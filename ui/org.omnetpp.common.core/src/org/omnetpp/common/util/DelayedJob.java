@@ -10,11 +10,13 @@ package org.omnetpp.common.util;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Run the given job after x milliseconds, but every restart() call
- * will re-start the countdown, the net effect being that the job
+ * Run the given job after x milliseconds in the UI thread, but every restart() 
+ * call will re-start the countdown, the net effect being that the job
  * gets run after the first "idle" period of x milliseconds (idle
  * meaning free of restart() calls). Can be used to implement
  * reconciler-style jobs, like lazy updating of views.
+ * 
+ * Internally relies on Display.timerExec(). 
  *
  * @author Andras
  */
