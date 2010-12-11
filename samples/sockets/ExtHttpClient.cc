@@ -8,6 +8,7 @@
 //
 
 
+#include <platdep/sockets.h>
 #include <omnetpp.h>
 #include "HttpMsg_m.h"
 #include "SocketRTScheduler.h"

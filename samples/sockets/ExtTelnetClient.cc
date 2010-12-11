@@ -8,6 +8,7 @@
 //
 
 
+#include <platdep/sockets.h>
 #include <omnetpp.h>
 #include "TelnetPkt_m.h"
 #include "SocketRTScheduler.h"

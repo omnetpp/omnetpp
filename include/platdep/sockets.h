@@ -25,6 +25,13 @@
 // With some care, it's possible to write platform-independent socket code
 // using the macros below.
 //
+// IMPORTANT: this header needs to be included BEFORE <omnetpp.h>, because
+// of timeval definitions in timeutil.h (see more info in timeutil.h)
+//
+
+#ifdef __PLATDEP_TIMEUTIL_H
+# error "#include <platdep/sockets.h> must precede <omnetpp.h> (and <platdep/timeutil.h> if present)"
+#endif
 
 #ifdef _WIN32
 //

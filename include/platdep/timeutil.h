@@ -18,8 +18,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_TIME_H
-#define __PLATDEP_TIME_H
+#ifndef __PLATDEP_TIMEUTIL_H
+#define __PLATDEP_TIMEUTIL_H
 
 #include <time.h>  // localtime()
 #include <stdio.h> // sprintf()
@@ -33,19 +33,24 @@
 # include <sys/time.h>
 # include <unistd.h>
 #else
+// Windows:
 # include <sys/types.h>
 # include <sys/timeb.h>  // ftime(), timeb
 
-// timeval is declared in <winsock.h> and <winsock2.h>; they're mutually exclusive
-# if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_)
-#  ifdef WANT_WINSOCK2
-#   include <winsock2.h>
-#  else
-#   include <winsock.h>
-#  endif
-#  undef min
-#  undef max
-# endif
+// Declare struct timeval. Note: timeval is declared in <winsock.h>/<winsock2.h>
+// (they're mutually exclusive), but we don't want <omnetpp.h> to pull them in
+// because winsock definitions often conflict with similar definitions in
+// model code; we rather define struct timeval here ourselves.
+// (Note: _WINSOCKAPI_ is used in the Windows SDK headers, _TIMEVAL_DEFINED in MinGW)
+#if !defined(_WINSOCKAPI_) && !defined(_WINSOCK2API_) && !defined(_TIMEVAL_DEFINED)
+#define _TIMEVAL_DEFINED
+// NOTE: if this timeval definition conflicts with winsock.h's definition,
+// make sure that winsock.h gets #included before this header!
+struct timeval {
+    long tv_sec;
+    long tv_usec;
+};
+#endif
 
 // Windows doesn't have gettimeofday(), so emulate it with ftime()
 inline int gettimeofday(struct timeval *tv, struct timezone *)
@@ -56,7 +61,7 @@ inline int gettimeofday(struct timeval *tv, struct timezone *)
     tv->tv_usec = tb.millitm * 1000UL;
     return 0;
 }
-#endif
+#endif /* _WIN32 */
 
 inline timeval timeval_add(const timeval& a, const timeval& b)
 {
