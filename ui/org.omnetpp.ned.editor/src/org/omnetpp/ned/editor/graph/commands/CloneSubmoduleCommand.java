@@ -16,6 +16,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
@@ -69,7 +70,10 @@ public class CloneSubmoduleCommand extends Command {
         if (parent instanceof CompoundModuleElementEx)
             connectionParent = parent.getFirstConnectionsChild();
 
-        ConnectionElementEx newConn = (ConnectionElementEx)oldConn.deepDup();
+		if (connectionParent == null)
+			connectionParent = (ConnectionsElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_CONNECTIONS, parent);
+
+		ConnectionElementEx newConn = (ConnectionElementEx)oldConn.deepDup();
 
         connectionParent.appendChild(newConn);
         newConn.setSrcModuleRef(srcModuleRef);
