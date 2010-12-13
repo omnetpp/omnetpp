@@ -1,10 +1,14 @@
+2010-12-13 Rudolf Hornig
+
+   * Fixed bug#224. NPEs when cloning submodules with connections which are defined in an ancestor module.
+
 2010-12-11 Rudolf Hornig 
 
     * Added plugin customization to force workspace refresh on IDE startup.
 
 2010-12-11 Rudolf Hornig 
 
-    Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the workspace got out of sync.
+    * Fixed bug#213. NPE occurred in NedEditorLauncher if the filesystem and the workspace got out of sync.
 
 2010-12-11 Andras Varga 
 
