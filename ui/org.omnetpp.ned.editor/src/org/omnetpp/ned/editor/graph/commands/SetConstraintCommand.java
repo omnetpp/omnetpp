@@ -41,8 +41,8 @@ public class SetConstraintCommand extends Command {
     public void execute() {
         oldDisplayString = module.getDisplayString().toString();
         // get the current (old) value of the size. if the size is not specified change it to -1
-        boolean sizeChanged = (newSize != null) && !newSize.equals(oldBounds.getSize());
-        boolean posChanged = (newPos != null) && !newPos.equals(oldBounds.getLocation());
+        boolean sizeChanged = (newSize != null) && (oldBounds != null) && !newSize.equals(oldBounds.getSize());
+        boolean posChanged = (newPos != null) && (oldBounds != null) && !newPos.equals(oldBounds.getLocation());
 
         if (pinOperation) {
             module.getDisplayString().setLocation(newPos, scale);

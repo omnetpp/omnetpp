@@ -269,4 +269,8 @@ public class CompoundModuleLayout extends AbstractLayout {
 	        union(getBorderPreferredSize(f));
 		return result;
 	}
+	
+    public Object getConstraint(IFigure child) {
+        throw new UnsupportedOperationException("Separate constraint objects are not supported byCompoundModuleLayout");
+    }
 }

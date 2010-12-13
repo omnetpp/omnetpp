@@ -1,6 +1,7 @@
 2010-12-13 Rudolf Hornig
 
    * Fixed bug#224. NPEs when cloning submodules with connections which are defined in an ancestor module.
+   * Fixed bug#227. NPE on upinning a submodule
 
 2010-12-11 Rudolf Hornig 
 
