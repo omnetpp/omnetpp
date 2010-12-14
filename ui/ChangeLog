@@ -1,3 +1,7 @@
+2010-12-14 Rudolf Hornig
+
+   * Fixed the tooltip of the "Disaply property" in the properties view. No longer disaplys null[0]
+
 2010-12-13 Rudolf Hornig
 
    * Fixed bug#224. NPEs when cloning submodules with connections which are defined in an ancestor module.

@@ -63,7 +63,7 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
         pdesc.setCategory(prop.getGroup().name());
         String enumDesc = prop.getEnumDesc();
         String defaultValue = prop.getDefaultDesc();
-        String desc = prop.getTag()+"["+prop.getPos()+"] - "+prop.getName()+": ";
+        String desc = (prop.getTag()!=null) ? prop.getTag()+"["+prop.getPos()+"] - "+prop.getName()+": " : "";
         desc += prop.getShortDesc() + (StringUtils.isNotEmpty(enumDesc) ?  ". Values: " + enumDesc : "");
         desc += (StringUtils.isNotEmpty(defaultValue) ? ". Default: "+defaultValue : "");
         pdesc.setDescription(desc);
