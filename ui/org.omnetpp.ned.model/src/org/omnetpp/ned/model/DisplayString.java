@@ -238,6 +238,8 @@ public class DisplayString implements IDisplayString {
 
         if (value.startsWith("$"))
             return VARIABLE_DEFAULTS.getTagArg(tagName, pos);
+        else if (NONE_TAG_VALUE.equals(value))  // disable inherited values and return the defaults
+            return EMPTY_DEFAULTS.getTagArg(tagName, pos);
         else if (!"".equals(value))
             return value;
         else if (getFallbackDisplayString() != null)

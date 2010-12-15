@@ -1,3 +1,8 @@
+2010-12-15 Rudolf Hornig
+
+   * Fixed #229. In NED Editor: Inherited display property values can be cleared now using "-" as a value.
+   It is possible now to remove an icon even if the ancestor specified one.
+
 2010-12-14 Rudolf Hornig
 
    * Fixed the tooltip of the "Disaply property" in the properties view. No longer disaplys null[0]
