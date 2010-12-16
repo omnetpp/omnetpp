@@ -42,7 +42,6 @@ import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.model.INedElement;
@@ -229,25 +228,20 @@ public class PaletteManager {
 
         // connection and type creation tools
         result.putAll(createConnectionTools());
-        Map<String, PaletteEntry> innerChannelTypes = createInnerTypes(file, false);
+        Map<String, PaletteEntry> innerChannelTypes = createInnerChannelPaletteEntries(file);
         if (innerChannelTypes.size() > 0) {
             result.putAll(innerChannelTypes);
         }
-        Map<String, PaletteEntry> channelsStackEntries = createChannelsStackEntries(contextProject);
+        Map<String, PaletteEntry> channelsStackEntries = createChannelPaletteEntries(contextProject);
         if (channelsStackEntries.size() > 0) {
             result.putAll(channelsStackEntries);
         }
 
         // type elements (simple/compound module/interfaces)
-        result.putAll(createTypesEntries());
+        result.putAll(createTypeCreationPaletteEntries());
 
         // submodule creation tools
-        Map<String, PaletteEntry> innerModuleTypes = createInnerTypes(file, true);
-        if (innerModuleTypes.size() > 0) {
-            result.putAll(innerModuleTypes);
-            result.put("separator", new PaletteSeparator());
-        }
-        result.putAll(createSubmodules(contextProject));
+        result.putAll(createSubmodulePaletteEntries(file));
 
         return result;
     }
@@ -358,27 +352,23 @@ public class PaletteManager {
     }
 
     /**
-     * Iterates over all top level types in a NED file and gathers all inner NEDTypes from all components.
-     * Returns a Container containing all inner types in this file.
+     * Returns a map containing palette entries for inner channel types in this file.
      */
-    private Map<String, PaletteEntry> createInnerTypes(IFile file, boolean moduleTypes) {
+    private Map<String, PaletteEntry> createInnerChannelPaletteEntries(IFile file) {
         List<INedTypeInfo> innerTypes = new ArrayList<INedTypeInfo>();
 
         // add module and module interface *inner* types of NED types in this file
         for (INedElement element : NedResourcesPlugin.getNedResources().getNedFileElement(file))
             if (element instanceof INedTypeElement)
             	for (INedTypeElement typeElement : ((INedTypeElement)element).getNedTypeInfo().getInnerTypes().values())
-            		if (typeElement instanceof IModuleKindTypeElement && moduleTypes || typeElement instanceof IChannelKindTypeElement && !moduleTypes)
+            		if (typeElement instanceof IChannelKindTypeElement)
             		    innerTypes.add(typeElement.getNedTypeInfo());
         // TODO: use SubmoduleComparator to sort the inner types
         Collections.sort(innerTypes, shortNameComparator);
 
         Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
         for(INedTypeInfo innerType : innerTypes)
-        	if (moduleTypes)
-        		addModuleToolEntry((IModuleKindTypeElement)innerType.getNedElement(), MRU_GROUP, entries);
-        	else
-        		addConnectionToolEntry((IChannelKindTypeElement)innerType.getNedElement(), entries);
+            addConnectionToolEntry((IChannelKindTypeElement)innerType.getNedElement(), entries);
 
         return entries;
     }
@@ -387,14 +377,28 @@ public class PaletteManager {
      * Creates several submodule drawers using currently parsed types (only non-inner types),
      * and using the GROUP property as the drawer name.
      */
-    protected Map<String, PaletteEntry> createSubmodules(IProject contextProject) {
+    protected Map<String, PaletteEntry> createSubmodulePaletteEntries(IFile file) {
+        IProject contextProject = file.getProject();
         Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
 
-        // get all the possible type names in alphabetical order
+
+        // get all the possible type names in alphabetical order including inner types
         List<INedTypeInfo> matchingTypeInfos = new ArrayList<INedTypeInfo>();
         List<INedTypeInfo> positiveScoreMatchingTypeInfos = new ArrayList<INedTypeInfo>();
+
+        for (INedElement element : NedResourcesPlugin.getNedResources().getNedFileElement(file))
+            if (element instanceof INedTypeElement)
+                for (INedTypeElement typeElement : ((INedTypeElement)element).getNedTypeInfo().getInnerTypes().values())
+                    if (typeElement instanceof IModuleKindTypeElement) {
+                        INedTypeInfo typeInfo = typeElement.getNedTypeInfo();
+                        matchingTypeInfos.add(typeInfo);
+
+                        if (calculateScore(typeInfo) > 0)
+                            positiveScoreMatchingTypeInfos.add(typeInfo);
+                    }
+                        
         for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getNedTypes(contextProject)) {
-            if (INedResources.MODULE_FILTER.matches(typeInfo) || INedResources.MODULEINTERFACE_FILTER.matches(typeInfo)) {
+            if (typeInfo.getNedElement() instanceof IModuleKindTypeElement) {
                 matchingTypeInfos.add(typeInfo);
 
                 if (calculateScore(typeInfo) > 0)
@@ -495,7 +499,7 @@ public class PaletteManager {
     /**
      * Creates entries for default tools and all top-level (non inner) channel types.
      */
-    private Map<String, PaletteEntry> createChannelsStackEntries(IProject contextProject) {
+    private Map<String, PaletteEntry> createChannelPaletteEntries(IProject contextProject) {
         Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
 
         ConnectionCreationToolEntry defaultConnectionTool = new ConnectionCreationToolEntry(
@@ -577,7 +581,7 @@ public class PaletteManager {
     /**
      * Builds a tool entry list containing base top level NED components like simple, module, channel etc.
      */
-    private static Map<String, ToolEntry> createTypesEntries() {
+    private static Map<String, ToolEntry> createTypeCreationPaletteEntries() {
     	String bannerComment = "//\n// TODO documentation\n//\n// @author "+System.getProperty("user.name")+"\n//\n";
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
@@ -671,6 +675,9 @@ public class PaletteManager {
         HashSet<String> submoduleLabels = new HashSet<String>();
         NedFileElementEx editedElement = hostingEditor.getModel();
 
+        if (typeInfo.getNedElement().getContainingNedFileElement() == editedElement)
+            score += 1;
+        
         // fill in gateLabels, containsLabels, and submoduleLabels
         // also: score+=10 to all submodule types already used
         for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {

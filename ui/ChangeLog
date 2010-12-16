@@ -1,3 +1,7 @@
+2010-12-16 Rudolf Hornig
+
+   * Changed the palette entry ordering in NED editor to include inner types in the current file on the top.
+
 2010-12-15 Rudolf Hornig
 
    * Fixed #229. In NED Editor: Inherited display property values can be cleared now using "-" as a value.
@@ -5,7 +9,7 @@
 
 2010-12-14 Rudolf Hornig
 
-   * Fixed the tooltip of the "Disaply property" in the properties view. No longer disaplys null[0]
+   * Fixed the tooltip of the "Display property" in the properties view. No longer displays null[0]
 
 2010-12-13 Rudolf Hornig
 
