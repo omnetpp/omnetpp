@@ -67,6 +67,17 @@
     (for example, udpApp's type need not be in StandardHost's project INET,
     it may also come from a project that has INET as dependency)
 
+2010-07-13 Tamas Borbely
+
+   * Scave: Line type on vector chart did get reflected in the Chart Properties dialog (issue 182).
+   When the line property has the same value for each selected line in the Properties dialog,
+   then that value is displayed in the control, instead of 'No change'.
+
+   * Scave: Empty chart if refreshing a temp chart after re-running simulation (issue 186).
+   When creating a temp chart, runs was identified by runname, now they are identified
+   by file/configname/runnumber. 'Add Selected Data to Dataset' and 'Convert to Dataset'
+   actions also use the file/configname/runnumber fields for consistency.
+
 2010-07-19 Levente Meszaros 
 
     * SeqChart: Fixed a NPE.
@@ -131,3 +142,45 @@
     getForeground().
 
 2010-06-11  ------ omnetpp-4.1 released ------
+
+2010-05-31  ------ omnetpp-4.1rc2 released ------
+
+2010-04-20  ------ omnetpp-4.1b4 released ------
+
+2010-03-14  ------ omnetpp-4.1b3 released ------
+
+2009-08-03  Levente Meszaros
+
+    * Connection chooser brings up channel chooser when using the default connection tool and there are matching labels between the connected gates and an available channel type.
+    * Palette shows NED types in two distinct groups: the first contains those which are related to the current editor ordered by score, the second contains all available types ordered by name
+
+2009-07-17  Levente Meszaros
+
+    * Text editor provides new context menu items to infer/distribute gate labels.
+
+2009-07-15  Levente Meszaros
+
+    * Palette provides regexp based substring filtering for qualified NED type names and @label properties.
+    * Palette sorts submodules based on what is actually already used, what could be connected and @contains properties.
+
+2009-07-14  Levente Meszaros
+
+    * Added support for matching @labels properties of gates in the connection chooser popup menu.
+
+2009-07-13  Levente Meszaros
+
+    * Added validation to parameters dialog, reserved NED words cannot be parameter names, and parameter values must be valid expressions.
+
+2009-06-09  Levente Meszaros
+
+    * SEQCHART: Added sequence chart support to display module method calls as vertical orange arrows.
+    The arrow's label is the method's name, tooltips are also available.
+
+    * Some message send arrows were drawn incorrectly from the caller module due to not taking
+    into consideration module method calls. From now on these kind of arrows might start from
+    any point on a module's axis, even if there was no event at that simulation time in the
+    callee module.
+
+    * Store various show/hide flags in sequence chart eventlog configuration files.
+
+2009-03-12  ------ omnetpp-4.0 released ------
