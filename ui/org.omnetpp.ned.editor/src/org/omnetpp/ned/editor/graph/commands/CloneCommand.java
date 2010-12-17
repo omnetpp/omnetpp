@@ -14,9 +14,11 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
@@ -65,9 +67,10 @@ public class CloneCommand extends Command {
         // duplicate the subtree but do not add to the new parent yet
         INedTypeElement newNode = (INedTypeElement)oldNode.deepDup();
 
-        // set a unique name
-        NedFileElementEx nedFile = oldNode.getContainingNedFileElement();
-        newNode.setName(NedElementUtilEx.getUniqueNameForToplevelType(newNode.getName(), nedFile));
+        // make the name unique. If parent is TypesElement the context is CompoundModule otherwise NedFile
+        INedTypeLookupContext context = (parent instanceof TypesElement) ? 
+                (CompoundModuleElementEx)(parent.getParent()) : (NedFileElementEx)parent ;
+        newNode.setName(NedElementUtilEx.getUniqueNameForType(newNode.getName(), context));
 
     	// insert into the parent at the correct position
         parent.insertChildBefore(insertBefore, newNode);

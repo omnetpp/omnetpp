@@ -1,3 +1,7 @@
+2010-12-17 Rudolf Hornig
+
+   * Cloning or creating new inner types using the graphical editor now generates unique names correctly
+
 2010-12-16 Rudolf Hornig
 
    * Changed the palette entry ordering in NED editor to include inner types in the current file on the top.

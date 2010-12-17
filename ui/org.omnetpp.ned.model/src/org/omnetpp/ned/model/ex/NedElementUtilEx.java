@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
@@ -26,6 +27,7 @@ import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
 import org.omnetpp.ned.model.interfaces.IHasType;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
@@ -39,6 +41,7 @@ import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * TODO add documentation
@@ -297,13 +300,30 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     /**
-     * Selects a name for a toplevel type, ensuring that the name will be unique in the package.
+     * Selects a name for a type, ensuring that the name will be unique in the given context.
+     * (i.e. in a package for top level types or inside a top-level type for inner types)
+     * The context must be a {@link NedFileElementEx} for top level elements or
+     * {@link CompoundModuleElementEx} for inner types 
      */
-    public static String getUniqueNameForToplevelType(String currentName, NedFileElementEx nedFile) {
-        INedTypeResolver res = NedElement.getDefaultNedTypeResolver();
-        IProject project = res.getNedFile(nedFile).getProject();
-        Set<String> reservedNames = res.getReservedQNames(project);
-        String currentQName = nedFile.getQNameAsPrefix() + currentName;
+    public static String getUniqueNameForType(String currentName, INedTypeLookupContext context) {
+        Set<String> reservedNames;
+        String currentQName;
+        if (context instanceof NedFileElementEx) {
+            // top level type (work with fully qualified names)
+            INedTypeResolver res = NedElement.getDefaultNedTypeResolver();
+            IProject project = res.getNedFile((NedFileElementEx)context).getProject();
+            reservedNames = res.getReservedQNames(project);
+            currentQName = context.getQNameAsPrefix() + currentName; 
+        } else if (context instanceof CompoundModuleElementEx) {
+            // inner type (we can work with unqualified names)
+            CompoundModuleElementEx containerElement = (CompoundModuleElementEx)context;
+            reservedNames = containerElement.getNedTypeInfo().getInnerTypes().keySet();
+            currentQName = currentName; 
+        } else {
+            Assert.isTrue(false, "Unique name ganeration is implemented only for NedFile and CompoundModule contexts.");
+            return currentName;
+        }
+
         String uniqueQName = getUniqueNameFor(currentQName, reservedNames);
         return uniqueQName.contains(".") ? StringUtils.substringAfterLast(uniqueQName, ".") : uniqueQName;
     }
