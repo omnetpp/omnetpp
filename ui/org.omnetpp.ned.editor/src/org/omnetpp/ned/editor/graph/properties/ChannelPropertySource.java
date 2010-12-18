@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -24,6 +24,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /*
  * @author rhornig
@@ -47,33 +48,38 @@ public class ChannelPropertySource extends MergedPropertySource {
 
     /**
      * Constructor
-     * @param nodeModel
+     * @param channelElement
      */
-    public ChannelPropertySource(final ChannelElementEx nodeModel) {
-    	super(nodeModel);
-        mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
+    public ChannelPropertySource(final ChannelElementEx channelElement) {
+    	super(channelElement);
+        mergePropertySource(new NamePropertySource(channelElement, new TypeNameValidator(channelElement)));
         // extends
-        mergePropertySource(new ExtendsPropertySource(nodeModel) {
+        mergePropertySource(new ExtendsPropertySource(channelElement) {
             @Override
             protected List<String> getPossibleValues() {
-                IProject project = NedResourcesPlugin.getNedResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
-                List<String> names = new ArrayList<String>(NedResourcesPlugin.getNedResources().getChannelQNames(project));
-                Collections.sort(names);
-                return names;
+                INedResources res = NedResourcesPlugin.getNedResources();
+                INedTypeLookupContext context = channelElement.getEnclosingLookupContext();
+                List<String> channelNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.CHANNEL_FILTER));
+                // remove ourselves to avoid direct cycle
+                channelNames.remove(channelElement.getName());
+                // add type names that need fully qualified names
+                channelNames.addAll(res.getInvisibleTypeNames(context, INedResources.CHANNEL_FILTER));
+                Collections.sort(channelNames);
+                return channelNames;
             }
         });
         // interfaces
         mergePropertySource(new DelegatingPropertySource(
-                new InterfacesListPropertySource(nodeModel),
+                new InterfacesListPropertySource(channelElement),
                 InterfacesListPropertySource.CATEGORY,
                 InterfacesListPropertySource.DESCRIPTION));
         // parameters
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(nodeModel),
+                new ParameterListPropertySource(channelElement),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
         // create a displayPropertySource
-        mergePropertySource(new ChannelDisplayPropertySource(nodeModel));
+        mergePropertySource(new ChannelDisplayPropertySource(channelElement));
     }
 
 }

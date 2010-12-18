@@ -66,6 +66,7 @@ import org.omnetpp.ned.model.notification.NedModelChangeEvent;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.notification.NedStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.NedElementTags;
+import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
  * Parses all NED files in the workspace and makes them available for other
@@ -527,7 +528,7 @@ public class NedResources implements INedResources, IResourceChangeListener {
             // inner type?
             if (lookupContext instanceof CompoundModuleElementEx) {
                 // always lookup in the topmost compound module's context because "types:" is not allowed elsewhere
-                CompoundModuleElementEx topLevelCompoundModule = (CompoundModuleElementEx)lookupContext.getParent().getParentWithTag(NedElementTags.NED_COMPOUND_MODULE);
+                CompoundModuleElementEx topLevelCompoundModule = (CompoundModuleElementEx)lookupContext.getParent().getSelfOrAncestorWithTag(NedElementTags.NED_COMPOUND_MODULE);
                 if (topLevelCompoundModule != null)
                     lookupContext = topLevelCompoundModule;
                 INedTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNedTypeInfo();
@@ -589,10 +590,14 @@ public class NedResources implements INedResources, IResourceChangeListener {
     public synchronized Set<String> getVisibleTypeNames(INedTypeLookupContext lookupContext, IPredicate predicate) {
         rehashIfNeeded();
 
-        // types from the same package
-        String prefix = lookupContext.getQNameAsPrefix();
-        String regex = prefix.replace(".", "\\.") + "[^.]+";
         Set<String> result = new HashSet<String>();
+        // inner types
+        if (lookupContext instanceof CompoundModuleElementEx)
+            result.addAll(getLocalTypeNames(lookupContext, predicate));
+        
+        // types from the same package
+        String prefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
+        String regex = prefix.replace(".", "\\.") + "[^.]+";
 
         IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
         ProjectData projectData = projects.get(project);
@@ -608,6 +613,51 @@ public class NedResources implements INedResources, IResourceChangeListener {
                 if (typeInfo.getFullyQualifiedName().matches(importRegex) && predicate.matches(typeInfo))
                     result.add(typeInfo.getName());
         }
+        return result;
+    }
+
+    public synchronized Set<String> getInvisibleTypeNames(INedTypeLookupContext lookupContext, IPredicate predicate) {
+        rehashIfNeeded();
+
+        IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
+        Set<String> result = getNedTypeQNames(predicate, project);  // innerTypes are not included
+        
+        // types from the same package
+        String prefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
+        String regex = prefix.replace(".", "\\.") + "[^.]+";
+
+        ProjectData projectData = projects.get(project);
+        for (INedTypeInfo typeInfo : projectData.components.values())
+            if (typeInfo.getFullyQualifiedName().matches(regex))
+                result.remove(typeInfo.getFullyQualifiedName());
+
+        // imported types
+        List<String> imports = lookupContext.getContainingNedFileElement().getImports();
+        for (String importSpec : imports) {
+            String importRegex = NedElementUtilEx.importToRegex(importSpec);
+            for (INedTypeInfo typeInfo : projectData.components.values())
+                if (typeInfo.getFullyQualifiedName().matches(importRegex) )
+                    result.remove(typeInfo.getFullyQualifiedName());
+        }
+        return result;
+    }
+
+    public synchronized Set<String> getLocalTypeNames(INedTypeLookupContext lookupContext, IPredicate predicate) {
+        Set<String> result = new HashSet<String>();
+        if (lookupContext instanceof NedFileElement) {
+            List<INedTypeElement> topLevelTypeNodes = lookupContext.getContainingNedFileElement().getTopLevelTypeNodes();
+            for (INedTypeElement element : topLevelTypeNodes) {
+                if (predicate.matches(element.getNedTypeInfo()))
+                    result.add(element.getName());
+            }
+        } else {  // CompounModule - return inner types
+            Map<String, INedTypeElement> innerTypes = ((CompoundModuleElementEx)lookupContext).getNedTypeInfo().getInnerTypes();
+            for (INedTypeElement element : innerTypes.values()) {
+                if (predicate.matches(element.getNedTypeInfo()))
+                    result.add(element.getName());
+            }
+        }
+
         return result;
     }
 

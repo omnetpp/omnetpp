@@ -278,9 +278,9 @@ public interface INedElement extends Iterable<INedElement> {
 
 	/**
 	 * Climb up in the element tree until it finds an element with the given tagcode.
-	 * Returns null if not found.
+	 * Returns null if not found and the element itself if it matches the tag immediately.
 	 */
-	public INedElement getParentWithTag(int tagcode);
+	public INedElement getSelfOrAncestorWithTag(int tagcode);
 
 	/**
 	 * Finds and returns the element with the given Id in this subtree, or null if not found.
@@ -332,17 +332,19 @@ public interface INedElement extends Iterable<INedElement> {
 	public INedTypeElement getEnclosingTypeElement();
 
 	/**
-	 * Like getEnclosingTypeNode(), but for NED types (INedTypeElement) it returns itself.
+	 * Like getEnclosingTypeElement(), but for NED types (INedTypeElement) it returns itself.
 	 */
 	public INedTypeElement getSelfOrEnclosingTypeElement();
 
 	/**
-	 * Returns the (nearest) NedFileElementEx parent of this element, or null.
+	 * Returns the (nearest) NedFileElementEx ancestor of this element (or the element itself
+	 * if called on NedFileElementEx), or null if not found.
 	 */
 	public NedFileElementEx getContainingNedFileElement();
 
     /**
-     * Returns the (nearest) MsgFileElementEx parent of this element, or null.
+     * Returns the (nearest) MsgFileElementEx ancestor of this element (or the element itself 
+     * if called on MsgFileElementEx), or null if not found.
      */
     public MsgFileElementEx getContainingMsgFileElement();
 

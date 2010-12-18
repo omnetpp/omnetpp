@@ -1,4 +1,7 @@
 2010-12-17 Rudolf Hornig
+   
+   * Fixed #230. The values for Type, Like and Extends property on a submodule/connections/or ned type (top-level or inner) 
+     are initialized correctly. They contain correct values according to the current lookup context.
 
    * Cloning or creating new inner types using the graphical editor now generates unique names correctly
 

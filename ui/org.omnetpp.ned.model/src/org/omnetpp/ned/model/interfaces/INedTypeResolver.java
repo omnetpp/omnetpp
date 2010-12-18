@@ -257,10 +257,27 @@ public interface INedTypeResolver {
 
 	/**
 	 * Return all NED type names matching the predicate, and visible in the given
-	 * context without fully qualifying them, including inner types.
+	 * context without fully qualifying them, including inner types, types in the 
+	 * current package and types explicitly imported into the file.
 	 * Returned names are short names (NOT qualified).
 	 */
 	public Set<String> getVisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
+
+    /**
+     * Return all NED type names matching the predicate, that require full qualification
+     * to be visible in this context. (i.e. all top-level types that are not in the current
+     * package or not imported explicitly)
+     * Returned names are fully qualified.
+     */
+    public Set<String> getInvisibleTypeNames(INedTypeLookupContext context, IPredicate predicate);
+
+    /**
+     * Return all NED type names matching the predicate, and defined in the given
+     * context. For NedFileElement context this means all the top level type elements defined in 
+     * the given file, for CompoundModule context it returns all inner types (including 
+     * the inherited ones if any). Returned names are short names (NOT qualified).
+     */
+    public Set<String> getLocalTypeNames(INedTypeLookupContext context, IPredicate predicate);
 
     /**
 	 * Returns all valid toplevel (non-inner) module names in the NED files,

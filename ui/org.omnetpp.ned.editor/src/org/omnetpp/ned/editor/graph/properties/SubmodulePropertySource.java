@@ -12,10 +12,10 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -26,7 +26,9 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
  * Properties of the submodule element
@@ -48,16 +50,28 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
     public SubmodulePropertySource(final SubmoduleElementEx submoduleNodeModel) {
         super(submoduleNodeModel);
-        // create a nested displayPropertySource
-        // name
+        // create a nested displayPropertySource name
         mergePropertySource(new NamePropertySource(submoduleNodeModel, new SubmoduleNameValidator(submoduleNodeModel)));
         mergePropertySource(new BasePropertySource(submoduleNodeModel));
         // type
         mergePropertySource(new TypePropertySource(submoduleNodeModel) {
-            @Override
-            protected List<String> getPossibleValues() {
-                IProject project = NedResourcesPlugin.getNedResources().getNedFile(submoduleNodeModel.getContainingNedFileElement()).getProject();
-                List<String> moduleNames = new ArrayList<String>(NedResourcesPlugin.getNedResources().getModuleQNames(project));
+            protected List<String> getPossibleTypeValues() {
+                INedResources res = NedResourcesPlugin.getNedResources();
+                INedTypeLookupContext context = submoduleNodeModel.getEnclosingLookupContext();
+                List<String> moduleNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.MODULE_FILTER));
+                // remove also the containing type
+                if (context instanceof CompoundModuleElementEx) 
+                    moduleNames.remove(((CompoundModuleElementEx)context).getName());
+                // add type names that need fully qualified names
+                moduleNames.addAll(res.getInvisibleTypeNames(context, INedResources.MODULE_FILTER));
+                Collections.sort(moduleNames);
+                return moduleNames;
+            }
+            protected List<String> getPossibleLikeTypeValues() {
+                INedResources res = NedResourcesPlugin.getNedResources();
+                CompoundModuleElementEx context = submoduleNodeModel.getCompoundModule();
+                List<String> moduleNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.MODULEINTERFACE_FILTER));
+                moduleNames.addAll(res.getInvisibleTypeNames(context, INedResources.MODULEINTERFACE_FILTER));
                 Collections.sort(moduleNames);
                 return moduleNames;
             }

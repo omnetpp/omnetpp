@@ -427,7 +427,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 		return null;
 	}
 
-	public INedElement getParentWithTag(int tagcode) {
+	public INedElement getSelfOrAncestorWithTag(int tagcode) {
 		INedElement node = this;
 		while (node!=null && node.getTagCode()!=tagcode)
 			node = node.getParent();
@@ -511,11 +511,11 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	}
 
 	public NedFileElementEx getContainingNedFileElement() {
-		return (NedFileElementEx) getParentWithTag(NedElementTags.NED_NED_FILE);
+		return (NedFileElementEx) getSelfOrAncestorWithTag(NedElementTags.NED_NED_FILE);
 	}
 
     public MsgFileElementEx getContainingMsgFileElement() {
-        return (MsgFileElementEx) getParentWithTag(NedElementTags.NED_MSG_FILE);
+        return (MsgFileElementEx) getSelfOrAncestorWithTag(NedElementTags.NED_MSG_FILE);
     }
 
     public INedTypeLookupContext getEnclosingLookupContext() {

@@ -12,11 +12,10 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
-
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
+import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
@@ -29,6 +28,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
  * TODO add documentation
@@ -100,37 +100,42 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         }
     }
 
-    public SimpleModulePropertySource(final SimpleModuleElementEx nodeModel) {
-        super(nodeModel);
+    public SimpleModulePropertySource(final SimpleModuleElementEx simpleModuleElement) {
+        super(simpleModuleElement);
         //create name
-        mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
-        mergePropertySource(new BasePropertySource(nodeModel));
+        mergePropertySource(new NamePropertySource(simpleModuleElement, new TypeNameValidator(simpleModuleElement)));
+        mergePropertySource(new BasePropertySource(simpleModuleElement));
         // extends
-        mergePropertySource(new ExtendsPropertySource(nodeModel) {
+        mergePropertySource(new ExtendsPropertySource(simpleModuleElement) {
             @Override
             protected List<String> getPossibleValues() {
-                IProject project = NedResourcesPlugin.getNedResources().getNedFile(nodeModel.getContainingNedFileElement()).getProject();
-                List<String> moduleNames = new ArrayList<String>(NedResourcesPlugin.getNedResources().getModuleQNames(project));
+                INedResources res = NedResourcesPlugin.getNedResources();
+                INedTypeLookupContext context = simpleModuleElement.getEnclosingLookupContext();
+                List<String> moduleNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.SIMPLE_MODULE_FILTER));
+                // remove ourselves to avoid direct cycle
+                moduleNames.remove(simpleModuleElement.getName());
+                // add type names that need fully qualified names
+                moduleNames.addAll(res.getInvisibleTypeNames(context, INedResources.SIMPLE_MODULE_FILTER));
                 Collections.sort(moduleNames);
                 return moduleNames;
             }
         });
         // interfaces
         mergePropertySource(new DelegatingPropertySource(
-                new InterfacesListPropertySource(nodeModel),
+                new InterfacesListPropertySource(simpleModuleElement),
                 InterfacesListPropertySource.CATEGORY,
                 InterfacesListPropertySource.DESCRIPTION));
         // parameter list property
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(nodeModel),
+                new ParameterListPropertySource(simpleModuleElement),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
         mergePropertySource(new DelegatingPropertySource(
-                new GateListPropertySource(nodeModel),
+                new GateListPropertySource(simpleModuleElement),
                 GateListPropertySource.CATEGORY,
                 GateListPropertySource.DESCRIPTION));
         // create a nested displayPropertySource
-        mergePropertySource(new SimpleModuleDisplayPropertySource(nodeModel));
+        mergePropertySource(new SimpleModuleDisplayPropertySource(simpleModuleElement));
 
     }
 

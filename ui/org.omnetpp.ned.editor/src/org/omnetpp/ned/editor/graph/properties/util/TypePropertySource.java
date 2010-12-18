@@ -55,16 +55,20 @@ public abstract class TypePropertySource extends NedBasePropertySource {
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
             //fill the connection combobox with types
-            List<String> values = getPossibleValues();
-            typeProp.setItems(values);
-            likeProp.setItems(values);
+            typeProp.setItems(getPossibleTypeValues());
+            likeProp.setItems(getPossibleLikeTypeValues());
             return descriptors;
         }
 
         /**
-         * Returns the list of possible values that will be used to fill a dropdown box.
+         * Returns the list of possible type values that will be used to fill a dropdown box.
          */
-        protected abstract List<String> getPossibleValues();
+        protected abstract List<String> getPossibleTypeValues();
+
+        /**
+         * Returns the list of possible likeType values that will be used to fill a dropdown box.
+         */
+        protected abstract List<String> getPossibleLikeTypeValues();
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Type.equals(propName))
