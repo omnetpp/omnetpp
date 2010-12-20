@@ -13,7 +13,7 @@ CFLAGS=$(CFLAGS) -DWIN32_DLL
 COPTS=$(CFLAGS) -I. -I../../src/common -I../../include/platdep /Fd"filereadertest.pdb"
 
 OBJS= fileechotest.obj filereadertest.obj filereaderconsumer.obj filereaderproducer.obj
-LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/commond.lib
+LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/oppcommond.lib
 
 #
 # Automatic rules
@@ -26,9 +26,10 @@ LIBS= $(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)/commond.lib
 #
 # Targets (TBD: build dll)
 #
-all: fileechotest.exe filereadertest.exe
+all: fileechotest.exe filereadertest.exe filereaderconsumer.exe filereaderproducer.exe
 
 fileechotest.exe: fileechotest.obj $(LIBS)
+	echo $(LIBS)
 	$(LINK) $(LDFLAGS) /nologo /out:fileechotest.exe fileechotest.obj $(LIBS)
 
 filereadertest.exe: filereadertest.obj $(LIBS)
