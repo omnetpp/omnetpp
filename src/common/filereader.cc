@@ -114,6 +114,7 @@ void FileReader::restorePosition()
 
 file_offset_t FileReader::pointerToFileOffset(char *pointer) const
 {
+	Assert(bufferBegin <= pointer && pointer <= bufferEnd);
     file_offset_t fileOffset = pointer - bufferBegin + bufferFileOffset;
     Assert(fileOffset >= 0 && fileOffset <= fileSize);
     return fileOffset;
@@ -184,7 +185,7 @@ void FileReader::checkConsistence(bool checkDataPointer) const
 {
     bool ok = (size_t)(bufferEnd - bufferBegin) == bufferSize &&
       ((!dataBegin && !dataEnd) ||
-       (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd &&
+       (dataBegin <= dataEnd && bufferBegin <= dataBegin && dataEnd <= bufferEnd && dataEnd - dataBegin <= fileSize &&
     (!checkDataPointer || (dataBegin <= currentDataPointer && currentDataPointer <= dataEnd))));
 
     if (!ok)
@@ -271,7 +272,9 @@ void FileReader::fillBuffer(bool forward)
         if (ferror(f))
             throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
 
+        dataLength = std::min((int64)dataLength, fileSize - fileOffset);
         int bytesRead = fread(dataPointer, 1, dataLength, f);
+
         if (ferror(f))
             throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
 
