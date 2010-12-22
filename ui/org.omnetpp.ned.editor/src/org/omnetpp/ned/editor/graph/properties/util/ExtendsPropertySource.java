@@ -13,6 +13,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
@@ -53,15 +54,20 @@ public abstract class ExtendsPropertySource extends NedBasePropertySource {
         protected abstract List<String> getPossibleValues();
 
         public Object getPropertyValue(Object propName) {
-            if (Prop.Extends.equals(propName))
-                return getNedTypeModel().getFirstExtends();
-
+            if (Prop.Extends.equals(propName)) {
+                String result = lookupFullyQualifiedName(getNedTypeModel().getEnclosingLookupContext(), getNedTypeModel().getFirstExtends());
+                return convertQNameToDisplayName(result);
+            }
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Extends.equals(propName))
-                getNedTypeModel().setFirstExtends((String)value);
+                getNedTypeModel().setFirstExtends(convertDisplayNameToQName((String)value));
+
+            NedElementUtilEx.addImportForExtends(getNedTypeModel()); // note: overwrites the first extends 
+            // note that this will add an import statement if needed, but WILL not remove when undo is invoked
+            // there is no way to distinguish here between do and undo operations
         }
 
         public boolean isPropertySet(Object propName) {

@@ -7,8 +7,6 @@
 
 package org.omnetpp.ned.editor.graph.properties;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -16,16 +14,13 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
  * TODO add documentation
@@ -108,33 +103,23 @@ public class ConnectionPropertySource extends MergedPropertySource {
     }
 
     // constructor
-    public ConnectionPropertySource(final ConnectionElementEx connectionNodeModel) {
-        super(connectionNodeModel);
+    public ConnectionPropertySource(final ConnectionElementEx modelElement) {
+        super(modelElement);
         // create a nested displayPropertySources
-        mergePropertySource(new BasePropertySource(connectionNodeModel));
+        mergePropertySource(new BasePropertySource(modelElement));
         // type
-        mergePropertySource(new TypePropertySource(connectionNodeModel) {
+        mergePropertySource(new TypePropertySource(modelElement) {
             @Override
             protected List<String> getPossibleTypeValues() {
-                INedResources res = NedResourcesPlugin.getNedResources();
-                INedTypeLookupContext context = connectionNodeModel.getEnclosingLookupContext();
-                List<String> channelNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.CHANNEL_FILTER));
-                channelNames.addAll(res.getInvisibleTypeNames(context, INedResources.CHANNEL_FILTER));
-                Collections.sort(channelNames);
-                return channelNames;
+                return getPossibleTypeDisplayNames(modelElement, INedResources.CHANNEL_FILTER);
             }
             protected List<String> getPossibleLikeTypeValues() {
-                INedResources res = NedResourcesPlugin.getNedResources();
-                CompoundModuleElementEx context = connectionNodeModel.getCompoundModule();
-                List<String> channelInterfaceNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.CHANNELINTERFACE_FILTER));
-                channelInterfaceNames.addAll(res.getInvisibleTypeNames(context, INedResources.CHANNELINTERFACE_FILTER));
-                Collections.sort(channelInterfaceNames);
-                return channelInterfaceNames;
+                return getPossibleTypeDisplayNames(modelElement, INedResources.CHANNELINTERFACE_FILTER);
             }
         });
-        mergePropertySource(new ConnectionDisplayPropertySource(connectionNodeModel));
+        mergePropertySource(new ConnectionDisplayPropertySource(modelElement));
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(connectionNodeModel),
+                new ParameterListPropertySource(modelElement),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
 

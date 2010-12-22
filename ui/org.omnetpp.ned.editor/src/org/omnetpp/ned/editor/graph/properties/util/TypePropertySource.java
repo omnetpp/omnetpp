@@ -12,9 +12,9 @@ import java.util.List;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
-
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.interfaces.IHasType;
 
 /**
@@ -71,10 +71,14 @@ public abstract class TypePropertySource extends NedBasePropertySource {
         protected abstract List<String> getPossibleLikeTypeValues();
 
         public Object getPropertyValue(Object propName) {
-            if (Prop.Type.equals(propName))
-                return getHasTypeModel().getType();
-            if (Prop.Like.equals(propName))
-                return getHasTypeModel().getLikeType();
+            if (Prop.Type.equals(propName)) {
+                String result = lookupFullyQualifiedName(getHasTypeModel().getEnclosingLookupContext(), getHasTypeModel().getType());
+                return convertQNameToDisplayName(result);
+            }
+            if (Prop.Like.equals(propName)) {
+                String result = lookupFullyQualifiedName(getHasTypeModel().getEnclosingLookupContext(), getHasTypeModel().getLikeType());
+                return convertQNameToDisplayName(result);
+            }
             if (Prop.LikeParam.equals(propName))
                 return getHasTypeModel().getLikeParam();
 
@@ -83,11 +87,15 @@ public abstract class TypePropertySource extends NedBasePropertySource {
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Type.equals(propName))
-                getHasTypeModel().setType((String)value);
+                getHasTypeModel().setType(convertDisplayNameToQName((String)value));
             if (Prop.Like.equals(propName))
-                getHasTypeModel().setLikeType((String)value);
+                getHasTypeModel().setLikeType(convertDisplayNameToQName((String)value));
             if (Prop.LikeParam.equals(propName))
                 getHasTypeModel().setLikeParam((String)value);
+            
+            NedElementUtilEx.addImportFor(getHasTypeModel()); // note: overwrites "type" (or "like-type") attribute
+            // note that this will add an import statement if needed, but WILL not remove when undo is invoked
+            // there is no way to distinguish here between do and undo operations
         }
 
         public boolean isPropertySet(Object propName) {

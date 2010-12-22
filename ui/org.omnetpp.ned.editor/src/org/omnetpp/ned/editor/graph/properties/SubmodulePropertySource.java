@@ -7,8 +7,6 @@
 
 package org.omnetpp.ned.editor.graph.properties;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -16,7 +14,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.GateListPropertySource;
@@ -26,9 +23,7 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /**
  * Properties of the submodule element
@@ -48,46 +43,32 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
     }
 
-    public SubmodulePropertySource(final SubmoduleElementEx submoduleNodeModel) {
-        super(submoduleNodeModel);
+    public SubmodulePropertySource(final SubmoduleElementEx modelElement) {
+        super(modelElement);
         // create a nested displayPropertySource name
-        mergePropertySource(new NamePropertySource(submoduleNodeModel, new SubmoduleNameValidator(submoduleNodeModel)));
-        mergePropertySource(new BasePropertySource(submoduleNodeModel));
+        mergePropertySource(new NamePropertySource(modelElement, new SubmoduleNameValidator(modelElement)));
+        mergePropertySource(new BasePropertySource(modelElement));
         // type
-        mergePropertySource(new TypePropertySource(submoduleNodeModel) {
+        mergePropertySource(new TypePropertySource(modelElement) {
             protected List<String> getPossibleTypeValues() {
-                INedResources res = NedResourcesPlugin.getNedResources();
-                INedTypeLookupContext context = submoduleNodeModel.getEnclosingLookupContext();
-                List<String> moduleNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.MODULE_FILTER));
-                // remove also the containing type
-                if (context instanceof CompoundModuleElementEx) 
-                    moduleNames.remove(((CompoundModuleElementEx)context).getName());
-                // add type names that need fully qualified names
-                moduleNames.addAll(res.getInvisibleTypeNames(context, INedResources.MODULE_FILTER));
-                Collections.sort(moduleNames);
-                return moduleNames;
+                return getPossibleTypeDisplayNames(modelElement, INedResources.MODULE_FILTER);
             }
             protected List<String> getPossibleLikeTypeValues() {
-                INedResources res = NedResourcesPlugin.getNedResources();
-                CompoundModuleElementEx context = submoduleNodeModel.getCompoundModule();
-                List<String> moduleNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.MODULEINTERFACE_FILTER));
-                moduleNames.addAll(res.getInvisibleTypeNames(context, INedResources.MODULEINTERFACE_FILTER));
-                Collections.sort(moduleNames);
-                return moduleNames;
+                return getPossibleTypeDisplayNames(modelElement, INedResources.MODULEINTERFACE_FILTER);
             }
         });
         // parameters
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(submoduleNodeModel),
+                new ParameterListPropertySource(modelElement),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
         // gates
         mergePropertySource(new DelegatingPropertySource(
-                new GateListPropertySource(submoduleNodeModel),
+                new GateListPropertySource(modelElement),
                 GateListPropertySource.CATEGORY,
                 GateListPropertySource.DESCRIPTION));
         // display
-        mergePropertySource(new SubmoduleDisplayPropertySource(submoduleNodeModel));
+        mergePropertySource(new SubmoduleDisplayPropertySource(modelElement));
     }
 
     // submodule module specific properties

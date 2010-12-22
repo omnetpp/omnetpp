@@ -7,13 +7,10 @@
 
 package org.omnetpp.ned.editor.graph.properties;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
@@ -48,38 +45,31 @@ public class ChannelPropertySource extends MergedPropertySource {
 
     /**
      * Constructor
-     * @param channelElement
+     * @param modelElement
      */
-    public ChannelPropertySource(final ChannelElementEx channelElement) {
-    	super(channelElement);
-        mergePropertySource(new NamePropertySource(channelElement, new TypeNameValidator(channelElement)));
+    public ChannelPropertySource(final ChannelElementEx modelElement) {
+    	super(modelElement);
+        mergePropertySource(new NamePropertySource(modelElement, new TypeNameValidator(modelElement)));
         // extends
-        mergePropertySource(new ExtendsPropertySource(channelElement) {
+        mergePropertySource(new ExtendsPropertySource(modelElement) {
             @Override
             protected List<String> getPossibleValues() {
-                INedResources res = NedResourcesPlugin.getNedResources();
-                INedTypeLookupContext context = channelElement.getEnclosingLookupContext();
-                List<String> channelNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.CHANNEL_FILTER));
-                // remove ourselves to avoid direct cycle
-                channelNames.remove(channelElement.getName());
-                // add type names that need fully qualified names
-                channelNames.addAll(res.getInvisibleTypeNames(context, INedResources.CHANNEL_FILTER));
-                Collections.sort(channelNames);
-                return channelNames;
+                List<String> result = getPossibleTypeDisplayNames(modelElement, INedResources.CHANNEL_FILTER);
+                return result;
             }
         });
         // interfaces
         mergePropertySource(new DelegatingPropertySource(
-                new InterfacesListPropertySource(channelElement),
+                new InterfacesListPropertySource(modelElement),
                 InterfacesListPropertySource.CATEGORY,
                 InterfacesListPropertySource.DESCRIPTION));
         // parameters
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(channelElement),
+                new ParameterListPropertySource(modelElement),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
         // create a displayPropertySource
-        mergePropertySource(new ChannelDisplayPropertySource(channelElement));
+        mergePropertySource(new ChannelDisplayPropertySource(modelElement));
     }
 
 }

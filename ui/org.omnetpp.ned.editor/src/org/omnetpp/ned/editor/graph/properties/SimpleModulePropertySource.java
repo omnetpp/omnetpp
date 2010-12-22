@@ -7,8 +7,6 @@
 
 package org.omnetpp.ned.editor.graph.properties;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -16,7 +14,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.omnetpp.common.properties.CheckboxPropertyDescriptor;
 import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ExtendsPropertySource;
@@ -100,42 +97,35 @@ public class SimpleModulePropertySource extends MergedPropertySource {
         }
     }
 
-    public SimpleModulePropertySource(final SimpleModuleElementEx simpleModuleElement) {
-        super(simpleModuleElement);
+    public SimpleModulePropertySource(final SimpleModuleElementEx modelElement) {
+        super(modelElement);
         //create name
-        mergePropertySource(new NamePropertySource(simpleModuleElement, new TypeNameValidator(simpleModuleElement)));
-        mergePropertySource(new BasePropertySource(simpleModuleElement));
+        mergePropertySource(new NamePropertySource(modelElement, new TypeNameValidator(modelElement)));
+        mergePropertySource(new BasePropertySource(modelElement));
         // extends
-        mergePropertySource(new ExtendsPropertySource(simpleModuleElement) {
+        mergePropertySource(new ExtendsPropertySource(modelElement) {
             @Override
             protected List<String> getPossibleValues() {
-                INedResources res = NedResourcesPlugin.getNedResources();
-                INedTypeLookupContext context = simpleModuleElement.getEnclosingLookupContext();
-                List<String> moduleNames = new ArrayList<String>(res.getVisibleTypeNames(context, INedResources.SIMPLE_MODULE_FILTER));
-                // remove ourselves to avoid direct cycle
-                moduleNames.remove(simpleModuleElement.getName());
-                // add type names that need fully qualified names
-                moduleNames.addAll(res.getInvisibleTypeNames(context, INedResources.SIMPLE_MODULE_FILTER));
-                Collections.sort(moduleNames);
-                return moduleNames;
+                List<String> result = getPossibleTypeDisplayNames(modelElement, INedResources.SIMPLE_MODULE_FILTER);
+                return result;
             }
         });
         // interfaces
         mergePropertySource(new DelegatingPropertySource(
-                new InterfacesListPropertySource(simpleModuleElement),
+                new InterfacesListPropertySource(modelElement),
                 InterfacesListPropertySource.CATEGORY,
                 InterfacesListPropertySource.DESCRIPTION));
         // parameter list property
         mergePropertySource(new DelegatingPropertySource(
-                new ParameterListPropertySource(simpleModuleElement),
+                new ParameterListPropertySource(modelElement),
                 ParameterListPropertySource.CATEGORY,
                 ParameterListPropertySource.DESCRIPTION));
         mergePropertySource(new DelegatingPropertySource(
-                new GateListPropertySource(simpleModuleElement),
+                new GateListPropertySource(modelElement),
                 GateListPropertySource.CATEGORY,
                 GateListPropertySource.DESCRIPTION));
         // create a nested displayPropertySource
-        mergePropertySource(new SimpleModuleDisplayPropertySource(simpleModuleElement));
+        mergePropertySource(new SimpleModuleDisplayPropertySource(modelElement));
 
     }
 

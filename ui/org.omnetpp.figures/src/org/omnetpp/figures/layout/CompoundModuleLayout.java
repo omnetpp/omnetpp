@@ -271,6 +271,6 @@ public class CompoundModuleLayout extends AbstractLayout {
 	}
 	
     public Object getConstraint(IFigure child) {
-        throw new UnsupportedOperationException("Separate constraint objects are not supported byCompoundModuleLayout");
+        return child;  // submodules are their own constraints
     }
 }
