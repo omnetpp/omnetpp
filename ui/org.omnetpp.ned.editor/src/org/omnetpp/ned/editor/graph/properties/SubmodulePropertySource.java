@@ -8,7 +8,6 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
@@ -49,14 +48,10 @@ public class SubmodulePropertySource extends MergedPropertySource {
         mergePropertySource(new NamePropertySource(modelElement, new SubmoduleNameValidator(modelElement)));
         mergePropertySource(new BasePropertySource(modelElement));
         // type
-        mergePropertySource(new TypePropertySource(modelElement) {
-            protected List<String> getPossibleTypeValues() {
-                return getPossibleTypeDisplayNames(modelElement, INedResources.MODULE_FILTER);
-            }
-            protected List<String> getPossibleLikeTypeValues() {
-                return getPossibleTypeDisplayNames(modelElement, INedResources.MODULEINTERFACE_FILTER);
-            }
-        });
+        mergePropertySource(new TypePropertySource(modelElement,
+                                                   getPossibleTypeDisplayNames(modelElement, INedResources.MODULE_FILTER),
+                                                   getPossibleTypeDisplayNames(modelElement, INedResources.MODULEINTERFACE_FILTER)
+                                                   ));
         // parameters
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(modelElement),

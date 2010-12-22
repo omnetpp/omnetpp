@@ -8,7 +8,6 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
@@ -108,13 +107,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
         mergePropertySource(new NamePropertySource(modelElement, new TypeNameValidator(modelElement)));
         mergePropertySource(new BasePropertySource(modelElement));
         // extends
-        mergePropertySource(new ExtendsPropertySource(modelElement) {
-            @Override
-            protected List<String> getPossibleValues() {
-                List<String> result = getPossibleTypeDisplayNames(modelElement, INedResources.COMPOUND_MODULE_FILTER);
-                return result;
-            }
-        });
+        mergePropertySource(new ExtendsPropertySource(modelElement, getPossibleTypeDisplayNames(modelElement, INedResources.COMPOUND_MODULE_FILTER)));
         // interfaces
         mergePropertySource(new DelegatingPropertySource(
                 new InterfacesListPropertySource(modelElement),

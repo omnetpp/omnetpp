@@ -10,7 +10,6 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
@@ -22,17 +21,20 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  *
  * @author rhornig
  */
-public abstract class ExtendsPropertySource extends NedBasePropertySource {
+public class ExtendsPropertySource extends NedBasePropertySource {
         public enum Prop { Extends }
         protected IPropertyDescriptor[] descriptors;
         EditableComboBoxPropertyDescriptor extendsProp;
+        private List<String> possibleValues;
 
-        public ExtendsPropertySource(final INedTypeElement nodeModel) {
+        public ExtendsPropertySource(INedTypeElement nodeModel, List<String> possibleValues) {
             super(nodeModel);
+            this.possibleValues = possibleValues;
 
             // set up property descriptors
             extendsProp = new EditableComboBoxPropertyDescriptor(Prop.Extends, "extends");
             extendsProp.setCategory(MergedPropertySource.BASE_CATEGORY);
+            extendsProp.setValidator(new ExistingTypeNameValidator(possibleValues));
             extendsProp.setDescription("Which component is extended by this component");
 
             descriptors = new IPropertyDescriptor[] { extendsProp };
@@ -44,14 +46,9 @@ public abstract class ExtendsPropertySource extends NedBasePropertySource {
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
             //fill the connection combobox with types
-            extendsProp.setItems(getPossibleValues());
+            extendsProp.setItems(possibleValues);
             return descriptors;
         }
-
-        /**
-         * Returns the list of possible values that will be used to fill a dropdown box.
-         */
-        protected abstract List<String> getPossibleValues();
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Extends.equals(propName)) {

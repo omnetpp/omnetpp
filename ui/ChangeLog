@@ -1,7 +1,13 @@
+2010-12-22 Rudolf Hornig
+
+   * Property cell editors for type, liketype, extends properties on simple modules, compound modules, channels
+   submodules and connections are now displaying all the possible types correctly. Cells contents are validated
+   so no-existent types cannot be used.
+
 2010-12-17 Rudolf Hornig
-   
+
    * Fixed #230. The values for Type, Like and Extends property on a submodule/connections/or ned type (top-level or inner) 
-     are initialized correctly. They contain correct values according to the current lookup context.
+   are initialized correctly. They contain correct values according to the current lookup context.
 
    * Cloning or creating new inner types using the graphical editor now generates unique names correctly
 

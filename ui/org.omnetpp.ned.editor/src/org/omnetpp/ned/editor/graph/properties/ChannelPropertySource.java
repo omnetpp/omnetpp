@@ -8,7 +8,6 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
@@ -21,7 +20,6 @@ import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
 /*
  * @author rhornig
@@ -51,13 +49,7 @@ public class ChannelPropertySource extends MergedPropertySource {
     	super(modelElement);
         mergePropertySource(new NamePropertySource(modelElement, new TypeNameValidator(modelElement)));
         // extends
-        mergePropertySource(new ExtendsPropertySource(modelElement) {
-            @Override
-            protected List<String> getPossibleValues() {
-                List<String> result = getPossibleTypeDisplayNames(modelElement, INedResources.CHANNEL_FILTER);
-                return result;
-            }
-        });
+        mergePropertySource(new ExtendsPropertySource(modelElement, getPossibleTypeDisplayNames(modelElement, INedResources.CHANNEL_FILTER)));
         // interfaces
         mergePropertySource(new DelegatingPropertySource(
                 new InterfacesListPropertySource(modelElement),

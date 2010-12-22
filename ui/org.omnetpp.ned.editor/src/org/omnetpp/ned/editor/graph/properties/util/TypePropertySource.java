@@ -24,22 +24,28 @@ import org.omnetpp.ned.model.interfaces.IHasType;
  *
  * @author rhornig
  */
-public abstract class TypePropertySource extends NedBasePropertySource {
+public class TypePropertySource extends NedBasePropertySource {
         public enum Prop { Type, Like, LikeParam }
         protected IPropertyDescriptor[] descriptors;
         EditableComboBoxPropertyDescriptor typeProp;
         EditableComboBoxPropertyDescriptor likeProp;
+        List<String> typeValues;
+        List<String> likeTypeValues;
 
-        public TypePropertySource(IHasType nodeModel) {
+        public TypePropertySource(IHasType nodeModel, List<String> typeValues, List<String> likeTypeValues) {
             super(nodeModel);
+            this.typeValues = typeValues;
+            this.likeTypeValues = likeTypeValues;
 
             // set up property descriptors
             typeProp = new EditableComboBoxPropertyDescriptor(Prop.Type, "type");
             typeProp.setCategory(MergedPropertySource.BASE_CATEGORY);
+            typeProp.setValidator(new ExistingTypeNameValidator(typeValues));
             typeProp.setDescription("The type of the component");
 
             likeProp = new EditableComboBoxPropertyDescriptor(Prop.Like, "like");
             likeProp.setCategory(MergedPropertySource.BASE_CATEGORY);
+            likeProp.setValidator(new ExistingTypeNameValidator(likeTypeValues));
             likeProp.setDescription("The interface type of the component");
 
             PropertyDescriptor likeParamProp = new TextPropertyDescriptor(Prop.LikeParam, "like-param");
@@ -55,20 +61,10 @@ public abstract class TypePropertySource extends NedBasePropertySource {
 
         public IPropertyDescriptor[] getPropertyDescriptors() {
             //fill the connection combobox with types
-            typeProp.setItems(getPossibleTypeValues());
-            likeProp.setItems(getPossibleLikeTypeValues());
+            typeProp.setItems(typeValues);
+            likeProp.setItems(likeTypeValues);
             return descriptors;
         }
-
-        /**
-         * Returns the list of possible type values that will be used to fill a dropdown box.
-         */
-        protected abstract List<String> getPossibleTypeValues();
-
-        /**
-         * Returns the list of possible likeType values that will be used to fill a dropdown box.
-         */
-        protected abstract List<String> getPossibleLikeTypeValues();
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Type.equals(propName)) {

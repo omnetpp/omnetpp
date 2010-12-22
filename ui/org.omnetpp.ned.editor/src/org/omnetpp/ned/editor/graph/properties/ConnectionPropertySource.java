@@ -8,7 +8,6 @@
 package org.omnetpp.ned.editor.graph.properties;
 
 import java.util.EnumSet;
-import java.util.List;
 
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
@@ -108,15 +107,10 @@ public class ConnectionPropertySource extends MergedPropertySource {
         // create a nested displayPropertySources
         mergePropertySource(new BasePropertySource(modelElement));
         // type
-        mergePropertySource(new TypePropertySource(modelElement) {
-            @Override
-            protected List<String> getPossibleTypeValues() {
-                return getPossibleTypeDisplayNames(modelElement, INedResources.CHANNEL_FILTER);
-            }
-            protected List<String> getPossibleLikeTypeValues() {
-                return getPossibleTypeDisplayNames(modelElement, INedResources.CHANNELINTERFACE_FILTER);
-            }
-        });
+        mergePropertySource(new TypePropertySource(modelElement,
+                                                   getPossibleTypeDisplayNames(modelElement, INedResources.CHANNEL_FILTER),
+                                                   getPossibleTypeDisplayNames(modelElement, INedResources.CHANNELINTERFACE_FILTER)
+                                                   ));
         mergePropertySource(new ConnectionDisplayPropertySource(modelElement));
         mergePropertySource(new DelegatingPropertySource(
                 new ParameterListPropertySource(modelElement),
