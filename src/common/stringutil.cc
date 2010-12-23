@@ -468,7 +468,7 @@ unsigned long opp_strtoul(const char *s, char **endptr)
 unsigned long opp_atoul(const char *s)
 {
     char *endptr;
-    unsigned long d = opp_strtol(s, &endptr);
+    unsigned long d = opp_strtoul(s, &endptr);
     while (opp_isspace(*endptr))
         endptr++;
     if (*endptr)
