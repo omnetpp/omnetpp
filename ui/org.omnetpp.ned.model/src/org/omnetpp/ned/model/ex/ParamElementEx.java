@@ -74,7 +74,7 @@ public class ParamElementEx extends ParamElement implements IHasName {
             INedTypeInfo typeInfo = typeElement.getNedTypeInfo();
 
             if (typeInfo != null) {
-                for (INedTypeInfo superTypeElement : typeInfo.getExtendsChain()) {
+                for (INedTypeInfo superTypeElement : typeInfo.getInheritanceChain()) {
                     ParamElementEx paramElement = superTypeElement.getParamDeclarations().get(name);
 
                     if (paramElement != null)

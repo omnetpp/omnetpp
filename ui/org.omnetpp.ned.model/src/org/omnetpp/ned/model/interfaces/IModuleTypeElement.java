@@ -9,7 +9,8 @@ package org.omnetpp.ned.model.interfaces;
 
 
 /**
- * Common interface for SimpleModuleElementEx and CompoundModuleElementEx.
+ * Common interface for SimpleModuleElementEx, CompoundModuleElementEx and 
+ * ModuleInterfaceElementEx.
  *
  * @author Andras
  */

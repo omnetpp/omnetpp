@@ -244,6 +244,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected INedElement getNedElementToOpen() {
-        return getCompoundModuleModel().getFirstExtendsRef();
+        return getCompoundModuleModel().getSuperType();
     }
 }

@@ -124,7 +124,7 @@ public class CloneSubmoduleCommand extends Command {
 
         // we have to iterate through the inheritance chain and gather all inherited connections and connection groups
         newConnectionsChildren = new ArrayList<INedElement>();
-        for(INedTypeInfo nedTypeInfo : parent.getNedTypeInfo().getExtendsChain()) {
+        for(INedTypeInfo nedTypeInfo : parent.getNedTypeInfo().getInheritanceChain()) {
             CompoundModuleElementEx currentModule = (CompoundModuleElementEx)nedTypeInfo.getNedElement();
             ConnectionsElement connsElement = currentModule.getFirstConnectionsChild();
             if (connsElement != null) {

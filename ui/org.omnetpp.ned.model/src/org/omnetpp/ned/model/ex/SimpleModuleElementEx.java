@@ -75,7 +75,7 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getFirstExtendsRef()));
+    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
     	return displayString;
     }
 
@@ -88,8 +88,8 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
         NedElementUtilEx.setFirstExtends(this, ext);
     }
 
-    public INedTypeElement getFirstExtendsRef() {
-        return getNedTypeInfo().getFirstExtendsRef();
+    public INedTypeElement getSuperType() {
+        return getNedTypeInfo().getSuperType();
     }
 
     public List<ExtendsElement> getAllExtends() {

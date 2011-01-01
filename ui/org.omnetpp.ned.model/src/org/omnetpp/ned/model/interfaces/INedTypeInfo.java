@@ -79,34 +79,51 @@ public interface INedTypeInfo extends INedChangeListener {
 	 */
     public void invalidateInherited();
 
-	/**
-	 * Returns the inheritance chain, starting with this NED type, and
-	 * ending with the root.
-	 *
-	 * Only for non-interfaces (i.e. module or channel types): to get the
-	 * inheritance of an interface, use getInterfaces instead.
-	 */
-	public List<INedTypeInfo> getExtendsChain();
-
     /**
-     * Returns the first ned element that is in the extends clause. Returns NULL
-     * if the type does not exist, if the extends clause is missing
+     * For single-inheritance types (non-interface types such as modules and channels),
+     * this method returns the super type.  Returns null if there is no super 
+     * type (type contains no "extends" clause), if the type does not exist, 
      * or there is a cycle in the inheritance chain.
+     * 
+     * For multiple-interface types (module interface, channel interface), this method 
+     * returns null. To obtain the super types of an interface, use the
+     * getLocalInterfaces() method.
+     * 
+     *  @see getInheritanceChain()
      */
-    public INedTypeElement getFirstExtendsRef();
+    public INedTypeElement getSuperType();
 
     /**
-     * Returns the list of interfaces this type locally implements.
+     * For single-inheritance types (non-interface types such as modules and channels),
+     * this method returns the inheritance chain as a list. The list starts
+     * with this NED type, and ends with the root.
+     *
+     * For multiple-interface types (module interface, channel interface), this method 
+     * returns a list that contains this type only. To build the inheritance tree of 
+     * an interface, use getInterfaces().
+     * 
+     * @see getSuperType()
+     */
+    public List<INedTypeInfo> getInheritanceChain();
+    
+    /**
+     * Returns the list of interfaces this type locally extends or implements.
+     * That is, this method returns the types in the "extends" clause
+     * of interface types, and the types in the "like" clause of non-interface 
+     * types.
      */
 	public Set<INedTypeElement> getLocalInterfaces();
 
 	/**
      * Returns the list of interfaces this type and its ancestor types and
-     * ancestor interfaces implement.
+     * ancestor interfaces extend or implement.
      */
     public Set<INedTypeElement> getInterfaces();
 
-    /** XXX ? */
+    /** 
+     * Returns the map of all locally declared inner types, parameters, gates
+     * and submodules.
+     */
     public Map<String, INedElement> getLocalMembers();
 
     /** Parameters declared locally within this type (i.e. where param type is not empty) */

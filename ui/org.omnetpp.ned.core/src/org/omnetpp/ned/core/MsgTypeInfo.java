@@ -32,7 +32,7 @@ public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
         typeNode = node;
     }
 
-    public IMsgTypeElement getFirstExtendsRef() {
+    public IMsgTypeElement getSuperType() {
         String name = typeNode.getFirstExtends();
 
         if (name == null)
@@ -70,7 +70,7 @@ public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
 
         while (typeElement != null) {
             fields.putAll(typeElement.getMsgTypeInfo().getLocalFields());
-            typeElement = (IMsgTypeElement)typeElement.getMsgTypeInfo().getFirstExtendsRef();
+            typeElement = (IMsgTypeElement)typeElement.getMsgTypeInfo().getSuperType();
         }
 
         return fields;

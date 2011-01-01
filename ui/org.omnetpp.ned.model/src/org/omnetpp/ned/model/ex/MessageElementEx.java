@@ -43,8 +43,8 @@ public class MessageElementEx extends MessageElement implements IMsgTypeElement 
             return null;
     }
 
-    public ITypeElement getFirstExtendsRef() {
-        return getMsgTypeInfo().getFirstExtendsRef();
+    public ITypeElement getSuperType() {
+        return getMsgTypeInfo().getSuperType();
     }
 
     public Set<IMsgTypeElement> getLocalUsedTypes() {

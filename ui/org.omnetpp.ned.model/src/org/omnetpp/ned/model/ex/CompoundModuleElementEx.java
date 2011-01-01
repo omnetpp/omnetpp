@@ -98,7 +98,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     public DisplayString getDisplayString() {
     	if (displayString == null)
     		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getFirstExtendsRef()));
+    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
     	return displayString;
     }
 
@@ -275,7 +275,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      */
     public List<ConnectionElementEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
     	List<ConnectionElementEx> result = new ArrayList<ConnectionElementEx>();
-    	for (INedTypeInfo typeInfo : getNedTypeInfo().getExtendsChain())
+    	for (INedTypeInfo typeInfo : getNedTypeInfo().getInheritanceChain())
     		if (typeInfo.getNedElement() instanceof CompoundModuleElementEx)
     			result.addAll(((CompoundModuleElementEx)typeInfo.getNedElement()).getOwnConnections(srcName, srcGate, destName, destGate));
         return result;
@@ -346,8 +346,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         NedElementUtilEx.setFirstExtends(this, ext);
     }
 
-    public INedTypeElement getFirstExtendsRef() {
-        return getNedTypeInfo().getFirstExtendsRef();
+    public INedTypeElement getSuperType() {
+        return getNedTypeInfo().getSuperType();
     }
 
     public List<ExtendsElement> getAllExtends() {

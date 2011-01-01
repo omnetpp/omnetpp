@@ -48,7 +48,7 @@ public interface INedTypeElement extends ITypeElement, IHasDisplayString, IHasPa
      * NOTE that this checks only the FIRST "extends" node, so it doesn't return full
      * inheritance info for ModuleInterface and ChannelInterface.
      */
-    public INedTypeElement getFirstExtendsRef();
+    public INedTypeElement getSuperType();
 
     /**
      * Returns the list of child elements that hold the "extends" names (usually only

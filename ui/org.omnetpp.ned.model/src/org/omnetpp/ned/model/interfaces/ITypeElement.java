@@ -19,7 +19,7 @@ import java.util.Set;
 public interface ITypeElement extends IHasName, IHasProperties {
     public String getFirstExtends();
 
-    public ITypeElement getFirstExtendsRef();
+    public ITypeElement getSuperType();
 
     public Set<? extends ITypeElement> getLocalUsedTypes();
 }

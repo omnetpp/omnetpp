@@ -98,7 +98,7 @@ public class NedTypeEditPart extends NedEditPart {
     @Override
     protected INedElement getNedElementToOpen() {
         if (getModel() instanceof INedTypeElement)
-            return ((INedTypeElement)getNedModel()).getFirstExtendsRef();
+            return ((INedTypeElement)getNedModel()).getSuperType();
 
         return null;
     }

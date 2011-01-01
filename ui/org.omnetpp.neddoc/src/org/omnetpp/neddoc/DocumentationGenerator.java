@@ -489,7 +489,7 @@ public class DocumentationGenerator {
     protected void collectSubtypesMap() {
         monitor.subTask("Collecting subtypes");
         for (ITypeElement subtype : typeElements) {
-            ITypeElement supertype = subtype.getFirstExtendsRef();
+            ITypeElement supertype = subtype.getSuperType();
 
             if (supertype != null) {
                 ArrayList<ITypeElement> subtypes = subtypesMap.get(supertype);
@@ -1573,7 +1573,7 @@ public class DocumentationGenerator {
         		"<table>\r\n");
 
             // TODO: more extends for interfaces
-            ITypeElement supertype = typeElement.getFirstExtendsRef();
+            ITypeElement supertype = typeElement.getSuperType();
 
             if (supertype != null)
                 generateTypeReference(supertype);
@@ -1862,8 +1862,8 @@ public class DocumentationGenerator {
                 dot.appendNode(typeElement, typeElements.size() == 1);
 
                 // TODO: what if there are more extends for interfaces
-                if (typeElement.getFirstExtendsRef() != null) {
-                    ITypeElement extendz = typeElement.getFirstExtendsRef();
+                if (typeElement.getSuperType() != null) {
+                    ITypeElement extendz = typeElement.getSuperType();
                     dot.appendNode(extendz);
                     dot.appendEdge(extendz, typeElement);
                 }

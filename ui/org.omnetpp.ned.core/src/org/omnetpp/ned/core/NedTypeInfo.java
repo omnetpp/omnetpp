@@ -8,6 +8,7 @@
 package org.omnetpp.ned.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,6 +63,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
 	// local members
     protected boolean needsRefreshLocal;
+    protected INedTypeElement extendsType;
 	protected Set<INedTypeElement> localInterfaces = new HashSet<INedTypeElement>();
 	protected Map<String, Map<String, PropertyElementEx>> localProperties = new LinkedHashMap<String, Map<String, PropertyElementEx>>();
     protected Map<String, ParamElementEx> localParams = new LinkedHashMap<String, ParamElementEx>();
@@ -92,7 +94,6 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 	// sum of all local+inherited stuff
 	protected Map<String, INedElement> allMembers = new LinkedHashMap<String, INedElement>();
 
-    private INedTypeElement firstExtendsRef;
 
 	// for local use
     interface IPredicate {
@@ -124,7 +125,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 	 * Collect elements (gates, params, etc) that match the predicate from the given section
 	 * (NED_PARAMETERS, NED_GATES, etc) into the map.
 	 */
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void collect(Map<String, ? extends INedElement> map, int sectionTagCode, IPredicate predicate) {
 		INedElement section = componentNode.getFirstChildWithTag(sectionTagCode);
 		if (section != null)
@@ -172,21 +173,31 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 	 * are skipped from the list.
 	 */
 	protected List<INedTypeInfo> resolveExtendsChain() {
+	    if (getNedElement() instanceof IInterfaceTypeElement)
+	        return Arrays.asList(new INedTypeInfo[] { this }); // see docu of getExtendsChain()
+
 	    List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+	    int thisTagCode = getNedElement().getTagCode();
 	    INedTypeInfo currentComponent = this;
-	    //FIXME todo: don't follow the chain if type is different (i.e. a channel cannot extend a module!)
-	    while (currentComponent != null) {
+
+	    while (true) {
 	        // if cycle detected we remove the cycle members from the tail
 	        if (result.contains(currentComponent)) {
 	            int skipPoint = result.indexOf(currentComponent);
 	            return result.subList(0, skipPoint+1);
 	        }
+	        
+	        // add current type
 	    	result.add(currentComponent);
+
+	    	// resolve super type. Finish if there's no super type, it cannot be resolved, 
+	    	// or is of different component type (e.g. a channel cannot extend a module)
 	    	String extendsName = currentComponent.getNedElement().getFirstExtends();
-	    	if (StringUtils.isNotEmpty(extendsName))
-	    		currentComponent = getResolver().lookupNedType(extendsName, currentComponent.getNedElement().getParentLookupContext());
-	    	else
-	    		currentComponent = null;
+	    	if (StringUtils.isEmpty(extendsName))
+	    	    break;
+    		currentComponent = getResolver().lookupNedType(extendsName, currentComponent.getNedElement().getParentLookupContext());
+            if (currentComponent == null || currentComponent.getNedElement().getTagCode() != thisTagCode)
+	    	    break;
 	    }
 	    return result;
 	}
@@ -305,7 +316,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
         // determine extends chain
         extendsChain = resolveExtendsChain();
-        firstExtendsRef = extendsChain.size() >= 2 ? extendsChain.get(1).getNedElement() : null;
+        extendsType = extendsChain.size() >= 2 ? extendsChain.get(1).getNedElement() : null;
 
         allInterfaces.clear();
 		allProperties.clear();
@@ -319,8 +330,8 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
 		// collect interfaces: what our base class implements (directly or indirectly),
 		// plus our interfaces and everything they extend (directly or indirectly)
-		if (!(getNedElement() instanceof IInterfaceTypeElement) && firstExtendsRef != null)
-		    allInterfaces.addAll(firstExtendsRef.getNedTypeInfo().getInterfaces());
+		if (!(getNedElement() instanceof IInterfaceTypeElement) && extendsType != null)
+		    allInterfaces.addAll(extendsType.getNedTypeInfo().getInterfaces());
 
 		allInterfaces.addAll(localInterfaces);
 		for (INedTypeElement interfaceTypeInfo : localInterfaces)
@@ -401,7 +412,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
     public String getFullyQualifiedCppClassName() {
         String className = null;
-        List<INedTypeInfo> extendsChain = getExtendsChain();
+        List<INedTypeInfo> extendsChain = getInheritanceChain();
 
         for (INedTypeInfo typeInfo : extendsChain) {
             PropertyElementEx property = typeInfo.getProperty("class", null);
@@ -422,12 +433,12 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
             return namespace + "::" + className;
     }
 
-    public INedTypeElement getFirstExtendsRef() {
+    public INedTypeElement getSuperType() {
         refreshInheritedMembersIfNeeded();
-        return firstExtendsRef;
+        return extendsType;
     }
 
-    public List<INedTypeInfo> getExtendsChain() {
+    public List<INedTypeInfo> getInheritanceChain() {
     	refreshInheritedMembersIfNeeded();
 		return extendsChain;
 	}
@@ -572,7 +583,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
 		List<ParamElementEx> result = new ArrayList<ParamElementEx>();
-		for (INedTypeInfo type : getExtendsChain())
+		for (INedTypeInfo type : getInheritanceChain())
 			if (type.getLocalParams().containsKey(parameterName))
 				result.add(type.getLocalParams().get(parameterName));
 		return result;
@@ -580,7 +591,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
 	public List<GateElementEx> getGateInheritanceChain(String gateName) {
 		List<GateElementEx> result = new ArrayList<GateElementEx>();
-		for (INedTypeInfo type : getExtendsChain())
+		for (INedTypeInfo type : getInheritanceChain())
 			if (type.getLocalGateDeclarations().containsKey(gateName))
 				result.add(type.getLocalGateDeclarations().get(gateName));
 		return result;
@@ -588,7 +599,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 
 	public List<PropertyElement> getPropertyInheritanceChain(String propertyName) {
 		List<PropertyElement> result = new ArrayList<PropertyElement>();
-		for (INedTypeInfo type : getExtendsChain())
+		for (INedTypeInfo type : getInheritanceChain())
 			if (type.getLocalProperties().containsKey(propertyName))
 				result.add(type.getLocalProperty(propertyName, null));
 		return result;
@@ -612,7 +623,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     	Debug.println("NedTypeInfo: " + getNedElement().toString() + " debugId=" + debugId);
     	if (needsRefreshInherited || needsRefreshLocal)
     		Debug.println(" currently invalid (needs refresh)");
-    	Debug.println("  extends chain: " + StringUtils.join(getExtendsChain(), ", "));
+    	Debug.println("  extends chain: " + StringUtils.join(getInheritanceChain(), ", "));
     	Debug.println("  local interfaces: " + StringUtils.join(localInterfaces, ", "));
     	Debug.println("  all interfaces: " + StringUtils.join(allInterfaces, ", "));
     	Debug.println("  local gates: " + StringUtils.join(localGateDecls.keySet(), ", "));

@@ -19,7 +19,7 @@ import org.omnetpp.ned.model.pojo.FieldElement;
  * @author levy
  */
 public interface IMsgTypeInfo {
-    public ITypeElement getFirstExtendsRef();
+    public IMsgTypeElement getSuperType();
 
     /** Types used locally in this type */
     public Set<IMsgTypeElement> getLocalUsedTypes();

@@ -207,7 +207,7 @@ public class NedInheritanceView extends AbstractModuleView {
         // build tree
         final GenericTreeNode root = new GenericTreeNode("root");
 
-        List<INedTypeInfo> extendsChain = inputNedType.getExtendsChain();
+        List<INedTypeInfo> extendsChain = inputNedType.getInheritanceChain();
         INedTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
         buildInheritanceTreeOf(rootType, root, new HashSet<INedTypeInfo>());
 
