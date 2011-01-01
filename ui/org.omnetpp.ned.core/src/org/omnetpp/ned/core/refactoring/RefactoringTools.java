@@ -34,7 +34,7 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelSpecElement;
@@ -110,8 +110,8 @@ public class RefactoringTools {
 		final Set<String> result = new HashSet<String>();
 		NedElementUtilEx.visitNedTree(nedFileElement, new NedElementUtilEx.INedElementVisitor() {
 			public void visit(INedElement element) {
-				if (element instanceof IHasType)
-					collect(result, NedElementUtilEx.getTypeOrLikeType((IHasType)element));
+				if (element instanceof ISubmoduleOrConnection)
+					collect(result, NedElementUtilEx.getTypeOrLikeType((ISubmoduleOrConnection)element));
 				else if (element instanceof ExtendsElement)
 					collect(result, ((ExtendsElement)element).getName());
 				else if (element instanceof InterfaceNameElement)

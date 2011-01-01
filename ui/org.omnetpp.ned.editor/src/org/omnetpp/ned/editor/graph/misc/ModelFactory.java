@@ -12,7 +12,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
-import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 
@@ -90,13 +90,13 @@ public class ModelFactory implements CreationFactory {
 		if (element instanceof IHasName)
             ((IHasName)element).setName(name);
 
-        if (element instanceof IHasType) {
+        if (element instanceof ISubmoduleOrConnection) {
             if (!useLike)
-                ((IHasType)element).setType(type);
+                ((ISubmoduleOrConnection)element).setType(type);
             else {
-                ((IHasType)element).setLikeType(type);
+                ((ISubmoduleOrConnection)element).setLikeType(type);
                 // TODO maybe we could ask the user to specify the param name in a dialog box
-                ((IHasType)element).setLikeParam("paramName");
+                ((ISubmoduleOrConnection)element).setLikeParam("paramName");
             }
         }
 

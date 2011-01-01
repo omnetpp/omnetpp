@@ -45,7 +45,7 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedTreeUtil;
-import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -194,8 +194,8 @@ public class NedInheritanceView extends AbstractModuleView {
         while (inputNedType == null && selectedElement != null) {
             if (selectedElement instanceof INedTypeElement)
                 inputNedType = ((INedTypeElement)selectedElement).getNedTypeInfo();
-            else if (selectedElement instanceof IHasType)
-                inputNedType = ((IHasType)selectedElement).getNedTypeInfo();
+            else if (selectedElement instanceof ISubmoduleOrConnection)
+                inputNedType = ((ISubmoduleOrConnection)selectedElement).getNedTypeInfo();
             selectedElement = selectedElement.getParent();
         }
 

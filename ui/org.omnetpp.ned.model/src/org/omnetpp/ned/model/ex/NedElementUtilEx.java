@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
-import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
@@ -416,7 +416,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * the last import so the trailing new lines (in the trailing comment 
      * of the last import) will not appear between the import lines. 
      */
-	public static ImportElement addImportFor(IHasType submoduleOrConnection) {
+	public static ImportElement addImportFor(ISubmoduleOrConnection submoduleOrConnection) {
 	    String typeOrLikeType = getTypeOrLikeType(submoduleOrConnection);
         if (StringUtils.isEmpty(typeOrLikeType))
 	            return null;
@@ -451,7 +451,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	/**
 	 * Sets whichever of "type" and "like-type" is already set on the element
 	 */
-	public static void setTypeOrLikeType(IHasType submoduleOrConnection, String value) {
+	public static void setTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection, String value) {
 		if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
 			submoduleOrConnection.setLikeType(value);
 		else
@@ -461,7 +461,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	/**
 	 * Returns whichever of "type" and "like-type" is already set on the element
 	 */
-	public static String getTypeOrLikeType(IHasType submoduleOrConnection) {
+	public static String getTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection) {
 	    if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
 	        return submoduleOrConnection.getLikeType();
 	    else

@@ -15,7 +15,7 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.omnetpp.common.properties.EditableComboBoxPropertyDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
-import org.omnetpp.ned.model.interfaces.IHasType;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 /**
  * A property source for displaying Type info and Like-Type with its parameter
@@ -32,7 +32,7 @@ public class TypePropertySource extends NedBasePropertySource {
         List<String> typeValues;
         List<String> likeTypeValues;
 
-        public TypePropertySource(IHasType nodeModel, List<String> typeValues, List<String> likeTypeValues) {
+        public TypePropertySource(ISubmoduleOrConnection nodeModel, List<String> typeValues, List<String> likeTypeValues) {
             super(nodeModel);
             this.typeValues = typeValues;
             this.likeTypeValues = likeTypeValues;
@@ -118,7 +118,7 @@ public class TypePropertySource extends NedBasePropertySource {
             return true;
         }
 
-        public IHasType getHasTypeModel() {
-            return (IHasType)getModel();
+        public ISubmoduleOrConnection getHasTypeModel() {
+            return (ISubmoduleOrConnection)getModel();
         }
 }
