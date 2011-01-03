@@ -23,7 +23,7 @@ public interface INedTypeElement extends ITypeElement, IHasDisplayString, IHasPa
 
 	/**
 	 * Returns the typeinfo belonging to this NED type. This can be trusted
-	 * to be NOT null for all NED types, including duplicate and invalid ones.
+	 * to be not null for all NED types, including duplicate and invalid ones.
 	 *
 	 * Only null for detached trees that haven't been seen at all by NEDResources
 	 * (i.e. not part of any NED file).
@@ -31,22 +31,20 @@ public interface INedTypeElement extends ITypeElement, IHasDisplayString, IHasPa
 	public INedTypeInfo getNedTypeInfo();
 
     /**
-     * Returns the base object's name (ONLY the first extends node name returned).
-     * NULL if no base object exist or the object (or its inheritance chain) is invalid
-     * (ie. contains a cycle)
+     * Returns the base object's name (Only the first extends node name returned).
+     * Returns null if no base object exist or the object (or its inheritance chain) 
+     * is invalid (i.e. contains a cycle)
      */
     public String getFirstExtends();
 
     /**
-     * Sets the first "extends" node to the given NED type name
+     * Sets the first "extends" node to the given string. If name is null or the
+     * empty string, the "extends" node will be removed.
      */
     public void setFirstExtends(String name);
 
     /**
-     * Returns the model element that represents the base object of this element.
-     *
-     * NOTE that this checks only the FIRST "extends" node, so it doesn't return full
-     * inheritance info for ModuleInterface and ChannelInterface.
+     * Equivalent to <code>getNedTypeInfo().getSuperType()</code>.
      */
     public INedTypeElement getSuperType();
 
