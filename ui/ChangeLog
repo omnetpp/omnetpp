@@ -1,3 +1,8 @@
+2011-01-03 Rudolf Hornig
+
+   * The simulation process is now started by using relative paths. The command line displayed in the console
+   when the process start has failed is much readeble now.
+
 2010-12-22 Rudolf Hornig
 
    * Property cell editors for type, liketype, extends properties on simple modules, compound modules, channels

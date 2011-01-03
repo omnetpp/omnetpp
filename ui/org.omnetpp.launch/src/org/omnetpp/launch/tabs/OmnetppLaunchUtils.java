@@ -228,6 +228,9 @@ public class OmnetppLaunchUtils {
             throw new CoreException(new Status(Status.ERROR, LaunchPlugin.PLUGIN_ID, "Working directory must be set"));
 		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getLocationForWorkspacePath(wdirStr, "/", false).toString());
 
+		// absolute filesystem location of the working directory
+		IPath wdirLocation = getLocationForWorkspacePath(StringUtils.substituteVariables(wdirStr),"/",false);
+		
 		// executable name
 		String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
 
@@ -276,8 +279,10 @@ public class OmnetppLaunchUtils {
 		if (StringUtils.isNotBlank(nedpathStr)) {
 			String[] nedPaths = StringUtils.split(nedpathStr, pathSep);
 			for (int i = 0 ; i< nedPaths.length; i++)
-				nedPaths[i] = getLocationForWorkspacePath(nedPaths[i], wdirStr, false).toString();
-			args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
+				nedPaths[i] = makeRelativePathTo(getLocationForWorkspacePath(nedPaths[i], wdirStr, false), wdirLocation).toString();
+			// always create ned path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
+			if (nedPaths.length>1 || !".".equals(nedPaths[0]))
+			    args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
 		}
 
 		// shared libraries
@@ -287,7 +292,7 @@ public class OmnetppLaunchUtils {
 			String[] libs = StringUtils.split(shLibStr);
 			// convert to file system location
 			for (int i = 0 ; i< libs.length; i++)
-				libs[i] = getLocationForWorkspacePath(libs[i], wdirStr, true).toString();
+				libs[i] = makeRelativePathTo(getLocationForWorkspacePath(libs[i], wdirStr, true), wdirLocation).toString();
 			args += " -l " + StringUtils.join(libs," -l ")+" ";
 		}
 
@@ -306,7 +311,7 @@ public class OmnetppLaunchUtils {
 			String[] inifiles = StringUtils.split(iniStr);
 			// convert to file system location
 			for (int i = 0 ; i< inifiles.length; i++)
-				inifiles[i] = getLocationForWorkspacePath(inifiles[i], wdirStr, true).toString();
+				inifiles[i] = makeRelativePathTo(getLocationForWorkspacePath(inifiles[i], wdirStr, true), wdirLocation).toString();
 			args += " " + StringUtils.join(inifiles," ")+" ";
 		}
 
@@ -579,16 +584,23 @@ public class OmnetppLaunchUtils {
 			}
 
 			cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-g");
-
 		}
 
-		String wdAttr = getWorkingDirectoryPath(configuration).toString();
-		String expandedWd = StringUtils.substituteVariables(wdAttr);
+		IPath expandedWd = getWorkingDirectoryPath(configuration);
 		String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
 
-		// fill in the infoBuffer
-		infoBuffer.append(StringUtils.join(cmdLine,' '));
-    	infoBuffer.append("\n\nWorking directory: "+expandedWd+"\n");
+		// fill in the infoBuffer (turn the first argument (program name to relative path))
+		String displayedCommand = makeRelativePathTo(new Path(cmdLine[0]), expandedWd).toString();
+		// if opp_run is used, do not display any path info
+		if (displayedCommand.endsWith("/opp_run"))
+		    displayedCommand = "opp_run";
+        infoBuffer.append(displayedCommand);
+        // add the rest of the command line options
+		for (int i=1; i<cmdLine.length; ++i)
+		    infoBuffer.append(" "+cmdLine[i]);
+		
+        infoBuffer.append("\nWorking directory: "+expandedWd.toString()+"\n");
+        
     	for (String env : environment) {
     		// on windows the environment is case insensitive, so we convert it to upper case
     		if (Platform.getOS().equals(Platform.OS_WIN32))
@@ -599,7 +611,7 @@ public class OmnetppLaunchUtils {
     			infoBuffer.append("\n"+env);
     	}
 
-		return DebugPlugin.exec(cmdLine, new File(expandedWd), environment);
+		return DebugPlugin.exec(cmdLine, new File(expandedWd.toString()), environment);
 	}
 
 	/**
