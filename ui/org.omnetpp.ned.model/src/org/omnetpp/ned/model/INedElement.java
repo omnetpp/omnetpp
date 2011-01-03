@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedModelEvent;
+import org.omnetpp.ned.model.pojo.NedElementTags;
 
 /**
  * Base class for objects in a NED object tree, the XML-based
@@ -24,7 +25,7 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
  *
  * @author andras, rhornig
  */
-public interface INedElement extends Iterable<INedElement> {
+public interface INedElement extends Iterable<INedElement>, NedElementTags, NedElementConstants {
 
 	public static final int SEVERITY_NONE = -1;
 

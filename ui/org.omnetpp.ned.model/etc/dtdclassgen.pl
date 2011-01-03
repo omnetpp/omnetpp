@@ -249,7 +249,7 @@ foreach $element (@elements)
     print JAVA $decl;
     print JAVA " * </pre>\n";
     print JAVA " */\n";
-    print JAVA "public class $elementclass extends NedElement implements NedElementTags, NedElementConstants\n";
+    print JAVA "public class $elementclass extends NedElement\n";
     print JAVA "{\n";
     for ($i=0; $i<$attcount; $i++)
     {

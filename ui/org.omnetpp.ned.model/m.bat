@@ -1,3 +1,3 @@
 @echo off
-call ..\..\setenv.cmd
+call ..\..\setenv-vc90.bat
 nmake -f Makefile.vc %*
