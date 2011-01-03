@@ -75,7 +75,7 @@ import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.editor.NedEditorPlugin;
-import org.omnetpp.ned.editor.graph.commands.AddNedElementCommand;
+import org.omnetpp.ned.editor.graph.commands.InsertCommand;
 import org.omnetpp.ned.editor.graph.commands.DeleteCommand;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElementConstants;
@@ -992,7 +992,7 @@ public class ParametersDialog extends TitleAreaDialog {
            parameterReplaceCommand.add(new DeleteCommand(parametersElement));
 
        if (newParametersElement.getFirstChild() != null)
-           parameterReplaceCommand.add(new AddNedElementCommand(getRealParametersProvider(), newParametersElement));
+           parameterReplaceCommand.add(new InsertCommand(getRealParametersProvider(), newParametersElement));
        else if (parametersElement != null)
            parameterReplaceCommand.add(new DeleteCommand(parametersElement));
 

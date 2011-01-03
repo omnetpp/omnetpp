@@ -36,7 +36,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
-import org.omnetpp.ned.editor.graph.commands.AddNedElementCommand;
+import org.omnetpp.ned.editor.graph.commands.InsertCommand;
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -190,7 +190,7 @@ public class PasteAction extends SelectionAction {
 				usedNedTypeNames.add(newName);
 
 				// paste it
-				compoundCommand.add(new AddNedElementCommand(parent, typeElement, beforeElement));
+				compoundCommand.add(new InsertCommand(parent, typeElement, beforeElement));
 				pastedElements.add(typeElement);
 			}
 		}
@@ -222,7 +222,7 @@ public class PasteAction extends SelectionAction {
 				// insert
 				if (submodulesSection == null)
 					submodulesSection = (SubmodulesElement) findOrCreateSection(targetModule, NED_SUBMODULES, compoundCommand);
-				compoundCommand.add(new AddNedElementCommand(submodulesSection, submodule));
+				compoundCommand.add(new InsertCommand(submodulesSection, submodule));
 				pastedElements.add(submodule);
 			}
 		}
@@ -242,7 +242,7 @@ public class PasteAction extends SelectionAction {
 				// insert
 				if (connectionsSection == null)
 					connectionsSection = (ConnectionsElement) findOrCreateSection(targetModule, NED_CONNECTIONS, compoundCommand);
-				compoundCommand.add(new AddNedElementCommand(connectionsSection, connection));
+				compoundCommand.add(new InsertCommand(connectionsSection, connection));
 				pastedElements.add(connection);
 			}
 		}
@@ -259,7 +259,7 @@ public class PasteAction extends SelectionAction {
 				// insert
 				if (parametersSection == null)
 					parametersSection = (ParametersElement) findOrCreateSection(targetElement, NED_PARAMETERS, compoundCommand);
-				compoundCommand.add(new AddNedElementCommand(parametersSection, element));
+				compoundCommand.add(new InsertCommand(parametersSection, element));
 				pastedElements.add(element);
 			}
 		}
@@ -276,7 +276,7 @@ public class PasteAction extends SelectionAction {
 				// insert
 				if (gatesSection == null)
 					gatesSection = (GatesElement) findOrCreateSection(targetElement, NED_GATES, compoundCommand);
-				compoundCommand.add(new AddNedElementCommand(gatesSection, element));
+				compoundCommand.add(new InsertCommand(gatesSection, element));
 				pastedElements.add(element);
 			}
 		}
@@ -286,7 +286,7 @@ public class PasteAction extends SelectionAction {
 		INedElement sectionElement = parent.getFirstChildWithTag(tagcode);
 		if (sectionElement == null) {
 			sectionElement = NedElementFactoryEx.getInstance().createElement(tagcode);
-			compoundCommand.add(new AddNedElementCommand(parent, sectionElement));
+			compoundCommand.add(new InsertCommand(parent, sectionElement));
 		}
 		return sectionElement;
 	}

@@ -10,26 +10,31 @@ package org.omnetpp.ned.editor.graph.commands;
 import org.eclipse.gef.commands.Command;
 
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
  * Adds a NED element to the model tree
  *
  * @author rhornig
  */
-public class AddNedElementCommand extends Command {
+public class InsertCommand extends Command {
     private final INedElement child;
     private final INedElement parent;
     private final INedElement insertBefore;
 
-    public AddNedElementCommand(INedElement parent, INedElement child) {
+    public InsertCommand(INedElement parent, INedElement child) {
         this(parent, child, null);
     }
 
-    public AddNedElementCommand(INedElement parent, INedElement child, INedElement where) {
+    public InsertCommand(INedElement parent, INedElement child, INedElement where) {
     	this.child = child;
     	this.parent = parent;
     	this.insertBefore = where;
-    	setLabel("Add");
+
+        String label = "Add";
+        if (child instanceof IHasName)
+            label += " "+((IHasName)child).getName();
+        setLabel(label);
     }
 
     @Override
