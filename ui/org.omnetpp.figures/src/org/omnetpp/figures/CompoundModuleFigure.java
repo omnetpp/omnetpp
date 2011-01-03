@@ -30,8 +30,7 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
 /**
- * A figure representing a compound module (only the client area. No border, title or inner type container).
- * image (if any)
+ * A figure representing a compound module (only the client area, no title or inner type container).
  *
  * @author rhornig
  */
@@ -193,6 +192,9 @@ public class CompoundModuleFigure extends NedFigure
         mainContainer.addLayerAfter(backDecorationLayer = new Layer(), null, null);
         mainContainer.addLayerAfter(backgroundLayer = new BackgroundLayer(), null, null);
 
+        // add a compound module border
+        mainContainer.setBorder(new CompoundModuleLineBorder());
+
         // set up the layouter. Preferred sizes should be set to 0 so the mainContainer
         // can follow the size of the submoduleLayer which uses the layouter to calculate the
         // preferred size
@@ -249,22 +251,21 @@ public class CompoundModuleFigure extends NedFigure
 
 	/**
 	 * Adjusts compound module background parameters
-	 * @param img Background image
-	 * @param arrange
-	 * @param backgroundColor
-	 * @param borderColor
-	 * @param borderWidth
 	 */
-	protected void setBackground(Image img, String arrange, Color backgroundColor, Color borderColor, int borderWidth) {
+	protected void setBackground(Image image, String arrangement, Color backgroundColor, Color borderColor, int borderWidth) {
 		moduleBackgroundColor = backgroundColor==null ? ERROR_BACKGROUND_COLOR : backgroundColor;
 		moduleBorderColor = borderColor==null ? ERROR_BORDER_COLOR : borderColor;
-		this.moduleBorderWidth = borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth;
+		moduleBorderWidth = borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth;
+
 		// the global background is the same as the border color
-		// XXX do we need to set this?
 		mainContainer.setBackgroundColor(moduleBorderColor);
+
 		// background image
-		backgroundImage = img;
-		backgroundImageArrangement = arrange != null ? arrange : "";
+		backgroundImage = image;
+		backgroundImageArrangement = arrangement != null ? arrangement : "";
+		
+        getCompoundModuleBorder().setColor(moduleBorderColor);
+        getCompoundModuleBorder().setWidth(moduleBorderWidth);
 	}
 
 	/**
@@ -387,5 +388,10 @@ public class CompoundModuleFigure extends NedFigure
 	public Layer getMessageLayer() {
 		return messageLayer;
 	}
+
+    public CompoundModuleLineBorder getCompoundModuleBorder() {
+        return (CompoundModuleLineBorder)mainContainer.getBorder();
+    }
+
 
 }

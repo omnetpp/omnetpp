@@ -30,8 +30,7 @@ import org.omnetpp.common.image.ImageFactory;
  *
  * @author rhornig
  */
-// TODO border handling must be moved to the  CompoundModuleFigure class
-// TODO CompoundModuleTypeFigure should be a composit? instead of inheriting from CompoundModuleFigure
+// TODO CompoundModuleTypeFigure should be a composite? instead of inheriting from CompoundModuleFigure
 public class CompoundModuleTypeFigure extends CompoundModuleFigure {
     protected IFigure innerTypeContainer;
 
@@ -69,31 +68,12 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
         innerTypeContainer.setBorder(new InnerTypesBorder(0, 20, 0, 0 ));
         innerTypeContainer.setLayoutManager(typesLayout);
         add(innerTypeContainer,1);
-
-        // add a compound module border / titlebar (FIXME: shoud be rather drawn in CompoundModuleFigure)
-        mainContainer.setBorder(new CompoundModuleLineBorder());
     }
 
     public IFigure getInnerTypeContainer() {
         // this is the figure which is used to add inner types
         return innerTypeContainer;
     }
-
-    /**
-     * Helper function to return the current border
-     */
-    public CompoundModuleLineBorder getCompoundModuleBorder() {
-    	return (CompoundModuleLineBorder)mainContainer.getBorder();
-    }
-
-    @Override
-	protected void setBackground(Image img, String arrange,
-			Color backgroundColor, Color borderColor, int borderWidth) {
-    	super.setBackground(img, arrange, backgroundColor, borderColor,borderWidth);
-    	// super has already set the module border color/width. fields so we set it on the border
-		getCompoundModuleBorder().setColor(moduleBorderColor);
-		getCompoundModuleBorder().setWidth(moduleBorderWidth);
-	}
 
 	protected void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
         if (img == null)
