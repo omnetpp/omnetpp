@@ -99,7 +99,7 @@ public class NedImageDescriptor extends ImageDescriptor {
 
     /**
      * Sets the preferred scaling factor. If preferredScale > 0 it is treated
-     * as an absolute WIDTH parameter, otherwise it is assumed to be a percent value
+     * as an absolute SHAPE_WIDTH parameter, otherwise it is assumed to be a percent value
      * The aspect ratio of the image is kept
      * @param preferredScale
      */

@@ -138,7 +138,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // set the rest of the display properties
         submoduleFigure.setDisplayString(scale, dps);
 
-        submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE)) ? "#" : "");
+        submoduleFigure.setQueueText(StringUtils.isNotBlank(dps.getAsString(IDisplayString.Prop.QUEUE_NAME)) ? "#" : "");
 
         // show/hide the pin marker
         submoduleFigure.setPinVisible(dps.getLocation(scale) != null);

@@ -131,7 +131,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
             else
                 newImageSize = "vl";    // 100x100 pixel icons
 
-            ChangeDisplayPropertyCommand dpchange = new ChangeDisplayPropertyCommand(submodule, IDisplayString.Prop.IMAGESIZE);
+            ChangeDisplayPropertyCommand dpchange = new ChangeDisplayPropertyCommand(submodule, IDisplayString.Prop.IMAGE_SIZE);
             dpchange.setLabel("Set icon size");
             dpchange.setValue(newImageSize);
             return dpchange;

@@ -315,15 +315,15 @@ public class CompoundModuleFigure extends NedFigure
         		dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
 
         // decode the image arrangement
-        String imageArrangementStr = dps.getAsString(IDisplayString.Prop.MODULE_IMAGEARRANGEMENT);
+        String imageArrangementStr = dps.getAsString(IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT);
 
         // set the background
         setBackground(
         		imgback,
         		imageArrangementStr,
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_FILLCOL)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDERCOL)),
-        		dps.getAsInt(IDisplayString.Prop.MODULE_BORDERWIDTH, -1));
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_FILL_COLOR)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDER_COLOR)),
+        		dps.getAsInt(IDisplayString.Prop.MODULE_BORDER_WIDTH, -1));
 
         // scaling support
         setScale(
@@ -332,9 +332,9 @@ public class CompoundModuleFigure extends NedFigure
 
         // grid support
         setGrid(
-        		dps.unit2pixel(dps.getAsInt(IDisplayString.Prop.MODULE_TICKDISTANCE, -1), null),
-        		dps.getAsInt(IDisplayString.Prop.MODULE_TICKNUMBER, -1),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRIDCOL)));
+        		dps.unit2pixel(dps.getAsInt(IDisplayString.Prop.MODULE_TICK_DISTANCE, -1), null),
+        		dps.getAsInt(IDisplayString.Prop.MODULE_TICK_NUMBER, -1),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
 
         // finally set the location and size using the models helper methods
         // if the size is specified in the display string we should set it as preferred size

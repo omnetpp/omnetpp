@@ -36,7 +36,7 @@ public class ChannelPropertySource extends MergedPropertySource {
             // we do not support all properties currently, just color, width and style
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.ROUTING_CONSTRAINT,
                     								 DisplayString.Prop.CONNECTION_STYLE));
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTPOS));
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXT_POS));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);
         }
     }

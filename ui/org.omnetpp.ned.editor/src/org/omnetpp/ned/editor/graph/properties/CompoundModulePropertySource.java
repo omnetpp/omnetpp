@@ -40,8 +40,8 @@ public class CompoundModulePropertySource extends MergedPropertySource {
             super(model);
             this.model = model;
             // submodule inherited properties
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.WIDTH,
-                                                	 DisplayString.Prop.OVIMAGECOLORPCT));
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.SHAPE_WIDTH,
+                                                	 DisplayString.Prop.IMAGE2_COLOR_PERCENTAGE));
             // direct compound module properties
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.MODULE_X,
                	 									 DisplayString.Prop.MODULE_SCALE));

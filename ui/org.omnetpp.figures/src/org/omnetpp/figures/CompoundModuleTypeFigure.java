@@ -108,16 +108,16 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
         // set the icon showing the default representation in the titlebar
         Image img = ImageFactory.getImage(
         		dps.getAsString(IDisplayString.Prop.IMAGE),
-        		dps.getAsString(IDisplayString.Prop.IMAGESIZE),
-        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
+        		dps.getAsString(IDisplayString.Prop.IMAGE_SIZE),
+        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
+        		dps.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
         setDefaultShape(img,
         		dps.getAsString(IDisplayString.Prop.SHAPE),
-        		dps.getAsInt(IDisplayString.Prop.WIDTH, -1),
-        		dps.getAsInt(IDisplayString.Prop.HEIGHT, -1),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
+        		dps.getAsInt(IDisplayString.Prop.SHAPE_WIDTH, -1),
+        		dps.getAsInt(IDisplayString.Prop.SHAPE_HEIGHT, -1),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.SHAPE_FILL_COLOR)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.SHAPE_BORDER_COLOR)),
+        		dps.getAsInt(IDisplayString.Prop.SHAPE_BORDER_WIDTH, -1));
 
         repaint();
 	}

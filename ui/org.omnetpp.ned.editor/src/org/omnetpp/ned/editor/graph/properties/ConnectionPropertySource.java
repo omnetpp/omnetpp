@@ -41,7 +41,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.ROUTING_CONSTRAINT,
                     								 DisplayString.Prop.CONNECTION_STYLE));
 
-            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXTCOLOR));
+            supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXT_COLOR));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);
         }
 

@@ -461,9 +461,9 @@ public class DisplayString implements IDisplayString {
     }
 
     public Dimension getSize(Float scale) {
-    	int width = unit2pixel(getAsFloat(Prop.WIDTH, -1.0f), scale);
+    	int width = unit2pixel(getAsFloat(Prop.SHAPE_WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
-        int height = unit2pixel(getAsFloat(Prop.HEIGHT, -1.0f), scale);
+        int height = unit2pixel(getAsFloat(Prop.SHAPE_HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1;
         return new Dimension(width, height);
     }
@@ -471,20 +471,20 @@ public class DisplayString implements IDisplayString {
     /**
      * Converts the size given in pixels to unit based size and sets the size of the element (B tag).
      * If negative number is given as width or height the corresponding property is deleted.
-     * It fires property change notification for Prop.WIDTH
+     * It fires property change notification for Prop.SHAPE_WIDTH
      */
     public void setSize(Dimension size, Float scale) {
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.width < 0 )
-            set(Prop.WIDTH, null);
+            set(Prop.SHAPE_WIDTH, null);
         else
-            set(Prop.WIDTH, floatToString(pixel2unit(size.width, scale)));
+            set(Prop.SHAPE_WIDTH, floatToString(pixel2unit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
-            set(Prop.HEIGHT, null);
+            set(Prop.SHAPE_HEIGHT, null);
         else
-            set(Prop.HEIGHT, floatToString(pixel2unit(size.height, scale)));
+            set(Prop.SHAPE_HEIGHT, floatToString(pixel2unit(size.height, scale)));
     }
 
     public Dimension getCompoundSize(Float scale) {

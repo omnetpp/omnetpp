@@ -112,30 +112,30 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		// range support
 		setRange(
 				displayString.getRange(scale),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEFILLCOL)),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGEBORDERCOL)),
-				displayString.getAsInt(IDisplayString.Prop.RANGEBORDERWIDTH, -1));
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGE_FILL_COLOR)),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.RANGE_BORDER_COLOR)),
+				displayString.getAsInt(IDisplayString.Prop.RANGE_BORDER_WIDTH, -1));
 
 		// tooltip support
 		setTooltipText(displayString.getAsString(IDisplayString.Prop.TOOLTIP));
 
 		// additional text support
 		setInfoText(displayString.getAsString(IDisplayString.Prop.TEXT),
-				displayString.getAsString(IDisplayString.Prop.TEXTPOS),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXTCOLOR), ColorFactory.RED));
+				displayString.getAsString(IDisplayString.Prop.TEXT_POS),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.TEXT_COLOR), ColorFactory.RED));
 
 		// shape support
-		String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGESIZE);
+		String imageSize = displayString.getAsString(IDisplayString.Prop.IMAGE_SIZE);
 		Image img = ImageFactory.getImage(
 				displayString.getAsString(IDisplayString.Prop.IMAGE),
 				imageSize,
-				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-				displayString.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
+				ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
+				displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
 
 		// rectangle ("b" tag)
 		Dimension size = displayString.getSize(scale);  // falls back to size in EMPTY_DEFAULTS
-		boolean widthExist = displayString.containsProperty(IDisplayString.Prop.WIDTH);
-		boolean heightExist = displayString.containsProperty(IDisplayString.Prop.HEIGHT);
+		boolean widthExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_WIDTH);
+		boolean heightExist = displayString.containsProperty(IDisplayString.Prop.SHAPE_HEIGHT);
 
 		// if one of the dimensions is missing use the other dimension instead
 		if (!widthExist && heightExist)
@@ -149,17 +149,17 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		setShape(img, shape,
 				size.width,
 				size.height,
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.FILLCOL), ColorFactory.RED),
-				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.BORDERCOL), ColorFactory.RED),
-				displayString.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.SHAPE_FILL_COLOR), ColorFactory.RED),
+				ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.SHAPE_BORDER_COLOR), ColorFactory.RED),
+				displayString.getAsInt(IDisplayString.Prop.SHAPE_BORDER_WIDTH, -1));
 
 		// set the decoration image properties
 		setDecorationImage(
 				ImageFactory.getImage(
-						displayString.getAsString(IDisplayString.Prop.OVIMAGE),
+						displayString.getAsString(IDisplayString.Prop.IMAGE2),
 						null,
-						ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.OVIMAGECOLOR)),
-						displayString.getAsInt(IDisplayString.Prop.OVIMAGECOLORPCT,0)));
+						ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE2_COLOR)),
+						displayString.getAsInt(IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE,0)));
 
 		// set the layouter input
 		String layout = displayString.getAsString(IDisplayString.Prop.LAYOUT);
@@ -247,7 +247,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		Assert.isNotNull(color);
 		this.text = text;
 		if (!StringUtils.isEmpty(pos))
-			pos = StringUtils.nullToEmpty(IDisplayString.Prop.TEXTPOS.getEnumSpec().getNameFor(pos));
+			pos = StringUtils.nullToEmpty(IDisplayString.Prop.TEXT_POS.getEnumSpec().getNameFor(pos));
 		this.textPos = pos.equals("left") ? TEXTPOS_LEFT : pos.equals("right") ? TEXTPOS_RIGHT : TEXTPOS_TOP;
 		this.textColor = color;
 	}

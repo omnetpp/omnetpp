@@ -144,15 +144,15 @@ public class ConnectionFigure extends PolylineConnection {
 	 * @param dps The display string object containing the properties
 	 */
 	public void setDisplayString(IDisplayString dps) {
-        setStyle(ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.CONNECTION_COL)),
+        setStyle(ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.CONNECTION_COLOR)),
 				dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1),
 				dps.getAsString(IDisplayString.Prop.CONNECTION_STYLE));
         // tooltip support
         setTooltipText(dps.getAsString(IDisplayString.Prop.TOOLTIP));
         // additional text support
         setInfoText(dps.getAsString(IDisplayString.Prop.TEXT),
-                dps.getAsString(IDisplayString.Prop.TEXTPOS),
-                ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.TEXTCOLOR)));
+                dps.getAsString(IDisplayString.Prop.TEXT_POS),
+                ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.TEXT_COLOR)));
 
         invalidate();
 	}

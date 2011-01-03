@@ -49,21 +49,21 @@ public class NedTypeFigure extends NedFigure {
     public void setDisplayString(IDisplayString dps) {
 
         // shape support
-        String imgSize = dps.getAsString(IDisplayString.Prop.IMAGESIZE);
+        String imgSize = dps.getAsString(IDisplayString.Prop.IMAGE_SIZE);
         Image img = ImageFactory.getImage(
         		dps.getAsString(IDisplayString.Prop.IMAGE),
         		imgSize,
-        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGECOLOR)),
-        		dps.getAsInt(IDisplayString.Prop.IMAGECOLORPERCENTAGE,0));
+        		ColorFactory.asRGB(dps.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
+        		dps.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
 
         // set the figure properties
         setShape(img,
         		dps.getAsString(IDisplayString.Prop.SHAPE),
         		dps.getSize(null).width,
         		dps.getSize(null).height,
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.FILLCOL)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.BORDERCOL)),
-        		dps.getAsInt(IDisplayString.Prop.BORDERWIDTH, -1));
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.SHAPE_FILL_COLOR)),
+        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.SHAPE_BORDER_COLOR)),
+        		dps.getAsInt(IDisplayString.Prop.SHAPE_BORDER_WIDTH, -1));
 
         invalidate();
 	}
