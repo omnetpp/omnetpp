@@ -119,23 +119,25 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	}
 
 	/**
-	 * Insert an import before the first import in the file.
-	 * 
-	 * The new import is inserted at the beginning rather than after 
-	 * the last import so the trailing new lines (in the trailing comment 
-	 * of the last import) will not appear between the import lines. 
+	 * Insert an import into the file. May add newlines to the import as trailing comment.
 	 */
-   public ImportElement addImport(String importSpec) {
+	public ImportElement addImport(String importSpec) {
 		ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
 		importElement.setImportSpec(importSpec);
-
-		INedElement firstImport = getFirstImportChild();
-		INedElement insertionPoint = firstImport!=null ? firstImport :
-			getFirstPackageChild()!=null ? getFirstPackageChild().getNextSibling() : getFirstChild();
-
-		insertChildBefore(insertionPoint, importElement);
+		insertImport(importElement);
 		return importElement;
 	}
+
+	/**
+     * Inserts the given import into the file. May add newlines to the import as trailing comment. 
+     */
+    public void insertImport(ImportElement importElement) {
+        insertChildBefore(NedElementUtilEx.findInsertionPointForNewImport(this), importElement);
+
+        // if this is the last import element, add some additional new lines as trailing comment
+        if (importElement.getNextImportSibling() == null)
+            importElement.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
+    }
 
 	/**
 	 * Removes all ImportElements from this NED file.

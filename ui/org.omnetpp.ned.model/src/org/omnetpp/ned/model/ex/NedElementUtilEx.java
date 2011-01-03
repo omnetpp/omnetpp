@@ -25,11 +25,11 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
-import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
@@ -39,15 +39,16 @@ import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
 import org.omnetpp.ned.model.pojo.NedElementFactory;
 import org.omnetpp.ned.model.pojo.NedElementTags;
+import org.omnetpp.ned.model.pojo.NedFileElement;
+import org.omnetpp.ned.model.pojo.PackageElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
 import org.omnetpp.ned.model.pojo.PropertyKeyElement;
-import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
- * TODO add documentation
+ * A collection of utility functions for manipulating NedElement trees
  *
- * @author rhornig
+ * @author rhornig, andras
  */
 public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	public static final String DISPLAY_PROPERTY = "display";
@@ -364,6 +365,50 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	}
 
     /**
+     * Determines what import is necessary so that simple name can be used instead of the fully qualified type name.
+     * The result of this call is an optional "import" element that needs to be inserted into the file,
+     * and the contents of the "outModifiedName" string buffer.
+     */
+    public static ImportElement createImportFor(INedTypeLookupContext lookupContext, String fullyQualifiedTypeName, StringBuffer modifiedName) {
+        String simpleTypeName = fullyQualifiedTypeName.indexOf('.')==-1 ? fullyQualifiedTypeName : StringUtils.substringAfterLast(fullyQualifiedTypeName, "."); 
+        INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, lookupContext);
+        if (existingSimilarType == null) {
+            // add import
+            ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
+            importElement.setImportSpec(fullyQualifiedTypeName);
+            modifiedName.append(simpleTypeName);
+            return importElement;
+        }
+        else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
+            // import not needed, this type is already visible: just use short name
+            modifiedName.append(simpleTypeName);
+            return null;
+        }
+        else {
+            // cannot import: another module with the same simple name already imported, so leave fully qualified name
+            modifiedName.append(fullyQualifiedTypeName);
+            return null;
+        }
+    }
+
+    /**
+     * Returns a good insertion point for a new "import" element in a NED file; see INedElement.insertBefore().
+     */
+    public static INedElement findInsertionPointForNewImport(NedFileElement nedFileElement) {
+        // insert just before other imports, so the trailing new lines (in the trailing comment 
+        // of the last import) will not appear between the import lines.
+        ImportElement firstImport = nedFileElement.getFirstImportChild();
+        if (firstImport != null)
+            return firstImport;
+        
+        // no existing imports; so skip comments and the package declaration at the top of file, and insert there 
+        for (INedElement child : nedFileElement)
+            if (!(child instanceof CommentElement) && !(child instanceof PackageElement))
+                return child;
+        return null; // file only contains comments and package, so append import at the bottom
+    }
+    
+    /**
      * Given a type which extends an other type and the base type name is a fully qualified name,
      * this method replaces it with the simple name plus an import in the NED file
      * if needed/possible.
@@ -376,32 +421,19 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * of the last import) will not appear between the import lines. 
      */
     public static ImportElement addImportForExtends(INedTypeElement typeElement) {
-        String fullyQualifiedTypeName = typeElement.getFirstExtends(); // might be simple name too
+        String fullyQualifiedTypeName = typeElement.getFirstExtends();
         if (StringUtils.isEmpty(fullyQualifiedTypeName))
-                return null;
+            return null;
 
-        ImportElement theImport = null;
-        // prepend with . so even type name in default package (without dots) will return the simple name correctly
-        String simpleTypeName = StringUtils.substringAfterLast("."+fullyQualifiedTypeName, "."); 
-        INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, typeElement.getEnclosingLookupContext());
-        if (existingSimilarType == null) {
-            // add import
-            theImport = typeElement.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
-            // if this is the last import element add some additional new lines as trailing comment
-            if (theImport.getNextImportSibling() == null)
-                theImport.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
+        StringBuffer modifiedName = new StringBuffer();
+        ImportElement importElement = createImportFor(typeElement.getParentLookupContext(), fullyQualifiedTypeName, modifiedName);
 
-            typeElement.setFirstExtends(simpleTypeName);
-        }
-        else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
-            // import not needed, this type is already visible: just use short name
-            typeElement.setFirstExtends(simpleTypeName);
-        }
-        else {
-            // do nothing: another module with the same simple name already imported, so leave fully qualified name
-        }
+        typeElement.setFirstExtends(modifiedName.toString());
 
-        return theImport;
+        if (importElement != null)
+            typeElement.getContainingNedFileElement().insertImport(importElement);
+
+        return importElement;
     }
 
     /**
@@ -421,31 +453,17 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         if (StringUtils.isEmpty(typeOrLikeType))
 	            return null;
 
-		ImportElement theImport = null;
-		CompoundModuleElementEx parent = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
+        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 
-		String fullyQualifiedTypeName = typeOrLikeType;
-		// prepend with . so even type name in default package (without dots) will return the simple name correctly
-		String simpleTypeName = StringUtils.substringAfterLast("."+fullyQualifiedTypeName, "."); 
-		INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, parent);
-		if (existingSimilarType == null) {
-		    // add import
-		    theImport = parent.getContainingNedFileElement().addImport(fullyQualifiedTypeName);
-		    // if this is the last import element add some additional new lines as trailing comment
-		    if (theImport.getNextImportSibling() == null)
-		        theImport.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
+        StringBuffer modifiedName = new StringBuffer();
+        ImportElement importElement = createImportFor(compoundModule.getParentLookupContext(), typeOrLikeType, modifiedName);
 
-		    setTypeOrLikeType(submoduleOrConnection, simpleTypeName);
-		}
-		else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
-		    // import not needed, this type is already visible: just use short name
-		    setTypeOrLikeType(submoduleOrConnection, simpleTypeName);
-		}
-		else {
-		    // do nothing: another module with the same simple name already imported, so leave fully qualified name
-		}
+        setTypeOrLikeType(submoduleOrConnection, modifiedName.toString());
 
-		return theImport;
+        if (importElement != null)
+            compoundModule.getContainingNedFileElement().insertImport(importElement);
+       
+		return importElement;
 	}
 
 	/**
