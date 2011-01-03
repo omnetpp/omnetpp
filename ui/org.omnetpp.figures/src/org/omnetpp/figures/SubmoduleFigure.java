@@ -61,7 +61,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int vectorIndex;
 	protected VectorArrangement vectorArrangement;
 	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
-	protected int alpha;
+	protected int alpha = 255;
 
 	// result of layouting
 	protected Point centerLoc;
