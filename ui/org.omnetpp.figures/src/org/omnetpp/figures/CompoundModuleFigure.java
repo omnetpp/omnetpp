@@ -332,7 +332,7 @@ public class CompoundModuleFigure extends NedFigure
 
         // grid support
         setGrid(
-        		dps.unit2pixel(dps.getAsInt(IDisplayString.Prop.MODULE_TICK_DISTANCE, -1), null),
+        		dps.unitToPixel(dps.getAsInt(IDisplayString.Prop.MODULE_TICK_DISTANCE, -1), null),
         		dps.getAsInt(IDisplayString.Prop.MODULE_TICK_NUMBER, -1),
         		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
 

@@ -113,13 +113,12 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
         	return getEditableValue();
 
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
+        
         // otherwise look for a single tag/attribute
-        String tagVal = getDisplayString().getAsStringLocal(prop);
+        String value = getDisplayString().getAsStringLocal(prop);
+        
         // if the property does not exists yet, return default empty value
-        if (tagVal == null)
-            tagVal = DisplayString.EMPTY_TAG_VALUE;
-
-        return tagVal;
+        return value == null ? "" : value;
     }
 
     @Override

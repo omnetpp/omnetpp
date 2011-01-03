@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.common.Debug;
@@ -31,7 +32,7 @@ import org.omnetpp.ned.model.interfaces.IHasDisplayString;
  * NED element. This is the only way to get notified about changes that were made
  * directly on the tree, bypassing the DisplayString object.
  *
- * @author rhornig
+ * @author rhornig, andras (cleanup)
  */
 //XXX use of the Point and Dimension classes force this plugin to depend on draw2d!
 public class DisplayString implements IDisplayString {
@@ -42,12 +43,12 @@ public class DisplayString implements IDisplayString {
     // contains the default fallback values for the different tags if it is empty
     public static final DisplayString EMPTY_DEFAULTS = new DisplayString(EMPTY_DEFAULTS_STR);
 
-    public static final String EMPTY_TAG_VALUE = "";
-    public static final String NONE_TAG_VALUE = "-";
+    // special value used to remove (neutralize) an inherited value
+    public static final String ANTIVALUE = "-";
 
     // use only a weak reference, so if the referenced fallback display string is deleted
     // along with the containing model element, it will not be held in memory
-    protected WeakReference<DisplayString> fallbackDisplayStringRef = null;
+    protected WeakReference<DisplayString> fallbackDisplayStringRef = null; //FIXME revise weak reference, very likely NOT needed and even bogus (Andras)
 
     // the owner of the display string
     protected IHasDisplayString owner = null;
@@ -66,7 +67,6 @@ public class DisplayString implements IDisplayString {
 
         /**
          * Creates a tag by parsing the given string
-         * @param tagString
          */
         public TagInstance(String tagString) {
             if (tagString != null)
@@ -74,7 +74,7 @@ public class DisplayString implements IDisplayString {
         }
 
         /**
-         * @return The tag name
+         * Returns the tag name
          */
         public String getName() {
             return name;
@@ -89,20 +89,16 @@ public class DisplayString implements IDisplayString {
         }
 
         /**
-         * Returns a tag argument at the given position
-         * @param pos
-         * @return The value of that position or <code>EMPTY_TAG_VALUE</code> if does not exist
+         * Returns a tag argument at the given position, or an empty string if it does not exist
          */
         public String getArg(int pos) {
             if (pos < 0 || pos >= args.size() || args.get(pos) == null)
-                return EMPTY_TAG_VALUE;
+                return "";
             return args.get(pos);
         }
 
         /**
          * Sets the value at a given position.
-         * @param pos
-         * @param newValue
          */
         public void setArg(int pos, String newValue) {
             // extend the vector if necessary
@@ -111,57 +107,70 @@ public class DisplayString implements IDisplayString {
         }
 
         /**
-         * Check if the tag's value is default
-         * @return <code>true</code> if ALL tag values are missing or have the default value
+         * Check if the tag's value is default. Returns true if all tag values are 
+         * missing or empty.
          */
         public boolean isEmpty() {
-            for (String val : args)
-                if (val != null && !EMPTY_TAG_VALUE.equals(val)) return false;
+            for (String value : args)
+                if (value != null && !value.equals("")) 
+                    return false;
             return true;
         }
 
         /**
-         * @return the values part of the tag
+         * Returns the values part of the tag
          */
         public String getArgString() {
             StringBuffer sb = new StringBuffer(20);
-            // check for the last non default value
+            
+            // check for the last non-default value
             int endPos;
             for (endPos = args.size() - 1; endPos>0; endPos--)
-                if (args.get(endPos) != null && !EMPTY_TAG_VALUE.equals(args.get(endPos))) break;
+                if (args.get(endPos) != null && !"".equals(args.get(endPos))) 
+                    break;
+            
             // if there are unnecessary default values at the end, throw them away
-            if (endPos < args.size() - 1) args.setSize(endPos + 1);
+            if (endPos < args.size() - 1) 
+                args.setSize(endPos + 1);
 
             boolean firstArg = true;
             for (String val : args) {
-                if (firstArg) firstArg = false;
-                    else sb.append(',');
+                if (firstArg) 
+                    firstArg = false;
+                else 
+                    sb.append(',');
 
-                if (val != null) sb.append(val);
+                if (val != null) 
+                    sb.append(val);
             }
             return sb.toString();
         }
 
         /**
-         * @return the string representation of the tag or <code>EMPTY_TAG_VALUE</code>
-         * if all the args are default
+         * Returns the string representation of the tag, or the empty string
+         * if all the args are empty
          */
         @Override
         public String toString() {
             // return an empty string if all the values are default
-            if (isEmpty()) return EMPTY_TAG_VALUE;
-            return getName()+"="+getArgString();
+            if (isEmpty()) 
+                return "";
+            return getName() + "=" + getArgString();
         }
 
         // parse a single tag and its values into a string vector
         private void parseTag(String tagStr) {
             args = new Vector<String>(2);
             Scanner scr = new Scanner(tagStr);
+            
             // TODO string literal and escaping must be correctly handled
             // StreamParser can handle comments too, maybe it would be a better choice
             scr.useDelimiter("=|,");
+            
             // parse for the tag name
-            if (scr.hasNext()) name = scr.next().trim();
+            if (scr.hasNext()) 
+                name = scr.next().trim();
+            
             // parse for the tag values with a new tokenizer
             while (scr.hasNext())
                 args.add(scr.next().trim());
@@ -212,38 +221,41 @@ public class DisplayString implements IDisplayString {
 
 	/**
      * Returns the value of the given tag on the given position
-     * @param tag TagInstance to be checked
-     * @param pos Position (0 based)
-     * @return TagInstance arg's value or <code>EMPTY_TAG_VALUE</code> if empty
-     * or <code>null</code> if tag does not exist at all
+     * @param tag Tag to be checked
+     * @param pos Position (0-based)
+     * @return TagInstance arg's value, the empty string if empty,  or 
+     * <code>null</code> if the tag does not exist at all
      */
     protected String getTagArg(Tag tag, int pos) {
         TagInstance tagInst = getTag(tag);
-        // if tag doesn't exist return null
-        if (tagInst == null) return null;
+        
+        // if tag doesn't exist, return null
+        if (tagInst == null) 
+            return null;
+        
         // check for the value itself
-        String val = tagInst.getArg(pos);
-        if (val == null) val = EMPTY_TAG_VALUE;
-        return val;
+        String value = tagInst.getArg(pos);
+        return value == null ? "" :  value;
     }
 
     /**
-     * Returns TagInstance arg's value or <code>EMPTY_TAG_VALUE</code> if empty and no default is defined
+     * Returns TagInstance arg's value or <code>""</code> if empty and no default is defined
      * or <code>null</code> if tag does not exist at all. If a default display string was
      * provided with <code>setFallbackDisplayString</code> it tries to look up the property from there
      */
-    protected String getTagArgUsingDefs(Tag tagName, int pos) {
+    protected String getTagArgUsingDefaults(Tag tagName, int pos) {
         TagInstance tag = getTag(tagName);
         String value = (tag == null) ? "" : tag.getArg(pos);
+        Assert.isNotNull(value);
 
         if (value.startsWith("$"))
             return VARIABLE_DEFAULTS.getTagArg(tagName, pos);
-        else if (NONE_TAG_VALUE.equals(value))  // disable inherited values and return the defaults
+        else if (value.equals(ANTIVALUE))  // disable inherited values and return the defaults
             return EMPTY_DEFAULTS.getTagArg(tagName, pos);
-        else if (!"".equals(value))
+        else if (!value.equals(""))
             return value;
         else if (getFallbackDisplayString() != null)
-            return getFallbackDisplayString().getTagArgUsingDefs(tagName, pos);
+            return getFallbackDisplayString().getTagArgUsingDefaults(tagName, pos);
         else
             return EMPTY_DEFAULTS.getTagArg(tagName, pos);
     }
@@ -251,8 +263,9 @@ public class DisplayString implements IDisplayString {
     public boolean containsProperty(Prop prop) {
         TagInstance tag = getTag(prop.getTag());
         String value = (tag == null) ? "" : tag.getArg(prop.getPos());
+        Assert.isNotNull(value);
 
-        if (!"".equals(value))
+        if (!value.equals(""))
             return true;
         else if (getFallbackDisplayString() != null)
             return getFallbackDisplayString().containsProperty(prop);
@@ -278,15 +291,18 @@ public class DisplayString implements IDisplayString {
      */
     protected void setTagArg(Tag tag, int pos, String newValue) {
         TagInstance tagInstance = getTag(tag);
+        
         // if the value is empty or null and the tag does not exist, do nothing
-        if (tagInstance == null && (newValue == null || EMPTY_TAG_VALUE.equals(newValue)))
+        if (tagInstance == null && (newValue == null || "".equals(newValue)))
         	return;
+        
         // if the tag does not exist add it to the map
         if (tagInstance == null) {
             tagInstance = new TagInstance(tag.name());
             tagMap.put(tag.name(), tagInstance);
         }
         tagInstance.setArg(pos, newValue);
+        
         // remove the tag if every value is empty
         if (tagInstance.isEmpty())
             tagMap.remove(tag.name());
@@ -366,7 +382,7 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * The property value. NULL if tag does not exist, TagInstance.EMPTY_TAG_VALUE if the value
+     * The property value. NULL if tag does not exist, "" if the value
      * is empty.
      */
     public String getAsStringLocal(Prop property) {
@@ -377,23 +393,23 @@ public class DisplayString implements IDisplayString {
 	 * @see org.omnetpp.ned2.model.IDisplayString#getAsStringDef(org.omnetpp.ned2.model.DisplayString.Prop)
 	 */
     public String getAsString(Prop property) {
-        return getTagArgUsingDefs(property.getTag(), property.getPos());
+        return getTagArgUsingDefaults(property.getTag(), property.getPos());
     }
 
-    public int getAsInt(Prop propName, int defValue) {
+    public int getAsInt(Prop propName, int defaultValue) {
         try {
             String propValue = getAsString(propName);
-            return propValue == null ? defValue : Integer.valueOf(propValue);
+            return propValue == null ? defaultValue : Integer.valueOf(propValue);
         } catch (NumberFormatException e) { }
-        return defValue;
+        return defaultValue;
     }
 
-	public float getAsFloat(Prop propName, float defValue) {
+	public float getAsFloat(Prop propName, float defaultValue) {
         try {
             String propValue = getAsString(propName);
-            return StringUtils.isEmpty(propValue) ? defValue : Float.valueOf(propValue);
+            return StringUtils.isEmpty(propValue) ? defaultValue : Float.valueOf(propValue);
         } catch (NumberFormatException e) { }
-        return defValue;
+        return defaultValue;
 	}
 
 	/**
@@ -413,14 +429,14 @@ public class DisplayString implements IDisplayString {
 	}
 
     // helper functions for setting and getting the location and size properties
-	public final float pixel2unit(int pixel, Float overrideScale) {
+	public final float pixelToUnit(int pixel, Float overrideScale) {
         if (overrideScale != null)
             return pixel / overrideScale;
 
 		return  pixel / getScale();
 	}
 
-	public final int unit2pixel(float unit, Float overrideScale) {
+	public final int unitToPixel(float unit, Float overrideScale) {
         if (overrideScale != null)
             return (int)(unit * overrideScale);
 
@@ -429,18 +445,19 @@ public class DisplayString implements IDisplayString {
 
     public int getRange(Float scale) {
     	float floatvalue = getAsFloat(DisplayString.Prop.RANGE, -1.0f);
-    	return (floatvalue <= 0) ? -1 : unit2pixel(floatvalue, scale);
+    	return (floatvalue <= 0) ? -1 : unitToPixel(floatvalue, scale);
     }
 
     public Point getLocation(Float scale) {
         // return NaN to signal that the property is missing
         Float x = getAsFloat(Prop.X, Float.NaN);
         Float y = getAsFloat(Prop.Y, Float.NaN);
-        // if it's unspecified in any direction we should return a NULL constraint
+        
+        // if it's unspecified in any direction, we should return a NULL constraint
         if (x.equals(Float.NaN) || y.equals(Float.NaN))
             return null;
 
-        return new Point (unit2pixel(x, scale), unit2pixel(y, scale));
+        return new Point (unitToPixel(x, scale), unitToPixel(y, scale));
     }
 
     /**
@@ -455,15 +472,15 @@ public class DisplayString implements IDisplayString {
             set(Prop.Y, null);
         }
         else {
-            set(Prop.X, floatToString(pixel2unit(location.x, scale)));
-            set(Prop.Y, floatToString(pixel2unit(location.y, scale)));
+            set(Prop.X, floatToString(pixelToUnit(location.x, scale)));
+            set(Prop.Y, floatToString(pixelToUnit(location.y, scale)));
         }
     }
 
     public Dimension getSize(Float scale) {
-    	int width = unit2pixel(getAsFloat(Prop.SHAPE_WIDTH, -1.0f), scale);
+    	int width = unitToPixel(getAsFloat(Prop.SHAPE_WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
-        int height = unit2pixel(getAsFloat(Prop.SHAPE_HEIGHT, -1.0f), scale);
+        int height = unitToPixel(getAsFloat(Prop.SHAPE_HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1;
         return new Dimension(width, height);
     }
@@ -478,19 +495,19 @@ public class DisplayString implements IDisplayString {
         if (size == null || size.width < 0 )
             set(Prop.SHAPE_WIDTH, null);
         else
-            set(Prop.SHAPE_WIDTH, floatToString(pixel2unit(size.width, scale)));
+            set(Prop.SHAPE_WIDTH, floatToString(pixelToUnit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
             set(Prop.SHAPE_HEIGHT, null);
         else
-            set(Prop.SHAPE_HEIGHT, floatToString(pixel2unit(size.height, scale)));
+            set(Prop.SHAPE_HEIGHT, floatToString(pixelToUnit(size.height, scale)));
     }
 
     public Dimension getCompoundSize(Float scale) {
-    	int width = unit2pixel(getAsFloat(Prop.MODULE_WIDTH, -1.0f), scale);
+    	int width = unitToPixel(getAsFloat(Prop.MODULE_WIDTH, -1.0f), scale);
         width = width > 0 ? width : -1;
-        int height = unit2pixel(getAsFloat(Prop.MODULE_HEIGHT, -1.0f), scale);
+        int height = unitToPixel(getAsFloat(Prop.MODULE_HEIGHT, -1.0f), scale);
         height = height > 0 ? height : -1;
 
         return new Dimension(width, height);
@@ -507,13 +524,13 @@ public class DisplayString implements IDisplayString {
         if (size == null || size.width < 0 )
             set(Prop.MODULE_WIDTH, null);
         else
-            set(Prop.MODULE_WIDTH, floatToString(pixel2unit(size.width, scale)));
+            set(Prop.MODULE_WIDTH, floatToString(pixelToUnit(size.width, scale)));
 
         // if the size is unspecified, remove the size constraint from the model
         if (size == null || size.height < 0)
             set(Prop.MODULE_HEIGHT, null);
         else
-            set(Prop.MODULE_HEIGHT, floatToString(pixel2unit(size.height, scale)));
+            set(Prop.MODULE_HEIGHT, floatToString(pixelToUnit(size.height, scale)));
     }
 
     /**
@@ -526,8 +543,7 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * @param value
-     * @return The converted floating point number (with removed .0 at the end)
+     * Converts a float number to string (without trailing ".0" if it's an integer)
      */
     private static String floatToString(float value) {
         return StringUtils.chomp(String.valueOf(value), ".0");

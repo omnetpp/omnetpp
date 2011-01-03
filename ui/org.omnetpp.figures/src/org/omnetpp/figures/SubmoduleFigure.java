@@ -172,9 +172,9 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		setBaseLocation(
 				displayString.getLocation(scale),
 				arrangement,
-				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, Integer.MIN_VALUE), scale),
-				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, Integer.MIN_VALUE), scale),
-				displayString.unit2pixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, Integer.MIN_VALUE), scale)
+				displayString.unitToPixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR1, Integer.MIN_VALUE), scale),
+				displayString.unitToPixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR2, Integer.MIN_VALUE), scale),
+				displayString.unitToPixel(displayString.getAsInt(IDisplayString.Prop.LAYOUT_PAR3, Integer.MIN_VALUE), scale)
 		);
 
 		// if the shapeBounds has changed, we should trigger the layouting

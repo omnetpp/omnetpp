@@ -481,7 +481,7 @@ public interface IDisplayString {
      * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
 	 * @return Value in units
 	 */
-	public float pixel2unit(int pixel, Float overrideScale);
+	public float pixelToUnit(int pixel, Float overrideScale);
 
 	/**
 	 * Converts the provided value (in unit) to pixel
@@ -489,7 +489,7 @@ public interface IDisplayString {
      * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
 	 * @return Value in pixels
 	 */
-	public int unit2pixel(float unit, Float overrideScale);
+	public int unitToPixel(float unit, Float overrideScale);
 
     /**
      * Sets the content of the display string.
