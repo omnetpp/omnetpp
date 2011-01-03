@@ -422,7 +422,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		}
 
 		private void updateImageLabel() {
-			Image image = ColorFactory.createColorImage(text.getText(), true);
+			Image image = ColorFactory.createColorImage(ColorFactory.asRGB(text.getText()));
 			Image oldImage = label.getImage();
 			label.setImage(image);
 			if (oldImage != null)

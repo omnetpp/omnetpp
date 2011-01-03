@@ -22,14 +22,16 @@ import org.eclipse.swt.graphics.RGB;
 
 /**
  * A factory that creates and manages colors using symbolic names or
- * #RRGGBB or @HHSSBB format
- * @author rhornig
+ * #RRGGBB or @HHSSBB format, and performs other color-related utility
+ * functions
+ * 
+ * @author rhornig; andras (cleanup)
  */
 public class ColorFactory {
 
-    private static ColorRegistry str2rgbRegistry = new ColorRegistry();
-    private static HashMap<RGB, String> rgb2strMap = new HashMap<RGB, String>();
-    private static ImageRegistry str2img = new ImageRegistry();
+    private static ColorRegistry stringToRgbMap = new ColorRegistry();
+    private static HashMap<RGB, String> rgbToStringMap = new HashMap<RGB, String>();
+    private static ImageRegistry imageRegistry = new ImageRegistry();
     private static Color[] goodDarkColors;
     private static Color[] goodLightColors;
 
@@ -591,7 +593,6 @@ public class ColorFactory {
         		ColorFactory.asColor("yellow"),
         		ColorFactory.asColor("black"),
         		ColorFactory.asColor("purple"),
-        		//XXX add more
         };
 
         goodLightColors = new Color[] {
@@ -605,51 +606,52 @@ public class ColorFactory {
         		ColorFactory.asColor("lightPink"),
         		ColorFactory.asColor("lightGrey"),
         		ColorFactory.asColor("mediumPurple"),
-        		//XXX add more
         };
 	};
 
     /**
-     * label provider to display color rectangles
-     * @author rhornig
+     * Label provider that displays color rectangles.
      */
     public static class ColorLabelProvider extends LabelProvider {
         @Override
         public Image getImage(Object element) {
             return ColorFactory.asImage((String)element);
         }
-
     }
 
     /**
-     * Returns the color name, or #RRGGBB if no constant found for the color. Throws
-     * <code>NullPointerException</code> if the parameter is <code>null</code>
-     * @param value RGB object to be converted
+     * Returns the color name, or #RRGGBB if no constant was found for the color.
+     * 
+     * @param value RGB object to be converted (cannot be null)
      * @return String representation of the color
      */
     public static String asString(RGB value) {
         // check for color constants first
-        String constName = rgb2strMap.get(value);
-        if (constName != null) return constName;
+        String colorName = rgbToStringMap.get(value);
+        if (colorName != null) 
+            return colorName;
 
         // if no constant was found, create a hex description
         return String.format("#%06X", value.red << 16 | value.green << 8 | value.blue);
     }
 
     /**
-     * Parses a string into an RGB object. The format can be #RRGGBB @HHSSII or
-     * a color constant name like: red, green
-     * Throws null pointer exception on incoming <code>null</code>
+     * Parses a string into an RGB object. The format can be "#RRGGBB", "@HHSSII", 
+     * or and English color name like "red" or "green". Returns null if the color
+     * is not recognized.
+     * 
      * @param value String to be parsed
      * @return RGB or <code>null</code> on parse error
      */
     public static RGB asRGB(String value) {
+        if (value == null)
+            return null;
+
         RGB result = null;
         try {
-            if (value == null)
-                return null;
             // check for color constants
-            RGB constRGB = str2rgbRegistry.getRGB(value.toLowerCase());
+            RGB constRGB = stringToRgbMap.getRGB(value.toLowerCase());
+
             // return a new RGB object, because RGB is mutable
             if (constRGB != null)
                 return new RGB(constRGB.red, constRGB.green, constRGB.blue);
@@ -659,6 +661,7 @@ public class ColorFactory {
                 int rgbVal = Integer.parseInt(value.substring(1), 16);
                 result = new RGB((rgbVal >> 16) & 0xFF, (rgbVal >> 8) & 0xFF, rgbVal & 0xFF);
             }
+
             // check for HSB syntax and convert
             if (value.startsWith("@")) {
                 int hsbVal = Integer.parseInt(value.substring(1), 16);
@@ -668,36 +671,37 @@ public class ColorFactory {
                 result = new RGB(hue, saturation, brightness);
             }
 
-        } catch (NumberFormatException e) { }
+        } catch (NumberFormatException e) {
+        }
         return result;
     }
 
     /**
-     * Returns a color from a color factory
+     * Returns a color from a color factory.
+     * 
      * @param value string representation of the color
      * @return An SWT color object that can be used or <code>null</code> on parse error
      */
     public static Color asColor(String value) {
-        if (value == null) return null;
+        if (value == null) 
+            return null;
+
         // look up in the registry
-        Color result = str2rgbRegistry.get(value.toLowerCase());
-        // if we have it in the registry, return it
-        if (result != null) return result;
+        Color result = stringToRgbMap.get(value.toLowerCase());
+        if (result != null) 
+            return result;
+
         // otherwise create an RGB representation from the string
-        RGB tempRgb = asRGB(value);
-        // if conversion is unsuccessful, return null
-        if (tempRgb == null) return null;
-        // this might be a problem if we are running on a 256 color display
-        return new Color(null, tempRgb);
-//        // put it in the registry for later use
-//        str2rgbRegistry.put(value.toLowerCase(), tempRgb);
-//        // return it as a Color object
-//        return str2rgbRegistry.get(value.toLowerCase());
+        RGB rgb = asRGB(value);
+        if (rgb == null) 
+            return null;
+        
+        return new Color(null, rgb); // this might be a problem if we are running on a 256-color display
     }
 
     /**
-     * Returns a color from a color factory or defaultColor
-     * if value is invalid or a nonexistent color.
+     * Returns a color from a color factory, or defaultColor if value is an invalid or 
+     * nonexistent color.
      */
     public static Color asColor(String value, Color defaultColor) {
     	Color color = asColor(value);
@@ -705,20 +709,23 @@ public class ColorFactory {
     }
 
     /**
-     * @param value The colors id
-     * @return a 16x16 rectangle image filled with the given color (or null, if color id is not valid)
+     * Returns a 16x16 rectangle image filled with the given color (or null if colorId is not valid).
+     * The image must not be disposed of by the caller.
      */
     public static Image asImage(String value) {
-        Image img = str2img.get(value);
-        if (img != null)
-            return img;
+        Image image = imageRegistry.get(value);
+        if (image != null)
+            return image;
 
-        ImageData idata = createColorImageData(value, false);
-        if (idata == null)
+        // parse the color
+        RGB color = asRGB(value);
+        if (color == null)
             return null;
-        // store it for later use
-        str2img.put(value, ImageDescriptor.createFromImageData(idata).createImage());
-        return str2img.get(value);
+
+        // create image and store it in the registry
+        image = createColorImage(color);
+        imageRegistry.put(value, image);
+        return image;
     }
 
 	/**
@@ -736,80 +743,66 @@ public class ColorFactory {
 	}
 
     /**
-     * @return All registered color names
+     * Returns all registered color names.
      */
 	public static String[] getColorNames() {
         ArrayList<String> keys = new ArrayList<String>();
-        for (Object key : str2rgbRegistry.getKeySet())
+        for (Object key : stringToRgbMap.getKeySet())
             keys.add((String)key);
         return keys.toArray(new String[0]);
     }
 
     /**
-     * @return All registered color RGBs
+     * Returns all registered color RGBs.
      */
     public static String[] getColorRGBs() {
         ArrayList<String> rgbs = new ArrayList<String>();
-        for (Object key : str2rgbRegistry.getKeySet())
-            rgbs.add(str2rgbRegistry.getRGB((String)key).toString());
+        for (Object key : stringToRgbMap.getKeySet())
+            rgbs.add(stringToRgbMap.getRGB((String)key).toString());
         return rgbs.toArray(new String[0]);
     }
 
     /**
-     * @return All registered color images
+     * Returns a registered color images.
      */
     public static Image[] getColorImages() {
         ArrayList<Image> images = new ArrayList<Image>();
-        for (Object key : str2rgbRegistry.getKeySet())
+        for (Object key : stringToRgbMap.getKeySet())
             images.add(asImage((String)key));
         return images.toArray(new Image[0]);
     }
 
     // helper function to fill the color table
     private static Color addMapping(String name, RGB rgb) {
-        str2rgbRegistry.put(name.toLowerCase(), rgb);
+        stringToRgbMap.put(name.toLowerCase(), rgb);
+
         // check if the given RGB is already in the map
-        String colName = rgb2strMap.get(rgb);
+        String colorName = rgbToStringMap.get(rgb);
+
         // if the new color name is shorter, use that for the reverse mapping and remove the previous one
-        if (colName == null || colName.length() > name.length()) {
-            rgb2strMap.remove(rgb);
-            rgb2strMap.put(rgb, name);
+        if (colorName == null || colorName.length() > name.length()) {
+            rgbToStringMap.remove(rgb);
+            rgbToStringMap.put(rgb, name);
         }
         return new Color(null, rgb);
     }
 
     /**
-     * Creates and returns the color image data for the
-     * RGB value. which is a 16 pixel square.
-     *
-     * @param colorId the colorId
-     * @param createNullImage if true creates an image with an 'X' when the color is not found
+     * Creates and returns a color image for the RGB value. The image is 15x15 pixels, and the
+     * color rectangle is 11x11 pixels in it, CENTERED.
+     * A null RGB is also accepted, and will create an image containing an X.
+     * The caller is responsible for disposing of the image.
      */
-    private static ImageData createColorImageData(String colorId, boolean createNullImage) {
-
+    public static Image createColorImage(RGB color) {
+        int width = 15, height = 15;
         int size = 11;
-        int indent = 0;
-        int rightpadding = 4;
-        int extent = 15;
+        int xoffset = 2;
+        int yoffset = 2;
 
-        int width = indent + size + rightpadding;
-        int height = extent;
-
-        int xoffset = indent;
-        int yoffset = (height - size) / 2;
-
-        RGB black = new RGB(0, 0, 0);
-        RGB color = ColorFactory.asRGB(colorId);
-        PaletteData dataPalette;
-
-        if (color == null) {
-        	if (createNullImage)
-        		dataPalette = new PaletteData(new RGB[] { black, black});
-        	else
-        		return null;
-        }
-        else
-            dataPalette = new PaletteData(new RGB[] { black, black, color });
+        RGB dummy = new RGB(0, 0, 0);
+        RGB black = new RGB(80, 80, 80);
+        RGB[] colors = (color == null) ? new RGB[] {dummy, black} : new RGB[] {dummy, black, color};
+        PaletteData dataPalette = new PaletteData(colors);
 
         ImageData data = new ImageData(width, height, 4, dataPalette);
         data.transparentPixel = 0;
@@ -819,31 +812,13 @@ public class ColorFactory {
         int end = size - 1;
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
-                if (x == 0 || y == 0 || x == end || y == end ||
-                	(color == null && (y == x || y == size - x - 1))) {
-
+                if (x == 0 || y == 0 || x == end || y == end || (color == null && (y == x || y == size - x - 1)))
                     data.setPixel(x + xoffset, y + yoffset, lineColor);
-                }
-                else {
+                else
                     data.setPixel(x + xoffset, y + yoffset, fillColor);
-                }
             }
         }
 
-        return data;
-    }
-
-    /**
-     * Creates an image without caching.
-     * @param colorId the colorId
-     * @param createNullImage if true creates an image with an 'X' when the color is not found
-     */
-    public static Image createColorImage(String colorId, boolean createNullImage) {
-    	ImageData imageData = createColorImageData(colorId, createNullImage);
-    	if (imageData != null) {
-    		return ImageDescriptor.createFromImageData(imageData).createImage();
-    	}
-    	else
-    		return null;
+        return ImageDescriptor.createFromImageData(data).createImage();
     }
 }
