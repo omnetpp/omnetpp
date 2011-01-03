@@ -81,35 +81,59 @@ public interface INedTypeInfo extends INedChangeListener {
 
     /**
      * For single-inheritance types (non-interface types such as modules and channels),
-     * this method returns the super type.  Returns null if there is no super 
-     * type (type contains no "extends" clause), if the type does not exist, 
-     * or there is a cycle in the inheritance chain.
-     * 
-     * For multiple-interface types (module interface, channel interface), this method 
+     * this method returns the super type.  Returns null if there is no super
+     * type (type contains no "extends" clause), if the type does not exist,
+     * or if this NED type extends itself.
+     *
+     * For multiple-interface types (module interface, channel interface), this method
      * returns null. To obtain the super types of an interface, use the
      * getLocalInterfaces() method.
-     * 
-     *  @see getInheritanceChain()
+     *
+     * A few examples:
+     *
+     * module m1 {} // returns null
+     * module m2 extends m1 {} // returns m1
+     * module m3 extends m3 {} // returns null
+     * module m4 extends m5 {} // returns null
+     * module m5 extends m4 {} // returns null
+     * module m6 extends m5 {} // returns m5
+     * module m7 extends m6 {} // returns m6
+     *
+     * @see getInheritanceChain()
      */
     public INedTypeElement getSuperType();
 
     /**
      * For single-inheritance types (non-interface types such as modules and channels),
-     * this method returns the inheritance chain as a list. The list starts
-     * with this NED type, and ends with the root.
+     * this method returns the inheritance chain as a list. The returned list always starts
+     * with this NED type (i.e. it is never empty), and ends with the root if no cycle is
+     * found. Otherwise the list ends with the first element of the cycle and the rest is
+     * skipped. This strategy prevents cycles to be formed even when multiple inheritance
+     * chains are used, because cycle edges are never returned. (i.e. there are no two
+     * subsequent types present in the list which are part of a cycle).
      *
-     * For multiple-interface types (module interface, channel interface), this method 
-     * returns a list that contains this type only. To build the inheritance tree of 
+     * For multiple-interface types (module interface, channel interface), this method
+     * returns a list that contains this type only. To build the inheritance tree of
      * an interface, use getInterfaces().
-     * 
+     *
+     * A few examples:
+     *
+     * module m1 {} // returns [m1]
+     * module m2 extends m1 {} // returns [m2, m1]
+     * module m3 extends m3 {} // returns [m3]
+     * module m4 extends m5 {} // returns [m4]
+     * module m5 extends m4 {} // returns [m5]
+     * module m6 extends m5 {} // returns [m6, m5]
+     * module m7 extends m6 {} // returns [m7, m6, m5]
+     *
      * @see getSuperType()
      */
     public List<INedTypeInfo> getInheritanceChain();
-    
+
     /**
      * Returns the list of interfaces this type locally extends or implements.
      * That is, this method returns the types in the "extends" clause
-     * of interface types, and the types in the "like" clause of non-interface 
+     * of interface types, and the types in the "like" clause of non-interface
      * types.
      */
 	public Set<INedTypeElement> getLocalInterfaces();
@@ -117,10 +141,20 @@ public interface INedTypeInfo extends INedChangeListener {
 	/**
      * Returns the list of interfaces this type and its ancestor types and
      * ancestor interfaces extend or implement.
+     *
+     * A few examples:
+     *
+     * moduleinterface i1 {} // returns [i1]
+     * moduleinterface i2 extends i1 {} // returns [i2, i1]
+     * moduleinterface i3 extends i3 {} // returns [i3]
+     * moduleinterface i4 extends i5 {} // returns [i4, i5]
+     * moduleinterface i5 extends i4 {} // returns [i5, i4]
+     * moduleinterface i6 extends i5, i3 {} // returns [i6, i5, i4, i3]
+     * module m like i6, i2 {} // returns [i6, i5, i4, i3, i2, i1]
      */
     public Set<INedTypeElement> getInterfaces();
 
-    /** 
+    /**
      * Returns the map of all locally declared inner types, parameters, gates
      * and submodules.
      */
