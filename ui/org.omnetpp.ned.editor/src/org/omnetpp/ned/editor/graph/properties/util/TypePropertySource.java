@@ -68,57 +68,58 @@ public class TypePropertySource extends NedBasePropertySource {
 
         public Object getPropertyValue(Object propName) {
             if (Prop.Type.equals(propName)) {
-                String result = lookupFullyQualifiedName(getHasTypeModel().getEnclosingLookupContext(), getHasTypeModel().getType());
+                String result = lookupFullyQualifiedName(getModel().getEnclosingLookupContext(), getModel().getType());
                 return convertQNameToDisplayName(result);
             }
             if (Prop.Like.equals(propName)) {
-                String result = lookupFullyQualifiedName(getHasTypeModel().getEnclosingLookupContext(), getHasTypeModel().getLikeType());
+                String result = lookupFullyQualifiedName(getModel().getEnclosingLookupContext(), getModel().getLikeType());
                 return convertQNameToDisplayName(result);
             }
             if (Prop.LikeParam.equals(propName))
-                return getHasTypeModel().getLikeParam();
+                return getModel().getLikeParam();
 
             return null;
         }
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Type.equals(propName))
-                getHasTypeModel().setType(convertDisplayNameToQName((String)value));
+                getModel().setType(convertDisplayNameToQName((String)value));
             if (Prop.Like.equals(propName))
-                getHasTypeModel().setLikeType(convertDisplayNameToQName((String)value));
+                getModel().setLikeType(convertDisplayNameToQName((String)value));
             if (Prop.LikeParam.equals(propName))
-                getHasTypeModel().setLikeParam((String)value);
+                getModel().setLikeParam((String)value);
             
-            NedElementUtilEx.addImportFor(getHasTypeModel()); // note: overwrites "type" (or "like-type") attribute
+            NedElementUtilEx.addImportFor(getModel()); // note: overwrites "type" (or "like-type") attribute
             // note that this will add an import statement if needed, but WILL not remove when undo is invoked
             // there is no way to distinguish here between do and undo operations
         }
 
         public boolean isPropertySet(Object propName) {
             if (Prop.Type.equals(propName))
-                return StringUtils.isNotEmpty(getHasTypeModel().getType()); ;
+                return StringUtils.isNotEmpty(getModel().getType()); ;
             if (Prop.Like.equals(propName))
-                return StringUtils.isNotEmpty(getHasTypeModel().getLikeType());
+                return StringUtils.isNotEmpty(getModel().getLikeType());
             if (Prop.LikeParam.equals(propName))
-                return StringUtils.isNotEmpty(getHasTypeModel().getLikeParam());
+                return StringUtils.isNotEmpty(getModel().getLikeParam());
 
             return false;
         }
 
         public void resetPropertyValue(Object propName) {
             if (Prop.Type.equals(propName))
-                getHasTypeModel().setType(null);
+                getModel().setType(null);
             if (Prop.Like.equals(propName))
-                getHasTypeModel().setLikeType(null);
+                getModel().setLikeType(null);
             if (Prop.LikeParam.equals(propName))
-                getHasTypeModel().setLikeParam(null);
+                getModel().setLikeParam(null);
         }
 
         public boolean isPropertyResettable(Object propName) {
             return true;
         }
 
-        public ISubmoduleOrConnection getHasTypeModel() {
-            return (ISubmoduleOrConnection)getModel();
+        public ISubmoduleOrConnection getModel() {
+            // only overridden to change return type to be more specific
+            return (ISubmoduleOrConnection) super.getModel();
         }
 }
