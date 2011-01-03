@@ -7,7 +7,6 @@
 
 package org.omnetpp.ned.model;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -46,9 +45,8 @@ public class DisplayString implements IDisplayString {
     // special value used to remove (neutralize) an inherited value
     public static final String ANTIVALUE = "-";
 
-    // use only a weak reference, so if the referenced fallback display string is deleted
-    // along with the containing model element, it will not be held in memory
-    protected WeakReference<DisplayString> fallbackDisplayStringRef = null; //FIXME revise weak reference, very likely NOT needed and even bogus (Andras)
+    // display string used for fallback (i.e. display string of the ancestor type)
+    protected DisplayString fallbackDisplayString = null;
 
     // the owner of the display string
     protected IHasDisplayString owner = null;
@@ -206,9 +204,7 @@ public class DisplayString implements IDisplayString {
      * Returns the currently set fallback display string
      */
     public DisplayString getFallbackDisplayString() {
-        if (fallbackDisplayStringRef != null)
-            return fallbackDisplayStringRef.get();
-        return null;
+        return fallbackDisplayString;
     }
 
     /**
@@ -216,7 +212,7 @@ public class DisplayString implements IDisplayString {
      * requested property (points to the type or ancestor display string).
      */
     public void setFallbackDisplayString(DisplayString defaults) {
-        this.fallbackDisplayStringRef = new WeakReference<DisplayString>(defaults);
+        this.fallbackDisplayString = defaults;
     }
 
 	/**
