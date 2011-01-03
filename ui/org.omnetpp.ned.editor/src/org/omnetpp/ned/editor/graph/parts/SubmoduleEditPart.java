@@ -45,17 +45,22 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected void createEditPolicies() {
         super.createEditPolicies();
     }
+    
     /**
      * Returns a newly created Figure of this.
      */
     @Override
     protected IFigure createFigure() {
         SubmoduleFigure fig = new SubmoduleFigureEx();
+        
         // set the pin decoration image for the image (The compound module requests an auto-layout
         // if we add an figure without pin. ie. submodule created in the text editor without
         // a display string
         fig.setPinVisible(getSubmoduleModel().getDisplayString().getLocation(1.0f) != null);
 
+        // range figure should appear on the background decoration layer
+        fig.setRangeFigureLayer(getCompoundModulePart().getCompoundModuleFigure().getBackgroundDecorationLayer());
+        
         gateAnchor = new GateAnchor(fig);
         return fig;
     }

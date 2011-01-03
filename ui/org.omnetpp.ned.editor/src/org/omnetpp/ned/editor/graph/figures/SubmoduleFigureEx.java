@@ -20,13 +20,15 @@ import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
 
 /**
- * EDITING specific parts of the figure. Direct editing etc.
+ * Editing-specific parts of the figure. Direct editing, etc.
  */
-public class SubmoduleFigureEx extends SubmoduleFigure implements HandleBounds,
-		IDirectEditSupport {
+public class SubmoduleFigureEx extends SubmoduleFigure implements HandleBounds, IDirectEditSupport {
 
     protected String tmpName;
 
+    public SubmoduleFigureEx() {
+    }
+    
     // support locator for finding the name of the figure allowing the direct edit
     // cell editor above the name figure
     class SubmoduleFigureNameCellEditorLocator implements CellEditorLocator {

@@ -22,7 +22,6 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.figures.CompoundModuleFigure.SubmoduleLayer;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
@@ -61,12 +60,13 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int vectorIndex;
 	protected VectorArrangement vectorArrangement;
 	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
-	protected int alpha = 255;
+	protected Layer rangeFigureLayer; 
 
-	// result of layouting
+    // result of layouting
 	protected Point centerLoc;
 
 	// appearance
+	protected int alpha = 255;
 	protected String nameText;
 	protected String tooltipText;
 	protected ITooltipTextProvider problemMarkerTextProvider;
@@ -195,6 +195,17 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	/**
+	 * Sets the layer to be used as parent for the range figure (see setRange()).
+	 */
+	public void setRangeFigureLayer(Layer rangeFigureLayer) {
+	    this.rangeFigureLayer = rangeFigureLayer;
+	}
+
+    public Layer getRangeFigureLayer() {
+        return rangeFigureLayer;
+    }
+
+	/**
 	 * Store range figure parameters. fillColor and/or borderColor can be null,
 	 * meaning that no background or outline should be drawn.
 	 */
@@ -206,7 +217,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 		else {
 			if (rangeFigure == null) {
 				rangeFigure = new RangeFigure();
-				Layer backgroundLayer = ((SubmoduleLayer)getParent()).getCompoundModuleFigure().getBackgroundDecorationLayer();
+				Layer backgroundLayer = getRangeFigureLayer();
 				backgroundLayer.add(rangeFigure);
 			}
 			rangeFigure.setVisible(true);
@@ -634,6 +645,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	    graphics.setAlpha(alpha);
 		super.paint(graphics);
 		Assert.isNotNull(centerLoc, "setCenterLoc() must be called before painting");
+		Assert.isNotNull(rangeFigureLayer, "setRangeFigureLayer() must be called before painting");
 
 		// draw shape
 		if (shape != SHAPE_NONE) {

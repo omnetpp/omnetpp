@@ -143,7 +143,7 @@ public class CompoundModuleFigure extends NedFigure
     }
 
     // main layer used to display submodules
-    class SubmoduleLayer extends Layer {
+    public class SubmoduleLayer extends Layer {
 
         @Override
         public void add(IFigure child, Object constraint, int index) {
