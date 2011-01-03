@@ -28,13 +28,16 @@ USING_NAMESPACE
 
 #define LL  INT64_PRINTF_FORMAT
 
-#define PRINT_DEBUG_MESSAGES false
-
 FileReader::FileReader(const char *fileName, size_t bufferSize)
    : fileName(fileName), bufferSize(bufferSize),
      bufferBegin(new char[bufferSize]), bufferEnd(bufferBegin + bufferSize),
      maxLineSize(bufferSize / 2)
 {
+
+#ifndef NDEBUG
+	TRACE("FileReader::FileReader(%s, %d)", fileName, bufferSize);
+#endif
+
     f = NULL;
     checkFileChanged = true;
     synchronizeWhenAppended = true;
@@ -61,6 +64,11 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
 
 FileReader::~FileReader()
 {
+
+#ifndef NDEBUG
+    TRACE("FileReader::~FileReader(%s)", fileName.c_str());
+#endif
+
     delete [] bufferBegin;
     ensureFileClosed();
 }
@@ -122,9 +130,17 @@ file_offset_t FileReader::pointerToFileOffset(char *pointer) const
 
 FileReader::FileChangedState FileReader::getFileChangedState()
 {
+	TRACE("FileReader::getFileChangedState()");
+	Assert(checkFileChanged);
+	FileReader::FileChangedState result;
     int64 newFileSize = getFileSizeInternal();
 
     if (newFileSize > fileSize) {
+
+#ifndef NDEBUG
+    	TPRINTF("FileReader::getFileChangedState: from file size %"LL"d to file size %"LL"d", fileSize, newFileSize);
+#endif
+
         // compare the stored last line with the one in the file
         storePosition();
 
@@ -138,14 +154,20 @@ FileReader::FileChangedState FileReader::getFileChangedState()
         restorePosition();
 
         if (currentLastLine && currentLineLength == lastLineLength && !strncmp(currentLastLine, lastLine.c_str(), lastLineLength))
-            return APPENDED;
+            result = APPENDED;
         else
-            return OVERWRITTEN;
+            result = OVERWRITTEN;
     }
     else if (newFileSize < fileSize)
-        return OVERWRITTEN;
+        result = OVERWRITTEN;
     else
-        return UNCHANGED;
+        result = UNCHANGED;
+
+#ifndef NDEBUG
+    if (result != UNCHANGED) TRACE("FileReader::getFileChangedState: %d", result);
+#endif
+
+    return result;
 }
 
 void FileReader::synchronize()
@@ -154,6 +176,11 @@ void FileReader::synchronize()
     int64 newFileSize = getFileSizeInternal();
 
     if (newFileSize != fileSize || lastLineOffset == -1) {
+
+#ifndef NDEBUG
+        TRACE("FileReader::synchronize: from file size %"LL"d to file size %"LL"d", fileSize, newFileSize);
+#endif
+
         fileSize = newFileSize;
         dataBegin = dataEnd = NULL;
 
@@ -224,6 +251,7 @@ void FileReader::fillBuffer(bool forward)
 {
 #ifndef NDEBUG
     checkConsistence();
+    TRACE("FileReader::fillBuffer %s", forward ? "forward" : "backward");
 #endif
 
     char *dataPointer;
@@ -279,7 +307,7 @@ void FileReader::fillBuffer(bool forward)
             throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
 
 #ifndef NDEBUG
-        if (PRINT_DEBUG_MESSAGES) printf("Reading data at file offset: %"LL"d, length: %d\n", fileOffset, bytesRead);
+        TPRINTF("FileReader::fillBuffer data at file offset: %"LL"d, length: %d", fileOffset, bytesRead);
 #endif
 
         if (!hasData()) {
@@ -340,7 +368,9 @@ bool FileReader::isLineStart(char *s) {
 
 char *FileReader::findNextLineStart(char *start, bool bufferFilled)
 {
-    char *s = start;
+	TRACE("FileReader::findNextLineStart(start: %p)", start);
+
+	char *s = start;
 
     // find next CR/LF (fast path)
     while (s < dataEnd && *s != '\r' && *s!= '\n')
@@ -357,28 +387,41 @@ char *FileReader::findNextLineStart(char *start, bool bufferFilled)
     {
         file_offset_t fileOffset = pointerToFileOffset(start);
 
+#ifndef NDEBUG
+        TPRINTF("FileReader::findNextLineStart start file offset %"LL"d", fileOffset);
+#endif
+
         if (s != start && isLineStart(s)) // line just ends at the end of data buffer
-            return s;
+            ; // void
         else if (fileOffset == getFileSize()) // searching from the end of the file
-            return NULL;
+            RETURN(NULL)
         else if (!bufferFilled) { // refill buffer
             seekTo(fileOffset, maxLineSize);
-            fillBuffer(true);
-            s = fileOffsetToPointer(fileOffset);
 
-            return findNextLineStart(s, true);
+#ifndef NDEBUG
+            TPRINTF("FileReader::findNextLineStart bufffer file offset before fillBuffer is called %"LL"d", bufferFileOffset);
+#endif
+
+            fillBuffer(true);
+            s = findNextLineStart(fileOffsetToPointer(fileOffset), true);
         }
         else if (getDataEndFileOffset() == getFileSize()) // searching reached to the end of the file without CR/LF
-            return NULL;
+            RETURN(NULL)
         else // line too long
             throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
 
-    return s;
+#ifndef NDEBUG
+    TPRINTF("FileReader::findNextLineStart returns with next line file offset %"LL"d", pointerToFileOffset(s));
+#endif
+
+    RETURN(s)
 }
 
 char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
 {
+	TRACE("FileReader::findPreviousLineStart(start: %p)", start);
+
     char *s = start - 1;
 
     if (s >= dataBegin && *s == '\n')
@@ -398,22 +441,33 @@ char *FileReader::findPreviousLineStart(char *start, bool bufferFilled)
     {
         file_offset_t fileOffset = pointerToFileOffset(start);
 
+#ifndef NDEBUG
+        TPRINTF("FileReader::findPreviousLineStart start file offset %"LL"d", fileOffset);
+#endif
+
         if (s != start && isLineStart(s)) // line starts at the beginning of the data buffer
-            return s;
+            ; // void
         else if (fileOffset == 0) // searching from the beginning of the file
             return NULL;
         else if (!bufferFilled) { // refill buffer
             seekTo(fileOffset, maxLineSize);
-            fillBuffer(false);
-            s = fileOffsetToPointer(fileOffset);
 
-            return findPreviousLineStart(s, true);
+#ifndef NDEBUG
+            TPRINTF("FileReader::findPreviousLineStart bufffer file offset before refill %"LL"d", bufferFileOffset);
+#endif
+
+            fillBuffer(false);
+            s = findPreviousLineStart(fileOffsetToPointer(fileOffset), true);
         }
         else if (getDataBeginFileOffset() == 0) // searching reached to the beginning of the file without CR/LF
             return dataBegin;
         else // line too long
             throw opp_runtime_error("Line too long, should be below %d in file `%s'", maxLineSize, fileName.c_str());
     }
+
+#ifndef NDEBUG
+    TPRINTF("FileReader::findPreviousLineStart: previous line file offset %"LL"d", pointerToFileOffset(s));
+#endif
 
     return s;
 }
@@ -426,7 +480,7 @@ char *FileReader::getNextLineBufferPointer()
     Assert(currentDataPointer);
 
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in next line at file offset: %"LL"d\n", pointerToFileOffset(currentDataPointer));
+    TRACE("FileReader::Reading in next line at file offset: %"LL"d", pointerToFileOffset(currentDataPointer));
 #endif
 
     // read forward if needed
@@ -445,13 +499,20 @@ char *FileReader::getNextLineBufferPointer()
         }
     }
 
-    currentLineStartOffset = pointerToFileOffset(currentDataPointer);
+    // save offset to avoid problems related to recursive calls from find
+    file_offset_t savedCurrentLineStartOffset = pointerToFileOffset(currentDataPointer);
     char *nextLineDataPointer = findNextLineStart(currentDataPointer);
 
     if (nextLineDataPointer) {
         setCurrentDataPointer(nextLineDataPointer);
+        currentLineStartOffset = savedCurrentLineStartOffset;
         currentLineEndOffset = pointerToFileOffset(currentDataPointer);
 
+#ifndef NDEBUG
+        TPRINTF("FileReader::getNextLineBufferPointer: currentLineStartOffset: %"LL"d, currentLineEndOffset: %"LL"d", currentLineStartOffset, currentLineEndOffset);
+#endif
+
+        Assert(currentLineEndOffset >= currentLineStartOffset);
         return fileOffsetToPointer(currentLineStartOffset);
     }
     else {
@@ -469,7 +530,7 @@ char *FileReader::getPreviousLineBufferPointer()
     Assert(currentDataPointer);
 
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Reading in previous line at file offset: %"LL"d\n", pointerToFileOffset(currentDataPointer));
+    TRACE("FileReader::Reading in previous line at file offset: %"LL"d", pointerToFileOffset(currentDataPointer));
 #endif
 
     // read backward if needed
@@ -488,13 +549,20 @@ char *FileReader::getPreviousLineBufferPointer()
         }
     }
 
-    currentLineEndOffset = pointerToFileOffset(currentDataPointer);
+    // save offset to avoid problems related to recursive calls from find
+    file_offset_t savedCurrentLineEndOffset = pointerToFileOffset(currentDataPointer);
     char *previousLineDataPointer = findPreviousLineStart(currentDataPointer);
 
     if (previousLineDataPointer) {
         setCurrentDataPointer(previousLineDataPointer);
         currentLineStartOffset = pointerToFileOffset(currentDataPointer);
+        currentLineEndOffset = savedCurrentLineEndOffset;
 
+#ifndef NDEBUG
+        TPRINTF("FileReader::getPreviousLineBufferPointer: currentLineStartOffset: %"LL"d, currentLineEndOffset: %"LL"d", currentLineStartOffset, currentLineEndOffset);
+#endif
+
+        Assert(currentLineEndOffset >= currentLineStartOffset);
         return fileOffsetToPointer(currentLineStartOffset);
     }
     else {
@@ -570,7 +638,7 @@ int64 FileReader::getFileSizeInternal()
 void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeAround)
 {
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Seeking to file offset: %"LL"d\n", fileOffset);
+    TRACE("FileReader::seekTo seeking to file offset: %"LL"d", fileOffset);
     checkConsistence();
 #endif
 
@@ -594,7 +662,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
     Assert(currentDataPointer);
 
 #ifndef NDEBUG
-    if (PRINT_DEBUG_MESSAGES) printf("Setting buffer file offset to: %"LL"d\n", newBufferFileOffset);
+    TPRINTF("FileReader::seekTo setting buffer file offset to: %"LL"d", newBufferFileOffset);
 #endif
 
     // try to keep as much data as possible
@@ -603,7 +671,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
         file_offset_t oldDataEndFileOffset = getDataEndFileOffset();
 
 #ifndef NDEBUG
-        if (PRINT_DEBUG_MESSAGES) printf("Data before: from file offset: %"LL"d to file offset: %"LL"d\n", oldDataBeginFileOffset, oldDataEndFileOffset);
+        TPRINTF("FileReader::seekTo data before seek: from file offset: %"LL"d to file offset: %"LL"d", oldDataBeginFileOffset, oldDataEndFileOffset);
 #endif
 
         file_offset_t newBufferBeginFileOffset = newBufferFileOffset;
@@ -616,7 +684,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
 
         if (moveSize > 0 && moveSrc != moveDest) {
 #ifndef NDEBUG
-            if (PRINT_DEBUG_MESSAGES) printf("Keeping data from file offset: %"LL"d with length: %d\n", pointerToFileOffset(moveSrc), moveSize);
+        	TPRINTF("FileReader::Keeping data from file offset: %"LL"d with length: %d", pointerToFileOffset(moveSrc), moveSize);
 #endif
 
             fflush(stdout);
@@ -629,7 +697,7 @@ void FileReader::seekTo(file_offset_t fileOffset, unsigned int ensureBufferSizeA
         dataEnd = moveDest + moveSize;
 
 #ifndef NDEBUG
-        if (PRINT_DEBUG_MESSAGES) printf("Data after: from file offset: %"LL"d to file offset: %"LL"d\n", getDataBeginFileOffset(), getDataEndFileOffset());
+        TPRINTF("FileReader::Data after seek: from file offset: %"LL"d to file offset: %"LL"d", getDataBeginFileOffset(), getDataEndFileOffset());
 #endif
     }
     else {
