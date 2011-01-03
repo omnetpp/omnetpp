@@ -43,12 +43,22 @@ DebugCall::DebugCall(const char *fmt,...)
     char buf[1024];
     VSNPRINTF(buf, 1024, fmt);
     funcname = buf;
-    printf("%*s ++ %s\n", depth++*2, "", funcname.c_str());
+    std::cout << std::setw(depth++*2) << "" << " ++ " << funcname << std::endl;
 }
 
 DebugCall::~DebugCall()
 {
-    printf("%*s -- %s\n", --depth*2, "", funcname.c_str());
+    std::cout << std::setw(--depth*2) << "" << " -- " << funcname;
+    if (!result.empty())
+    	std::cout << ", result: " << result;
+    std::cout << std::endl;
+}
+
+void DebugCall::printf(const char *fmt, ...)
+{
+    char buf[1024];
+    VSNPRINTF(buf, 1024, fmt);
+    std::cout << std::setw(depth*2) << "" << "    " << buf << std::endl;
 }
 
 //----

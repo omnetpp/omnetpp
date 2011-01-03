@@ -18,6 +18,9 @@
 #define _COMMONUTIL_H_
 
 #include <assert.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include "commondefs.h"
 #include "exception.h"
 #include "intxtypes.h"
@@ -71,17 +74,39 @@ COMMON_API void setPosixLocale();
  * Debugging aid: prints a message on entering/leaving methods; message
  * gets indented according to call depth. See TRACE macro.
  */
+template <class T> struct ToString;
+
 class COMMON_API DebugCall
 {
   private:
     static int depth;
     std::string funcname;
+    std::string result;
   public:
     DebugCall(const char *fmt,...);
     ~DebugCall();
+    static void printf(const char *fmt, ...);
+    template <class T> void setResult(T x) { result = ToString<T>::toString(x); };
+};
+
+// helper class because template method overloading sucks
+// see: http://www.gotw.ca/publications/mill17.htm
+
+template <class T> struct ToString
+{
+	static std::string toString(const T x) { std::ostringstream s; s << x; return s.str();}
+};
+
+template <class T> struct ToString<T*>
+{
+	static std::string toString(const T* x) { std::ostringstream s; s << ((void*)x); return s.str(); }
 };
 
 #define TRACE  DebugCall __x
+
+#define TPRINTF DebugCall::printf
+
+#define RETURN(x) { __x.setResult(x); return x; }
 
 /**
  * Performs the RDTSC (read time stamp counter) x86 instruction, and returns
