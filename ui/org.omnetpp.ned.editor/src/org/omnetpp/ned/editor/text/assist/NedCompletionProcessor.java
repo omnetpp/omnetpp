@@ -119,7 +119,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 			else if (line.matches(".*\\bchannel .* like") || line.matches(".*\\bchannel .* like .*,"))
                 addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNELINTERFACE_FILTER);
 
-			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|interface|channelinterface)\\b [_A-Za-z0-9]+"))
+			if (!line.equals("") && !line.matches(".*\\b(like|extends)\\b.*") && line.matches(".*\\b(simple|module|network|channel|moduleinterface|channelinterface)\\b [_A-Za-z0-9]+"))
 				addProposals(viewer, documentOffset, result, new String[]{"extends "}, "keyword");
 
             if (!line.equals("") && line.matches(".*\\b(simple|module|network|channel)\\b [_A-Za-z0-9]+( extends [_A-Za-z0-9]+)?"))
