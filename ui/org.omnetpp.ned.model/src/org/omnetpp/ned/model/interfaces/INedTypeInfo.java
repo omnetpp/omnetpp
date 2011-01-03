@@ -90,7 +90,7 @@ public interface INedTypeInfo extends INedChangeListener {
      * getLocalInterfaces() method.
      *
      * A few examples:
-     *
+     * <pre>
      * module m1 {} // returns null
      * module m2 extends m1 {} // returns m1
      * module m3 extends m3 {} // returns null
@@ -98,6 +98,7 @@ public interface INedTypeInfo extends INedChangeListener {
      * module m5 extends m4 {} // returns null
      * module m6 extends m5 {} // returns m5
      * module m7 extends m6 {} // returns m6
+     * </pre>
      *
      * @see getInheritanceChain()
      */
@@ -117,7 +118,7 @@ public interface INedTypeInfo extends INedChangeListener {
      * an interface, use getInterfaces().
      *
      * A few examples:
-     *
+     * <pre>
      * module m1 {} // returns [m1]
      * module m2 extends m1 {} // returns [m2, m1]
      * module m3 extends m3 {} // returns [m3]
@@ -125,6 +126,7 @@ public interface INedTypeInfo extends INedChangeListener {
      * module m5 extends m4 {} // returns [m5]
      * module m6 extends m5 {} // returns [m6, m5]
      * module m7 extends m6 {} // returns [m7, m6, m5]
+     * </pre>
      *
      * @see getSuperType()
      */
@@ -143,7 +145,7 @@ public interface INedTypeInfo extends INedChangeListener {
      * ancestor interfaces extend or implement.
      *
      * A few examples:
-     *
+     * <pre>
      * moduleinterface i1 {} // returns [i1]
      * moduleinterface i2 extends i1 {} // returns [i2, i1]
      * moduleinterface i3 extends i3 {} // returns [i3]
@@ -151,6 +153,7 @@ public interface INedTypeInfo extends INedChangeListener {
      * moduleinterface i5 extends i4 {} // returns [i5, i4]
      * moduleinterface i6 extends i5, i3 {} // returns [i6, i5, i4, i3]
      * module m like i6, i2 {} // returns [i6, i5, i4, i3, i2, i1]
+     * </pre>
      */
     public Set<INedTypeElement> getInterfaces();
 
