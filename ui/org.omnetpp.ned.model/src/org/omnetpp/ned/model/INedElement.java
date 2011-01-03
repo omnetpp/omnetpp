@@ -7,6 +7,8 @@
 
 package org.omnetpp.ned.model;
 
+import java.util.List;
+
 import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -238,7 +240,12 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
      */
     public void removeAllChildren();
 
-	/**
+    /**
+     * Creates and returns a list containing the child elements. 
+     */
+    public List<INedElement> getChildren();
+
+    /**
 	 * Returns pointer to the first child element with the given tag code,
 	 * or null if this element has no such children.
 	 */
@@ -260,6 +267,11 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 	 */
 	public INedElement getNextSiblingWithTag(int tagcode);
 
+	/**
+	 * Creates and returns a list containing the child elements that have the given tagcode. 
+	 */
+	public List<INedElement> getChildrenWithTag(int tagcode);
+	
 	/**
 	 * Returns the number of child elements.
 	 */

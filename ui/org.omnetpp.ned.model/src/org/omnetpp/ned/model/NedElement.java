@@ -380,7 +380,14 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
             removeChild(firstchild);
     }
 
-	public INedElement getFirstChildWithTag(int tagcode) {
+    public List<INedElement> getChildren() {
+        List<INedElement> result = new ArrayList<INedElement>();
+        for (INedElement child = getFirstChild(); child != null; child = child.getNextSibling())
+            result.add(child);
+        return result;
+    }
+
+    public INedElement getFirstChildWithTag(int tagcode) {
 		INedElement node = firstchild;
 		while (node!=null)
 		{
@@ -400,6 +407,13 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 			node = node.getNextSibling();
 		}
 		return null;
+	}
+
+	public List<INedElement> getChildrenWithTag(int tagcode) {
+	    List<INedElement> result = new ArrayList<INedElement>();
+        for (INedElement child = getFirstChildWithTag(tagcode); child != null; child = child.getNextSiblingWithTag(tagcode))
+            result.add(child);
+	    return result;
 	}
 
 	public int getNumChildren() {
