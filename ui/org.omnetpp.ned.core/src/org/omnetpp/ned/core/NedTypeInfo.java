@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -33,10 +34,10 @@ import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelChangeEvent;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -168,9 +169,10 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     }
 
 	/**
-	 * Produce a list that starts with this type, and ends with the root.
-	 * Cycles in the "extends" chain are handled gracefully. If cycle is detected its members
-	 * are skipped from the list.
+	 * Produce a list that starts with this type, and ends with the root if .
+	 * Cycles in the "extends" chain are handled gracefully. The returned list always starts
+     * with this NED type, and ends with the root if no cycle is found. Otherwise the list
+     * contains only the first element of the cycle and the rest is skipped.
 	 */
 	protected List<INedTypeInfo> resolveExtendsChain() {
 	    if (getNedElement() instanceof IInterfaceTypeElement)
@@ -186,11 +188,11 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 	            int skipPoint = result.indexOf(currentComponent);
 	            return result.subList(0, skipPoint+1);
 	        }
-	        
+
 	        // add current type
 	    	result.add(currentComponent);
 
-	    	// resolve super type. Finish if there's no super type, it cannot be resolved, 
+	    	// resolve super type. Finish if there's no super type, it cannot be resolved,
 	    	// or is of different component type (e.g. a channel cannot extend a module)
 	    	String extendsName = currentComponent.getNedElement().getFirstExtends();
 	    	if (StringUtils.isEmpty(extendsName))
@@ -201,6 +203,26 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 	    }
 	    return result;
 	}
+
+    protected Set<INedTypeElement> resolveInterfaces() {
+        Set<INedTypeElement> interfaceElements = new HashSet<INedTypeElement>();
+        Stack<INedTypeElement> remainingElements = new Stack<INedTypeElement>();
+        for (INedTypeInfo typeInfo : extendsChain)
+            remainingElements.add(typeInfo.getNedElement());
+        while (!remainingElements.isEmpty()) {
+            INedTypeElement currentElement = remainingElements.pop();
+            if (currentElement instanceof IInterfaceTypeElement && !interfaceElements.contains(currentElement))
+                interfaceElements.add(currentElement);
+            for (INedTypeElement localInterfaceElement : currentElement.getNedTypeInfo().getLocalInterfaces()) {
+                if (!interfaceElements.contains(localInterfaceElement)) {
+                    interfaceElements.add(localInterfaceElement);
+                    remainingElements.add(localInterfaceElement);
+                }
+            }
+        }
+        System.out.println(this + " has the following interfaces: " + interfaceElements + " and extends chain: " + extendsChain);
+        return interfaceElements;
+    }
 
     /**
      * Refresh tables of local members
@@ -318,7 +340,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         extendsChain = resolveExtendsChain();
         extendsType = extendsChain.size() >= 2 ? extendsChain.get(1).getNedElement() : null;
 
-        allInterfaces.clear();
+        allInterfaces = resolveInterfaces();
 		allProperties.clear();
 		allParamDecls.clear();
         allParamValues.clear();
@@ -327,15 +349,6 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 		allInnerTypes.clear();
 		allSubmodules.clear();
 		allMembers.clear();
-
-		// collect interfaces: what our base class implements (directly or indirectly),
-		// plus our interfaces and everything they extend (directly or indirectly)
-		if (!(getNedElement() instanceof IInterfaceTypeElement) && extendsType != null)
-		    allInterfaces.addAll(extendsType.getNedTypeInfo().getInterfaces());
-
-		allInterfaces.addAll(localInterfaces);
-		for (INedTypeElement interfaceTypeInfo : localInterfaces)
-		    allInterfaces.addAll(interfaceTypeInfo.getNedTypeInfo().getInterfaces());
 
         // collect all inherited members
 		INedTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INedTypeInfo[]{});
