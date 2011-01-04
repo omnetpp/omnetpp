@@ -46,6 +46,9 @@ public interface INedTypeResolver {
 	}
 
     // some useful predicates
+    public static final IPredicate ALL_FILTER = new IPredicate() {
+        public boolean matches(INedTypeInfo component) {return true;}
+    };
     public static class InstanceofPredicate implements IPredicate {
         private Class<? extends INedTypeElement> clazz;
         public InstanceofPredicate(Class<? extends INedTypeElement> clazz) {
@@ -198,6 +201,11 @@ public interface INedTypeResolver {
 	public Collection<INedTypeInfo> getNedTypesFromAllProjects();
 
     /**
+     * Like getNedTypesFromAllProjects(), but the result if filtered with the given predicate.
+     */
+    public Collection<INedTypeInfo> getNedTypesFromAllProjects(IPredicate predicate);
+
+    /**
      * Returns the fully qualified names of all toplevel (non-inner) types 
      * from NED files in all projects, including duplicate types. This method 
      * is useful for implementing an Open NED Type dialog, and for not much else.
@@ -215,6 +223,12 @@ public interface INedTypeResolver {
 	 */
 	public Collection<INedTypeInfo> getNedTypes(IProject context);
 
+    /**
+     * Returns a filtered list of all toplevel (non-inner) types in the NED files, excluding 
+     * duplicate names, from the given project and its dependent projects. 
+     */
+	public Collection<INedTypeInfo> getNedTypes(IPredicate predicate, IProject context);
+	
     /**
      * Returns all toplevel (non-inner) types in the NED files that implement
      * the given interface, excluding duplicate names, from the given project

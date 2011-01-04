@@ -316,12 +316,19 @@ public class NedResources implements INedResources, IResourceChangeListener {
     }
 
     public synchronized Collection<INedTypeInfo> getNedTypesFromAllProjects() {
+        return getNedTypesFromAllProjects(ALL_FILTER);
+    }
+
+    public synchronized Collection<INedTypeInfo> getNedTypesFromAllProjects(IPredicate predicate) {
         // return everything from everywhere, including duplicates
         List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
         for (IFile file : nedFiles.keySet())
             for (INedElement child : nedFiles.get(file))
-                if (child instanceof INedTypeElement)
-                    result.add(((INedTypeElement)child).getNedTypeInfo());
+                if (child instanceof INedTypeElement) {
+                    INedTypeInfo typeInfo = ((INedTypeElement)child).getNedTypeInfo();
+                    if (predicate.matches(typeInfo))
+                        result.add(typeInfo);
+                }
         return result;
     }
 
@@ -338,9 +345,9 @@ public class NedResources implements INedResources, IResourceChangeListener {
     public synchronized Set<INedTypeInfo> getNedTypesFromAllProjects(String qualifiedName) {
         Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
         for (IProject project : projects.keySet()) {
-            INedTypeInfo nedType = getToplevelOrInnerNedType(qualifiedName, project);
-            if (nedType != null)
-                result.add(nedType);
+            INedTypeInfo type = getToplevelOrInnerNedType(qualifiedName, project);
+            if (type != null)
+                result.add(type);
         }
         return result;
     }
@@ -351,10 +358,17 @@ public class NedResources implements INedResources, IResourceChangeListener {
         return projectData==null ? new ArrayList<INedTypeInfo>() : projectData.components.values();
     }
 
+    public synchronized Collection<INedTypeInfo> getNedTypes(IPredicate predicate, IProject context) {
+        Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        for (INedTypeInfo type : getNedTypes(context))
+            if (predicate.matches(type))
+                result.add(type);
+        return result;
+    }
+    
     public synchronized Collection<INedTypeInfo> getNedTypesThatImplement(INedTypeInfo interfaceType, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        Collection<INedTypeInfo> types = getNedTypes(context);
-        for (INedTypeInfo type : types)
+        for (INedTypeInfo type : getNedTypes(context))
             if (type.getInterfaces().contains(interfaceType.getNedElement()))
                 result.add(type);
         return result;
@@ -1173,4 +1187,5 @@ public class NedResources implements INedResources, IResourceChangeListener {
                     "  nedfolders: " + StringUtils.join(projectData.nedSourceFolders, ","));
         }
     }
+
 }
