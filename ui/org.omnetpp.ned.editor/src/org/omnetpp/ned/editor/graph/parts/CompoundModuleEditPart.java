@@ -88,26 +88,32 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         return getCompoundModuleFigure().getSubmoduleLayer();
     }
 
-    // overridden so submodules are added to the contentPane while TypesEditPart is never added as a child
+    // overridden so submodules are added to the contentPane while TypesEditPart is never added to the contentPane
     // TypesEdit part is always associated with the innerTypesCompartment of the CompoundModuleFigure
+    // and should be added directly to the figure (instead of the contentPane)
     @Override
     protected void addChildVisual(EditPart childEditPart, int index) {
-        IFigure child = ((GraphicalEditPart)childEditPart).getFigure();
-        if (!(childEditPart instanceof TypesEditPart))
-            getContentPane().add(child);
+        IFigure childFigure = ((GraphicalEditPart)childEditPart).getFigure();
+        // submodule figures should be added to the main pane
+        if (childEditPart instanceof SubmoduleEditPart)
+            getContentPane().add(childFigure);
+        // the inner type compartment should be added as the second child (between title and submodules)
+        else if (childEditPart instanceof TypesEditPart)
+            getCompoundModuleFigure().add(childFigure,1);
     }
 
-    // overridden so child figures are always removed from their parent
+    // overridden so child figures are always removed from their direct parent
+    // because both submoduleFigures and TypesFigures can be removed.
+    // Submodule figures are removed from the contentPane (SubmoduleLayer) 
+    // while TypesFigure removed directly from the child list
     @Override
     protected void removeChildVisual(EditPart childEditPart) {
-        IFigure child = ((GraphicalEditPart)childEditPart).getFigure();
-        // never throw away the types compartment figure
-        if (!(childEditPart instanceof TypesEditPart))
-            child.getParent().remove(child);
+        IFigure childFigure = ((GraphicalEditPart)childEditPart).getFigure();
+        if (childFigure.getParent() != null)
+            childFigure.getParent().remove(childFigure);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object getAdapter(Class key) {
         if (key == MouseWheelHelper.class) return new ViewportMouseWheelHelper(this);
         // snap to grid/guide adaptor

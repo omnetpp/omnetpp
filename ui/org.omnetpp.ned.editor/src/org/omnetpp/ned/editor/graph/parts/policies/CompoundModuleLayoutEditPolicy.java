@@ -35,14 +35,20 @@ import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
+import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
+import org.omnetpp.ned.editor.graph.commands.InsertCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.NedElementTags;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Layout policy used in compound modules. Handles cloning, creation, resizing of submodules
@@ -79,17 +85,30 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
 
     @Override
     protected Command getCreateCommand(CreateRequest request) {
-    	// only create a command if we want to create a submodule
-    	if (!(request.getNewObject() instanceof SubmoduleElementEx))
-    		return null;
+        Object element = request.getNewObject();
+        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
+    	// submodule creation
+    	if (element instanceof SubmoduleElementEx) {
+            CreateSubmoduleCommand create = new CreateSubmoduleCommand(
+    	            compoundModule, (SubmoduleElementEx)element);
+    	    create.setLocation((Rectangle)getConstraintFor(request));
+    	    create.setLabel("Add");
+    	    return create;
+    	}
+    	// inner type creation
+        if (element instanceof INedTypeElement) {
+            CompoundCommand command = new CompoundCommand("Create");
+            TypesElement typesElement = compoundModule.getFirstTypesChild();
+            // add a new types element if necessary.
+            if (typesElement == null) {
+                typesElement = (TypesElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_TYPES);
+                command.add(new InsertCommand(compoundModule, typesElement));
+            }
+            command.add(new CreateNedTypeElementCommand(typesElement, null, (INedTypeElement)element));
+            return command;
+        }
 
-        CreateSubmoduleCommand create
-        		= new CreateSubmoduleCommand((CompoundModuleElementEx) getHost().getModel(),
-        									 (SubmoduleElementEx) request.getNewObject());
-        create.setLocation((Rectangle)getConstraintFor(request));
-        create.setLabel("Add");
-
-        return create;
+        return UnexecutableCommand.INSTANCE;
     }
 
     @Override

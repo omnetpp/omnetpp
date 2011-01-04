@@ -17,7 +17,7 @@ import org.eclipse.gef.SnapToGeometry;
 import org.eclipse.gef.SnapToHelper;
 
 import org.omnetpp.figures.NedFileFigure;
-import org.omnetpp.ned.editor.graph.parts.policies.NedFileLayoutEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedTypeContainerLayoutEditPolicy;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -39,7 +39,7 @@ public class NedFileEditPart extends NedEditPart {
         // this is a root edit part, so it cannot be deleted
         installEditPolicy(EditPolicy.COMPONENT_ROLE, null);
         // install a layout edit policy, this one provides also the creation commands
-        installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedFileLayoutEditPolicy());
+        installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedTypeContainerLayoutEditPolicy());
         // no direct editing is possible on the toplevel model element
         installEditPolicy(EditPolicy.DIRECT_EDIT_ROLE, null);
     }

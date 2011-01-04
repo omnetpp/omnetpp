@@ -38,12 +38,12 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
- * Layout policy used in the top level NedFile element allowing a vertical, toolbar like
- * layout, rearrange of components.
+ * Layout policy used in the top level NedFile element and in TypesElement allowing a 
+ * vertical, toolbar like layout, rearrange of components etc.
  *
  * @author rhornig
  */
-public class NedFileLayoutEditPolicy extends FlowLayoutEditPolicy {
+public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 	/** (non-Javadoc)
 	 * @see org.eclipse.gef.editpolicies.OrderedLayoutEditPolicy#createChildEditPolicy(org.eclipse.gef.EditPart)

@@ -28,7 +28,11 @@ public class CreateNedTypeElementCommand extends Command {
     private INedElement parent;
     private INedElement insertBefore;
 
-
+    /**
+     * @param parent. The parent element Must be NedFileelementEx (top level) or TypesElement (Inner types)
+     * @param where - the sibling before the element will be inserted. If NULL, it will be appended at the end 
+     * @param child - element to insert
+     */
     public CreateNedTypeElementCommand(INedElement parent, INedElement where, INedTypeElement child) {
         Assert.isTrue(parent instanceof NedFileElementEx || parent instanceof TypesElement, "The parent of a type must be a NedFile or a Types element");
     	this.child = child;

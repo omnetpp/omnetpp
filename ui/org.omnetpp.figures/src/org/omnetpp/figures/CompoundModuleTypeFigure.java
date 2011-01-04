@@ -7,15 +7,8 @@
 
 package org.omnetpp.figures;
 
-import org.eclipse.draw2d.ColorConstants;
-import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.Graphics;
-import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
-import org.eclipse.draw2d.MarginBorder;
-import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.XYLayout;
-import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -30,26 +23,8 @@ import org.omnetpp.common.image.ImageFactory;
  *
  * @author rhornig
  */
-// TODO CompoundModuleTypeFigure should be a composite? instead of inheriting from CompoundModuleFigure
 public class CompoundModuleTypeFigure extends CompoundModuleFigure {
-    protected IFigure innerTypeContainer;
 
-    /**
-     * Used at the left inner types compartment.
-     */
-    class InnerTypesBorder extends MarginBorder {
-        InnerTypesBorder(int t, int l, int b, int r) {
-            super(t, l, b, r);
-        }
-
-        @Override
-        public void paint(IFigure f, Graphics g, Insets i) {
-            Rectangle r = getPaintRectangle(f, i);
-            g.setForegroundColor(ColorConstants.buttonDarker);
-            int x = r.x + insets.left/4;
-            g.drawLine(x, r.y, x, r.bottom());
-        }
-    }
 
     public CompoundModuleTypeFigure() {
         super();
@@ -58,23 +33,9 @@ public class CompoundModuleTypeFigure extends CompoundModuleFigure {
         nameHelperLayer.setLayoutManager(new XYLayout());
         nameHelperLayer.add(nameFigure, new Rectangle(0,0,-1,-1));
         nameHelperLayer.add(problemMarkerFigure, new Rectangle(-1,0,16,16));
-        add(nameHelperLayer,0);
-
-        // create the container for the inner types
-        innerTypeContainer = new Figure();
-        ToolbarLayout typesLayout = new ToolbarLayout();
-        typesLayout.setStretchMinorAxis(false);
-        typesLayout.setSpacing(5);
-        innerTypeContainer.setBorder(new InnerTypesBorder(0, 20, 0, 0 ));
-        innerTypeContainer.setLayoutManager(typesLayout);
-        add(innerTypeContainer,1);
+        add(nameHelperLayer, 0); // place at the beginning
     }
-
-    public IFigure getInnerTypeContainer() {
-        // this is the figure which is used to add inner types
-        return innerTypeContainer;
-    }
-
+    
 	protected void setDefaultShape(Image img, String shape, int shapeWidth, int shapeHeight, Color shapeFillColor, Color shapeBorderColor, int shapeBorderWidth) {
         if (img == null)
             img = ImageFactory.getImage(ImageFactory.DEFAULT_KEY);
