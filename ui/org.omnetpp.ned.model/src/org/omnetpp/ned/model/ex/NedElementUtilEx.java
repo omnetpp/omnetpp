@@ -604,4 +604,36 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     public static void addLabels(IHasProperties element, Collection<String> labels) {
         addPropertyValues(element, "labels", null, labels);
     }
+    
+
+    /**
+     * Converts a fully qualified NED type name to a user-friendly form, "SimpleName (package.name)".
+     */
+    public static String qnameToFriendlyTypeName(String qname) {
+        return qname.indexOf('.') != -1 ? qname.replaceFirst("(.*)\\.(.*)", "$2 ($1)") : qname;
+    }
+
+    /**
+     * Parses a user-friendly NED type name ("SimpleName (package.name)" syntax) into a 
+     * fully qualified name. No error is thrown: spaces and invalid characters are simply
+     * removed from the string. 
+     * 
+     * Simple names and already fully qualified names are accepted 
+     * and returned verbatim (after trimming surrounding spaces).
+     */
+    public static String friendlyTypeNameToQName(String displayedName) {
+        if (displayedName == null)
+            return null;
+        if (!displayedName.contains("("))
+            return displayedName.trim();
+    
+        // swap the parts before and after the opening parenthesis 
+        String result = displayedName.replaceAll("(.*)\\((.*)", "$2.$1");
+        
+        // throw out invalid characters
+        result = result.replaceAll("[^A-Za-z0-9_.]", "");
+        return result;
+    }
+
+
 }

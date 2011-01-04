@@ -83,9 +83,9 @@ public class TypePropertySource extends NedBasePropertySource {
 
         public void setPropertyValue(Object propName, Object value) {
             if (Prop.Type.equals(propName))
-                getModel().setType(convertDisplayNameToQName((String)value));
+                getModel().setType(NedElementUtilEx.friendlyTypeNameToQName((String)value));
             if (Prop.Like.equals(propName))
-                getModel().setLikeType(convertDisplayNameToQName((String)value));
+                getModel().setLikeType(NedElementUtilEx.friendlyTypeNameToQName((String)value));
             if (Prop.LikeParam.equals(propName))
                 getModel().setLikeParam((String)value);
             

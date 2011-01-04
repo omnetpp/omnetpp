@@ -77,22 +77,6 @@ abstract public class NedBasePropertySource implements IPropertySource2 {
     }
     
     /**
-     * Turns a display friendly "Name (package)" into a fully qualified name.
-     * Simple names and already fully qualified names are accepted and returned verbatim.
-     */
-    public static String convertDisplayNameToQName(String displayedName) {
-        if (displayedName==null || !displayedName.contains("("))
-            return displayedName;
-
-        // swap the parts before and after the opening parenthesis 
-        String result = displayedName.replaceAll("(.*)\\((.*)", "$2.$1");
-        
-        // throw out invalid characters
-        result = result.replaceAll("[^A-Za-z0-9_.]", "");
-        return result;
-    }
-
-    /**
      * Returns all possible type values in a display friendly format "Name (packagename)" 
      * that can be used in a given element for the type, likeType or extends attribute. 
      * Removes the name corresponding to the element (to eliminate self recursion)
