@@ -13,7 +13,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -489,19 +488,28 @@ public class DocumentationGenerator {
     protected void collectSubtypesMap() {
         monitor.subTask("Collecting subtypes");
         for (ITypeElement subtype : typeElements) {
-            ITypeElement supertype = subtype.getSuperType();
+            if (subtype instanceof IInterfaceTypeElement)
+                for (INedTypeElement supertype : ((IInterfaceTypeElement)subtype).getNedTypeInfo().getLocalInterfaces())
+                    addSubtypeMapping(subtype, supertype);
+            else {
+                ITypeElement supertype = subtype.getSuperType();
 
-            if (supertype != null) {
-                ArrayList<ITypeElement> subtypes = subtypesMap.get(supertype);
-
-                if (subtypes == null)
-                    subtypes = new ArrayList<ITypeElement>();
-
-                subtypes.add(subtype);
-                subtypesMap.put(supertype, subtypes);
+                if (supertype != null) {
+                    addSubtypeMapping(subtype, supertype);
+                }
             }
         }
         monitor.worked(1);
+    }
+
+    private void addSubtypeMapping(ITypeElement subtype, ITypeElement supertype) {
+        ArrayList<ITypeElement> subtypes = subtypesMap.get(supertype);
+
+        if (subtypes == null)
+            subtypes = new ArrayList<ITypeElement>();
+
+        subtypes.add(subtype);
+        subtypesMap.put(supertype, subtypes);
     }
 
     protected void collectImplementorsMap() {
@@ -674,7 +682,7 @@ public class DocumentationGenerator {
                 "   <head>\r\n" +
                 "      <title>Redirect Page</title>\r\n" +
                 "      <meta http-equiv=\"refresh\" content=\"0;url=" + remainingPath.append("index.html").toPortableString() + "\"></head>\r\n" +
-                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" + 
+                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
                 "   <body/>\r\n" +
                 "</html>",
                 "UTF-8"
@@ -686,7 +694,7 @@ public class DocumentationGenerator {
                 "<html>\r\n" +
                 "   <head>\r\n" +
                 "      <title>Model documentation -- generated from NED files</title>\r\n" +
-                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" + 
+                "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
                 "   </head>\r\n" +
                 "   <frameset cols=\"25%,75%\">\r\n" +
                 "      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" +
@@ -1572,13 +1580,17 @@ public class DocumentationGenerator {
             out("<h3 class=\"subtitle\">Extends:</h3>\r\n" +
         		"<table>\r\n");
 
-            // TODO: more extends for interfaces
-            ITypeElement supertype = typeElement.getSuperType();
+            if (typeElement instanceof IInterfaceTypeElement)
+                for (INedTypeElement supertype : ((IInterfaceTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces())
+                    generateTypeReference(supertype);
+            else {
+                ITypeElement supertype = typeElement.getSuperType();
 
-            if (supertype != null)
-                generateTypeReference(supertype);
-            else
-                generateUnresolvedTypeReference(typeElement.getFirstExtends());
+                if (supertype != null)
+                    generateTypeReference(supertype);
+                else
+                    generateUnresolvedTypeReference(typeElement.getFirstExtends());
+            }
 
             out("</table>\r\n");
         }
@@ -1861,11 +1873,18 @@ public class DocumentationGenerator {
             for (ITypeElement typeElement : typeElements) {
                 dot.appendNode(typeElement, typeElements.size() == 1);
 
-                // TODO: what if there are more extends for interfaces
-                if (typeElement.getSuperType() != null) {
-                    ITypeElement extendz = typeElement.getSuperType();
-                    dot.appendNode(extendz);
-                    dot.appendEdge(extendz, typeElement);
+                if (typeElement instanceof IInterfaceTypeElement) {
+                    for (INedTypeElement supertype : ((IInterfaceTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces()) {
+                        dot.appendNode(supertype);
+                        dot.appendEdge(supertype, typeElement);
+                    }
+                }
+                else {
+                    if (typeElement.getSuperType() != null) {
+                        ITypeElement extendz = typeElement.getSuperType();
+                        dot.appendNode(extendz);
+                        dot.appendEdge(extendz, typeElement);
+                    }
                 }
 
                 if (typeElement instanceof IInterfaceTypeElement) {
@@ -1892,11 +1911,12 @@ public class DocumentationGenerator {
 
                 ArrayList<ITypeElement> subtypes = subtypesMap.get(typeElement);
 
-                if (subtypes != null)
+                if (subtypes != null) {
                     for (ITypeElement subtype : subtypes) {
                         dot.appendNode(subtype);
                         dot.appendEdge(typeElement, subtype);
                     }
+                }
             }
 
             dot.append("}");
@@ -2074,7 +2094,7 @@ public class DocumentationGenerator {
 
         out("<html>\r\n" +
             "   <head>\r\n" +
-            "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" + 
+            "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
             "      <link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" />\r\n");
 
         if (header != null)
