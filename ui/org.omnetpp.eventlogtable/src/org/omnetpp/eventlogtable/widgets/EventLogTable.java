@@ -47,7 +47,7 @@ public class EventLogTable
 	extends VirtualTable<EventLogEntryReference>
 	implements IEventLogChangeListener
 {
-	private static final boolean debug = true;
+	private static final boolean debug = false;
 
 	public static final String STATE_PROPERTY = "EventLogTableState";
 
