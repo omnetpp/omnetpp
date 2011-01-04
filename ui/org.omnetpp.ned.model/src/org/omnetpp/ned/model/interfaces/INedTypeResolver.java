@@ -16,8 +16,13 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.ChannelElementEx;
+import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
+import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
+import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 
 /*
  * For accessing NED types.
@@ -40,6 +45,35 @@ public interface INedTypeResolver {
 		public boolean matches(INedTypeInfo typeInfo);
 	}
 
+    // some useful predicates
+    public static class InstanceofPredicate implements IPredicate {
+        private Class<? extends INedTypeElement> clazz;
+        public InstanceofPredicate(Class<? extends INedTypeElement> clazz) {
+            this.clazz = clazz;
+        }
+        public boolean matches(INedTypeInfo component) {
+            return clazz.isInstance(component.getNedElement());
+        }
+    };
+    public static final IPredicate MODULE_FILTER = new InstanceofPredicate(IModuleTypeElement.class);
+    public static final IPredicate SIMPLE_MODULE_FILTER = new InstanceofPredicate(SimpleModuleElementEx.class);
+    public static final IPredicate COMPOUND_MODULE_FILTER = new InstanceofPredicate(CompoundModuleElementEx.class);
+    public static final IPredicate MODULEINTERFACE_FILTER = new InstanceofPredicate(ModuleInterfaceElementEx.class);
+    public static final IPredicate CHANNEL_FILTER = new InstanceofPredicate(ChannelElementEx.class);
+    public static final IPredicate CHANNELINTERFACE_FILTER = new InstanceofPredicate(ChannelInterfaceElementEx.class);
+    public static final IPredicate NETWORK_FILTER = new IPredicate() {
+        public boolean matches(INedTypeInfo component) {
+            return component.getNedElement() instanceof IModuleTypeElement &&
+                   ((IModuleTypeElement)component.getNedElement()).isNetwork();
+        }
+    };
+    public static final IPredicate MODULE_EXCEPT_NETWORK_FILTER = new IPredicate() {
+        public boolean matches(INedTypeInfo component) {
+            return component.getNedElement() instanceof IModuleTypeElement &&
+                   !((IModuleTypeElement)component.getNedElement()).isNetwork();
+        }
+    };
+	
 	/**
 	 * Returns the current value of a counter that gets incremented by every
 	 * NED change. Checking against this counter allows one to invalidate

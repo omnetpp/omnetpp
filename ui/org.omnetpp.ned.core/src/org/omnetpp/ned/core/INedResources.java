@@ -10,13 +10,6 @@ package org.omnetpp.ned.core;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.ned.model.ex.ChannelElementEx;
-import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
-import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
-import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
-import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
@@ -29,29 +22,6 @@ import org.omnetpp.ned.model.notification.INedChangeListener;
  * @author andras
  */
 public interface INedResources extends INedTypeResolver {
-    // utilities for predicate-based filtering of NED types using getAllNedTypes()
-    public static class InstanceofPredicate implements IPredicate {
-        private Class<? extends INedTypeElement> clazz;
-        public InstanceofPredicate(Class<? extends INedTypeElement> clazz) {
-            this.clazz = clazz;
-        }
-        public boolean matches(INedTypeInfo component) {
-            return clazz.isInstance(component.getNedElement());
-        }
-    };
-    public static final IPredicate MODULE_FILTER = new InstanceofPredicate(IModuleTypeElement.class);
-    public static final IPredicate SIMPLE_MODULE_FILTER = new InstanceofPredicate(SimpleModuleElementEx.class);
-    public static final IPredicate COMPOUND_MODULE_FILTER = new InstanceofPredicate(CompoundModuleElementEx.class);
-    public static final IPredicate MODULEINTERFACE_FILTER = new InstanceofPredicate(ModuleInterfaceElementEx.class);
-    public static final IPredicate CHANNEL_FILTER = new InstanceofPredicate(ChannelElementEx.class);
-    public static final IPredicate CHANNELINTERFACE_FILTER = new InstanceofPredicate(ChannelInterfaceElementEx.class);
-    public static final IPredicate NETWORK_FILTER = new IPredicate() {
-        public boolean matches(INedTypeInfo component) {
-            return component.getNedElement() instanceof IModuleTypeElement &&
-                   ((IModuleTypeElement)component.getNedElement()).isNetwork();
-        }
-    };
-
     /**
      * Adds a listener that will be notified about changes anywhere
      * in the loaded NED files.
