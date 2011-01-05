@@ -235,25 +235,25 @@ public class DisplayString implements IDisplayString {
     }
 
     /**
-     * Returns TagInstance arg's value or <code>""</code> if empty and no default is defined
-     * or <code>null</code> if tag does not exist at all. If a default display string was
-     * provided with <code>setFallbackDisplayString</code> it tries to look up the property from there
+     * Returns TagInstance arg's value or <code>""</code> if empty and no default is defined.
+     * If a default display string was provided with <code>setFallbackDisplayString</code>,
+     * it tries to look up the property from there.
      */
-    protected String getTagArgUsingDefaults(Tag tagName, int pos) {
+    protected String getTagArgUsingDefaults(Tag tagName, int pos, boolean useEmptyDefaults, boolean useVariableDefaults) {
         TagInstance tag = getTag(tagName);
         String value = (tag == null) ? "" : tag.getArg(pos);
         Assert.isNotNull(value);
 
-        if (value.startsWith("$"))
+        if (value.startsWith("$") && useVariableDefaults)
             return VARIABLE_DEFAULTS.getTagArg(tagName, pos);
-        else if (value.equals(ANTIVALUE))  // disable inherited values and return the defaults
-            return EMPTY_DEFAULTS.getTagArg(tagName, pos);
-        else if (!value.equals(""))
+        else if (value.equals(ANTIVALUE))  // antivalue disables inherited values, so we return the default
+            return useEmptyDefaults ? EMPTY_DEFAULTS.getTagArg(tagName, pos) : "";
+        else if (value.length() > 0)
             return value;
         else if (getFallbackDisplayString() != null)
-            return getFallbackDisplayString().getTagArgUsingDefaults(tagName, pos);
+            return getFallbackDisplayString().getTagArgUsingDefaults(tagName, pos, useEmptyDefaults, useVariableDefaults);
         else
-            return EMPTY_DEFAULTS.getTagArg(tagName, pos);
+            return useEmptyDefaults ? EMPTY_DEFAULTS.getTagArg(tagName, pos) : "";
     }
 
     public boolean containsProperty(Prop prop) {
@@ -385,11 +385,12 @@ public class DisplayString implements IDisplayString {
         return getTagArg(property.getTag(), property.getPos());
     }
 
-    /* (non-Javadoc)
-	 * @see org.omnetpp.ned2.model.IDisplayString#getAsStringDef(org.omnetpp.ned2.model.DisplayString.Prop)
-	 */
+    public String getAsString(Prop property, boolean useEmptyDefaults, boolean useVariableDefaults) {
+        return getTagArgUsingDefaults(property.getTag(), property.getPos(), useEmptyDefaults, useVariableDefaults);
+    }
+
     public String getAsString(Prop property) {
-        return getTagArgUsingDefaults(property.getTag(), property.getPos());
+        return getTagArgUsingDefaults(property.getTag(), property.getPos(), true, true);
     }
 
     public int getAsInt(Prop propName, int defaultValue) {
