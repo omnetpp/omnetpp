@@ -68,11 +68,11 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof SimpleModuleElement) {
             SimpleModuleElement node = (SimpleModuleElement)model;
-            label = "simple "+node.getName();
+            label = node.getName() + " (simple module)";
         }
         else if (model instanceof CompoundModuleElementEx) {
             CompoundModuleElementEx node = (CompoundModuleElementEx)model;
-            label = (node.isNetwork() ? "network " : "module ")+node.getName();
+            label = node.getName() + (node.isNetwork() ? " (network)" : " (compound module)");
         }
         else if (model instanceof SubmoduleElementEx) {
             SubmoduleElementEx node = (SubmoduleElementEx)model;
@@ -102,7 +102,7 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof ChannelElement) {
             ChannelElement node = (ChannelElement)model;
-            label = "channel "+node.getName();
+            label = node.getName() + " (channel)";
         }
         else if (model instanceof GateElement) {
             GateElement node = (GateElement)model;
