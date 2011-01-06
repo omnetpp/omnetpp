@@ -214,13 +214,13 @@ public interface IDisplayString {
         SHAPE_WIDTH(Tag.b, 0, PropType.UNIT, PropGroup.Polygon, "width", "Width of object. Default: match the object height, or the icon width", null),
         SHAPE_HEIGHT(Tag.b, 1, PropType.UNIT, PropGroup.Polygon, "height", "Height of object. Default: match the object width, or the icon height", null),
         SHAPE(Tag.b, 2, PropType.STRING, PropGroup.Polygon, "shape", "Shape of object", "rectangle=r.*,rect; oval=o.*,oval"),
-        SHAPE_FILL_COLOR(Tag.b, 3, PropType.COLOR, PropGroup.Polygon, "fill color", "Fill color of the object (colorname or #RRGGBB or @HHSSBB)", null),
-        SHAPE_BORDER_COLOR(Tag.b, 4, PropType.COLOR, PropGroup.Polygon, "border color", "Border color of the object (colorname or #RRGGBB or @HHSSBB)", null),
+        SHAPE_FILL_COLOR(Tag.b, 3, PropType.COLOR, PropGroup.Polygon, "fill color", "Fill color of the object (color name, #RRGGBB or @HHSSBB)", null),
+        SHAPE_BORDER_COLOR(Tag.b, 4, PropType.COLOR, PropGroup.Polygon, "border color", "Border color of the object (color name, #RRGGBB or @HHSSBB)", null),
         SHAPE_BORDER_WIDTH(Tag.b, 5, PropType.INTEGER, PropGroup.Polygon, "border width", "Border width of the object", null),
 
         // I tag
         IMAGE(Tag.i, 0, PropType.IMAGE, PropGroup.Icon, "icon", "An icon representing the object", null),
-        IMAGE_COLOR(Tag.i, 1, PropType.COLOR, PropGroup.Icon, "icon color", "A color to colorize the icon (colorname or #RRGGBB or @HHSSBB)", null),
+        IMAGE_COLOR(Tag.i, 1, PropType.COLOR, PropGroup.Icon, "icon color", "A color to colorize the icon (color name, #RRGGBB or @HHSSBB)", null),
         IMAGE_COLOR_PERCENTAGE(Tag.i, 2, PropType.INTEGER, PropGroup.Icon, "icon colorization %", "Amount of colorization in percent", null),
 
         // IS tag
@@ -228,13 +228,13 @@ public interface IDisplayString {
         
         // I2 tag
         IMAGE2(Tag.i2, 0, PropType.IMAGE, PropGroup.Icon, "overlay icon", "An icon added to the upper right corner of the original image", null),
-        IMAGE2_COLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon color", "A color to colorize the overlay icon (colorname or #RRGGBB or @HHSSBB)", null),
+        IMAGE2_COLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon color", "A color to colorize the overlay icon (color name, #RRGGBB or @HHSSBB)", null),
         IMAGE2_COLOR_PERCENTAGE(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon colorization %", "Amount of colorization in percent", null),
         
         // R tag
         RANGE(Tag.r, 0, PropType.UNIT, PropGroup.Range, "range", "Radius of the range indicator", null),
-        RANGE_FILL_COLOR(Tag.r, 1, PropType.COLOR, PropGroup.Range, "range fill color", "Fill color of the range indicator (colorname or #RRGGBB or @HHSSBB)", null),
-        RANGE_BORDER_COLOR(Tag.r, 2, PropType.COLOR, PropGroup.Range, "range border color", "Border color of the range indicator (colorname or #RRGGBB or @HHSSBB)", null),
+        RANGE_FILL_COLOR(Tag.r, 1, PropType.COLOR, PropGroup.Range, "range fill color", "Fill color of the range indicator (color name, #RRGGBB or @HHSSBB)", null),
+        RANGE_BORDER_COLOR(Tag.r, 2, PropType.COLOR, PropGroup.Range, "range border color", "Border color of the range indicator (color name, #RRGGBB or @HHSSBB)", null),
         RANGE_BORDER_WIDTH(Tag.r, 3, PropType.INTEGER, PropGroup.Range, "range border width", "Border width of the range indicator", null),
         
         // Q tag
@@ -243,7 +243,7 @@ public interface IDisplayString {
         // T tag
         TEXT(Tag.t, 0, PropType.STRING, PropGroup.Text, "text", "Additional text to display", null),
         TEXT_POS(Tag.t, 1, PropType.STRING, PropGroup.Text, "text position", "Position of the text", "left=l.*,l; right=r.*,r; top=t.*,t"),
-        TEXT_COLOR(Tag.t, 2, PropType.COLOR, PropGroup.Text, "text color", "Color of the displayed text (colorname or #RRGGBB or @HHSSBB)", null),
+        TEXT_COLOR(Tag.t, 2, PropType.COLOR, PropGroup.Text, "text color", "Color of the displayed text (color name, #RRGGBB or @HHSSBB)", null),
         
         // TT tag
         TOOLTIP(Tag.tt, 0, PropType.STRING, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object", null),
@@ -258,8 +258,8 @@ public interface IDisplayString {
         // BGB tag
         MODULE_WIDTH(Tag.bgb, 0, PropType.UNIT, PropGroup.BackgroundPosition, "bg width", "Width of the module background rectangle. Default: match the contents", null),
         MODULE_HEIGHT(Tag.bgb, 1, PropType.UNIT, PropGroup.BackgroundPosition, "bg height", "Height of the module background rectangle. Default: match the contents", null),
-        MODULE_FILL_COLOR(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (colorname or #RRGGBB or @HHSSBB)", null),
-        MODULE_BORDER_COLOR(Tag.bgb, 3, PropType.COLOR, PropGroup.BackgroundStyle, "bg border color", "Border color of the module background rectangle (colorname or #RRGGBB or @HHSSBB)", null),
+        MODULE_FILL_COLOR(Tag.bgb, 2, PropType.COLOR, PropGroup.BackgroundStyle, "bg fill color", "Background fill color (color name, #RRGGBB or @HHSSBB)", null),
+        MODULE_BORDER_COLOR(Tag.bgb, 3, PropType.COLOR, PropGroup.BackgroundStyle, "bg border color", "Border color of the module background rectangle (color name, #RRGGBB or @HHSSBB)", null),
         MODULE_BORDER_WIDTH(Tag.bgb, 4, PropType.INTEGER, PropGroup.BackgroundStyle, "bg border width", "Border width of the module background rectangle", null),
 
         // BGTT tag
@@ -270,9 +270,9 @@ public interface IDisplayString {
         MODULE_IMAGE_ARRANGEMENT(Tag.bgi, 1, PropType.STRING, PropGroup.Background, "bg image mode", "How to arrange the module's background image", "fix=f.*,f; tile=t.*,t; stretch=s.*,s; center=c.*,c"),
 
         // BGG tag
-        MODULE_TICK_DISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Background, "grid tick distance", "Distance between two major ticks measured in units", null),
-        MODULE_TICK_NUMBER(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid minor ticks", "Minor ticks per major ticks", null),
-        MODULE_GRID_COLOR(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (colorname or #RRGGBB or @HHSSBB)", null),
+        MODULE_GRID_DISTANCE(Tag.bgg, 0, PropType.UNIT, PropGroup.Background, "grid distance", "Distance between two major gridlines, in units", null),
+        MODULE_GRID_SUBDIVISION(Tag.bgg, 1, PropType.INTEGER, PropGroup.Background, "grid subdivision", "Minor gridlines per major gridlines", null),
+        MODULE_GRID_COLOR(Tag.bgg, 2, PropType.COLOR, PropGroup.Background, "grid color", "Color of the grid lines (color name, #RRGGBB or @HHSSBB)", null),
 
         // BGL tag (compound module layouting)
         MODULE_LAYOUT_SEED(Tag.bgl, 0, PropType.INTEGER, PropGroup.BackgroundLayout, "layout seed","Seed value for layout algorithm", null),
@@ -295,7 +295,7 @@ public interface IDisplayString {
         // ANCHOR_DSTY(Tag.a, 3, PropType.INTEGER, PropGroup.Position, "destination anchor y", "Relative vertical position of the anchor on the destination module side"),
 
         // LS tag (line style)
-        CONNECTION_COLOR(Tag.ls, 0, PropType.COLOR, PropGroup.Line, "line color", "Connection color (colorname or #RRGGBB or @HHSSBB)", null),
+        CONNECTION_COLOR(Tag.ls, 0, PropType.COLOR, PropGroup.Line, "line color", "Connection color (color name, #RRGGBB or @HHSSBB)", null),
         CONNECTION_WIDTH(Tag.ls, 1, PropType.INTEGER, PropGroup.Line, "line width", "Connection line width", null),
         CONNECTION_STYLE(Tag.ls, 2, PropType.STRING, PropGroup.Line, "line style", "Connection line style", "solid=s.*,s; dotted=d.*,d; dashed=da.*,da");
         // CONNECTION_SEGMENTS(Tag.ls, 3, PropType.STRING, PropGroup.Line, "segments", "Connection segments", "todo: [l]ine, [s]pline"),
