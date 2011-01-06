@@ -44,7 +44,7 @@ public class CompoundModulePropertySource extends MergedPropertySource {
                                                 	 DisplayString.Prop.IMAGE2_COLOR_PERCENTAGE));
             // direct compound module properties
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.MODULE_X,
-               	 									 DisplayString.Prop.MODULE_SCALE));
+               	 									 DisplayString.Prop.MODULE_UNIT));
         }
 
     }
