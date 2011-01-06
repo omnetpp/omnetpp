@@ -7,23 +7,23 @@
 
 package org.omnetpp.ned.editor.graph.properties.util;
 
-import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
 /**
  * Validator used for checking submodule names.
+ * 
+ * @author rhornig, andras (cleanup)
  */
 public class SubmoduleNameValidator extends NedNameValidator {
-    CompoundModuleElementEx compoundModuleModel;
+    private SubmoduleElementEx submodule;
 
-    public SubmoduleNameValidator(SubmoduleElementEx element) {
-        super(element);
-        this.compoundModuleModel = element.getCompoundModule();
+    public SubmoduleNameValidator(SubmoduleElementEx submodule) {
+        this.submodule = submodule;
     }
 
     @Override
     public String isValid(Object newValue) {
-        if (compoundModuleModel.getNedTypeInfo().getMembers().containsKey(newValue) && !newValue.equals(element.getName()))
+        if (submodule.getCompoundModule().getNedTypeInfo().getMembers().containsKey(newValue) && !newValue.equals(submodule.getName()))
             return "Name is already in use. Submodule name must not be the same as an existing" +
             		" submodule, gate, parameter or inner type name.";
 
