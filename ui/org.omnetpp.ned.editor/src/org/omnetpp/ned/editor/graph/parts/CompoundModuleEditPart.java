@@ -114,6 +114,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(Class key) {
         if (key == MouseWheelHelper.class) return new ViewportMouseWheelHelper(this);
         // snap to grid/guide adaptor

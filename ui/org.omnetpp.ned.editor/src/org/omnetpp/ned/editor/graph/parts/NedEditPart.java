@@ -170,8 +170,8 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	protected abstract INedElement getNedElementToOpen();
 
 
-    @Override
-    @SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("rawtypes")
 	public Object getAdapter(Class key) {
 		// TODO Auto-generated method stub
 		return null;

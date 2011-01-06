@@ -61,8 +61,8 @@ public class NedFileEditPart extends NedEditPart {
     /**
      * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
-	@Override
+    @Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
     public Object getAdapter(Class adapter) {
         if (adapter == SnapToHelper.class) {
             List snapStrategies = new ArrayList();

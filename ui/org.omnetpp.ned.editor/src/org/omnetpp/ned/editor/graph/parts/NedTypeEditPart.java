@@ -13,7 +13,6 @@ import org.omnetpp.ned.editor.graph.figures.NedTypeFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelElement;
@@ -27,19 +26,16 @@ import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
  * and they rather share a base class with submodules (this makes
  * connection handling easier).
  *
- * @author rhornig
+ * @author rhornig, andras (cleanup)
  */
 public class NedTypeEditPart extends NedEditPart {
 
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new TypeNameValidator((IHasName)getNedModel());
+        renameValidator = new TypeNameValidator(getNedTypeModel());
     }
 
-    /**
-     * Returns the model associated with this as a INedElement.
-     */
     @Override
 	protected IFigure createFigure() {
 		return new NedTypeFigureEx();
@@ -49,57 +45,33 @@ public class NedTypeEditPart extends NedEditPart {
         return (NedTypeFigure)getFigure();
     }
 
+    public INedTypeElement getNedTypeModel() {
+        return (INedTypeElement) getNedModel();
+    }
+
 	@Override
 	protected void refreshVisuals() {
         super.refreshVisuals();
-        // define the properties that determine the visual appearance
-    	if (getModel() instanceof IHasName) {
-    		// set module name and vector size
-    		String nameToDisplay = ((IHasName)getModel()).getName();
 
-            if (getModel() instanceof ChannelInterfaceElement)
-                nameToDisplay = nameToDisplay +" (channel interface)";
-            else if (getModel() instanceof ChannelElement)
-                nameToDisplay = nameToDisplay+" (channel)";
-            else if (getModel() instanceof ModuleInterfaceElement)
-                nameToDisplay = nameToDisplay +" (module interface)";
+        // set name
+        String nameToDisplay = ((IHasName)getModel()).getName();
+        if (getModel() instanceof ChannelInterfaceElement)
+            nameToDisplay += " (channel interface)";
+        else if (getModel() instanceof ChannelElement)
+            nameToDisplay += " (channel)";
+        else if (getModel() instanceof ModuleInterfaceElement)
+            nameToDisplay += " (module interface)";
 
-            getNedTypeFigure().setName(nameToDisplay);
-    	}
+        getNedTypeFigure().setName(nameToDisplay);
 
-    	// parse a display string, so it's easier to get values from it.
-    	// for other visual properties
-    	if (getModel() instanceof IHasDisplayString) {
-    		DisplayString dps = ((IHasDisplayString)getModel()).getDisplayString();
-
-    		getNedTypeFigure().setDisplayString(dps);
-
-    		// TODO remove this if channels can draw their own icons by default
-
-            // set icon names for the channel and module/channel interface figures
-            // we use special icons for these types
-
-//            Image image = null;
-//            if (getModel() instanceof ChannelInterfaceElement)
-//                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNELINTERFACE);
-//            else if (getModel() instanceof ChannelElement)
-//                image = ImageFactory.getImage(ImageFactory.MODEL_IMAGE_CHANNEL);
-//
-//            if (image != null)
-//                getNedTypeFigure().setIcon(image);
-    	}
-
+    	// update visual properties
+        DisplayString displayString = getNedTypeModel().getDisplayString();
+        getNedTypeFigure().setDisplayString(displayString);
 	}
 
-    /* (non-Javadoc)
-     * @see org.omnetpp.ned.editor.graph.edit.NedEditPart#getTypeNameForDblClickOpen()
-     * open the first base component for double click
-     */
+	
     @Override
     protected INedElement getNedElementToOpen() {
-        if (getModel() instanceof INedTypeElement)
-            return ((INedTypeElement)getNedModel()).getSuperType();
-
-        return null;
+        return getNedTypeModel().getSuperType(); 
     }
 }
