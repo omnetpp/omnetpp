@@ -29,10 +29,13 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
+import org.omnetpp.ned.editor.graph.commands.InsertCommand;
+import org.omnetpp.ned.editor.graph.commands.RemoveCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
+import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -94,10 +97,20 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return cloneCmd;
 	}
 
-	// adding an already existing node is not supported
+	// adding an already existing node is part of a move operation (moving a from 
+	// one nedTypeComtainer to an other (i.e. from top level to inner)
 	@Override
-    protected Command createAddCommand(EditPart child, EditPart after) {
-		return null;
+    protected Command createAddCommand(EditPart childToAdd, EditPart after) {
+	    if (childToAdd instanceof NedTypeEditPart) {
+	        INedElement parent = (INedElement)getHost().getModel();
+	        INedElement node = (INedElement)childToAdd.getModel();
+	        INedElement where = after != null ? (INedElement)after.getModel() : null;
+	        CompoundCommand command = new CompoundCommand("Move");
+	        command.add(new RemoveCommand(node));
+	        command.add(new InsertCommand(parent, node, where));
+	        return command;
+	    }
+	    return UnexecutableCommand.INSTANCE;
 	}
 
 	/* (non-Javadoc)
@@ -183,7 +196,7 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 	 * @param child the child EditPart for which the constraint should be generated
 	 * @return the draw2d constraint
 	 */
-	protected Object getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
+	protected Rectangle getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
 		Rectangle rect = new PrecisionRectangle(child.getFigure().getBounds());
 		child.getFigure().translateToAbsolute(rect);
 		rect = request.getTransformedRectangle(rect);

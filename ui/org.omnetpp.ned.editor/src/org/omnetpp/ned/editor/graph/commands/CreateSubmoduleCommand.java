@@ -52,7 +52,10 @@ public class CreateSubmoduleCommand extends Command {
         if (rect != null) {
             // get the scaling factor from the container module
             float scale = parent.getDisplayString().getScale();
-            child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize(), scale);
+            if (rect.width<0 || rect.height<0)
+                child.getDisplayString().setLocation(rect.getLocation(), scale);
+            else
+                child.getDisplayString().setConstraint(rect.getLocation(), rect.getSize(), scale);
         }
     }
 
@@ -76,7 +79,7 @@ public class CreateSubmoduleCommand extends Command {
         	importElement.removeFromParent();
     }
 
-    public void setLocation(Rectangle r) {
+    public void setConstraint(Rectangle r) {
         rect = r;
     }
 }

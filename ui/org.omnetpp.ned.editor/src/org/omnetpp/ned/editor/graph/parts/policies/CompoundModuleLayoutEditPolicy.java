@@ -20,8 +20,6 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
-import org.eclipse.gef.Request;
-import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
@@ -38,10 +36,13 @@ import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.InsertCommand;
+import org.omnetpp.ned.editor.graph.commands.RemoveCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
 import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -61,14 +62,6 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         super();
     }
 
-    /**
-     * Override to return the <code>Command</code> to perform an {@link
-     * RequestConstants#REQ_CLONE CLONE}. By default, <code>null</code> is
-     * returned.
-     *
-     * @param request the Clone Request
-     * @return A command to perform the Clone.
-     */
     @SuppressWarnings("unchecked")
 	@Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
@@ -89,15 +82,14 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
     	// submodule creation
     	if (element instanceof SubmoduleElementEx) {
-            CreateSubmoduleCommand create = new CreateSubmoduleCommand(
-    	            compoundModule, (SubmoduleElementEx)element);
-    	    create.setLocation((Rectangle)getConstraintFor(request));
-    	    create.setLabel("Add");
+            CreateSubmoduleCommand create = new CreateSubmoduleCommand(compoundModule, (SubmoduleElementEx)element);
+    	    create.setConstraint((Rectangle)getConstraintFor(request));
+    	    create.setLabel("Create submodule");
     	    return create;
     	}
     	// inner type creation
         if (element instanceof INedTypeElement) {
-            CompoundCommand command = new CompoundCommand("Create");
+            CompoundCommand command = new CompoundCommand("Create type");
             TypesElement typesElement = compoundModule.getFirstTypesChild();
             // add a new types element if necessary.
             if (typesElement == null) {
@@ -111,6 +103,27 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         return UnexecutableCommand.INSTANCE;
     }
 
+    @Override
+    protected Command createAddCommand(EditPart childToAdd, Object constraint) {
+        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
+        if (childToAdd instanceof NedTypeEditPart) {
+            CompoundCommand command = new CompoundCommand("Move type");
+            INedElement parent = (INedElement)getHost().getModel();
+            INedElement node = (INedElement)childToAdd.getModel();
+            command.add(new RemoveCommand(node));
+            TypesElement typesElement = compoundModule.getFirstTypesChild();
+            // add a new types element if necessary.
+            if (typesElement == null) {
+                typesElement = (TypesElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_TYPES);
+                command.add(new InsertCommand(compoundModule, typesElement));
+            }
+            command.add(new InsertCommand(typesElement, node));
+            return command;
+        }
+        
+        return UnexecutableCommand.INSTANCE;
+    }
+    
     @Override
     protected Command createChangeConstraintCommand(EditPart child, Object newConstraint) {
         // do not allow change if we are read only components
@@ -208,53 +221,6 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         return getLayer(LayerConstants.SCALED_FEEDBACK_LAYER);
     }
 
-
-    protected Object getConstraintForClone(GraphicalEditPart part, ChangeBoundsRequest request) {
-    	IFigure figure = part.getFigure();
-    	Rectangle bounds = new PrecisionRectangle(((SubmoduleFigure)figure).getShapeBounds());
-
-    	figure.translateToAbsolute(bounds);
-    	bounds = request.getTransformedRectangle(bounds);
-
-    	((GraphicalEditPart)getHost()).getContentPane().translateToRelative(bounds);
-    	bounds.translate(getLayoutOrigin().getNegated());
-    	return getConstraintFor(bounds);
-    }
-
-    protected Command getAddCommand(Request generic) {
-    	ChangeBoundsRequest request = (ChangeBoundsRequest)generic;
-    	List editParts = request.getEditParts();
-    	CompoundCommand command = new CompoundCommand();
-    	command.setDebugLabel("Add in ConstrainedLayoutEditPolicy");//$NON-NLS-1$
-    	GraphicalEditPart childPart;
-    	Rectangle r;
-    	Object constraint;
-
-    	for (int i = 0; i < editParts.size(); i++) {
-    		childPart = (GraphicalEditPart)editParts.get(i);
-    		// we are interested only in submodule figures and skip other figures
-    		// like top level ned types in the local "types:" declaration
-    		if (!(childPart.getFigure() instanceof SubmoduleFigure))
-    			continue;
-    		
-    		r = ((SubmoduleFigure)childPart.getFigure()).getShapeBounds().getCopy();
-    		//convert r to absolute from childpart figure
-    		childPart.getFigure().translateToAbsolute(r);
-    		r = request.getTransformedRectangle(r);
-    		//convert this figure to relative
-    		getLayoutContainer().translateToRelative(r);
-    		getLayoutContainer().translateFromParent(r);
-    		r.translate(getLayoutOrigin().getNegated());
-    		constraint = getConstraintFor(r);
-    		/*
-    		 * @TODO:Pratik Should create a new createAddCommand(...) which is given the
-    		 * request so that attaching to/detaching from guides can be taken care of.
-    		 */
-    		command.add(createAddCommand(childPart, translateToModelConstraint(constraint)));
-    	}
-    	return command.unwrap();
-    }
-
     // DESKTOPLAYOUTEDITPOLICY
     /**
      * Returns a MODEL object constraint equivalent to the DRAW2D constraint. We transform the
@@ -267,14 +233,23 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      */
 
     @Override
-    public Object getConstraintFor(Rectangle rect) {
+    public Rectangle getConstraintFor(Rectangle rect) {
         return new Rectangle(rect.getCenter(), rect.getSize());
     }
-
-
-    // XYLayoutEditPolicy
+    
+    protected Rectangle getConstraintForClone(GraphicalEditPart part, ChangeBoundsRequest request) {
+        IFigure figure = part.getFigure();
+        Rectangle bounds = new PrecisionRectangle(((SubmoduleFigure)figure).getShapeBounds());
+        
+        figure.translateToAbsolute(bounds);
+        bounds = request.getTransformedRectangle(bounds);
+        
+        ((GraphicalEditPart)getHost()).getContentPane().translateToRelative(bounds);
+        bounds.translate(getLayoutOrigin().getNegated());
+        return getConstraintFor(bounds);
+    }
+    
     private static final Dimension DEFAULT_SIZE = new Dimension(-1, -1);
-//    private XYLayout xyLayout;
 
     /**
      * Overridden to prevent sizes from becoming too small, and to prevent preferred sizes
@@ -284,7 +259,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      *
      * @see ConstrainedLayoutEditPolicy#getConstraintFor(ChangeBoundsRequest, GraphicalEditPart)
      */
-    protected Object getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
+    protected Rectangle getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
     	Rectangle rect = new PrecisionRectangle(((SubmoduleFigure)child.getFigure()).getShapeBounds());
     	Rectangle original = rect.getCopy();
     	child.getFigure().translateToAbsolute(rect);
@@ -319,7 +294,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * @param p the input Point
      * @return a Rectangle
      */
-    public Object getConstraintFor(Point p) {
+    public Rectangle getConstraintFor(Point p) {
     	return new Rectangle(p, DEFAULT_SIZE);
     }
 
@@ -334,14 +309,6 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     }
 
     /**
-     * Returns {@link XYLayout#getOrigin(IFigure)}.
-     * @see ConstrainedLayoutEditPolicy#getLayoutOrigin()
-     */
-//    protected Point getLayoutOrigin() {
-//    	return getXYLayout().getOrigin(getLayoutContainer());
-//    }
-
-    /**
      * Determines the <em>minimum</em> size that the specified child can be resized to. Called
      * from {@link #getConstraintFor(ChangeBoundsRequest, GraphicalEditPart)}. By default,
      * a small <code>Dimension</code> is returned.
@@ -351,25 +318,6 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     protected Dimension getMinimumSizeFor(GraphicalEditPart child) {
     	return new Dimension(8, 8);
     }
-
-    /**
-     * @return the XYLayout layout manager set on the {@link
-     * LayoutEditPolicy#getLayoutContainer() container}
-     */
-//    protected XYLayout getXYLayout() {
-//    	if (xyLayout == null) {
-//    		IFigure container = getLayoutContainer();
-//    		xyLayout = (XYLayout)container.getLayoutManager();
-//    	}
-//    	return xyLayout;
-//    }
-
-    /**
-     * @param xyLayout The xyLayout to set.
-     */
-//    public void setXyLayout(XYLayout xyLayout) {
-//    	this.xyLayout = xyLayout;
-//    }
 
     /**
      * Places the feedback rectangle where the User indicated.
@@ -383,6 +331,4 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     	feedback.translateToRelative(size);
     	feedback.setBounds(new Rectangle(p, size).expand(getCreationFeedbackOffset(request)));
     }
-
-
 }
