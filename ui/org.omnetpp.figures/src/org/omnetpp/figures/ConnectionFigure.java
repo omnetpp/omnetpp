@@ -86,7 +86,7 @@ public class ConnectionFigure extends PolylineConnection {
 	        add(centerDecoration, new MidpointLocator(this, 0));
 	}
 
-    protected void setStyle(Color color, int width, String style) {
+    public void setStyle(Color color, int width, String style) {
     	style = style == null ? "" : style;
     	if (style.toLowerCase().startsWith("da"))
     		setLineStyle(localLineStyle = Graphics.LINE_DASH);
@@ -117,7 +117,7 @@ public class ConnectionFigure extends PolylineConnection {
         }
     }
 
-    protected void setInfoText(String text, String alignment, Color color) {
+    public void setInfoText(String text, String alignment, Color color) {
 
         if (textFigure == null)
             return;

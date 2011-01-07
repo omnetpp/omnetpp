@@ -9,11 +9,14 @@ package org.omnetpp.ned.editor.graph.parts;
 
 import org.eclipse.draw2d.IFigure;
 import org.omnetpp.figures.NedTypeFigure;
-import org.omnetpp.ned.editor.graph.figures.NedTypeFigureEx;
+import org.omnetpp.ned.editor.graph.figures.ConnectionTypeFigure;
+import org.omnetpp.ned.editor.graph.figures.ModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
@@ -38,7 +41,10 @@ public class NedTypeEditPart extends NedEditPart {
 
     @Override
 	protected IFigure createFigure() {
-		return new NedTypeFigureEx();
+        if (getNedTypeModel() instanceof IChannelKindTypeElement)
+            return new ConnectionTypeFigure();
+        else
+            return new ModuleTypeFigure();
 	}
 
     public NedTypeFigure getNedTypeFigure() {
@@ -56,15 +62,15 @@ public class NedTypeEditPart extends NedEditPart {
         // set name
         String nameToDisplay = ((IHasName)getModel()).getName();
         if (getModel() instanceof ChannelInterfaceElement)
-            nameToDisplay += " (channel interface)";
-        else if (getModel() instanceof ChannelElement)
-            nameToDisplay += " (channel)";
+            nameToDisplay += " (interface)";
         else if (getModel() instanceof ModuleInterfaceElement)
-            nameToDisplay += " (module interface)";
+            nameToDisplay += " (interface)";
 
         getNedTypeFigure().setName(nameToDisplay);
 
     	// update visual properties
+        getNedTypeFigure().setInterface(getNedTypeModel() instanceof IInterfaceTypeElement);
+        getNedTypeFigure().setInnerType(getNedTypeModel().getEnclosingTypeElement() != null);
         DisplayString displayString = getNedTypeModel().getDisplayString();
         getNedTypeFigure().setDisplayString(displayString);
 	}
@@ -72,6 +78,6 @@ public class NedTypeEditPart extends NedEditPart {
 	
     @Override
     protected INedElement getNedElementToOpen() {
-        return getNedTypeModel().getSuperType(); 
+        return getNedTypeModel().getSuperType();  //FIXME remove
     }
 }

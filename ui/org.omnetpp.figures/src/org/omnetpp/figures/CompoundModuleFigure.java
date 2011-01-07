@@ -42,7 +42,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
 // FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
 // FIXME module size is not calculated again if we relayout the content
-public class CompoundModuleFigure extends NedFigure
+public class CompoundModuleFigure extends NedTypeFigure
 				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport {
 
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;

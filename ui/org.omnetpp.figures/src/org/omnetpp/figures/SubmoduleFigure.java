@@ -79,7 +79,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int shapeBorderWidth;
 	protected Image image;
 	protected Image decoratorImage;
-	protected int imageSizePercentage = 100;
+	protected int imageSizePercentage = 100;  // currently unused
 	protected boolean pinVisible;
 	protected boolean nameVisible = true;
 	protected String text;
@@ -237,7 +237,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
-		problemMarkerImage = NedFigure.getProblemImageFor(maxSeverity);
+		problemMarkerImage = NedTypeFigure.getProblemImageFor(maxSeverity);
 		problemMarkerTextProvider = textProvider;
 		if (centerLoc != null)
 			updateBounds();
