@@ -217,8 +217,8 @@ public class SubmoduleElementEx extends SubmoduleElement
     }
 
     public List<ParamElementEx> getParameterInheritanceChain(String parameterName) {
-        // FIXME: what if there's no type info?
-        List<ParamElementEx> chain = getNedTypeInfo().getParameterInheritanceChain(parameterName);
+        INedTypeInfo typeInfo = getNedTypeInfo();
+        List<ParamElementEx> chain = typeInfo == null ? new ArrayList<ParamElementEx>() : typeInfo.getParameterInheritanceChain(parameterName);
 
         for (ParamElementEx param : getOwnParams()) {
             if (parameterName.equals(param.getName())) {
@@ -296,19 +296,9 @@ public class SubmoduleElementEx extends SubmoduleElement
         return submoduleType == null ? new HashMap<String, GateElementEx>() : submoduleType.getGateDeclarations();
     }
 
-    // TODO: properly implement property: name, index pair
-    public Map<String, PropertyElementEx> getProperties() {
-        Map<String, PropertyElementEx> map = new HashMap<String, PropertyElementEx>();
-        INedElement section = getFirstChildWithTag(NedElementTags.NED_PARAMETERS);
-        if (section != null) {
-            for (INedElement node : section) {
-                if (node instanceof PropertyElementEx) {
-                    PropertyElementEx property = (PropertyElementEx)node;
-                    map.put(property.getName(), property);
-                }
-            }
-        }
-
+    public Map<String, Map<String, PropertyElementEx>> getProperties() {
+        HashMap<String, Map<String, PropertyElementEx>> map = new HashMap<String, Map<String, PropertyElementEx>>();
+        NedElementUtilEx.collectProperties(this, map);
         return map;
     }
 

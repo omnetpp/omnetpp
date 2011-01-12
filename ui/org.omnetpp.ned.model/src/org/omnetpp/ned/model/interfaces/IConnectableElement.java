@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
  *
  * @author rhornig
  */
-public interface IConnectableElement extends IHasName, IHasGates, IHasDisplayString {
+public interface IConnectableElement extends IHasName, IHasProperties, IHasParameters, IHasGates, IHasDisplayString {
     /**
      * Returns the typeinfo for the effective type.
      *

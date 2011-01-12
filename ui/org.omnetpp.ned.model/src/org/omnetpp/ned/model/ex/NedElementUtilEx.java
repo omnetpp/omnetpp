@@ -497,19 +497,18 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 
 
     public static void collectProperties(INedElement node, Map<String, Map<String, PropertyElementEx>> map) {
-   		INedElement propertyParent = node instanceof IHasParameters ?
-   							node.getFirstChildWithTag(NED_PARAMETERS) : node;
+   		INedElement propertyParent = node instanceof IHasParameters ? node.getFirstChildWithTag(NED_PARAMETERS) : node;
 
     	if (propertyParent != null) {
     		for (INedElement child : propertyParent) {
-    			if (child instanceof IHasName && child.getTagCode()==NED_PROPERTY) {
-    				String name = ((IHasName)child).getName();
+    			if (child instanceof PropertyElementEx) {
+    			    PropertyElementEx property = (PropertyElementEx)child;
+    				String name = property.getName();
     				Map<String, PropertyElementEx> propertyMap = map.get(name);
     				if (propertyMap == null) {
     					propertyMap = new HashMap<String, PropertyElementEx>();
     					map.put(name, propertyMap);
     				}
-    				PropertyElementEx property = (PropertyElementEx)child;
     				propertyMap.put(property.getIndex(), property);
     			}
     		}
