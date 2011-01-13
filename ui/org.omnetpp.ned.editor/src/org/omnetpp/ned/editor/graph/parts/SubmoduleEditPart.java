@@ -26,7 +26,6 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 
-
 /**
  * Controls the submodule figure according to the model changes.
  *
@@ -38,14 +37,9 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new SubmoduleFullNameValidator(getSubmoduleModel());
+        renameValidator = new SubmoduleFullNameValidator(getModel());
     }
 
-    @Override
-    protected void createEditPolicies() {
-        super.createEditPolicies();
-    }
-    
     /**
      * Returns a newly created Figure of this.
      */
@@ -56,10 +50,11 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // set the pin decoration image for the image (The compound module requests an auto-layout
         // if we add an figure without pin. ie. submodule created in the text editor without
         // a display string
-        fig.setPinVisible(getSubmoduleModel().getDisplayString().getLocation(1.0f) != null);
+        fig.setPinVisible(getModel().getDisplayString().getLocation(1.0f) != null);
 
         // range figure should appear on the background decoration layer
-        fig.setRangeFigureLayer(getCompoundModulePart().getCompoundModuleFigure().getBackgroundDecorationLayer());
+        fig.setRangeFigureLayer(getCompoundModulePart().getFigure().
+                getSubmoduleArea().getBackgroundDecorationLayer());
         
         gateAnchor = new GateAnchor(fig);
         return fig;
@@ -68,15 +63,15 @@ public class SubmoduleEditPart extends ModuleEditPart {
     /**
      * Returns the Figure for this as an SubmoduleFigure.
      */
-    public SubmoduleFigure getSubmoduleFigure() {
-        return (SubmoduleFigure)getFigure();
+    public SubmoduleFigure getFigure() {
+        return (SubmoduleFigure)super.getFigure();
     }
 
     /**
      * Helper function to return the model object with correct type
      */
-    public SubmoduleElementEx getSubmoduleModel() {
-        return (SubmoduleElementEx)getModel();
+    public SubmoduleElementEx getModel() {
+        return (SubmoduleElementEx)super.getModel();
     }
 
 	/**
@@ -101,21 +96,19 @@ public class SubmoduleEditPart extends ModuleEditPart {
     /**
      * Returns a list of connections for which this is the srcModule.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected List getModelSourceConnections() {
+    protected List<ConnectionElementEx> getModelSourceConnections() {
         // get the connections from out controller parent's model
-        return getCompoundModulePart().getCompoundModuleModel().getSrcConnectionsFor(getSubmoduleModel().getName());
+        return getCompoundModulePart().getModel().getSrcConnectionsFor(getModel().getName());
     }
 
     /**
      * Returns a list of connections for which this is the destModule.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    protected List getModelTargetConnections() {
+    protected List<ConnectionElementEx> getModelTargetConnections() {
         // get the connections from out controller parent's model
-        return getCompoundModulePart().getCompoundModuleModel().getDestConnectionsFor(getSubmoduleModel().getName());
+        return getCompoundModulePart().getModel().getDestConnectionsFor(getModel().getName());
     }
 
     /**
@@ -125,16 +118,15 @@ public class SubmoduleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         super.refreshVisuals();
         // define the properties that determine the visual appearance
-    	SubmoduleElementEx submNode = getSubmoduleModel();
 
     	// set module name and vector size
-    	SubmoduleFigure submoduleFigure = getSubmoduleFigure();
-        submoduleFigure.setName(NedElementUtilEx.getFullName(submNode));
-        submoduleFigure.setAlpha(submNode.isDynamic() ? 64 : 255);
+    	SubmoduleFigure submoduleFigure = getFigure();
+        submoduleFigure.setName(NedElementUtilEx.getFullName(getModel()));
+        submoduleFigure.setAlpha(getModel().isDynamic() ? 64 : 255);
 
     	// parse a display string, so it's easier to get values from it.
     	// for other visual properties
-        DisplayString dps = submNode.getDisplayString();
+        DisplayString dps = getModel().getDisplayString();
 
         // get the scale factor for this submodule (coming from the containing compound module's display string)
         // set it in the figure, so size and range indicator can use it
@@ -179,6 +171,6 @@ public class SubmoduleEditPart extends ModuleEditPart {
 
     @Override
     protected INedElement getNedElementToOpen() {
-        return getSubmoduleModel().getEffectiveTypeRef();
+        return getModel().getEffectiveTypeRef();  // open the effective type if pressed F3
     }
 }

@@ -597,7 +597,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     /* (non-Javadoc)
      * @see org.omnetpp.ned.model.interfaces.IModelProvider#getNEDModel()
      */
-    public INedElement getNedModel() {
+    public INedElement getModel() {
         return this;
     }
 

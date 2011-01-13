@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2006-2011 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
@@ -7,40 +7,35 @@
 
 package org.omnetpp.ned.editor.graph.figures;
 
-import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.figures.NedTypeFigure;
-import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
-import org.omnetpp.ned.editor.graph.misc.LabelCellEditorLocator;
+import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
- * Figure for a simple module or module interface NED type 
+ * Figure for a simple module or module interface NED type. Provides an icon in addition to the name
+ * of the module. 
  *
  * @author andras
  */
-public class ModuleTypeFigure extends NedTypeFigure implements IDirectEditSupport {
-    protected ModuleTypeIconFigure iconFigure = new ModuleTypeIconFigure();
-    protected String tmpName;
+public class ModuleTypeFigure extends NedTypeFigure {
+    // default icons
+    protected static final Image IMG_DEFAULT_SIMPLE = NedEditorPlugin.getCachedImage("icons/type/simple.png");
+    protected static final Image IMG_DEFAULT_SIMPLE_S = NedEditorPlugin.getCachedImage("icons/type/simple_s.png");
+    protected static final Image IMG_DEFAULT_INTERFACE = NedEditorPlugin.getCachedImage("icons/type/interface.png");
+    protected static final Image IMG_DEFAULT_INTERFACE_S = NedEditorPlugin.getCachedImage("icons/type/interface_s.png");
+
+    protected NedIconFigure iconFigure = new NedIconFigure();
 
     public ModuleTypeFigure() {
-        setLayoutManager(new XYLayout());
-        add(nameFigure); 
-        add(iconFigure);
-        add(problemMarkerFigure, new Rectangle(-1, 0, 16, 16));
+        super();
+        titleArea.add(iconFigure, 0); // the 0 index is needed so the problem image will be displayed above iconFigure (z-ordering)
     }
     
-    @Override
-    protected boolean useLocalCoordinates() {
-        return true;
-    }
-
     /**
 	 * Adjusts the figure properties using a displayString object
 	 */
@@ -49,15 +44,6 @@ public class ModuleTypeFigure extends NedTypeFigure implements IDirectEditSuppor
 	        iconFigure.setTargetSize(24, 24);  // "s" icons
 	    else 
 	        iconFigure.setTargetSize(40, 40); // normal icons
-	    
-        // image
-        String imageSize = isInnerType() ? "s" : "n";
-        Image image = ImageFactory.getImage(
-                displayString.getAsString(IDisplayString.Prop.IMAGE),
-                imageSize,
-                ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
-                displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
-        iconFigure.setImage(image);
 
         // shape
         Dimension size = displayString.getSize(1.0f);
@@ -80,6 +66,20 @@ public class ModuleTypeFigure extends NedTypeFigure implements IDirectEditSuppor
                 ColorFactory.asColor(displayString.getAsString(IDisplayString.Prop.SHAPE_BORDER_COLOR), ColorFactory.RED),
                 displayString.getAsInt(IDisplayString.Prop.SHAPE_BORDER_WIDTH, -1));
 
+        // image
+        String imageSize = isInnerType() ? "s" : "n";
+        Image image = ImageFactory.getImage(
+                displayString.getAsString(IDisplayString.Prop.IMAGE),
+                imageSize,
+                ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE_COLOR)),
+                displayString.getAsInt(IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE,0));
+
+        // default image
+        if (image == null && StringUtils.isEmpty(shape))
+            image = getDefaultImage(); 
+
+        iconFigure.setImage(image);
+        
         // decoration image 
         iconFigure.setDecorationImage(
                 ImageFactory.getImage(
@@ -88,29 +88,20 @@ public class ModuleTypeFigure extends NedTypeFigure implements IDirectEditSuppor
                         ColorFactory.asRGB(displayString.getAsString(IDisplayString.Prop.IMAGE2_COLOR)),
                         displayString.getAsInt(IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE,0)));
 
-        setConstraint(iconFigure, new Rectangle(0, 0, -1, -1));
-        setConstraint(nameFigure, new Rectangle(iconFigure.getPreferredSize().width+3, 2, -1, iconFigure.getPreferredSize().height));
+        titleArea.setConstraint(iconFigure, new Rectangle(0, 0, -1, -1));
+        titleArea.setConstraint(nameFigure, new Rectangle(iconFigure.getPreferredSize().width+3, 0, -1, iconFigure.getPreferredSize().height));
         
         invalidateTree();
     }
 
-    // Direct edit support
-    public CellEditorLocator getDirectEditCellEditorLocator() {
-        return new LabelCellEditorLocator(nameFigure);
+    /**
+     * Return an image representing the type if no icon or shape is specified in display string
+     */
+    protected Image getDefaultImage() {
+        Image image = isInterface() ? 
+                (isInnerType() ? IMG_DEFAULT_INTERFACE_S : IMG_DEFAULT_INTERFACE) : 
+                    (isInnerType() ? IMG_DEFAULT_SIMPLE_S : IMG_DEFAULT_SIMPLE);
+        return image;
     }
 
-    public void showLabelUnderCellEditor(boolean visible) {
-        // HACK to hide the text part only of the label
-        if (!visible) {
-            tmpName = nameFigure.getText();
-            nameFigure.setText("");
-        }
-        else {
-            if (StringUtils.isEmpty(nameFigure.getText()))
-                nameFigure.setText(tmpName);
-        }
-        invalidate();
-        validate();
-    }
-	
 }

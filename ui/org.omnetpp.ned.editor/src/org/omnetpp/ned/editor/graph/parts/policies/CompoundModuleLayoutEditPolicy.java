@@ -48,11 +48,13 @@ import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Layout policy used in compound modules. Handles cloning, creation, resizing of submodules
+ * via creating appropriate commands.
  *
  * @author rhornig
  */
@@ -90,6 +92,12 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     	// inner type creation
         if (element instanceof INedTypeElement) {
             CompoundCommand command = new CompoundCommand("Create type");
+
+            // We do not need any banner comments for inner types. - remove them
+            CommentElement bannerComment = (CommentElement)((INedTypeElement)element).getFirstChildWithAttribute(NedElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
+            if (bannerComment != null)
+                bannerComment.removeFromParent();
+            
             TypesElement typesElement = compoundModule.getFirstTypesChild();
             // add a new types element if necessary.
             if (typesElement == null) {
@@ -108,7 +116,6 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
         if (childToAdd instanceof NedTypeEditPart) {
             CompoundCommand command = new CompoundCommand("Move type");
-            INedElement parent = (INedElement)getHost().getModel();
             INedElement node = (INedElement)childToAdd.getModel();
             command.add(new RemoveCommand(node));
             TypesElement typesElement = compoundModule.getFirstTypesChild();

@@ -277,7 +277,7 @@ public class ImageSelectionDialog extends Dialog {
 		    Rectangle bounds = image.getBounds();
 		    String tooltip = imageName + " (" + bounds.width + "x" + bounds.height + ")";
 		    if (bounds.width > 64 || bounds.height > 64) {
-		        image = ImageConverter.getResampledImage(image, 64, 64);  //FIXME will have to be disposed!!!! cache it!!!
+		        image = ImageUtils.getResampledImage(image, 64, 64);  //FIXME will have to be disposed!!!! cache it!!!
 		        tooltip += " [scaled back for display]";
 		    }
 

@@ -73,7 +73,7 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                     nedElement = (INedElement)element;
 
                 if (element instanceof INedModelProvider)
-                    nedElement = ((INedModelProvider)element).getNedModel();
+                    nedElement = ((INedModelProvider)element).getModel();
 
                 while (nedElement != null) {
                     INedTypeElement nedTypeElement = null;

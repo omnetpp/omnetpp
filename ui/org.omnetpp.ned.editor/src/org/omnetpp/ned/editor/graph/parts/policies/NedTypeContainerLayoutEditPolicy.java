@@ -26,13 +26,13 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 
-import org.omnetpp.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.InsertCommand;
 import org.omnetpp.ned.editor.graph.commands.RemoveCommand;
 import org.omnetpp.ned.editor.graph.commands.ReorderCommand;
 import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
+import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
@@ -42,7 +42,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Layout policy used in the top level NedFile element and in TypesElement allowing a 
- * vertical, toolbar like layout, rearrange of components etc.
+ * vertical, toolbar like layout, provides creation and rearrange commands.
  *
  * @author rhornig
  */
@@ -174,7 +174,7 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
             Dimension newSize = modelConstraint.getSize().expand(cfigure.getHandleBounds().getSize());
             newSize.shrink(figureBounds.width, figureBounds.height);
             // reduce the size with the module border
-            Insets inset = cfigure.getCompoundModuleBorder().getInsets(cfigure);
+            Insets inset = cfigure.getSubmoduleArea().getBorder().getInsets(cfigure);
             newSize.shrink(inset.getWidth(), inset.getHeight());
             cmd.setSize(newSize);
 

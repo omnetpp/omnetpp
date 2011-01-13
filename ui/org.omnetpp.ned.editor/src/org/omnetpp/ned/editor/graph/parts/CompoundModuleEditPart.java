@@ -29,12 +29,13 @@ import org.eclipse.gef.editpolicies.SnapFeedbackPolicy;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.ned.editor.graph.figures.CompoundModuleFigureEx;
+import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.policies.CompoundModuleLayoutEditPolicy;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
+import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
@@ -51,7 +52,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     @Override
     public void activate() {
         super.activate();
-        renameValidator = new TypeNameValidator(getCompoundModuleModel());
+        renameValidator = new TypeNameValidator(getModel());
     }
 
     @Override
@@ -66,26 +67,26 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected IFigure createFigure() {
-        return new CompoundModuleFigureEx();
+        return new CompoundModuleTypeFigure();
     }
 
     /**
      * Convenience method to return the figure object with the correct type
      */
-    public CompoundModuleFigureEx getCompoundModuleFigure() {
-        return (CompoundModuleFigureEx) getFigure();
+    public CompoundModuleTypeFigure getFigure() {
+        return (CompoundModuleTypeFigure)super.getFigure();
     }
 
     /**
      * Convenience method to return the model object with the correct type
      */
-    public CompoundModuleElementEx getCompoundModuleModel() {
-        return (CompoundModuleElementEx)getModel();
+    public CompoundModuleElementEx getModel() {
+        return (CompoundModuleElementEx)super.getModel();
     }
 
     @Override
     public IFigure getContentPane() {
-        return getCompoundModuleFigure().getSubmoduleLayer();
+        return getFigure().getSubmoduleArea().getSubmoduleLayer();
     }
 
     // overridden so submodules are added to the contentPane while TypesEditPart is never added to the contentPane
@@ -99,7 +100,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
             getContentPane().add(childFigure);
         // the inner type compartment should be added as the second child (between title and submodules)
         else if (childEditPart instanceof TypesEditPart)
-            getCompoundModuleFigure().add(childFigure,1);
+            getFigure().add(childFigure,1); // add it as a second child to be displayed between the title and the submodulesarea
     }
 
     // overridden so child figures are always removed from their direct parent
@@ -139,12 +140,12 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected List<INedElement> getModelChildren() {
         List<INedElement> result = new ArrayList<INedElement>();
         // add the innerTypes element (if exists)
-        TypesElement typesElement = getCompoundModuleModel().getFirstTypesChild();
+        TypesElement typesElement = getModel().getFirstTypesChild();
         if (typesElement != null)
             result.add(typesElement);
 
         // return all submodule including inherited ones
-        result.addAll(getCompoundModuleModel().getSubmodules());
+        result.addAll(getModel().getSubmodules());
     	return result;
     }
 
@@ -153,7 +154,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected List<ConnectionElementEx> getModelSourceConnections() {
-        return getCompoundModuleModel().getSrcConnections();
+        return getModel().getSrcConnections();
     }
 
     /**
@@ -161,7 +162,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected List<ConnectionElementEx> getModelTargetConnections() {
-        return getCompoundModuleModel().getDestConnections();
+        return getModel().getDestConnections();
     }
 
     /**
@@ -171,9 +172,12 @@ public class CompoundModuleEditPart extends ModuleEditPart {
     protected void refreshVisuals() {
         super.refreshVisuals();
         // define the properties that determine the visual appearance
-        CompoundModuleFigureEx compoundModuleFigure = getCompoundModuleFigure();
-        CompoundModuleElementEx compoundModuleModel = getCompoundModuleModel();
+        CompoundModuleTypeFigure compoundModuleFigure = getFigure();
+        CompoundModuleElementEx compoundModuleModel = getModel();
         compoundModuleFigure.setName(compoundModuleModel.getName());
+        compoundModuleFigure.setNetwork(compoundModuleModel.isNetwork());
+        compoundModuleFigure.setInterface(compoundModuleModel instanceof IInterfaceTypeElement);
+        compoundModuleFigure.setInnerType(compoundModuleModel.getEnclosingTypeElement() != null);
     	compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString());
     }
 
@@ -183,7 +187,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 * Coordinates are viewport relative.
 	 */
 	public boolean isOnBorder(int x, int y) {
-		return getCompoundModuleFigure().isOnBorder(x, y);
+		return getFigure().isOnBorder(x, y);
 	}
 
 	/**
@@ -230,7 +234,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     public float getScale() {
-        return ((CompoundModuleElementEx)getModel()).getDisplayString().getScale();
+        return getModel().getDisplayString().getScale();
     }
 
     @Override
@@ -251,6 +255,6 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      */
     @Override
     protected INedElement getNedElementToOpen() {
-        return getCompoundModuleModel().getSuperType();
+        return getModel().getSuperType();
     }
 }

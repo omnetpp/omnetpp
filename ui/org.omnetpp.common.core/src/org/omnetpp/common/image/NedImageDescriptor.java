@@ -367,7 +367,7 @@ public class NedImageDescriptor extends ImageDescriptor {
             newHeight = Math.max((int)(imgData.height*scaleRatio), padding.y+padding.height);
         }
 
-        return ImageConverter.getResampledImageData(imgData, newWidth, newHeight,
+        return ImageUtils.getResampledImageData(imgData, newWidth, newHeight,
                                     padding.x, padding.y, padding.width, padding.height);
     }
 

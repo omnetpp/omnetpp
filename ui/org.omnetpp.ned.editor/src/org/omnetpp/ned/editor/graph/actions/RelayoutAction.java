@@ -71,7 +71,7 @@ public class RelayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
 		// get the parent of the currently selected
 		CompoundModuleElementEx compoundModuleElementEx
-			= ((ModuleEditPart)selEditParts.get(0)).getCompoundModulePart().getCompoundModuleModel();
+			= ((ModuleEditPart)selEditParts.get(0)).getCompoundModulePart().getModel();
 		// create command that changes the compound modules layout seed
 		return new ChangeLayoutSeedCommand(compoundModuleElementEx);
 	}

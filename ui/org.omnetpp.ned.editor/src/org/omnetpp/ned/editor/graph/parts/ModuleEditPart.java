@@ -15,12 +15,12 @@ import org.eclipse.gef.NodeEditPart;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.requests.DropRequest;
 import org.omnetpp.figures.anchors.GateAnchor;
-import org.omnetpp.ned.editor.graph.parts.policies.NedNodeEditPolicy;
+import org.omnetpp.ned.editor.graph.parts.policies.NedGraphicalNodeEditPolicy;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
 /**
- * Base abstract controller for NedModel and NedFigures. Provides support for
- * connection handling and common display attributes.
+ * Provides support for connection handling and common display attributes.
+ * Both compound and submodules share this as a super type.
  *
  * @author rhornig
  */
@@ -29,9 +29,8 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
     @Override
 	protected void createEditPolicies() {
 		super.createEditPolicies();
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedNodeEditPolicy());
+		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedGraphicalNodeEditPolicy());
 	}
-
 
 	/**
 	 * Compute the source connection anchor to be assigned based on the current mouse
@@ -81,7 +80,7 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
      * Re-implemented because the original implementation has a global (per viewer) MAP
      * to store MODEL - PART associations. This is a problem if we want to display a compound module which
      * inherits some submodules and connections from an other one (that is also displayed in this viewer)
-     * In those case the original implementation would not create a new PART for the connection in the
+     * In those cases the original implementation would not create a new PART for the connection in the
      * derived module but would return the editpart from the base module (which is of course wrong)
      * and leads to very strange bugs.
      */
@@ -93,5 +92,4 @@ abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart
             return conx;
         return createConnection(model);
     }
-
 }

@@ -36,7 +36,7 @@ public class NedEditPartPropertySourceProvider implements IPropertySourceProvide
         if ((object instanceof INedModelProvider))
         {
             // try to get the adapter from the model (if it was previously created)
-            INedElement nedModel = ((INedModelProvider)object).getNedModel();
+            INedElement nedModel = ((INedModelProvider)object).getModel();
 
             // if no property source exists for this model object, create one
             if (nedModel instanceof SubmoduleElementEx)

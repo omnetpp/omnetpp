@@ -62,7 +62,7 @@ public class NedConnectionCreationTool extends ConnectionCreationTool {
 
 		CreateConnectionCommand endCommand = (CreateConnectionCommand)command;
         ModuleEditPart destMod = (ModuleEditPart)getTargetEditPart();
-        CompoundModuleElementEx compoundMod = destMod.getCompoundModulePart().getCompoundModuleModel();
+        CompoundModuleElementEx compoundMod = destMod.getCompoundModulePart().getModel();
     	// ask the user about which gates should be connected, ask for both source and destination gates
 		ConnectionElementEx connection = endCommand.getConnection();
         ConnectionElementEx templateConn = new ConnectionChooser().open(compoundMod, connection, true, true);

@@ -347,7 +347,7 @@ public class GraphicalNedEditor
                 List newSel = new ArrayList();
                 for (Object o : sel) {
                     if (o instanceof INedModelProvider) {
-                        INedElement nedElement = ((INedModelProvider)o).getNedModel();
+                        INedElement nedElement = ((INedModelProvider)o).getModel();
                         if (nedElement.getContainingNedFileElement() != null)
                             newSel.add(o);
                     }
@@ -399,7 +399,7 @@ public class GraphicalNedEditor
                 // or we are inside a compound module figure (we display the hover only over the border a title for
                 // a compound module)
                 if (epUnderMouse instanceof CompoundModuleEditPart &&
-                        !((CompoundModuleEditPart)epUnderMouse).getCompoundModuleFigure().isOnBorder(x, y))
+                        !((CompoundModuleEditPart)epUnderMouse).getFigure().isOnBorder(x, y))
                     return null;
 
                 return getHTMLHoverTextFor(epUnderMouse, outPreferredSize);
@@ -783,7 +783,7 @@ public class GraphicalNedEditor
 		if (!(ep instanceof INedModelProvider))
 			return null;
 
-		INedElement element = ((INedModelProvider)ep).getNedModel();
+		INedElement element = ((INedModelProvider)ep).getModel();
 		if (element instanceof NedFileElementEx)
 			return null;
 

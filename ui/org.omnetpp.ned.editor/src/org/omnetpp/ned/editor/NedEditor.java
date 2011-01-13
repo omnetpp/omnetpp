@@ -323,7 +323,7 @@ public class NedEditor
             Object object = ((IStructuredSelection)graphicalEditor.getSite()
                     .getSelectionProvider().getSelection()).getFirstElement();
             if (object != null)
-                currentNEDElementSelection = ((INedModelProvider)object).getNedModel();
+                currentNEDElementSelection = ((INedModelProvider)object).getModel();
 
             if (currentNEDElementSelection != null)
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
@@ -341,7 +341,7 @@ public class NedEditor
 	            Object object = ((IStructuredSelection)textEditor.getSite()
 	                    .getSelectionProvider().getSelection()).getFirstElement();
 	            if (object != null)
-	                currentNEDElementSelection = ((INedModelProvider)object).getNedModel();
+	                currentNEDElementSelection = ((INedModelProvider)object).getModel();
 	        }
             if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);

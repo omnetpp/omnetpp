@@ -43,7 +43,7 @@ import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ITileCache.Tile;
-import org.omnetpp.common.image.ImageConverter;
+import org.omnetpp.common.image.ImageUtils;
 import org.omnetpp.common.util.GraphicsUtils;
 
 /**
@@ -138,7 +138,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
 
         int width = getClientArea().width, height = getClientArea().height;
         Image image = getImage(width, height);
-        cp.setContents(new ImageTransferable(ImageConverter.convertToAWT(image)), owner);
+        cp.setContents(new ImageTransferable(ImageUtils.convertToAWT(image)), owner);
     }
 
     public void exportToSVG(String fileName) {

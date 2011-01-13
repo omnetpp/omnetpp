@@ -33,7 +33,9 @@ import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 /**
- * Provides support for Container EditParts.
+ * Provides support for deleting and renaming the components (using direct edit).
+ * Sets the error markers and messages as tooltips. Disables all commands if
+ * the edit part is read only.
  *
  * @author rhornig
  */
@@ -55,21 +57,20 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	/**
 	 * Returns the model associated with this as a INedElement.
 	 */
-	public INedElement getNedModel() {
-		return (INedElement) getModel();
+	public INedElement getModel() {
+		return (INedElement)super.getModel();
 	}
 
 	@Override
 	protected void refreshVisuals() {
 		super.refreshVisuals();
 
-		// FIXME figures must implement an IProblemDecorator interface instead for setting the tooltip text
 		if (getFigure() instanceof IProblemDecorationSupport) {
 			ITooltipTextProvider textProvider = new ITooltipTextProvider() {
 				public String getTooltipText(int x, int y) {
 					String message = "";
-					if (getNedModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
-						IMarker[] markers = NedResourcesPlugin.getNedResources().getMarkersForElement(getNedModel(), 11);
+					if (getModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
+						IMarker[] markers = NedResourcesPlugin.getNedResources().getMarkersForElement(getModel(), 11);
 						int i = 0;
 						for (IMarker marker : markers) {
 							message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
@@ -84,13 +85,13 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 				}
 			};
 
-			((IProblemDecorationSupport)getFigure()).setProblemDecoration(getNedModel().getMaxProblemSeverity(), textProvider);
+			((IProblemDecorationSupport)getFigure()).setProblemDecoration(getModel().getMaxProblemSeverity(), textProvider);
 		}
 	}
 
 	@Override
 	public void refresh() {
-		Assert.isTrue((getNedModel() instanceof NedFileElementEx) || getNedModel().getParent() != null,
+		Assert.isTrue((getModel() instanceof NedFileElementEx) || getModel().getParent() != null,
 		"NedElement must be inside a model (must have parent)");
 		super.refresh();
 		for (Object child : getChildren())
@@ -156,7 +157,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	 */
 	protected void performDirectEdit() {
 		if (manager == null && (getFigure() instanceof IDirectEditSupport)
-				&& getNedModel() instanceof IHasName && isEditable()) {
+				&& getModel() instanceof IHasName && isEditable()) {
 			IDirectEditSupport deSupport = (IDirectEditSupport)getFigure();
 			manager = new RenameDirectEditManager(this, TextCellEditor.class, renameValidator, deSupport);
 		}
@@ -165,7 +166,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	}
 
 	/**
-	 * Returns the type name that must be opened if the user double clicks the module
+	 * Returns the type name that must be opened if the user presses F3 (open type/super type)
 	 */
 	protected abstract INedElement getNedElementToOpen();
 

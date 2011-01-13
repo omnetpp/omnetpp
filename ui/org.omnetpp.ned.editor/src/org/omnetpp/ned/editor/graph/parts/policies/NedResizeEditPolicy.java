@@ -30,7 +30,6 @@ import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
  */
 public class NedResizeEditPolicy extends ResizableEditPolicy {
 
-
     /**
      * Creates and returns the figure used for feedback.
      */

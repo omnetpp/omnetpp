@@ -298,7 +298,7 @@ public class PasteAction extends SelectionAction {
 		List selectedEditParts = graphicalViewer.getSelectedEditParts();
 		for (Object editPart : selectedEditParts)
 			if (editPart instanceof ModuleEditPart)
-				return ((ModuleEditPart)editPart).getCompoundModulePart().getCompoundModuleModel();
+				return ((ModuleEditPart)editPart).getCompoundModulePart().getModel();
 		return null;
 	}
 
@@ -308,7 +308,7 @@ public class PasteAction extends SelectionAction {
 		GraphicalViewer graphicalViewer = getGraphicalViewer();
 		List<EditPart> selectedEditParts = graphicalViewer.getSelectedEditParts();
 		if (selectedEditParts.size() > 0 && selectedEditParts.get(0) instanceof INedModelProvider)
-			return ((INedModelProvider)selectedEditParts.get(0)).getNedModel();
+			return ((INedModelProvider)selectedEditParts.get(0)).getModel();
 		else
 			return null;
 	}

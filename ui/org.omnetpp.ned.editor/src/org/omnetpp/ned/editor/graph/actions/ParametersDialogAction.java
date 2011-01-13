@@ -40,7 +40,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     @Override
     protected boolean calculateEnabled() {
         if (getSelectedObjects().size() == 1 && getSelectedObjects().get(0) instanceof INedModelProvider) {
-           INedElement element = ((INedModelProvider)getSelectedObjects().get(0)).getNedModel();
+           INedElement element = ((INedModelProvider)getSelectedObjects().get(0)).getModel();
            return element instanceof IHasParameters && element.getSyntaxProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE;
         }
         else
@@ -49,7 +49,7 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
 
     @Override
     public void run() {
-        IHasParameters paramsParent = (IHasParameters)((INedModelProvider)getSelectedObjects().get(0)).getNedModel();
+        IHasParameters paramsParent = (IHasParameters)((INedModelProvider)getSelectedObjects().get(0)).getModel();
         ParametersDialog dialog = new ParametersDialog(Display.getDefault().getActiveShell(), paramsParent);
 
         // if the dialog is cancelled, the command is not executable

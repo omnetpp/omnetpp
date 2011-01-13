@@ -41,7 +41,7 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
     @Override
     protected EditPart convert(EditPartViewer viewer, EditPart part) {
         if (part instanceof INedModelProvider) {
-            INedElement model = ((INedModelProvider)part).getNedModel();
+            INedElement model = ((INedModelProvider)part).getModel();
             return GraphicalNedEditor.getNearestEditPartForModel(viewer, model);
         }
         return null;

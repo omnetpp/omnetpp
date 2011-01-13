@@ -64,7 +64,7 @@ public class CutAction extends SelectionAction {
 		List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
 		for (EditPart editPart : selectedEditParts) {
         	if (editPart instanceof INedModelProvider) {
-				INedElement model = ((INedModelProvider)editPart).getNedModel();
+				INedElement model = ((INedModelProvider)editPart).getModel();
 				selectedModelObjects.add(model.deepDup());
 				compoundCommand.add(new DeleteCommand(model));
 			}

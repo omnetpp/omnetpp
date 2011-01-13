@@ -34,13 +34,13 @@ import org.eclipse.gef.palette.PanningSelectionToolEntry;
 import org.eclipse.gef.palette.ToolEntry;
 import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.image.NedImageDescriptor;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
@@ -456,14 +456,16 @@ public class PaletteManager {
             key = group+GROUP_DELIMITER+key;
 
         // set the default images for the palette entry
-        ImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
-        ImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
+        NedImageDescriptor imageDescNorm = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"vs",null,0);
+        NedImageDescriptor imageDescLarge = ImageFactory.getDescriptor(ImageFactory.DEFAULT,"s",null,0);
         if (typeElement instanceof IHasDisplayString) {
             IDisplayString dps = ((IHasDisplayString)typeElement).getDisplayString();
             String imageId = dps.getAsString(IDisplayString.Prop.IMAGE);
             if (StringUtils.isNotEmpty(imageId)) {
                 imageDescNorm = ImageFactory.getDescriptor(imageId,"vs",null,0);
+                imageDescNorm.setPreferredScale(16);
                 imageDescLarge = ImageFactory.getDescriptor(imageId,"s",null,0);
+                imageDescLarge.setPreferredScale(24);
                 key += ":"+imageId;
             }
         }
@@ -582,7 +584,7 @@ public class PaletteManager {
      * Builds a tool entry list containing base top level NED components like simple, module, channel etc.
      */
     private static Map<String, ToolEntry> createTypeCreationPaletteEntries() {
-    	String bannerComment = "//\n// TODO documentation\n//\n// @author "+System.getProperty("user.name")+"\n//\n";
+    	String bannerComment = "//\n// TODO documentation\n//\n";
         Map<String, ToolEntry> entries = new LinkedHashMap<String, ToolEntry>();
 
         ModelFactory modelFactory = new ModelFactory(NedElementTags.NED_SIMPLE_MODULE, IHasName.DEFAULT_TYPE_NAME);

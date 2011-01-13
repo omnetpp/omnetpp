@@ -75,12 +75,12 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
         // reorder support
     }
 
-    public INedElement getNedModel() {
+    public INedElement getModel() {
         return (INedElement)getModel();
     }
 
     public boolean isEditable() {
-    	NedFileElementEx nedFileElement = getNedModel().getContainingNedFileElement();
+    	NedFileElementEx nedFileElement = getModel().getContainingNedFileElement();
        	return nedFileElement == null || (!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError());
     }
 
@@ -116,7 +116,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
         // not refresh the element (ie. we cannot determine the icon for example as it requires the
         // display string, which requires type resolve which requires project context...)
         // of course the top level file element do not need a parent
-        if (!(getNedModel() instanceof NedFileElementEx) && getNedModel().getParent() == null)
+        if (!(getModel() instanceof NedFileElementEx) && getModel().getParent() == null)
             return;
 
     	super.refresh();

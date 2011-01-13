@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
+  Copyright (C) 2006-2011 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
@@ -7,13 +7,14 @@
 
 package org.omnetpp.figures;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.Border;
 import org.eclipse.draw2d.ConnectionLayer;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.LayeredPane;
 import org.eclipse.draw2d.StackLayout;
-import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -42,15 +43,14 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
 // FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
 // FIXME module size is not calculated again if we relayout the content
-public class CompoundModuleFigure extends NedTypeFigure
+public class CompoundModuleFigure extends LayeredPane
 				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport {
 
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
     protected static final int ERROR_BORDER_WIDTH = 2;
-    protected static final int BORDER_SNAP_WIDTH = 3;
+    public static final int BORDER_SNAP_WIDTH = 3;
 
-    protected LayeredPane mainContainer;
     protected Image backgroundImage;
     protected String backgroundImageArrangement = "fix";
     protected Dimension backgroundSize;
@@ -85,7 +85,7 @@ public class CompoundModuleFigure extends NedTypeFigure
 	        graphics.fillRectangle(getClientArea());
 
 	        // get the size of the viewport (which is actually the module size)
-	        Rectangle viewportRect = new Rectangle(new Point(0,0), mainContainer.getSize());
+	        Rectangle viewportRect = new Rectangle(new Point(0,0), this.getSize());
 	        // draw a solid background
 	        graphics.setBackgroundColor(moduleBackgroundColor);
 	        graphics.fillRectangle(viewportRect);
@@ -138,7 +138,6 @@ public class CompoundModuleFigure extends NedTypeFigure
 	        // restore the graphics state
       	graphics.popState();
 		}
-
     }
 
     // main layer used to display submodules
@@ -152,10 +151,6 @@ public class CompoundModuleFigure extends NedTypeFigure
             super.add(child, constraint, index);
         }
 
-        public CompoundModuleFigure getCompoundModuleFigure() {
-        	return CompoundModuleFigure.this;
-        }
-
         @Override
         public Dimension getPreferredSize(int wHint, int hHint) {
 			return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
@@ -163,37 +158,29 @@ public class CompoundModuleFigure extends NedTypeFigure
 
         @Override
         public Dimension getMinimumSize(int wHint, int hHint) {
-        	return new Dimension(100,50);
-//			return getPreferredSize(wHint, hHint);
+        	return new Dimension(8,8);
         }
     }
 
     public CompoundModuleFigure() {
         super();
 
-        // set up the name and error marker figure
-        ToolbarLayout tb = new ToolbarLayout();
-        tb.setSpacing(2);
-        tb.setStretchMinorAxis(false);
-        setLayoutManager(tb);
-
-        // contains all layers used inside a compound modules submodule area
-        mainContainer = new LayeredPane() {
-        	@Override
-        	protected boolean useLocalCoordinates() {
-        		return true;
-        	}
-        };
-        mainContainer.setLayoutManager(new StackLayout());
-        mainContainer.addLayerAfter(messageLayer = new Layer(), null, null);
-        mainContainer.addLayerAfter(connectionLayer = new ConnectionLayer(), null, null);
-        mainContainer.addLayerAfter(frontDecorationLayer = new Layer(), null, null);
-        mainContainer.addLayerAfter(submoduleLayer = new SubmoduleLayer(), null, null);
-        mainContainer.addLayerAfter(backDecorationLayer = new Layer(), null, null);
-        mainContainer.addLayerAfter(backgroundLayer = new BackgroundLayer(), null, null);
+        setLayoutManager(new StackLayout());
+        // add layer used to display message animation effects - not used in editor
+        addLayerAfter(messageLayer = new Layer(), null, null);
+        // connections inside a compound module
+        addLayerAfter(connectionLayer = new ConnectionLayer(), null, null);
+        // foregroundDecorationLayer (text messages, decorator icons etc)
+        addLayerAfter(frontDecorationLayer = new Layer(), null, null);
+        // plain layer used to display submodules - size is automatically calculated from child size and positions
+        addLayerAfter(submoduleLayer = new SubmoduleLayer(), null, null);
+        // submodule background decoration (range indicator etc). non extendable
+        addLayerAfter(backDecorationLayer = new Layer(), null, null);
+        // compound module background. images, colors, grid etc
+        addLayerAfter(backgroundLayer = new BackgroundLayer(), null, null);
 
         // add a compound module border
-        mainContainer.setBorder(new CompoundModuleLineBorder());
+        setBorder(new CompoundModuleLineBorder());
 
         // set up the layouter. Preferred sizes should be set to 0 so the mainContainer
         // can follow the size of the submoduleLayer which uses the layouter to calculate the
@@ -205,16 +192,6 @@ public class CompoundModuleFigure extends NedTypeFigure
         backDecorationLayer.setPreferredSize(0, 0);
         backgroundLayer.setPreferredSize(0, 0);
 
-        add(mainContainer);
-
-        // this effectively creates the following hierarchy:
-        // ---- LayeredPane
-        // ------ backgroundLayer (compound module background. images, colors, grid etc)
-        // ------ backgroundDecorationLayer (submodule background decoration (range indicator etc). non extendable
-        // ------ submoduleLayer (plain layer used to display submodules - size is automatically calculated from child size and positions)
-        // ------ foregroundDecorationLayer (text messages, decorator icons etc)
-        // ------ connection (connections inside a compound module)
-        // ------ message layer (used to display message animation effects)
 
         // set the connection routing
 //        FanRouter fr = new FanRouter();
@@ -232,19 +209,24 @@ public class CompoundModuleFigure extends NedTypeFigure
         connectionLayer.setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
+    protected boolean useLocalCoordinates() {
+        return true;
+    }
+
     /**
      * @see org.eclipse.gef.handles.HandleBounds#getHandleBounds()
      */
     public Rectangle getHandleBounds() {
-        return mainContainer.getBounds();
+        Rectangle result = getBounds().getCopy();
+        // translateToParent(result);
+        return result;
     }
 
     /**
      * Returns the bounds where the anchors should be placed in parent coordinate system.
      */
     public Rectangle getAnchorBounds() {
-    	Rectangle box = mainContainer.getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
-    	mainContainer.translateToParent(box);
+    	Rectangle box = getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
     	translateToParent(box);
     	return box;
     }
@@ -258,14 +240,14 @@ public class CompoundModuleFigure extends NedTypeFigure
 		moduleBorderWidth = borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth;
 
 		// the global background is the same as the border color
-		mainContainer.setBackgroundColor(moduleBorderColor);
+		setBackgroundColor(moduleBorderColor);
 
 		// background image
 		backgroundImage = image;
 		backgroundImageArrangement = arrangement != null ? arrangement : "";
 		
-        getCompoundModuleBorder().setColor(moduleBorderColor);
-        getCompoundModuleBorder().setWidth(moduleBorderWidth);
+        getBorder().setColor(moduleBorderColor);
+        getBorder().setWidth(moduleBorderWidth);
 	}
 
 	/**
@@ -302,7 +284,6 @@ public class CompoundModuleFigure extends NedTypeFigure
 	 * Adjusts the figure properties using a displayString object
 	 * @param dps The display string object containing the properties
 	 */
-	@Override
     public void setDisplayString(IDisplayString dps) {
 		// OPTIMIZATION: do not change anything if the display string has not changed
 		int newCumulativeHashCode = dps.cumulativeHashCode();
@@ -357,7 +338,7 @@ public class CompoundModuleFigure extends NedTypeFigure
             layouter.layout(submoduleLayer);
         }
 
-		  layouter.invalidate();
+		layouter.invalidate();
         repaint();
 	}
 
@@ -389,9 +370,15 @@ public class CompoundModuleFigure extends NedTypeFigure
 		return messageLayer;
 	}
 
-    public CompoundModuleLineBorder getCompoundModuleBorder() {
-        return (CompoundModuleLineBorder)mainContainer.getBorder();
+    @Override
+    public CompoundModuleLineBorder getBorder() {
+        return (CompoundModuleLineBorder)super.getBorder();
     }
 
-
+    @Override
+    public void setBorder(Border border) {
+        Assert.isTrue(border instanceof CompoundModuleLineBorder,"Only CompoundModuleBorder is supported");
+        super.setBorder(border);
+    }
+    
 }

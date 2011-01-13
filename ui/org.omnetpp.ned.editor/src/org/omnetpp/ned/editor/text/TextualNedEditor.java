@@ -480,7 +480,7 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
 			if (selection.isEmpty())
 				resetHighlightRange();
 			else if (firstElement instanceof INedModelProvider){
-				INedElement node = ((INedModelProvider)firstElement).getNedModel();
+				INedElement node = ((INedModelProvider)firstElement).getModel();
 				//Debug.println("selected: "+node);
 				NedSourceRegion region = node.getSourceRegion();
 				if (region!=null) {

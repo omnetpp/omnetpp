@@ -114,7 +114,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
                 // with editparts in it. INedElement can be extracted from editparts
                 // via IModelProvider.
                 //
-                INedElement model = ((INedModelProvider)element).getNedModel();
+                INedElement model = ((INedModelProvider)element).getModel();
                 if (model != null ) {
                     hideMessage();
                     buildContent(model, null, null, null);

@@ -308,27 +308,23 @@ public final class NedCompletionHelper {
     public final static Template[] proposedNedGlobalTempl = new Template[] {
         makeTemplate("simple1", "create simple module",
                 "//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"simple ${SomeModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    gates:\n"+
         		"}"),
         makeTemplate("simple2", "specialize simple module",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"simple ${SomeModule} extends ${AnotherModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"}"),
         makeTemplate("simple3", "simple module that complies to an interface",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"simple ${SomeModule} like ${SomeInterface}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    gates:\n"+
         		"}"),
         makeTemplate("module1", "create compound module",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"module ${SomeModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    gates:\n"+
@@ -337,13 +333,11 @@ public final class NedCompletionHelper {
         		"}"),
         makeTemplate("module2", "specialize compound module",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"module ${SomeModule} extends ${AnotherModule}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"}"),
         makeTemplate("module3", "create compound module that complies to an interface",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"module ${SomeModule} like ${SomeInterface}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    gates:\n"+
@@ -352,14 +346,12 @@ public final class NedCompletionHelper {
         		"}"),
 		makeTemplate("moduleinterface", "create module interface",
 				"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
 				"moduleinterface ${SomeInterface}\n{\n"+
 				"    parameters:${cursor}\n"+
 				"    gates:\n"+
 				"}"),
         makeTemplate("network1", "create network",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"network ${SomeNetwork}\n{\n"+
         		"    parameters:${cursor}\n"+
         		"    submodules:\n"+
@@ -367,19 +359,16 @@ public final class NedCompletionHelper {
         		"}"),
         makeTemplate("channel1", "create channel",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"channel ${SomeChannel}\n{\n"+
         		"    ${cursor}\n"+
         		"}"),
         makeTemplate("channel2", "channel with underlying C++ class", //XXX revise name
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"channel ${SomeChannel}\n{\n"+
         		"    @class(${classname});${cursor}\n"+
         		"}"),
         makeTemplate("channelinterface", "create channel interface",
         		"//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
         		"channelinterface ${SomeChannelInterface}\n{\n"+
         		"    ${cursor}\n"+
         		"}"),
@@ -393,7 +382,6 @@ public final class NedCompletionHelper {
                 "        inout ${right};\n"+
                 "}\n\n"+
                 "//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
                 "module ${BinaryTree}\n{\n"+
                 "    parameters:\n"+
                 "        int height = default(5);\n"+
@@ -415,7 +403,6 @@ public final class NedCompletionHelper {
                 "        inout ${right};\n"+
                 "}\n\n"+
                 "//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
                 "module ${Mesh}\n{\n"+
                 "    parameters:\n"+
                 "        int height = default(4);\n"+
@@ -441,7 +428,6 @@ public final class NedCompletionHelper {
                 "        inout ${ne};\n" +
                 "}\n\n" +
                 "//\n// TODO documentation\n//\n" +
-                "// @author ${user}\n//\n" +
                 "module ${TriMesh}\n{\n" +
                 "    parameters:\n" +
                 "        int rows = default(3);\n" +
@@ -462,7 +448,6 @@ public final class NedCompletionHelper {
                 "        inout ${port}[];\n"+
                 "}\n\n"+
                 "//\n// TODO documentation\n//\n"+
-                "// @author ${user}\n//\n"+
                 "module ${HexMesh}\n{\n"+
                 "    parameters:\n"+
                 "        int rows = default(3);\n"+

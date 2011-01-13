@@ -48,7 +48,7 @@ public class ConvertToNewFormatAction extends org.eclipse.gef.ui.actions.Selecti
         if (getSelectedObjects().size() > 0) {
             Object obj = getSelectedObjects().get(0);
             if (obj instanceof INedModelProvider) {
-                INedElement element = ((INedModelProvider)obj).getNedModel();
+                INedElement element = ((INedModelProvider)obj).getModel();
                 return new ConvertNedVersionCommand(element);
             }
         }

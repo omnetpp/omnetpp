@@ -21,7 +21,6 @@ import org.omnetpp.figures.ConnectionKindFigure;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPolicy;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
@@ -55,8 +54,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
     @Override
     public void activateFigure() {
     	// add the connection to the compound module's connection layer instead of the global one
-    	((CompoundModuleEditPart)getParent()).getCompoundModuleFigure().getConnectionLayer()
-    			.add(getConnectionFigure());
+    	((CompoundModuleEditPart)getParent()).getFigure().
+    	     getSubmoduleArea().getConnectionLayer().add(getConnectionFigure());
     }
 
     @Override
@@ -142,12 +141,10 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         ConnectionFigure conn = new ConnectionFigure();
         return conn;
     }
-
-    /**
-     * Returns the model associated to this editpart as a ConnectionElementEx
-     */
-    protected ConnectionElementEx getConnectionModel() {
-        return (ConnectionElementEx) getModel();
+    
+    @Override
+    public ConnectionFigure getConnectionFigure() {
+        return (ConnectionFigure)super.getConnectionFigure();
     }
 
     /**
@@ -157,9 +154,9 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
      */
     @Override
     protected void refreshVisuals() {
-        ConnectionElementEx connectionModel = getConnectionModel();
+        ConnectionElementEx connectionModel = getModel();
+        ConnectionFigure cfig = getConnectionFigure();
 
-        ConnectionFigure cfig = (ConnectionFigure)getConnectionFigure();
         cfig.setDisplayString(connectionModel.getDisplayString());
         cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NedElementConstants.NED_ARROWDIR_BIDIR);
 
@@ -182,7 +179,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
 
     public boolean isEditable() {
         boolean isEditable
-            = editable && getParent().getModel() == ((ConnectionElementEx)getModel()).getCompoundModule();
+            = editable && getParent().getModel() == getModel().getCompoundModule();
         if (!isEditable)
             return false;
         // otherwise check what about the parent. if parent is read only we should return its state
@@ -196,7 +193,7 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         super.performRequest(req);
         // let's open or activate a new editor if someone has double clicked the component
         if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-            NedResourcesPlugin.openNedElementInEditor(getConnectionModel().getEffectiveTypeRef());
+            NedResourcesPlugin.openNedElementInEditor(getModel().getEffectiveTypeRef());
         }
     }
 
@@ -233,8 +230,8 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
             registry.remove(getModel());
     }
 
-    public INedElement getNedModel() {
-        return (INedElement)getModel();
+    public ConnectionElementEx getModel() {
+        return (ConnectionElementEx)super.getModel();
     }
 }
 
