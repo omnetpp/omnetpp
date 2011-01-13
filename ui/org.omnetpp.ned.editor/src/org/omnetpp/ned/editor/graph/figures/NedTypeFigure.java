@@ -22,12 +22,11 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.tools.CellEditorLocator;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
+import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.misc.LabelCellEditorLocator;
 
@@ -59,11 +58,6 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
 		};
 	}
 	
-	// FIXME move it to ImageFactory
-	protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
-	protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
-	protected static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
-
     protected String tmpName;
     protected Label nameFigure = new Label();
     protected Layer titleArea = new Layer();
@@ -108,19 +102,6 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
      */
     abstract public void setDisplayString(IDisplayString dps);
 
-	// FIXME move the icons to ImageFactory
-    public static Image getProblemImageFor(int severity) {
-		Image image;
-    	switch (severity) {
-	    	case -1: image = null; break;
-	    	case SEVERITY_ERROR: image = ICON_ERROR; break;
-	    	case SEVERITY_WARNING: image = ICON_WARNING; break;
-	    	case SEVERITY_INFO: image = ICON_INFO; break;
-	    	default: throw new RuntimeException("invalid severity value");
-    	}
-		return image;
-	}
-    
     public boolean isInterface() {
         return isInterface;
     }
@@ -147,6 +128,7 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
 		if (problemMarkerTextProvider != null && problemMarkerFigure != null) {
 			Rectangle markerBounds = problemMarkerFigure.getBounds().getCopy();
 			translateToParent(markerBounds);
+			translateToAbsolute(markerBounds);
 			if (markerBounds.contains(x, y)) {
 				String text = problemMarkerTextProvider.getTooltipText(x, y);
 				if (text != null)
@@ -157,7 +139,7 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
 	}
 
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
-        Image image = NedTypeFigure.getProblemImageFor(maxSeverity);
+        Image image = FigureUtils.getProblemImageFor(maxSeverity);
         if (image != null)
             problemMarkerFigure.setImage(image);
         problemMarkerFigure.setVisible(image != null);

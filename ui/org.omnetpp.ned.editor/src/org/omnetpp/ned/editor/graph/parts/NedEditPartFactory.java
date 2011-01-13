@@ -39,7 +39,7 @@ public class NedEditPartFactory implements EditPartFactory {
         else if (model instanceof SubmoduleElementEx)
             child = new SubmoduleEditPart();
         else if (model instanceof ConnectionElementEx)
-            child = new ModuleConnectionEditPart();
+            child = new NedConnectionEditPart();
         else if (model instanceof INedTypeElement)
             child = new NedTypeEditPart();
         else if (model instanceof TypesElement)

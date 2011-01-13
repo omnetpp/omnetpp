@@ -10,10 +10,14 @@ package org.omnetpp.figures.misc;
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.Debug;
+import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
 
 /**
@@ -22,6 +26,22 @@ import org.omnetpp.figures.ITooltipTextProvider;
  * @author Andras
  */
 public class FigureUtils {
+
+    public static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
+    public static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
+    public static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
+
+    public static Image getProblemImageFor(int severity) {
+        Image image;
+        switch (severity) {
+            case -1: image = null; break;
+            case IProblemDecorationSupport.SEVERITY_ERROR: image = ICON_ERROR; break;
+            case IProblemDecorationSupport.SEVERITY_WARNING: image = ICON_WARNING; break;
+            case IProblemDecorationSupport.SEVERITY_INFO: image = ICON_INFO; break;
+            default: throw new RuntimeException("invalid severity value");
+        }
+        return image;
+    }
 
 	/**
 	 * Finds the root figure for any figure

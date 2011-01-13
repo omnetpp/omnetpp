@@ -10,24 +10,29 @@ package org.omnetpp.figures;
 import org.eclipse.draw2d.ConnectionLocator;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.MidpointLocator;
 import org.eclipse.draw2d.PolygonDecoration;
 import org.eclipse.draw2d.PolylineConnection;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.misc.ConnectionLabelLocator;
+import org.omnetpp.figures.misc.FigureUtils;
 
 /**
- * TODO add documentation
+ * A figure representing a connection between two modules
  *
  * @author rhornig
  */
 //TODO only parse display string if it's changed; ditto for all public setters
-public class ConnectionFigure extends PolylineConnection {
+public class ConnectionFigure extends PolylineConnection 
+                              implements ITooltipTextProvider, IProblemDecorationSupport {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
@@ -43,12 +48,17 @@ public class ConnectionFigure extends PolylineConnection {
     protected TooltipFigure tooltipFigure;
 	protected boolean isArrowHeadEnabled;
     protected IFigure centerDecoration;
+    private int oldCumulativeHashCode;
+    protected ITooltipTextProvider problemMarkerTextProvider;
+    protected ImageFigure problemMarkerFigure = new ImageFigure(); // FIXME create it on demand
 
 	@Override
     public void addNotify() {
         super.addNotify();
+        add(problemMarkerFigure, new MidpointLocator(this, 0));
         add(textFigure, labelLocator);
     }
+	
     public Color getLocalLineColor() {
 		return localLineColor;
 	}
@@ -83,7 +93,7 @@ public class ConnectionFigure extends PolylineConnection {
 	        remove(centerDecoration);
 	    centerDecoration = decoration;
 	    if (centerDecoration != null)
-	        add(centerDecoration, new MidpointLocator(this, 0));
+	        add(centerDecoration, new MidpointLocator(this, 0), 0); // insert as first so it will be displayed UNDER the error marker
 	}
 
     public void setStyle(Color color, int width, String style) {
@@ -141,9 +151,15 @@ public class ConnectionFigure extends PolylineConnection {
 
     /**
 	 * Adjusts the figure properties using a displayString object
-	 * @param dps The display string object containing the properties
 	 */
 	public void setDisplayString(IDisplayString dps) {
+        // OPTIMIZATION: do not change anything if the display string has not changed
+        int newCumulativeHashCode = dps.cumulativeHashCode();
+        if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
+            return;
+
+        this.oldCumulativeHashCode = newCumulativeHashCode;
+
         setStyle(ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.CONNECTION_COLOR)),
 				dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1),
 				dps.getAsString(IDisplayString.Prop.CONNECTION_STYLE));
@@ -168,4 +184,36 @@ public class ConnectionFigure extends PolylineConnection {
 	    super.paint(graphics);
 	    graphics.popState();
 	}
+
+	@Override
+	protected boolean useLocalCoordinates() {
+	    return false;  // locators are working correctly ONLY in non-local coordinate systems
+	}
+	
+    public String getTooltipText(int x, int y) {
+        // if there is a problem marker and an associated tooltip text provider
+        // and the cursor is over the marker, delegate to the problem marker text provider
+        if (problemMarkerTextProvider != null && problemMarkerFigure != null) {
+            Rectangle markerBounds = problemMarkerFigure.getBounds().getCopy();
+            translateToParent(markerBounds);
+            translateToAbsolute(markerBounds);
+            if (markerBounds.contains(x, y)) {
+                String text = problemMarkerTextProvider.getTooltipText(x, y);
+                if (text != null)
+                    return text;
+            }
+        }
+        return null;
+    }
+	
+    public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
+        Image image = FigureUtils.getProblemImageFor(maxSeverity);
+        if (image != null)
+            problemMarkerFigure.setImage(image);
+        problemMarkerFigure.setVisible(image != null);
+
+        problemMarkerTextProvider = textProvider;
+        repaint();
+    }
+	
 }

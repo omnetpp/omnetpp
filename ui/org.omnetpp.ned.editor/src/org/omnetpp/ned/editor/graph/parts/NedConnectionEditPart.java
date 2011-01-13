@@ -9,6 +9,8 @@ package org.omnetpp.ned.editor.graph.parts;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.gef.ConnectionEditPart;
 import org.eclipse.gef.EditPart;
@@ -18,6 +20,7 @@ import org.eclipse.gef.RequestConstants;
 import org.eclipse.gef.editparts.AbstractConnectionEditPart;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.ConnectionKindFigure;
+import org.omnetpp.figures.ITooltipTextProvider;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPolicy;
@@ -28,11 +31,11 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 
 
 /**
- * Implements a Connection editpart to represent a wire-like connection.
+ * Implements a Connection editpart to represent a wire-like connection between modules.
  *
  * @author rhornig
  */
-public class ModuleConnectionEditPart extends AbstractConnectionEditPart
+public class NedConnectionEditPart extends AbstractConnectionEditPart
                     implements IReadOnlySupport, INedModelProvider {
 
 	private EditPart sourceEditPartEx;
@@ -171,6 +174,28 @@ public class ModuleConnectionEditPart extends AbstractConnectionEditPart
         }
         if (isConditional || isGroup)
             cfig.setMidpointDecoration(new ConnectionKindFigure(isConditional, isGroup));
+        
+        // set the error marker on the figure
+        ITooltipTextProvider textProvider = new ITooltipTextProvider() {
+            public String getTooltipText(int x, int y) {
+                String message = "";
+                if (getModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
+                    IMarker[] markers = NedResourcesPlugin.getNedResources().getMarkersForElement(getModel(), 11);
+                    int i = 0;
+                    for (IMarker marker : markers) {
+                        message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";
+                        // we allow 10 markers maximum in a single message
+                        if (++i > 10) {
+                            message += "and some more...\n";
+                            break;
+                        }
+                    }
+                }
+                return StringUtils.strip(message);
+            }
+        };
+
+        getConnectionFigure().setProblemDecoration(getModel().getMaxProblemSeverity(), textProvider);
     }
 
     public void setEditable(boolean editable) {

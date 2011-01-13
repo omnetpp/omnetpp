@@ -15,7 +15,7 @@ import org.eclipse.gef.tools.ConnectionEndpointTracker;
 
 import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
-import org.omnetpp.ned.editor.graph.parts.ModuleConnectionEditPart;
+import org.omnetpp.ned.editor.graph.parts.NedConnectionEditPart;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 
@@ -39,7 +39,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 		        return false;
 			ReconnectCommand connCommand = (ReconnectCommand)cmd;
 
-			ModuleConnectionEditPart connPart = (ModuleConnectionEditPart)getConnectionEditPart();
+			NedConnectionEditPart connPart = (NedConnectionEditPart)getConnectionEditPart();
 	        CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getModel();
 	        // ask the user about which gates should be connected, ask for both source and destination gates
 	        // FIXME we should extract the direction (src/dest) locally and not from the command
@@ -82,7 +82,7 @@ public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
     @Override
     protected boolean handleDragInProgress() {
         // allow dragging ONLY if the connection is editable
-        if (((ModuleConnectionEditPart)getConnectionEditPart()).isEditable())
+        if (((NedConnectionEditPart)getConnectionEditPart()).isEditable())
             return super.handleDragInProgress();
 
         return false;

@@ -18,14 +18,13 @@ import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
+import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 
 /**
@@ -50,11 +49,6 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected static final int TEXTPOS_LEFT = 1;
 	protected static final int TEXTPOS_RIGHT = 2;
 	protected static final int TEXTPOS_TOP = 3;
-
-	// FIXME use image factory instead of stck images
-    protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
-    protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
-    protected static final Image ICON_INFO = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_INFO);
 
     protected static final Image IMG_PIN = ImageFactory.getImage(ImageFactory.DEFAULT_PIN);
 	protected static final Image IMG_DEFAULT = ImageFactory.getImage(ImageFactory.DEFAULT);
@@ -244,25 +238,12 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	}
 
 	public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
-		problemMarkerImage = getProblemImageFor(maxSeverity);
+		problemMarkerImage = FigureUtils.getProblemImageFor(maxSeverity);
 		problemMarkerTextProvider = textProvider;
 		if (centerLoc != null)
 			updateBounds();
 		repaint();
 	}
-
-	// FIXME move it to ImageFactory (and remove this method)
-    private static Image getProblemImageFor(int severity) {
-        Image image;
-        switch (severity) {
-            case -1: image = null; break;
-            case SEVERITY_ERROR: image = ICON_ERROR; break;
-            case SEVERITY_WARNING: image = ICON_WARNING; break;
-            case SEVERITY_INFO: image = ICON_INFO; break;
-            default: throw new RuntimeException("invalid severity value");
-        }
-        return image;
-    }
 
 	public void setQueueText(String queueText) {
 		if (!StringUtils.equals(this.queueText, queueText)) {
@@ -764,7 +745,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			graphics.drawImage(IMG_PIN, r.x, r.y);
 		}
 
-		// draw pin
+		// draw error image
 		if (problemMarkerImage != null) {
 			if (shapeBounds == null) shapeBounds = getShapeBounds();
 			Rectangle r = getProblemMarkerImageBounds(shapeBounds);
