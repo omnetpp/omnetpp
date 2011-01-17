@@ -198,7 +198,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 */
 	@Override
     public ConnectionAnchor getConnectionAnchorAt(Point p) {
-        return new CompoundModuleGateAnchor(getFigure());
+        return new CompoundModuleGateAnchor(getFigure().getSubmoduleArea());
 	}
 
 	/**
@@ -206,7 +206,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 	 */
 	@Override
     public GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate) {
-	    CompoundModuleGateAnchor gateAnchor = new CompoundModuleGateAnchor(getFigure());
+	    CompoundModuleGateAnchor gateAnchor = new CompoundModuleGateAnchor(getFigure().getSubmoduleArea());
         gateAnchor.setEdgeConstraint(getRoutingConstraintPosition(connection.getDisplayString().getAsString(Prop.ROUTING_CONSTRAINT)));
         return gateAnchor;
 	}
