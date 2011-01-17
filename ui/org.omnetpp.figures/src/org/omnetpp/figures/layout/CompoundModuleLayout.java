@@ -106,10 +106,10 @@ public class CompoundModuleLayout extends AbstractLayout {
                 if (srcFig == null || targetFig == null)
                     continue;
 				// if this is an edge coming from outside to a submodule
-				if (srcFig instanceof CompoundModuleFigure) {
+				if (!(srcFig instanceof SubmoduleFigure)) {
 					autoLayouter.addEdgeToBorder(targetFig, 0);
 				} // else if this is an edge going out from a submodule
-				else if (targetFig instanceof CompoundModuleFigure) {
+				else if (!(targetFig instanceof SubmoduleFigure)) {
 					autoLayouter.addEdgeToBorder(srcFig, 0);
 				}
 				else {  // both are submodules
