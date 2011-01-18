@@ -7,14 +7,14 @@ sub testEcho1
    print("Testing echo on $fileName\n");
 
    print("  Echoing the whole input file\n");
-   system("$eventLogTool echo -o result/tmp.log $fileName") == 0
+   system("$eventLogTool echo -o results/tmp.elog $fileName") == 0
       or print("*** FAIL: Testing echo on $fileName\n");
 
    print("  Diffing output against original input file\n");
-   system("diff result/tmp.log $fileName > result/tmp.diff");
-   unlink("result/tmp.log");
+   system("diff results/tmp.elog $fileName > results/tmp.diff");
+   unlink("results/tmp.elog");
 
-   if ((stat("result/tmp.diff"))[7] != 0)
+   if ((stat("results/tmp.diff"))[7] != 0)
    {
       print("*** FAIL: Echo returned different content for $fileName\n\n");
    }
@@ -23,7 +23,7 @@ sub testEcho1
       print("PASS\n\n");
    }
 
-   unlink("result/tmp.diff");
+   unlink("results/tmp.diff");
 }
 
 sub testEcho2
@@ -33,21 +33,21 @@ sub testEcho2
    print("Testing echo on $fileName\n");
 
    print("  Echoing the input file in two parts\n");
-   system("$eventLogTool echo -o result/tmp1.log -te 100 $fileName") == 0
+   system("$eventLogTool echo -o results/tmp1.elog -te 100 $fileName") == 0
       or print("*** FAIL: Testing echo on $fileName failed\n");
 
-   system("$eventLogTool echo -oi -o result/tmp2.log -fe 101 $fileName") == 0
+   system("$eventLogTool echo -oi -o results/tmp2.elog -fe 101 $fileName") == 0
       or print("*** FAIL: Testing echo on $fileName failed\n");
 
    print("  Diffing the concatenation of the outputs against the input file\n");
-   system("cat result/tmp1.log result/tmp2.log > result/tmp.log");
-   unlink("result/tmp1.log");
-   unlink("result/tmp2.log");
+   system("cat results/tmp1.elog results/tmp2.elog > results/tmp.elog");
+   unlink("results/tmp1.elog");
+   unlink("results/tmp2.elog");
 
-   system("diff result/tmp.log $fileName > result/tmp.diff");
-   unlink("result/tmp.log");
+   system("diff results/tmp.elog $fileName > results/tmp.diff");
+   unlink("results/tmp.elog");
 
-   if ((stat("result/tmp.diff"))[7] != 0)
+   if ((stat("results/tmp.diff"))[7] != 0)
    {
       print("*** FAIL: Echo returned different content for $fileName\n");
    }
@@ -56,7 +56,7 @@ sub testEcho2
       print("PASS\n\n");
    }
 
-   unlink("result/tmp.diff");
+   unlink("results/tmp.diff");
 }
 
 sub testOffsets
@@ -65,9 +65,9 @@ sub testOffsets
 
    print("Testing offsets on $fileName\n");
 
-   system("$eventLogTool offsets -e \"0 1 2 3\" -o result/tmp.log $fileName") == 0
+   system("$eventLogTool offsets -e \"0 1 2 3\" -o results/tmp.elog $fileName") == 0
       or print("*** FAIL: Testing offsets on $fileName failed\n");
-   unlink("result/tmp.log");
+   unlink("results/tmp.elog");
 
    if ($lastEventNumber >= 0)
    {
@@ -119,18 +119,19 @@ sub testFilter
    {
       print("  Tracing event number $i in $fileName\n");
 
-      system("$eventLogTool filter -oi -e $i -o result/tmp.log $fileName") == 0
+      $end = $i + 1000;
+      system("$eventLogTool filter -oi -e $i -te $end -o results/tmp.elog $fileName") == 0
          or print("*** FAIL: Testing filter on $fileName failed\n");
 
-      $length = (stat("result/tmp.log"))[7];
+      $length = (stat("results/tmp.elog"))[7];
       print("  resulted in $length bytes\n");
 
-      `$eventLogTool offsets -e $i result/tmp.log` != -1
+      `$eventLogTool offsets -e $i results/tmp.elog` != -1
          or print("*** FAIL: Traced event not found in filter result for $fileName\n");
    }
 
    print("PASS\n\n");
-   unlink("result/tmp.log");
+   unlink("results/tmp.elog");
 }
 
 sub testEventLogTool
@@ -150,7 +151,7 @@ sub testEventLogTool
    testFilter($fileName, $lastEventNumber);
 }
 
-testEventLogTool("log/empty.log");
-testEventLogTool("log/one-event.log");
-testEventLogTool("log/two-events.log");
-testEventLogTool("generated/stress.log");
+testEventLogTool("elog/empty.elog");
+testEventLogTool("elog/one-event.elog");
+testEventLogTool("elog/two-events.elog");
+testEventLogTool("generated/stress.elog");

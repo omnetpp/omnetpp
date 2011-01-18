@@ -3,9 +3,9 @@ sub testEventLogIndex
    my($fileName, $numberOfOffsetLookups) = @_;
 
    $resultFileName = $fileName;
-   $resultFileName =~ s/^(.*)\//result\//;
+   $resultFileName =~ s/^(.*)\//results\//;
 
-   if (system("./eventlogindextest $fileName $numberOfOffsetLookups > $resultFileName") == 0)
+   if (system("eventlogindextest $fileName $numberOfOffsetLookups > $resultFileName") == 0)
    {
       print("PASS: Indexing on $fileName\n\n");
    }
@@ -15,11 +15,11 @@ sub testEventLogIndex
    }
 }
 
-mkdir("result");
+mkdir("results");
 
-testEventLogIndex("log/empty.log", 1);
-testEventLogIndex("log/one-event.log", 5);
-testEventLogIndex("log/two-events.log", 10);
-testEventLogIndex("generated/stress.log", 1000);
-testEventLogIndex("filtered/stress-lines.log", 1000);
-testEventLogIndex("filtered/stress-events.log", 1000);
+testEventLogIndex("elog/empty.elog", 1);
+testEventLogIndex("elog/one-event.elog", 5);
+testEventLogIndex("elog/two-events.elog", 10);
+testEventLogIndex("generated/stress.elog", 1000);
+testEventLogIndex("filtered/stress-lines.elog", 1000);
+testEventLogIndex("filtered/stress-events.elog", 1000);

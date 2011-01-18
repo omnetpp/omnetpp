@@ -1,5 +1,5 @@
 mkdir("generated");
 
 chdir("../stress");
-system("stress.exe -u Cmdenv");
-rename("omnetpp.log", "../eventlog/generated/stress.log");
+system("stress -u Cmdenv -c Simple --sim-time-limit=1000s");
+rename("results/Simple-0.elog", "../eventlog/generated/stress.elog");

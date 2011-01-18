@@ -52,12 +52,12 @@ void checkOffset(EventLogIndex& eventLogIndex, file_offset_t offset)
         throw opp_runtime_error("*** Inconsistent begin and end offsets for offset: %"LL"d\n", offset);
 }
 
-void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, MatchKind matchKind, long eventNumber)
+void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, MatchKind matchKind, eventnumber_t eventNumber)
 {
     if (offset != -1) {
         checkOffset(eventLogIndex, offset);
 
-        long checkEventNumber;
+        eventnumber_t checkEventNumber;
         file_offset_t lineStartOffset, lineEndOffset;
         simtime_t simulationTime;
 
@@ -69,7 +69,7 @@ void checkEventNumberOffset(EventLogIndex& eventLogIndex, file_offset_t offset, 
 
             if ((!forward || eventNumber > checkEventNumber) &&
                 (forward || eventNumber < checkEventNumber))
-                throw opp_runtime_error("*** Found wrong offset for event number: %ld\n", eventNumber);
+                throw opp_runtime_error("*** Found wrong offset for event number: %"LL"d\n", eventNumber);
         }
     }
 }
@@ -79,7 +79,7 @@ void checkSimulationTimeOffset(EventLogIndex& eventLogIndex, file_offset_t offse
     if (offset != -1) {
         checkOffset(eventLogIndex, offset);
 
-        long eventNumber;
+        eventnumber_t eventNumber;
         file_offset_t lineStartOffset, lineEndOffset;
         simtime_t checkSimulationTime;
         bool forward = getReadForward(matchKind);
@@ -102,22 +102,22 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
     LCGRandom random;
     EventLogIndex eventLogIndex(new FileReader(fileName));
 
-    long firstEventNumber = eventLogIndex.getFirstEventNumber();
+    eventnumber_t firstEventNumber = eventLogIndex.getFirstEventNumber();
     simtime_t firstSimulationTime = eventLogIndex.getFirstSimulationTime();
     file_offset_t firstEventOffset = eventLogIndex.getFirstEventOffset();
 
-    long lastEventNumber = eventLogIndex.getLastEventNumber();
+    eventnumber_t lastEventNumber = eventLogIndex.getLastEventNumber();
     simtime_t lastSimulationTime = eventLogIndex.getLastSimulationTime();
     file_offset_t lastEventOffset = eventLogIndex.getLastEventOffset();
 
     if ((firstEventNumber == -1 || lastEventNumber == -1) && firstEventNumber != lastEventNumber)
-        throw opp_runtime_error("*** Inconsistent first and last event numbers: %ld, %ld\n", firstEventNumber, lastEventNumber);
+        throw opp_runtime_error("*** Inconsistent first and last event numbers: %"LL"d, %"LL"d\n", firstEventNumber, lastEventNumber);
 
     if (lastEventNumber != -1) {
         while (numberOfOffsetLookups--) {
             // seek to random event number
-            long eventNumber = random.next01() * lastEventNumber;
-            printf("Seeking for event number: %ld\n", eventNumber);
+            eventnumber_t eventNumber = random.next01() * lastEventNumber;
+            printf("Seeking for event number: %"LL"d\n", eventNumber);
             file_offset_t offset = eventLogIndex.getOffsetForEventNumber(eventNumber, EXACT);
             file_offset_t firstOrPreviousOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_PREVIOUS);
             file_offset_t firstOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, FIRST_OR_NEXT);
@@ -125,13 +125,13 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
             file_offset_t lastOrNextOffset = eventLogIndex.getOffsetForEventNumber(eventNumber, LAST_OR_NEXT);
 
             if (firstOrPreviousOffset > lastOrNextOffset)
-                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for event number: %ld\n", eventNumber);
+                throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for event number: %"LL"d\n", eventNumber);
 
             if (firstOrNextOffset < firstOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for event number: %ld\n", eventNumber);
+                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for event number: %"LL"d\n", eventNumber);
 
             if (lastOrNextOffset < lastOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for event number: %ld\n", eventNumber);
+                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for event number: %"LL"d\n", eventNumber);
 
             checkEventNumberOffset(eventLogIndex, offset, EXACT, eventNumber);
             checkEventNumberOffset(eventLogIndex, firstOrPreviousOffset, FIRST_OR_PREVIOUS, eventNumber);
@@ -152,10 +152,10 @@ void testEventLogIndex(const char *fileName, int numberOfOffsetLookups)
                 throw opp_runtime_error("*** Inconsistent first or previous and last or next offsets for simulation time: %g\n", simulationTime);
 
             if (firstOrNextOffset < firstOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for simulation time: %ld\n", simulationTime);
+                throw opp_runtime_error("*** Inconsistent first or next and first or previous offsets for simulation time: %g\n", simulationTime);
 
             if (lastOrNextOffset < lastOrPreviousOffset)
-                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for simulation time: %ld\n", simulationTime);
+                throw opp_runtime_error("*** Inconsistent last or next and last or previous offsets for simulation time: %g\n", simulationTime);
 
             checkSimulationTimeOffset(eventLogIndex, offset, EXACT, simulationTime);
             checkSimulationTimeOffset(eventLogIndex, firstOrPreviousOffset, FIRST_OR_PREVIOUS, simulationTime);

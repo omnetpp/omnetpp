@@ -48,5 +48,5 @@ sub filterLogFileWithTool
 
 mkdir("filtered");
 
-filterLinesFromLogFile("generated/stress.log", "filtered/stress-lines.log");
-filterEventsFromLogFile("generated/stress.log", "filtered/stress-events.log");
+filterLinesFromLogFile("generated/stress.elog", "filtered/stress-lines.elog");
+filterEventsFromLogFile("generated/stress.elog", "filtered/stress-events.elog");
