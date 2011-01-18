@@ -27,11 +27,11 @@ sub test
    $resultFileName = $fileName;
    $forwardResultFileName = $fileName;
    $backwardResultFileName = $fileName;
-   $resultFileName =~ s/^(.*)\//result\//;
-   $forwardResultFileName =~ s/^(.*)\//result\/forward-/;
-   $backwardResultFileName =~ s/^(.*)\//result\/backward-/;
+   $resultFileName =~ s/^(.*)\//results\//;
+   $forwardResultFileName =~ s/^(.*)\//results\/forward-/;
+   $backwardResultFileName =~ s/^(.*)\//results\/backward-/;
 
-   if (system("./fileechotest $fileName forward > $forwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
+   if (system("fileechotest $fileName forward > $forwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
    {
       print("PASS: Forward echoing $fileName\n\n");
    }
@@ -40,7 +40,7 @@ sub test
       print("FAIL: Forward echoing $fileName\n\n");
    }
 
-   if (system("./fileechotest $fileName backward > $backwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
+   if (system("fileechotest $fileName backward > $backwardResultFileName") == 0 && matchFiles($fileName, $forwardResultFileName))
    {
       print("PASS: Backward echoing $fileName\n\n");
    }
@@ -49,7 +49,7 @@ sub test
       print("FAIL: Backward echoing $fileName\n\n");
    }
 
-   if (system("./filereadertest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
+   if (system("filereadertest $fileName $numberOfLines $numberOfSeeks $numberOfReadLines > $resultFileName") == 0)
    {
       print("PASS: Reader test on $fileName\n\n");
    }
@@ -84,8 +84,9 @@ sub generate
 
    while ($fileSize > 0)
    {
-      print OUT "$numberOfLines ";
-      $line = generateContent($maxLineSize);
+      $lineNumber = "$numberOfLines ";
+      print OUT $lineNumber;
+      $line = generateContent($maxLineSize - length($lineNumber));
       $fileSize -= length($line);
       $numberOfLines++;
       print OUT "$line\n";
@@ -112,14 +113,14 @@ sub concurrentTest
       print "resources not avilable.\n";
    } elsif ($pid == 0) {
       # child process
-      if (system("./filereaderproducer $fileName $duration $numberOfLines") != 0)
+      if (system("filereaderproducer $fileName $duration $numberOfLines") != 0)
       {
          print("FAIL: Cannot start filereaderproducer with $fileName\n\n");
       }
       exit(0);
    } else {
       # parent process
-      if (system("./filereaderconsumer $fileName $duration") == 0)
+      if (system("filereaderconsumer $fileName $duration") == 0)
       {
          print("PASS: Concurrent reader test on $fileName\n\n");
       }
@@ -133,7 +134,7 @@ sub concurrentTest
 }
 
 mkdir("generated");
-mkdir("result");
+mkdir("results");
 
 test("text/empty.txt", 0, 10, 10);
 test("text/one-character.txt", 0, 10, 10);
@@ -160,5 +161,5 @@ generateAndTest("generated/large-big-lines.txt",  1E+8, 32768, 100, 100);
 # uncomment this if you want to test it with GByte files
 #generateAndTest("generated/huge-big-lines.txt",   5E+9, 32768, 100, 100);
 
-concurrentTest("result/concurrent_small.txt", 1, 100);
-concurrentTest("result/concurrent_large.txt", 10, 10000);
+concurrentTest("results/concurrent_small.txt", 1, 100);
+concurrentTest("results/concurrent_large.txt", 10, 10000);
