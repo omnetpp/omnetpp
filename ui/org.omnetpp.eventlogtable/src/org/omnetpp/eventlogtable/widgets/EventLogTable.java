@@ -154,8 +154,8 @@ public class EventLogTable
     					paintHasBeenFinished = true;
 				    }
                     catch (RuntimeException e) {
-                        if (eventLogInput.isEventLogChangedException(e))
-                            eventLogInput.checkEventLogForChanges();
+                        if (eventLogInput.isFileChangedException(e))
+                            eventLogInput.synchronize(e);
                         else {
                             internalErrorHappenedDuringPaint = true;
                             throw e;

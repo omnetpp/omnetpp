@@ -8,6 +8,7 @@
 package org.omnetpp.common.eventlog;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
@@ -62,6 +63,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		locationTimer = new Runnable() {
 			public void run() {
+		        Assert.isTrue(Display.getCurrent() != null);
 				markLocation();
 			}
 		};
@@ -154,7 +156,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 
 					if (currentLocation != null && !currentLocation.equals(lastLocation)) {
 						lastLocation = currentLocation;
-						Display.getCurrent().timerExec(3000, locationTimer);
+						Display.getDefault().timerExec(3000, locationTimer);
 					}
 				}
 			}
@@ -166,6 +168,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	}
 
 	public void markLocation() {
+        Assert.isTrue(Display.getCurrent() != null);
 		getSite().getPage().getNavigationHistory().markLocation(this);
 	}
 

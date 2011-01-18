@@ -2281,8 +2281,8 @@ public class SequenceChart
     						Debug.println("Read " + eventLog.getFileReader().getNumReadBytes() + " bytes, " + eventLog.getFileReader().getNumReadLines() + " lines, " + eventLog.getNumParsedEvents() + " events from " + eventLogInput.getFile().getName());
 				    }
 				    catch (RuntimeException e) {
-				        if (eventLogInput.isEventLogChangedException(e))
-				            eventLogInput.checkEventLogForChanges();
+				        if (eventLogInput.isFileChangedException(e))
+				            eventLogInput.synchronize(e);
 				        else {
 	                        internalErrorHappenedDuringPaint = true;
 				            throw e;

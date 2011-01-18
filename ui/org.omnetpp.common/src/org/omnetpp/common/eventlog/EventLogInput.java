@@ -11,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.FileEditorInput;
 import org.omnetpp.common.CommonPlugin;
@@ -104,9 +105,9 @@ public class EventLogInput extends FileEditorInput
 			public void run() {
 	            Display.getDefault().asyncExec(new Runnable() {
 	                // synchronize may destructively modify the underlying structure of the event log
-	                // and thus it must be called from the UI thread to prevent UI concurrent paints
+	                // and thus it must be called from the UI thread to prevent concurrent paints
 	                public void run() {
-	                    checkEventLogForChanges();
+	                    synchronize(getEventLog().getFileReader().checkFileForChanges());
 	                }
 	            });
 			}
@@ -116,32 +117,19 @@ public class EventLogInput extends FileEditorInput
 		restoreState();
 	}
 
-	public synchronized void checkEventLogForChanges() {
-	    try {
-	        synchronize(eventLog.getFileReader().getFileChangedState());
-	    }
-	    catch (RuntimeException e) {
-	        // ignore if the log changes during synchronizing
-	        // we will synchronize later
-	        if (!isEventLogChangedException(e))
-	            throw e;
-	    }
-	}
+    public void synchronize(Exception e) {
+        // TODO: XXX: FIXME: get change and call synchronize with that
+        synchronize(FileReader.FileChangedState.OVERWRITTEN);
+    }
 
     public void synchronize(int change) {
-        if (debug)
-            Debug.println("Synchronizing event log file content: " + getFile().getName());
-
-        getEventLogTableFacade().synchronize(change);
-        getSequenceChartFacade().synchronize(change);
-
-        switch (change) {
-            case FileReader.FileChangedState.APPENDED:
-                eventLogAppended();
-                break;
-            case FileReader.FileChangedState.OVERWRITTEN:
-                eventLogOverwritten();
-                break;
+        Assert.isTrue(Display.getCurrent() != null);
+        if (change != FileReader.FileChangedState.UNCHANGED) {
+            if (debug)
+                Debug.println("Synchronizing event log file content: " + getFile().getName());
+            getEventLogTableFacade().synchronize(change);
+            getSequenceChartFacade().synchronize(change);
+            eventLogChanged(change);
         }
     }
 
@@ -184,9 +172,8 @@ public class EventLogInput extends FileEditorInput
 	}
 
 	public EventLogFilterParameters getFilterParameters() {
-		if (eventLogFilterParameters == null) {
+		if (eventLogFilterParameters == null)
 			eventLogFilterParameters = new EventLogFilterParameters(this);
-		}
 
 		return eventLogFilterParameters;
 	}
@@ -405,6 +392,17 @@ public class EventLogInput extends FileEditorInput
 			eventLogWatcher.stop();
 	}
 
+    private void eventLogChanged(int change) {
+        switch (change) {
+            case FileReader.FileChangedState.APPENDED:
+                eventLogAppended();
+                break;
+            case FileReader.FileChangedState.OVERWRITTEN:
+                eventLogOverwritten();
+                break;
+        }
+    }
+
 	private void eventLogAppended() {
         if (debug)
             Debug.println("Notifying listeners about new content being appended to the event log");
@@ -518,11 +516,12 @@ public class EventLogInput extends FileEditorInput
 	        return t.getMessage() != null && t.getMessage().contains("LongRunningOperationCanceled");
 	}
 
-    public boolean isEventLogChangedException(Throwable t) {
+	// TODO: check for specific C++ exception class
+    public boolean isFileChangedException(Throwable t) {
         if (t instanceof InvocationTargetException)
-            return isEventLogChangedException(((InvocationTargetException)t).getTargetException());
+            return isFileChangedException(((InvocationTargetException)t).getTargetException());
         else if (t.getCause() != null)
-            return isEventLogChangedException(t.getCause());
+            return isFileChangedException(t.getCause());
         else
             return t.getMessage() != null && t.getMessage().contains("File changed: ");
     }

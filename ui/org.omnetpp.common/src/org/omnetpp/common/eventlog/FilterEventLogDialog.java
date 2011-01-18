@@ -362,7 +362,7 @@ public class FilterEventLogDialog
 			checkboxTableViewer.setCheckedElements(values);
 	}
 
-	public void parseFilterParameters(EventLogFilterParameters filterParameters) {
+	private void parseFilterParameters(EventLogFilterParameters filterParameters) {
 		try {
 			Class<EventLogFilterParameters> clazz = EventLogFilterParameters.class;
 
@@ -675,6 +675,7 @@ public class FilterEventLogDialog
         filterDescription.setText(filterParameters.toString());
 
         container.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
                 ScrollBar verticalBar = filterDescription.getVerticalBar();
                 int scrollBarWidth = verticalBar == null ? 0 : verticalBar.getSize().x;
@@ -815,7 +816,7 @@ public class FilterEventLogDialog
 				moduleNEDTypeNameSet.add(moduleCreatedEntry.getNedTypeName());
 		}
 
-		String[] moduleNEDTypeNamesAsStrings = (String[])moduleNEDTypeNameSet.toArray(new String[0]);
+		String[] moduleNEDTypeNamesAsStrings = moduleNEDTypeNameSet.toArray(new String[0]);
 		Collections.sort(Arrays.asList(moduleNEDTypeNamesAsStrings), StringUtils.dictionaryComparator);
 		moduleNEDTypeNames = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		moduleNEDTypeNames.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -855,7 +856,8 @@ public class FilterEventLogDialog
         moduleIds = CheckboxTableViewer.newCheckList(panel, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL);
 		moduleIds.getTable().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 		moduleIds.setLabelProvider(new LabelProvider() {
-			public String getText(Object element) {
+			@Override
+            public String getText(Object element) {
 				ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule((Integer)element);
 
 				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath();
