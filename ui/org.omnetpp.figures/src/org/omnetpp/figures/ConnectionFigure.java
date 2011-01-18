@@ -30,7 +30,6 @@ import org.omnetpp.figures.misc.FigureUtils;
  *
  * @author rhornig
  */
-//TODO only parse display string if it's changed; ditto for all public setters
 public class ConnectionFigure extends PolylineConnection 
                               implements ITooltipTextProvider, IProblemDecorationSupport {
 	protected int localLineStyle = Graphics.LINE_SOLID;

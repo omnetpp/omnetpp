@@ -226,7 +226,7 @@ public class CompoundModuleFigure extends LayeredPane
      * Returns the bounds where the anchors should be placed in parent coordinate system.
      */
     public Rectangle getAnchorBounds() {
-    	Rectangle box = getClientArea().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
+    	Rectangle box = getClientArea().shrink(BORDER_SNAP_WIDTH, BORDER_SNAP_WIDTH);
     	translateToParent(box);
     	return box;
     }
