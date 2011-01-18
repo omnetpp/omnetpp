@@ -74,6 +74,7 @@ public class NedFileEditPart extends NedEditPart {
     protected void refreshVisuals() {
     	super.refreshVisuals();
    		getFigure().setProblemMessage(!getModel().hasSyntaxError() ? null : "Syntax error, the graphical editor content may be outdated and invalid. Please fix the syntax errors first.");
+   		getFigure().setPackageName(getModel().getPackage());
     }
 
     @Override
