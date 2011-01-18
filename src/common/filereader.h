@@ -19,6 +19,7 @@
 
 #include <vector>
 #include <string>
+#include "exception.h"
 #include "platmisc.h"
 #include "commondefs.h"
 #include "intxtypes.h"   // for int64
@@ -44,9 +45,9 @@ class COMMON_API FileReader
   private:
     // the file
     const std::string fileName;
-    FILE *f;
-    bool checkFileChanged;
-    bool synchronizeWhenAppended;
+    FILE *file;
+    bool enableCheckFileForChanges;
+    bool enableIgnoreAppendChanges;
 
     // the buffer
     const size_t bufferSize;
@@ -56,21 +57,19 @@ class COMMON_API FileReader
 
     // file positions and size
     file_offset_t bufferFileOffset;
-    file_offset_t storedBufferFileOffset;
     int64 fileSize;
 
     // the currently used (filled with data) region in buffer
     char *dataBegin; // must point between bufferBegin and bufferEnd
     char *dataEnd; // must point between bufferBegin and bufferEnd
 
-    // the very last line of the file as currently known
-    file_offset_t lastLineOffset;
-    int lastLineLength;
-    std::string lastLine;
+    // the very end of the file as currently known
+    int lastSavedSize;
+    char* lastSavedBufferBegin;
+    char* lastSavedBufferEnd;
 
     // the position where readNextLine() or readPreviousLine() starts from
     char *currentDataPointer; // must point between dataBegin and dataEnd when used
-    char *storedDataPointer;
 
     // the pointer returned by readNextLine() or readPreviousLine()
     file_offset_t currentLineStartOffset;
@@ -96,16 +95,10 @@ class COMMON_API FileReader
      * May read from 0 up to bufferSize number of bytes.
      */
     void fillBuffer(bool forward);
-
+    int readFileEnd(void *dataPointer);
     void ensureFileOpenInternal();
-
-    // assert data structure consistence
-    void checkConsistence(bool checkDataPointer = false) const;
-    FileChangedState checkFileChangedAndSynchronize();
-
-    // store and restore state to be able to read at another position
-    void storePosition();
-    void restorePosition();
+    int64 getFileSizeInternal();
+    void checkConsistency(bool checkDataPointer = false) const;
 
     file_offset_t pointerToFileOffset(char *pointer) const;
     char* fileOffsetToPointer(file_offset_t offset) const { return offset - bufferFileOffset + (char *)bufferBegin; }
@@ -120,8 +113,6 @@ class COMMON_API FileReader
     char *findNextLineStart(char *s, bool bufferFilled = false);
     char *findPreviousLineStart(char *s, bool bufferFilled = false);
 
-    int64 getFileSizeInternal();
-
   public:
     /**
      * Creates a tokenizer object for the given file, with the given buffer size.
@@ -135,14 +126,16 @@ class COMMON_API FileReader
     virtual ~FileReader();
 
     /**
-     * Controls whether file is checked for changes each time before physically accessing it.
+     * Controls whether the file is checked for changes each time before physically accessing it.
+     * See checkFileForChanges() for more details.
      */
-    void setCheckFileChanged(bool value) { checkFileChanged = value; }
+    void setCheckFileForChanges(bool value) { enableCheckFileForChanges = value; }
 
     /**
      * Controls what happens when it is determined that new content has been appended to the file.
+     * If append changes are not ignored an exception will be thrown.
      */
-    void setSynchronizeWhenAppended(bool value) { synchronizeWhenAppended = value; }
+    void setIgnoreAppendChanges(bool value) { enableIgnoreAppendChanges = value; }
 
     /**
      * This method is called automatically whenever the file is accessed through a public function.
@@ -154,18 +147,6 @@ class COMMON_API FileReader
      * not needed for a long period of time.
      */
     void ensureFileClosed();
-
-    /**
-     * Checks if file has been changed on disk. A file change is considered to be an append if it did not change the
-     * content of the last line (starting at the very same offset).
-     */
-    FileChangedState getFileChangedState();
-
-    /**
-     * Updates internal state to reflect file changes on disk, it does not move the current position
-     * and thus it may become invalid for truncated files.
-     */
-    void synchronize();
 
     /**
      * Returns the first line from the file, see getNextLineBufferPointer.
@@ -217,10 +198,10 @@ class COMMON_API FileReader
     /**
      * Returns the length of the last line including CR/LF.
      */
-    int getCurrentLineLength() const { return currentLineEndOffset - currentLineStartOffset; }
+    int getCurrentLineLength() const;
 
     /**
-     * Returns the size of the file when last time synchronize was called.
+     * Returns the size of the file when last time checkFileForChanges() was called.
      */
     int64 getFileSize();
 
@@ -238,6 +219,38 @@ class COMMON_API FileReader
      * Returns the total number of bytes read in so far.
      */
     int64 getNumReadBytes() const { return numReadBytes; }
+
+    /**
+     * Checks if the file has been changed. A file change is considered to be an append if it did not change the
+     * content of the last line (starting at the very same file offset) and the file size has been increased.
+     * Otherwise the change is considered to be an overwrite. If the file content is changed and the file size
+     * remains the same, then it is not considered to be a change at all.
+     */
+    FileChangedState checkFileForChanges();
+
+    /**
+     * May or may not throw a FileChangedError depending on the current configuration.
+     */
+    void signalFileChanges(FileChangedState change);
+};
+
+/**
+ * Special purpose exception to signal when the underlying file changes.
+ */
+class COMMON_API FileChangedError : opp_runtime_error
+{
+  public:
+    FileReader::FileChangedState change;
+
+    /**
+     * The error message can be generated in a printf-like manner.
+     */
+    FileChangedError(FileReader::FileChangedState change, const char *msg, ...);
+
+    /**
+     * Destructor with throw clause required by gcc.
+     */
+    virtual ~FileChangedError() throw() {}
 };
 
 NAMESPACE_END
