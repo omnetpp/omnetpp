@@ -36,14 +36,14 @@ NAMESPACE_BEGIN
 class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 {
     protected:
-        long timelineCoordinateSystemVersion;
-        eventnumber_t timelineCoordinateOriginEventNumber;
-        simtime_t timelineCoordinateOriginSimulationTime;
-        eventnumber_t timelineCoordinateRangeStartEventNumber;
-        eventnumber_t timelineCoordinateRangeEndEventNumber;
+        long timelineCoordinateSystemVersion; // a counter incremented each time the timeline coordinate system is relocated
+        eventnumber_t timelineCoordinateOriginEventNumber; // -1 means undefined, otherwise the event number of the timeline coordinate system origin
+        simtime_t timelineCoordinateOriginSimulationTime; // simtime_nil means undefined
+        eventnumber_t timelineCoordinateRangeStartEventNumber; // -1 means undefined, the beginning of the continuous event range which has timeline coordinates assigned
+        eventnumber_t timelineCoordinateRangeEndEventNumber; // -1 means undefined, the end of the continuous event range which has timeline coordinates assigned
         TimelineMode timelineMode;
-        double nonLinearMinimumTimelineCoordinateDelta;
-        double nonLinearFocus;
+        double nonLinearFocus; // a useful constant for the nonlinear transformation between simulation time and timeline coordinate
+        double nonLinearMinimumTimelineCoordinateDelta; // minimum timeline coordinate difference between two events
 
     public:
         SequenceChartFacade(IEventLog *eventLog);
@@ -57,7 +57,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 
         double getNonLinearMinimumTimelineCoordinateDelta() { return nonLinearMinimumTimelineCoordinateDelta; }
         void setNonLinearMinimumTimelineCoordinateDelta(double value);
-        double getNonLinearFocus() { return nonLinearFocus; }
+        double getNonLinearFocus();
         void setNonLinearFocus(double nonLinearFocus);
 
         IEvent *getTimelineCoordinateSystemOriginEvent() { return eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber); }
@@ -95,6 +95,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
 
         std::vector<ptr_t> *getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr);
         std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples, int messageSendWeight = 1, int messageReuseWeight = 0);
+
     protected:
         void extractSimulationTimesAndTimelineCoordinates(
             IEvent *event, IEvent *&nextEvent,

@@ -116,7 +116,7 @@ class EVENTLOG_API EventLogIndex
          */
         template <typename T> file_offset_t linearSearchForOffset(T key, file_offset_t beginOffset, bool forward, bool exactMatchRequired);
 
-        void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
+        void clearInternalState();
 
         bool isEventBeginOffset(file_offset_t offset);
 

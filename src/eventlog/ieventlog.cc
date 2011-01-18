@@ -23,16 +23,19 @@ USING_NAMESPACE
 
 IEventLog::IEventLog()
 {
+    clearInternalState();
+}
+
+void IEventLog::clearInternalState()
+{
     lastNeighbourEventNumber = -1;
     lastNeighbourEvent = NULL;
 }
 
 void IEventLog::synchronize(FileReader::FileChangedState change)
 {
-    if (change != FileReader::UNCHANGED) {
-        lastNeighbourEventNumber = -1;
-        lastNeighbourEvent = NULL;
-    }
+    if (change != FileReader::UNCHANGED)
+        clearInternalState();
 }
 
 void IEventLog::printEvents(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)

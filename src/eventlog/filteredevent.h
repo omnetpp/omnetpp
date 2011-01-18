@@ -65,7 +65,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
         IEvent *getEvent();
 
         // IEvent interface
-        virtual void synchronize();
+        virtual void synchronize(FileReader::FileChangedState change);
         virtual IEventLog *getEventLog();
 
         virtual ModuleCreatedEntry *getModuleCreatedEntry() { return getEvent()->getModuleCreatedEntry(); }
@@ -102,6 +102,10 @@ class EVENTLOG_API FilteredEvent : public IEvent
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true) { getEvent()->print(file, outputEventLogMessages); }
 
     protected:
+        void clearInternalState();
+        void deleteConsequences();
+        void deleteAllocatedObjects();
+
         void getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level);
         void getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level);
         int countFilteredMessageDependencies(IMessageDependencyList *messageDependencies);

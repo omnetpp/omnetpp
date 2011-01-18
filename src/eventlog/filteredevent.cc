@@ -25,7 +25,11 @@ FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t e
 {
     this->eventNumber = eventNumber;
     this->filteredEventLog = filteredEventLog;
+    clearInternalState();
+}
 
+void FilteredEvent::clearInternalState()
+{
     causeEventNumber = -1;
     cause = NULL;
     causes = NULL;
@@ -34,32 +38,46 @@ FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t e
 
 FilteredEvent::~FilteredEvent()
 {
-    delete cause;
+    deleteAllocatedObjects();
+}
 
-    if (causes)
-    {
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-            delete *it;
-        delete causes;
-    }
-
-    if (consequences)
-    {
+void FilteredEvent::deleteConsequences()
+{
+    if (consequences) {
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
+        consequences = NULL;
     }
 }
 
-void FilteredEvent::synchronize()
+void FilteredEvent::deleteAllocatedObjects()
 {
-    if (consequences)
-    {
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+    if (cause && !causes) {
+        delete cause;
+        cause = NULL;
+    }
+    if (causes) {
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
             delete *it;
-        delete consequences;
+        delete causes;
+        causes = NULL;
+    }
+    deleteConsequences();
+}
 
-        consequences = NULL;
+void FilteredEvent::synchronize(FileReader::FileChangedState change)
+{
+    if (change != FileReader::UNCHANGED) {
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                deleteAllocatedObjects();
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                deleteConsequences();
+                break;
+        }
     }
 }
 
@@ -75,8 +93,7 @@ IEvent *FilteredEvent::getEvent()
 
 FilteredEvent *FilteredEvent::getPreviousEvent()
 {
-    if (!previousEvent && filteredEventLog->getFirstEvent() != this)
-    {
+    if (!previousEvent && filteredEventLog->getFirstEvent() != this) {
         previousEvent = filteredEventLog->getMatchingEventInDirection(getEvent()->getPreviousEvent(), false);
 
         if (previousEvent)
@@ -88,8 +105,7 @@ FilteredEvent *FilteredEvent::getPreviousEvent()
 
 FilteredEvent *FilteredEvent::getNextEvent()
 {
-    if (!nextEvent && filteredEventLog->getLastEvent() != this)
-    {
+    if (!nextEvent && filteredEventLog->getLastEvent() != this) {
         nextEvent = filteredEventLog->getMatchingEventInDirection(getEvent()->getNextEvent(), true);
 
         if (nextEvent)
@@ -101,15 +117,13 @@ FilteredEvent *FilteredEvent::getNextEvent()
 
 FilteredEvent *FilteredEvent::getCauseEvent()
 {
-    if (causeEventNumber == -1)
-    {
+    if (causeEventNumber == -1) {
         IEvent *causeEvent = getEvent()->getCauseEvent();
 
         // TODO: LONG RUNNING OPERATION
         // walk backwards on the cause chain until we find an event matched by the filter
         // this might read all events backward if none of the causes matches the filter
-        while (causeEvent)
-        {
+        while (causeEvent) {
             filteredEventLog->progress();
 
             if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
@@ -136,8 +150,7 @@ BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
 
 IMessageDependency *FilteredEvent::getCause()
 {
-    if (cause == NULL)
-    {
+    if (cause == NULL) {
         IEvent *causeEvent = getEvent();
         IMessageDependency *causeMessageDependency = causeEvent->getCause();
 
@@ -146,15 +159,13 @@ IMessageDependency *FilteredEvent::getCause()
 
             // TODO: LONG RUNNING OPERATION
             // this might read all events backward if none of the causes matches the filter
-            while (causeEvent && (messageDependency = causeEvent->getCause()))
-            {
+            while (causeEvent && (messageDependency = causeEvent->getCause())) {
                 filteredEventLog->progress();
 
                 if (causeEvent->getEventNumber() < filteredEventLog->getFirstEventNumber())
                     return NULL;
 
-                if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent()))
-                {
+                if (filteredEventLog->matchesFilter(messageDependency->getCauseEvent())) {
                     if (messageDependency == causeMessageDependency)
                         cause = messageDependency->duplicate(filteredEventLog);
                     else
@@ -174,8 +185,7 @@ IMessageDependency *FilteredEvent::getCause()
 
 IMessageDependencyList *FilteredEvent::getCauses()
 {
-    if (causes == NULL)
-    {
+    if (causes == NULL) {
         // returns a list of dependencies, where the consequence is this event,
         // and the other end is no further away than getMaximumCauseDepth() and
         // no events in between match the filter
@@ -201,8 +211,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
             int level = searchItem.level;
 
             IMessageDependencyList *eventCauses = currentEvent->getCauses();
-            for (IMessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++)
-            {
+            for (IMessageDependencyList::iterator it = eventCauses->begin(); it != eventCauses->end(); it++) {
                 IMessageDependency *messageDependency = *it;
                 IEvent *causeEvent = messageDependency->getCauseEvent();
 
@@ -234,8 +243,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
 
 IMessageDependencyList *FilteredEvent::getConsequences()
 {
-    if (consequences == NULL)
-    {
+    if (consequences == NULL) {
         // similar to getCause
         long begin = clock();
         consequences = new IMessageDependencyList();
@@ -259,8 +267,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
             int level = searchItem.level;
 
             IMessageDependencyList *eventConsequences = currentEvent->getConsequences();
-            for (IMessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++)
-            {
+            for (IMessageDependencyList::iterator it = eventConsequences->begin(); it != eventConsequences->end(); it++) {
                 IMessageDependency *messageDependency = *it;
                 IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 

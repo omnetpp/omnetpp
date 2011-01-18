@@ -29,30 +29,24 @@ USING_NAMESPACE
 
 SequenceChartFacade::SequenceChartFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
+    nonLinearFocus = -1;
+    nonLinearMinimumTimelineCoordinateDelta = 0.1;
     timelineMode = NONLINEAR;
     timelineCoordinateSystemVersion = -1;
     undefineTimelineCoordinateSystem();
-
-    nonLinearMinimumTimelineCoordinateDelta = 0.1;
-    setNonLinearFocus(calculateNonLinearFocus());
 }
 
 void SequenceChartFacade::synchronize(FileReader::FileChangedState change)
 {
-    if (change != FileReader::UNCHANGED) {
-        EventLogFacade::synchronize(change);
-
-        setNonLinearFocus(calculateNonLinearFocus());
-
-        if (timelineCoordinateOriginEventNumber != -1) {
-            IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber);
-
-            if (event)
-                relocateTimelineCoordinateSystem(event);
-            else
-                undefineTimelineCoordinateSystem();
-        }
-    }
+	if (change != FileReader::UNCHANGED) {
+		EventLogFacade::synchronize(change);
+		nonLinearFocus = -1;
+		timelineCoordinateSystemVersion++;
+		if (change == FileReader::APPENDED)
+		    timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = timelineCoordinateOriginEventNumber;
+		else
+			undefineTimelineCoordinateSystem();
+	}
 }
 
 double SequenceChartFacade::calculateNonLinearFocus()
@@ -82,8 +76,15 @@ void SequenceChartFacade::setNonLinearMinimumTimelineCoordinateDelta(double valu
 
 void SequenceChartFacade::setNonLinearFocus(double nonLinearFocus)
 {
-    Assert(nonLinearFocus >= 0);
-    this->nonLinearFocus = nonLinearFocus;
+	Assert(nonLinearFocus >= 0);
+	this->nonLinearFocus = nonLinearFocus;
+}
+
+double SequenceChartFacade::getNonLinearFocus()
+{
+	if (nonLinearFocus == -1)
+		nonLinearFocus = calculateNonLinearFocus();
+	return nonLinearFocus;
 }
 
 void SequenceChartFacade::undefineTimelineCoordinateSystem()
@@ -96,7 +97,6 @@ void SequenceChartFacade::undefineTimelineCoordinateSystem()
 void SequenceChartFacade::relocateTimelineCoordinateSystem(IEvent *event)
 {
     Assert(event);
-
     timelineCoordinateSystemVersion++;
     timelineCoordinateOriginEventNumber = timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = event->getEventNumber();
     timelineCoordinateOriginSimulationTime = event->getSimulationTime();
@@ -120,12 +120,12 @@ double SequenceChartFacade::IEvent_getTimelineCoordinate(ptr_t ptr)
 
 double SequenceChartFacade::getTimelineCoordinateDelta(double simulationTimeDelta)
 {
-    Assert(nonLinearFocus > 0);
+    Assert(getNonLinearFocus() > 0);
 
     if (timelineMode == STEP)
         return 1;
     else
-        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(fabs(simulationTimeDelta) / nonLinearFocus) / PI * 2;
+        return nonLinearMinimumTimelineCoordinateDelta + (1 - nonLinearMinimumTimelineCoordinateDelta) * atan(fabs(simulationTimeDelta) / getNonLinearFocus()) / PI * 2;
 }
 
 double SequenceChartFacade::getTimelineCoordinate(ptr_t ptr, double lowerTimelineCoordinateCalculationLimit, double upperTimelineCoordinateCalculationLimit)

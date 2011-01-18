@@ -199,9 +199,9 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         double getApproximateMatchingEventRatio();
         void setPatternMatchers(std::vector<PatternMatcher> &patternMatchers, std::vector<std::string> &patterns, bool dottedPath = false);
 
+        void clearInternalState();
+        void deleteConsequences();
         void deleteAllocatedObjects();
-        void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
-
         bool isAncestorModuleCreatedEntry(ModuleCreatedEntry *ancestor, ModuleCreatedEntry *descendant);
 };
 

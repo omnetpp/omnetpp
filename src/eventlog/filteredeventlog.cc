@@ -23,13 +23,11 @@ USING_NAMESPACE
 FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
-
-    // collection limits
+    // collection limit parameters
     collectMessageReuses = true;
     maximumNumberOfCauses = maximumNumberOfConsequences = 5;
     maximumCauseDepth = maximumConsequenceDepth = 15;
     maximumCauseCollectionTime = maximumConsequenceCollectionTime = 100;
-
     // trace filter parameters
     tracedEventNumber = -1;
     firstEventNumber = -1;
@@ -38,13 +36,11 @@ FilteredEventLog::FilteredEventLog(IEventLog *eventLog)
     traceConsequences = true;
     traceMessageReuses = true;
     traceSelfMessages = true;
-
     // other filter parameters
     enableModuleFilter = false;
     enableMessageFilter = false;
     setModuleExpression("");
     setMessageExpression("");
-
     clearInternalState();
 }
 
@@ -53,43 +49,50 @@ FilteredEventLog::~FilteredEventLog()
     deleteAllocatedObjects();
 }
 
+void FilteredEventLog::clearInternalState()
+{
+    firstMatchingEvent = NULL;
+    lastMatchingEvent = NULL;
+    approximateNumberOfEvents = -1;
+    approximateMatchingEventRatio = -1;
+    eventNumberToFilteredEventMap.clear();
+    eventNumberToFilterMatchesFlagMap.clear();
+    eventNumberToTraceableEventFlagMap.clear();
+}
+
 void FilteredEventLog::deleteAllocatedObjects()
 {
     for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
         delete it->second;
-
-    clearInternalState();
-}
-
-void FilteredEventLog::clearInternalState(FileReader::FileChangedState change)
-{
-    Assert(change != FileReader::UNCHANGED);
-    approximateNumberOfEvents = -1;
-    approximateMatchingEventRatio = -1;
-    lastMatchingEvent = NULL;
-
-    if (change == FileReader::OVERWRITTEN) {
-        firstMatchingEvent = NULL;
-
-        eventNumberToFilteredEventMap.clear();
-        eventNumberToFilterMatchesFlagMap.clear();
-        eventNumberToTraceableEventFlagMap.clear();
-    }
+    eventNumberToFilteredEventMap.clear();
+    eventNumberToFilterMatchesFlagMap.clear();
+    eventNumberToTraceableEventFlagMap.clear();
 }
 
 void FilteredEventLog::synchronize(FileReader::FileChangedState change)
 {
     if (change != FileReader::UNCHANGED) {
-        if (change == FileReader::OVERWRITTEN)
-            deleteAllocatedObjects();
-        else
-            clearInternalState(change);
-
         eventLog->synchronize(change);
-
-        if (change == FileReader::APPENDED)
-            for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
-                it->second->synchronize();
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                deleteAllocatedObjects();
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                for (EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.begin(); it != eventNumberToFilteredEventMap.end(); it++)
+                    it->second->synchronize(change);
+                if (lastMatchingEvent) {
+                    eventnumber_t eventNumber = lastMatchingEvent->getEventNumber();
+                    eventNumberToFilteredEventMap.erase(eventNumber);
+                    eventNumberToFilterMatchesFlagMap.erase(eventNumber);
+                    eventNumberToTraceableEventFlagMap.erase(eventNumber);
+                    if (firstMatchingEvent == lastMatchingEvent)
+                        firstMatchingEvent = NULL;
+                    delete lastMatchingEvent;
+                    lastMatchingEvent = NULL;
+                }
+                break;
+        }
     }
 }
 

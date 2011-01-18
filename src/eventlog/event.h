@@ -67,7 +67,7 @@ class EVENTLOG_API Event : public IEvent
         file_offset_t parse(FileReader *reader, file_offset_t offset);
 
         // IEvent interface
-        virtual void synchronize();
+        virtual void synchronize(FileReader::FileChangedState change);
         virtual IEventLog *getEventLog();
 
         virtual ModuleCreatedEntry *getModuleCreatedEntry();
@@ -105,8 +105,9 @@ class EVENTLOG_API Event : public IEvent
         virtual void print(FILE *file = stdout, bool outputEventLogMessages = true);
 
     protected:
-        void deleteAllocatedObjects();
         void clearInternalState();
+        void deleteConsequences();
+        void deleteAllocatedObjects();
         Event *getReuserEvent(int &beginSendEntryNumber);
 };
 

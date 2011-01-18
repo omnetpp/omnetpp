@@ -26,7 +26,6 @@ USING_NAMESPACE
 Event::Event(EventLog *eventLog)
 {
     this->eventLog = eventLog;
-
     clearInternalState();
 }
 
@@ -35,55 +34,60 @@ Event::~Event()
     deleteAllocatedObjects();
 }
 
-void Event::deleteAllocatedObjects()
-{
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
-        delete *it;
-
-    if (!cause)
-        delete cause;
-
-    if (causes)
-    {
-        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-            delete *it;
-        delete causes;
-    }
-
-    if (consequences)
-    {
-        for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
-            delete *it;
-        delete consequences;
-    }
-
-    clearInternalState();
-}
-
 void Event::clearInternalState()
 {
     beginOffset = -1;
     endOffset = -1;
     numEventLogMessages = -1;
     numBeginSendEntries = -1;
-
     eventEntry = NULL;
     moduleCreatedEntry = NULL;
     cause = NULL;
     causes = NULL;
     consequences = NULL;
-
     eventLogEntries.clear();
 }
 
-void Event::synchronize()
+void Event::deleteConsequences()
 {
-    if (consequences)
-    {
+    if (consequences) {
         for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
             delete *it;
         delete consequences;
         consequences = NULL;
+    }
+}
+
+void Event::deleteAllocatedObjects()
+{
+    if (cause && !causes) {
+        delete cause;
+        cause = NULL;
+    }
+    if (causes) {
+        for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+            delete *it;
+        delete causes;
+        causes = NULL;
+    }
+    deleteConsequences();
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
+        delete *it;
+    eventLogEntries.clear();
+}
+
+void Event::synchronize(FileReader::FileChangedState change)
+{
+    if (change != FileReader::UNCHANGED) {
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                deleteAllocatedObjects();
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                deleteConsequences();
+                break;
+        }
     }
 }
 
@@ -105,6 +109,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     eventLog->progress();
 
     deleteAllocatedObjects();
+    clearInternalState();
     numEventLogMessages = 0;
     numBeginSendEntries = 0;
 
@@ -117,8 +122,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
     int index = 0;
     std::deque<int> contextModuleIds;
 
-    while (true)
-    {
+    while (true) {
         char *line = reader->getNextLineBufferPointer();
 
         if (!line) {
@@ -174,13 +178,13 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             numBeginSendEntries++;
     }
 
+    Assert(eventEntry);
     return endOffset = reader->getCurrentLineStartOffset();
 }
 
 void Event::print(FILE *file, bool outputEventLogMessages)
 {
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
-    {
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
         EventLogEntry *eventLogEntry = *it;
 
         if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
@@ -192,8 +196,7 @@ EventLogMessageEntry *Event::getEventLogMessage(int index)
 {
     Assert(index >= 0);
 
-    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++)
-    {
+    for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
         EventLogMessageEntry *eventLogMessage = dynamic_cast<EventLogMessageEntry *>(*it);
 
         if (eventLogMessage) {
@@ -227,8 +230,7 @@ bool Event::isSelfMessageProcessingEvent()
 EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
 {
     Assert(beginSendEntry && this == beginSendEntry->getEvent());
-    for (int i = beginSendEntry->getEntryIndex(); i < (int)eventLogEntries.size(); i++)
-    {
+    for (int i = beginSendEntry->getEntryIndex(); i < (int)eventLogEntries.size(); i++) {
         EventLogEntry *eventLogEntry = eventLogEntries[i];
 
         EndSendEntry *endSendEntry = dynamic_cast<EndSendEntry *>(eventLogEntry);
@@ -272,8 +274,7 @@ simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)
 
 Event *Event::getPreviousEvent()
 {
-    if (!previousEvent && eventLog->getFirstEvent() != this)
-    {
+    if (!previousEvent && eventLog->getFirstEvent() != this) {
         previousEvent = eventLog->getEventForEndOffset(beginOffset);
 
         if (previousEvent)
@@ -285,8 +286,7 @@ Event *Event::getPreviousEvent()
 
 Event *Event::getNextEvent()
 {
-    if (!nextEvent && eventLog->getLastEvent() != this)
-    {
+    if (!nextEvent && eventLog->getLastEvent() != this) {
         nextEvent = eventLog->getEventForBeginOffset(endOffset);
 
         if (nextEvent)
@@ -318,12 +318,10 @@ BeginSendEntry *Event::getCauseBeginSendEntry()
 
 MessageDependency *Event::getCause()
 {
-    if (!cause)
-    {
+    if (!cause) {
         Event *event = getCauseEvent();
 
-        if (event)
-        {
+        if (event) {
             int beginSendEntryNumber = event->findBeginSendEntryIndex(getMessageId());
 
             if (beginSendEntryNumber != -1)
@@ -336,8 +334,7 @@ MessageDependency *Event::getCause()
 
 IMessageDependencyList *Event::getCauses()
 {
-    if (!causes)
-    {
+    if (!causes) {
         causes = new IMessageDependencyList();
 
         if (getCause())
@@ -345,8 +342,7 @@ IMessageDependencyList *Event::getCauses()
             causes->push_back(getCause());
 
         // add message reuses
-        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++)
-        {
+        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++) {
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntries[beginSendEntryNumber]);
 
             if (beginSendEntry &&
@@ -365,12 +361,10 @@ IMessageDependencyList *Event::getCauses()
 
 IMessageDependencyList *Event::getConsequences()
 {
-    if (!consequences)
-    {
+    if (!consequences) {
         consequences = new IMessageDependencyList();
 
-        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++)
-        {
+        for (int beginSendEntryNumber = 0; beginSendEntryNumber < (int)eventLogEntries.size(); beginSendEntryNumber++) {
             EventLogEntry *eventLogEntry = eventLogEntries[beginSendEntryNumber];
 
             if (eventLogEntry->isMessageSend())
@@ -400,13 +394,11 @@ Event *Event::getReuserEvent(int &beginSendEntryNumber)
     while (current && maxLookAhead--) {
         eventLog->progress();
 
-        for (beginSendEntryNumber = 0; beginSendEntryNumber < (int)current->eventLogEntries.size(); beginSendEntryNumber++)
-        {
+        for (beginSendEntryNumber = 0; beginSendEntryNumber < (int)current->eventLogEntries.size(); beginSendEntryNumber++) {
             EventLogEntry *eventLogEntry = current->eventLogEntries[beginSendEntryNumber];
             BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
 
-            if (beginSendEntry && beginSendEntry->messageId == getMessageId())
-            {
+            if (beginSendEntry && beginSendEntry->messageId == getMessageId()) {
                 if (beginSendEntry->previousEventNumber == getEventNumber())
                     return current;
                 else

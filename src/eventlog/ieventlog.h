@@ -195,6 +195,9 @@ class EVENTLOG_API IEventLog
          * The given event numbers may not be included in the log.
          */
         virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputInitializationEntries = true, bool outputEventLogMessages = true);
+
+    protected:
+        void clearInternalState();
 };
 
 NAMESPACE_END

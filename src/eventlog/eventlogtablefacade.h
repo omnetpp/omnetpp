@@ -42,12 +42,12 @@ enum EventLogTableFilterMode {
 class EVENTLOG_API EventLogTableFacade : public EventLogFacade
 {
     protected:
-        eventnumber_t approximateNumberOfEntries;
-        eventnumber_t lastMatchedEventNumber;
-        int lastNumMatchingEventLogEntries;
-        EventLogTableFilterMode filterMode;
-        std::string customFilter;
-        MatchExpression matchExpression;
+        eventnumber_t approximateNumberOfEntries; // cached value, -1 means not yet calculated
+        eventnumber_t lastMatchedEventNumber; // -1 means unused
+        int lastNumMatchingEventLogEntries; // -1 means unused
+        EventLogTableFilterMode filterMode; // can be set with the public API
+        std::string customFilter; // can be set with the public API
+        MatchExpression matchExpression; // cached expression
 
     public:
         EventLogTableFacade(IEventLog *eventLog);
@@ -59,7 +59,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         void setFilterMode(EventLogTableFilterMode filterMode);
         bool matchesFilter(EventLogEntry *eventLogEntry);
         int getNumMatchingEventLogEntries(IEvent *event);
-        void setCustomFilter(const char *pattern) { customFilter = pattern; matchExpression.setPattern((std::string("E or (") + customFilter + ")").c_str(), false, true, false); }
+        void setCustomFilter(const char *pattern);
         const char *getCustomFilter() { return customFilter.c_str(); }
 
         EventLogEntry *getEventLogEntry(eventnumber_t eventNumber, int eventLogEntryIndex);
@@ -80,6 +80,7 @@ class EVENTLOG_API EventLogTableFacade : public EventLogFacade
         EventLogEntry *getPreviousEntry(EventLogEntry *eventLogEntry, int& index);
         EventLogEntry *getNextEntry(EventLogEntry *eventLogEntry, int& index);
         EventLogEntry *getEntryAndDistance(EventLogEntry *sourceEventLogEntry, EventLogEntry *targetEventLogEntry, eventnumber_t distance, eventnumber_t& reachedDistance);
+        void clearInternalState();
 };
 
 NAMESPACE_END

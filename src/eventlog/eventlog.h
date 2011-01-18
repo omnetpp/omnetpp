@@ -126,8 +126,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void uncacheEventLogEntries(Event *event);
         void cacheEventLogEntry(EventLogEntry *eventLogEntry);
         void uncacheEventLogEntry(EventLogEntry *eventLogEntry);
+        void clearInternalState();
         void deleteAllocatedObjects();
-        void clearInternalState(FileReader::FileChangedState change = FileReader::OVERWRITTEN);
 };
 
 NAMESPACE_END

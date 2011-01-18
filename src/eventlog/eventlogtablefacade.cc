@@ -26,25 +26,36 @@ USING_NAMESPACE
 
 EventLogTableFacade::EventLogTableFacade(IEventLog *eventLog) : EventLogFacade(eventLog)
 {
-    setFilterMode(ALL_ENTRIES);
     setCustomFilter("*");
+    setFilterMode(ALL_ENTRIES);
+}
+
+void EventLogTableFacade::clearInternalState()
+{
+    approximateNumberOfEntries = -1;
+    lastMatchedEventNumber = -1;
+    lastNumMatchingEventLogEntries = -1;
 }
 
 void EventLogTableFacade::synchronize(FileReader::FileChangedState change)
 {
-    if (change != FileReader::UNCHANGED) {
-        EventLogFacade::synchronize(change);
-        setFilterMode(filterMode);
-    }
+	if (change != FileReader::UNCHANGED) {
+	    EventLogFacade::synchronize(change);
+		clearInternalState();
+	}
+}
+
+void EventLogTableFacade::setCustomFilter(const char *pattern)
+{
+	customFilter = pattern;
+	matchExpression.setPattern((std::string("E or (") + customFilter + ")").c_str(), false, true, false);
+    clearInternalState();
 }
 
 void EventLogTableFacade::setFilterMode(EventLogTableFilterMode filterMode)
 {
     this->filterMode = filterMode;
-
-    approximateNumberOfEntries = -1;
-    lastMatchedEventNumber = -1;
-    lastNumMatchingEventLogEntries = -1;
+    clearInternalState();
 }
 
 bool EventLogTableFacade::matchesFilter(EventLogEntry *eventLogEntry)

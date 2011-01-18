@@ -25,8 +25,7 @@ CommonStringPool eventLogStringPool;
 
 EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
-    reader->setSynchronizeWhenAppended(false);
-
+    reader->setIgnoreAppendChanges(false);
     clearInternalState();
     parseInitializationLogEntries();
 }
@@ -36,6 +35,25 @@ EventLog::~EventLog()
     deleteAllocatedObjects();
 }
 
+void EventLog::clearInternalState()
+{
+    numParsedEvents = 0;
+    approximateNumberOfEvents = -1;
+    progressCallInterval = CLOCKS_PER_SEC;
+    lastProgressCall = -1;
+    firstEvent = NULL;
+    lastEvent = NULL;
+    messageNames.clear();
+    messageClassNames.clear();
+    initializationLogEntries.clear();
+    moduleIdToModuleCreatedEntryMap.clear();
+    moduleIdAndGateIdToGateCreatedEntryMap.clear();
+    simulationBeginEntry = NULL;
+    eventNumberToEventMap.clear();
+    beginOffsetToEventMap.clear();
+    endOffsetToEventMap.clear();
+}
+
 void EventLog::deleteAllocatedObjects()
 {
     for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
@@ -43,65 +61,35 @@ void EventLog::deleteAllocatedObjects()
 
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
         delete it->second;
-
-    clearInternalState();
-}
-
-void EventLog::clearInternalState(FileReader::FileChangedState change)
-{
-    Assert(change != FileReader::UNCHANGED);
-    approximateNumberOfEvents = -1;
-
-    // lastEvent should be set to null if the last event becomes a different one
-    if (change == FileReader::OVERWRITTEN) {
-        numParsedEvents = 0;
-
-        progressCallInterval = CLOCKS_PER_SEC;
-        lastProgressCall = -1;
-
-        firstEvent = NULL;
-        lastEvent = NULL;
-
-        messageNames.clear();
-        messageClassNames.clear();
-
-        initializationLogEntries.clear();
-//        moduleIdToModuleCreatedEntryMap.clear();
-        moduleIdAndGateIdToGateCreatedEntryMap.clear();
-
-        simulationBeginEntry = NULL;
-
-        eventNumberToEventMap.clear();
-        beginOffsetToEventMap.clear();
-        endOffsetToEventMap.clear();
-    }
-    else if (lastEvent && lastEvent->getBeginOffset() != getLastEventOffset())
-        lastEvent = NULL;
 }
 
 void EventLog::synchronize(FileReader::FileChangedState change)
 {
     if (change != FileReader::UNCHANGED) {
-        if (change == FileReader::OVERWRITTEN)
-            deleteAllocatedObjects();
-
-        Event *lastEvent = this->lastEvent;
-
         IEventLog::synchronize(change);
         EventLogIndex::synchronize(change);
-
-        if (change == FileReader::APPENDED) {
-            clearInternalState(change);
-
-            // always update the old last event because it might have been incomplete
-            if (lastEvent)
-                parseEvent(lastEvent, lastEvent->getBeginOffset());
-
-            for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
-                it->second->synchronize();
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                deleteAllocatedObjects();
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
+                    it->second->synchronize(change);
+                if (lastEvent) {
+                    eventNumberToEventMap.erase(lastEventNumber);
+                    eventNumberToCacheEntryMap.erase(lastEventNumber);
+                    beginOffsetToEventMap.erase(lastEvent->getBeginOffset());
+                    endOffsetToEventMap.erase(lastEvent->getEndOffset());
+                    if (firstEvent == lastEvent) {
+                        firstEvent = NULL;
+                        simulationBeginEntry = NULL;
+                    }
+                    delete lastEvent;
+                    lastEvent = NULL;
+                }
+                break;
         }
-        else
-            parseInitializationLogEntries();
     }
 }
 
@@ -407,6 +395,7 @@ void EventLog::parseEvent(Event *event, file_offset_t beginOffset)
     cacheEntry(event->getEventNumber(), event->getSimulationTime(), event->getBeginOffset(), event->getEndOffset());
     cacheEventLogEntries(event);
     numParsedEvents++;
+    Assert(event->getEventEntry());
 }
 
 void EventLog::cacheEventLogEntries(Event *event)

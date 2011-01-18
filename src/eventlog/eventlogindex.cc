@@ -109,7 +109,6 @@ void EventLogIndex::CacheEntry::getEndKey(simtime_t &key)
 EventLogIndex::EventLogIndex(FileReader *reader)
 {
     this->reader = reader;
-
     clearInternalState();
 }
 
@@ -118,30 +117,32 @@ EventLogIndex::~EventLogIndex()
     delete reader;
 }
 
-void EventLogIndex::synchronize(FileReader::FileChangedState change)
+void EventLogIndex::clearInternalState()
 {
-    if (change != FileReader::UNCHANGED) {
-        clearInternalState(change);
-        reader->synchronize();
-    }
+    firstEventNumber = EVENT_NOT_YET_CALCULATED;
+    lastEventNumber = EVENT_NOT_YET_CALCULATED;
+    firstSimulationTime = simtime_nil;
+    lastSimulationTime = simtime_nil;
+    firstEventOffset = -1;
+    lastEventOffset = -1;
+    eventNumberToCacheEntryMap.clear();
+    simulationTimeToCacheEntryMap.clear();
 }
 
-void EventLogIndex::clearInternalState(FileReader::FileChangedState change)
+void EventLogIndex::synchronize(FileReader::FileChangedState change)
 {
-    Assert(change != FileReader::UNCHANGED);
-
-    if (change == FileReader::OVERWRITTEN) {
-        eventNumberToCacheEntryMap.clear();
-        simulationTimeToCacheEntryMap.clear();
-
-        firstEventNumber = EVENT_NOT_YET_CALCULATED;
-        firstSimulationTime = simtime_nil;
-        firstEventOffset = -1;
+    switch (change) {
+        case FileReader::OVERWRITTEN:
+            clearInternalState();
+            break;
+        case FileReader::APPENDED:
+            eventNumberToCacheEntryMap.erase(lastEventNumber);
+            simulationTimeToCacheEntryMap.erase(lastSimulationTime);
+            lastEventNumber = EVENT_NOT_YET_CALCULATED;
+            lastSimulationTime = simtime_nil;
+            lastEventOffset = -1;
+            break;
     }
-
-    lastEventNumber = EVENT_NOT_YET_CALCULATED;
-    lastSimulationTime = simtime_nil;
-    lastEventOffset = -1;
 }
 
 eventnumber_t EventLogIndex::getFirstEventNumber()
