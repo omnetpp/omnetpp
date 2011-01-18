@@ -44,7 +44,7 @@ void StressSource::handleMessage(cMessage *msg)
         cancelEvent(timer);
     }
 
-    // randomly call a source (including ourselve)
+    // randomly call a source (including ourself)
     sources.at(intrand(sources.size()))->sendOut(msg);
 
     // make sure our timer is always active
@@ -67,8 +67,15 @@ void StressSource::sendOut(cMessage *msg)
     else
         msg->setName("Other source's");
 
-    take(msg);
-    send(msg, "out", intrand(gateSize("out")));
+    cGate *outGate = gate("out", intrand(gateSize("out")));
+    if (outGate->getTransmissionChannel()->isBusy()) {
+        ev << "Output channel is busy, dropping message: " << msg << "\n";
+        delete msg;
+    }
+    else {
+        take(msg);
+        send(msg, outGate);
+    }
 
     if (otherModule) {
         // cancel context module's timer

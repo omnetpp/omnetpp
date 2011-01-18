@@ -24,6 +24,9 @@ bool StressChannel::deliver(cMessage *msg, simtime_t at)
 		ev << "Deleting message in channel due to ongoing transmission: " << msg << "\n";;
 		return false;
 	}
-    else
-        return cDatarateChannel::deliver(msg, at);
+    else {
+        result_t result;
+        cDatarateChannel::processMessage(msg, at, result);
+        return result.discard;
+    }
 }

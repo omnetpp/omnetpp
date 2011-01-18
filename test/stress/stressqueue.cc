@@ -50,8 +50,7 @@ void StressQueue::handleMessage(cMessage *msg)
 		cGate *outGate = gate("out", intrand(gateSize("out")));
         sendOutMsg->setName("Dequeued");
 		send(sendOutMsg, outGate);
-
-		scheduleAt(outGate->getTransmissionFinishTime(), timer);
+		scheduleAt(sendOutMsg->getArrivalTime(), timer);
 	}
 
 	// colorize icon

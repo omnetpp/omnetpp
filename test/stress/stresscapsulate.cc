@@ -34,5 +34,13 @@ void StressCapsulate::handleMessage(cMessage *msg)
         packet = encapsulatedPacket;
     }
 
-    send(packet, "out", intrand(gateSize("out")));
+    cGate *outGate = gate("out", intrand(gateSize("out")));
+    if (outGate->getTransmissionChannel()->isBusy()) {
+        ev << "Output channel is busy, dropping message: " << packet << "\n";
+        delete packet;
+    }
+    else {
+        ev << "Sending out message: "  << packet << "\n";;
+        send(packet, outGate);
+    }
 }

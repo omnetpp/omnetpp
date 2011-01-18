@@ -21,7 +21,7 @@ simple StressSource
 simple StressNode
 {
     parameters:
-        volatile int outGateIndex = intuniform(0, sizeof(out) - 1);
+        volatile int outGateIndex = default(intuniform(0, sizeof(out) - 1));
         @display("i=block/cogwheel");
     gates:
         input directIn;
