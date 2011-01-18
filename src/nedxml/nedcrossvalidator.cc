@@ -298,11 +298,6 @@ void NEDCrossValidator::validateElement(ConnectionElement *node)
     validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, compound, node, false);
 }
 
-void NEDCrossValidator::validateElement(ChannelSpecElement *node)
-{
-    // FIXME revise
-}
-
 void NEDCrossValidator::validateElement(ChannelInterfaceElement *node)
 {
     // FIXME revise

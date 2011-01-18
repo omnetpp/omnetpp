@@ -824,7 +824,7 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
 //FIXME spurious error message comes when trying to connect INOUT gate with "-->"
     try
     {
-        if (conn->getArrowDirection()!=NED_ARROWDIR_BIDIR)
+        if (!conn->getIsBidirectional())
         {
             // find gates and create connection
             cGate *srcg = resolveGate(modp, conn->getSrcModule(), findExpression(conn, "src-module-index"),
@@ -880,18 +880,16 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
 
 void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionElement *conn)
 {
-    // connect
-    ChannelSpecElement *channelspec = conn->getFirstChannelSpecChild();
-    if (!channelspec)
+    if (opp_isempty(conn->getType()) && opp_isempty(conn->getLikeType()) && !conn->getFirstParametersChild())
     {
         srcg->connectTo(destg);
     }
     else
     {
-        cChannel *channel = createChannel(channelspec, modp, srcg);
+        cChannel *channel = createChannel(conn, modp, srcg);
         channel->setConnectionId(conn->getId()); // so that properties will be found
         srcg->connectTo(destg, channel);
-        assignSubcomponentParams(channel, channelspec);
+        assignSubcomponentParams(channel, conn);
         channel->finalizeParameters();
     }
 }
@@ -1014,17 +1012,17 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
     }
 }
 
-std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ChannelSpecElement *channelspec, const char *channelname)
+std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ConnectionElement *conn, const char *channelname)
 {
     std::string channeltypename;
-    if (opp_isempty(channelspec->getLikeType()))
+    if (opp_isempty(conn->getLikeType()))
     {
-        if (!opp_isempty(channelspec->getType())) {
-            channeltypename = channelspec->getType();
+        if (!opp_isempty(conn->getType())) {
+            channeltypename = conn->getType();
         }
         else {
             bool hasDelayChannelParams = false, hasOtherParams = false;
-            ParametersElement *channelparams = channelspec->getFirstParametersChild();
+            ParametersElement *channelparams = conn->getFirstParametersChild();
             if (channelparams) {
                 for (ParamElement *param=channelparams->getFirstParamChild(); param; param=param->getNextParamSibling())
                     if (strcmp(param->getName(),"delay")==0 || strcmp(param->getName(),"disabled")==0)
@@ -1040,11 +1038,11 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     else
     {
         // type may be given either in ExpressionElement child or "like-param" attribute
-        if (!opp_isempty(channelspec->getLikeParam())) {
-            channeltypename = parentmodp->par(channelspec->getLikeParam()).stringValue();
+        if (!opp_isempty(conn->getLikeParam())) {
+            channeltypename = parentmodp->par(conn->getLikeParam()).stringValue();
         }
         else {
-            ExpressionElement *likeParamExpr = findExpression(channelspec, "like-param");
+            ExpressionElement *likeParamExpr = findExpression(conn, "like-param");
             if (likeParamExpr)
                 channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
             else {
@@ -1059,20 +1057,20 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     return channeltypename;
 }
 
-cChannel *cNEDNetworkBuilder::createChannel(ChannelSpecElement *channelspec, cModule *parentmodp, cGate *srcgate)
+cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate)
 {
     // resolve channel type
     const char *channelname = "channel";
     cChannelType *channeltype;
     try {
-        std::string channeltypename = getChannelTypeName(parentmodp, srcgate, channelspec, channelname);
-        bool usesLike = !opp_isempty(channelspec->getLikeType());
+        std::string channeltypename = getChannelTypeName(parentmodp, srcgate, conn, channelname);
+        bool usesLike = !opp_isempty(conn->getLikeType());
         channeltype = usesLike ?
-            findAndCheckChannelTypeLike(channeltypename.c_str(), channelspec->getLikeType(), parentmodp) :
+            findAndCheckChannelTypeLike(channeltypename.c_str(), conn->getLikeType(), parentmodp) :
             findAndCheckChannelType(channeltypename.c_str(), parentmodp);
     }
     catch (std::exception& e) {
-        updateOrRethrowException(e, channelspec); throw;
+        updateOrRethrowException(e, conn); throw;
     }
 
     // create channel object

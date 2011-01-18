@@ -26,10 +26,6 @@ public interface NedElementConstants
     public static final int  NED_GATETYPE_OUTPUT = 102;
     public static final int  NED_GATETYPE_INOUT = 103;
 
-    public static final int  NED_ARROWDIR_R2L = 201;
-    public static final int  NED_ARROWDIR_L2R = 202;
-    public static final int  NED_ARROWDIR_BIDIR = 203;
-
     public static final int  NED_PARTYPE_NONE = 300;
     public static final int  NED_PARTYPE_DOUBLE = 301;
     public static final int  NED_PARTYPE_INT = 302;
@@ -51,10 +47,6 @@ public interface NedElementConstants
     public static final String gatetype_vals[] = {"", "input", "output", "inout"};
     public static final int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};
     public static final int gatetype_n = 4;
-
-    public static final String arrowdir_vals[] = {"l2r", "r2l", "bidir"};
-    public static final int arrowdir_nums[] = {NED_ARROWDIR_L2R, NED_ARROWDIR_R2L, NED_ARROWDIR_BIDIR};
-    public static final int arrowdir_n = 3;
 
     public static final String partype_vals[] = {"", "double", "int", "string", "bool", "xml"};
     public static final int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};

@@ -226,8 +226,7 @@ cProperties *cNEDDeclaration::doConnectionProperties(int connectionId, const cha
     if (!connectionNode && !props)
         return NULL; // error: no such connection
 
-    NEDElement *connspecNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_CHANNEL_SPEC) : NULL;
-    NEDElement *paramsNode = connspecNode ? connspecNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
+    NEDElement *paramsNode = connectionNode ? connectionNode->getFirstChildWithTag(NED_PARAMETERS) : NULL;
     props = mergeProperties(props, paramsNode);
     putIntoPropsMap(connectionPropsMap, key.c_str(), props);
     return props;

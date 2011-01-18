@@ -396,7 +396,7 @@ void NED1Generator::doParameters(ParametersElement *node, const char *indent, bo
         doModuleParameters(node, indent);
     else if (parentTag==NED_CHANNEL)
         doChannelParameters(node, indent);
-    else if (parentTag==NED_CHANNEL_SPEC)
+    else if (parentTag==NED_CONNECTION)
         doConnectionAttributes(node, indent);
     else
         INTERNAL_ERROR0(node,"unexpected parameters section");
@@ -592,16 +592,16 @@ void NED1Generator::doProperty(PropertyElement *node, const char *indent, bool i
     if (strcmp(node->getName(), "display")==0)
     {
         // must be submodule->parameters->property, module->parameters->property or
-        // connection->chanspec->parameters->property
+        // connection->parameters->property
         NEDElement *grandparent = node->getParent() ? node->getParent()->getParent() : NULL;
-        if (!grandparent || (grandparent->getTagCode()!=NED_SUBMODULE && grandparent->getTagCode()!=NED_COMPOUND_MODULE && grandparent->getTagCode()!=NED_CHANNEL_SPEC))
+        if (!grandparent || (grandparent->getTagCode()!=NED_SUBMODULE && grandparent->getTagCode()!=NED_COMPOUND_MODULE))
             errors->addWarning(node, NED2FEATURE "@display may occur on submodules, connections and compound modules only");
     }
     else if (strcmp(node->getName(), "prompt")==0)
     {
         int parentTag = node->getParent()->getTagCode();
         if (parentTag!=NED_PARAM)
-            errors->addWarning(node, NED2FEATURE "@prompt may occur in submodule parameter assigments and networks only");
+            errors->addWarning(node, NED2FEATURE "@prompt may occur in submodule parameter assignments and networks only");
     }
     else
         errors->addWarning(node, NED2FEATURE "property (except @display and @prompt)");
@@ -784,17 +784,11 @@ void NED1Generator::doConnections(ConnectionsElement *node, const char *indent, 
 
 void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bool islast, const char *)
 {
-    //  direction
-    const char *arrow;
-    bool srcfirst;
-    switch (node->getArrowDirection())
-    {
-        case NED_ARROWDIR_L2R:   arrow = " -->"; srcfirst = true; break;
-        case NED_ARROWDIR_R2L:   arrow = " <--"; srcfirst = false; break;
-        case NED_ARROWDIR_BIDIR: errors->addWarning(node, NED2FEATURE "two-way connection");
-                                 arrow = " <-->"; srcfirst = true; break;
-        default: INTERNAL_ERROR0(node, "wrong arrow-dir");
-    }
+    // direction
+    const char *arrow = node->getIsBidirectional() ?  " <-->" : node->getIsForwardArrow() ? " -->" : " <--";
+    bool srcfirst = node->getIsForwardArrow();
+    if (node->getIsBidirectional())
+        errors->addWarning(node, NED2FEATURE "two-way connection");
 
     OUT << getBannerComment(node, indent);
 
@@ -809,9 +803,29 @@ void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bo
     OUT << arrow;
 
     // print channel attributes
-    if (node->getFirstChildWithTag(NED_CHANNEL_SPEC))
+    if (!opp_isempty(node->getType()) || !opp_isempty(node->getLikeType()) || node->getFirstChildWithTag(NED_PARAMETERS))
     {
-        generateChildrenWithType(node, NED_CHANNEL_SPEC, indent, arrow);
+        NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
+        bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
+
+        if (!opp_isempty(node->getLikeType()))
+        {
+            errors->addWarning(node, NED2FEATURE "channel `like'");
+        }
+        else if (!opp_isempty(node->getType()))
+        {
+            // concrete channel type
+            OUT << " " << node->getType() << arrow;
+
+            if (hasParams)
+                errors->addWarning(node, NED2FEATURE "channel spec with parameters");
+        }
+        else if (node->getFirstChildWithTag(NED_PARAMETERS))
+        {
+            generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+            if (hasParams)
+                OUT << arrow;
+        }
     }
 
     // print dest
@@ -832,49 +846,20 @@ void NED1Generator::doConnection(ConnectionElement *node, const char *indent, bo
         doCondition((ConditionElement *)condition, indent, false, NULL);
 
     // display string
-    NEDElement *chanSpecNode = node->getFirstChildWithTag(NED_CHANNEL_SPEC);
-    if (chanSpecNode)
+    PropertyElement *dummy;
+    std::string dispstr = getDisplayStringOf(node, dummy);
+    if (!dispstr.empty())
     {
-        PropertyElement *dummy;
-        std::string dispstr = getDisplayStringOf(chanSpecNode, dummy);
-        if (!dispstr.empty())
-        {
-            try {
-                dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
-                OUT << " display " << opp_quotestr(dispstr.c_str());
-            }
-            catch (std::exception& e) {
-                errors->addWarning(node, opp_stringf("error converting display string: %s", e.what()).c_str());
-            }
+        try {
+            dispstr = DisplayStringUtil::toOldConnectionDisplayString(opp_parsequotedstr(dispstr.c_str()).c_str());
+            OUT << " display " << opp_quotestr(dispstr.c_str());
+        }
+        catch (std::exception& e) {
+            errors->addWarning(node, opp_stringf("error converting display string: %s", e.what()).c_str());
         }
     }
 
     OUT << ";" << getRightComment(node);
-}
-
-void NED1Generator::doChannelSpec(ChannelSpecElement *node, const char *indent, bool islast, const char *arrow)
-{
-    NEDElement *params = node->getFirstChildWithTag(NED_PARAMETERS);
-    bool hasParams = params && params->getFirstChildWithTag(NED_PARAM);
-
-    if (!opp_isempty(node->getLikeType()))
-    {
-        errors->addWarning(node, NED2FEATURE "channel `like'");
-    }
-    else if (!opp_isempty(node->getType()))
-    {
-        // concrete channel type
-        OUT << " " << node->getType() << arrow;
-
-        if (hasParams)
-            errors->addWarning(node, NED2FEATURE "channel spec with parameters");
-    }
-    else if (node->getFirstChildWithTag(NED_PARAMETERS))
-    {
-        generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-        if (hasParams)
-            OUT << arrow;
-    }
 }
 
 void NED1Generator::doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *)
@@ -1158,8 +1143,6 @@ void NED1Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doConnections((ConnectionsElement *)node, indent, islast, arg); break;
         case NED_CONNECTION:
             doConnection((ConnectionElement *)node, indent, islast, arg); break;
-        case NED_CHANNEL_SPEC:
-            doChannelSpec((ChannelSpecElement *)node, indent, islast, arg); break;
         case NED_CONNECTION_GROUP:
             doConnectionGroup((ConnectionGroupElement *)node, indent, islast, arg); break;
         case NED_LOOP:

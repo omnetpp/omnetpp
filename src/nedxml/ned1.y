@@ -158,7 +158,6 @@ static struct NED1ParserState
     ConnectionsElement *conns;
     ConnectionGroupElement *conngroup;
     ConnectionElement *conn;
-    ChannelSpecElement *chanspec;
     LoopElement *loop;
     ConditionElement *condition;
 } ps;
@@ -169,8 +168,7 @@ static void resetParserState()
     ps = cleanps;
 }
 
-ChannelSpecElement *createChannelSpec(NEDElement *conn);
-void removeRedundantChanSpecParams();
+void removeRedundantConnectionParams();
 void createSubstparamsElementIfNotExists();
 void createGatesizesElementIfNotExists();
 
@@ -889,10 +887,7 @@ opt_conncondition
 opt_conn_displaystr
         : DISPLAY STRINGCONSTANT
                 {
-                  bool hadChanSpec = ps.chanspec!=NULL;
-                  if (!ps.chanspec)
-                      ps.chanspec = createChannelSpec(ps.conn);
-                  ps.property = addComponentProperty(ps.chanspec, "display");
+                  ps.property = addComponentProperty(ps.conn, "display");
                   ps.propkey = (PropertyKeyElement *)createElementWithTag(NED_PROPERTY_KEY, ps.property);
                   LiteralElement *literal = (LiteralElement *)createElementWithTag(NED_LITERAL);
                   literal->setType(NED_CONST_STRING);
@@ -908,8 +903,6 @@ opt_conn_displaystr
                   storePos(ps.propkey, @$);
                   storePos(literal, @2);
                   storePos(ps.property, @$);
-                  if (!hadChanSpec)
-                      storePos(ps.chanspec, @$);
                 }
         |
         ;
@@ -922,29 +915,33 @@ notloopconnections
 notloopconnection
         : leftgatespec RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(true);
                   storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec RIGHT_ARROW channeldescr RIGHT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
-                  removeRedundantChanSpecParams();
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(true);
+                  removeRedundantConnectionParams();
                   storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(false);
                   storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
         | leftgatespec LEFT_ARROW channeldescr LEFT_ARROW rightgatespec opt_conncondition opt_conn_displaystr comma_or_semicolon
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
-                  removeRedundantChanSpecParams();
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(false);
+                  removeRedundantConnectionParams();
                   storeBannerAndRightComments(ps.conn,@$);
                   storePos(ps.conn, @$);
                 }
@@ -959,15 +956,17 @@ leftmod
         : NAME vector
                 {
                   ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
                   addVector(ps.conn, "src-module-index",@2,$2);
-                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME
                 {
                   ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
-                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         ;
 
@@ -992,25 +991,28 @@ parentleftgate
         : NAME vector
                 {
                   ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   addVector(ps.conn, "src-gate-index",@2,$2);
-                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME
                 {
                   ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
-                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         | NAME PLUSPLUS
                 {
                   ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement *)ps.conngroup : (NEDElement*)ps.conns );
+                  ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
+                  ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGatePlusplus(true);
-                  ps.chanspec = NULL;   // signal that there's no chanspec for this conn yet
                 }
         ;
 
@@ -1069,8 +1071,7 @@ parentrightgate
 channeldescr
         : channelattrs
                 {
-                  storePos(ps.chanspec, @$);
-                  if (ps.chanspec->getFirstChildWithTag(NED_PARAMETERS)!=NULL)
+                  if (ps.conn->getFirstChildWithTag(NED_PARAMETERS)!=NULL)
                       storePos(ps.params, @$);
                 }
         ;
@@ -1078,9 +1079,7 @@ channeldescr
 channelattrs
         : NAME
                 {
-                  if (!ps.chanspec)
-                      ps.chanspec = createChannelSpec(ps.conn);
-                  ps.chanspec->setType(toString(@1));
+                  ps.conn->setType(toString(@1));
                 }
         | chanattr
         | channelattrs chanattr
@@ -1089,8 +1088,6 @@ channelattrs
 chanattr
         : CHANATTRNAME expression
                 {
-                  if (!ps.chanspec)
-                      ps.chanspec = createChannelSpec(ps.conn);
                   ps.param = addParameter(ps.params, @1);
                   addExpression(ps.param, "value",@2,$2);
                   storePos(ps.param, @$);
@@ -1396,15 +1393,6 @@ void yyerror(const char *s)
     np->error(buf, pos.li);
 }
 
-// this function depends too much on ps, cannot be put into nedyylib.cc
-ChannelSpecElement *createChannelSpec(NEDElement *conn)
-{
-   ChannelSpecElement *chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
-   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, chanspec);
-   ps.params->setIsImplicit(true);
-   return chanspec;
-}
-
 void createSubstparamsElementIfNotExists()
 {
    // check if already exists (multiple blocks must be merged)
@@ -1422,9 +1410,9 @@ void createGatesizesElementIfNotExists()
        ps.gatesizes = (GatesElement *)createElementWithTag(NED_GATES, ps.submod);
 }
 
-void removeRedundantChanSpecParams()
+void removeRedundantConnectionParams()
 {
-    if (ps.chanspec && !ps.params->getFirstChild())
-        delete ps.chanspec->removeChild(ps.params);
+    if (!ps.params->getFirstChild())
+        delete ps.conn->removeChild(ps.params);
 }
 

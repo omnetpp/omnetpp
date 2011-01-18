@@ -33,11 +33,10 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
@@ -111,13 +110,6 @@ public class NedTextUtils {
                     return createInfo(element, dottedWordRegion, element);
                 return null;
             }
-            if (element instanceof ChannelSpecElement) {
-                if (dottedWord.equals(((ConnectionElementEx)element.getParent()).getEffectiveType())) {
-                    INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
-                    return createInfo(element, dottedWordRegion, declElement);
-                }
-                return null;
-            }
             if (element instanceof ParamElement) {
                 String paramName = ((ParamElement)element).getName();
                 if (word.equals(paramName)) {
@@ -152,6 +144,13 @@ public class NedTextUtils {
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getSrcModule(), conn.getSrcGate()));
                 if (textBeforeWord.contains("--") && word.equals(conn.getDestGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getDestModule(), conn.getDestGate()));
+                
+                if (dottedWord.equals(conn.getEffectiveType())) {
+                    INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
+                    return createInfo(element, dottedWordRegion, declElement);
+                }
+                return null;
+                
             }
 
             return null; // nothing

@@ -96,7 +96,6 @@ class NEDXML_API NED2Generator
     bool hasExpression(NEDElement *node, const char *attr);
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printOptVector(NEDElement *node, const char *attr, const char *indent);
-    bool isEmptyChannelSpec(ChannelSpecElement *node);
     void doMsgClassOrStructBody(NEDElement *msgclassorstruct, const char *indent);
     //@}
 
@@ -134,7 +133,6 @@ class NEDXML_API NED2Generator
     void doSubmodule(SubmoduleElement *node, const char *indent, bool islast, const char *);
     void doConnections(ConnectionsElement *node, const char *indent, bool islast, const char *);
     void doConnection(ConnectionElement *node, const char *indent, bool islast, const char *);
-    void doChannelSpec(ChannelSpecElement *node, const char *indent, bool islast, const char *);
     void doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *);
     void doLoop(LoopElement *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionElement *node, const char *indent, bool islast, const char *);

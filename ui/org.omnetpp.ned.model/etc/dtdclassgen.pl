@@ -178,9 +178,6 @@ foreach $element (@elements)
            elsif ($atttypes[$i] eq '(double|int|string|bool|spec)') {
               $enumname = "littype";
            }
-           elsif ($atttypes[$i] eq '(l2r|r2l|bidir)') {
-              $enumname = "arrowdir";
-           }
            elsif ($atttypes[$i] eq '(i|o)') {
               $enumname = "subgate";
            }

@@ -34,10 +34,9 @@ import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.GatesElement;
@@ -198,20 +197,6 @@ public class RefactoringTools {
         // filter the child nodes first
         for (INedElement child : element)
             cleanupTree(child);
-
-        // see if the current node can be filtered out
-
-        // skip a channel spec if it does not contain any meaningful information
-        if (element instanceof ChannelSpecElement) {
-            ChannelSpecElement channelSpec = (ChannelSpecElement) element;
-            if ((channelSpec.getType() == null || "".equals(channelSpec.getType()))
-                && (channelSpec.getLikeType() == null || "".equals(channelSpec.getLikeType()))
-                && !channelSpec.hasChildren()) {
-
-                // remove it from the parent if it does not matter
-                element.removeFromParent();
-            }
-        }
 
         // check for empty types, parameters, gates, submodules, connections node
         if ((element instanceof TypesElement

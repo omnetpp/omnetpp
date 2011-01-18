@@ -22,11 +22,11 @@ import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IMsgTypeResolver;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NedChangeListenerList;
@@ -142,10 +142,6 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 
     public static String gateTypeToString(int gatetype) {
         return enumToString(gatetype, NedElementConstants.gatetype_vals, NedElementConstants.gatetype_nums, NedElementConstants.gatetype_n);
-    }
-
-    public static String arrowDirToString(int arrowdir) {
-        return enumToString(arrowdir, NedElementConstants.arrowdir_vals, NedElementConstants.arrowdir_nums, NedElementConstants.arrowdir_n);
     }
 
     public static String parTypeToString(int partype) {

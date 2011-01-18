@@ -118,7 +118,7 @@
 <!ATTLIST connections
      allow-unconnected (true|false) "false">
 
-<!ELEMENT connection (comment*, expression*, channel-spec?, (loop|condition)*)>
+<!ELEMENT connection (comment*, expression*, parameters?, (loop|condition)*)>
 <!ATTLIST connection
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
@@ -132,13 +132,11 @@
      dest-gate-plusplus (true|false) "false"
      dest-gate-index     CDATA     #IMPLIED
      dest-gate-subg      (i|o)     #IMPLIED
-     arrow-direction    (l2r|r2l|bidir) #REQUIRED>
-
-<!ELEMENT channel-spec (comment*, expression*, parameters?)>
-<!ATTLIST channel-spec
-     type               CDATA     #IMPLIED
-     like-type          CDATA     #IMPLIED
-     like-param         CDATA     #IMPLIED>
+     type                CDATA     #IMPLIED
+     like-type           CDATA     #IMPLIED
+     like-param          CDATA     #IMPLIED
+     is-bidirectional   (true|false) "false"
+     is-forward-arrow   (true|false) "true">
 
 <!ELEMENT connection-group (comment*, (loop|condition)*, connection*)>
 
@@ -169,9 +167,9 @@
 <!ATTLIST function
      name                NMTOKEN   #REQUIRED>
 
-<!-- Ident is either a parameter reference or an argument for the "sizeof" 
+<!-- Ident is either a parameter reference or an argument for the "sizeof"
      operator; its NED source form is one of the following: "name", "module.name",
-     "module[n].name". If there is a child, it represents the module index n. 
+     "module[n].name". If there is a child, it represents the module index n.
      A reserved module name (with special meaning) is "this".
 -->
 <!ELEMENT ident (comment*, (operator|function|ident|literal)?)>

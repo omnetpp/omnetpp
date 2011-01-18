@@ -400,9 +400,9 @@ void NED2Generator::doParameters(ParametersElement *node, const char *indent, bo
     if (!node->getIsImplicit())
         OUT << indent << "parameters:" << getRightComment(node);
 
-    // inside channel-spec, everything has to be on one line except it'd be too long
+    // inside a connection, everything has to be on one line except it'd be too long
     // (rule of thumb: if it contains a param group or "parameters:" keyword is explicit)
-    bool inlineParams = node->getIsImplicit() && node->getParent() && node->getParent()->getTagCode()==NED_CHANNEL_SPEC;
+    bool inlineParams = node->getIsImplicit() && node->getParent() && node->getParent()->getTagCode()==NED_CONNECTION;
     generateChildren(node, inlineParams ? NULL : node->getIsImplicit() ? indent : increaseIndent(indent));
 }
 
@@ -412,7 +412,7 @@ void NED2Generator::doParam(ParamElement *node, const char *indent, bool islast,
     if (indent)
         OUT << indent;
     else
-        OUT << " ";  // inline params, used for channel-spec in connections
+        OUT << " ";  // inline params, used in connections
 
     if (node->getIsVolatile())
         OUT << "volatile ";
@@ -581,15 +581,8 @@ void NED2Generator::doConnections(ConnectionsElement *node, const char *indent, 
 void NED2Generator::doConnection(ConnectionElement *node, const char *indent, bool islast, const char *)
 {
     // direction
-    const char *arrow;
-    bool srcfirst;
-    switch (node->getArrowDirection())
-    {
-        case NED_ARROWDIR_L2R:   arrow = " -->"; srcfirst = true; break;
-        case NED_ARROWDIR_R2L:   arrow = " <--"; srcfirst = false; break;
-        case NED_ARROWDIR_BIDIR: arrow = " <-->"; srcfirst = true; break;
-        default: INTERNAL_ERROR0(node, "wrong arrow-dir");
-    }
+    const char *arrow = node->getIsBidirectional() ?  " <-->" : node->getIsForwardArrow() ? " -->" : " <--";
+    bool srcfirst = node->getIsForwardArrow();
 
     OUT << getBannerComment(node, indent);
 
@@ -604,10 +597,29 @@ void NED2Generator::doConnection(ConnectionElement *node, const char *indent, bo
     OUT << arrow;
 
     // print channel spec
-    ChannelSpecElement *channelSpecNode = (ChannelSpecElement *)node->getFirstChildWithTag(NED_CHANNEL_SPEC);
-    if (channelSpecNode && !isEmptyChannelSpec(channelSpecNode))
+    if (!opp_isempty(node->getType()) || !opp_isempty(node->getLikeType()) || node->getFirstChildWithTag(NED_PARAMETERS))
     {
-        generateChildrenWithType(node, NED_CHANNEL_SPEC, indent);
+        if (!opp_isempty(node->getLikeType()))
+        {
+            // "like" version
+            OUT << " <";
+            printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+            OUT << ">";
+            OUT << " like " << node->getLikeType();
+        }
+        else if (!opp_isempty(node->getType()))
+        {
+            // concrete channel type
+            OUT << " " << node->getType();
+        }
+
+        if (node->getFirstChildWithTag(NED_PARAMETERS))
+        {
+            OUT << " { ";
+            generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
+            OUT << " }";
+        }
+
         OUT << arrow;
     }
 
@@ -626,40 +638,6 @@ void NED2Generator::doConnection(ConnectionElement *node, const char *indent, bo
         generateChildrenWithTypes(node, tags, increaseIndent(indent), ", ");
     }
     OUT << ";" << getRightComment(node);
-}
-
-bool NED2Generator::isEmptyChannelSpec(ChannelSpecElement *node)
-{
-    if (!opp_isempty(node->getType()) || !opp_isempty(node->getLikeType()) || !opp_isempty(node->getLikeParam()))
-        return false;
-    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-        if (child->getTagCode() != NED_COMMENT)
-            return false;
-    return true;
-}
-
-void NED2Generator::doChannelSpec(ChannelSpecElement *node, const char *indent, bool islast, const char *)
-{
-    if (!opp_isempty(node->getLikeType()))
-    {
-        // "like" version
-        OUT << " <";
-        printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
-        OUT << ">";
-        OUT << " like " << node->getLikeType();
-    }
-    else if (!opp_isempty(node->getType()))
-    {
-        // concrete channel type
-        OUT << " " << node->getType();
-    }
-
-    if (node->getFirstChildWithTag(NED_PARAMETERS))
-    {
-        OUT << " { ";
-        generateChildrenWithType(node, NED_PARAMETERS, increaseIndent(indent));
-        OUT << " }";
-    }
 }
 
 void NED2Generator::doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *)
@@ -1156,8 +1134,6 @@ void NED2Generator::generateNedItem(NEDElement *node, const char *indent, bool i
             doConnections((ConnectionsElement *)node, indent, islast, arg); break;
         case NED_CONNECTION:
             doConnection((ConnectionElement *)node, indent, islast, arg); break;
-        case NED_CHANNEL_SPEC:
-            doChannelSpec((ChannelSpecElement *)node, indent, islast, arg); break;
         case NED_CONNECTION_GROUP:
             doConnectionGroup((ConnectionGroupElement *)node, indent, islast, arg); break;
         case NED_LOOP:

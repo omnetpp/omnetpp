@@ -32,7 +32,6 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
-import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
@@ -68,12 +67,8 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	 * Returns null if the NED tree doesn't contain a display string.
 	 */
 	public static String getDisplayStringLiteral(IHasDisplayString node) {
-        // for connections, we need to look inside the channelSpec node for the display string
-		INedElement parametersParent = (node instanceof ConnectionElement) ?
-				((ConnectionElement)node).getFirstChildWithTag(NED_CHANNEL_SPEC) : (INedElement)node;
-
 		// look for the "display" property inside the parameters section (if it exists)
-        INedElement parametersNode = parametersParent == null ? null : parametersParent.getFirstChildWithTag(NED_PARAMETERS);
+        INedElement parametersNode = node.getFirstChildWithTag(NED_PARAMETERS);
         if (parametersNode != null)
         	for (INedElement currElement : parametersNode)
         		if (currElement instanceof PropertyElement) {
@@ -93,18 +88,6 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	 */
 	public static LiteralElement setDisplayStringLiteral(IHasDisplayString node1, String displayString) {
 		INedElement node = node1;
-
-		// the connection node is special because the display string is stored inside its
-        // channel spec node, so we must create that too
-        if (node instanceof ConnectionElement) {
-            INedElement channelSpecNode = node.getFirstChildWithTag(NED_CHANNEL_SPEC);
-            if (channelSpecNode == null) {
-                channelSpecNode = NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
-                node.appendChild(channelSpecNode);
-            }
-            // use the new channel spec node as the container of display string
-            node = channelSpecNode;
-        }
 
 		// look for the "parameters" block
 		INedElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);

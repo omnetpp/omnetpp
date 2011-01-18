@@ -393,11 +393,10 @@ public class ConnectionChooser {
 		// set the possible gates
 		conn.setSrcGate(srcGate.getName());
 		conn.setDestGate(destGate.getName());
+		
 		// if both side is bidirectional gate, use a bidirectional connection
-		if (srcGate.getType() == GateElement.NED_GATETYPE_INOUT && destGate.getType() == GateElement.NED_GATETYPE_INOUT)
-			conn.setArrowDirection(ConnectionElement.NED_ARROWDIR_BIDIR);
-		else
-			conn.setArrowDirection(ConnectionElement.NED_ARROWDIR_L2R);
+		boolean useBidir = srcGate.getType() == GateElement.NED_GATETYPE_INOUT && destGate.getType() == GateElement.NED_GATETYPE_INOUT;
+		conn.setIsBidirectional(useBidir);
 
 		// check if we have a module vector and add an index to it.
 		if (srcGate.getIsVector())

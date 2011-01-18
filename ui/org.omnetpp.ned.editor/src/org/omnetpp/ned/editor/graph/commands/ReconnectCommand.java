@@ -79,7 +79,8 @@ public class ReconnectCommand extends Command {
         to.setDestGatePlusplus(from.getDestGatePlusplus());
         to.setDestGateSubg(from.getDestGateSubg());
 
-        to.setArrowDirection(from.getArrowDirection());
+        to.setIsBidirectional(from.getIsBidirectional());
+        to.setIsForwardArrow(from.getIsForwardArrow());
 	}
 
     /**

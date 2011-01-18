@@ -58,7 +58,7 @@ public interface INedTypeInfo extends INedChangeListener {
 	public INedTypeElement getNedElement();
 
 	/**
-	 * Returns NED file containing the definition.
+	 * Returns NED file containing the definition. Returns null for built-in types.
 	 */
 	public IFile getNedFile();
 

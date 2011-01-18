@@ -144,7 +144,6 @@ class NEDXML_API NED1Generator
     void doSubmodule(SubmoduleElement *node, const char *indent, bool islast, const char *);
     void doConnections(ConnectionsElement *node, const char *indent, bool islast, const char *);
     void doConnection(ConnectionElement *node, const char *indent, bool islast, const char *);
-    void doChannelSpec(ChannelSpecElement *node, const char *indent, bool islast, const char *);
     void doConnectionGroup(ConnectionGroupElement *node, const char *indent, bool islast, const char *);
     void doLoop(LoopElement *node, const char *indent, bool islast, const char *);
     void doCondition(ConditionElement *node, const char *indent, bool islast, const char *);

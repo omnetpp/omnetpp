@@ -191,9 +191,6 @@ foreach $element (@elements)
            elsif ($atttypes[$i] eq '(double|int|string|bool|spec)') {
               $enumname = "littype";
            }
-           elsif ($atttypes[$i] eq '(l2r|r2l|bidir)') {
-              $enumname = "arrowdir";
-           }
            elsif ($atttypes[$i] eq '(i|o)') {
               $enumname = "subgate";
            }
@@ -263,7 +260,6 @@ print H "};\n\n";
 
 print H "// Note: zero *must* be a valid value for all enums, because that gets set in the ctor if there's not default\n";
 print H "enum {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
-print H "enum {NED_ARROWDIR_R2L, NED_ARROWDIR_L2R, NED_ARROWDIR_BIDIR};\n";
 print H "enum {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";
 print H "enum {NED_CONST_DOUBLE, NED_CONST_INT, NED_CONST_STRING, NED_CONST_BOOL, NED_CONST_SPEC};\n";
 print H "enum {NED_SUBGATE_NONE, NED_SUBGATE_I, NED_SUBGATE_O};\n";
@@ -273,10 +269,6 @@ print H "\n";
 print CC "static const char *gatetype_vals[] = {\"\", \"input\", \"output\", \"inout\"};\n";
 print CC "static int gatetype_nums[] = {NED_GATETYPE_NONE, NED_GATETYPE_INPUT, NED_GATETYPE_OUTPUT, NED_GATETYPE_INOUT};\n";
 print CC "static const int gatetype_n = 4;\n";
-print CC "\n";
-print CC "static const char *arrowdir_vals[] = {\"l2r\", \"r2l\", \"bidir\"};\n";
-print CC "static int arrowdir_nums[] = {NED_ARROWDIR_L2R, NED_ARROWDIR_R2L, NED_ARROWDIR_BIDIR};\n";
-print CC "static const int arrowdir_n = 3;\n";
 print CC "\n";
 print CC "static const char *partype_vals[] = {\"\", \"double\", \"int\", \"string\", \"bool\", \"xml\"};\n";
 print CC "static int partype_nums[] = {NED_PARTYPE_NONE, NED_PARTYPE_DOUBLE, NED_PARTYPE_INT, NED_PARTYPE_STRING, NED_PARTYPE_BOOL, NED_PARTYPE_XML};\n";

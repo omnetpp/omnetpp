@@ -160,13 +160,13 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
 
 bool NEDSyntaxValidator::isWithinSubcomponent(NEDElement *node)
 {
-    // only returns true if node is within the BODY of a submodule or a channelspec
+    // only returns true if node is within the BODY of a submodule or a connection
     // (i.e. returns *false* for a submodule vector size)
     for (; node!=NULL; node = node->getParent())
     {
         if (node->getTagCode() == NED_PARAMETERS || node->getTagCode() == NED_GATES) {
             int sectionOwnerType = node->getParent()->getTagCode();
-            return sectionOwnerType==NED_SUBMODULE || sectionOwnerType==NED_CHANNEL_SPEC || sectionOwnerType==NED_CONNECTION;
+            return sectionOwnerType==NED_SUBMODULE || sectionOwnerType==NED_CONNECTION;
         }
     }
     return false;
@@ -280,14 +280,14 @@ void NEDSyntaxValidator::validateElement(ParamElement *node)
 
 void NEDSyntaxValidator::validateElement(PropertyElement *node)
 {
-    // properties cannot occur on submodule or channelspec parameters and gates.
+    // properties cannot occur on submodule or connection parameters/gates.
     // structure: submodule>parameters>parameter>property
     NEDElement *parent = node->getParent();
     if (parent && (parent->getTagCode()==NED_PARAM || parent->getTagCode()==NED_GATE))
     {
         NEDElement *container = parent->getParent()->getParent();
-        if (container && (container->getTagCode()==NED_SUBMODULE || container->getTagCode()==NED_CHANNEL_SPEC))
-            errors->addError(node, "cannot modify parameter or gate properties with a submodule or connection");
+        if (container && (container->getTagCode()==NED_SUBMODULE || container->getTagCode()==NED_CONNECTION))
+            errors->addError(node, "cannot modify parameter/gate properties in a submodule or connection");
     }
 }
 
@@ -405,13 +405,9 @@ void NEDSyntaxValidator::validateElement(ConnectionElement *node)
         errors->addError(node, "wrong source gate: cannot have both gate index and '++' operator specified");
     if (destGateIx && node->getDestGatePlusplus())
         errors->addError(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
-}
 
-void NEDSyntaxValidator::validateElement(ChannelSpecElement *node)
-{
     checkDottedNameAttribute(node, "type", false);
     checkDottedNameAttribute(node, "like-type", false);
-    //FIXME revise
 }
 
 void NEDSyntaxValidator::validateElement(ChannelInterfaceElement *node)

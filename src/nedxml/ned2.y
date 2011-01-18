@@ -157,7 +157,6 @@ static struct NED2ParserState
     ConnectionsElement *conns;
     ConnectionGroupElement *conngroup;
     ConnectionElement *conn;
-    ChannelSpecElement *chanspec;
     LoopElement *loop;
     ConditionElement *condition;
 } ps;
@@ -1178,9 +1177,6 @@ connectionsitem
         : connectiongroup
         | connection opt_loops_and_conditions ';'
                 {
-                  ps.chanspec = (ChannelSpecElement *)ps.conn->getFirstChildWithTag(NED_CHANNEL_SPEC);
-                  if (ps.chanspec)
-                      ps.conn->appendChild(ps.conn->removeChild(ps.chanspec)); // move channelspec to conform DTD
                   if ($2) {
                       transferChildren($2, ps.conn);
                       delete $2;
@@ -1255,29 +1251,33 @@ loop
 connection
         : leftgatespec RIGHTARROW rightgatespec
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(true);
                 }
         | leftgatespec RIGHTARROW channelspec RIGHTARROW rightgatespec
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_L2R);
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(true);
                 }
         | leftgatespec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(false);
                 }
         | leftgatespec LEFTARROW channelspec LEFTARROW rightgatespec
                 {
                   swapConnection(ps.conn);
-                  ps.conn->setArrowDirection(NED_ARROWDIR_R2L);
+                  ps.conn->setIsBidirectional(false);
+                  ps.conn->setIsForwardArrow(false);
                 }
         | leftgatespec DBLARROW rightgatespec
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
+                  ps.conn->setIsBidirectional(true);
                 }
         | leftgatespec DBLARROW channelspec DBLARROW rightgatespec
                 {
-                  ps.conn->setArrowDirection(NED_ARROWDIR_BIDIR);
+                  ps.conn->setIsBidirectional(true);
                 }
         ;
 
@@ -1420,10 +1420,9 @@ opt_subgate
 
 channelspec
         : channelspec_header
-                { storePos(ps.chanspec, @$); }
         | channelspec_header '{'
                 {
-                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.chanspec);
+                  ps.parameters = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.parameters->setIsImplicit(true);
                   ps.propertyscope.push(ps.parameters);
                 }
@@ -1431,26 +1430,20 @@ channelspec
           '}'
                 {
                   ps.propertyscope.pop();
-                  storePos(ps.chanspec, @$);
                 }
         ;
 
 
 channelspec_header
         :
-                {
-                  ps.chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
-                }
         | dottedname
                 {
-                  ps.chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  ps.chanspec->setType(removeSpaces(@1).c_str());
+                  ps.conn->setType(removeSpaces(@1).c_str());
                 }
         | likeparam LIKE dottedname
                 {
-                  ps.chanspec = (ChannelSpecElement *)createElementWithTag(NED_CHANNEL_SPEC, ps.conn);
-                  addLikeParam(ps.chanspec, "like-param", @1, $1);
-                  ps.chanspec->setLikeType(removeSpaces(@3).c_str());
+                  addLikeParam(ps.conn, "like-param", @1, $1);
+                  ps.conn->setLikeType(removeSpaces(@3).c_str());
                 }
         ;
 

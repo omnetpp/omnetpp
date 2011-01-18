@@ -161,7 +161,7 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
         ConnectionFigure cfig = getConnectionFigure();
 
         cfig.setDisplayString(connectionModel.getDisplayString());
-        cfig.setArrowHeadEnabled(connectionModel.getArrowDirection() != NedElementConstants.NED_ARROWDIR_BIDIR);
+        cfig.setArrowHeadEnabled(!connectionModel.getIsBidirectional());
 
         boolean isConditional = connectionModel.getFirstConditionChild() != null;
         boolean isGroup = connectionModel.getFirstLoopChild() != null;

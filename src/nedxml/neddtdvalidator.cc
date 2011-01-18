@@ -264,7 +264,7 @@ void NEDDTDValidator::validateElement(ConnectionElement *node)
     Choice choices[] = {
         {{NED_COMMENT, NED_NULL}, '*'},
         {{NED_EXPRESSION, NED_NULL}, '*'},
-        {{NED_CHANNEL_SPEC, NED_NULL}, '?'},
+        {{NED_PARAMETERS, NED_NULL}, '?'},
         {{NED_LOOP, NED_CONDITION, NED_NULL}, '*'},
     };
     checkSeqOfChoices(node, choices, sizeof(choices)/sizeof(Choice));
@@ -283,17 +283,10 @@ void NEDDTDValidator::validateElement(ConnectionElement *node)
     checkEnumeratedAttribute(node, "dest-gate-plusplus", vals9, sizeof(vals9)/sizeof(const char *));
     const char *vals11[] = {"i","o",""};
     checkEnumeratedAttribute(node, "dest-gate-subg", vals11, sizeof(vals11)/sizeof(const char *));
-    checkRequiredAttribute(node, "arrow-direction");
-    const char *vals12[] = {"l2r","r2l","bidir"};
-    checkEnumeratedAttribute(node, "arrow-direction", vals12, sizeof(vals12)/sizeof(const char *));
-}
-
-void NEDDTDValidator::validateElement(ChannelSpecElement *node)
-{
-    int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PARAMETERS, NED_NULL};
-    char mult[] = {'*','*','?', 0};
-    checkSequence(node, tags, mult);
-
+    const char *vals15[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-bidirectional", vals15, sizeof(vals15)/sizeof(const char *));
+    const char *vals16[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-forward-arrow", vals16, sizeof(vals16)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ConnectionGroupElement *node)

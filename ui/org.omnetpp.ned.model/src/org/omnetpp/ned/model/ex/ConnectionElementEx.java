@@ -18,16 +18,15 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.NedModelEvent;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 
 /**
- * TODO add documentation
+ * Represents a connection in a compound module.
  *
  * @author rhornig
  */
@@ -37,12 +36,10 @@ public class ConnectionElementEx extends ConnectionElement
 	private DisplayString displayString = null;
 
     protected ConnectionElementEx() {
-		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
 
     protected ConnectionElementEx(INedElement parent) {
 		super(parent);
-		setArrowDirection(ConnectionElementEx.NED_ARROWDIR_L2R);
 	}
 
     public IConnectableElement getSrcModuleRef() {
@@ -115,6 +112,7 @@ public class ConnectionElementEx extends ConnectionElement
 		result += getSrcGateWithIndex();
 		return result;
 	}
+	
 	/**
 	 * Returns the fully qualified dest gate name (with module, index, gate, index)
 	 */
@@ -187,50 +185,6 @@ public class ConnectionElementEx extends ConnectionElement
 
     // type management
 
-    public String getType() {
-        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        return channelSpecElement == null ? null : channelSpecElement.getType();
-    }
-
-    public void setType(String type) {
-        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        if (channelSpecElement == null) {
-            channelSpecElement = (ChannelSpecElement)NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
-            appendChild(channelSpecElement);
-        }
-        channelSpecElement.setType(type);
-    }
-
-    public String getLikeType() {
-        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        return channelSpecElement == null ? null : channelSpecElement.getLikeType();
-    }
-
-    public void setLikeType(String type) {
-        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
-
-        if (channelSpecElement == null) {
-            channelSpecElement = (ChannelSpecElement)NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
-            appendChild(channelSpecElement);
-        }
-        channelSpecElement.setLikeType(type);
-    }
-
-    public String getLikeParam() {
-        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
-        return channelSpecElement == null ? null : channelSpecElement.getLikeParam();
-    }
-
-    public void setLikeParam(String param) {
-        ChannelSpecElement channelSpecElement = (ChannelSpecElement)getFirstChildWithTag(NED_CHANNEL_SPEC);
-
-        if (channelSpecElement == null) {
-            channelSpecElement = (ChannelSpecElement)NedElementFactoryEx.getInstance().createElement(NED_CHANNEL_SPEC);
-            appendChild(channelSpecElement);
-        }
-        channelSpecElement.setLikeParam(param);
-    }
-
     public String getEffectiveType() {
         String likeType = getLikeType();
         if (StringUtils.isEmpty(likeType)) {
@@ -268,16 +222,12 @@ public class ConnectionElementEx extends ConnectionElement
     }
 
     /**
-     * Returns a list of all parameters assigned in this module (inside the channel spec element)
+     * Returns a list of all parameters assigned in this module
      */
     public List<ParamElementEx> getOwnParams() {
         List<ParamElementEx> result = new ArrayList<ParamElementEx>();
 
-        ChannelSpecElement channelSpecElement = getFirstChannelSpecChild();;
-        if (channelSpecElement == null)
-            return result;
-
-        ParametersElement parametersElement = channelSpecElement.getFirstParametersChild();
+        ParametersElement parametersElement = getFirstParametersChild();
         if (parametersElement != null)
         	for (INedElement currChild : parametersElement)
         		if (currChild instanceof ParamElementEx)

@@ -37,11 +37,11 @@ import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
 import org.omnetpp.ned.model.pojo.ClassDeclElement;
 import org.omnetpp.ned.model.pojo.ClassElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.ConditionElement;
+import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.CplusplusElement;
@@ -114,9 +114,9 @@ public class NedValidator extends AbstractNedValidatorEx {
 	private SubmoduleElementEx submoduleNode;
 	private INedTypeInfo submoduleType; // may be null; valid while submoduleNode!=null
 
-	// non-null while we're validating a channel spec of a connection
-	private ChannelSpecElement channelSpecElement;
-	private INedTypeInfo channelSpecType; // may be null; valid while channelSpecElement!=null
+	// non-null while we're validating the type of a connection
+	private ConnectionElement connectionElement;
+	private INedTypeInfo connectionType; // may be null; valid while connectionElement!=null
 
 	// members of the component currently being validated
 	private HashMap<String, INedElement> members = new HashMap<String, INedElement>();
@@ -335,7 +335,7 @@ public class NedValidator extends AbstractNedValidatorEx {
 				errors.addError(node, "'"+parname+"': new parameters can only be defined on a module type, but not per submodule");
 				return;
 			}
-			if (channelSpecElement!=null) {
+			if (connectionElement!=null) {
 				errors.addError(node, "'"+parname+"': new channel parameters can only be defined on a channel type, but not per connection");
 				return;
 			}
@@ -371,15 +371,15 @@ public class NedValidator extends AbstractNedValidatorEx {
 			}
 			else validateParamAssignment(result, (ParamElementEx)node, paramDeclaration);
 		}
-		else if (channelSpecElement!=null) {
+		else if (connectionElement!=null) {
 			// inside a connection's channel spec
-			if (channelSpecType==null) {
+			if (connectionType==null) {
 				errors.addError(node, "cannot assign parameters of a channel of unknown type");
 				return;
 			}
 
-			if (channelSpecType.getParamDeclarations().get(parname) == null) {
-				errors.addError(node, "'"+parname+"': type '"+channelSpecType.getName()+"' has no such parameter");
+			if (connectionType.getParamDeclarations().get(parname) == null) {
+				errors.addError(node, "'"+parname+"': type '"+connectionType.getName()+"' has no such parameter");
 				return;
 			}
 		}
@@ -623,7 +623,7 @@ public class NedValidator extends AbstractNedValidatorEx {
 
 			boolean connectedToParent = StringUtils.isEmpty(doSrcGate ? conn.getSrcModule() : conn.getDestModule());
 			int expectedGateDir;
-			if (conn.getArrowDirection()==NED_ARROWDIR_BIDIR)
+			if (conn.getIsBidirectional())
 				expectedGateDir = NED_GATETYPE_INOUT;
 			else
 				expectedGateDir = (doSrcGate==connectedToParent) ? NED_GATETYPE_INPUT : NED_GATETYPE_OUTPUT;
@@ -688,42 +688,36 @@ public class NedValidator extends AbstractNedValidatorEx {
 	    validateConnGate(node, true);
 	    validateConnGate(node, false);
 
-	    //FIXME validate channel
-	    validateChildren(node);
-	}
-
-	@Override
-    protected void validateElement(ChannelSpecElement node) {
 		// find channel type
 		String typeName = node.getType();
 		String likeTypeName = node.getLikeType();
 		CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)componentNode;
 		if (StringUtils.isNotEmpty(typeName)) {
 			// normal case
-			channelSpecType = resolver.lookupNedType(typeName, compoundModule);
-			if (channelSpecType == null)
+			connectionType = resolver.lookupNedType(typeName, compoundModule);
+			if (connectionType == null)
 				errors.addError(node, "'"+typeName+"': no such channel type");
-			else if (!(channelSpecType.getNedElement() instanceof ChannelElementEx))
+			else if (!(connectionType.getNedElement() instanceof ChannelElementEx))
 				errors.addError(node, "'"+typeName+"' is not a channel type");
 		}
 		else if (StringUtils.isNotEmpty(likeTypeName)) {
 			// "like" case
-			channelSpecType = resolver.lookupNedType(likeTypeName, compoundModule);
-			if (channelSpecType == null)
+			connectionType = resolver.lookupNedType(likeTypeName, compoundModule);
+			if (connectionType == null)
 				errors.addError(node, "'"+likeTypeName+"': no such channel or channel interface type");
-			else if (!(channelSpecType.getNedElement() instanceof ChannelInterfaceElementEx))
+			else if (!(connectionType.getNedElement() instanceof ChannelInterfaceElementEx))
 				errors.addError(node, "'"+likeTypeName+"' is not a channel interface type");
 		}
 		else {
 			// fallback: type is DatarateChannel
-			channelSpecType = resolver.getToplevelNedType(DEFAULT_CHANNEL_TYPE, contextProject);
-			Assert.isTrue(channelSpecType!=null);
+			connectionType = resolver.getToplevelNedType(DEFAULT_CHANNEL_TYPE, contextProject);
+			Assert.isTrue(connectionType!=null);
 		}
 
 		// validate contents
-		channelSpecElement = node;
+		connectionElement = node;
 		validateChildren(node);
-		channelSpecElement = null;
+		connectionElement = null;
 	}
 
 	@Override

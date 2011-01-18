@@ -14,12 +14,11 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ChannelElement;
-import org.omnetpp.ned.model.pojo.ChannelSpecElement;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
-import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.GatesElement;
@@ -54,22 +53,18 @@ public class NedModelContentProvider implements ITreeContentProvider {
 		return ((INedElement)child).getParent();
 	}
 
-	// TODO maybe we should provide a more flatter layout (skipping the parameters, gates, suboldules, types, connections nodes)
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
     public Object[] getChildren(Object parent) {
         List result = new ArrayList();
         INedElement currElem = ((INedElement)parent);
 
         // if this is a channel spec we will give back the parameters subnode's children
-        if (currElem instanceof ChannelSpecElement)
-            currElem = ((ChannelSpecElement)currElem).getFirstParametersChild();
         if (currElem == null)
             return result.toArray();
 
         for (INedElement child : currElem) {
             // display only the following classes
             if ((child instanceof NedFileElement) ||
-//                    (child instanceof ImportElement) ||
                     (child instanceof PropertyElement && parent instanceof ParametersElement) ||
                     (child instanceof ChannelElement) ||
                     (child instanceof ChannelInterfaceElement) ||
@@ -80,8 +75,7 @@ public class NedModelContentProvider implements ITreeContentProvider {
                     (child instanceof GateElement) ||
                     (child instanceof ParamElement) ||
                     (child instanceof ConnectionElement) ||
-                    (child instanceof ConnectionGroupElement) ||
-                    (child instanceof ChannelSpecElement))
+                    (child instanceof ConnectionGroupElement))
                 result.add(child);
             // flatten the following nodes to the first level
             if ((child instanceof ParametersElement) ||

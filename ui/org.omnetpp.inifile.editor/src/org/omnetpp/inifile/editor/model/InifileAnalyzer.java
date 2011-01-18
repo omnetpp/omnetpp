@@ -1014,7 +1014,8 @@ public class InifileAnalyzer {
      * Collects parameters of a module type (recursively), *without* an inifile present.
      */
     public static List<ParamResolution> collectParameters(INedTypeInfo moduleType) {
-        return collectParameters(moduleType, moduleType.getNedFile().getProject());
+        IFile nedFile = moduleType.getNedFile();
+        return collectParameters(moduleType, nedFile==null ? null : nedFile.getProject());
     }
     
 	/**
