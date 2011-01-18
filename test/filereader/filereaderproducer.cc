@@ -31,7 +31,8 @@ void runProducer(const char *filename, double duration, int numberOfLines)
     for (int i = 0; i < numberOfLines; ++i)
     {
         outfile << i << std::endl;
-        usleep(sleep_usec);
+        if (sleep_usec > 1000)
+        	usleep(sleep_usec);
     }
     outfile.close();
 }

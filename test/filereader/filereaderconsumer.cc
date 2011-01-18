@@ -38,6 +38,7 @@ void runConsumer(const char *filename, double duration)
         char *line;
         while ((line=reader.getNextLineBufferPointer())!=NULL)
         {
+            //usleep(1);
             int len=reader.getCurrentLineLength();
             if (len < 0)
                 throw opp_runtime_error("Line length is negative: %s\n", len);
