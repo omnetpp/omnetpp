@@ -29,9 +29,7 @@ USING_NAMESPACE
 
 #define LL  INT64_PRINTF_FORMAT
 
-#ifdef TRACE_FILEREADER
 //#define TRACE_FILEREADER
-#endif
 
 FileChangedError::FileChangedError(FileReader::FileChangedState changed, const char *messagefmt, ...) : change(change), opp_runtime_error("")
 {
