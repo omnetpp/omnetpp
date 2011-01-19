@@ -272,32 +272,37 @@ Event *EventLog::getLastEvent()
     return lastEvent;
 }
 
-Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind)
+Event *EventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind, bool useCacheOnly)
 {
     Assert(eventNumber >= 0);
-
     if (matchKind == EXACT) {
         EventNumberToEventMap::iterator it = eventNumberToEventMap.find(eventNumber);
         if (it != eventNumberToEventMap.end())
             return it->second;
+        else if (useCacheOnly)
+            return NULL;
+        else {
+            // the following two are still faster than binary searching
+            // but this may access the disk
+            it = eventNumberToEventMap.find(eventNumber - 1);
+            if (it != eventNumberToEventMap.end())
+                return it->second->getNextEvent();
 
-        // the following two are still faster than binary searching
-        it = eventNumberToEventMap.find(eventNumber - 1);
-        if (it != eventNumberToEventMap.end())
-            return it->second->getNextEvent();
-
-        it = eventNumberToEventMap.find(eventNumber + 1);
-        if (it != eventNumberToEventMap.end())
-            return it->second->getPreviousEvent();
+            it = eventNumberToEventMap.find(eventNumber + 1);
+            if (it != eventNumberToEventMap.end())
+                return it->second->getPreviousEvent();
+        }
     }
-
-    // TODO: maybe cache result
-    file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
-
-    if (offset == -1)
+    if (useCacheOnly)
         return NULL;
-    else
-        return getEventForBeginOffset(offset);
+    else {
+        // TODO: shall we cache result
+        file_offset_t offset = getOffsetForEventNumber(eventNumber, matchKind);
+        if (offset == -1)
+            return NULL;
+        else
+            return getEventForBeginOffset(offset);
+    }
 }
 
 Event *EventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
@@ -306,16 +311,19 @@ Event *EventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)
     return (Event *)IEventLog::getNeighbourEvent(event, distance);
 }
 
-Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
+Event *EventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind, bool useCacheOnly)
 {
-    Assert(simulationTime >= 0);
-
-    file_offset_t offset = getOffsetForSimulationTime(simulationTime, matchKind);
-
-    if (offset == -1)
+    if (useCacheOnly)
         return NULL;
-    else
-        return getEventForBeginOffset(offset);
+    else {
+        Assert(simulationTime >= 0);
+        file_offset_t offset = getOffsetForSimulationTime(simulationTime, matchKind);
+
+        if (offset == -1)
+            return NULL;
+        else
+            return getEventForBeginOffset(offset);
+    }
 }
 
 EventLogEntry *EventLog::findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive)

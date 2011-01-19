@@ -139,12 +139,12 @@ class EVENTLOG_API IEventLog
          * Returns the requested event or NULL if there is no such event included in the log.
          * The given event number may not be included in the log.
          */
-        virtual IEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT) = 0;
+        virtual IEvent *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false) = 0;
         /**
          * Returns the requested event or NULL if there is no such event included in the log.
          * The given simulation time may not be included in the log.
          */
-        virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT) = 0;
+        virtual IEvent *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false) = 0;
 
         /**
          * Finds the closest event log entry containing the given text.
@@ -170,7 +170,7 @@ class EVENTLOG_API IEventLog
 
     public:
         /**
-         * Returns the event at the given instance. 0 means the parameter event will be returned.
+         * Returns the event at the given distance. 0 means the parameter event will be returned.
          */
         virtual IEvent *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1);
 

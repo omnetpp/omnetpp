@@ -107,8 +107,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual Event *getFirstEvent();
         virtual Event *getLastEvent();
         virtual Event *getNeighbourEvent(IEvent *event, eventnumber_t distance = 1);
-        virtual Event *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT);
-        virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT);
+        virtual Event *getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind = EXACT, bool useCacheOnly = false);
+        virtual Event *getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind = EXACT, bool useCacheOnly = false);
 
         virtual EventLogEntry *findEventLogEntry(EventLogEntry *start, const char *search, bool forward, bool caseSensitive);
 

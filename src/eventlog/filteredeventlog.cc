@@ -386,17 +386,13 @@ FilteredEvent *FilteredEventLog::getLastEvent()
     return lastMatchingEvent;
 }
 
-FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind)
+FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumber, MatchKind matchKind, bool useCacheOnly)
 {
     Assert(eventNumber >= 0);
-
     EventNumberToFilteredEventMap::iterator it = eventNumberToFilteredEventMap.find(eventNumber);
-
     if (it != eventNumberToFilteredEventMap.end())
         return it->second;
-
-    IEvent *event = eventLog->getEventForEventNumber(eventNumber, matchKind);
-
+    IEvent *event = eventLog->getEventForEventNumber(eventNumber, matchKind, useCacheOnly);
     if (event) {
         switch (matchKind) {
             case EXACT:
@@ -406,27 +402,27 @@ FilteredEvent *FilteredEventLog::getEventForEventNumber(eventnumber_t eventNumbe
             case FIRST_OR_PREVIOUS:
                 if (event->getEventNumber() == eventNumber && matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
-                else
+                else if (!useCacheOnly)
                     return getMatchingEventInDirection(event, false);
             case FIRST_OR_NEXT:
-                return getMatchingEventInDirection(event, true);
+                if (!useCacheOnly)
+                    return getMatchingEventInDirection(event, true);
             case LAST_OR_PREVIOUS:
-                return getMatchingEventInDirection(event, false);
+                if (!useCacheOnly)
+                    return getMatchingEventInDirection(event, false);
             case LAST_OR_NEXT:
                 if (event->getEventNumber() == eventNumber && matchesFilter(event))
                     return cacheFilteredEvent(event->getEventNumber());
-                else
+                else if (!useCacheOnly)
                     return getMatchingEventInDirection(event, true);
         }
     }
-
     return NULL;
 }
 
-FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind)
+FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationTime, MatchKind matchKind, bool useCacheOnly)
 {
-    IEvent *event = eventLog->getEventForSimulationTime(simulationTime, matchKind);
-
+    IEvent *event = eventLog->getEventForSimulationTime(simulationTime, matchKind, useCacheOnly);
     if (event) {
         switch (matchKind) {
             case EXACT:
@@ -434,29 +430,33 @@ FilteredEvent *FilteredEventLog::getEventForSimulationTime(simtime_t simulationT
                     return cacheFilteredEvent(event->getEventNumber());
                 break;
             case FIRST_OR_PREVIOUS:
-                if (event->getSimulationTime() == simulationTime) {
-                    IEvent *lastEvent = eventLog->getEventForSimulationTime(simulationTime, LAST_OR_NEXT);
-                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event, true, lastEvent->getEventNumber());
+                if (!useCacheOnly) {
+                    if (event->getSimulationTime() == simulationTime) {
+                        IEvent *lastEvent = eventLog->getEventForSimulationTime(simulationTime, LAST_OR_NEXT);
+                        FilteredEvent *matchingEvent = getMatchingEventInDirection(event, true, lastEvent->getEventNumber());
 
-                    if (matchingEvent)
-                        return matchingEvent;
+                        if (matchingEvent)
+                            return matchingEvent;
+                    }
+                    return getMatchingEventInDirection(event, false);
                 }
-
-                return getMatchingEventInDirection(event, false);
             case FIRST_OR_NEXT:
-                return getMatchingEventInDirection(event, true);
+                if (!useCacheOnly)
+                    return getMatchingEventInDirection(event, true);
             case LAST_OR_PREVIOUS:
-                return getMatchingEventInDirection(event, false);
+                if (!useCacheOnly)
+                    return getMatchingEventInDirection(event, false);
             case LAST_OR_NEXT:
-                if (event->getSimulationTime() == simulationTime) {
-                    IEvent *firstEvent = eventLog->getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
-                    FilteredEvent *matchingEvent = getMatchingEventInDirection(event, false, firstEvent->getEventNumber());
+                if (!useCacheOnly) {
+                    if (event->getSimulationTime() == simulationTime) {
+                        IEvent *firstEvent = eventLog->getEventForSimulationTime(simulationTime, FIRST_OR_PREVIOUS);
+                        FilteredEvent *matchingEvent = getMatchingEventInDirection(event, false, firstEvent->getEventNumber());
 
-                    if (matchingEvent)
-                        return matchingEvent;
+                        if (matchingEvent)
+                            return matchingEvent;
+                    }
+                    return getMatchingEventInDirection(event, true);
                 }
-
-                return getMatchingEventInDirection(event, true);
         }
     }
 
