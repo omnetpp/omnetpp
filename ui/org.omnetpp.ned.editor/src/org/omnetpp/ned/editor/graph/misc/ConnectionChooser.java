@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.SWT;
@@ -116,7 +117,7 @@ public class ConnectionChooser {
         List<String> noGates = new ArrayList<String>();
         if (srcMod.getGateDeclarations().size() == 0)
             noGates.add(srcMod.getName());
-        if (destMod.getGateDeclarations().size() == 0 && !srcMod.getNedTypeInfo().equals(destMod.getNedTypeInfo()))
+        if (destMod.getGateDeclarations().size() == 0 && !ObjectUtils.equals(srcMod.getNedTypeInfo(), destMod.getNedTypeInfo()))
             noGates.add(destMod.getName());
         if (noGates.size() > 0) {
             MenuItem menuItem = menu.addMenuItem(SWT.PUSH);
