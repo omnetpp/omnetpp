@@ -42,7 +42,7 @@ class EVENTLOG_API IEvent
         /**
          * Synchorizes state when the underlying log file changes (new events are appended).
          */
-        virtual void synchronize(FileReader::FileChangedState change) = 0;
+        virtual void synchronize(FileReader::FileChangedState change);
 
         /**
          * Returns the corresponding event log.
@@ -134,6 +134,10 @@ class EVENTLOG_API IEvent
          */
         static void linkEvents(IEvent *previousEvent, IEvent *nextEvent);
         static void unlinkEvents(IEvent *previousEvent, IEvent *nextEvent);
+        static void unlinkNeighbourEvents(IEvent *nextEvent);
+
+    protected:
+        void clearInternalState();
 };
 
 NAMESPACE_END

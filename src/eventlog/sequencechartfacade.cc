@@ -41,11 +41,18 @@ void SequenceChartFacade::synchronize(FileReader::FileChangedState change)
 	if (change != FileReader::UNCHANGED) {
 		EventLogFacade::synchronize(change);
 		nonLinearFocus = -1;
-		timelineCoordinateSystemVersion++;
-		if (change == FileReader::APPENDED)
-		    timelineCoordinateRangeStartEventNumber = timelineCoordinateRangeEndEventNumber = timelineCoordinateOriginEventNumber;
-		else
-			undefineTimelineCoordinateSystem();
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+	    		undefineTimelineCoordinateSystem();
+                break;
+            case FileReader::APPENDED:
+                IEvent *event = eventLog->getEventForEventNumber(timelineCoordinateOriginEventNumber, EXACT, true);
+                if (event)
+                    relocateTimelineCoordinateSystem(event);
+                else
+    	    		undefineTimelineCoordinateSystem();
+                break;
+        }
 	}
 }
 

@@ -21,10 +21,28 @@ USING_NAMESPACE
 
 IEvent::IEvent()
 {
+    clearInternalState();
+}
+
+void IEvent::clearInternalState()
+{
     nextEvent = NULL;
     previousEvent = NULL;
     cachedTimelineCoordinate = -1;
     cachedTimelineCoordinateSystemVersion = -1;
+}
+
+void IEvent::synchronize(FileReader::FileChangedState change)
+{
+    if (change != FileReader::UNCHANGED) {
+        switch (change) {
+            case FileReader::OVERWRITTEN:
+                clearInternalState();
+                break;
+            case FileReader::APPENDED:
+                break;
+        }
+    }
 }
 
 int IEvent::findBeginSendEntryIndex(int messageId)
@@ -51,4 +69,12 @@ void IEvent::unlinkEvents(IEvent *previousEvent, IEvent *nextEvent)
 {
     previousEvent->nextEvent = NULL;
     nextEvent->previousEvent = NULL;
+}
+
+void IEvent::unlinkNeighbourEvents(IEvent *event)
+{
+    if (event->previousEvent)
+        unlinkEvents(event->previousEvent, event);
+    if (event->nextEvent)
+        unlinkEvents(event, event->nextEvent);
 }

@@ -79,6 +79,7 @@ void Event::deleteAllocatedObjects()
 void Event::synchronize(FileReader::FileChangedState change)
 {
     if (change != FileReader::UNCHANGED) {
+        IEvent::synchronize(change);
         switch (change) {
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();

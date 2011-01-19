@@ -237,7 +237,7 @@ class COMMON_API FileReader
 /**
  * Special purpose exception to signal when the underlying file changes.
  */
-class COMMON_API FileChangedError : opp_runtime_error
+class COMMON_API FileChangedError : public opp_runtime_error
 {
   public:
     FileReader::FileChangedState change;

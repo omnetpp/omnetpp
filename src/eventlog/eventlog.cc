@@ -72,13 +72,15 @@ void EventLog::synchronize(FileReader::FileChangedState change)
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
                 clearInternalState();
+                parseInitializationLogEntries();
                 break;
             case FileReader::APPENDED:
                 for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
                     it->second->synchronize(change);
                 if (lastEvent) {
-                    eventNumberToEventMap.erase(lastEventNumber);
-                    eventNumberToCacheEntryMap.erase(lastEventNumber);
+                    IEvent::unlinkNeighbourEvents(lastEvent);
+                    eventNumberToEventMap.erase(lastEvent->getEventNumber());
+                    eventNumberToCacheEntryMap.erase(lastEvent->getEventNumber());
                     beginOffsetToEventMap.erase(lastEvent->getBeginOffset());
                     endOffsetToEventMap.erase(lastEvent->getEndOffset());
                     if (firstEvent == lastEvent) {
