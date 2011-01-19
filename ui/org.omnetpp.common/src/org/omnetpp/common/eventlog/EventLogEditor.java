@@ -63,8 +63,16 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		locationTimer = new Runnable() {
 			public void run() {
-		        Assert.isTrue(Display.getCurrent() != null);
-				markLocation();
+			    try {
+    		        Assert.isTrue(Display.getCurrent() != null);
+    				markLocation();
+                }
+                catch (RuntimeException x) {
+                    if (eventLogInput.isFileChangedException(x))
+                        eventLogInput.synchronize(x);
+                    else
+                        throw x;
+                }
 			}
 		};
 
@@ -151,14 +159,22 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	protected void addLocationProviderPaintListener(Control control) {
 		control.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
-				if (eventLogInput != null && canCreateNavigationLocation()) {
-					INavigationLocation currentLocation = createNavigationLocation();
+			    try {
+    				if (eventLogInput != null && canCreateNavigationLocation()) {
+    					INavigationLocation currentLocation = createNavigationLocation();
 
-					if (currentLocation != null && !currentLocation.equals(lastLocation)) {
-						lastLocation = currentLocation;
-						Display.getDefault().timerExec(3000, locationTimer);
-					}
-				}
+    					if (currentLocation != null && !currentLocation.equals(lastLocation)) {
+    						lastLocation = currentLocation;
+    						Display.getDefault().timerExec(3000, locationTimer);
+    					}
+    				}
+			    }
+                catch (RuntimeException x) {
+                    if (eventLogInput.isFileChangedException(x))
+                        eventLogInput.synchronize(x);
+                    else
+                        throw x;
+                }
 			}
 		});
 	}

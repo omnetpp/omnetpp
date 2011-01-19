@@ -119,7 +119,10 @@ public class EventLogInput extends FileEditorInput
 
     public void synchronize(Exception e) {
         // TODO: XXX: FIXME: get change and call synchronize with that
-        synchronize(FileReader.FileChangedState.OVERWRITTEN);
+        if (e.getMessage().contains("appended"))
+            synchronize(FileReader.FileChangedState.APPENDED);
+        else
+            synchronize(FileReader.FileChangedState.OVERWRITTEN);
     }
 
     public void synchronize(int change) {

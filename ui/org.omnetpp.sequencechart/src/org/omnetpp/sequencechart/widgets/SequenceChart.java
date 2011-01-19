@@ -1436,38 +1436,54 @@ public class SequenceChart
      */
 
 	public void eventLogAppended() {
-		eventLogChanged();
+	    Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    eventLogChanged();
+                }
+                catch (RuntimeException e) {
+                    if (eventLogInput.isFileChangedException(e))
+                        eventLogInput.synchronize(e);
+                    else
+                        throw e;
+                }
+            }
+	    });
 	}
 
     public void eventLogOverwritten() {
-        clearAxisModules();
-        eventLogChanged();
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    clearAxisModules();
+                    eventLogChanged();
+                }
+                catch (RuntimeException e) {
+                    if (eventLogInput.isFileChangedException(e))
+                        eventLogInput.synchronize(e);
+                    else
+                        throw e;
+                }
+            }
+        });
     }
 
     private void eventLogChanged() {
         if (eventLog.isEmpty())
             relocateFixPoint(null, 0);
+        else if (followEnd) {
+            if (debug)
+                Debug.println("Scrolling to follow eventlog change");
+            scrollToEnd();
+        }
         else if (sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1 ||
                  sequenceChartFacade.getTimelineCoordinateSystemOriginEvent() == null)
             scrollToBegin();
-
         if (debug)
 			Debug.println("SequenceChart got notification about eventlog change");
-
 		configureScrollBars();
 		adjustHorizontalScrollBar();
-		clearCanvasCache();
-
-		if (followEnd)
-		{
-			if (debug)
-				Debug.println("Scrolling to follow eventlog change");
-
-            if (!eventLog.isEmpty())
-                scrollToEnd();
-		}
-		else
-			redraw();
+		clearCanvasCacheAndRedraw();
     }
 
 	public void eventLogFiltered() {

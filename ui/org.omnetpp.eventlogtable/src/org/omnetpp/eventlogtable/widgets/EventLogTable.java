@@ -23,6 +23,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
@@ -351,35 +352,52 @@ public class EventLogTable
 	 */
 
 	public void eventLogAppended() {
-		eventLogChanged();
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    eventLogChanged();
+                }
+                catch (RuntimeException x) {
+                    if (eventLogInput.isFileChangedException(x))
+                        eventLogInput.synchronize(x);
+                    else
+                        throw x;
+                }
+            }
+        });
 	}
 
     public void eventLogOverwritten() {
-        eventLogChanged();
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                try {
+                    eventLogChanged();
+                }
+                catch (RuntimeException x) {
+                    if (eventLogInput.isFileChangedException(x))
+                        eventLogInput.synchronize(x);
+                    else
+                        throw x;
+                }
+            }
+        });
     }
 
     private void eventLogChanged() {
         if (eventLog.isEmpty())
             fixPointElement = null;
+        else if (followEnd) {
+            if (debug)
+                Debug.println("Scrolling to follow eventlog change");
+            scrollToEnd();
+        }
         else if (fixPointElement == null || fixPointElement.getEvent(eventLog) == null)
             scrollToBegin();
-
         if (debug)
 			Debug.println("EventLogTable got notification about eventlog change");
-
         configureVerticalScrollBar();
 		updateVerticalBarPosition();
-
-		if (followEnd)
-		{
-			if (debug)
-				Debug.println("Scrolling to follow eventlog change");
-
-			if (!eventLog.isEmpty())
-			    scrollToEnd();
-		}
-		else
-			redraw();
+		redraw();
     }
 
 	public void eventLogFiltered() {
