@@ -18,11 +18,17 @@ import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.figures.IProblemDecorationSupport;
 import org.omnetpp.figures.ITooltipTextProvider;
 import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.editor.NedEditor;
+import org.omnetpp.ned.editor.graph.dialogs.PropertiesDialog;
 import org.omnetpp.ned.editor.graph.misc.IDirectEditSupport;
 import org.omnetpp.ned.editor.graph.misc.RenameDirectEditManager;
 import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
@@ -142,13 +148,22 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	@Override
 	public void performRequest(Request req) {
 		super.performRequest(req);
-		if (RequestConstants.REQ_DIRECT_EDIT.equals(req.getType()))
+		if (RequestConstants.REQ_DIRECT_EDIT.equals(req.getType()) && isEditable())
 			performDirectEdit();
 		// let's open or activate a new editor if someone has double clicked the component
-		if (RequestConstants.REQ_OPEN.equals(req.getType())) {
-			INedElement elementToOpen= getNedElementToOpen();
-			if (elementToOpen != null)
-				NedResourcesPlugin.openNedElementInEditor(elementToOpen);
+		if (RequestConstants.REQ_OPEN.equals(req.getType()) && isEditable()) {
+		    INedElement[] elements = new INedElement[] { getModel() };
+
+		    PropertiesDialog dialog = new PropertiesDialog(Display.getDefault().getActiveShell(), elements);
+		    if (dialog.open() != Dialog.OK)
+		        return; // canceled
+
+		    // get the command stack of the active editor and execute the command with it
+            IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+            if (activeEditor instanceof NedEditor) {
+                Command command = dialog.getResultCommand();		    
+                ((NedEditor)activeEditor).getGraphEditor().getEditDomain().getCommandStack().execute(command);
+            }
 		}
 	}
 

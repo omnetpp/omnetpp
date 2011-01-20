@@ -119,7 +119,6 @@ public class TypePropertySource extends NedBasePropertySource {
         }
 
         public ISubmoduleOrConnection getModel() {
-            // only overridden to change return type to be more specific
-            return (ISubmoduleOrConnection) super.getModel();
+            return (ISubmoduleOrConnection)super.getModel();
         }
 }

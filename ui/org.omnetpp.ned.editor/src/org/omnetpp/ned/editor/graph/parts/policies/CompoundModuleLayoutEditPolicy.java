@@ -127,10 +127,10 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
             command.add(new InsertCommand(typesElement, node));
             return command;
         }
-        
+
         return UnexecutableCommand.INSTANCE;
     }
-    
+
     @Override
     protected Command createChangeConstraintCommand(EditPart child, Object newConstraint) {
         // do not allow change if we are read only components
@@ -170,10 +170,9 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
             else
                 newImageSize = "vl";    // 100x100 pixel icons
 
-            ChangeDisplayPropertyCommand dpchange = new ChangeDisplayPropertyCommand(submodule, IDisplayString.Prop.IMAGE_SIZE);
-            dpchange.setLabel("Set icon size");
-            dpchange.setValue(newImageSize);
-            return dpchange;
+            ChangeDisplayPropertyCommand displayStringChange = new ChangeDisplayPropertyCommand(submodule, IDisplayString.Prop.IMAGE_SIZE, newImageSize);
+            displayStringChange.setLabel("Set icon size");
+            return displayStringChange;
         }
         else {
             // move or resize operation
@@ -243,19 +242,19 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     public Rectangle getConstraintFor(Rectangle rect) {
         return new Rectangle(rect.getCenter(), rect.getSize());
     }
-    
+
     protected Rectangle getConstraintForClone(GraphicalEditPart part, ChangeBoundsRequest request) {
         IFigure figure = part.getFigure();
         Rectangle bounds = new PrecisionRectangle(((SubmoduleFigure)figure).getShapeBounds());
-        
+
         figure.translateToAbsolute(bounds);
         bounds = request.getTransformedRectangle(bounds);
-        
+
         ((GraphicalEditPart)getHost()).getContentPane().translateToRelative(bounds);
         bounds.translate(getLayoutOrigin().getNegated());
         return getConstraintFor(bounds);
     }
-    
+
     private static final Dimension DEFAULT_SIZE = new Dimension(-1, -1);
 
     /**

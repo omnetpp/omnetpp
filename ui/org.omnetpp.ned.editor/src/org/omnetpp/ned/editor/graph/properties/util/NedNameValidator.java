@@ -23,14 +23,15 @@ import org.omnetpp.ned.model.ex.NedElementUtilEx;
 public class NedNameValidator implements ICellEditorValidator {
     public String isValid(Object value) {
         if (StringUtils.isBlank((String)value))
-            return "Invalid identifier: Names must not be empty";
+            return "Invalid identifier: Name must not be empty";
+
+        if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(value)) // must check this first, because NedElementUtilEx.isValidIdentifier() also checks this 
+            return "Invalid identifier: '" + value + "' is a reserved keyword.";
 
         if (!NedElementUtilEx.isValidIdentifier((String)value))
-            return "Invalid identifier: Names must begin with a letter or underscore, and may contain letters," +
+            return "Invalid identifier: Name must begin with a letter or underscore, and may contain letters," +
             " digits or underscore";
 
-        if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(value))
-            return "Invalid identifier: '" + value + "' is a reserved keyword.";
         return null;
     }
 

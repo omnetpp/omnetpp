@@ -97,6 +97,9 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(ChooseIconAction.ID);
         if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
 
+        action = getActionRegistry().getAction(PropertiesAction.ID);
+        manager.appendToGroup(GROUP_EDIT, action);
+
         action = getActionRegistry().getAction(ParametersDialogAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
 
