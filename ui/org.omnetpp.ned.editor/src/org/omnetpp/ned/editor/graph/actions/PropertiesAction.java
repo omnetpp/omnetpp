@@ -13,6 +13,7 @@ import java.util.List;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
@@ -29,7 +30,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
  * @author andras
  */
 public class PropertiesAction extends org.eclipse.gef.ui.actions.SelectionAction {
-    public static final String ID = "Properties";
+    public static final String ID = "org.omnetpp.ned.editor.graph.Properties";
     public static final String MENUNAME = "&Properties...";
     public static final String TOOLTIP = "Edit properties";
     public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PROPERTIES);
@@ -38,6 +39,8 @@ public class PropertiesAction extends org.eclipse.gef.ui.actions.SelectionAction
         super(part);
         setText(MENUNAME);
         setId(ID);
+        setActionDefinitionId(ID);
+        setAccelerator(SWT.CR);  // affects only the display. actual mapping is done in GraphicalNedEditor.getCommonHandler()
         setToolTipText(TOOLTIP);
         setImageDescriptor(IMAGE);
     }

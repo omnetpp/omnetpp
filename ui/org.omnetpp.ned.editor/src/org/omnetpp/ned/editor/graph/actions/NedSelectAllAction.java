@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.gef.EditPart;
@@ -14,11 +15,13 @@ import org.eclipse.gef.GraphicalViewer;
 import org.eclipse.gef.ui.actions.SelectAllAction;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IWorkbenchPart;
-
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
+import org.omnetpp.ned.editor.graph.parts.TypesEditPart;
 
 /**
- * TODO add documentation
+ * Same as a the SelectAllAction but handles selects only all the submodules inside a 
+ * compound module if the compound module or any submodule is selected. If other toplevel
+ * types is selected then all top level will be selected.
  *
  * @author rhornig
  */
@@ -30,6 +33,7 @@ public class NedSelectAllAction extends SelectAllAction {
         wbp = part;
     }
 
+    // TODO handle select all connections in the current compound module too
 	@Override
 	@SuppressWarnings("unchecked")
     public void run() {
@@ -44,7 +48,13 @@ public class NedSelectAllAction extends SelectAllAction {
                 parentEP = ((ModuleEditPart)selection.get(0)).getCompoundModulePart();
 
             // we have the parent where all child part have to be selected
-            viewer.setSelection(new StructuredSelection(parentEP.getChildren()));
+            // Leave out the unselectable ones (e.g. inner types compartment)
+            List children = new ArrayList();
+            for (Object child : parentEP.getChildren())
+                if (!(child instanceof TypesEditPart))
+                    children.add(child);
+            
+            viewer.setSelection(new StructuredSelection(children));
         }
     }
 }

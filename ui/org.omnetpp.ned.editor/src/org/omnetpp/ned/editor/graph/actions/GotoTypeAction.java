@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.gef.ui.actions.SelectionAction;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.graph.parts.NedConnectionEditPart;
@@ -22,21 +23,19 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  */
 public class GotoTypeAction extends SelectionAction {
 
-	public static final String ID = "GotoType";
+	public static final String ID = "org.omnetpp.ned.editor.graph.GotoType";
     public static final String MENUNAME = "Goto &Type";
     public static final String TOOLTIP = "Opens the type of the element";
     public static final String MENUNAME_NEDTYPE = "Goto Supert&ype";
     public static final String TOOLTIP_NEDTYPE = "Opens the base type of the element";
-	// public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_OPEN);
 
 	public GotoTypeAction(IWorkbenchPart part) {
 		super(part);
 		setText(MENUNAME);
 		setId(ID);
+		setActionDefinitionId(ID);
 		setToolTipText(TOOLTIP);
-		setActionDefinitionId("org.omnetpp.ned.editor.graph.GotoType");
-		// setImageDescriptor(IMAGE);
-		// setHoverImageDescriptor(IMAGE);
+        setAccelerator(SWT.F3);  // affects only the display. actual mapping is done in GraphicalNedEditor.getCommonHandler()
 	}
 
 	@Override
@@ -56,7 +55,7 @@ public class GotoTypeAction extends SelectionAction {
 
 	    return getNedTypeElementToOpen() != null;
 	}
-
+	
 	/**
 	 * The ned type that must be opened for the actual primary selection. For types this is
 	 * the supertype (if exists) for submodules this is the type, for connection this is the channel

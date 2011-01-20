@@ -76,7 +76,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
     }
 
     public INedElement getModel() {
-        return (INedElement)getModel();
+        return (INedElement)super.getModel();
     }
 
     public boolean isEditable() {

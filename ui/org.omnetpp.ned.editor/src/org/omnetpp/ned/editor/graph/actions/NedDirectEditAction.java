@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.actions;
 
 import org.eclipse.gef.ui.actions.DirectEditAction;
+import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 
@@ -19,6 +20,7 @@ public class NedDirectEditAction extends DirectEditAction {
 
     public NedDirectEditAction(IWorkbenchPart part) {
         super(part);
+        setAccelerator(SWT.F6);  // affects only the display. actual mapping is done in GraphicalNedEditor.getCommonHandler()
     }
 
     @Override

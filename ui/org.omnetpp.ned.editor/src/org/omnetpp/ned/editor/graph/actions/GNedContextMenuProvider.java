@@ -15,8 +15,8 @@ import static org.eclipse.gef.ui.actions.GEFActionConstants.ALIGN_RIGHT;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.ALIGN_TOP;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.DIRECT_EDIT;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_EDIT;
-import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_REST;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_FIND;
+import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_REST;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_SAVE;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_UNDO;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_VIEW;
@@ -35,7 +35,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.osgi.util.NLS;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -95,9 +94,6 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
 
         manager.appendToGroup(GROUP_EDIT, new Separator());
 
-        action = getActionRegistry().getAction(ChooseIconAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
-
         action = getActionRegistry().getAction(PropertiesAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
 
@@ -105,22 +101,27 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         manager.appendToGroup(GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(TogglePinAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
+        if (action.isEnabled()) 
+            manager.appendToGroup(GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(RelayoutAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
+        if (action.isEnabled()) 
+            manager.appendToGroup(GROUP_EDIT, action);
 
         if (IConstants.IS_COMMERCIAL) {
         	action = getActionRegistry().getAction(ExportImageAction.ID);
-        	if (action.isEnabled()) manager.appendToGroup(GROUP_SAVE, action);
+        	if (action.isEnabled()) 
+        	    manager.appendToGroup(GROUP_SAVE, action);
         }
 
         action = getActionRegistry().getAction(DIRECT_EDIT);
         action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
-        if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
+        if (action.isEnabled()) 
+            manager.appendToGroup(GROUP_EDIT, action);
 
         action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
-        if (action.isEnabled()) manager.appendToGroup(GROUP_EDIT, action);
+        if (action.isEnabled()) 
+            manager.appendToGroup(GROUP_EDIT, action);
 
         // Alignment Actions
         MenuManager submenu = new MenuManager("&Align");
@@ -153,7 +154,8 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         action = getActionRegistry().getAction(MATCH_HEIGHT);
         submenu.add(action);
 
-        if (!submenu.isEmpty()) manager.appendToGroup(GROUP_EDIT, submenu);
+        if (!submenu.isEmpty()) 
+            manager.appendToGroup(GROUP_EDIT, submenu);
 
         action = getActionRegistry().getAction(ToggleSnapToGeometryAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
@@ -168,11 +170,9 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
         manager.appendToGroup(GROUP_VIEW, showInSubMenu);
 
-        action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
-        if (action.isEnabled()) manager.appendToGroup(GROUP_VIEW, action);
-
         action = getActionRegistry().getAction(GotoTypeAction.ID);
-        if (action.isEnabled()) manager.appendToGroup(GROUP_FIND, action);
+        if (action.isEnabled()) 
+            manager.appendToGroup(GROUP_FIND, action);
 
         IMenuService menuService = (IMenuService)serviceLocator.getService(IMenuService.class);
         menuService.populateContributionManager((ContributionManager)manager, "popup:org.omnetpp.ned.editor.graphical");

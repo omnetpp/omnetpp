@@ -430,6 +430,7 @@ public class GraphicalNedEditor
         getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
         id = ActionFactory.PASTE.getId();
         getEditorSite().getKeyBindingService().registerAction(registry.getAction(id));
+
     }
 
     @Override
@@ -481,7 +482,11 @@ public class GraphicalNedEditor
         if (sharedKeyHandler == null) {
             sharedKeyHandler = new KeyHandler();
             sharedKeyHandler.put(KeyStroke.getPressed(SWT.F6, 0),
-                                 getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
+                    getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.F3, 0),
+                    getActionRegistry().getAction(GotoTypeAction.ID));
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.CR, SWT.CR, 0),
+                    getActionRegistry().getAction(PropertiesAction.ID));
         }
         return sharedKeyHandler;
     }
@@ -515,10 +520,6 @@ public class GraphicalNedEditor
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 
-        action = new ChooseIconAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
-
         action = new PropertiesAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
@@ -528,10 +529,6 @@ public class GraphicalNedEditor
         getSelectionActions().add(action.getId());
 
         action = new NedDirectEditAction(this);
-        registry.registerAction(action);
-        getSelectionActions().add(action.getId());
-
-        action = new ShowViewAction(IPageLayout.ID_PROP_SHEET);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 

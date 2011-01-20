@@ -28,7 +28,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
- * Action to edit the icon property
+ * Action to edit the icon property (unused)
  *
  * @author rhornig
  */
