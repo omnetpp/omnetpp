@@ -101,7 +101,7 @@ public class ModelObjectPalette {
 		if (showText)
 			toolButton.setText(labelProvider.getText(elementPrototype));
 		String className = elementPrototype.eClass().getName();
-		String hint = "Click or drag and drop to create " + StringUtils.indefiniteArticle(className) + " '" + className + "' object.";
+		String hint = "Click or drag and drop to create " + StringUtils.indefiniteArticle(className,false) + " '" + className + "' object.";
 		String desc = StringUtils.breakLines(getDescription(elementPrototype.eClass()),60);
 		toolButton.setToolTipText(hint + "\n" + desc);
 

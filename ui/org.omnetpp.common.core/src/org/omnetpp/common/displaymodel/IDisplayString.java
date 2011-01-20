@@ -459,9 +459,9 @@ public interface IDisplayString {
 	public Dimension getSize(Float scale);
 
     /**
-     * The size of module (in pixel) if represented as compound module (BGB tag).
+     * The size of module (in pixels) if represented as a compound module (BGB tag).
      * Uses fallback if the property is not specified locally.
-     * If width or height is missing returns -1 instead.
+     * If width or height is missing, the function returns -1.
      * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
      */

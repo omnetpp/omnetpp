@@ -321,3 +321,6 @@ xswt
 verbosity
 nutshell
 antivalue
+vectorness
+endpoints
+unparseable

@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
@@ -118,7 +120,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 		return proposals;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected static List<IContentProposal> sort(List<IContentProposal> proposals) {
 		Collections.sort((List)proposals);
 		return proposals;
@@ -128,7 +130,7 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 	 * Utility function: Turn strings into proposals.
 	 */
 	protected static List<IContentProposal> toProposals(String[] strings) {
-		return toProposals(strings, null);
+		return toProposals(strings, (String)null);
 	}
 
 	/**
@@ -144,4 +146,25 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 				p[i] = new ContentProposal(strings[i], strings[i].trim()+" -- "+labelSuffix, null);
 		return Arrays.asList(p);
 	}
+
+    /**
+     * Utility function: Turn strings-and-labels into proposals.
+     */
+    protected static List<IContentProposal> toProposals(String[] strings, String[] labels) {
+        Assert.isTrue(strings.length == labels.length);
+        List<IContentProposal> result = new ArrayList<IContentProposal>();
+        for (int i=0; i<strings.length; i++)
+            result.add(new ContentProposal(strings[i], labels[i], null));
+        return result;
+    }
+
+    /**
+     * Utility function: Turn strings-and-labels into proposals.
+     */
+    protected static List<IContentProposal> toProposals(Map<String,String> proposalsWithLabels) {
+        List<IContentProposal> result = new ArrayList<IContentProposal>();
+        for (String proposal : proposalsWithLabels.keySet())
+            result.add(new ContentProposal(proposal, proposalsWithLabels.get(proposal), null));
+        return result;
+    }
 }

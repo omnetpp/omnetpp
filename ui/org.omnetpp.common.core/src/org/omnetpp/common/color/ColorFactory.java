@@ -677,10 +677,9 @@ public class ColorFactory {
     }
 
     /**
-     * Returns a color from a color factory.
-     * 
-     * @param value string representation of the color
-     * @return An SWT color object that can be used or <code>null</code> on parse error
+     * Returns a color from a color factory. Color names are those understood by asRGB():
+     * "#RRGGBB", "@HHSSII", or and English color name like "red" or "green". Returns null 
+     * if the color is not recognized.
      */
     public static Color asColor(String value) {
         if (value == null) 
@@ -800,7 +799,7 @@ public class ColorFactory {
         int yoffset = 2;
 
         RGB dummy = new RGB(0, 0, 0);
-        RGB black = new RGB(80, 80, 80);
+        RGB black = new RGB(120, 120, 120); // a bit darker than usual line color on Eclipse UI
         RGB[] colors = (color == null) ? new RGB[] {dummy, black} : new RGB[] {dummy, black, color};
         PaletteData dataPalette = new PaletteData(colors);
 

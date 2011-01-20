@@ -20,8 +20,7 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-@SuppressWarnings("unchecked")
-public class ContentProposal implements IContentProposal, Comparable {
+public class ContentProposal implements IContentProposal, Comparable<Object> {
     // decorators
     public static final int DEC_NONE       = 0x00;
     public static final int DEC_OP         = 0x01;
@@ -126,4 +125,9 @@ public class ContentProposal implements IContentProposal, Comparable {
 	private static String quoteStringIfNeeded(String str) {
         return needsQuotes(str) ? Common.quoteString(str) : str;
     }
+	
+	@Override
+	public String toString() {
+	    return "\"" + content + "\"";
+	}
 }

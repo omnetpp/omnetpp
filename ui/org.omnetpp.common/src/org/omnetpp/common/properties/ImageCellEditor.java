@@ -23,7 +23,7 @@ import org.omnetpp.common.image.ImageSelectionDialog;
 
 public class ImageCellEditor extends TextCellEditorEx {
 
-    public class ImageContentProposalProvider extends ContentProposalProvider {
+    public static class ImageContentProposalProvider extends ContentProposalProvider {
         public ImageContentProposalProvider() {
             super(true);
         }

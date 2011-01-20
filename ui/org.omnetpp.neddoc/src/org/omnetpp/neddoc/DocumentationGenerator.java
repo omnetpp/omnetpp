@@ -493,7 +493,6 @@ public class DocumentationGenerator {
                     addSubtypeMapping(subtype, supertype);
             else {
                 ITypeElement supertype = subtype.getSuperType();
-
                 if (supertype != null) {
                     addSubtypeMapping(subtype, supertype);
                 }

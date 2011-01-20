@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.editor.graph.commands;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -30,10 +31,11 @@ public class RemoveCommand extends Command {
     public void execute() {
         parent = element.getParent();
         nextSibling = element.getNextSibling();
-
+        Assert.isNotNull(parent);
+        
         String label = "Delete";
-    	if (element instanceof IHasName)
-    		label += " "+((IHasName)element).getName();
+        if (element instanceof IHasName)
+            label += " "+((IHasName)element).getName();
         setLabel(label);
 
         redo();

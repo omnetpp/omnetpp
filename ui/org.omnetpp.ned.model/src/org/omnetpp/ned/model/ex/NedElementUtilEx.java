@@ -8,6 +8,7 @@
 package org.omnetpp.ned.model.ex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -82,16 +83,20 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 	/**
 	 * Sets the display string of a given node in the NED tree,
 	 * by creating or updating the LiteralElement that contains the
-	 * "@display" property in the tree.
+	 * "@display" property in the tree. If the value to be set is empty,
+	 * the method removes the display string.
 	 *
-	 * Returns the LiteralElement which was created/updated.
+	 * Returns the LiteralElement which was created/updated, or null if the 
+	 * display string was removed.
 	 */
-	public static LiteralElement setDisplayStringLiteral(IHasDisplayString node1, String displayString) {
-		INedElement node = node1;
-
+	public static LiteralElement setDisplayStringLiteral(IHasDisplayString node, String displayString) {
+	    boolean remove = displayString.equals("");
+	    
 		// look for the "parameters" block
 		INedElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 		if (paramsNode == null) {
+		    if (remove)
+		        return null;
 			paramsNode = NedElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
             ((ParametersElement)paramsNode).setIsImplicit(true);
 			node.appendChild(paramsNode);
@@ -100,14 +105,18 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 		// look for the first property parameter named "display"
 		INedElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, DISPLAY_PROPERTY);
 		if (displayPropertyNode == null) {
+            if (remove)
+                return null;
 			displayPropertyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY);
 			((PropertyElement)displayPropertyNode).setName(DISPLAY_PROPERTY);
 			paramsNode.appendChild(displayPropertyNode);
 		}
 
         // if displayString was set to "" (empty), we want to delete the whole display property node
-        if ("".equals(displayString)){
+        if (remove) {
             paramsNode.removeChild(displayPropertyNode);
+            if (paramsNode.getFirstChild() == null)
+                node.removeChild(paramsNode); // remove empty "parameters:" section
             return null;
         }
 
@@ -314,10 +323,42 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     /**
-     * Checks whether the provided string is a valid NED identifier
+     * Checks whether the provided string is a valid identifier, i.e. it does not contain
+     * illegal characters and it not a reserved keyword.
      */
     public static boolean isValidIdentifier(String str) {
-        return str != null && str.matches("[a-zA-Z_][a-zA-Z0-9_]*");
+        if (str == null)
+            return false;
+        if (!str.matches("[a-zA-Z_][a-zA-Z0-9_]*"))
+            return false;
+        if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(str))
+            return false;
+        return true;
+    }
+
+    /**
+     * Checks whether the provided string is a "dotted" sequence of valid NED identifiers.
+     */
+    public static boolean isValidQualifiedIdentifier(String str) {
+        if (str == null)
+            return false;
+        if (str.startsWith(".") || str.endsWith(".") || str.contains(".."))  // split can discard empty tokens
+            return false;
+        for (String name : str.split("\\."))
+            if (!isValidIdentifier(name))
+                return false;
+        return true;
+    }
+
+    /**
+     * Checks whether the provided string is valid NED identifier in the 
+     * "friendly" notation "SimpleName (pac.kage.name)"  or the formal notation "pac.kage.name.SimpleName"
+     */
+    public static boolean isValidFriendlyQualifiedIdentifier(String str) {
+        str = str.replaceAll(" *\\( *", "("); // remove spaces
+        str = str.replaceAll(" *\\) *", ")");
+        String str2 = str.replaceAll("(.*)\\((.*)\\)", "$2.$1");
+        return isValidQualifiedIdentifier(str2);
     }
 
     /**
@@ -350,9 +391,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     /**
      * Determines what import is necessary so that simple name can be used instead of the fully qualified type name.
      * The result of this call is an optional "import" element that needs to be inserted into the file,
-     * and the contents of the "outModifiedName" string buffer.
+     * and the contents of the "modifiedName" string buffer.
      */
     public static ImportElement createImportFor(INedTypeLookupContext lookupContext, String fullyQualifiedTypeName, StringBuffer modifiedName) {
+        Assert.isTrue(StringUtils.isNotBlank(fullyQualifiedTypeName));
         String simpleTypeName = fullyQualifiedTypeName.indexOf('.')==-1 ? fullyQualifiedTypeName : StringUtils.substringAfterLast(fullyQualifiedTypeName, "."); 
         INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, lookupContext);
         if (existingSimilarType == null) {
@@ -592,7 +634,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * Converts a fully qualified NED type name to a user-friendly form, "SimpleName (package.name)".
      */
     public static String qnameToFriendlyTypeName(String qname) {
-        return qname.indexOf('.') != -1 ? qname.replaceFirst("(.*)\\.(.*)", "$2 ($1)") : qname;
+        return qname==null ? null : qname.indexOf('.') == -1 ? qname : qname.replaceFirst("(.*)\\.(.*)", "$2 ($1)");
     }
 
     /**

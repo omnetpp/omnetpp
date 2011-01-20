@@ -336,9 +336,19 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 	/**
 	 * Useful for choosing indefinite article ("a" or "an") for a noun.
 	 */
-    public static String indefiniteArticle(String noun) {
-    	return startsWithVowel(noun) ? "an" : "a";
+    public static String indefiniteArticle(String noun, boolean capitalized) {
+        if (capitalized)
+            return startsWithVowel(noun) ? "An" : "A";
+        else
+            return startsWithVowel(noun) ? "an" : "a";
 	}
+
+    /**
+     * Prefixes the noun with an indefinite article ("a" or "an"). 
+     */
+    public static String addIndefiniteArticle(String noun, boolean capitalized) {
+        return indefiniteArticle(noun, capitalized) + " " + noun;
+    }
 
     /**
      * Returns "1st", "2nd", "3rd" etc.

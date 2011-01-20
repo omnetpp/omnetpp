@@ -212,14 +212,15 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	 */
 	protected void setRange(int radius, Color fillColor, Color borderColor, int borderWidth) {
 		if (radius <= 0) {
-			if (rangeFigure != null)
-				rangeFigure.setVisible(false);
+			if (rangeFigure != null) {
+			    getRangeFigureLayer().remove(rangeFigure);
+			    rangeFigure = null;
+			}
 		}
 		else {
 			if (rangeFigure == null) {
 				rangeFigure = new RangeFigure();
-				Layer backgroundLayer = getRangeFigureLayer();
-				backgroundLayer.add(rangeFigure);
+				getRangeFigureLayer().add(rangeFigure);
 			}
 			rangeFigure.setVisible(true);
 			rangeFigure.setFill(fillColor != null);
