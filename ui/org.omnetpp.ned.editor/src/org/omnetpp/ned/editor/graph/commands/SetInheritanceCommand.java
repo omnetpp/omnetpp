@@ -62,7 +62,6 @@ public class SetInheritanceCommand extends CompoundCommand {
             add(new RemoveCommand(e));
         
         // add new elements
-        INedElement insertionPoint = typeElement.getFirstChild(); // doesn't really matter
         NedFileElementEx nedFileElement = typeElement.getContainingNedFileElement();
         INedElement importsInsertionPoint = NedElementUtilEx.findInsertionPointForNewImport(nedFileElement);
         ImportElement lastNewImportElement = null;
@@ -76,7 +75,7 @@ public class SetInheritanceCommand extends CompoundCommand {
                 ((ExtendsElement)e).setName(modifiedName.toString()); 
             else
                 ((InterfaceNameElement)e).setName(modifiedName.toString());
-            add(new InsertCommand(typeElement, e, insertionPoint));
+            add(new InsertCommand(typeElement, e));
             
             // insert the new import
             if (importElement != null) {

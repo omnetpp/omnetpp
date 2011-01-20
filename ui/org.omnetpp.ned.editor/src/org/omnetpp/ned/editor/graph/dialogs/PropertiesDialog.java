@@ -2376,7 +2376,7 @@ public class PropertiesDialog extends TrayDialog {
             if (msg.charAt(0)=='E') {firstError = msg; break;}
         errorImageLabel.setImage(messages.length == 0 ? null : firstError==null ? UIUtils.ICON_WARNING : UIUtils.ICON_ERROR);
         errorMessageLabel.setText(messages.length == 0 ? "" : firstError==null ? messages[0].substring(2) : firstError.substring(2));
-        errorMessageLabel.setForeground(firstError==null ? ColorFactory.YELLOW4 : ColorFactory.RED2);
+        errorMessageLabel.setForeground(firstError==null ? ColorFactory.BLACK : ColorFactory.RED2);
 
         validationErrors = newErrors;
         return firstError != null;
