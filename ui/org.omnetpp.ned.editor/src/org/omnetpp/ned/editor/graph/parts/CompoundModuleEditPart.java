@@ -36,6 +36,7 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
@@ -254,7 +255,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
      * open the first base component for double click
      */
     @Override
-    protected INedElement getNedElementToOpen() {
+    public INedTypeElement getNedTypeElementToOpen() {
         return getModel().getSuperType();
     }
 }

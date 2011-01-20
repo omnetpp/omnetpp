@@ -83,7 +83,7 @@ public class NedFileEditPart extends NedEditPart {
     }
 
     @Override
-    protected INedElement getNedElementToOpen() {
+    public INedTypeElement getNedTypeElementToOpen() {
         return null;
     }
 

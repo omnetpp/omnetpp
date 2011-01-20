@@ -58,7 +58,7 @@ public class NedTypeEditPart extends NedEditPart {
 	}
 
     @Override
-    protected INedElement getNedElementToOpen() {
+    public INedTypeElement getNedTypeElementToOpen() {
         return getModel().getSuperType();
     }
 

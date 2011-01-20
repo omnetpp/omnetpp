@@ -37,6 +37,7 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Provides support for deleting and renaming the components (using direct edit).
@@ -183,7 +184,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 	/**
 	 * Returns the type name that must be opened if the user presses F3 (open type/super type)
 	 */
-	protected abstract INedElement getNedElementToOpen();
+	public abstract INedTypeElement getNedTypeElementToOpen();
 
 
 	@Override

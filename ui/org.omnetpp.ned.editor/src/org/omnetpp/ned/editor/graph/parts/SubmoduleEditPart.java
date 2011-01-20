@@ -21,10 +21,10 @@ import org.omnetpp.ned.editor.graph.commands.ReconnectCommand;
 import org.omnetpp.ned.editor.graph.figures.SubmoduleFigureEx;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleFullNameValidator;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 
 /**
  * Controls the submodule figure according to the model changes.
@@ -170,7 +170,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     }
 
     @Override
-    protected INedElement getNedElementToOpen() {
+    public INedTypeElement getNedTypeElementToOpen() {
         return getModel().getEffectiveTypeRef();  // open the effective type if pressed F3
     }
 }

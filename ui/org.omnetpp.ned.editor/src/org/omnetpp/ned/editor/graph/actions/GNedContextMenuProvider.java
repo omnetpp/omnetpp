@@ -16,6 +16,7 @@ import static org.eclipse.gef.ui.actions.GEFActionConstants.ALIGN_TOP;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.DIRECT_EDIT;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_EDIT;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_REST;
+import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_FIND;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_SAVE;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_UNDO;
 import static org.eclipse.gef.ui.actions.GEFActionConstants.GROUP_VIEW;
@@ -169,6 +170,9 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
 
         action = getActionRegistry().getAction(IPageLayout.ID_PROP_SHEET);
         if (action.isEnabled()) manager.appendToGroup(GROUP_VIEW, action);
+
+        action = getActionRegistry().getAction(GotoTypeAction.ID);
+        if (action.isEnabled()) manager.appendToGroup(GROUP_FIND, action);
 
         IMenuService menuService = (IMenuService)serviceLocator.getService(IMenuService.class);
         menuService.populateContributionManager((ContributionManager)manager, "popup:org.omnetpp.ned.editor.graphical");

@@ -165,6 +165,11 @@
    <extension
          point="org.eclipse.ui.bindings">
       <key
+            commandId="org.omnetpp.ned.editor.graph.GotoType"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="F3">
+      </key>
+      <key
             commandId="org.omnetpp.ned.editor.text.ToggleComment"
             contextId="org.omnetpp.context.nedTextEditor"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
@@ -203,6 +208,11 @@
    </extension>
    <extension
          point="org.eclipse.ui.commands">
+      <command
+            description="Opens the type of the element"
+            id="org.omnetpp.ned.editor.graph.GotoType"
+            name="Goto Type">
+      </command>
       <command
             categoryId="org.eclipse.ui.category.textEditor"
             description="Comment/Uncomment the selected lines"

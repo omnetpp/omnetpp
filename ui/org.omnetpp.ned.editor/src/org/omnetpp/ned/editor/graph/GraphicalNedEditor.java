@@ -121,6 +121,7 @@ import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNedContextMenuProvider;
+import org.omnetpp.ned.editor.graph.actions.GotoTypeAction;
 import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
 import org.omnetpp.ned.editor.graph.actions.NedSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.PaletteFilterAction;
@@ -142,9 +143,9 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedAttributeChangeEvent;
 import org.omnetpp.ned.model.notification.NedBeginModelChangeEvent;
@@ -509,6 +510,10 @@ public class GraphicalNedEditor
         	registry.registerAction(action);
         	getSelectionActions().add(action.getId());
         }
+
+        action = new GotoTypeAction(this);
+        registry.registerAction(action);
+        getSelectionActions().add(action.getId());
 
         action = new ChooseIconAction(this);
         registry.registerAction(action);

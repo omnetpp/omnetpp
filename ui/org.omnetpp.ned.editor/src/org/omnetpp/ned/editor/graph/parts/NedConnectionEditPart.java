@@ -34,6 +34,7 @@ import org.omnetpp.ned.editor.graph.parts.policies.NedConnectionEndpointEditPoli
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 
 
@@ -275,6 +276,15 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
 
     public ConnectionElementEx getModel() {
         return (ConnectionElementEx)super.getModel();
+    }
+
+    public INedTypeElement getNedTypeElementToOpen() {
+        INedTypeElement typeToOpen = getModel().getEffectiveTypeRef();
+        // detect built-in types (that are not defined in a file) and return null (they cannot be opened) 
+        if (typeToOpen != null && typeToOpen.getNedTypeInfo().getNedFile()==null)
+            return null;
+        
+        return typeToOpen;  // open the effective type if pressed F3
     }
 }
 
