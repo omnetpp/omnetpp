@@ -18,6 +18,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorCellEditorEx;
 import org.omnetpp.common.ui.ColorSelector;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents a color selection widget in the Properties dialog
@@ -114,7 +115,7 @@ public class ColorFieldEditor implements IFieldEditor {
     }
 
     public void setMessage(int severity, String text) {
-        PropertiesDialog.updateProblemDecoration(problemDecoration, severity, text);
+        UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
     
     public void addModifyListener(ModifyListener listener) {

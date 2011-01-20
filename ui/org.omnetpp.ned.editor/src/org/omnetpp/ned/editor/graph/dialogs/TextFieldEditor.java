@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents a text control in the Properties dialog
@@ -102,7 +103,7 @@ public class TextFieldEditor implements IFieldEditor {
     }
 
     public void setMessage(int severity, String text) {
-        PropertiesDialog.updateProblemDecoration(problemDecoration, severity, text);
+        UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
     
     public void addModifyListener(ModifyListener listener) {

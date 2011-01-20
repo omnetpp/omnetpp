@@ -30,6 +30,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
@@ -54,13 +55,13 @@ public class InifileUtils {
 	public static final Image ICON_SECTION_ITER = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iter.gif");
 	public static final Image ICON_SECTION_ITERREP = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iterrep.gif");
 
-	public static final Image ICON_OVR_ERROR = InifileEditorPlugin.getCachedImage("icons/full/ovr16/error.gif");
-	public static final Image ICON_OVR_WARNING = InifileEditorPlugin.getCachedImage("icons/full/ovr16/warning.gif");
-	public static final Image ICON_OVR_INFO = InifileEditorPlugin.getCachedImage("icons/full/ovr16/info.gif");
+	public static final Image ICON_OVR_ERROR = UIUtils.ICON_ERROR_SMALL;
+	public static final Image ICON_OVR_WARNING = UIUtils.ICON_WARNING_SMALL;
+	public static final Image ICON_OVR_INFO = UIUtils.ICON_INFO_SMALL;
 
 	// for getKeyImage()
-    public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
-    public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
+    public static final Image ICON_ERROR = UIUtils.ICON_ERROR;
+    public static final Image ICON_INFO = UIUtils.ICON_INFO;
     public static final Image ICON_PAR_UNASSIGNED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unassigned.png");
     public static final Image ICON_PAR_NED = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_ned.png");
     public static final Image ICON_PAR_INIDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_neddefault.png");

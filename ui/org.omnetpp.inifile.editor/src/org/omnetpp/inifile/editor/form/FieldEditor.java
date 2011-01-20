@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
@@ -43,12 +44,12 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 public abstract class FieldEditor extends Composite {
 	// colors and icons for subclasses
 	public static final Color BGCOLOR = InifileFormEditor.BGCOLOR;
-	public static final Image ICON_ERROR_SMALL = InifileEditorPlugin.getCachedImage("icons/full/ovr16/error2.gif");
-	public static final Image ICON_WARNING_SMALL = InifileEditorPlugin.getCachedImage("icons/full/ovr16/warning.gif");
-	public static final Image ICON_INFO_SMALL = InifileEditorPlugin.getCachedImage("icons/full/ovr16/info.gif");
-	public static final Image ICON_ERROR = InifileEditorPlugin.getCachedImage("icons/full/obj16/Error.png");
-	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png");
-	public static final Image ICON_INFO = InifileEditorPlugin.getCachedImage("icons/full/obj16/Info.gif");
+	public static final Image ICON_ERROR_SMALL = UIUtils.ICON_ERROR_SMALL;
+	public static final Image ICON_WARNING_SMALL = UIUtils.ICON_WARNING_SMALL;
+	public static final Image ICON_INFO_SMALL = UIUtils.ICON_INFO_SMALL;
+	public static final Image ICON_ERROR = UIUtils.ICON_ERROR;
+	public static final Image ICON_WARNING = UIUtils.ICON_WARNING;
+	public static final Image ICON_INFO = UIUtils.ICON_INFO;
 
 	protected ConfigOption entry;
 	protected IInifileDocument inifile;

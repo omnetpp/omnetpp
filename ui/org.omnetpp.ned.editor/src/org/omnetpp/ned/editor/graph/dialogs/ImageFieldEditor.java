@@ -19,6 +19,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.image.ImageSelectionDialog;
 import org.omnetpp.common.properties.ImageCellEditor;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents an image selection widget in the Properties dialog
@@ -115,7 +116,7 @@ public class ImageFieldEditor implements IFieldEditor {
     }
 
     public void setMessage(int severity, String text) {
-        PropertiesDialog.updateProblemDecoration(problemDecoration, severity, text);
+        UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
     
     public void addModifyListener(ModifyListener listener) {

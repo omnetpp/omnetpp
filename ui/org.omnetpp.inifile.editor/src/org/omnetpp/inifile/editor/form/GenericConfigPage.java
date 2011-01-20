@@ -109,6 +109,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -138,7 +139,7 @@ public class GenericConfigPage extends ScrolledFormPage {
         "0", "-3", "-6", "-9", "-12", "-15", "-18",  //TODO add (s),(ms),(us),(ns),(ps),(fs),(as) once combo supports it
     };
 
-	public static final Image ICON_WARNING = InifileEditorPlugin.getCachedImage("icons/full/obj16/Warning.png"); //XXX
+	public static final Image ICON_WARNING = UIUtils.ICON_WARNING;
 
     public static String[] getCategoryNames() {
     	return new String[] {

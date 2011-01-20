@@ -25,6 +25,7 @@ import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedTypeSelectionDialog;
@@ -169,7 +170,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
     }
 
     public void setMessage(int severity, String text) {
-        PropertiesDialog.updateProblemDecoration(problemDecoration, severity, text);
+        UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
 
     public void addModifyListener(ModifyListener listener) {

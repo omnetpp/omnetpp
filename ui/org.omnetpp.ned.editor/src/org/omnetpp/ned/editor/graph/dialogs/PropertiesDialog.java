@@ -44,7 +44,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TrayDialog;
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
@@ -55,7 +54,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -71,8 +69,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
@@ -140,11 +136,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 //TODO property nevekre nincs content assist! (@disp <ctrl+Space>  --> semmi)
 
 public class PropertiesDialog extends TrayDialog {
-    protected static final Image ICON_ERROR = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_ERROR);
-    protected static final Image ICON_WARNING = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK); //ImageFactory.getImage(ImageFactory.DECORATOR_IMAGE_WARNING);
-    public static final Image ICON_ERROR_SMALL = NedEditorPlugin.getCachedImage("icons/ovr16/error.gif");
-    public static final Image ICON_WARNING_SMALL = NedEditorPlugin.getCachedImage("icons/ovr16/warning.gif");
-
     private static final String STR_PARENTMODULE = "<parent>";  // for connection src/dest module selection combo
     private static final String STR_GATEPLUSPLUS = "++";    // for connection gate index selection combo
 
@@ -531,7 +522,7 @@ public class PropertiesDialog extends TrayDialog {
         // error display
         Composite errorArea = createComposite(composite, 2);
         errorImageLabel = new Label(errorArea, SWT.NONE); 
-        errorImageLabel.setLayoutData(new GridData(ICON_ERROR.getBounds().width, SWT.DEFAULT));
+        errorImageLabel.setLayoutData(new GridData(UIUtils.ICON_ERROR.getBounds().width, SWT.DEFAULT));
         errorMessageLabel = new Label(errorArea, SWT.NONE);
         errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         
@@ -2383,24 +2374,12 @@ public class PropertiesDialog extends TrayDialog {
         String firstError = null;
         for (String msg : messages)
             if (msg.charAt(0)=='E') {firstError = msg; break;}
-        errorImageLabel.setImage(messages.length == 0 ? null : firstError==null ? ICON_WARNING : ICON_ERROR);
+        errorImageLabel.setImage(messages.length == 0 ? null : firstError==null ? UIUtils.ICON_WARNING : UIUtils.ICON_ERROR);
         errorMessageLabel.setText(messages.length == 0 ? "" : firstError==null ? messages[0].substring(2) : firstError.substring(2));
         errorMessageLabel.setForeground(firstError==null ? ColorFactory.YELLOW4 : ColorFactory.RED2);
 
         validationErrors = newErrors;
         return firstError != null;
-    }
-
-    //TODO move to some UIUtils or so, together with similar stuff in InifileEditor field editors
-    protected static void updateProblemDecoration(ControlDecoration problemDecoration, int severity, String text) {
-        problemDecoration.setImage(severity==IMarker.SEVERITY_ERROR ? ICON_ERROR_SMALL : ICON_WARNING_SMALL);
-        problemDecoration.setDescriptionText(text);
-        if (text != null) 
-            problemDecoration.show();
-        else { 
-            problemDecoration.hide();
-            problemDecoration.hideHover();
-        }
     }
 }
 

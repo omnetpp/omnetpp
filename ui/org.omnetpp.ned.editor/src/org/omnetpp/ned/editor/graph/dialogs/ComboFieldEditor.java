@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents a combo widget in the Properties dialog.
@@ -91,7 +92,7 @@ public class ComboFieldEditor implements IFieldEditor {
     }
 
     public void setMessage(int severity, String text) {
-        PropertiesDialog.updateProblemDecoration(problemDecoration, severity, text);
+        UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
     
     public String[] getItems() {
