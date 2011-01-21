@@ -32,6 +32,7 @@
 #include "export.h"
 #include "fields.h"
 #include "stringutil.h"
+#include "stringtokenizer.h"
 #include "scaveutils.h"
 
 USING_NAMESPACE
@@ -70,6 +71,10 @@ void printUsage()
        "    -a <function>   apply the given processing to the selected scalars (see syntax below);\n"
        "                    the `info' command prints the names of available operations. This option\n"
        "                    may occur multiple times.\n"
+       "    -g <grouping>   specifies how the scalars are grouped. It is a comma separated list of field\n"
+       "                    names ('file','run','module','name'). Scalars are grouped by the values of these\n"
+       "                    fields and written into separate columns (csv) or variables.\n"
+       "                    Default is '' (empty list), meaning that each row contains only one scalar value.\n"
        "    -O <filename>   output file name\n"
        "    -F <formatname> format of output file: csv (default), matlab, octave\n" //TODO sca files
        "    -V              print info about progress (verbose)\n"
@@ -438,6 +443,7 @@ int scalarCommand(int argc, char **argv)
     string opt_outputFileName = "_out_";
     string opt_outputFormat = "csv";
     string opt_applyFunction;
+    string opt_groupingFields = "";
     vector<string> opt_fileNames;
 
     // parse options
@@ -453,6 +459,8 @@ int scalarCommand(int argc, char **argv)
             opt_filterExpression = unquoteString(argv[++i]);
         else if (!strcmp(opt, "-a") && i!=argc-1)
             opt_applyFunction = unquoteString(argv[++i]);
+        else if (!strcmp(opt, "-g") && i!=argc-1)
+            opt_groupingFields = unquoteString(argv[++i]);
         else if (!strcmp(opt, "-O") && i!=argc-1)
             opt_outputFileName = argv[++i];
         else if (!strcmp(opt, "-F") && i!=argc-1)
@@ -490,8 +498,9 @@ int scalarCommand(int argc, char **argv)
 
                     if (opt_applyFunction.empty())
                     {
-                        ResultItemFields fields(ResultItemField::NAME); // TODO option
-                        // TODO option to choose columns (allow averaging in cells)
+                        StringTokenizer tokenizer(opt_groupingFields.c_str(), ", \t");
+                        StringVector fieldNames = tokenizer.asVector();
+                        ResultItemFields fields(fieldNames);
                         exporter->saveScalars("scalars", desc, scalarIDList,
                             fields.complement(), resultFileManager);
                     }

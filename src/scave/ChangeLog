@@ -1,3 +1,12 @@
+2011-01-21  Tamas Borbely
+
+    * added -g option to 'scavetool scalar' command. The user can specify
+      how the scalars are grouped into columns/variables. The default is also changed:
+      each scalar value is written into one column (csv) or variable. This
+      allows the user to import the csv into a spreadsheet and use the
+      'pivot table' functionality to group the scalars as he likes.
+      Old behaviour can be obtained by '-g name'.
+
 2010-07-13  Tamas Borbely
 
 	* added "substractFirstValue" filter, it substracts the first finite value
