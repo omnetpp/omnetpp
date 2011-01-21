@@ -687,9 +687,9 @@ int infoCommand(int argc, char **argv)
 
     printf("\nScalar operations:\n\n");
     printf("scatter(module,scalar,...):\n"
-           "  Create scatter plot. The first two arguments identifys the scalar selected\n"
-           "  for the X axis. Additional arguments identify the iso attributes; they are\n"
-           "  (module, scalar) pairs, or names of run attributes.\n");
+            "  Create scatter plot dataset. The first two arguments identifies the scalar\n"
+            "  selected for the X axis. Additional arguments identify the iso attributes;\n"
+            "  they are (module, scalar) pairs, or names of run attributes.\n");
 
     printf("\nVector operations:\n\n");
     NodeTypeRegistry *registry = NodeTypeRegistry::getInstance();
