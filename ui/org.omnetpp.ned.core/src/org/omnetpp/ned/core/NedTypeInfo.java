@@ -427,15 +427,18 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         String className = null;
         List<INedTypeInfo> extendsChain = getInheritanceChain();
 
+        // find the first type in the extends chain that have @class atribute and return that class name
         for (INedTypeInfo typeInfo : extendsChain) {
             PropertyElementEx property = typeInfo.getProperty("class", null);
-
-            if (property != null)
+            if (property != null) {
                 className = property.getSimpleValue();
+                break;
+            }
         }
 
+        // if none of them has, return the last class in the chain
         if (className == null)
-            className = extendsChain.get(0).getName();
+            className = extendsChain.get(extendsChain.size()-1).getName();
 
         NedFileElementEx fileElement = componentNode.getContainingNedFileElement();
         String namespace = getResolver().getSimplePropertyFor(fileElement, INedTypeResolver.NAMESPACE_PROPERTY);
