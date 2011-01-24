@@ -40,6 +40,7 @@ import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -82,6 +83,8 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                         nedTypeElement = (INedTypeElement)nedElement;
                     else if (nedElement instanceof SubmoduleElementEx)
                         nedTypeElement = ((SubmoduleElementEx)nedElement).getEffectiveTypeRef();
+                    else if (nedElement instanceof ConnectionElementEx)
+                        nedTypeElement = ((ConnectionElementEx)nedElement).getEffectiveTypeRef();
 
                     if (nedTypeElement != null) {
                         String className = nedTypeElement.getNedTypeInfo().getFullyQualifiedCppClassName();

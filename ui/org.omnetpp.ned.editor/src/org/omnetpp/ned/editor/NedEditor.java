@@ -481,9 +481,7 @@ public class NedEditor
 
     // provides show in view options
     public String[] getShowInTargetIds() {
-        return new String[] {IPageLayout.ID_PROP_SHEET,
-                             IPageLayout.ID_OUTLINE,
-                             IPageLayout.ID_RES_NAV,
+        return new String[] {IPageLayout.ID_OUTLINE,
                              IConstants.MODULEHIERARCHY_VIEW_ID,
                              IConstants.MODULEPARAMETERS_VIEW_ID,
                              IConstants.NEDINHERITANCE_VIEW_ID};
