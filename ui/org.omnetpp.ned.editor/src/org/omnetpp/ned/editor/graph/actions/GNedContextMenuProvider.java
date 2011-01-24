@@ -73,104 +73,71 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
 
         IWorkbenchWindow wwin = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IAction action;
+        ActionRegistry ar = getActionRegistry();
 
-        // add convert menu ONLY if its meaningful
-        action = getActionRegistry().getAction(ConvertToNewFormatAction.ID);
-        if (action.isEnabled())
-            manager.appendToGroup(GROUP_REST, action);
-
-        action = getActionRegistry().getAction(ActionFactory.UNDO.getId());
-        manager.appendToGroup(GROUP_UNDO, action);
-
-        action = getActionRegistry().getAction(ActionFactory.REDO.getId());
-        manager.appendToGroup(GROUP_UNDO, action);
-
-        action = getActionRegistry().getAction(ActionFactory.CUT.getId());
-        manager.appendToGroup(GROUP_EDIT, action);
-        action = getActionRegistry().getAction(ActionFactory.COPY.getId());
-        manager.appendToGroup(GROUP_EDIT, action);
-        action = getActionRegistry().getAction(ActionFactory.PASTE.getId());
+        action = ar.getAction(PropertiesAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
 
-        manager.appendToGroup(GROUP_EDIT, new Separator());
-
-        action = getActionRegistry().getAction(PropertiesAction.ID);
+        action = ar.getAction(ParametersDialogAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ParametersDialogAction.ID);
-        manager.appendToGroup(GROUP_EDIT, action);
-
-        action = getActionRegistry().getAction(TogglePinAction.ID);
+        action = ar.getAction(TogglePinAction.ID);
         if (action.isEnabled()) 
             manager.appendToGroup(GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(RelayoutAction.ID);
+        action = ar.getAction(RelayoutAction.ID);
         if (action.isEnabled()) 
             manager.appendToGroup(GROUP_EDIT, action);
 
-        if (IConstants.IS_COMMERCIAL) {
-        	action = getActionRegistry().getAction(ExportImageAction.ID);
-        	if (action.isEnabled()) 
-        	    manager.appendToGroup(GROUP_SAVE, action);
-        }
+        action = ar.getAction(ExportImageAction.ID);
+        if (action.isEnabled()) 
+            manager.appendToGroup(GROUP_SAVE, action);
 
-        action = getActionRegistry().getAction(DIRECT_EDIT);
-        action.setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_RENAME));
+        action = ar.getAction(DIRECT_EDIT);
         if (action.isEnabled()) 
             manager.appendToGroup(GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ActionFactory.DELETE.getId());
+        action = ar.getAction(ActionFactory.DELETE.getId());
         if (action.isEnabled()) 
             manager.appendToGroup(GROUP_EDIT, action);
 
         // Alignment Actions
         MenuManager submenu = new MenuManager("&Align");
 
-        action = getActionRegistry().getAction(ALIGN_LEFT);
-        submenu.add(action);
-
-        action = getActionRegistry().getAction(ALIGN_CENTER);
-        submenu.add(action);
-
-        action = getActionRegistry().getAction(ALIGN_RIGHT);
-        submenu.add(action);
-
+        submenu.add(ar.getAction(ALIGN_LEFT));
+        submenu.add(ar.getAction(ALIGN_CENTER));
+        submenu.add(ar.getAction(ALIGN_RIGHT));
         submenu.add(new Separator());
-
-        action = getActionRegistry().getAction(ALIGN_TOP);
-        submenu.add(action);
-
-        action = getActionRegistry().getAction(ALIGN_MIDDLE);
-        submenu.add(action);
-
-        action = getActionRegistry().getAction(ALIGN_BOTTOM);
-        submenu.add(action);
-
+        submenu.add(ar.getAction(ALIGN_TOP));
+        submenu.add(ar.getAction(ALIGN_MIDDLE));
+        submenu.add(ar.getAction(ALIGN_BOTTOM));
         submenu.add(new Separator());
-
-        action = getActionRegistry().getAction(MATCH_WIDTH);
-        submenu.add(action);
-
-        action = getActionRegistry().getAction(MATCH_HEIGHT);
-        submenu.add(action);
+        submenu.add(ar.getAction(MATCH_WIDTH));
+        submenu.add(ar.getAction(MATCH_HEIGHT));
 
         if (!submenu.isEmpty()) 
             manager.appendToGroup(GROUP_EDIT, submenu);
 
-        action = getActionRegistry().getAction(ToggleSnapToGeometryAction.ID);
+        action = ar.getAction(ToggleSnapToGeometryAction.ID);
         manager.appendToGroup(GROUP_EDIT, action);
 
-        action = getActionRegistry().getAction(ZOOM_IN);
+        // add convert menu ONLY if its meaningful
+        action = ar.getAction(ConvertToNewFormatAction.ID);
+        if (action.isEnabled())
+            manager.appendToGroup(GROUP_EDIT, action);
+
+        // view group
+        action = ar.getAction(ZOOM_IN);
         manager.appendToGroup(GROUP_VIEW, action);
 
-        action = getActionRegistry().getAction(ZOOM_OUT);
+        action = ar.getAction(ZOOM_OUT);
         manager.appendToGroup(GROUP_VIEW, action);
 
         MenuManager showInSubMenu= new MenuManager(getShowInMenuLabel());
         showInSubMenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(wwin));
         manager.appendToGroup(GROUP_VIEW, showInSubMenu);
 
-        action = getActionRegistry().getAction(GotoTypeAction.ID);
+        action = ar.getAction(GotoTypeAction.ID);
         if (action.isEnabled()) 
             manager.appendToGroup(GROUP_FIND, action);
 
