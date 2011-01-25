@@ -90,7 +90,7 @@ void FileReader::ensureFileOpenInternal()
 
 int FileReader::readFileEnd(void *dataPointer)
 {
-    opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)fileSize - bufferSize), SEEK_SET);
+    opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)(fileSize - bufferSize)), SEEK_SET);
     if (ferror(file))
         throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
     int bytesRead = fread(dataPointer, 1, std::min((int64)bufferSize, fileSize), file);
