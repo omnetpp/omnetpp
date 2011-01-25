@@ -206,7 +206,8 @@ public class NedImageDescriptor extends ImageDescriptor {
         if (location != null && location.getResourceAsStream(name) == null)
             return false;
         // check if the file exists
-        if (location == null && !(new File(name)).exists())
+        File file = new File(name);
+        if (location == null && (!file.exists() || !file.isFile()))
             return false;
         return true;
     }
