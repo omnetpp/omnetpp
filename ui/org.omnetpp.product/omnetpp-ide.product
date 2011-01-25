@@ -279,6 +279,7 @@ POSSIBILITY OF SUCH DAMAGES.
 
    <features>
       <feature id="org.omnetpp.ide.academic"/>
+      <feature id="org.omnetpp.ide.linuxtools"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.gef"/>

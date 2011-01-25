@@ -29,6 +29,7 @@
 				<include name="org.omnetpp.ide/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
+				<include name="org.omnetpp.ide.linuxtools/**" />
 			</fileset>
 		</copy>
 	</target>
