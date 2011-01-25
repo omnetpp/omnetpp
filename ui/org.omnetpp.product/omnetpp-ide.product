@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.1.0.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.2.0.qualifier" useFeatures="true" includeLaunchers="true">
 
 
    <configIni use="default">
@@ -278,7 +278,7 @@ POSSIBILITY OF SUCH DAMAGES.
    </plugins>
 
    <features>
-      <feature id="org.omnetpp.ide.academic" version="4.1.0.qualifier"/>
+      <feature id="org.omnetpp.ide.academic"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.gef"/>
