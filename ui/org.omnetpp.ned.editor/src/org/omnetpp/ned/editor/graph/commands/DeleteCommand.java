@@ -8,6 +8,7 @@
 package org.omnetpp.ned.editor.graph.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.gef.commands.Command;
@@ -69,7 +70,8 @@ public class DeleteCommand extends Command {
     }
 
     private void deleteConnections(SubmoduleElementEx module) {
-        ArrayList<ConnectionElementEx> connections = new ArrayList<ConnectionElementEx>();
+        // use a set so self connections wont be added two times to the collection
+        HashSet<ConnectionElementEx> connections = new HashSet<ConnectionElementEx>();
         connections.addAll(module.getSrcConnections());
         connections.addAll(module.getDestConnections());
 
