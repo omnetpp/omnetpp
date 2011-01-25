@@ -3,8 +3,8 @@
 # opp_msgc: translates MSG files into C++ code.
 #
 
-$MSGC_VERSION = "4.1";
-$MSGC_VERSION_HEX = "0x0401";
+$MSGC_VERSION = "4.2";
+$MSGC_VERSION_HEX = "0x0402";
 
 sub processFile($);
 sub quote($);

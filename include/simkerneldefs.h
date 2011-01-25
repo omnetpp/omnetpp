@@ -26,7 +26,7 @@
 #include "platdep/intxtypes.h"
 
 // OMNeT++ version -- must match NEDC_VERSION and MSGC_VERSION in nedxml
-#define OMNETPP_VERSION 0x0401
+#define OMNETPP_VERSION 0x0402
 
 #if defined(SIM_EXPORT)
 #  define SIM_API OPP_DLLEXPORT
