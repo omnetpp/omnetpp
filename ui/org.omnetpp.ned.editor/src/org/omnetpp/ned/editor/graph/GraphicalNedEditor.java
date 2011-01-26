@@ -121,7 +121,7 @@ import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNedContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.GotoTypeAction;
+import org.omnetpp.ned.editor.graph.actions.OpenTypeAction;
 import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
 import org.omnetpp.ned.editor.graph.actions.NedSelectAllAction;
 import org.omnetpp.ned.editor.graph.actions.PaletteFilterAction;
@@ -484,7 +484,7 @@ public class GraphicalNedEditor
             sharedKeyHandler.put(KeyStroke.getPressed(SWT.F6, 0),
                     getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
             sharedKeyHandler.put(KeyStroke.getPressed(SWT.F3, 0),
-                    getActionRegistry().getAction(GotoTypeAction.ID));
+                    getActionRegistry().getAction(OpenTypeAction.ID));
             sharedKeyHandler.put(KeyStroke.getPressed(SWT.CR, SWT.CR, 0),
                     getActionRegistry().getAction(PropertiesAction.ID));
         }
@@ -516,7 +516,7 @@ public class GraphicalNedEditor
         	getSelectionActions().add(action.getId());
         }
 
-        action = new GotoTypeAction(this);
+        action = new OpenTypeAction(this);
         registry.registerAction(action);
         getSelectionActions().add(action.getId());
 

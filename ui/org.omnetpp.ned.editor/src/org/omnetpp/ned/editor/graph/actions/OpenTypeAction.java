@@ -21,15 +21,15 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  *
  * @author rhornig
  */
-public class GotoTypeAction extends SelectionAction {
+public class OpenTypeAction extends SelectionAction {
 
-	public static final String ID = "org.omnetpp.ned.editor.graph.GotoType";
-    public static final String MENUNAME = "Goto &Type";
+	public static final String ID = "org.omnetpp.ned.editor.graph.OpenType";
+    public static final String MENUNAME = "Open &Type";
     public static final String TOOLTIP = "Opens the type of the element";
-    public static final String MENUNAME_NEDTYPE = "Goto Supert&ype";
+    public static final String MENUNAME_NEDTYPE = "Open Supert&ype";
     public static final String TOOLTIP_NEDTYPE = "Opens the base type of the element";
 
-	public GotoTypeAction(IWorkbenchPart part) {
+	public OpenTypeAction(IWorkbenchPart part) {
 		super(part);
 		setText(MENUNAME);
 		setId(ID);
@@ -55,7 +55,7 @@ public class GotoTypeAction extends SelectionAction {
 
 	    return getNedTypeElementToOpen() != null;
 	}
-	
+
 	/**
 	 * The ned type that must be opened for the actual primary selection. For types this is
 	 * the supertype (if exists) for submodules this is the type, for connection this is the channel
@@ -65,12 +65,12 @@ public class GotoTypeAction extends SelectionAction {
 	    int size = getSelectedObjects().size();
 	    if (size == 0)
 	        return null;
-	    
+
 	    Object primarySelection = getSelectedObjects().get(size-1);
 	    INedTypeElement modelToOpen = null;
 	    if  (primarySelection instanceof NedConnectionEditPart) {
 	        modelToOpen = ((NedConnectionEditPart)primarySelection).getNedTypeElementToOpen();
-	    } 
+	    }
 	    else if (primarySelection instanceof SubmoduleEditPart) {
 	        modelToOpen = ((SubmoduleEditPart)primarySelection).getNedTypeElementToOpen();
 	    }
@@ -80,7 +80,7 @@ public class GotoTypeAction extends SelectionAction {
 
 	    return modelToOpen;
 	}
-	
+
     @Override
     public void run() {
         INedTypeElement element = getNedTypeElementToOpen();

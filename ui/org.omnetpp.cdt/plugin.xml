@@ -395,7 +395,7 @@
             defaultHandler="org.omnetpp.cdt.handlers.GotoCppDefinitionForNedTypeHandler"
             description="Opens the C++ definition for a NED type (simple module or channel)"
             id="org.omnetpp.cdt.gotoCppDefinitionForNedType"
-            name="Goto C++ Definition">
+            name="Open C++ Definition">
       </command>
       <command
             defaultHandler="org.omnetpp.cdt.handlers.CleanSelectedProjects"
