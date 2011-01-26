@@ -750,9 +750,9 @@ public class PropertiesDialog extends TrayDialog {
             imageField = createImageSelector(comp); 
             imageSizeField = createCombo(comp, IDisplayString.Prop.IMAGE_SIZE.getEnumSpec().getNames());
             createLabel(comp, " Tint:", true); 
+            imageColorField = createColorSelector(comp);
             imageColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
             createLabel(comp, "%", false); 
-            imageColorField = createColorSelector(comp);
 
             group = createGroup(page, "Decorations", 1);
 
@@ -762,9 +762,9 @@ public class PropertiesDialog extends TrayDialog {
             image2Field = createImageSelector(comp, "status/");
             createLabel(comp, "", false); 
             createLabel(comp, " Tint:", true); 
+            image2ColorField = createColorSelector(comp);
             image2ColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
             createLabel(comp, "%", false); 
-            image2ColorField = createColorSelector(comp);
 
             // notes
             if (e instanceof CompoundModuleElementEx && !((CompoundModuleElementEx)e).isNetwork())
@@ -793,9 +793,9 @@ public class PropertiesDialog extends TrayDialog {
             imageField = createImageSelector(comp); 
             imageSizeField = createCombo(comp, IDisplayString.Prop.IMAGE_SIZE.getEnumSpec().getNames());
             createLabel(comp, " Tint:", true); 
+            imageColorField = createColorSelector(comp);
             imageColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
             createLabel(comp, "%", false); 
-            imageColorField = createColorSelector(comp);
 
             group = createGroup(page, "Shape", 1);
 
@@ -840,9 +840,9 @@ public class PropertiesDialog extends TrayDialog {
             image2Field = createImageSelector(comp, "status/");
             createLabel(comp, "", false); 
             createLabel(comp, " Tint:", true); 
+            image2ColorField = createColorSelector(comp);
             image2ColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
             createLabel(comp, "%", false); 
-            image2ColorField = createColorSelector(comp);
             
             // Q tag
             comp = createComposite(group, 2);
@@ -2376,7 +2376,7 @@ public class PropertiesDialog extends TrayDialog {
             if (msg.charAt(0)=='E') {firstError = msg; break;}
         errorImageLabel.setImage(messages.length == 0 ? null : firstError==null ? UIUtils.ICON_WARNING : UIUtils.ICON_ERROR);
         errorMessageLabel.setText(messages.length == 0 ? "" : firstError==null ? messages[0].substring(2) : firstError.substring(2));
-        errorMessageLabel.setForeground(firstError==null ? ColorFactory.BLACK : ColorFactory.RED2);
+        errorMessageLabel.setForeground(firstError==null ? ColorFactory.BLACK /*YELLOW4*/ : ColorFactory.RED2);
 
         validationErrors = newErrors;
         return firstError != null;
