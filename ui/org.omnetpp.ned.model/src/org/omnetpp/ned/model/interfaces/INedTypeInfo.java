@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -62,6 +63,11 @@ public interface INedTypeInfo extends INedChangeListener {
 	 */
 	public IFile getNedFile();
 
+    /**
+     * Returns project containing the definition. Returns null for built-in types.
+     */
+    public IProject getProject();
+    
 	/**
 	 * Returns the C++ class name inherited along @class properties or from the root's NED type name.
 	 * The namespace is determined using the @namespace properties from the package.ned files.

@@ -18,6 +18,7 @@ import java.util.Stack;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
@@ -414,10 +415,15 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 		return componentNode;
 	}
 
-	public IFile getNedFile() {
-		NedFileElementEx nedFileElement = getNedElement().getContainingNedFileElement();
-		return nedFileElement==null ? null : getResolver().getNedFile(nedFileElement); // Note: built-in types don't have a NedFileElement parent
-	}
+    public IFile getNedFile() {
+        NedFileElementEx nedFileElement = getNedElement().getContainingNedFileElement();
+        return nedFileElement==null ? null : getResolver().getNedFile(nedFileElement); // Note: built-in types don't have a NedFileElement parent
+    }
+
+    public IProject getProject() {
+        IFile file = getNedFile();
+        return file != null ? file.getProject() : null;
+    }
 
 	protected INedTypeResolver getResolver() {
 		return NedElement.getDefaultNedTypeResolver();

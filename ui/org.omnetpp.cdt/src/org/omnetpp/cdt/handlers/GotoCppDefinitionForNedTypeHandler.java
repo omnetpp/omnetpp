@@ -3,7 +3,7 @@
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
+ *--------------------------------------------------------------*/
 
 package org.omnetpp.cdt.handlers;
 
@@ -27,7 +27,9 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchPage;
@@ -36,36 +38,38 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
+import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.ex.ConnectionElementEx;
-import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
  * Goes to a C++ definition of a NED simple module or channel.
  *
- * @author Levy
+ * @author Levy, andras, rhornig
  */
 @SuppressWarnings("restriction")
 public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
-    public Object execute(ExecutionEvent event) throws ExecutionException {
+
+    @Override
+    public boolean isEnabled() {
+        return super.isEnabled() && getNedElement()!=null;
+    }
+
+    protected INedTypeElement getNedElement() {
         IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchPage page = window == null ? null : window.getActivePage();
 
         if (page != null) {
             ISelection selection = page.getSelection();
 
-            IFile editedFile = null;
-            if (page.getActiveEditor()!=null && page.getActiveEditor().getEditorInput() instanceof FileEditorInput)
-                editedFile = ((FileEditorInput)page.getActiveEditor().getEditorInput()).getFile();
+            if (selection instanceof IStructuredSelection) {
 
-            if (selection instanceof IStructuredSelection && NedResourcesPlugin.getNedResources().isNedFile(editedFile)) {
                 IStructuredSelection structuredSelection = (IStructuredSelection)selection;
                 INedElement nedElement = null;
 
@@ -75,53 +79,70 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
 
                 if (element instanceof INedModelProvider)
                     nedElement = ((INedModelProvider)element).getModel();
+                
+                while (nedElement!=null && !(nedElement instanceof INedTypeElement || nedElement instanceof ISubmoduleOrConnection))
+                        nedElement = nedElement.getParent();
 
-                while (nedElement != null) {
-                    INedTypeElement nedTypeElement = null;
-
-                    if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement)
-                        nedTypeElement = (INedTypeElement)nedElement;
-                    else if (nedElement instanceof SubmoduleElementEx)
-                        nedTypeElement = ((SubmoduleElementEx)nedElement).getEffectiveTypeRef();
-                    else if (nedElement instanceof ConnectionElementEx)
-                        nedTypeElement = ((ConnectionElementEx)nedElement).getEffectiveTypeRef();
-
-                    if (nedTypeElement != null) {
-                        String className = nedTypeElement.getNedTypeInfo().getFullyQualifiedCppClassName();
-                        IProject[] projects = ProjectUtils.getAllReferencedProjects(editedFile.getProject(), false, true);
-
-                        if (!gotoCppDefinition(page, projects, className)) {
-                            IContainer container = editedFile.getParent();
-                            IFile hFile = container.getFile(new Path(editedFile.getName()).removeFileExtension().addFileExtension(".h"));
-                            IFile ccFile = container.getFile(new Path(editedFile.getName()).removeFileExtension().addFileExtension(".cc"));
-                            IFile file = null;
-
-                            if (hFile.exists())
-                                file = hFile;
-                            else if (ccFile.exists())
-                                file = ccFile;
-
-                            if (file != null) {
-                                try {
-                                    IDE.openEditor(page, file, true);
-                                }
-                                catch (PartInitException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-
-                        break;
-                    }
-
-                    nedElement = nedElement.getParent();
+                if (nedElement instanceof ISubmoduleOrConnection)
+                    nedElement = ((ISubmoduleOrConnection)nedElement).getEffectiveTypeRef();
+                
+                if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement) {
+                    INedTypeElement nedTypeElement = (INedTypeElement)nedElement;
+                    if (nedTypeElement.getNedTypeInfo().getProject() != null) // not a built-in type
+                        return nedTypeElement;
                 }
             }
         }
-
         return null;
     }
 
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage page = window == null ? null : window.getActivePage();
+        INedTypeElement nedTypeElement = getNedElement();
+
+        if (page != null && nedTypeElement != null) {
+            String className = nedTypeElement.getNedTypeInfo().getFullyQualifiedCppClassName();
+            IProject project = nedTypeElement.getNedTypeInfo().getProject();
+            Assert.isNotNull(project);
+            IProject[] projects = ProjectUtils.getAllReferencedProjects(project, false, true);
+
+            if (!gotoCppDefinition(page, projects, className)) {
+                if (page.getActiveEditor()!=null && page.getActiveEditor().getEditorInput() instanceof FileEditorInput) {
+                    IFile editedFile = ((FileEditorInput)page.getActiveEditor().getEditorInput()).getFile();
+                    if(!openNearbyCppFile(page, editedFile)) {
+                        MessageDialog.openError(window.getShell(), "Not Found", "C++ class '"+className+"' not found in project '"+project.getName()+"' and its referenced projects.");
+                    }
+                        
+                }
+            }
+        }
+        return null;
+    }
+
+    protected boolean openNearbyCppFile(IWorkbenchPage page, IFile inputFile) {
+        IContainer container = inputFile.getParent();
+        IFile hFile = container.getFile(new Path(inputFile.getName()).removeFileExtension().addFileExtension(".h"));
+        IFile ccFile = container.getFile(new Path(inputFile.getName()).removeFileExtension().addFileExtension(".cc"));
+        IFile file = null;
+
+        if (hFile.exists())
+            file = hFile;
+        else if (ccFile.exists())
+            file = ccFile;
+
+        if (file != null) {
+            try {
+                IDE.openEditor(page, file, true);
+                return true;
+            }
+            catch (PartInitException e) {
+                Activator.logError("Could not open: "+file.toString(),e);
+            }
+        }
+        return false;
+    }
+    
     private boolean gotoCppDefinition(IWorkbenchPage page, IProject[] projects, String qualifiedClassName) {
         IIndexManager manager = CCorePlugin.getIndexManager();
 
