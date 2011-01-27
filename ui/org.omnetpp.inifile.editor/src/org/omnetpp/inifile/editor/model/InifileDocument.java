@@ -441,9 +441,11 @@ public class InifileDocument implements IInifileDocument {
     protected boolean replaceLine(Line line, String text) {
         synchronized (lock) {
             try {
-                int offset = document.getLineOffset(line.lineNumber-1);
-                int length = document.getLineOffset(line.lineNumber-1+line.numLines) - offset;
-                document.replace(offset, length, text==null ? "" : text+"\n");
+                int startOffset = document.getLineOffset(line.lineNumber-1);
+                int endOffset = line.lineNumber-1+line.numLines >= document.getNumberOfLines() ?
+                                    document.getLength() :
+                                    document.getLineOffset(line.lineNumber-1+line.numLines);
+                document.replace(startOffset, endOffset - startOffset, text==null ? "" : text+"\n");
 
                 boolean lineNumberChange = (text==null) || (line.numLines != StringUtils.countNewLines(text)+1);
                 return lineNumberChange;
@@ -704,9 +706,9 @@ public class InifileDocument implements IInifileDocument {
                     hasUndeletableParts = true;
                 else {
                     try {
-                        int offset = line.lineNumber == 0 ? 0 : document.getLineOffset(line.lineNumber-1);
-                        int length = document.getLineOffset(line.lastLine-1+line.numLines) - offset;
-                        document.replace(offset, length, "");
+                        int startOffset = line.lineNumber == 0 ? 0 : document.getLineOffset(line.lineNumber-1);
+                        int endOffset = line.lastLine >= document.getNumberOfLines() ? document.getLength() : document.getLineOffset(line.lastLine);
+                        document.replace(startOffset, endOffset - startOffset, "");
                         deletedSomething = true;
                     }
                     catch (BadLocationException e) {
