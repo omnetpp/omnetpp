@@ -301,7 +301,7 @@ public class InifileAnalyzer {
 					addError(section, "Invalid section name: must be [General] or [Config <name>]");
 				else if (section.contains("  "))
 					addError(section, "Invalid section name: contains too many spaces");
-				else if (!section.substring(0,1).matches("[a-zA-Z_]"))
+                else if (!String.valueOf(section.charAt(CONFIG_.length())).matches("[a-zA-Z_]"))
 					addError(section, "Invalid section name: config name must begin a letter or underscore");
 				else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
 					addError(section, "Invalid section name: contains illegal character(s)");
