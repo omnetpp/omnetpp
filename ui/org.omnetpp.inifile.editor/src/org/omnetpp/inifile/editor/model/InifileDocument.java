@@ -224,12 +224,13 @@ public class InifileDocument implements IInifileDocument {
             includedFiles.clear();
 
             class Callback implements InifileParser.ParserCallback {
-                Section currentSection = null;
-                SectionHeadingLine currentSectionHeading = null;
+                Section currentSection = null; // can point into the parent file
+                SectionHeadingLine currentSectionHeading = null; // points into current file
                 IFile currentFile;
 
-                public Callback(IFile file) {
+                public Callback(IFile file, Section currentSection) {
                     this.currentFile = file;
+                    this.currentSection = currentSection;
                 }
 
                 public void blankOrCommentLine(int lineNumber, int numLines, String rawLine, String rawComment) {
@@ -260,8 +261,14 @@ public class InifileDocument implements IInifileDocument {
                 }
 
                 public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
-                    if (currentSection == null)
-                        sectionHeadingLine(0, 1, "", ConfigRegistry.GENERAL, ""); // implicit general section
+                    if (currentSection == null) {
+                        addError(currentFile, lineNumber, "Missing section heading");
+                        sectionHeadingLine(0, 1, "", ConfigRegistry.GENERAL, ""); // implicit general section, might happen in the main file only
+                    }
+                    if (currentSectionHeading == null) {
+                        // implicit header for parent section if included file starts with key-value line
+                        sectionHeadingLine(0, 1, "", currentSection.headingLines.get(0).sectionName, "");
+                    }
                     if (currentSection.entries.containsKey(key)) {
                         KeyValueLine line = currentSection.entries.get(key);
                         String location = (line.file==currentFile ? "" : line.file.getName()+" ") + "line " + line.lineNumber;
@@ -298,7 +305,7 @@ public class InifileDocument implements IInifileDocument {
                             IFile file = currentFile.getParent().getFile(new Path(line.includedFile));
                             includedFiles.add(file);
                             markerSynchronizer.register(file);
-                            new InifileParser().parse(file, new Callback(file));
+                            new InifileParser().parse(file, new Callback(file, currentSection));
                         }
                         catch (ParseException e) {
                             addError(currentFile, e.getLineNumber(), e.getMessage());
@@ -316,7 +323,7 @@ public class InifileDocument implements IInifileDocument {
             }
 
             try {
-                new InifileParser().parse(streamReader, new Callback(documentFile));
+                new InifileParser().parse(streamReader, new Callback(documentFile, null));
             }
             catch (IOException e) {
                 // cannot happen with string input
