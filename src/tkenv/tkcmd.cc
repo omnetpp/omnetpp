@@ -744,14 +744,14 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"displayString")) {
        if (dynamic_cast<cModule *>(object)) {
            cModule *mod = dynamic_cast<cModule *>(object);
-           const char *str = mod->hasDisplayString() ? mod->getDisplayString().str() : "";
+           const char *str = mod->hasDisplayString() && mod->parametersFinalized() ? mod->getDisplayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, TCLCONST(dynamic_cast<cMessage *>(object)->getDisplayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cGate *>(object)) {
            cGate *gate = dynamic_cast<cGate *>(object);
            cChannel *chan = gate->getChannel();
-           const char *str = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
+           const char *str = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
            Tcl_SetResult(interp, TCLCONST(str), TCL_VOLATILE);
        } else {
            Tcl_SetResult(interp, TCLCONST("no such field in this object"), TCL_STATIC); return TCL_ERROR;

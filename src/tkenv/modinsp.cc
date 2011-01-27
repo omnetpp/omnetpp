@@ -218,7 +218,7 @@ TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,const char *geom,v
 
    const cDisplayString blank;
    cModule *parentmodule = static_cast<cModule *>(object);
-   const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->getDisplayString() : blank;
+   const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
    random_seed = resolveLongDispStrArg(ds.getTagArg("bgl",4), parentmodule, 1);
 }
 
@@ -313,7 +313,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
                                                               int& x, int& y, int& sx, int& sy)
 {
     const cDisplayString blank;
-    const cDisplayString& ds = submod->hasDisplayString() ? submod->getDisplayString() : blank;
+    const cDisplayString& ds = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString() : blank;
 
     // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
     int boxsx=0, boxsy=0, iconsx=0, iconsy=0;
@@ -430,7 +430,7 @@ void TGraphicalModWindow::refreshLayout()
     // Note trick avoid calling getDisplayString() directly because it'd cause
     // the display string object inside cModule to spring into existence
     const cDisplayString blank;
-    const cDisplayString& ds = parentmodule->hasDisplayString() ? parentmodule->getDisplayString() : blank;
+    const cDisplayString& ds = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString() : blank;
 
     // create and configure layouter object
     Tkenv::LayouterChoice choice = getTkenv()->opt_layouterchoice;
@@ -569,7 +569,7 @@ void TGraphicalModWindow::redrawModules()
     CHK(Tcl_VarEval(interp, canvas, " delete dx",NULL)); // NOT "delete all" because that'd remove "bubbles" too!
     const cDisplayString blank;
     std::string buffer;
-    const char *rawScaling = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *rawScaling = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
     const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
 
     for (cModule::SubmoduleIterator it(parentmodule); !it.end(); it++)
@@ -606,7 +606,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int
 {
     char coords[32];
     sprintf(coords,"%d %d ", x, y);
-    const char *dispstr = submod->hasDisplayString() ? submod->getDisplayString().str() : "";
+    const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
 
     CHK(Tcl_VarEval(interp, "draw_submod ",
                     canvas, " ",
@@ -621,7 +621,7 @@ void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int
 
 void TGraphicalModWindow::drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling)
 {
-    const char *dispstr = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().str() : "";
+    const char *dispstr = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().str() : "";
     CHK(Tcl_VarEval(interp, "draw_enclosingmod ",
                        canvas, " ",
                        ptrToStr(parentmodule), " ",
@@ -666,7 +666,7 @@ void TGraphicalModWindow::drawConnection(Tcl_Interp *interp, cGate *gate)
             dest_gate->getIndex(), dest_gate->size());
     cChannel *chan = gate->getChannel();
     ptrToStr(chan, chanptr);
-    const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
+    const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized()) ? chan->getDisplayString().str() : "";
 
     CHK(Tcl_VarEval(interp, "draw_connection ",
             canvas, " ",
@@ -815,7 +815,7 @@ void TGraphicalModWindow::bubble(cModule *submod, const char *text)
 
     cModule *parentmodule = static_cast<cModule *>(object);
     std::string buffer;
-    const char *rawScaling = parentmodule->hasDisplayString() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
+    const char *rawScaling = parentmodule->hasDisplayString() && parentmodule->parametersFinalized() ? parentmodule->getDisplayString().getTagArg("bgs",0) : "";
     const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
 
     // invoke Tcl code to display bubble
@@ -1214,7 +1214,7 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         ptrToStr(g->getNextGate(),destgateptr);
         cChannel *chan = g->getChannel();
         ptrToStr(chan,chanptr);
-        const char *dispstr = (chan && chan->hasDisplayString()) ? chan->getDisplayString().str() : "";
+        const char *dispstr = (chan && chan->hasDisplayString() && chan->parametersFinalized() ) ? chan->getDisplayString().str() : "";
         CHK(Tcl_VarEval(interp, "draw_conn ",
                       canvas, " ",
                       srcgateptr, " ",
