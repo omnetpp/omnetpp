@@ -19,6 +19,8 @@
 #include <stdio.h>
 #include <errno.h>
 #include <set>
+#include <vector>
+#include <algorithm>
 #include "opp_ctype.h"
 #include "fileutil.h"  // directoryOf
 #include "inifilereader.h"
@@ -105,15 +107,16 @@ void InifileReader::readFile(const char *filename)
     if (defaultbasedir.empty())
         defaultbasedir = directoryOf(rootfilename.c_str());
 
-    internalReadFile(filename, NULL);
+    std::vector<std::string> includedFiles;
+    internalReadFile(filename, NULL, includedFiles);
 }
 
-void InifileReader::internalReadFile(const char *filename, Section *currentSection)
+void InifileReader::internalReadFile(const char *filename, Section *currentSection, std::vector<std::string> &includedFiles)
 {
     // create an entry for this file, checking against circular inclusion
     std::string tmpfname = tidyFilename(toAbsolutePath(filename).c_str(),true);
     std::string tmpdir = directoryOf(tmpfname.c_str());
-    if (filenames.find(tmpfname)!=filenames.end())
+    if (find(includedFiles.begin(), includedFiles.end(), tmpfname)!=includedFiles.end())
         throw cRuntimeError("Ini file `%s' includes itself, directly or indirectly", filename);
     filenames.insert(tmpfname);
     if (basedirs.find(tmpdir)==basedirs.end())
@@ -183,7 +186,9 @@ void InifileReader::internalReadFile(const char *filename, Section *currentSecti
             PushDir d(directoryOf(filename).c_str());
 
             // process included inifile
-            internalReadFile(includeFilename.c_str(), currentSection);
+            includedFiles.push_back(tmpfname);
+            internalReadFile(includeFilename.c_str(), currentSection, includedFiles);
+            includedFiles.pop_back();
         }
         else if (*line=='[')
         {

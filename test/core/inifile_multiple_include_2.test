@@ -1,0 +1,42 @@
+%description:
+Negative test case for inifiles include circularity check.
+The configured ini file does not contain a loop, but contains
+an inifile which is included several times -- it should not cause
+an error.
+
+%extraargs: -c Test
+
+%file: test.ned
+import testlib.Dump;
+
+network Test {
+    parameters:
+        int a;
+        int b;
+    submodules:
+        dump: Dump;
+}
+
+%inifile: test.ini
+network = Test
+*.b = 0
+
+[Config Test]
+*.a = 1
+include include.ini
+include subinclude.ini
+
+%file: include.ini
+include subinclude.ini
+
+%file: subinclude.ini
+*.b = 2
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        a = 1
+        b = 2
+    submodules:
+}
