@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -161,8 +162,7 @@ public class ImageFactory {
 	}
 
     /**
-     * @param imageId
-     * @return a 16x16 image or null if there is no icon for that id
+     * Returns a (cached) 16x16 image for the given color, or null if the color name is not valid.
      */
     public static Image getIconImage(String imageId) {
         if (imageId == null)
@@ -184,58 +184,81 @@ public class ImageFactory {
     }
 
     /**
-     * Returns the requested image searching on the bitmap path and in the resources.
+     * Returns an image for a given ID. If imageId is empty or null, the function returns null.
+     * If the image is not found, returns the "unknown" image (id=UNKNOWN).
      * You should NEVER modify the returned instance.
-     * @param imageId the requested image's id
-     * @return Image with a given ID
      */
     public static Image getImage(String imageId) {
         return getImage(imageId, null, null, -1);
     }
 
     /**
-     * Returns an image descriptor for a given ID. You should NEVER modify the returned instance.
-     * @param imageId
-     * @return
+     * Returns an image descriptor for a given ID. If imageId is empty or null, the function returns null.
+     * If the image is not found, returns the "unknown" image (id=UNKNOWN).
+     * You should NEVER modify the returned instance.
      */
     public static NedImageDescriptor getDescriptor(String imageId) {
         return getDescriptor(imageId, null, null, -1);
     }
 
+    /**
+     * Returns an image for a given ID, modified with the given image size, 
+     * tint color and tint percentage. If imageId is empty or null, the function returns null.
+     * If the image is not found, returns the "unknown" image (id=UNKNOWN).
+     * You should NEVER modify the returned instance.
+     */
     public static Image getImage(String imageId, String imageSize, RGB shade, int weight) {
-        if (imageId == null || "".equals(imageId)) return null;
+        if (imageId == null || "".equals(imageId)) 
+            return null;
+        
         // look for the image on file system/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
+        
         // if image was found, get it from the registry
-        if (key != null) return imageRegistry.get(key);
+        if (key != null) 
+            return imageRegistry.get(key);
+        
         // if image was not found, look it up among the legacy icons
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
+        
         // if image was found, get it from the registry
-        if (key != null) return imageRegistry.get(key);
-        // if image was not found, display the unknown icon
+        if (key != null) 
+            return imageRegistry.get(key);
+        
+        // if image was not found, display the unknown icon (it must exist)
         key = getKeyFor(UNKNOWN, imageSize, shade, weight);
-        // if image was found, get it from the registry
-        if (key != null) return imageRegistry.get(key);
-        // if key was null (ie. not found) return the default image
-        return imageRegistry.get(DEFAULT_KEY);
+        Assert.isNotNull(key);
+        return imageRegistry.get(key);
     }
 
+    /**
+     * Returns an image descriptor for a given ID, modified with the given image size, 
+     * tint color and tint percentage. If imageId is empty or null, the function returns null.
+     * If the image is not found, returns the "unknown" image (id=UNKNOWN).
+     * You should NEVER modify the returned instance.
+     */
     public static NedImageDescriptor getDescriptor(String imageId, String imageSize, RGB shade, int weight) {
-        if (imageId == null || "".equals(imageId)) return null;
+        if (imageId == null || "".equals(imageId)) 
+            return null;
+
         // look for the image on file system/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
+
         // if image was found, get it from the registry
-        if (key != null) return (NedImageDescriptor)imageRegistry.getDescriptor(key);
+        if (key != null) 
+            return (NedImageDescriptor)imageRegistry.getDescriptor(key);
+
         // if image was not found, look it up among the legacy icons
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
+
         // if image was found, get it from the registry
-        if (key != null) return (NedImageDescriptor)imageRegistry.getDescriptor(key);
-        // if image was not found, display the unknown icon
+        if (key != null) 
+            return (NedImageDescriptor)imageRegistry.getDescriptor(key);
+
+        // if image was not found, display the unknown icon (it must exist)
         key = getKeyFor(UNKNOWN, imageSize, shade, weight);
-        // if image was found, get it from the registry
-        if (key != null) return (NedImageDescriptor)imageRegistry.getDescriptor(key);
-        // if key was null (ie. not found) return the default image descriptor
-        return (NedImageDescriptor)imageRegistry.getDescriptor(DEFAULT_KEY);
+        Assert.isNotNull(key);
+        return (NedImageDescriptor)imageRegistry.getDescriptor(key);
     }
 
     /**
