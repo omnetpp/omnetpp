@@ -51,6 +51,15 @@ BASE=common layout eventlog scave nedxml sim envir cmdenv tkenv utils
 SAMPLES=aloha cqn dyna embedding embedding2 fifo google-earth hypercube histograms neddemo queueinglib queueinglibext routing tictoc sockets
 JNILIBS=org.omnetpp.ned.model org.omnetpp.ide.nativelibs
 
+# add systemc optionally
+ifeq "$(SYSTEMC)" "yes"
+ifneq "$(wildcard src/systemc)" ""
+BASE+= systemc
+SAMPLES+= systemc-embedding
+systemc: sim
+endif
+endif
+
 #
 # Group targets.
 #
@@ -63,7 +72,7 @@ ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc, etc)
 clean depend: makefiles
-common layout eventlog scave nedxml sim envir cmdenv tkenv makefiles: utils
+common layout eventlog scave nedxml sim envir cmdenv tkenv systemc makefiles: utils
 layout eventlog scave nedxml sim envir cmdenv tkenv : common
 envir : sim
 cmdenv tkenv : envir
@@ -75,7 +84,7 @@ queueinglibext : queueinglib
 
 .PHONY: check-env cleanall depend makefiles clean apis docu tests all allmodes \
         components base ui samples common layout eventlog scave nedxml sim \
-        envir cmdenv tkenv utils
+        envir cmdenv tkenv utils systemc
 
 #
 # Core libraries and programs

@@ -26,8 +26,8 @@ $tempfilename ="linkall.tmp";
     "oppsim.lib", "oppenvir.lib", "oppcmdenv.lib", "opptkenv.lib",
     "oppcommon.lib", "oppnedxml.lib", "opplayout.lib",
     "oppsimd.lib", "oppenvird.lib", "oppcmdenvd.lib", "opptkenvd.lib",
-    "oppcommond.lib", "oppnedxmld.lib", "opplayoutd.lib",
-    "tcl84.lib", "tk84.lib", "blt24.lib", "zdll.lib",
+    "oppcommond.lib", "oppnedxmld.lib", "opplayoutd.lib","oppsystemc.lib",
+    "oppsystemcd.lib","tcl84.lib", "tk84.lib", "blt24.lib", "zdll.lib",
     "libxml2.lib", "iconv.lib", "wsock32.lib"
 );
 foreach $i (@knownlibs) {$knownlibs{$i} = 1;}
