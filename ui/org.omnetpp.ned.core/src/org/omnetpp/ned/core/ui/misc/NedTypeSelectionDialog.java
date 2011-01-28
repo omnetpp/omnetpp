@@ -32,7 +32,8 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
 public class NedTypeSelectionDialog extends ElementListSelectionDialog {
     private INedTypeResolver.IPredicate typeFilter; 
     private IProject contextProject;
-    private INedTypeInfo[] typesToOffer; // overrides previous two 
+    private INedTypeInfo[] typesToOffer; // overrides previous two
+    private NedLabelProvider labelProvider;
 
 
     INedChangeListener nedChangeListener = new INedChangeListener() {
@@ -52,6 +53,8 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
     };
 
     public static class NedLabelProvider extends LabelProvider {
+        private boolean showProject;  // whether to show which project the type was defined in
+        
         @Override
         public Image getImage(Object element) {
             INedTypeInfo nedType = (INedTypeInfo) element;
@@ -63,13 +66,23 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
             INedTypeInfo nedType = (INedTypeInfo) element;
             String simpleName = nedType.getName();
             String fullyQualifiedName = nedType.getFullyQualifiedName();
-            String typeName = nedType.getNedElement().getReadableTagName();
-            if (simpleName.equals(fullyQualifiedName))
-                return nedType.getName() + " -- " + typeName;
-            else
-                return nedType.getName() + " -- " + typeName + " (" + fullyQualifiedName + ")";
+            String kindName = nedType.getNedElement().getReadableTagName();
+            String nameAndKind = nedType.getName() + " -- " + kindName;
+            if (showProject) {
+                IProject project = nedType.getProject();
+                String projectName = project==null ? "built-in" : project.getName();
+                if (simpleName.equals(fullyQualifiedName))
+                    return nameAndKind + " (" + projectName + ")";
+                else
+                    return nameAndKind + " (" + fullyQualifiedName + " - " + projectName + ")";
+            }
+            else {
+                if (simpleName.equals(fullyQualifiedName))
+                    return nameAndKind;
+                else
+                    return nameAndKind + " (" + fullyQualifiedName + ")";
+            }
         }
-        
     }
 
     /**
@@ -78,18 +91,31 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
      */
     public NedTypeSelectionDialog(Shell parent) {
         super(parent, new NedLabelProvider());
+        labelProvider = (NedLabelProvider) ReflectionUtils.getFieldValue(this, "fRenderer"); // sorry...
         setMessage("Select NED type:");
         setTitle("Select NED Type");
         setDialogBoundsSettings(UIUtils.getDialogSettings(NedResourcesPlugin.getDefault(), "SelectNEDTypeDialog"), Dialog.DIALOG_PERSISTSIZE + Dialog.DIALOG_PERSISTLOCATION);
+        setShowProject(true); // because contextProject == null here
         INedResources nedResources = NedResourcesPlugin.getNedResources();
         nedResources.addNedModelChangeListener(nedChangeListener);
     }
 
     /**
+     * Enable/disable showing the defining project's name for each type.
+     * This flag is also set by setContextProject() and setTypesToOffer().
+     */
+    public void setShowProject(boolean showProject) {
+        labelProvider.showProject = showProject;    
+    }
+
+    /**
      * Sets the context project. When non-null, only types visible from the given project are offered.
+     * This setting overrides (and clears) the list set via setTypesToOffer().
      */
     public void setContextProject(IProject contextProject) {
         this.contextProject = contextProject;
+        this.typesToOffer = null;
+        setShowProject(contextProject == null);
     }
     
     public IProject getContextProject() {
@@ -109,10 +135,13 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
     }
 
     /**
-     * Sets the list of types to offer. This overrides the context project and the type filter.
+     * Sets the list of types to offer. This overrides (and clears) the context project and the type filter.
      */
-    public void setTypesToOffer(INedTypeInfo[] typesToOffer) {
+    public void setTypesToOffer(INedTypeInfo[] typesToOffer, boolean showProject) {
         this.typesToOffer = typesToOffer;
+        this.contextProject = null;
+        this.typeFilter = null;
+        setShowProject(showProject);
     }
     
     public INedTypeInfo[] getTypesToOffer() {
