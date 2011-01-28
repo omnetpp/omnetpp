@@ -144,6 +144,11 @@ WITH_NETBUILDER=yes
 #
 WITH_PARSIM=yes
 
+#
+# Set to "yes" to enable SystemC support. (Available only in the commecial version (OMNEST))
+#
+SYSTEMC=no
+
 #==============================================================================
 #======!!!         Try not to change anything below this line       !!!======
 #==============================================================================

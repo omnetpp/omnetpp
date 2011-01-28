@@ -53,6 +53,11 @@ WITH_NETBUILDER=yes
 WITH_PARSIM=yes
 
 #
+# Set to "yes" to enable SystemC support. (Available only in the commecial version (OMNEST))
+#
+SYSTEMC=no
+
+#
 # Set to no if you want to create static OMNeT++ libraries. Can be overriden
 # with "make SHARED_LIBS=no" but then simulation models also need to be built
 # with "make SHARED_LIBS=no"

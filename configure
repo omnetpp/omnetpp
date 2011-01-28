@@ -589,6 +589,7 @@ TK_LIBS
 TK_CFLAGS
 HAVE_DLOPEN
 NO_TCL
+SYSTEMC
 LIB_PREFIX
 EXE_SUFFIX
 DLL_LIB_SUFFIX
@@ -2249,6 +2250,9 @@ CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 
 # Build shared library by default
 SHARED_LIBS=${SHARED_LIBS:-yes}
+
+# No SystemC support by default
+SYSTEMC=${SYSTEMC:-no}
 
 #----------------------
 # Default flags for values for other variables that come from configure.user.
@@ -6322,6 +6326,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 

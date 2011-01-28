@@ -264,6 +264,9 @@ CYGWIN_STACKSIZE=${CYGWIN_STACKSIZE:-134217728}
 # Build shared library by default
 SHARED_LIBS=${SHARED_LIBS:-yes}
 
+# No SystemC support by default
+SYSTEMC=${SYSTEMC:-no}
+
 #----------------------
 # Default flags for values for other variables that come from configure.user.
 #----------------------
@@ -1164,6 +1167,7 @@ AC_SUBST(DLL_LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 AC_SUBST(LIB_PREFIX)
 
+AC_SUBST(SYSTEMC)
 AC_SUBST(NO_TCL)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
