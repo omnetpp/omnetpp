@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
@@ -91,8 +90,6 @@ public class NedTypeFieldEditor implements IFieldEditor {
         layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0; 
 
         text = new Text(composite, SWT.BORDER);
-        problemDecoration = new ControlDecoration(text, SWT.RIGHT | SWT.TOP);
-        problemDecoration.setShowOnlyOnFocus(false);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), 
                 new NedTypeContentProposalProvider(!multiple),
@@ -104,6 +101,9 @@ public class NedTypeFieldEditor implements IFieldEditor {
         int textHeight = text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
         gridData.heightHint = textHeight;
         button.setLayoutData(gridData);
+
+        problemDecoration = new ControlDecoration(button, SWT.RIGHT | SWT.TOP);
+        problemDecoration.setShowOnlyOnFocus(false);
 
         text.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {

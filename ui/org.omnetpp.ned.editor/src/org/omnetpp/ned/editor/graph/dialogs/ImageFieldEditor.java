@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.dialogs;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
@@ -46,8 +45,6 @@ public class ImageFieldEditor implements IFieldEditor {
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), 
                 new ImageCellEditor.ImageContentProposalProvider(),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
-        problemDecoration = new ControlDecoration(text, SWT.RIGHT | SWT.TOP);
-        problemDecoration.setShowOnlyOnFocus(false);
         
         button = new Button(composite, SWT.PUSH);
         button.setText("...");
@@ -55,6 +52,9 @@ public class ImageFieldEditor implements IFieldEditor {
         int textHeight = text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
         gridData.heightHint = textHeight;
         button.setLayoutData(gridData);
+
+        problemDecoration = new ControlDecoration(button, SWT.RIGHT | SWT.TOP);
+        problemDecoration.setShowOnlyOnFocus(false);
 
         text.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {

@@ -137,7 +137,7 @@ public class ConnectionElementEx extends ConnectionElement
 		return getGateNameWithIndex(getDestGate(), getDestGateSubg(), getDestGateIndex(), getDestGatePlusplus());
 	}
 
-	public String getGateNameWithIndex(String name, int subgate, String index, boolean isPlusPlus) {
+    public static String getGateNameWithIndex(String name, int subgate, String index, boolean isPlusPlus) {
 		String gate = name;
 		if (subgate == NED_SUBGATE_I) gate += "$i";
 		if (subgate == NED_SUBGATE_O) gate += "$o";
@@ -145,6 +145,27 @@ public class ConnectionElementEx extends ConnectionElement
 		if (StringUtils.isNotEmpty(index)) gate += "["+index+"]";
 		return gate;
 	}
+
+    /**
+     * Returns the name of the source gate (gate name plus subgate, but without index)
+     */
+    public String getSrcGateEx() {
+        return getGateName(getSrcGate(), getSrcGateSubg());
+    }
+
+    /**
+     * Returns the name of the source gate (gate name plus subgate, but without index)
+     */
+    public String getDestGateEx() {
+        return getGateName(getDestGate(), getDestGateSubg());
+    }
+
+    public static String getGateName(String name, int subgate) {
+        String gate = name;
+        if (subgate == NED_SUBGATE_I) gate += "$i";
+        if (subgate == NED_SUBGATE_O) gate += "$o";
+        return gate;
+    }
 
     @Override
     public void fireModelEvent(NedModelEvent event) {

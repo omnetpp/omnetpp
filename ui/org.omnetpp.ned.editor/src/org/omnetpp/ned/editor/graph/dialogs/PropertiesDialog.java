@@ -14,7 +14,6 @@ import static org.omnetpp.ned.model.interfaces.INedTypeResolver.MODULE_EXCEPT_NE
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +71,8 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.displaymodel.IDisplayString.Prop;
+import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.image.NedImageDescriptor;
 import org.omnetpp.common.ui.TristateButton;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
@@ -94,6 +95,7 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
@@ -115,6 +117,7 @@ import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
+import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
@@ -128,12 +131,12 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 //TODO type selection dialog does not show inner types
 //TODO inner type-ot is beimportalja!!!!
 //TODO shape editing ("" vs "rect") is not entirely correct... e.g. preview does not necessarily agree with final result...
-//TODO warn for invalid colors, etc
-//TODO factor out error/warning icons to UIUtils!!!!
+//TODO if you change the type of a submodule, the preview still displays the old icon, because the "Image" field of the dialog contains that! 
+//     solution is not trivial -- maybe when the user changes the type, re-populate the display properties with the new values? (and, if there are dirty fields, ask for confirmation?)
+//TODO validate gate type as well (if gate type != required, issue warning); this should handle $i/$o too
 
-//TODO words used in the Properties View and in the dialog should be consistent!! ("colorization" vs "tint", etc)
-//TODO connection text position enum names are wrong ("left", "right", "top")
-//TODO property nevekre nincs content assist! (@disp <ctrl+Space>  --> semmi)
+//TODO Properties View: use the word "Tint" instead of "Colorization"
+//TODO connection text position enum names are wrong ("left", "right", "top") -- likely unfixable, really
 
 public class PropertiesDialog extends TrayDialog {
     private static final String STR_PARENTMODULE = "<parent>";  // for connection src/dest module selection combo
@@ -366,6 +369,30 @@ public class PropertiesDialog extends TrayDialog {
 
         public Command makeChangeCommand(INedElement e, Object value) {
             return new SetAttributeCommand(e, attributeName, (String)value);
+        }
+    }
+
+    static class ConnectionGatePropertyAccess implements IPropertyAccess {
+        private boolean isSrc;
+        public ConnectionGatePropertyAccess(boolean isSrc) {
+            this.isSrc  = isSrc;
+        }
+
+        public String getValue(INedElement e) {
+            ConnectionElementEx conn = (ConnectionElementEx)e;
+            return isSrc ? conn.getSrcGateEx() : conn.getDestGateEx();
+        }
+
+        public Command makeChangeCommand(INedElement e, Object value) {
+            // we need to split the value to "gate name" and "subgate"
+            String name = (String)value;
+            String subg = "";
+            if (name.endsWith("$i")) { subg = "i"; name = name.substring(0, name.length()-2); }
+            if (name.endsWith("$o")) { subg = "o"; name = name.substring(0, name.length()-2); }
+            CompoundCommand result = new CompoundCommand();
+            result.add(new SetAttributeCommand(e, isSrc ? ConnectionElement.ATT_SRC_GATE : ConnectionElement.ATT_DEST_GATE, name));
+            result.add(new SetAttributeCommand(e, isSrc ? ConnectionElement.ATT_SRC_GATE_SUBG: ConnectionElement.ATT_DEST_GATE_SUBG, subg));
+            return result;
         }
     }
 
@@ -1325,16 +1352,16 @@ public class PropertiesDialog extends TrayDialog {
             connDestModuleField.setItems(submoduleNames, submoduleLabels);
 
             // populate fields
-            populateField(connSrcModuleField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE)));
+            populateField(connSrcModuleField, StringUtils.defaultIfEmpty((String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE)), STR_PARENTMODULE));
             populateField(connSrcModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE_INDEX))); 
-            populateField(connSrcGateField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE))); 
+            populateField(connSrcGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(true))); 
             String srcGateIndex = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE_INDEX));
             String srcGatePlusPlus = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE_PLUSPLUS));
             populateField(connSrcGateIndexField, (srcGateIndex==null || srcGatePlusPlus==null) ? null : srcGateIndex + (srcGatePlusPlus.equals("true")?STR_GATEPLUSPLUS:""));
 
-            populateField(connDestModuleField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE))); 
+            populateField(connDestModuleField, StringUtils.defaultIfEmpty((String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE)), STR_PARENTMODULE)); 
             populateField(connDestModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE_INDEX))); 
-            populateField(connDestGateField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE)));  
+            populateField(connDestGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(false)));  
             String destGateIndex = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE_INDEX));
             String destGatePlusPlus = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE_PLUSPLUS));
             populateField(connDestGateIndexField, (destGateIndex==null || destGatePlusPlus==null) ? null : destGateIndex + (destGatePlusPlus.equals("true")?STR_GATEPLUSPLUS:""));
@@ -1683,11 +1710,31 @@ public class PropertiesDialog extends TrayDialog {
         // update gateField
         Boolean areBidirConns = isBidirectionalField.getGrayed() ? null : isBidirectionalField.getSelection();
         Map<String, GateElementEx> gateDecls = module.getGateDeclarations();
-        String[] gateNames = makeGateNameList(areBidirConns, isSrcGate, isParent, gateDecls.values());
-        Arrays.sort(gateNames);
-        String[] gateLabels = new String[gateNames.length];
-        for (int i=0; i<gateLabels.length; i++)
-            gateLabels[i] = NedTreeUtil.getNedModelLabelProvider().getText(gateDecls.get(gateNames[i])); //TODO gatesize too!
+        Map<String, GateElementEx> gateSizes = module.getGateSizes();
+        List<String> gateNameList = new ArrayList<String>();
+        List<String> gateLabelList = new ArrayList<String>();
+        for (GateElementEx gateDecl : gateDecls.values()) {
+            boolean offerInputs = areBidirConns == null || (!areBidirConns && isSrcGate == isParent);
+            boolean offerOutputs = areBidirConns == null || (!areBidirConns && isSrcGate != isParent);
+            boolean offerInouts = areBidirConns == null || areBidirConns;
+            GateElementEx gateSize = gateSizes.get(gateDecl.getName());
+            if ((offerInputs && gateDecl.getType()==INedElement.NED_GATETYPE_INPUT) || (offerOutputs && gateDecl.getType()==INedElement.NED_GATETYPE_OUTPUT) || (offerInouts && gateDecl.getType()==INedElement.NED_GATETYPE_INOUT)) {
+                gateNameList.add(gateDecl.getName());
+                gateLabelList.add(makeGateLabel(gateDecl, gateSize, ""));
+            }
+            if ((offerInputs && gateDecl.getType()==INedElement.NED_GATETYPE_INOUT)) {
+                // offer gate$i
+                gateNameList.add(gateDecl.getName() + "$i");
+                gateLabelList.add(makeGateLabel(gateDecl, gateSize, "$i"));
+            }
+            if ((offerOutputs && gateDecl.getType()==INedElement.NED_GATETYPE_INOUT)) {
+                // offer gate$o
+                gateNameList.add(gateDecl.getName() + "$o");
+                gateLabelList.add(makeGateLabel(gateDecl, gateSize, "$o"));
+            }
+        }
+        String[] gateNames = gateNameList.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+        String[] gateLabels = gateLabelList.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
         gateField.setItems(gateNames, gateLabels);
 
         // update gateIndexField
@@ -1697,21 +1744,20 @@ public class PropertiesDialog extends TrayDialog {
         else {
             // try resolve gate
             String gateName = gateField.getText().trim();
-            GateElementEx gateDeclElement = gateDecls.get(gateName);
+            GateElementEx gateDeclElement = gateDecls.get(stripSubgate(gateName));
             gateIndexField.setEnabled(gateDeclElement == null || gateDeclElement.getIsVector());
         }
     }
 
-    protected static String[] makeGateNameList(Boolean isBidirConn, boolean isSrcGate, boolean isParent, Collection<GateElementEx> gates) {
-        List<String> result = new ArrayList<String>();
-        for (GateElementEx gate : gates)
-            if (isBidirConn == null ? gate.getType()!=(isSrcGate!=isParent ? INedElement.NED_GATETYPE_INPUT : INedElement.NED_GATETYPE_OUTPUT) : 
-                isBidirConn ? gate.getType()==INedElement.NED_GATETYPE_INOUT : 
-                    gate.getType()==(isSrcGate!=isParent ? INedElement.NED_GATETYPE_OUTPUT : INedElement.NED_GATETYPE_INPUT))
-                result.add(gate.getName());
-        return result.toArray(new String[]{});
+    protected String makeGateLabel(GateElementEx gateDecl, GateElementEx gateSize, String subgateSuffix) {
+        String label = gateDecl.getName() + subgateSuffix;
+        String vectorSize = gateSize == null ? "" : gateSize.getVectorSize();
+        if (gateDecl.getIsVector())
+            label += vectorSize.equals("") ? "[]" : "["+vectorSize+"]";
+        label += ": " + gateDecl.getAttribute(ParamElement.ATT_TYPE);
+        return label;
     }
-
+    
     protected void updatePreview() {
         // background preview
         if (bgPreviewFigure != null) {
@@ -1976,7 +2022,7 @@ public class PropertiesDialog extends TrayDialog {
                 addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE), value);
             }
             addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE_INDEX), connSrcModuleIndexField);
-            addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE), connSrcGateField);
+            addPropertyChangeCommands(compoundCommand, new ConnectionGatePropertyAccess(true), connSrcGateField);
             if (!connSrcGateIndexField.isEnabled() || !connSrcGateIndexField.isGrayed()) {
                 String value = connSrcGateIndexField.isEnabled() ? connSrcGateIndexField.getText().trim() : "";
                 boolean isPlusPlus = value.equals(STR_GATEPLUSPLUS);
@@ -1992,7 +2038,7 @@ public class PropertiesDialog extends TrayDialog {
                 addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE), value);
             }
             addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE_INDEX), connDestModuleIndexField);
-            addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE), connDestGateField);
+            addPropertyChangeCommands(compoundCommand, new ConnectionGatePropertyAccess(false), connDestGateField);
             if (!connDestGateIndexField.isEnabled() || !connDestGateIndexField.isGrayed()) {
                 String value = connDestGateIndexField.isEnabled() ? connDestGateIndexField.getText().trim() : "";
                 boolean isPlusPlus = value.equals(STR_GATEPLUSPLUS);
@@ -2214,6 +2260,47 @@ public class PropertiesDialog extends TrayDialog {
                 addErrorIfNotNull(errors, bogusField, "Background", "Width and height must be specified together, or both of them should be left empty");
             }
         }
+
+        validateNumericField(errors, "X coordinate", xField);
+        validateNumericField(errors, "Y coordinate", yField);
+        validateComboField(errors, "Layout", layoutField);
+        validateNumericField(errors, "Layout parameter 1", layoutPar1Field);
+        validateNumericField(errors, "Layout parameter 2", layoutPar2Field);
+        validateNumericField(errors, "Layout parameter 3", layoutPar3Field);
+        validateNumericField(errors, "Shape width", shapeWidthField);
+        validateNumericField(errors, "Shape height", shapeHeightField);
+        validateComboField(errors, "Shape", shapeField);
+        validateColorField(errors, "Shape fill color", shapeFillColorField);
+        validateColorField(errors, "Shape border color", shapeBorderColorField);
+        validateIntegerField(errors, "Shape border width", shapeBorderWidthField);
+        validateImageField(errors, "Image", imageField);
+        validateColorField(errors, "Image tint color", imageColorField);
+        validateIntegerField(errors, "Image color percentage", imageColorPercentageField);
+        validateComboField(errors, "Image size", imageSizeField);
+        validateImageField(errors, "Status image", image2Field);
+        validateColorField(errors, "Status image tint color", image2ColorField);
+        validateIntegerField(errors, "Status image tint percentage", image2ColorPercentageField);
+        validateNumericField(errors, "Range", rangeField);
+        validateColorField(errors, "Range fill color", rangeFillColorField);
+        validateColorField(errors, "Range border color", rangeBorderColorField);
+        validateIntegerField(errors, "Range border width", rangeBorderWidthField);
+        validateComboField(errors, "Text position", textPosField);
+        validateColorField(errors, "Text color", textColorField);
+        validateColorField(errors, "Line color", connectionColorField);
+        validateIntegerField(errors, "Line width", connectionWidthField);
+        validateComboField(errors, "Line style", connectionStyleField);
+        validateNumericField(errors, "Scale", bgScaleField);
+        validateNumericField(errors, "Width", bgWidthField);
+        validateNumericField(errors, "Height", bgHeightField);
+        validateColorField(errors, "Fill color", bgFillColorField);
+        validateColorField(errors, "Border color", bgBorderColorField);
+        validateIntegerField(errors, "Border width", bgBorderWidthField);
+        validateImageField(errors, "Background image", bgImageField);
+        validateComboField(errors, "Background image arrangement", bgImageArrangement);
+        validateNumericField(errors, "Grid distance", bgGridDistanceField);
+        validateIntegerField(errors, "Grid subdivision", bgGridSubdivisionField);
+        validateColorField(errors, "Grid color", bgGridColorField);
+        validateNumericField(errors, "Layout seed", bgLayoutSeedField);
         
         boolean hasError = synchronizeErrors(errors);
 
@@ -2275,7 +2362,7 @@ public class PropertiesDialog extends TrayDialog {
         GateElementEx gateDecl = null;
         if (!gateField.isGrayed()) {
             String gateName = gateField.getText().trim();
-            addErrorIfNotNull(errors, gateField, prefix+" gate name", isValidIdentifier(gateName, false));
+            addErrorIfNotNull(errors, gateField, prefix+" gate name", isValidIdentifier(stripSubgate(gateName), false));
             if (module != null) {
                 INedTypeInfo type = module.getNedTypeInfo();
                 if (type != null) {
@@ -2292,8 +2379,18 @@ public class PropertiesDialog extends TrayDialog {
         }
     }
 
+    /**
+     * Remove "$i" / "$o" suffix from a gate name
+     */
+    protected String stripSubgate(String gateName) {
+        if (gateName.endsWith("$i") || gateName.endsWith("$o")) 
+            return gateName.substring(0, gateName.length()-2);
+        else 
+            return gateName;
+    }
+
     protected void validateExpressionField(Map<IFieldEditor, String> errors, IFieldEditor fieldEditor, String fieldName, boolean canBeEmpty, String alsoAllowedValue) {
-        if (fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
+        if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
             String value = fieldEditor.getText().trim();
             if (StringUtils.isEmpty(value)) {
                 if (!canBeEmpty)
@@ -2325,6 +2422,63 @@ public class PropertiesDialog extends TrayDialog {
             if (!NedElementUtilEx.isValidFriendlyQualifiedIdentifier(value.trim()))
                 return "Syntax error in type name";
         return null;
+    }
+
+    protected void validateColorField(Map<IFieldEditor, String> errors, String fieldName, ColorFieldEditor fieldEditor) {
+        if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
+            String value = fieldEditor.getText();
+            if (!StringUtils.isBlank(value) && !value.contains("$") && ColorFactory.asRGB(value) == null)
+                addWarningIfNotNull(errors, fieldEditor, fieldName, "Invalid color name");
+        }
+    }
+
+    protected void validateImageField(Map<IFieldEditor, String> errors, String fieldName, ImageFieldEditor fieldEditor) {
+        if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
+            String value = fieldEditor.getText();
+            if (!StringUtils.isBlank(value) && !value.contains("$")) {
+                NedImageDescriptor descriptor = ImageFactory.getDescriptor(value);
+                if (descriptor==null || descriptor.equals(ImageFactory.getDescriptor(ImageFactory.UNKNOWN)))
+                    addWarningIfNotNull(errors, fieldEditor, fieldName, "Not a currently known image");
+            }
+        }
+    }
+
+    protected void validateNumericField(Map<IFieldEditor, String> errors, String fieldName, IFieldEditor fieldEditor) {
+        if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
+            String value = fieldEditor.getText();
+            if (!StringUtils.isBlank(value) && !value.contains("$")) {
+                try {
+                    Double.parseDouble(value);
+                } 
+                catch (NumberFormatException e) {
+                    addWarningIfNotNull(errors, fieldEditor, fieldName, "Number expected");
+                }
+            }
+        }
+    }
+
+    protected void validateIntegerField(Map<IFieldEditor, String> errors, String fieldName, IFieldEditor fieldEditor) {
+        if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
+            String value = fieldEditor.getText();
+            if (!StringUtils.isBlank(value) && !value.contains("$")) {
+                try {
+                    Integer.parseInt(value);
+                } 
+                catch (NumberFormatException e) {
+                    addWarningIfNotNull(errors, fieldEditor, fieldName, "Integer expected");
+                }
+            }
+        }
+    }
+
+    protected void validateComboField(Map<IFieldEditor, String> errors, String fieldName, ComboFieldEditor fieldEditor) {
+        if (fieldEditor!= null && fieldEditor.isEnabled() && !fieldEditor.isGrayed()) {
+            String value = fieldEditor.getText();
+            if (!StringUtils.isBlank(value) && !value.contains("$")) {
+                if (!ArrayUtils.contains(fieldEditor.getItems(), value))
+                    addWarningIfNotNull(errors, fieldEditor, fieldName, "Not a valid value");
+            }
+        }
     }
 
     /**

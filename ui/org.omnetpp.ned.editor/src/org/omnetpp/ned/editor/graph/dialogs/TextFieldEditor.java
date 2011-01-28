@@ -3,7 +3,6 @@ package org.omnetpp.ned.editor.graph.dialogs;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;

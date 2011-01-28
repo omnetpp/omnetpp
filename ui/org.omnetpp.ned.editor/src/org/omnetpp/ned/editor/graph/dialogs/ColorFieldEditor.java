@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.dialogs;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -44,8 +43,6 @@ public class ColorFieldEditor implements IFieldEditor {
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), 
                 new ColorCellEditorEx.ColorContentProposalProvider(),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
-        problemDecoration = new ControlDecoration(text, SWT.RIGHT | SWT.TOP);
-        problemDecoration.setShowOnlyOnFocus(false);
         
         colorSelector = new ColorSelector(composite);
         GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -53,6 +50,9 @@ public class ColorFieldEditor implements IFieldEditor {
         gridData.heightHint = textHeight;
         gridData.widthHint = textHeight + 2;  // widthHint=textHeight is too small on Linux, 1 pixel columns get shaved off from the image both sides 
         colorSelector.getButton().setLayoutData(gridData);
+
+        problemDecoration = new ControlDecoration(colorSelector.getButton(), SWT.RIGHT | SWT.TOP);
+        problemDecoration.setShowOnlyOnFocus(false);
 
         text.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {

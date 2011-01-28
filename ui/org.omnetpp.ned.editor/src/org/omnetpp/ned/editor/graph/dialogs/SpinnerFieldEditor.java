@@ -1,6 +1,5 @@
 package org.omnetpp.ned.editor.graph.dialogs;
 
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
