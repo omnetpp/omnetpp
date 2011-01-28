@@ -194,7 +194,7 @@ public class ConnectionChooser {
     @SuppressWarnings("unchecked")
     public ConnectionElementEx openConnectionChannelMenu(CompoundModuleElementEx compound, ConnectionElementEx connectionWithGatesTemplate, Point location) {
         INedResources nedResources = NedResourcesPlugin.getNedResources();
-        IProject project = compound.getNedTypeInfo().getNedFile().getProject();
+        IProject project = compound.getNedTypeInfo().getProject();
         List<ChannelElementEx> channels = new ArrayList<ChannelElementEx>();
         List<String> commonGateLabels = connectionLabelsMap.get(connectionWithGatesTemplate);
         // TODO: handle inner channel types

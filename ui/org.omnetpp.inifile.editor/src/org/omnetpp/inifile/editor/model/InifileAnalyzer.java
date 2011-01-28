@@ -1014,8 +1014,7 @@ public class InifileAnalyzer {
      * Collects parameters of a module type (recursively), *without* an inifile present.
      */
     public static List<ParamResolution> collectParameters(INedTypeInfo moduleType) {
-        IFile nedFile = moduleType.getNedFile();
-        return collectParameters(moduleType, nedFile==null ? null : nedFile.getProject());
+        return collectParameters(moduleType, moduleType.getProject());
     }
     
 	/**
@@ -1034,7 +1033,7 @@ public class InifileAnalyzer {
      * Collects parameters of a submodule subtree, *without* an inifile present.
      */
     public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule) {
-        IProject contextProject = submodule.getEnclosingTypeElement().getNedTypeInfo().getNedFile().getProject();
+        IProject contextProject = submodule.getEnclosingTypeElement().getNedTypeInfo().getProject();
         return collectParameters(submodule, contextProject);
     }
     
