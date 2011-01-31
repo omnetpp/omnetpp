@@ -986,6 +986,14 @@ public class SequenceChart
 			scrollToElement(event);
 	}
 
+    /**
+     * Scroll the canvas making the simulation time visible at the left edge of the viewport.
+     */
+    public void scrollToSimulationTime(org.omnetpp.common.engine.BigDecimal simulationTime) {
+        scrollHorizontal(getViewportCoordinateForSimulationTime(simulationTime));
+        redraw();
+    }
+
 	/**
 	 * Scroll the canvas making the simulation time visible at the center of the viewport.
 	 */

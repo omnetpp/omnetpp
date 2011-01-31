@@ -55,6 +55,16 @@
             id="org.omnetpp.sequencechart.refresh"
             name="Refresh">
       </command>
+      <command
+            defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$GotoSimulationTimeHandler"
+            id="org.omnetpp.sequencechart.gotoSimulationTime"
+            name="Go to Simulation Time...">
+      </command>
+      <command
+            defaultHandler="org.omnetpp.sequencechart.editors.SequenceChartContributor$GotoEventHandler"
+            id="org.omnetpp.sequencechart.gotoEvent"
+            name="Go to Event...">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -76,11 +86,23 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F5">
       </key>
+      <key
+            commandId="org.omnetpp.sequencechart.gotoSimulationTime"
+            contextId="org.omnetpp.context.SequenceChart"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+Shift+G">
+      </key>
+      <key
+            commandId="org.omnetpp.sequencechart.gotoEvent"
+            contextId="org.omnetpp.context.SequenceChart"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+G">
+      </key>
    </extension>
    <extension
          point="org.eclipse.ui.contexts">
       <context
-            description="OMNeT++ Eventlog Table"
+            description="OMNeT++ Sequence Chart"
             id="org.omnetpp.context.SequenceChart"
             name="SequenceChartContext"
             parentId="org.eclipse.ui.contexts.window">

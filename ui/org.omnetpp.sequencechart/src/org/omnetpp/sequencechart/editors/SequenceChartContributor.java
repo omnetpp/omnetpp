@@ -10,7 +10,6 @@ package org.omnetpp.sequencechart.editors;
 import java.awt.RenderingHints;
 import java.io.File;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +51,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -106,6 +106,7 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.FilterEventLogDialog;
@@ -130,8 +131,8 @@ import org.omnetpp.scave.engine.RunList;
 import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
-import org.omnetpp.sequencechart.widgets.VectorFileUtil;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
+import org.omnetpp.sequencechart.widgets.VectorFileUtil;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
@@ -370,6 +371,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 menuManager.add(createFindTextCommandContributionItem());
                 menuManager.add(createFindNextCommandContributionItem());
+                menuManager.add(separatorAction);
+
+                // goto submenu
+                IMenuManager subMenuManager = new MenuManager("Go To");
+                menuManager.add(subMenuManager);
+                subMenuManager.add(createGotoEventCommandContributionItem());
+                subMenuManager.add(createGotoSimulationTimeCommandContributionItem());
                 menuManager.add(separatorAction);
 
                 menuManager.add(spacingSubmenu);
@@ -1728,7 +1736,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         }
 
         private void setNonLinearMinimumTimelineCoordinateDeltaText() {
-            BigDecimal value = new BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
+            java.math.BigDecimal value = new java.math.BigDecimal(100 * getNonLinearMinimumTimelineCoordinateDelta());
             value = value.round(new MathContext(3));
         	minimumLabel.setText("Relative minimum distance to maximum distance: " + value + "%");
         }
@@ -1750,7 +1758,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         }
 
         private void setNonLinearFocusText() {
-            BigDecimal value = new BigDecimal(getNonLinearFocus());
+            java.math.BigDecimal value = new java.math.BigDecimal(getNonLinearFocus());
             value = value.round(new MathContext(3));
         	focusLabel.setText("Nonlinear simulation time focus: " + TimeUtils.secondsToTimeString(value));
         }
@@ -1880,6 +1888,93 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
             if (part instanceof ISequenceChartProvider)
                 ((ISequenceChartProvider)part).getSequenceChart().findText(true);
+
+            return null;
+        }
+    }
+
+    private CommandContributionItem createGotoEventCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.gotoEvent", SWT.PUSH));
+    }
+
+    public static class GotoEventHandler extends AbstractHandler {
+        // TODO: setEnabled(!getEventLog().isEmpty());
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+
+            if (part instanceof ISequenceChartProvider) {
+                SequenceChart sequenceChart = ((ISequenceChartProvider)part).getSequenceChart();
+                InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
+                    public String isValid(String newText) {
+                        try {
+                            int eventNumber = Integer.parseInt(newText);
+
+                            if (eventNumber >= 0)
+                                return null;
+                            else
+                                return "Negative event number";
+                        }
+                        catch (Exception e) {
+                            return "Not a number";
+                        }
+                    }
+                });
+
+                if (dialog.open() == Window.OK) {
+                    try {
+                        int eventNumber = Integer.parseInt(dialog.getValue());
+                        IEventLog eventLog = sequenceChart.getEventLog();
+                        IEvent event = eventLog.getEventForEventNumber(eventNumber);
+
+                        if (event != null)
+                            sequenceChart.gotoElement(event);
+                        else
+                            MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
+                    }
+                    catch (Exception x) {
+                        // void
+                    }
+                }
+            }
+
+            return null;
+        }
+    }
+
+    private CommandContributionItem createGotoSimulationTimeCommandContributionItem() {
+        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.gotoSimulationTime", SWT.PUSH));
+    }
+
+    public static class GotoSimulationTimeHandler extends AbstractHandler {
+        // TODO: setEnabled(!getEventLog().isEmpty());
+        public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
+            IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
+            if (part instanceof ISequenceChartProvider) {
+                SequenceChart sequenceChart = ((ISequenceChartProvider)part).getSequenceChart();
+                InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
+                    public String isValid(String newText) {
+                        try {
+                            Double.parseDouble(newText);
+                            return null;
+                        }
+                        catch (Exception e) {
+                            return "Not a number";
+                        }
+                    }
+                });
+                if (dialog.open() == Window.OK) {
+                    String value = dialog.getValue();
+                    BigDecimal simulationTime = BigDecimal.parse(value);
+                    if (value.startsWith("+") || value.startsWith("-"))
+                        simulationTime = simulationTime.add(sequenceChart.getSimulationTimeForViewportCoordinate(0));
+                    if (simulationTime.less(BigDecimal.getZero()))
+                        MessageDialog.openError(null, "Goto simulation time" , "The provided simulation time is negative: " + simulationTime);
+                    else if (simulationTime.greater(sequenceChart.getEventLog().getLastEvent().getSimulationTime()))
+                        MessageDialog.openError(null, "Goto simulation time" , "The provided siimulation time is beyond the end of the simulation: " + simulationTime);
+                    else
+                        sequenceChart.scrollToSimulationTime(simulationTime);
+                }
+            }
 
             return null;
         }
