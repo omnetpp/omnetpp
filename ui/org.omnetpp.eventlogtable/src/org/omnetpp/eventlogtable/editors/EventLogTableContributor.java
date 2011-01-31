@@ -714,31 +714,31 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         // TODO: setEnabled(!getEventLog().isEmpty());
         public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
-
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
 				InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
 					public String isValid(String newText) {
 						try {
-							double simulationTime = Double.parseDouble(newText);
-
-							if (simulationTime >= 0)
-								return null;
-							else
-								return "Negative simulation time";
+							Double.parseDouble(newText);
+							return null;
 						}
 						catch (Exception e) {
 							return "Not a number";
 						}
 					}
 				});
-
 				if (dialog.open() == Window.OK) {
 					try {
-						BigDecimal simulationTime = BigDecimal.parse(dialog.getValue());
+						String value = dialog.getValue();
+                        BigDecimal simulationTime = BigDecimal.parse(value);
 						IEventLog eventLog = eventLogTable.getEventLog();
+						if (value.startsWith("+") || value.startsWith("-")) {
+	                        EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+	                        if (eventLogEntryReference == null)
+	                            eventLogEntryReference = eventLogTable.getTopVisibleElement();
+	                        simulationTime = simulationTime.add(eventLogEntryReference.getEvent(eventLogTable.getEventLogInput()).getSimulationTime());
+						}
 						IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
-
 						if (event != null)
 							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 						else
