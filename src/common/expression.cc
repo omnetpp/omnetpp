@@ -19,6 +19,7 @@
 #include <sstream>
 #include "expression.h"
 #include "expressionyydefs.h"
+#include "unitconversion.h"
 
 USING_NAMESPACE
 
@@ -28,7 +29,9 @@ USING_NAMESPACE
 #define eEBADARGS    "Wrong arguments for '%s'"
 #define eBADEXP      "Malformed expression"
 #define eECANTCAST   "Cannot cast to %s"
+#define eDIMLESS     "Error in expression: `%s': argument(s) must be dimensionless"
 
+CommonStringPool Expression::Elem::stringPool/*("Expression::Elem::stringPool")*/;
 
 // should be member of Elem, but the VC++ 9.0 linker disagrees
 void Expression::Elem_eq(Elem& e, const Elem& other)
@@ -86,7 +89,7 @@ std::string Expression::Value::str()
     switch (type)
     {
       case BOOL: return bl ? "true" : "false";
-      case DBL:  sprintf(buf, "%g", dbl); return buf;
+      case DBL:  sprintf(buf, "%g%s", dbl, opp_nulltoempty(dblunit)); return buf;
       case STR:  return opp_quotestr(s.c_str());
       default:   throw opp_runtime_error("internal error: bad Value type");
     }
@@ -156,7 +159,7 @@ Expression::Value Expression::evaluate() const
            case Elem::DBL:
              if (tos>=stksize-1)
                  throw opp_runtime_error(eESTKOFLOW);
-             stk[++tos] = e.d;
+             stk[++tos].set(e.d.d, e.d.unit);
              break;
 
            case Elem::STR:
@@ -201,6 +204,8 @@ Expression::Value Expression::evaluate() const
                      case BIN_NOT:
                          if (stk[tos].type!=Value::DBL)
                              throw opp_runtime_error(eEBADARGS,"~");
+                         if (!opp_isempty(stk[tos].dblunit))
+                             throw opp_runtime_error(eDIMLESS,"~");
                          stk[tos] = (double)~ulong(stk[tos].dbl);
                          break;
                      default: Assert(false);
@@ -226,10 +231,12 @@ Expression::Value Expression::evaluate() const
                  {
                    case ADD:
                        // double addition or string concatenation
-                       if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL)
-                           stk[tos-1] = stk[tos-1].dbl + stk[tos].dbl;
+                       if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL) {
+                           stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
+                           stk[tos-1].dbl = stk[tos-1].dbl + stk[tos].dbl;
+                       }
                        else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR)
-                           stk[tos-1] = stk[tos-1].s + stk[tos].s;
+                           stk[tos-1].s = stk[tos-1].s + stk[tos].s;
                        else
                            throw opp_runtime_error(eEBADARGS,"+");
                        tos--;
@@ -237,31 +244,45 @@ Expression::Value Expression::evaluate() const
                    case SUB:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"-");
-                       stk[tos-1] = stk[tos-1].dbl - stk[tos].dbl;
+                       stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
+                       stk[tos-1].dbl = stk[tos-1].dbl - stk[tos].dbl;
                        tos--;
                        break;
                    case MUL:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"*");
-                       stk[tos-1] = stk[tos-1].dbl * stk[tos].dbl;
+                       if (!opp_isempty(stk[tos].dblunit) && !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error("Multiplying two quantities with units is not supported");
+                       stk[tos-1].dbl = stk[tos-1].dbl * stk[tos].dbl;
+                       if (opp_isempty(stk[tos-1].dblunit))
+                           stk[tos-1].dblunit = stk[tos].dblunit;
                        tos--;
                        break;
                    case DIV:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"/");
-                       stk[tos-1] = stk[tos-1].dbl / stk[tos].dbl;
+                       // for now we only support num/num, unit/num, and unit/unit if the two units are convertible
+                       if (!opp_isempty(stk[tos].dblunit))
+                           stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit);
+                       stk[tos-1].dbl = stk[tos-1].dbl / stk[tos].dbl;
+                       if (!opp_isempty(stk[tos].dblunit))
+                           stk[tos-1].dblunit = NULL;
                        tos--;
                        break;
                    case MOD:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"%");
-                       stk[tos-1] = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,"%");
+                       stk[tos-1].dbl = (double)(ulong(stk[tos-1].dbl) % ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case POW:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"^");
-                       stk[tos-1] = pow(stk[tos-1].dbl, stk[tos].dbl);
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,"^");
+                       stk[tos-1].dbl = pow(stk[tos-1].dbl, stk[tos].dbl);
                        tos--;
                        break;
                    case AND:
@@ -285,37 +306,48 @@ Expression::Value Expression::evaluate() const
                    case BIN_AND:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"&");
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,"&");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) & ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case BIN_OR:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"|");
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,"|");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) | ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case BIN_XOR:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"#");
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,"#");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) ^ ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case LSHIFT:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,"<<");
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,"<<");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) << ulong(stk[tos].dbl));
                        tos--;
                        break;
                    case RSHIFT:
                        if (stk[tos].type!=Value::DBL || stk[tos-1].type!=Value::DBL)
                            throw opp_runtime_error(eEBADARGS,">>");
+                       if (!opp_isempty(stk[tos].dblunit) || !opp_isempty(stk[tos-1].dblunit))
+                           throw opp_runtime_error(eDIMLESS,">>");
                        stk[tos-1] = (double)(ulong(stk[tos-1].dbl) >> ulong(stk[tos].dbl));
                        tos--;
                        break;
 #define COMPARISON(RELATION) \
-                                 if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL) \
+                                 if (stk[tos-1].type==Value::DBL && stk[tos].type==Value::DBL) { \
+                                     stk[tos].dbl = UnitConversion::convertUnit(stk[tos].dbl, stk[tos].dblunit, stk[tos-1].dblunit); \
                                      stk[tos-1] = (stk[tos-1].dbl RELATION stk[tos].dbl); \
-                                 else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR) \
+                                 } else if (stk[tos-1].type==Value::STR && stk[tos].type==Value::STR) \
                                      stk[tos-1] = (stk[tos-1].s RELATION stk[tos].s); \
                                  else if (stk[tos-1].type==Value::BOOL && stk[tos].type==Value::BOOL) \
                                      stk[tos-1] = (stk[tos-1].bl RELATION stk[tos].bl); \
@@ -364,20 +396,20 @@ bool Expression::boolValue()
     return v.bl;
 }
 
-long Expression::longValue()
+long Expression::longValue(const char *expectedUnit)
 {
     Value v = evaluate();
     if (v.type!=Value::DBL)
         throw opp_runtime_error(eECANTCAST,"long");
-    return (long) v.dbl;
+    return (long)(UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit));
 }
 
-double Expression::doubleValue()
+double Expression::doubleValue(const char *expectedUnit)
 {
     Value v = evaluate();
     if (v.type!=Value::DBL)
         throw opp_runtime_error(eECANTCAST,"double");
-    return v.dbl;
+    return UnitConversion::convertUnit(v.dbl, v.dblunit, expectedUnit);
 }
 
 std::string Expression::stringValue()
@@ -417,7 +449,7 @@ std::string Expression::str() const
                  if (tos>=stksize-1)
                      throw opp_runtime_error(eESTKOFLOW);
                  char buf[32];
-                 sprintf(buf, "%g", e.d);
+                 sprintf(buf, "%g%s", e.d.d, opp_nulltoempty(e.d.unit));
                  strstk[++tos] = buf;
                  pristk[tos] = 0;
                  }

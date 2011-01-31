@@ -82,7 +82,6 @@ using OPP::Expression;
 static Expression::Elem *e;
 static Expression::Resolver *resolver;
 
-/*
 static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
 {
     char *d = new char[strlen(s1)+strlen(s2)+strlen(s3?s3:"")+4];
@@ -93,7 +92,6 @@ static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
     delete [] s1; delete [] s2; delete [] s3;
     return d;
 }
-*/
 
 static void addFunction(const char *funcname, int numargs)
 {
@@ -112,6 +110,18 @@ static void addVariableRef(const char *varname)
     }
     catch (std::exception& e) {
         yyerror(e.what());
+    }
+}
+
+static double parseQuantity(const char *text, std::string& unit)
+{
+    try {
+        // evaluate quantities like "5s 230ms"
+        return UnitConversion::parseQuantity(text, unit);
+    }
+    catch (std::exception& e) {
+        yyerror(e.what());
+        return 0;
     }
 }
 
@@ -230,6 +240,25 @@ numliteral
                 { *e++ = opp_atol($1); delete [] $1; }
         | REALCONSTANT
                 { *e++ = opp_atof($1); delete [] $1; }
+        | quantity
+                {
+                  std::string unit;
+                  *e++ = parseQuantity($1, unit);
+                  if (!unit.empty())
+                      (e-1)->setUnit(unit.c_str());
+                  delete [] $1;
+                }
+        ;
+
+quantity
+        : quantity INTCONSTANT NAME
+                { $$ = expryyconcat($1,$2,$3); }
+        | quantity REALCONSTANT NAME
+                { $$ = expryyconcat($1,$2,$3); }
+        | INTCONSTANT NAME
+                { $$ = expryyconcat($1,$2); }
+        | REALCONSTANT NAME
+                { $$ = expryyconcat($1,$2); }
         ;
 
 %%

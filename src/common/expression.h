@@ -21,6 +21,7 @@
 #include "commondefs.h"
 #include "commonutil.h"
 #include "stringutil.h"
+#include "stringpool.h"
 
 NAMESPACE_BEGIN
 
@@ -74,11 +75,12 @@ class COMMON_API Expression
         //  - functor
         //
         enum Type {UNDEF, BOOL, DBL, STR, FUNCTOR, OP};
+        static CommonStringPool stringPool;
       private:
         Type type;
         union {
             bool b;
-            double d;
+            struct {double d; const char *unit;} d;
             char *s;
             Functor *fu;
             OpType op;
@@ -101,7 +103,7 @@ class COMMON_API Expression
         //@{
         Type getType() const {return type;}
         bool getBool() const {Assert(type==BOOL); return b;}
-        double getDouble() const {Assert(type==DBL); return d;}
+        double getDouble() const {Assert(type==DBL); return d.d;}
         const char *getString() const {Assert(type==STR); return s;}
         Functor *getFunctor() const {Assert(type==FUNCTOR); return fu;}
         OpType getOp() const {Assert(type==OP); return op;}
@@ -122,25 +124,25 @@ class COMMON_API Expression
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(int _i)  {type=DBL; d=_i;}
+        void operator=(int _i)  {type=DBL; d.d=_i; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(short _i)  {type=DBL; d=_i;}
+        void operator=(short _i)  {type=DBL; d.d=_i; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * (which is converted to double) to the evaluation stack.
          */
-        void operator=(long _l)  {type=DBL; d=_l;}
+        void operator=(long _l)  {type=DBL; d.d=_l; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given number
          * to the evaluation stack.
          */
-        void operator=(double _d)  {type=DBL; d=_d;}
+        void operator=(double _d)  {type=DBL; d.d=_d; d.unit=NULL;}
 
         /**
          * Effect during evaluation of the expression: pushes the given string
@@ -160,6 +162,12 @@ class COMMON_API Expression
         void operator=(OpType _op)  {type=OP; op=_op;}
 
         /**
+         * Sets the unit of an Elem previously set to a double value.
+         * The type must already be DBL, or an error gets thrown.
+         */
+        void setUnit(const char *s)  {Assert(type==DBL); d.unit = stringPool.get(s);}
+
+        /**
          * Utility function, returns the argument count of this element.
          * I.e. returns 0 for BOOL, DBL, STRING and zero-arg Functors,
          * returns 1 for a one-arg Functors, and returns 2 for most operators.
@@ -169,7 +177,7 @@ class COMMON_API Expression
         /**
          * Debug string.
          */
-        std::string str() const { return Elem_str(type,b,d,s,fu,op);}
+        std::string str() const { return Elem_str(type,b,d.d,s,fu,op);}
     };
 
     /**
@@ -183,19 +191,22 @@ class COMMON_API Expression
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
         bool bl;
         double dbl;
+        const char *dblunit; // stringpooled, may be NULL
         std::string s;
 
         Value()  {type=UNDEF;}
         Value(bool b)  {*this=b;}
         Value(long l)  {*this=l;}
         Value(double d)  {*this=d;}
+        Value(double d, const char *unit)  {set(d,unit);}
         Value(const char *s)  {*this=s;}
         Value(const std::string& s)  {*this=s;}
         void operator=(bool b)  {type=BOOL; bl=b;}
-        void operator=(long l)  {type=DBL; dbl=l;}
-        void operator=(double d)  {type=DBL; dbl=d;}
+        void operator=(long l)  {type=DBL; dbl=l; dblunit=NULL;}
+        void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
         void operator=(const char *s)  {type=STR; this->s=s?s:"";}
         void operator=(const std::string& s)  {type=STR; this->s=s;}
+        void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
         std::string str();
     };
 
@@ -327,13 +338,13 @@ class COMMON_API Expression
      * Evaluate the expression and convert the result to long if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual long longValue();
+    virtual long longValue(const char *expectedUnit=NULL);
 
     /**
      * Evaluate the expression and convert the result to double if possible;
      * throw an error if conversion from that type is not supported.
      */
-    virtual double doubleValue();
+    virtual double doubleValue(const char *expectedUnit=NULL);
 
     /**
      * Evaluate the expression and convert the result to string if possible;

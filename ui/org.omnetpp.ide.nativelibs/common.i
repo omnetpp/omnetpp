@@ -123,6 +123,7 @@ struct Value
     enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
     bool bl;
     double dbl;
+    const char *dblunit; // stringpooled, may be NULL
     std::string s;
 };
 
