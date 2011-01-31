@@ -461,7 +461,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     }
 
 	private EventLogTableAction createGotoMessageOriginAction() {
-		return new EventLogTableAction("Goto Message Origin") {
+		return new EventLogTableAction("Go to Message Origin") {
 			@Override
 			protected void doRun() {
 			    gotoEventLogEntry(eventLogTable, getMessageOriginEventLogEntry(), this, false);
@@ -499,7 +499,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	}
 
 	private EventLogTableAction createGotoMessageReuseAction() {
-		return new EventLogTableAction("Goto Message Reuse") {
+		return new EventLogTableAction("Go to Message Reuse") {
 			@Override
 			protected void doRun() {
 			    gotoEventLogEntry(eventLogTable, getMessageReuseEventLogEntry(), this, true);

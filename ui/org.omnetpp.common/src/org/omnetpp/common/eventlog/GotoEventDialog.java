@@ -9,7 +9,7 @@ public class GotoEventDialog extends InputDialog {
     private IEventLog eventLog;
 
     public GotoEventDialog(final IEventLog eventLog) {
-        super(null, "Goto Event", "Please enter the event number to go to:", null, new IInputValidator() {
+        super(null, "Go to Event", "Enter the event number to go to:", null, new IInputValidator() {
             public String isValid(String newText) {
                 try {
                     int eventNumber = Integer.parseInt(newText);

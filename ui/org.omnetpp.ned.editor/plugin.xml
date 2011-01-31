@@ -219,7 +219,7 @@
             categoryId="org.eclipse.ui.category.textEditor"
             description="Go to declaration of NED element"
             id="org.omnetpp.ned.editor.text.GotoDeclaration"
-            name="Goto Declaration">
+            name="Go to Declaration">
       </command>
       <command
             categoryId="org.eclipse.ui.category.textEditor"

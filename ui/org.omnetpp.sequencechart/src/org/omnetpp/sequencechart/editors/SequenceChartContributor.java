@@ -1155,7 +1155,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 
 	private SequenceChartAction createGotoCauseAction(final IMessageDependency messageDependency) {
-		return new SequenceChartAction("Goto Cause Event", Action.AS_PUSH_BUTTON) {
+		return new SequenceChartAction("Go to Cause Event", Action.AS_PUSH_BUTTON) {
 			@Override
 			protected void doRun() {
 				sequenceChart.gotoElement(messageDependency.getCauseEvent());
@@ -1164,7 +1164,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 
 	private SequenceChartAction createGotoConsequenceAction(final IMessageDependency messageDependency) {
-		return new SequenceChartAction("Goto Consequence Event", Action.AS_PUSH_BUTTON) {
+		return new SequenceChartAction("Go to Consequence Event", Action.AS_PUSH_BUTTON) {
 			@Override
 			protected void doRun() {
 				sequenceChart.gotoElement(messageDependency.getConsequenceEvent());

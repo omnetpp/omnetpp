@@ -12,7 +12,7 @@ public class GotoSimulationTimeDialog extends InputDialog {
     private BigDecimal baseSimulationTime;
 
     public GotoSimulationTimeDialog(final IEventLog eventLog, final BigDecimal baseSimulationTime) {
-        super(null, "Goto Simulation Time", "Enter an absolute simulation time, or start with a '+' or '-' sign to indicate relative positioning. Time units and compound time specifications are also supported:", null, new IInputValidator() {
+        super(null, "Go to Simulation Time", "Enter an absolute simulation time, or start with a '+' or '-' sign to indicate relative positioning. Time units and expressions are also accepted.", null, new IInputValidator() {
             public String isValid(String newText) {
                 try {
                     BigDecimal simulationTime = getSimulationTime(baseSimulationTime, newText);

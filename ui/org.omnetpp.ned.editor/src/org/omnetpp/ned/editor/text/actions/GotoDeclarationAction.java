@@ -17,7 +17,7 @@ import org.omnetpp.ned.editor.text.util.NedTextUtils;
 import org.omnetpp.ned.editor.text.util.NedTextUtils.Info;
 
 /**
- * Implements the "Goto Declaration" functionality in the text editor.
+ * Implements the "Open Declaration" functionality in the text editor.
  *
  * @author andras
  */
@@ -31,7 +31,7 @@ public class GotoDeclarationAction extends NedTextEditorAction {
     @Override
     public void update() {
         // NOTE: don't disable this action based on the current text selection (unless you properly implement selection changed)
-        //       because F3 (Goto definition) will break in the text editor
+        //       because F3 (Go to definition) will break in the text editor
         super.update();
     }
 
