@@ -31,6 +31,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.DisplayString;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -73,6 +74,11 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 
 		// calculate the lookup context used in nedresource calls
 		INedTypeLookupContext context = nedFileElement;
+		if (info.enclosingNedTypeName != null) {
+		    INedElement enclosingNedType = res.lookupNedType(info.enclosingNedTypeName, nedFileElement).getNedElement();
+		    if (enclosingNedType instanceof INedTypeLookupContext)
+		        context = (INedTypeLookupContext)enclosingNedType;
+		}
 		INedTypeInfo nedTypeInfo = null;
 		if (info.nedTypeName!=null) {
 		    nedTypeInfo = res.lookupNedType(info.nedTypeName, context);
