@@ -354,7 +354,7 @@ class COMMON_API Expression
      * is used for translating variable and function references during
      * parsing. Throws exception on parse errors.
      */
-    virtual void parse(const char *text, Resolver *resolver);
+    virtual void parse(const char *text, Resolver *resolver = NULL);
 
     /**
      * Returns true if the expression is just a literal (or equivalent to one,

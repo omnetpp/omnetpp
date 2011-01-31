@@ -9,6 +9,7 @@
 #include "unitconversion.h"
 #include "bigdecimal.h"
 #include "rwlock.h"
+#include "expression.h"
 %}
 
 %include "commondefs.i"
@@ -115,3 +116,19 @@ SWIG_JAVABODY_METHODS(public, public, BigDecimal)
 SWIG_JAVABODY_METHODS(public, public, ILock)
 
 %include "rwlock.h"
+
+// copied over from Expression.h, make sure that this is in sync with that!
+struct Value
+{
+    enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
+    bool bl;
+    double dbl;
+    std::string s;
+};
+
+%ignore MathFunction;
+%include "expression.h"
+
+%{
+typedef Expression::Value Value;
+%}
