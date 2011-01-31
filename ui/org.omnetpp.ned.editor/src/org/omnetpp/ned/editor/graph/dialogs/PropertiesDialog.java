@@ -412,7 +412,8 @@ public class PropertiesDialog extends TrayDialog {
         }
 
         public String getValue(INedElement e) {
-            String value = StringUtils.nullToEmpty(((IHasDisplayString)e).getDisplayString().getAsString(displayProperty, false, false)); 
+            DisplayString displayString = ((IHasDisplayString)e).getDisplayString();
+            String value = StringUtils.nullToEmpty(displayString.getAsString(displayProperty, false, false)); 
             if (!value.equals("") && displayProperty.getEnumSpec() != null) {
                 String expandedValue = displayProperty.getEnumSpec().getNameFor(value); // expand abbreviation
                 if (expandedValue != null)
@@ -462,7 +463,7 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     protected static boolean areSameType(INedElement[] elements) {
-        if (elements.length == 0) 
+        if (elements.length < 2) 
             return true;
         int firstType = elements[0].getTagCode();
         for (INedElement element : elements)
@@ -472,7 +473,7 @@ public class PropertiesDialog extends TrayDialog {
     }
     
     protected static boolean areInSameCompoundModule(INedElement[] elements) {
-        if (elements.length == 0) 
+        if (elements.length < 2) 
             return true;
         CompoundModuleElementEx firstCompoundModule = compoundModuleOf(elements[0]);
         for (INedElement e : elements)
@@ -606,7 +607,7 @@ public class PropertiesDialog extends TrayDialog {
             // Types
             createLabel(page, "Name:", false); 
             nameField = createText(page, 20); 
-            nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to set multiple elements
+            nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to multiple elements
             
             createLabel(page, "Extends:", false); 
             boolean areInterfaces = e instanceof IInterfaceTypeElement;
@@ -629,7 +630,7 @@ public class PropertiesDialog extends TrayDialog {
                 group = createGroup(page, "Name and Size", 2, 2);
                 createLabel(group, "Name:", false); 
                 nameField = createText(group, 20); 
-                nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to set multiple elements
+                nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to multiple elements
 
                 createLabel(group, "Vector size:*", false); 
                 vectorSizeField = createText(group, 10);
