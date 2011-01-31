@@ -128,13 +128,8 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-//TODO shape editing ("" vs "rect") is not entirely correct... e.g. preview does not necessarily agree with final result...
 //TODO if you change the type of a submodule, the preview still displays the old icon, because the "Image" field of the dialog contains that! 
 //     solution is not trivial -- maybe when the user changes the type, re-populate the display properties with the new values? (and, if there are dirty fields, ask for confirmation?)
-//TODO validate gate type as well (if gate type != required, issue warning); this should handle $i/$o too
-
-//TODO Properties View: use the word "Tint" instead of "Colorization"
-//TODO connection text position enum names are wrong ("left", "right", "top") -- likely unfixable, really
 
 public class PropertiesDialog extends TrayDialog {
     private static final String STR_PARENTMODULE = "<parent>";  // for connection src/dest module selection combo
@@ -891,7 +886,7 @@ public class PropertiesDialog extends TrayDialog {
             createLabel(group, "Text:", false); 
             textField = createText(group, 30); 
             createLabel(group, "Position:", true); 
-            textPosField = createCombo(group, IDisplayString.Prop.TEXT_POS.getEnumSpec().getNames());
+            textPosField = createCombo(group, IDisplayString.Prop.TEXT_POS.getEnumSpec().getNames()); //XXX offers "left"/"right"/"top", which are interpreted as beginning/end/center; unfixable because it uses the same display string property as submodule text position 
             createLabel(group, "Text color:", true); 
             textColorField = createColorSelector(group);
 
@@ -1352,14 +1347,16 @@ public class PropertiesDialog extends TrayDialog {
             connDestModuleField.setItems(submoduleNames, submoduleLabels);
 
             // populate fields
-            populateField(connSrcModuleField, StringUtils.defaultIfEmpty((String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE)), STR_PARENTMODULE));
+            String srcModule = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE));
+            populateField(connSrcModuleField, "".equals(srcModule) /* and srcModule!=null!!! */ ? STR_PARENTMODULE : srcModule);
             populateField(connSrcModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE_INDEX))); 
             populateField(connSrcGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(true))); 
             String srcGateIndex = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE_INDEX));
             String srcGatePlusPlus = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE_PLUSPLUS));
             populateField(connSrcGateIndexField, (srcGateIndex==null || srcGatePlusPlus==null) ? null : srcGateIndex + (srcGatePlusPlus.equals("true")?STR_GATEPLUSPLUS:""));
 
-            populateField(connDestModuleField, StringUtils.defaultIfEmpty((String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE)), STR_PARENTMODULE)); 
+            String destModule = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE));
+            populateField(connDestModuleField, "".equals(destModule) /* and destModule!=null!!! */ ? STR_PARENTMODULE : destModule);
             populateField(connDestModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE_INDEX))); 
             populateField(connDestGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(false)));  
             String destGateIndex = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE_INDEX));
@@ -1383,13 +1380,12 @@ public class PropertiesDialog extends TrayDialog {
         populateField(shapeFillColorField, IDisplayString.Prop.SHAPE_FILL_COLOR); 
         populateField(shapeBorderColorField, IDisplayString.Prop.SHAPE_BORDER_COLOR); 
         populateField(shapeBorderWidthField, IDisplayString.Prop.SHAPE_BORDER_WIDTH);
-//XXX        
-//        if (shapeField != null && !shapeField.isGrayed() && shapeField.getText().length()==0) {
-//            // if any other shape-related field is filled in, adjust shapeField to show "rectangle"
-//            if (shapeWidthField.getText().length()>0 || shapeHeightField.getText().length()>0 || shapeFillColorField.getText().length()>0 || shapeBorderColorField.getText().length()>0 || shapeBorderWidthField.getText().length()>0)
-//                shapeField.setText("rectangle");
-//            
-//        }
+
+        if (shapeField != null && !shapeField.isGrayed() && shapeField.getText().length()==0) {
+            // if any other shape-related field is filled in, adjust shapeField to show "rectangle"
+            if (shapeWidthField.getText().length()>0 || shapeHeightField.getText().length()>0 || shapeFillColorField.getText().length()>0 || shapeBorderColorField.getText().length()>0 || shapeBorderWidthField.getText().length()>0)
+                shapeField.setText("rectangle");
+        }
 
         // I tag
         populateField(imageField, IDisplayString.Prop.IMAGE); 
@@ -2375,9 +2371,30 @@ public class PropertiesDialog extends TrayDialog {
             if (module != null) {
                 INedTypeInfo type = module.getNedTypeInfo();
                 if (type != null) {
-                    gateDecl = type.getGateDeclarations().get(gateName);
+                    gateDecl = type.getGateDeclarations().get(stripSubgate(gateName));
                     if (gateDecl == null)
                         addWarningIfNotNull(errors, gateField, prefix+" gate name", NedElementUtilEx.qnameToFriendlyTypeName(type.getFullyQualifiedName()) + " does not have such gate");
+                    else {
+                        int gateDir = gateDecl.getType();
+                        if (gateDir == INedElement.NED_GATETYPE_INOUT) {
+                            if (gateName.endsWith("$i"))
+                                gateDir = INedElement.NED_GATETYPE_INPUT;
+                            else if (gateName.endsWith("$o"))
+                                gateDir = INedElement.NED_GATETYPE_OUTPUT;
+                        }
+                        
+                        // similar code as in updateConnectionEndPoint()
+                        boolean isParent = module instanceof CompoundModuleElement;
+                        Boolean areBidirConns = isBidirectionalField.getGrayed() ? null : isBidirectionalField.getSelection();
+                        boolean allowInputs = areBidirConns == null || (!areBidirConns && isSrcGate == isParent);
+                        boolean allowOutputs = areBidirConns == null || (!areBidirConns && isSrcGate != isParent);
+                        boolean allowInouts = areBidirConns == null || areBidirConns;
+                        
+                        if ((!allowInputs && gateDir==INedElement.NED_GATETYPE_INPUT) ||
+                                (!allowOutputs && gateDir==INedElement.NED_GATETYPE_OUTPUT) ||
+                                (!allowInouts && gateDir==INedElement.NED_GATETYPE_INOUT))
+                            addWarningIfNotNull(errors, gateField, prefix+" gate", "Gate type does not agree with connection direction");
+                    }
                 }
             }
         }
