@@ -669,7 +669,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-				InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
+				InputDialog dialog = new InputDialog(null, "Goto Event", "Please enter the event number to go to", null, new IInputValidator() {
 					public String isValid(String newText) {
 						try {
 							int eventNumber = Integer.parseInt(newText);

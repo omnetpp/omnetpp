@@ -1904,7 +1904,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
             if (part instanceof ISequenceChartProvider) {
                 SequenceChart sequenceChart = ((ISequenceChartProvider)part).getSequenceChart();
-                InputDialog dialog = new InputDialog(null, "Goto event", "Please enter the event number to go to", null, new IInputValidator() {
+                InputDialog dialog = new InputDialog(null, "Goto Event", "Please enter the event number to go to", null, new IInputValidator() {
                     public String isValid(String newText) {
                         try {
                             int eventNumber = Integer.parseInt(newText);

@@ -4,13 +4,15 @@ import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.Expression;
+import org.omnetpp.common.engine.UnitConversion;
+import org.omnetpp.common.engine.Value;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class GotoSimulationTimeDialog extends InputDialog {
     private BigDecimal baseSimulationTime;
 
     public GotoSimulationTimeDialog(final IEventLog eventLog, final BigDecimal baseSimulationTime) {
-        super(null, "Goto simulation time", "Please enter an absolute simulation time or start with a '+' or '-' sign to indicate relative positioning.", null, new IInputValidator() {
+        super(null, "Goto Simulation Time", "Enter an absolute simulation time, or start with a '+' or '-' sign to indicate relative positioning. Time units and compound time specifications are also supported.", null, new IInputValidator() {
             public String isValid(String newText) {
                 try {
                     BigDecimal simulationTime = getSimulationTime(baseSimulationTime, newText);
@@ -39,22 +41,17 @@ public class GotoSimulationTimeDialog extends InputDialog {
         // check sign
         if (originalValue.startsWith("+") || originalValue.startsWith("-")) {
             relative = true;
-            parsedValue = "0" + originalValue;
+            parsedValue = "0s" + originalValue;
         }
         else {
             relative = false;
             parsedValue = originalValue;
         }
         // parse
-        BigDecimal simulationTime = null;
-        try {
-            simulationTime = BigDecimal.parse(parsedValue);
-        }
-        catch (Exception e) {
-            Expression expression = new Expression();
-            expression.parse(parsedValue);
-            simulationTime = new BigDecimal(expression.evaluate().getDbl());
-        }
+        Expression expression = new Expression();
+        expression.parse(parsedValue);
+        Value value = expression.evaluate();
+        BigDecimal simulationTime = new BigDecimal(value.getDblunit() == null ? value.getDbl() : UnitConversion.convertUnit(value.getDbl(), value.getDblunit(), "s"));
         // relative vs. absolute
         if (relative)
             return baseSimulationTime.add(simulationTime);
