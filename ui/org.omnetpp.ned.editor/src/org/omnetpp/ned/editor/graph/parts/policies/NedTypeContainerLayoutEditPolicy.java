@@ -25,7 +25,6 @@ import org.eclipse.gef.editpolicies.FlowLayoutEditPolicy;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
-
 import org.omnetpp.ned.editor.graph.commands.CloneCommand;
 import org.omnetpp.ned.editor.graph.commands.CreateNedTypeElementCommand;
 import org.omnetpp.ned.editor.graph.commands.InsertCommand;
@@ -35,7 +34,7 @@ import org.omnetpp.ned.editor.graph.commands.SetCompoundModuleConstraintCommand;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
-import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
+import org.omnetpp.ned.editor.graph.parts.TypesEditPart;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
@@ -80,7 +79,15 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+    protected boolean isAllowed(INedElement element) {
+        // every type is allowed (but networks are not inside an inner type)
+        return element instanceof INedTypeElement &&
+                  !(getHost() instanceof TypesEditPart // this is an inner type container (not a top level ned file)
+                    && element instanceof CompoundModuleElementEx
+                    && ((CompoundModuleElementEx)element).isNetwork());
+    }
+
+    @SuppressWarnings("unchecked")
 	@Override
 	protected Command getCloneCommand(ChangeBoundsRequest request) {
 
@@ -91,26 +98,42 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 		// iterate through all involved editparts and add their model to the coning list
 		for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
-		    if (currPart.getModel() instanceof INedTypeElement)
+		    if (currPart.getModel() instanceof INedTypeElement && isAllowed((INedTypeElement)currPart.getModel()))
 		        cloneCmd.add((INedTypeElement)currPart.getModel());
 
 		return cloneCmd;
 	}
 
+    // creating a new ned type element
+    @Override
+    protected Command getCreateCommand(CreateRequest request) {
+        Object element = request.getNewObject();
+
+        if (!isAllowed((INedTypeElement)element))
+            return UnexecutableCommand.INSTANCE;
+
+        INedTypeElement newTypeElement = (INedTypeElement)element;
+        EditPart insertionPoint = getInsertionReference(request);
+        INedElement where = insertionPoint != null ? (INedElement)insertionPoint.getModel() : null;
+        INedElement parent = (INedElement)getHost().getModel();
+        return new CreateNedTypeElementCommand(parent, where, newTypeElement);
+    }
+
 	// adding an already existing node is part of a move operation (moving a from 
 	// one nedTypeComtainer to an other (i.e. from top level to inner)
 	@Override
     protected Command createAddCommand(EditPart childToAdd, EditPart after) {
-	    if (childToAdd instanceof NedTypeEditPart) {
-	        INedElement parent = (INedElement)getHost().getModel();
-	        INedElement node = (INedElement)childToAdd.getModel();
-	        INedElement where = after != null ? (INedElement)after.getModel() : null;
-	        CompoundCommand command = new CompoundCommand("Move");
-	        command.add(new RemoveCommand(node));
-	        command.add(new InsertCommand(parent, node, where));
-	        return command;
-	    }
-	    return UnexecutableCommand.INSTANCE;
+	    INedElement parent = (INedElement)getHost().getModel();
+	    INedElement element = (INedElement)childToAdd.getModel();
+
+	    if (!isAllowed((INedTypeElement)element))
+            return UnexecutableCommand.INSTANCE;
+
+        INedElement where = after != null ? (INedElement)after.getModel() : null;
+        CompoundCommand command = new CompoundCommand("Move");
+        command.add(new RemoveCommand(element));
+        command.add(new InsertCommand(parent, element, where));
+        return command;
 	}
 
 	/* (non-Javadoc)
@@ -122,19 +145,6 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 		INedElement where = wherePart != null ? (INedElement)wherePart.getModel() : null;
 		INedElement node = (INedElement)movedPart.getModel();
 		return new ReorderCommand(where, node);
-	}
-
-	@Override
-    protected Command getCreateCommand(CreateRequest request) {
-	    Object element = request.getNewObject();
-	    if (!(element instanceof INedTypeElement))
-	        return UnexecutableCommand.INSTANCE;
-
-	    INedTypeElement newTypeElement = (INedTypeElement)element;
-		EditPart insertionPoint = getInsertionReference(request);
-		INedElement where = insertionPoint != null ? (INedElement)insertionPoint.getModel() : null;
-		INedElement parent = (INedElement)getHost().getModel();
-		return new CreateNedTypeElementCommand(parent, where, newTypeElement);
 	}
 
 	/**

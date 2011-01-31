@@ -20,6 +20,7 @@ import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
+import org.eclipse.gef.Request;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.gef.commands.UnexecutableCommand;
@@ -29,6 +30,7 @@ import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.gef.requests.ChangeBoundsRequest;
 import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
@@ -38,17 +40,20 @@ import org.omnetpp.ned.editor.graph.commands.CreateSubmoduleCommand;
 import org.omnetpp.ned.editor.graph.commands.InsertCommand;
 import org.omnetpp.ned.editor.graph.commands.RemoveCommand;
 import org.omnetpp.ned.editor.graph.commands.SetConstraintCommand;
+import org.omnetpp.ned.editor.graph.misc.ModelFactory;
+import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
-import org.omnetpp.ned.editor.graph.parts.NedTypeEditPart;
 import org.omnetpp.ned.editor.graph.parts.SubmoduleEditPart;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
+import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.CommentElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
@@ -60,75 +65,133 @@ import org.omnetpp.ned.model.pojo.TypesElement;
  */
 public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy {
 
+    protected Request currentRequest;
+
     public CompoundModuleLayoutEditPolicy() {
         super();
+    }
+
+    protected boolean isAllowedType(INedElement element) {
+        // every type is allowed except networks
+        return element instanceof INedTypeElement &&
+            !(element instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)element).isNetwork());
+    }
+
+    @Override
+    public Command getCommand(Request request) {
+        // store the request so we can access it during command creation
+        currentRequest = request;
+        return super.getCommand(request);
     }
 
     @SuppressWarnings("unchecked")
 	@Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
-        CloneSubmoduleCommand cloneCmd
-            = new CloneSubmoduleCommand((CompoundModuleElementEx) getHost().getModel(),
-                                        ((ModuleEditPart)getHost()).getScale());
+        CompoundCommand compoundCmd = new CompoundCommand();
 
-        for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts()) {
-            cloneCmd.addModule((SubmoduleElementEx)currPart.getModel(),
-            					(Rectangle) getConstraintForClone(currPart, request));
+        // creating a new a submodules based on a simple or compound module types in the selection
+        for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
+            if (currPart.getModel() instanceof IModuleKindTypeElement) {
+                // the type in the selected editpart is a simple/compound or module interface
+                // prepare a submodule creation command for it
+                INedTypeElement typeElement = (INedTypeElement)currPart.getModel();
+
+                // skip networks. we should not instantiate them
+                if (!isAllowedType(typeElement))
+                    continue;
+
+                String instanceName = StringUtils.toInstanceName(typeElement.getName());
+                String fullyQualifiedTypeName = typeElement.getNedTypeInfo().getFullyQualifiedName();
+                ModelFactory factory = new ModelFactory(NedElementTags.NED_SUBMODULE, instanceName, fullyQualifiedTypeName, typeElement instanceof ModuleInterfaceElement);
+                CreateRequest cReq = new CreateRequest();
+                cReq.setFactory(factory);
+                cReq.setLocation(request.getLocation());
+                // get a submodule creation command
+                compoundCmd.add(getCreateCommand(cReq));
+            }
+
+        // allow submodule cloning only INSIDE the submodule area
+        Point p = request.getLocation();
+        if (!((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y)) {
+            // create a direct clone command for all submodule parts
+            CloneSubmoduleCommand cloneCmd
+            = new CloneSubmoduleCommand((CompoundModuleElementEx)getHost().getModel(), ((ModuleEditPart)getHost()).getScale());
+
+            for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
+                if (currPart.getModel() instanceof SubmoduleElementEx)
+                    cloneCmd.addModule((SubmoduleElementEx)currPart.getModel(), (Rectangle)getConstraintForClone(currPart, request));
+
+            if (cloneCmd.canExecute())
+                compoundCmd.add(cloneCmd);
         }
-        return cloneCmd;
+
+        return compoundCmd;
     }
 
     @Override
     protected Command getCreateCommand(CreateRequest request) {
-        Object element = request.getNewObject();
+        INedElement element = (INedElement)request.getNewObject();
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
     	// submodule creation
     	if (element instanceof SubmoduleElementEx) {
+	    // do no allow dropping a submodule on the title
+            Point p = request.getLocation();
+            if (((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
+                return UnexecutableCommand.INSTANCE;
+
             CreateSubmoduleCommand create = new CreateSubmoduleCommand(compoundModule, (SubmoduleElementEx)element);
     	    create.setConstraint((Rectangle)getConstraintFor(request));
     	    create.setLabel("Create submodule");
     	    return create;
     	}
+
     	// inner type creation
-        if (element instanceof INedTypeElement) {
-            CompoundCommand command = new CompoundCommand("Create type");
+        if (!isAllowedType(element))
+            return UnexecutableCommand.INSTANCE;
 
-            // We do not need any banner comments for inner types. - remove them
-            CommentElement bannerComment = (CommentElement)((INedTypeElement)element).getFirstChildWithAttribute(NedElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
-            if (bannerComment != null)
-                bannerComment.removeFromParent();
-            
-            TypesElement typesElement = compoundModule.getFirstTypesChild();
-            // add a new types element if necessary.
-            if (typesElement == null) {
-                typesElement = (TypesElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_TYPES);
-                command.add(new InsertCommand(compoundModule, typesElement));
-            }
-            command.add(new CreateNedTypeElementCommand(typesElement, null, (INedTypeElement)element));
-            return command;
+        // only NedTypeElements are allowed here
+        CompoundCommand command = new CompoundCommand("Create type");
+
+        // We do not need any banner comments for inner types. - remove them
+        CommentElement bannerComment = (CommentElement)element.getFirstChildWithAttribute(NedElementTags.NED_COMMENT, CommentElement.ATT_LOCID, "banner");
+        if (bannerComment != null)
+            bannerComment.removeFromParent();
+
+        TypesElement typesElement = compoundModule.getFirstTypesChild();
+        // add a new types element if necessary.
+        if (typesElement == null) {
+            typesElement = (TypesElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_TYPES);
+            command.add(new InsertCommand(compoundModule, typesElement));
         }
-
-        return UnexecutableCommand.INSTANCE;
+        command.add(new CreateNedTypeElementCommand(typesElement, null, (INedTypeElement)element));
+        return command;
     }
 
     @Override
     protected Command createAddCommand(EditPart childToAdd, Object constraint) {
-        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
-        if (childToAdd instanceof NedTypeEditPart) {
-            CompoundCommand command = new CompoundCommand("Move type");
-            INedElement node = (INedElement)childToAdd.getModel();
-            command.add(new RemoveCommand(node));
-            TypesElement typesElement = compoundModule.getFirstTypesChild();
-            // add a new types element if necessary.
-            if (typesElement == null) {
-                typesElement = (TypesElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_TYPES);
-                command.add(new InsertCommand(compoundModule, typesElement));
-            }
-            command.add(new InsertCommand(typesElement, node));
-            return command;
-        }
+        INedElement element = (INedElement)childToAdd.getModel();
 
-        return UnexecutableCommand.INSTANCE;
+        if (!isAllowedType(element)) // do not allow networks for example
+            return UnexecutableCommand.INSTANCE;
+
+        // if the add is not targeted to the title/border i.e. it is dropped inside
+        // a the submodule area, we should create a new submodule instead of creating an inner type
+        // (we should treat it as a clone command)
+        Point p = ((ChangeBoundsRequest)currentRequest).getLocation();
+        if (!((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
+            return getCloneCommand((ChangeBoundsRequest)currentRequest);
+
+        CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
+        CompoundCommand command = new CompoundCommand("Move type");
+        command.add(new RemoveCommand(element));
+        TypesElement typesElement = compoundModule.getFirstTypesChild();
+        // add a new types element if necessary.
+        if (typesElement == null) {
+            typesElement = (TypesElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_TYPES);
+            command.add(new InsertCommand(compoundModule, typesElement));
+        }
+        command.add(new InsertCommand(typesElement, element));
+        return command;
     }
 
     @Override

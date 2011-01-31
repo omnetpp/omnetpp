@@ -66,6 +66,11 @@ public class CloneSubmoduleCommand extends Command {
         indices.put(mod, index);
     }
 
+    @Override
+    public boolean canExecute() {
+        return modules.size() > 0;
+    }
+
     protected SubmoduleElementEx cloneModule(SubmoduleElementEx oldModule, Rectangle newBounds, int index) {
         SubmoduleElementEx newModule = null;
 
