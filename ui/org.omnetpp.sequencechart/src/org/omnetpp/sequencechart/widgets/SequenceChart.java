@@ -2416,21 +2416,23 @@ public class SequenceChart
 		BigDecimal leftTick = calculateTick(0, 1);
 		BigDecimal rightTick = calculateTick(viewportWidth, 1);
 		BigDecimal simulationTimeRange = rightTick.subtract(leftTick);
-		String timeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
+		String positionString = "Position: " + TimeUtils.secondsToTimeString(leftTick);
+		String rangeString = "Range: " + TimeUtils.secondsToTimeString(simulationTimeRange);
 		graphics.setFont(getFont());
-		int width = GraphicsUtils.getTextExtent(graphics, timeString).x;
+		int width = Math.max(GraphicsUtils.getTextExtent(graphics, positionString).x, GraphicsUtils.getTextExtent(graphics, rangeString).x);
 		int x = viewportWidth - width - 3;
 		int gutterHeight = getGutterHeight(graphics);
         int spacing = (gutterHeight - getFontHeight(graphics)) / 2;
 
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-		graphics.fillRectangle(x - 3, gutterHeight, width + 6, gutterHeight + 1);
+		graphics.fillRectangle(x - 3, gutterHeight, width + 6, 2 * gutterHeight + 1);
 		graphics.setForegroundColor(GUTTER_BORDER_COLOR);
 		graphics.setLineStyle(SWT.LINE_SOLID);
-		graphics.drawRectangle(x - 3, gutterHeight, width + 5, gutterHeight);
+		graphics.drawRectangle(x - 3, gutterHeight, width + 5, 2 * gutterHeight);
 		graphics.setBackgroundColor(INFO_BACKGROUND_COLOR);
-        drawText(graphics, timeString, x, gutterHeight + 1 - spacing);
+        drawText(graphics, positionString, x, gutterHeight + 2 - spacing);
+        drawText(graphics, rangeString, x, 2 * gutterHeight + 2 - spacing);
 	}
 
 	/**
@@ -2886,7 +2888,7 @@ public class SequenceChart
 		graphics.setForegroundColor(TICK_LABEL_COLOR);
 		graphics.setBackgroundColor(backgroundColor);
 		int spacing = (gutterHeight - getFontHeight(graphics)) / 2;
-		drawText(graphics, string, boxX + 3, spacing - 1);
+		drawText(graphics, string, boxX + 3, spacing);
 		drawText(graphics, string, boxX + 3, viewportHeight + gutterHeight + spacing - 1);
 
 		// draw hair line
