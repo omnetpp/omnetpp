@@ -338,9 +338,9 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 
 	/**
 	 * Returns the first parent which is an INedTypeElement, or null. For example,
-	 * for a submodule node or a submodule display string it finds the
-	 * compound module; for an inner type it returns the parent type; and for a
-	 * toplevel type it returns null.
+	 * for a parameter it returns the container NED type; for a submodule node or a 
+	 * submodule display string it finds the compound module; for an inner type it 
+	 * returns the parent type; and for a toplevel type it returns null.
 	 */
 	public INedTypeElement getEnclosingTypeElement();
 

@@ -96,6 +96,7 @@ import org.omnetpp.ned.model.pojo.UnknownElement;
 //FIXME validate 2 submods with the same name! etc
 //FIXME validate imports (what if there're clashes)
 //FIXME validate like-param: must me a string parameter, etc!
+//FIXME detect inheritance cycles
 public class NedValidator extends AbstractNedValidatorEx {
 
 	private static final String DEFAULT_CHANNEL_TYPE = "ned.DatarateChannel";
