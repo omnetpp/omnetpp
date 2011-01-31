@@ -62,10 +62,10 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.omnetpp.common.contentassist.ContentProposal;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryProposalProvider;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -716,40 +716,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-				InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
-					public String isValid(String newText) {
-						try {
-							Double.parseDouble(newText);
-							return null;
-						}
-						catch (Exception e) {
-							return "Not a number";
-						}
-					}
-				});
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+                if (eventLogEntryReference == null)
+                    eventLogEntryReference = eventLogTable.getTopVisibleElement();
+                GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(eventLogTable.getEventLog(), eventLogEntryReference.getEvent(eventLogTable.getEventLogInput()).getSimulationTime());
 				if (dialog.open() == Window.OK) {
-					try {
-						String value = dialog.getValue();
-                        BigDecimal simulationTime = BigDecimal.parse(value);
-						IEventLog eventLog = eventLogTable.getEventLog();
-						if (value.startsWith("+") || value.startsWith("-")) {
-	                        EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
-	                        if (eventLogEntryReference == null)
-	                            eventLogEntryReference = eventLogTable.getTopVisibleElement();
-	                        simulationTime = simulationTime.add(eventLogEntryReference.getEvent(eventLogTable.getEventLogInput()).getSimulationTime());
-						}
-						IEvent event = eventLog.getEventForSimulationTime(simulationTime, MatchKind.FIRST_OR_NEXT);
-						if (event != null)
-							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
-						else
-							MessageDialog.openError(null, "Goto simulation time" , "No such simulation time: " + simulationTime);
-					}
-					catch (Exception x) {
-						// void
-					}
+					IEvent event = eventLogTable.getEventLog().getEventForSimulationTime(dialog.getSimulationTime(), MatchKind.FIRST_OR_NEXT);
+					if (event != null)
+						eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
 				}
 			}
-
             return null;
         }
 	}

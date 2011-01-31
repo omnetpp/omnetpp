@@ -106,10 +106,10 @@ import org.eclipse.ui.part.EditorActionBarContributor;
 import org.eclipse.ui.texteditor.StatusLineContributionItem;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.FilterEventLogDialog;
+import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
@@ -1951,29 +1951,9 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
             if (part instanceof ISequenceChartProvider) {
                 SequenceChart sequenceChart = ((ISequenceChartProvider)part).getSequenceChart();
-                InputDialog dialog = new InputDialog(null, "Goto simulation time", "Please enter the simulation time to go to", null, new IInputValidator() {
-                    public String isValid(String newText) {
-                        try {
-                            Double.parseDouble(newText);
-                            return null;
-                        }
-                        catch (Exception e) {
-                            return "Not a number";
-                        }
-                    }
-                });
-                if (dialog.open() == Window.OK) {
-                    String value = dialog.getValue();
-                    BigDecimal simulationTime = BigDecimal.parse(value);
-                    if (value.startsWith("+") || value.startsWith("-"))
-                        simulationTime = simulationTime.add(sequenceChart.getSimulationTimeForViewportCoordinate(0));
-                    if (simulationTime.less(BigDecimal.getZero()))
-                        MessageDialog.openError(null, "Goto simulation time" , "The provided simulation time is negative: " + simulationTime);
-                    else if (simulationTime.greater(sequenceChart.getEventLog().getLastEvent().getSimulationTime()))
-                        MessageDialog.openError(null, "Goto simulation time" , "The provided siimulation time is beyond the end of the simulation: " + simulationTime);
-                    else
-                        sequenceChart.scrollToSimulationTime(simulationTime);
-                }
+                GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(sequenceChart.getEventLog(), sequenceChart.getSimulationTimeForViewportCoordinate(0));
+                if (dialog.open() == Window.OK)
+                    sequenceChart.scrollToSimulationTime(dialog.getSimulationTime());
             }
 
             return null;
