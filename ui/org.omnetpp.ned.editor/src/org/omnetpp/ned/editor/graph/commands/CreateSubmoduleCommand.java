@@ -17,7 +17,8 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
 /**
- * Adds a newly created Submodule element to a compound module.
+ * Adds a newly created Submodule element to a compound module. Additionally adds an 
+ * import statement for the type if need.
  *
  * @author rhornig, andras
  */

@@ -134,7 +134,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
     	// submodule creation
     	if (element instanceof SubmoduleElementEx) {
-	    // do no allow dropping a submodule on the title
+	        // do no allow dropping a submodule on the compound module title
             Point p = request.getLocation();
             if (((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
                 return UnexecutableCommand.INSTANCE;

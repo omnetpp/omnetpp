@@ -481,7 +481,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 
         StringBuffer modifiedName = new StringBuffer();
-        ImportElement importElement = createImportFor(compoundModule.getParentLookupContext(), typeOrLikeType, modifiedName);
+        ImportElement importElement = createImportFor(submoduleOrConnection.getEnclosingLookupContext(), typeOrLikeType, modifiedName);
 
         setTypeOrLikeType(submoduleOrConnection, modifiedName.toString());
 
