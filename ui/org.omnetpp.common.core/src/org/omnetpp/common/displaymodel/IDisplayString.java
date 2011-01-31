@@ -61,8 +61,8 @@ public interface IDisplayString {
         tt(COMPOUNDMODULE | SUBMODULE | CONNECTION, "Tooltip"),
 
         m(CONNECTION, "Routing mode"),
-//        bp(CONNECTION, "Bend points");
-//        a(CONNECTION, "Anchor"),
+        //TODO: bp(CONNECTION, "Bend points");
+        //TODO: a(CONNECTION, "Anchor"),
         ls(CONNECTION, "Line style");
 
         private final int type;
@@ -220,16 +220,16 @@ public interface IDisplayString {
 
         // I tag
         IMAGE(Tag.i, 0, PropType.IMAGE, PropGroup.Icon, "icon", "An icon representing the object", null),
-        IMAGE_COLOR(Tag.i, 1, PropType.COLOR, PropGroup.Icon, "icon color", "A color to colorize the icon (color name, #RRGGBB or @HHSSBB)", null),
-        IMAGE_COLOR_PERCENTAGE(Tag.i, 2, PropType.INTEGER, PropGroup.Icon, "icon colorization %", "Amount of colorization in percent", null),
+        IMAGE_COLOR(Tag.i, 1, PropType.COLOR, PropGroup.Icon, "icon tint", "A color for tinting the icon (color name, #RRGGBB or @HHSSBB)", null),
+        IMAGE_COLOR_PERCENTAGE(Tag.i, 2, PropType.INTEGER, PropGroup.Icon, "icon tint %", "Amount of tinting in percent", null),
 
         // IS tag
         IMAGE_SIZE(Tag.is, 0, PropType.STRING, PropGroup.Icon, "icon size", "The size of the image", "very small=v.*s.*,vs; small=s.*,s; normal=n.*,n; large=l.*,l; very large=v[^s]*l.*,vl"),
         
         // I2 tag
         IMAGE2(Tag.i2, 0, PropType.IMAGE, PropGroup.Icon, "overlay icon", "An icon added to the upper right corner of the original image", null),
-        IMAGE2_COLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon color", "A color to colorize the overlay icon (color name, #RRGGBB or @HHSSBB)", null),
-        IMAGE2_COLOR_PERCENTAGE(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon colorization %", "Amount of colorization in percent", null),
+        IMAGE2_COLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon tint", "A color for tinting the overlay icon (color name, #RRGGBB or @HHSSBB)", null),
+        IMAGE2_COLOR_PERCENTAGE(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon tint %", "Amount of tinting in percent", null),
         
         // R tag
         RANGE(Tag.r, 0, PropType.UNIT, PropGroup.Range, "range", "Radius of the range indicator", null),
