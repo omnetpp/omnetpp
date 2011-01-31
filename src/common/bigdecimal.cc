@@ -400,7 +400,10 @@ char *BigDecimal::ttoa(char *buf, const BigDecimal &x, char *&endp)
 const BigDecimal BigDecimal::parse(const char *s)
 {
     const char *endp;
-    return parse(s, endp);
+    BigDecimal value = parse(s, endp);
+    if (*endp != '\0')
+        throw opp_runtime_error("BigDecimal::parse(\"%s\"): junk in number", (s));
+    return value;
 }
 
 #define OVERFLOW_CHECK(c,s) if (!(c)) throw opp_runtime_error("BigDecimal::parse(\"%s\"): arithmetic overflow", (s));
