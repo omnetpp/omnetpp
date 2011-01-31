@@ -87,7 +87,7 @@ void BigDecimal::normalize()
 
     // overflow
     if (scale > maxScale + INT64_MAX_DIGITS)
-        throw opp_runtime_error("BigDecimal::normalize(): scale too big: %d.", scale); // XXX should be +-Infinity?
+        throw opp_runtime_error("BigDecimal: normalize(): scale %d is too big", scale); // XXX should be +-Infinity?
 
     // transform scale between minScale and maxScale
     if (scale < minScale)
@@ -109,7 +109,7 @@ void BigDecimal::normalize()
         while (scale > maxScale)
         {
             if (intVal > INT64_MAX/10)
-                throw opp_runtime_error("BigDecimal::normalize(): arithmetic overflow");
+                throw opp_runtime_error("BigDecimal: normalize(): arithmetic overflow");
 
             intVal *= 10;
             scale--;
@@ -249,7 +249,7 @@ bool BigDecimal::operator<(const BigDecimal &x) const
     if (isSpecial() || x.isSpecial())
     {
         if (isNil() || x.isNil())
-            throw opp_runtime_error("BigDecimal::operator<() received Nil.");
+            throw opp_runtime_error("BigDecimal: operator< received Nil");
         else if (isNaN() || x.isNaN())
             return false;
         else if (x == PositiveInfinity)
@@ -316,7 +316,7 @@ double BigDecimal::dbl() const
         else if (*this == NegativeInfinity)
             return NEGATIVE_INFINITY;
         else // Nil
-            throw opp_runtime_error("BigDecimal::dbl(): received Nil."); // XXX should return NaN?
+            throw opp_runtime_error("BigDecimal: cannot convert Nil to double"); // XXX should return NaN?
     }
 
     return (double)intVal * negativePowersOfTen[-scale];
@@ -350,8 +350,11 @@ char *BigDecimal::ttoa(char *buf, const BigDecimal &x, char *&endp)
             strcpy(buf, "-Inf");
             endp = buf+4;
         }
-        else // Nil
-            throw opp_runtime_error("BigDecimal::ttoa(): received Nil.");
+        else
+        {
+            strcpy(buf, "Nil");
+            endp = buf+3;
+        }
         return buf;
     }
 
@@ -402,11 +405,11 @@ const BigDecimal BigDecimal::parse(const char *s)
     const char *endp;
     BigDecimal value = parse(s, endp);
     if (*endp != '\0')
-        throw opp_runtime_error("BigDecimal::parse(\"%s\"): junk in number", (s));
+        throw opp_runtime_error("BigDecimal: invalid number syntax '%s'", s);
     return value;
 }
 
-#define OVERFLOW_CHECK(c,s) if (!(c)) throw opp_runtime_error("BigDecimal::parse(\"%s\"): arithmetic overflow", (s));
+#define OVERFLOW_CHECK(c,s) if (!(c)) throw opp_runtime_error("BigDecimal: arithmetic overflow while parsing '%s'", (s));
 
 
 const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
@@ -479,7 +482,7 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
 
     if (digits == 0 && *p != '.')
     {
-        throw opp_runtime_error("BigDecimal::parse(\"%s\"): missing digits", s);
+        throw opp_runtime_error("BigDecimal: invalid number syntax '%s'", s);
     }
 
     // digits after decimal
@@ -565,3 +568,5 @@ const BigDecimal operator-(const BigDecimal& x, const BigDecimal& y)
     // 2. subtract with precision loss
     return BigDecimal(x.dbl()-y.dbl());
 }
+
+

@@ -53,7 +53,7 @@ class COMMON_API BigDecimal
     void checkScale(int scale) const
     {
         if (scale < minScale || scale > maxScale)
-            throw opp_runtime_error("Scale must be between %d and %d.", minScale, maxScale);
+            throw opp_runtime_error("BigDecimal: scale must be between %d and %d", minScale, maxScale);
     }
 
     /*
