@@ -1,5 +1,6 @@
 package org.omnetpp.ned.core.ui.misc;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.eclipse.core.resources.IProject;
@@ -17,22 +18,38 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.NedTreeUtil;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver.IPredicate;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 
 /**
- * NED type selection dialog. It can offer all types, a list of types, types visible 
- * from a project and/or filtered by a predicate. By default this dialog allows 
- * one item to be selected; call setMultipleSelection(true) to allow multiple selection.
+ * NED type selection dialog. It can offer types from all projects, or alternatively, 
+ * combine NED types from three sources:
+ * <ul>
+ *   <li> toplevel types visible from a given project (see setContextProject())
+ *   <li> inner types of a given type (see setEnclosingNedType())
+ *   <li> types in an explicitly passed in type list (see setTypeList())
+ * </ul> 
+ * 
+ * If all such parameters are null, the dialog offers all types from all projects.
+ * In all cases, the list can be filtered with a predicate.
+ * 
+ * If new types become available while the dialog is open (e.g due to lazy loading of 
+ * NED files), the dialogs is kept up to date. 
+ * 
+ * By default this dialog allows one item to be selected; call setMultipleSelection(true) 
+ * to allow multiple selection.
  * 
  * @author Andras
  */
 public class NedTypeSelectionDialog extends ElementListSelectionDialog {
-    private INedTypeResolver.IPredicate typeFilter; 
-    private IProject contextProject;
-    private INedTypeInfo[] typesToOffer; // overrides previous two
+    private IProject contextProject; // if non-null: show toplevel types visible from this project
+    private INedTypeInfo enclosingNedType; // if non-null: show inner types of this type
+    private INedTypeInfo[] typeList; // if non-null: show these types
+    private INedTypeResolver.IPredicate typeFilter;  // show only matching types
     private NedLabelProvider labelProvider;
 
 
@@ -102,20 +119,22 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
 
     /**
      * Enable/disable showing the defining project's name for each type.
-     * This flag is also set by setContextProject() and setTypesToOffer().
+     * Note: This flag is affected by other setters, so make the call to this method the last one.
      */
     public void setShowProject(boolean showProject) {
         labelProvider.showProject = showProject;    
     }
 
+    public boolean getShowProject() {
+        return labelProvider.showProject;
+    }
+    
     /**
-     * Sets the context project. When non-null, only types visible from the given project are offered.
-     * This setting overrides (and clears) the list set via setTypesToOffer().
+     * Sets the context project. When non-null, (filtered) types visible from the given project are offered.
      */
     public void setContextProject(IProject contextProject) {
         this.contextProject = contextProject;
-        this.typesToOffer = null;
-        setShowProject(contextProject == null);
+        setShowProject(willShowTypesFromAllProjects());
     }
     
     public IProject getContextProject() {
@@ -123,50 +142,75 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
     }
 
     /**
+     * Sets an enclosing type. If non-null, also offer the (filtered) inner types of this type.
+     */
+    public void setEnclosingNedType(INedTypeInfo enclosingNedType) {
+        this.enclosingNedType = enclosingNedType;
+        setShowProject(willShowTypesFromAllProjects());
+    }
+
+    public INedTypeInfo getEnclosingNedType() {
+        return enclosingNedType;
+    }
+
+    /**
+     * Sets the list of types. This will still be filtered with the filter.
+     */
+    public void setTypeList(INedTypeInfo[] typeList) {
+        this.typeList = typeList;
+        setShowProject(willShowTypesFromAllProjects());
+    }
+    
+    public INedTypeInfo[] getTypeList() {
+        return typeList;
+    }
+
+    public boolean willShowTypesFromAllProjects() {
+        return contextProject == null && enclosingNedType == null && typeList == null;
+    }
+    
+    /**
      * Sets a filter predicate. When non-null, only types matching the predicate are offered. 
-     * Can be combined with setContextProject().
      */
     public void setTypeFilter(INedTypeResolver.IPredicate typeFilter) {
         this.typeFilter = typeFilter;
     }
-
+    
     public INedTypeResolver.IPredicate getTypeFilter() {
         return typeFilter;
     }
 
-    /**
-     * Sets the list of types to offer. This overrides (and clears) the context project and the type filter.
-     */
-    public void setTypesToOffer(INedTypeInfo[] typesToOffer, boolean showProject) {
-        this.typesToOffer = typesToOffer;
-        this.contextProject = null;
-        this.typeFilter = null;
-        setShowProject(showProject);
-    }
-    
-    public INedTypeInfo[] getTypesToOffer() {
-        return typesToOffer;
-    }
-
     protected INedTypeInfo[] getElementsToShow() {
-        if (getTypesToOffer() != null)
-            return getTypesToOffer();
-
+        IPredicate typeFilter = getTypeFilter();
         INedResources nedResources = NedResourcesPlugin.getNedResources();
         Collection<INedTypeInfo> result;
-
-        if (getContextProject() == null) {
-            if (getTypeFilter() == null)
+        
+        if (willShowTypesFromAllProjects()) {
+            if (typeFilter == null)
                 result = nedResources.getNedTypesFromAllProjects();
             else 
-                result = nedResources.getNedTypesFromAllProjects(getTypeFilter());
+                result = nedResources.getNedTypesFromAllProjects(typeFilter);
         }
         else {
-            if (getTypeFilter() == null)
-                result = nedResources.getNedTypes(getContextProject());
-            else 
-                result = nedResources.getNedTypes(getTypeFilter(), getContextProject());
+            result = new ArrayList<INedTypeInfo>();
+            if (getTypeList() != null)
+                for (INedTypeInfo type : getTypeList())
+                    if (typeFilter==null || typeFilter.matches(type))
+                        result.add(type);
+            
+            if (getContextProject() != null) {
+                if (typeFilter == null)
+                    result.addAll(nedResources.getNedTypes(getContextProject()));
+                else 
+                    result.addAll(nedResources.getNedTypes(typeFilter, getContextProject()));
+            }
+
+            if (getEnclosingNedType() != null)
+                for (INedTypeElement type : getEnclosingNedType().getInnerTypes().values())
+                    if (typeFilter==null || typeFilter.matches(type.getNedTypeInfo()))
+                        result.add(type.getNedTypeInfo());
         }
+
         return result.toArray(new INedTypeInfo[]{});   
     }
     
@@ -224,5 +268,4 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
         dialogUpdater.cancel();
         return super.close();
     }
-
 }

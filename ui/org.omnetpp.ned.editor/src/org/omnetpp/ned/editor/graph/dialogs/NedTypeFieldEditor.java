@@ -29,6 +29,7 @@ import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedTypeSelectionDialog;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
@@ -44,6 +45,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
     private boolean grayed = false; 
     private INedTypeResolver.IPredicate typeFilter; // which types to offer / allow
     private IProject contextProject;
+    private INedTypeInfo enclosingNedType; // if non-null, offer its inner types too
     private boolean multiple;
     private ControlDecoration problemDecoration;
 
@@ -60,6 +62,11 @@ public class NedTypeFieldEditor implements IFieldEditor {
             
             // add suggestions both in "package.name.SimpleName" and "SimpleName (package.name)" syntax 
             Set<String> qnames = nedResources.getNedTypeQNames(typeFilter, contextProject);
+            if (enclosingNedType != null)
+                for (INedTypeElement innerType : enclosingNedType.getInnerTypes().values())
+                    if (typeFilter.matches(innerType.getNedTypeInfo()))
+                        qnames.add(innerType.getNedTypeInfo().getFullyQualifiedName());
+
             List<String> friendlyTypeNames = new ArrayList<String>();
             for (String qname : qnames)
                 friendlyTypeNames.add(NedElementUtilEx.qnameToFriendlyTypeName(qname));
@@ -79,9 +86,10 @@ public class NedTypeFieldEditor implements IFieldEditor {
     }
     
     
-    public NedTypeFieldEditor(Composite parent, boolean multiple, IProject contextProject, INedTypeResolver.IPredicate typeFilter) {
-        this.typeFilter = typeFilter;
+    public NedTypeFieldEditor(Composite parent, boolean multiple, IProject contextProject, INedTypeInfo enclosingNedType, INedTypeResolver.IPredicate typeFilter) {
         this.contextProject = contextProject;
+        this.enclosingNedType = enclosingNedType;
+        this.typeFilter = typeFilter;
         this.multiple = multiple;
 
         composite = new Composite(parent, SWT.NONE);
@@ -185,6 +193,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
         // create and configure dialog
         NedTypeSelectionDialog dialog = new NedTypeSelectionDialog(composite.getShell());
         dialog.setContextProject(NedTypeFieldEditor.this.contextProject);
+        dialog.setEnclosingNedType(enclosingNedType);
         dialog.setTypeFilter(NedTypeFieldEditor.this.typeFilter);
         dialog.setMultipleSelection(NedTypeFieldEditor.this.multiple);
         

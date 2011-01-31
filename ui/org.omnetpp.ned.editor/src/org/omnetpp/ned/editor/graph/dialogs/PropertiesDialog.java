@@ -128,8 +128,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-//TODO type selection dialog does not show inner types
-//TODO inner type-ot is beimportalja!!!!
 //TODO shape editing ("" vs "rect") is not entirely correct... e.g. preview does not necessarily agree with final result...
 //TODO if you change the type of a submodule, the preview still displays the old icon, because the "Image" field of the dialog contains that! 
 //     solution is not trivial -- maybe when the user changes the type, re-populate the display properties with the new values? (and, if there are dirty fields, ask for confirmation?)
@@ -489,7 +487,8 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     protected static CompoundModuleElementEx compoundModuleOf(INedElement e) {
-        return (e instanceof ISubmoduleOrConnection) ? ((ISubmoduleOrConnection)e).getCompoundModule() : null;
+        INedTypeElement typeElement = e.getEnclosingTypeElement();
+        return typeElement instanceof CompoundModuleElementEx ? (CompoundModuleElementEx)typeElement : null;
     }
 
     @Override
@@ -1248,7 +1247,8 @@ public class PropertiesDialog extends TrayDialog {
 
     protected NedTypeFieldEditor createNedTypeSelector(Composite parent, boolean multiple, INedTypeResolver.IPredicate typeFilter) {
         IProject contextProject = NedResourcesPlugin.getNedResources().getNedFile(elements[0].getContainingNedFileElement()).getProject();
-        NedTypeFieldEditor fieldEditor = new NedTypeFieldEditor(parent, multiple, contextProject, typeFilter);
+        CompoundModuleElementEx compoundModule = compoundModuleOf(elements[0]);
+        NedTypeFieldEditor fieldEditor = new NedTypeFieldEditor(parent, multiple, contextProject, compoundModule==null ? null : compoundModule.getNedTypeInfo(), typeFilter);
         fieldEditor.addModifyListener(modifyListener);
         Control control = fieldEditor.getControl();
         control.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
@@ -1508,22 +1508,25 @@ public class PropertiesDialog extends TrayDialog {
         INedTypeInfo typeInfo = NedResourcesPlugin.getNedResources().lookupNedType(value, lookupContext);
 
         if (typeInfo != null) {
-            value = typeInfo.getFullyQualifiedName();
+            return typeInfo.getFullyQualifiedName();
         }
-        else if (value.indexOf('.') == -1) {
+        else if (value.indexOf('.') != -1) {
+            return value; // qualified name: leave as it is  
+        }
+        else {
+            // utilize leftover imports:
             // if the referred type used to exist and had been properly imported, we can recover
             // the fully qualified type name from the imports. E.g. if we have a "tcp: TCP" submodule
             // which is unresolved (typeInfo==null), but there is an "import inet.transport.tcp.TCP"
             // line in the file, we can conclude that the "tcp" module's type is "inet...", even though 
             // such type currently does not exist.
-            for (String importSpec : lookupContext.getContainingNedFileElement().getImports()) {
-                if (importSpec.endsWith("."+value) && importSpec.indexOf('*') == -1) {
-                    value = importSpec;
-                    break;
-                }
-            }
+            for (String importSpec : lookupContext.getContainingNedFileElement().getImports())
+                if (importSpec.endsWith("."+value) && importSpec.indexOf('*') == -1)
+                    return importSpec;
+            
+            // treat it as a currently nonexistent inner type or type from the local package
+            return lookupContext.getQNameAsPrefix() + value;
         }
-        return value;
     }
 
     protected String qnameListToFriendlyString(List<String> qnames) {
@@ -1833,12 +1836,13 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     protected DisplayString getFallbackDisplayString(INedElement e) {
-        IProject project = NedResourcesPlugin.getNedResources().getNedFile(elements[0].getContainingNedFileElement()).getProject();
+        INedTypeResolver resolver = NedElement.getDefaultNedTypeResolver();
+        IProject project = resolver.getNedFile(elements[0].getContainingNedFileElement()).getProject();
 
         if (e instanceof ISubmoduleOrConnection) {
             if (typeField.isEnabled() && !typeField.isGrayed()) {
                 String type = NedElementUtilEx.friendlyTypeNameToQName(typeField.getText());
-                INedTypeInfo toplevelNedType = NedResourcesPlugin.getNedResources().getToplevelNedType(type, project); // FIXME add inner types too
+                INedTypeInfo toplevelNedType = resolver.getToplevelOrInnerNedType(type, project);
                 if (toplevelNedType != null)
                     return toplevelNedType.getNedElement().getDisplayString();
                 else 
@@ -1848,7 +1852,7 @@ public class PropertiesDialog extends TrayDialog {
         if (e instanceof INedTypeElement) {
             if (extendsField.isEnabled() && !extendsField.isGrayed()) {
                 String superType = NedElementUtilEx.friendlyTypeNameToQName(extendsField.getText());
-                INedTypeInfo toplevelNedType = NedResourcesPlugin.getNedResources().getToplevelNedType(superType, project); // FIXME add inner types too
+                INedTypeInfo toplevelNedType = resolver.getToplevelOrInnerNedType(superType, project);
                 if (toplevelNedType != null)
                     return toplevelNedType.getNedElement().getDisplayString();
                 else 
@@ -2322,15 +2326,20 @@ public class PropertiesDialog extends TrayDialog {
             
             // check whether such type really exists
             INedTypeResolver resolver = NedElement.getDefaultNedTypeResolver();
-            IProject project = NedResourcesPlugin.getNedResources().getNedFile(elements[0].getContainingNedFileElement()).getProject();
+            IProject project = resolver.getNedFile(elements[0].getContainingNedFileElement()).getProject();
             for (String v : value.split(",")) {
                 String qname = NedElementUtilEx.friendlyTypeNameToQName(v);
-                INedTypeInfo nedType = resolver.getToplevelNedType(qname, project);
+                INedTypeInfo nedType = resolver.getToplevelOrInnerNedType(qname, project);
                 if (nedType == null)
                     addWarningIfNotNull(errors, fieldEditor, fieldName, "No such NED type");
                 else if (!fieldEditor.getTypeFilter().matches(nedType)) {               
                     String what = nedType.getNedElement().getReadableTagName();
                     addWarningIfNotNull(errors, fieldEditor, fieldName, StringUtils.indefiniteArticle(what, true) + " " + what + " is not allowed here");
+                }
+                else if (nedType.isInnerType()) {
+                    CompoundModuleElementEx compoundModule = compoundModuleOf(elements[0]);
+                    if (compoundModule == null || nedType.getEnclosingType() != compoundModule.getNedTypeInfo())
+                        addWarningIfNotNull(errors, fieldEditor, fieldName, "An inner type cannot be used outside its container type");
                 }
             }
         }

@@ -47,8 +47,14 @@ public class SetTypeOrLikeTypeCommand extends CompoundCommand {
     }
 
     protected void createCommands() {
+        if (qname.equals("")) {
+            add(new SetAttributeCommand(submoduleOrConnection, attribute, qname));
+            return;
+        }
+        
+        // figure out if the type needs to be imported, and if so, what (simple) name can be used in the type field  
         StringBuffer modifiedName = new StringBuffer();
-        ImportElement importElement = qname.equals("") ? null : NedElementUtilEx.createImportFor(submoduleOrConnection.getEnclosingLookupContext(), qname, modifiedName);
+        ImportElement importElement = NedElementUtilEx.createImportFor(submoduleOrConnection.getEnclosingLookupContext(), qname, modifiedName);
 
         // set the attribute
         add(new SetAttributeCommand(submoduleOrConnection, attribute, modifiedName.toString()));

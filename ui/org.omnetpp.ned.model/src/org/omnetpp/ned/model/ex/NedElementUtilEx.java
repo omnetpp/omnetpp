@@ -395,24 +395,35 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      */
     public static ImportElement createImportFor(INedTypeLookupContext lookupContext, String fullyQualifiedTypeName, StringBuffer modifiedName) {
         Assert.isTrue(StringUtils.isNotBlank(fullyQualifiedTypeName));
-        String simpleTypeName = fullyQualifiedTypeName.indexOf('.')==-1 ? fullyQualifiedTypeName : StringUtils.substringAfterLast(fullyQualifiedTypeName, "."); 
-        INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleTypeName, lookupContext);
-        if (existingSimilarType == null) {
-            // add import
-            ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
-            importElement.setImportSpec(fullyQualifiedTypeName);
-            modifiedName.append(simpleTypeName);
-            return importElement;
-        }
-        else if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
-            // import not needed, this type is already visible: just use short name
-            modifiedName.append(simpleTypeName);
-            return null;
+        String simpleName = fullyQualifiedTypeName.indexOf('.')==-1 ? fullyQualifiedTypeName : StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
+
+        // check what this simple name already means in this lookup context
+        INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleName, lookupContext);
+        if (existingSimilarType != null) {
+            if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
+                // it already means the same type we want: just use short name
+                modifiedName.append(simpleName);
+                return null;
+            } 
+            else {
+                // something else with the same simple name is already visible, so leave fully qualified name
+                modifiedName.append(fullyQualifiedTypeName);
+                return null;
+            }
         }
         else {
-            // cannot import: another module with the same simple name already imported, so leave fully qualified name
-            modifiedName.append(fullyQualifiedTypeName);
-            return null;
+            if (lookupContext instanceof CompoundModuleElementEx && fullyQualifiedTypeName.equals(lookupContext.getQNameAsPrefix() + simpleName)) {
+                // this is supposed to be a (currently nonexistent) inner type, but inner types cannot be imported anyway: just use the simple name
+                modifiedName.append(simpleName);
+                return null;
+            }
+            else {
+                // add import
+                ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
+                importElement.setImportSpec(fullyQualifiedTypeName);
+                modifiedName.append(simpleName);
+                return importElement;
+            }
         }
     }
 
