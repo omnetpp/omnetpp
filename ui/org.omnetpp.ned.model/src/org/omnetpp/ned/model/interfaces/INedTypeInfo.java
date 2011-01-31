@@ -54,6 +54,17 @@ public interface INedTypeInfo extends INedChangeListener {
 	public String getPackageName();
 
 	/**
+	 * Returns true if this type is an inner type, and false otherwise.
+	 */
+    public boolean isInnerType();
+
+    /**
+     * Returns the type info of the enclosing type if this type is an inner type, 
+     * and false otherwise.
+     */
+    public INedTypeInfo getEnclosingType();
+	
+	/**
 	 * Returns the underlying INedElement subtree.
 	 */
 	public INedTypeElement getNedElement();
