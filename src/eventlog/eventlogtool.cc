@@ -452,99 +452,104 @@ void parseStringTokens(std::vector<std::string> &parameter, char *str)
 
 int main(int argc, char **argv)
 {
-    if (argc < 3)
-        usage("Not enough arguments specified");
-    else {
-        char *e;
-        char *command = argv[1];
-        Options options;
-
-        for (int i = 2; i < argc; i++) {
-            if (!strcmp(argv[i], "-o") || !strcmp(argv[i], "--output"))
-                options.outputFileName = argv[++i];
-            else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose"))
-                options.verbose = true;
-            else if (!strcmp(argv[i], "-fe") || !strcmp(argv[i], "--from-event-number"))
-                options.fromEventNumber = strtoll(argv[++i], &e, 10);
-            else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
-                options.toEventNumber = strtoll(argv[++i], &e, 10);
-            else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-time"))
-                options.fromSimulationTime = BigDecimal::parse(argv[++i]);
-            else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-time"))
-                options.toSimulationTime = BigDecimal::parse(argv[++i]);
-            else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
-                parseEventNumberTokens(options.eventNumbers, argv[++i]);
-            else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
-                parseFileOffsetTokens(options.fileOffsets, argv[++i]);
-            else if (!strcmp(argv[i], "-me") || !strcmp(argv[i], "--module-expression"))
-                options.moduleExpression = argv[++i];
-            else if (!strcmp(argv[i], "-mn") || !strcmp(argv[i], "--module-names"))
-                parseStringTokens(options.moduleNames, argv[++i]);
-            else if (!strcmp(argv[i], "-mt") || !strcmp(argv[i], "--module-class-names"))
-                parseStringTokens(options.moduleClassNames, argv[++i]);
-            else if (!strcmp(argv[i], "-md") || !strcmp(argv[i], "--module-ned-type-names"))
-                parseStringTokens(options.moduleNEDTypeNames, argv[++i]);
-            else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
-                parseIntTokens(options.moduleIds, argv[++i]);
-            else if (!strcmp(argv[i], "-se") || !strcmp(argv[i], "--message-expression"))
-                options.messageExpression = argv[++i];
-            else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-names"))
-                parseStringTokens(options.messageNames, argv[++i]);
-            else if (!strcmp(argv[i], "-st") || !strcmp(argv[i], "--message-class-names"))
-                parseStringTokens(options.messageClassNames, argv[++i]);
-            else if (!strcmp(argv[i], "-si") || !strcmp(argv[i], "--message-ids"))
-                parseLongTokens(options.messageIds, argv[++i]);
-            else if (!strcmp(argv[i], "-sti") || !strcmp(argv[i], "--message-tree-ids"))
-                parseLongTokens(options.messageTreeIds, argv[++i]);
-            else if (!strcmp(argv[i], "-sei") || !strcmp(argv[i], "--message-encapsulation-ids"))
-                parseLongTokens(options.messageEncapsulationIds, argv[++i]);
-            else if (!strcmp(argv[i], "-seti") || !strcmp(argv[i], "--message-encapsulation-tree-ids"))
-                parseLongTokens(options.messageEncapsulationTreeIds, argv[++i]);
-            else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--omit-causes-trace"))
-                options.traceCauses = false;
-            else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--omit-consequences-trace"))
-                options.traceConsequences = false;
-            else if (!strcmp(argv[i], "-oi") || !strcmp(argv[i], "--omit-initialization"))
-                options.outputInitialization = false;
-            else if (!strcmp(argv[i], "-ol") || !strcmp(argv[i], "--omit-log-lines"))
-                options.outputLogLines = false;
-            else if (i == argc - 1)
-                options.inputFileName = argv[i];
-        }
-
-        if (!options.inputFileName)
-            usage("No input file specified");
+    try {
+        if (argc < 3)
+            usage("Not enough arguments specified");
         else {
-            if (options.outputFileName)
-                options.outputFile = fopen(options.outputFileName, "w");
-            else
-                options.outputFile = stdout;
+            char *e;
+            char *command = argv[1];
+            Options options;
 
-            try {
-                if (!strcmp(command, "offsets"))
-                    offsets(options);
-                else if (!strcmp(command, "events"))
-                    events(options);
-                else if (!strcmp(command, "ranges"))
-                    ranges(options);
-                else if (!strcmp(command, "filter"))
-                    filter(options);
-                else if (!strcmp(command, "echo"))
-                    echo(options);
-                else if (!strcmp(command, "cat"))
-                    cat(options);
+            for (int i = 2; i < argc; i++) {
+                if (!strcmp(argv[i], "-o") || !strcmp(argv[i], "--output"))
+                    options.outputFileName = argv[++i];
+                else if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--verbose"))
+                    options.verbose = true;
+                else if (!strcmp(argv[i], "-fe") || !strcmp(argv[i], "--from-event-number"))
+                    options.fromEventNumber = strtoll(argv[++i], &e, 10);
+                else if (!strcmp(argv[i], "-te") || !strcmp(argv[i], "--to-event-number"))
+                    options.toEventNumber = strtoll(argv[++i], &e, 10);
+                else if (!strcmp(argv[i], "-ft") || !strcmp(argv[i], "--from-simulation-time"))
+                    options.fromSimulationTime = BigDecimal::parse(argv[++i]);
+                else if (!strcmp(argv[i], "-tt") || !strcmp(argv[i], "--to-simulation-time"))
+                    options.toSimulationTime = BigDecimal::parse(argv[++i]);
+                else if (!strcmp(argv[i], "-e") || !strcmp(argv[i], "--event-numbers"))
+                    parseEventNumberTokens(options.eventNumbers, argv[++i]);
+                else if (!strcmp(argv[i], "-f") || !strcmp(argv[i], "--file-offsets"))
+                    parseFileOffsetTokens(options.fileOffsets, argv[++i]);
+                else if (!strcmp(argv[i], "-me") || !strcmp(argv[i], "--module-expression"))
+                    options.moduleExpression = argv[++i];
+                else if (!strcmp(argv[i], "-mn") || !strcmp(argv[i], "--module-names"))
+                    parseStringTokens(options.moduleNames, argv[++i]);
+                else if (!strcmp(argv[i], "-mt") || !strcmp(argv[i], "--module-class-names"))
+                    parseStringTokens(options.moduleClassNames, argv[++i]);
+                else if (!strcmp(argv[i], "-md") || !strcmp(argv[i], "--module-ned-type-names"))
+                    parseStringTokens(options.moduleNEDTypeNames, argv[++i]);
+                else if (!strcmp(argv[i], "-mi") || !strcmp(argv[i], "--module-ids"))
+                    parseIntTokens(options.moduleIds, argv[++i]);
+                else if (!strcmp(argv[i], "-se") || !strcmp(argv[i], "--message-expression"))
+                    options.messageExpression = argv[++i];
+                else if (!strcmp(argv[i], "-sn") || !strcmp(argv[i], "--message-names"))
+                    parseStringTokens(options.messageNames, argv[++i]);
+                else if (!strcmp(argv[i], "-st") || !strcmp(argv[i], "--message-class-names"))
+                    parseStringTokens(options.messageClassNames, argv[++i]);
+                else if (!strcmp(argv[i], "-si") || !strcmp(argv[i], "--message-ids"))
+                    parseLongTokens(options.messageIds, argv[++i]);
+                else if (!strcmp(argv[i], "-sti") || !strcmp(argv[i], "--message-tree-ids"))
+                    parseLongTokens(options.messageTreeIds, argv[++i]);
+                else if (!strcmp(argv[i], "-sei") || !strcmp(argv[i], "--message-encapsulation-ids"))
+                    parseLongTokens(options.messageEncapsulationIds, argv[++i]);
+                else if (!strcmp(argv[i], "-seti") || !strcmp(argv[i], "--message-encapsulation-tree-ids"))
+                    parseLongTokens(options.messageEncapsulationTreeIds, argv[++i]);
+                else if (!strcmp(argv[i], "-ob") || !strcmp(argv[i], "--omit-causes-trace"))
+                    options.traceCauses = false;
+                else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--omit-consequences-trace"))
+                    options.traceConsequences = false;
+                else if (!strcmp(argv[i], "-oi") || !strcmp(argv[i], "--omit-initialization"))
+                    options.outputInitialization = false;
+                else if (!strcmp(argv[i], "-ol") || !strcmp(argv[i], "--omit-log-lines"))
+                    options.outputLogLines = false;
+                else if (i == argc - 1)
+                    options.inputFileName = argv[i];
+            }
+
+            if (!options.inputFileName)
+                usage("No input file specified");
+            else {
+                if (options.outputFileName)
+                    options.outputFile = fopen(options.outputFileName, "w");
                 else
-                    usage("Unknown or invalid command");
-            }
-            catch (std::exception& e) {
-                fprintf(stderr, "Error: %s\n", e.what());
-                return -1;
-            }
+                    options.outputFile = stdout;
 
-            if (options.outputFileName)
-                fclose(options.outputFile);
+                try {
+                    if (!strcmp(command, "offsets"))
+                        offsets(options);
+                    else if (!strcmp(command, "events"))
+                        events(options);
+                    else if (!strcmp(command, "ranges"))
+                        ranges(options);
+                    else if (!strcmp(command, "filter"))
+                        filter(options);
+                    else if (!strcmp(command, "echo"))
+                        echo(options);
+                    else if (!strcmp(command, "cat"))
+                        cat(options);
+                    else
+                        usage("Unknown or invalid command");
+                }
+                catch (std::exception& e) {
+                    fprintf(stderr, "Error: %s\n", e.what());
+                    return -1;
+                }
+
+                if (options.outputFileName)
+                    fclose(options.outputFile);
+            }
         }
-    }
 
-    return 0;
+        return 0;
+    }
+    catch (std::exception &e) {
+        fprintf(stderr, "Exiting due to internal error: %s\n", e.what());
+    }
 }
