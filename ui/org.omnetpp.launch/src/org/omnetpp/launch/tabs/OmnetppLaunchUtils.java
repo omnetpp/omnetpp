@@ -38,6 +38,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.CollectionUtils;
@@ -647,32 +648,42 @@ public class OmnetppLaunchUtils {
 	 */
 	public static String getSimulationRunInfo(ILaunchConfiguration configuration) {
 		try {
+		    // launch the program
+		    long startTime = System.currentTimeMillis();
 			configuration = convertLaunchConfig(configuration, ILaunchManager.RUN_MODE);
 			StringBuilder info = new StringBuilder();
 			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, "", true, info);
+
+			// read its standard output
 			final int BUFFERSIZE = 8192;
 			byte bytes[] = new byte[BUFFERSIZE];
 			StringBuffer stringBuffer = new StringBuffer(BUFFERSIZE);
 			BufferedInputStream is = new BufferedInputStream(proc.getInputStream(), BUFFERSIZE);
 			int lastRead = 0;
-			while((lastRead = is.read(bytes)) > 0) {
+			while ((lastRead = is.read(bytes)) > 0)
 				stringBuffer.append(new String(bytes, 0, lastRead));
-			}
+			Debug.println("getSimulationRunInfo: read " + stringBuffer.length() + " bytes of program output in " + (System.currentTimeMillis() - startTime) + "ms");
 
+			// wait until it exits
 			proc.waitFor();
+			Debug.println("getSimulationRunInfo: program exited after total " + (System.currentTimeMillis() - startTime) + "ms");
 
-			String simInfo = stringBuffer.toString().replace("\r", "");
+			String simulationInfo = stringBuffer.toString().replace("\r", ""); // CRLF to LF conversion
 
-			//FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc
-			// --Andras
+			//FIXME parse out errors: they are the lines that start with "<!>" -- e.g. inifile might contain a syntax error etc --Andras
 			if (proc.exitValue() == 0)
-				return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simInfo, "Number of runs:", "\n\n"));
-		} catch (CoreException e) {
-			// LaunchPlugin.logError("Error starting the executable", e);
-			// its not a big deal if we cannot start the simulation. don't put anything in the log
-		} catch (IOException e) {
+				return "Number of runs: "+StringUtils.trimToEmpty(StringUtils.substringBetween(simulationInfo, "Number of runs:", "\n\n"));
+			
+		} 
+		catch (CoreException e) {
+			// do not litter the log with the error: this method often fails because it is often
+		    // called while the user edits the configuration, and moreover it is only used to 
+		    // bring up a tooltip
+		} 
+		catch (IOException e) {
 			LaunchPlugin.logError("Error getting output stream from the executable", e);
-		} catch (InterruptedException e) {
+		} 
+		catch (InterruptedException e) {
 			LaunchPlugin.logError("Error: thread interrupted while waiting for process to exit", e);
 		}
 		return "";
