@@ -79,7 +79,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         // no inner types are allowed if we are already an inner type (no more than 1 level of nesting)
         if (getHost() instanceof CompoundModuleEditPart) {
             CompoundModuleElementEx compModule = ((CompoundModuleEditPart)getHost()).getModel();
-            if (compModule.getEnclosingTypeElement() != null)  // the host is already an inner type
+            if (compModule.getNedTypeInfo().isInnerType())  // the host is already an inner type
                 return false;
         }
 

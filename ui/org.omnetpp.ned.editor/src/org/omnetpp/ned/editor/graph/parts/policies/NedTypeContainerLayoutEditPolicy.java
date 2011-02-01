@@ -84,7 +84,7 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
         // no inner types are allowed if we are already an inner type (no more than 1 level of nesting)
         if (getHost() instanceof TypesEditPart) {
             TypesElement typesModel = ((TypesEditPart)getHost()).getModel();
-            if (typesModel.getEnclosingTypeElement().getEnclosingTypeElement() != null)
+            if (typesModel.getEnclosingTypeElement().getNedTypeInfo().isInnerType())
                 return false;
         }
 
@@ -120,11 +120,11 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
     // creating a new ned type element
     @Override
     protected Command getCreateCommand(CreateRequest request) {
-        // do not allow adding an innertype into a module which is already an inner type
+        // do not allow adding an inner-type into a module which is already an inner type
 
         Object element = request.getNewObject();
 
-        if (!isInsertable((INedTypeElement)element))
+        if (!isInsertable((INedElement)element))
             return UnexecutableCommand.INSTANCE;
 
         INedTypeElement newTypeElement = (INedTypeElement)element;
@@ -141,7 +141,7 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 	    INedElement parent = (INedElement)getHost().getModel();
 	    INedElement element = (INedElement)childToAdd.getModel();
 
-	    if (!isInsertable((INedTypeElement)element))
+	    if (!isInsertable(element))
             return UnexecutableCommand.INSTANCE;
 
         INedElement where = after != null ? (INedElement)after.getModel() : null;
