@@ -1,18 +1,18 @@
 package org.omnetpp.common.eventlog;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.Expression;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.engine.Value;
+import org.omnetpp.common.ui.InputDialog;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class GotoSimulationTimeDialog extends InputDialog {
     private BigDecimal baseSimulationTime;
 
     public GotoSimulationTimeDialog(final IEventLog eventLog, final BigDecimal baseSimulationTime) {
-        super(null, "Goto Simulation Time", "Enter an absolute simulation time, or start with a '+' or '-' sign to indicate relative positioning. Time units and compound time specifications are also supported.", null, new IInputValidator() {
+        super(null, "Goto Simulation Time", "Enter an absolute simulation time, or start with a '+' or '-' sign to indicate relative positioning. Time units and compound time specifications are also supported:", null, new IInputValidator() {
             public String isValid(String newText) {
                 try {
                     BigDecimal simulationTime = getSimulationTime(baseSimulationTime, newText);

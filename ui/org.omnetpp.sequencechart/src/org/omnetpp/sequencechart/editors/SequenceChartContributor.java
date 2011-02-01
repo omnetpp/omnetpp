@@ -51,7 +51,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
@@ -109,6 +108,7 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.eventlog.EventLogFilterParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.FilterEventLogDialog;
+import org.omnetpp.common.eventlog.GotoEventDialog;
 import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
@@ -1901,42 +1901,12 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         // TODO: setEnabled(!getEventLog().isEmpty());
         public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
-
             if (part instanceof ISequenceChartProvider) {
                 SequenceChart sequenceChart = ((ISequenceChartProvider)part).getSequenceChart();
-                InputDialog dialog = new InputDialog(null, "Goto Event", "Please enter the event number to go to", null, new IInputValidator() {
-                    public String isValid(String newText) {
-                        try {
-                            int eventNumber = Integer.parseInt(newText);
-
-                            if (eventNumber >= 0)
-                                return null;
-                            else
-                                return "Negative event number";
-                        }
-                        catch (Exception e) {
-                            return "Not a number";
-                        }
-                    }
-                });
-
-                if (dialog.open() == Window.OK) {
-                    try {
-                        int eventNumber = Integer.parseInt(dialog.getValue());
-                        IEventLog eventLog = sequenceChart.getEventLog();
-                        IEvent event = eventLog.getEventForEventNumber(eventNumber);
-
-                        if (event != null)
-                            sequenceChart.gotoElement(event);
-                        else
-                            MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
-                    }
-                    catch (Exception x) {
-                        // void
-                    }
-                }
+                GotoEventDialog dialog = new GotoEventDialog(sequenceChart.getEventLog());
+                if (dialog.open() == Window.OK)
+                    sequenceChart.gotoElement(dialog.getEvent());
             }
-
             return null;
         }
     }

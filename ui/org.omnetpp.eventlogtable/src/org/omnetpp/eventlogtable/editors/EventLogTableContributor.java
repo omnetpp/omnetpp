@@ -25,7 +25,6 @@ import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
@@ -65,6 +64,7 @@ import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.eventlog.EventLogEntryProposalProvider;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.eventlog.GotoEventDialog;
 import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.image.ImageFactory;
@@ -666,42 +666,12 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         // TODO: setEnabled(!getEventLog().isEmpty());
         public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
-
             if (part instanceof IEventLogTableProvider) {
                 EventLogTable eventLogTable = ((IEventLogTableProvider)part).getEventLogTable();
-				InputDialog dialog = new InputDialog(null, "Goto Event", "Please enter the event number to go to", null, new IInputValidator() {
-					public String isValid(String newText) {
-						try {
-							int eventNumber = Integer.parseInt(newText);
-
-							if (eventNumber >= 0)
-								return null;
-							else
-								return "Negative event number";
-						}
-						catch (Exception e) {
-							return "Not a number";
-						}
-					}
-				});
-
-				if (dialog.open() == Window.OK) {
-					try {
-						int eventNumber = Integer.parseInt(dialog.getValue());
-						IEventLog eventLog = eventLogTable.getEventLog();
-						IEvent event = eventLog.getEventForEventNumber(eventNumber);
-
-						if (event != null)
-							eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
-						else
-							MessageDialog.openError(null, "Goto event" , "No such event: " + eventNumber);
-					}
-					catch (Exception x) {
-						// void
-					}
-				}
+                GotoEventDialog dialog = new GotoEventDialog(eventLogTable.getEventLog());
+                if (dialog.open() == Window.OK)
+                    eventLogTable.gotoElement(new EventLogEntryReference(dialog.getEvent().getEventEntry()));
 			}
-
             return null;
 		}
 	}
