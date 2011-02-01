@@ -38,6 +38,7 @@ import org.omnetpp.ned.editor.graph.parts.TypesEditPart;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Layout policy used in the top level NedFile element and in TypesElement allowing a 
@@ -79,7 +80,19 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 		return false;
 	}
 
-    protected boolean isAllowed(INedElement element) {
+    protected boolean isInsertable(INedElement element) {
+        // no inner types are allowed if we are already an inner type (no more than 1 level of nesting)
+        if (getHost() instanceof TypesEditPart) {
+            TypesElement typesModel = ((TypesEditPart)getHost()).getModel();
+            if (typesModel.getEnclosingTypeElement().getEnclosingTypeElement() != null)
+                return false;
+        }
+
+        // check if the dropped element has inner types. in this case it should not be added as an inner-type (no nesting allowed)
+        if (element instanceof CompoundModuleElementEx &&
+            ((CompoundModuleElementEx)element).getFirstTypesChild() != null)
+            return false;
+
         // every type is allowed (but networks are not inside an inner type)
         return element instanceof INedTypeElement &&
                   !(getHost() instanceof TypesEditPart // this is an inner type container (not a top level ned file)
@@ -98,7 +111,7 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 
 		// iterate through all involved editparts and add their model to the coning list
 		for (GraphicalEditPart currPart : (List<GraphicalEditPart>)request.getEditParts())
-		    if (currPart.getModel() instanceof INedTypeElement && isAllowed((INedTypeElement)currPart.getModel()))
+		    if (currPart.getModel() instanceof INedTypeElement && isInsertable((INedTypeElement)currPart.getModel()))
 		        cloneCmd.add((INedTypeElement)currPart.getModel());
 
 		return cloneCmd;
@@ -107,9 +120,11 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
     // creating a new ned type element
     @Override
     protected Command getCreateCommand(CreateRequest request) {
+        // do not allow adding an innertype into a module which is already an inner type
+
         Object element = request.getNewObject();
 
-        if (!isAllowed((INedTypeElement)element))
+        if (!isInsertable((INedTypeElement)element))
             return UnexecutableCommand.INSTANCE;
 
         INedTypeElement newTypeElement = (INedTypeElement)element;
@@ -126,7 +141,7 @@ public class NedTypeContainerLayoutEditPolicy extends FlowLayoutEditPolicy {
 	    INedElement parent = (INedElement)getHost().getModel();
 	    INedElement element = (INedElement)childToAdd.getModel();
 
-	    if (!isAllowed((INedTypeElement)element))
+	    if (!isInsertable((INedTypeElement)element))
             return UnexecutableCommand.INSTANCE;
 
         INedElement where = after != null ? (INedElement)after.getModel() : null;

@@ -15,10 +15,10 @@ import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTypeContainerLayoutEditPolicy;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Inner types in a compound module are displayed inside a TypesEditpart. It relates directly
@@ -44,8 +44,8 @@ public class TypesEditPart extends AbstractGraphicalEditPart implements INedMode
         installEditPolicy(EditPolicy.LAYOUT_ROLE, new NedTypeContainerLayoutEditPolicy());
     }
 
-    public INedElement getModel() {
-        return (INedElement)super.getModel();
+    public TypesElement getModel() {
+        return (TypesElement)super.getModel();
     }
 
     @Override

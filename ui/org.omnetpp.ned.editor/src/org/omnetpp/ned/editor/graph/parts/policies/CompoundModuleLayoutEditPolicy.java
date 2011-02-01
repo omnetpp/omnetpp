@@ -71,6 +71,29 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         super();
     }
 
+    /**
+     * Checks if the provided type is allowed to be inserted into the current
+     * edit part. Inner types are allowed only in top level types.
+     */
+    protected boolean isInsertable(INedElement element) {
+        // no inner types are allowed if we are already an inner type (no more than 1 level of nesting)
+        if (getHost() instanceof CompoundModuleEditPart) {
+            CompoundModuleElementEx compModule = ((CompoundModuleEditPart)getHost()).getModel();
+            if (compModule.getEnclosingTypeElement() != null)  // the host is already an inner type
+                return false;
+        }
+
+        // check if the dropped element has inner types. in this case it should not be added as an inner-type
+        if (element instanceof CompoundModuleElementEx &&
+            ((CompoundModuleElementEx)element).getFirstTypesChild() != null)
+            return false;
+
+        return true;
+    }
+
+    /**
+     * Networks are not allowed as inner types.
+     */
     protected boolean isAllowedType(INedElement element) {
         // every type is allowed except networks
         return element instanceof INedTypeElement &&
@@ -146,7 +169,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     	}
 
     	// inner type creation
-        if (!isAllowedType(element))
+        if (!isAllowedType(element) || !isInsertable(element))
             return UnexecutableCommand.INSTANCE;
 
         // only NedTypeElements are allowed here
@@ -171,15 +194,15 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     protected Command createAddCommand(EditPart childToAdd, Object constraint) {
         INedElement element = (INedElement)childToAdd.getModel();
 
-        if (!isAllowedType(element)) // do not allow networks for example
-            return UnexecutableCommand.INSTANCE;
-
         // if the add is not targeted to the title/border i.e. it is dropped inside
         // a the submodule area, we should create a new submodule instead of creating an inner type
         // (we should treat it as a clone command)
         Point p = ((ChangeBoundsRequest)currentRequest).getLocation();
         if (!((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
             return getCloneCommand((ChangeBoundsRequest)currentRequest);
+
+        if (!isAllowedType(element) || !isInsertable(element)) // do not allow networks for example
+            return UnexecutableCommand.INSTANCE;
 
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
         CompoundCommand command = new CompoundCommand("Move type");
