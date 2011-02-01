@@ -326,3 +326,4 @@ endpoints
 unparseable
 holey
 unfixable
+supertype

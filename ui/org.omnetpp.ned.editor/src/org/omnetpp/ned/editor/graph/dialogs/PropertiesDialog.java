@@ -42,6 +42,7 @@ import org.eclipse.gef.commands.CompoundCommand;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.SWT;
@@ -128,9 +129,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  *
  * @author andras
  */
-//TODO if you change the type of a submodule, the preview still displays the old icon, because the "Image" field of the dialog contains that! 
-//     solution is not trivial -- maybe when the user changes the type, re-populate the display properties with the new values? (and, if there are dirty fields, ask for confirmation?)
-
 public class PropertiesDialog extends TrayDialog {
     private static final String STR_PARENTMODULE = "<parent>";  // for connection src/dest module selection combo
     private static final String STR_GATEPLUSPLUS = "++";    // for connection gate index selection combo
@@ -236,8 +234,11 @@ public class PropertiesDialog extends TrayDialog {
     private TextFieldEditor bgLayoutSeedField;
     //private ComboFieldEditor bgLayoutAlgorithmField;
     private List<Label> unitLabels = new ArrayList<Label>();
+    
+    private INedTypeInfo editedTypeOrSupertype; // when not null, use this instead of the type or supertype of the selected elements for computing the preview, etc. 
 
     private Map<IFieldEditor, String> validationErrors = new LinkedHashMap<IFieldEditor, String>();
+    
     
     private ModifyListener modifyListener = new ModifyListener() {
         public void modifyText(ModifyEvent e) {
@@ -246,6 +247,7 @@ public class PropertiesDialog extends TrayDialog {
 
             try {
                 modifyInProgress = true;
+                updateEditedTypeOrSupertype();
                 updateControlStates();
                 updatePreview();
                 validateDialogContents();
@@ -404,7 +406,7 @@ public class PropertiesDialog extends TrayDialog {
         }
     }
 
-    static class DisplayPropertyAccess implements IPropertyAccess {
+    class DisplayPropertyAccess implements IPropertyAccess {
         private Prop displayProperty;
 
         public DisplayPropertyAccess(IDisplayString.Prop displayProperty) {
@@ -413,6 +415,10 @@ public class PropertiesDialog extends TrayDialog {
 
         public String getValue(INedElement e) {
             DisplayString displayString = ((IHasDisplayString)e).getDisplayString();
+            if (editedTypeOrSupertype != null) {
+                displayString = new DisplayString(displayString.toString()); // clone
+                displayString.setFallbackDisplayString(editedTypeOrSupertype.getNedElement().getDisplayString());
+            }
             String value = StringUtils.nullToEmpty(displayString.getAsString(displayProperty, false, false)); 
             if (!value.equals("") && displayProperty.getEnumSpec() != null) {
                 String expandedValue = displayProperty.getEnumSpec().getNameFor(value); // expand abbreviation
@@ -1365,6 +1371,13 @@ public class PropertiesDialog extends TrayDialog {
             populateField(connDestGateIndexField, (destGateIndex==null || destGatePlusPlus==null) ? null : destGateIndex + (destGatePlusPlus.equals("true")?STR_GATEPLUSPLUS:""));
         }
 
+        // display properties
+        populateDisplayPropertyFields();
+        
+        updatePreview();
+    }
+
+    protected void populateDisplayPropertyFields() {
         //============== SUBMODULE ================
         // P tag
         populateField(xField, IDisplayString.Prop.X);
@@ -1455,8 +1468,6 @@ public class PropertiesDialog extends TrayDialog {
         //populateField(bgLayoutAlgorithmField, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM); 
         populateField(bgScaleField, IDisplayString.Prop.MODULE_SCALE); 
         populateField(bgUnitField, IDisplayString.Prop.MODULE_UNIT);
-        
-        updatePreview();
     }
 
     protected void populateField(IFieldEditor field, IDisplayString.Prop displayProperty) {
@@ -1626,6 +1637,40 @@ public class PropertiesDialog extends TrayDialog {
         layoutPar1Label.getParent().layout(true);
     }
 
+    protected void updateEditedTypeOrSupertype() {
+        INedElement e = elements[0];
+        INedTypeResolver resolver = NedElement.getDefaultNedTypeResolver();
+        IProject project = resolver.getNedFile(e.getContainingNedFileElement()).getProject();
+
+        INedTypeInfo nedType = null;
+        if (e instanceof ISubmoduleOrConnection) {
+            if (typeField.isEnabled() && !typeField.isGrayed()) {
+                String type = NedElementUtilEx.friendlyTypeNameToQName(typeField.getText());
+                nedType = resolver.getToplevelOrInnerNedType(type, project);
+            }
+        }
+        if (e instanceof INedTypeElement) {
+            if (extendsField.isEnabled() && !extendsField.isGrayed()) {
+                String superType = NedElementUtilEx.friendlyTypeNameToQName(extendsField.getText());
+                nedType = resolver.getToplevelOrInnerNedType(superType, project);
+            }
+        }
+        
+        if (editedTypeOrSupertype != nedType) {
+            // store changed value
+            editedTypeOrSupertype = nedType;
+            
+            // offer the user to re-populate graphical properties
+            String fieldName = extendsField!=null ? "Extends" : "Type";
+            boolean repopulate = MessageDialog.openQuestion(getShell(), 
+                    "Type or Supertype Changed", 
+                    "You have edited the '" + fieldName + "' field. Do you want to discard edits of graphical properties and " +
+                    "reflect the graphical properties of the the new type in the dialog contents?");
+            if (repopulate)
+                populateDisplayPropertyFields();
+        }
+    }
+    
     protected void updateControlStates() {
         if (connSrcModuleField != null) {
             updateConnectionEndpoint(true, connSrcModuleField, connSrcModuleIndexField, connSrcGateField, connSrcGateIndexField);
@@ -1833,31 +1878,18 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     protected DisplayString getFallbackDisplayString(INedElement e) {
-        INedTypeResolver resolver = NedElement.getDefaultNedTypeResolver();
-        IProject project = resolver.getNedFile(elements[0].getContainingNedFileElement()).getProject();
-
-        if (e instanceof ISubmoduleOrConnection) {
-            if (typeField.isEnabled() && !typeField.isGrayed()) {
-                String type = NedElementUtilEx.friendlyTypeNameToQName(typeField.getText());
-                INedTypeInfo toplevelNedType = resolver.getToplevelOrInnerNedType(type, project);
-                if (toplevelNedType != null)
-                    return toplevelNedType.getNedElement().getDisplayString();
-                else 
-                    return new DisplayString("");
-            }
+        if (editedTypeOrSupertype != null) {
+            return editedTypeOrSupertype.getNedElement().getDisplayString();
         }
-        if (e instanceof INedTypeElement) {
-            if (extendsField.isEnabled() && !extendsField.isGrayed()) {
-                String superType = NedElementUtilEx.friendlyTypeNameToQName(extendsField.getText());
-                INedTypeInfo toplevelNedType = resolver.getToplevelOrInnerNedType(superType, project);
-                if (toplevelNedType != null)
-                    return toplevelNedType.getNedElement().getDisplayString();
-                else 
-                    return new DisplayString("");
-            }
+        else {
+            // return the display string of the original type or supertype
+            INedTypeElement typeOrSuperTypeElement = null;
+            if (e instanceof INedTypeElement)
+                typeOrSuperTypeElement = ((INedTypeElement) e).getNedTypeInfo().getSuperType();
+            else if (e instanceof ISubmoduleOrConnection)
+                typeOrSuperTypeElement = ((ISubmoduleOrConnection) e).getEffectiveTypeRef();
+            return typeOrSuperTypeElement != null ? typeOrSuperTypeElement.getDisplayString() : new DisplayString("");
         }
-
-        return ((IHasDisplayString)e).getDisplayString().getFallbackDisplayString();
     }
 
     protected void updatePreviewDisplayString(DisplayString displayString) {
