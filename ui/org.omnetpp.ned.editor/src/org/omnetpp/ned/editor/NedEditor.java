@@ -10,6 +10,7 @@ package org.omnetpp.ned.editor;
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
@@ -217,6 +218,15 @@ public class NedEditor
 
         // connect() must take place *before* setInput()
         IFile newFile = ((IFileEditorInput) newInput).getFile();
+        // check if the given file is in sync with the filesystem. If not
+        // synchronize it otherwise the text editor loads only an empty file
+        if (!newFile.isSynchronized(IResource.DEPTH_ZERO))
+            try {
+                newFile.refreshLocal(IResource.DEPTH_ZERO, null);
+            } catch (CoreException e) {
+                NedEditorPlugin.logError("Cannot refresh file", e);
+            }
+
         NedResourcesPlugin.getNedResources().connect(newFile);
 
         // set the new input
