@@ -96,6 +96,8 @@ static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
 static void addFunction(const char *funcname, int numargs)
 {
     try {
+        if (!resolver)
+	        throw opp_runtime_error("no resolver provided, cannot resolve function name: %s", funcname);
         *e++ = resolver->resolveFunction(funcname, numargs);
     }
     catch (std::exception& e) {
@@ -106,6 +108,8 @@ static void addFunction(const char *funcname, int numargs)
 static void addVariableRef(const char *varname)
 {
     try {
+        if (!resolver)
+	        throw opp_runtime_error("no resolver provided, cannot resolve variable name: %s", varname);
         *e++ = resolver->resolveVariable(varname);
     }
     catch (std::exception& e) {
