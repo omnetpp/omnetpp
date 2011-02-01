@@ -68,11 +68,12 @@ import org.omnetpp.launch.LaunchPlugin;
  *
  * @author rhornig
  */
-public class OmnetppMainTab extends AbstractLaunchConfigurationTab
-implements ModifyListener {
+public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements ModifyListener {
 
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
+
+    protected static final int MAX_TOOLTIP_CHARS = 50000;  
 
     // UI widgets
     protected Button fProgOppRunButton;
@@ -784,7 +785,7 @@ implements ModifyListener {
         hover.adapt(fRunText, new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
                 if (infoText == null)
-                    infoText = OmnetppLaunchUtils.getSimulationRunInfo(config);
+                    infoText = truncateHoverText(OmnetppLaunchUtils.getSimulationRunInfo(config), MAX_TOOLTIP_CHARS);
                 outPreferredSize.preferredWidth = 350;
                 return HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>");
             }
@@ -800,6 +801,16 @@ implements ModifyListener {
         }
 
         return composite;
+    }
+
+    protected String truncateHoverText(String text, int limit) {
+        if (text.length() > limit) {
+            int truncatePos = text.indexOf('\n', limit); // try to keep a whole last line
+            if (truncatePos == -1 || truncatePos > 1.2*limit)
+                truncatePos = limit;
+            text = text.substring(0, truncatePos) + "\n...\n";
+        }
+        return text;
     }
 
     protected Composite createOptionsGroup(Composite parent, int colSpan) {
