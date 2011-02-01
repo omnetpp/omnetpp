@@ -45,10 +45,9 @@ public class CutAction extends SelectionAction {
     	setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
     }
 
-    // FIXME non editable parts should not be deleted (cut should not be allowed here)
     @Override
     protected boolean calculateEnabled() {
-        return getSelectedObjects().size() > 0;
+        return getSelectedObjects().size() > 0 && EditPartUtil.isEditable(getSelectedObjects().get(0));
     }
 
 	@Override @SuppressWarnings("unchecked")

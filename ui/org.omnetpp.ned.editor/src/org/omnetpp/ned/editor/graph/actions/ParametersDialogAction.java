@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.editor.graph.misc.ParametersDialog;
+import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IHasParameters;
@@ -41,7 +42,8 @@ public class ParametersDialogAction extends org.eclipse.gef.ui.actions.Selection
     protected boolean calculateEnabled() {
         if (getSelectedObjects().size() == 1 && getSelectedObjects().get(0) instanceof INedModelProvider) {
            INedElement element = ((INedModelProvider)getSelectedObjects().get(0)).getModel();
-           return element instanceof IHasParameters && element.getSyntaxProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE;
+           return element instanceof IHasParameters && EditPartUtil.isEditable(getSelectedObjects().get(0))
+                   && element.getSyntaxProblemMaxCumulatedSeverity() == NedElement.SEVERITY_NONE;
         }
         else
             return false;
