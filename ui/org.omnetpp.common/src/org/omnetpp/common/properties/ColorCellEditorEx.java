@@ -13,7 +13,6 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
@@ -24,18 +23,13 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 
 /**
- * A cell editor that manages a color field. using the ColorFactory
- * Supports content assist function, and direct text editing of the color name
+ * A cell editor that manages a color field. Uses ColorFactory.
+ * Supports content assist function, and direct text editing of the color name.
  * <p>
- * This is a copied/modified version of the platform ColorCellEditor
+ * This is a copied/modified version of the platform ColorCellEditor.
  * </p>
  */
 public class ColorCellEditorEx extends TextCellEditorEx {
-
-    /**
-     * The image.
-     */
-    private Image image;
 
     public static class ColorContentProposalProvider extends ContentProposalProvider {
         public ColorContentProposalProvider() {
@@ -46,7 +40,6 @@ public class ColorCellEditorEx extends TextCellEditorEx {
         protected List<IContentProposal> getProposalCandidates(String prefix) {
             return sort(toProposals(ColorFactory.getColorNames()));
         }
-
     }
 
     /**
@@ -74,61 +67,6 @@ public class ColorCellEditorEx extends TextCellEditorEx {
         doSetValue("");
     }
 
-    /**
-     * Creates and returns the color image data for the given control
-     * and RGB value. The image's size is either the control's item extent
-     * or the cell editor's default extent, which is 16 pixels square.
-     *
-     * @param w the control
-     * @param color the color
-     */
-//    private ImageData createColorImage(Control w, RGB color) {
-//
-//        GC gc = new GC(w);
-//        FontMetrics fm = gc.getFontMetrics();
-//        int size = fm.getAscent();
-//        gc.dispose();
-//
-//        int indent = 6;
-//        int extent = DEFAULT_EXTENT;
-//        if (w instanceof Table) {
-//            extent = ((Table) w).getItemHeight() - 1;
-//        } else if (w instanceof Tree) {
-//            extent = ((Tree) w).getItemHeight() - 1;
-//        } else if (w instanceof TableTree) {
-//            extent = ((TableTree) w).getItemHeight() - 1;
-//        }
-//
-//        if (size > extent) {
-//            size = extent;
-//        }
-//
-//        int width = indent + size;
-//        int height = extent;
-//
-//        int xoffset = indent;
-//        int yoffset = (height - size) / 2;
-//
-//        RGB black = new RGB(0, 0, 0);
-//        PaletteData dataPalette = new PaletteData(new RGB[] { black, black,
-//                color });
-//        ImageData data = new ImageData(width, height, 4, dataPalette);
-//        data.transparentPixel = 0;
-//
-//        int end = size - 1;
-//        for (int y = 0; y < size; y++) {
-//            for (int x = 0; x < size; x++) {
-//                if (x == 0 || y == 0 || x == end || y == end) {
-//                    data.setPixel(x + xoffset, y + yoffset, 1);
-//                } else {
-//                    data.setPixel(x + xoffset, y + yoffset, 2);
-//                }
-//            }
-//        }
-//
-//        return data;
-//    }
-
     @Override
     protected Control createControl(Composite parent) {
         Control result = super.createControl(parent);
@@ -137,17 +75,6 @@ public class ColorCellEditorEx extends TextCellEditorEx {
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
 
         return result;
-    }
-
-    /* (non-Javadoc)
-     * Method declared on CellEditor.
-     */
-    public void dispose() {
-        if (image != null) {
-            image.dispose();
-            image = null;
-        }
-        super.dispose();
     }
 
     /* (non-Javadoc)
