@@ -44,15 +44,10 @@ class cComponent;
 //
 #ifdef _NDEBUG
 #define CHK(tcl_eval_statement)   tcl_eval_statement
-#elif defined VERBOSE_TCL_ERRORS
-#define CHK(tcl_eval_statement)    \
-  do { if (tcl_eval_statement==TCL_ERROR) \
-        ::printf("Tcl error: %s#%d: %s\n\n",__FILE__,__LINE__, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY)); \
-  } while(0)
 #else
 #define CHK(tcl_eval_statement)    \
   do { if (tcl_eval_statement==TCL_ERROR) \
-        ::printf("%s#%d: %s\n",__FILE__,__LINE__, Tcl_GetStringResult(interp)); \
+        logTclError(__FILE__,__LINE__, interp); \
   } while(0)
 #endif
 
@@ -154,6 +149,8 @@ const char *substituteDisplayStringParamRefs(const char *dispstr, std::string& b
 bool resolveBoolDispStrArg(const char *arg, cComponent *component, bool defaultValue);
 long resolveLongDispStrArg(const char *arg, cComponent *component, int defaultValue);
 double resolveDoubleDispStrArg(const char *arg, cComponent *component, double defaultValue);
+
+void logTclError(const char *file, int line, Tcl_Interp *interp);
 
 NAMESPACE_END
 

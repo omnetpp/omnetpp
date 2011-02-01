@@ -1,3 +1,14 @@
+2010-02-01  Andras Varga
+
+	* Log Tcl errors into .tkenvlog instead of dumping them on stdout
+
+2010-01-27  Rudolf Hornig
+
+	* Tkenv: fixed #245: if one of the ini file parameters had a syntax 
+	error, Tkenv failed to display the module that uses that parameter 
+	and showed "Cannot access display string yet: parameters not yet set 
+	up" errors.
+
 2010-12-09  Andras Varga
 
 	* fix for bug #221: Negative zoom level in Tkenv (could not reproduce

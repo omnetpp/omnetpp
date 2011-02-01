@@ -421,6 +421,11 @@ double resolveDoubleDispStrArg(const char *arg, cComponent *component, double de
     return atof(arg2);
 }
 
+void logTclError(const char *file, int line, Tcl_Interp *interp)
+{
+    getTkenv()->logTclError(file, line, interp);
+}
+
 NAMESPACE_END
 
 

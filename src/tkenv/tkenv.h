@@ -141,6 +141,8 @@ class TKENV_API Tkenv : public EnvirBase
       typedef std::map<std::string,std::string> StringMap;
       StringMap answers;           // key: <ModuleType>:<paramName>, value: <interactively-given-paramvalue>
 
+      FILE *ferrorlog;             // .tkenvlog file; NULL if not yet open
+
    public:
       Tkenv();
       virtual ~Tkenv();
@@ -179,6 +181,8 @@ class TKENV_API Tkenv : public EnvirBase
 
       // with Tkenv, activity() modules need extra stack
       virtual unsigned getExtraStackForEnvir() const;
+
+      virtual void logTclError(const char *file, int line, Tcl_Interp *interp);
 
   protected:
       // redefined virtual functions from EnvirBase
@@ -258,7 +262,6 @@ class TKENV_API Tkenv : public EnvirBase
       const char *getOutScalarFileName() {return outscalarmgr->getFileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->getFileName();}
       const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
-
 };
 
 

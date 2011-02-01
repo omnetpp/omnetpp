@@ -121,6 +121,7 @@ Tkenv::Tkenv()
     // printUISpecificHelp() on it
 
     interp = NULL;  // Tcl/Tk not set up yet
+    ferrorlog = NULL;
     simstate = SIM_NONET;
     stopsimulation_flag = false;
     animating = false;
@@ -1970,7 +1971,23 @@ bool Tkenv::askyesno(const char *question)
 
 unsigned Tkenv::getExtraStackForEnvir() const
 {
-     return opt_extrastack;
+    return opt_extrastack;
+}
+
+void Tkenv::logTclError(const char *file, int line, Tcl_Interp *interp)
+{
+    if (!ferrorlog)
+    {
+        ferrorlog = fopen(".tkenvlog", "a");
+        if (!ferrorlog)
+            ::fprintf(stderr, "Tkenv: could not open .tkenvlog for append\n");
+        else
+            ::fprintf(ferrorlog, "----------------------------------------------------------------------\n\n\n");
+    }
+
+    FILE *f = ferrorlog ? ferrorlog : stderr;
+    ::fprintf(f, "Tcl error: %s#%d: %s\n\n\n",file, line, Tcl_GetVar(interp, "errorInfo", TCL_GLOBAL_ONLY));
+    ::fflush(f);
 }
 
 //======================================================================
