@@ -112,7 +112,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     cRNG **rngs;
 
     // Output file managers
-    EventlogFileManager *eventlogmgr;  // NULL if no event log is being written, must be non NULL if record_eventlog is true
+    EventlogFileManager *eventlogmgr;  // NULL if no eventlog is being written, must be non NULL if record_eventlog is true
     cOutputVectorManager *outvectormgr;
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;

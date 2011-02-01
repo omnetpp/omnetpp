@@ -216,6 +216,7 @@ EnvirBase::~EnvirBase()
     delete cfg;
     delete xmlcache;
 
+    delete eventlogmgr;
     delete outvectormgr;
     delete outscalarmgr;
     delete snapshotmgr;
@@ -343,6 +344,9 @@ bool EnvirBase::setup()
 
         // install XML document cache
         xmlcache = new cXMLDocCache();
+
+        // install eventlog manager
+        eventlogmgr = new EventlogFileManager();
 
         // install output vector manager
         CREATE_BY_CLASSNAME(outvectormgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
@@ -775,6 +779,8 @@ void EnvirBase::startRun()
     snapshotmgr->startRun();
     if (record_eventlog)
         eventlogmgr->startRun();
+    else
+        eventlogmgr->remove();
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
@@ -795,12 +801,9 @@ void EnvirBase::endRun()
         parsimpartition->endRun();
 #endif
     }
-    if (record_eventlog) {
+    if (record_eventlog)
         eventlogmgr->endRun();
-        delete eventlogmgr;
-        eventlogmgr = NULL;
-        record_eventlog = false;
-    }
+    eventlogmgr->close();
     snapshotmgr->endRun();
     outscalarmgr->endRun();
     outvectormgr->endRun();
@@ -1459,26 +1462,23 @@ void EnvirBase::readPerRunOptions()
         nextuniquenumber = (unsigned)parsimcomm->getProcId() * ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
 
-    // open message log file. Note: in startRun() it would be too late,
-    // because modules have already been created by then
+    // open eventlog file.
+    // Note: in startRun() it would be too late, because modules are created earlier
+    eventlogmgr->configure();
     record_eventlog = cfg->getAsBool(CFGID_RECORD_EVENTLOG);
-    if (record_eventlog) {
-        eventlogmgr = new EventlogFileManager();
-        eventlogmgr->configure();
+    if (record_eventlog)
         eventlogmgr->open();
-    }
 }
 
 void EnvirBase::setEventlogRecording(bool enabled)
 {
     // NOTE: eventlogmgr must be non-NULL when record_eventlog is true
-    if (enabled && !eventlogmgr) {
-        eventlogmgr = new EventlogFileManager();
-        eventlogmgr->configure();
+    if (enabled && !record_eventlog) {
         eventlogmgr->open();
         eventlogmgr->recordSimulation();
     }
     record_eventlog = enabled;
+    eventlogmgr->flush();
 }
 
 bool EnvirBase::hasEventlogRecordingIntervals() const

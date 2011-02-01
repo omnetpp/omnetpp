@@ -569,6 +569,7 @@ proc rebuild {} {
     if {[network_present] == 0} return
     busy "Rebuilding network..."
     opp_rebuild
+    reflect_record_eventlog
     busy
 }
 

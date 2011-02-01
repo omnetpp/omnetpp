@@ -36,10 +36,10 @@
 USING_NAMESPACE
 
 
-Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the event log file to generate.");
+Register_PerRunConfigOption(CFGID_EVENTLOG_FILE, "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog", "Name of the eventlog file to generate.");
 Register_PerRunConfigOption(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN, "eventlog-message-detail-pattern", CFG_CUSTOM, NULL,
         "A list of patterns separated by '|' character which will be used to write "
-        "message detail information into the event log for each message sent during "
+        "message detail information into the eventlog for each message sent during "
         "the simulation. The message detail will be presented in the sequence chart "
         "tool. Each pattern starts with an object pattern optionally followed by ':' "
         "character and a comma separated list of field patterns. In both "
@@ -95,6 +95,7 @@ EventlogFileManager::EventlogFileManager()
     feventlog = NULL;
     objectPrinter = NULL;
     recordingIntervals = NULL;
+    isEmpty = true;
     isEventLogRecordingEnabled = true;
     isIntervalEventLogRecordingEnabled = true;
     isModuleEventLogRecordingEnabled = true;
@@ -108,15 +109,12 @@ EventlogFileManager::~EventlogFileManager()
 
 void EventlogFileManager::configure()
 {
-    // setup event log object printer
+    // setup eventlog object printer
     delete objectPrinter;
     objectPrinter = NULL;
-
     const char *eventLogMessageDetailPattern = ev.getConfig()->getAsCustom(CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN);
-
-    if (eventLogMessageDetailPattern) {
+    if (eventLogMessageDetailPattern)
         objectPrinter = new ObjectPrinter(recurseIntoMessageFields, eventLogMessageDetailPattern, 3);
-    }
 
     // setup eventlog recording intervals
     const char *text = ev.getConfig()->getAsCustom(CFGID_EVENTLOG_RECORDING_INTERVALS);
@@ -128,24 +126,44 @@ void EventlogFileManager::configure()
     // setup filename
     filename = ev.getConfig()->getAsFilename(CFGID_EVENTLOG_FILE).c_str();
     dynamic_cast<EnvirBase *>(&ev)->processFileName(filename);
-    ::printf("Recording event log to file `%s'...\n", filename.c_str());
 }
 
 void EventlogFileManager::open()
 {
-    mkPath(directoryOf(filename.c_str()).c_str());
-    FILE *out = fopen(filename.c_str(), "w");
-    if (!out)
-        throw cRuntimeError("Cannot open eventlog file `%s' for write", filename.c_str());
-    feventlog = out;
+    if (!feventlog) {
+        mkPath(directoryOf(filename.c_str()).c_str());
+        FILE *out = fopen(filename.c_str(), "w");
+        if (!out)
+            throw cRuntimeError("Cannot open eventlog file `%s' for write", filename.c_str());
+        ::printf("Recording eventlog to file `%s'...\n", filename.c_str());
+        feventlog = out;
+        isEventLogRecordingEnabled = true;
+    }
+}
+
+void EventlogFileManager::close()
+{
+    if (feventlog) {
+        fclose(feventlog);
+        feventlog = NULL;
+        isEventLogRecordingEnabled = false;
+    }
+}
+
+void EventlogFileManager::remove()
+{
+    removeFile(filename.c_str(), "old eventlog file");
+    isEmpty = true;
 }
 
 void EventlogFileManager::recordSimulation()
 {
-    cModule *systemModule = simulation.getSystemModule();
-    recordModules(systemModule);
-    recordConnections(systemModule);
-    recordMessages();
+    if (isEmpty) {
+        cModule *systemModule = simulation.getSystemModule();
+        recordModules(systemModule);
+        recordConnections(systemModule);
+        recordMessages();
+    }
 }
 
 void EventlogFileManager::recordMessages()
@@ -161,8 +179,10 @@ void EventlogFileManager::recordMessages()
         if (currentEventNumber != message->getPreviousEventNumber()) {
         	currentEventNumber = message->getPreviousEventNumber();
             EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, currentEventNumber, message->getSendingTime(), currentEventNumber == 0 ? simulation.getSystemModule()->getId() : message->getSenderModuleId(), -1);
-            if (currentEventNumber == 0)
+            if (currentEventNumber == 0) {
                 EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
+                isEmpty = false;
+            }
         }
         if (currentEventNumber == 0) {
         	cModule *senderModule = message->getSenderModule();
@@ -199,9 +219,8 @@ void EventlogFileManager::recordModules(cModule *module)
     }
     moduleCreated(module);
     // FIXME: records display string twice if it is lazily created right now
-    if (strcmp(module->getDisplayString().str(), "")) {
+    if (strcmp(module->getDisplayString().str(), ""))
         displayStringChanged(module);
-    }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
         recordModules(it());
 }
@@ -213,9 +232,8 @@ void EventlogFileManager::recordConnections(cModule *module)
         if (gate->getNextGate())
             connectionCreated(gate);
         cChannel *channel = gate->getChannel();
-        if (channel && strcmp(channel->getDisplayString(), "")) {
+        if (channel && strcmp(channel->getDisplayString(), ""))
             displayStringChanged(channel);
-        }
     }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
         recordConnections(it());
@@ -223,24 +241,23 @@ void EventlogFileManager::recordConnections(cModule *module)
 
 void EventlogFileManager::startRun()
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
         // TODO: we can't use simulation.getEventNumber() and simulation.getSimTime(), because when we start a new run
         // these numbers are still set from the previous run (i.e. not zero)
         EventLogWriter::recordEventEntry_e_t_m_msg(feventlog, 0, 0, simulation.getSystemModule()->getId(), -1);
         EventLogWriter::recordSimulationBeginEntry_v_rid(feventlog, OMNETPP_VERSION, runId);
+        isEmpty = false;
         fflush(feventlog);
     }
 }
 
 void EventlogFileManager::endRun()
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordSimulationEndEntry(feventlog);
-        fclose(feventlog);
-        feventlog = NULL;
+        isEmpty = false;
+        fflush(feventlog);
     }
 }
 
@@ -261,35 +278,31 @@ void EventlogFileManager::clearRecordingIntervals()
 void EventlogFileManager::flush()
 {
     if (isEventLogRecordingEnabled)
-    {
         fflush(feventlog);
-    }
 }
 
 void EventlogFileManager::simulationEvent(cMessage *msg)
 {
     cModule *mod = simulation.getContextModule();
-
     isModuleEventLogRecordingEnabled = simulation.getContextModule()->isRecordEvents();
     isIntervalEventLogRecordingEnabled = !recordingIntervals || recordingIntervals->contains(simulation.getSimTime());
     isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
-
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog,
             simulation.getEventNumber(), simulation.getSimTime(), mod->getId(),
             msg->getPreviousEventNumber(), msg->getId());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::bubble(cComponent *component, const char *text)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         if (dynamic_cast<cModule *>(component))
         {
             cModule *mod = (cModule *)component;
             EventLogWriter::recordBubbleEntry_id_txt(feventlog, mod->getId(), text);
+            isEmpty = false;
         }
         else if (dynamic_cast<cChannel *>(component))
         {
@@ -310,6 +323,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
                 pkt->getClassName(), pkt->getFullName(), pkt->getPreviousEventNumber(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
                 objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL);
+            isEmpty = false;
         }
         else {
             EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
@@ -317,14 +331,14 @@ void EventlogFileManager::beginSend(cMessage *msg)
                 msg->getClassName(), msg->getFullName(), msg->getPreviousEventNumber(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
                 objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL);
+            isEmpty = false;
         }
     }
 }
 
 void EventlogFileManager::messageScheduled(cMessage *msg)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventlogFileManager::beginSend(msg);
         EventlogFileManager::endSend(msg);
     }
@@ -332,66 +346,63 @@ void EventlogFileManager::messageScheduled(cMessage *msg)
 
 void EventlogFileManager::messageCancelled(cMessage *msg)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordCancelEventEntry_id_pe(feventlog, msg->getId(), msg->getPreviousEventNumber());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordSendDirectEntry_sm_dm_dg_pd_td(feventlog,
             msg->getSenderModuleId(), toGate->getOwnerModule()->getId(), toGate->getId(),
             propagationDelay, transmissionDelay);
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordSendHopEntry_sm_sg(feventlog,
             srcGate->getOwnerModule()->getId(), srcGate->getId());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordSendHopEntry_sm_sg_pd_td(feventlog,
             srcGate->getOwnerModule()->getId(), srcGate->getId(), propagationDelay, transmissionDelay);
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::endSend(cMessage *msg)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         bool isStart = msg->isPacket() ? ((cPacket *)msg)->isReceptionStart() : false;
         EventLogWriter::recordEndSendEntry_t_is(feventlog, msg->getArrivalTime(), isStart);
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::messageDeleted(cMessage *msg)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordDeleteMessageEntry_id_pe(feventlog, msg->getId(), msg->getPreviousEventNumber());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va)
 {
-    if (isEventLogRecordingEnabled)
-    {
-        if (from && from->isModule() && to->isModule())
-        {
+    if (isEventLogRecordingEnabled) {
+        if (from && from->isModule() && to->isModule()) {
             const char *methodText = "";  // for the Enter_Method_Silent case
-            if (methodFmt)
-            {
+            if (methodFmt) {
                 static char methodTextBuf[MAX_METHODCALL];
                 vsnprintf(methodTextBuf, MAX_METHODCALL, methodFmt, va);
                 methodTextBuf[MAX_METHODCALL-1] = '\0';
@@ -399,114 +410,110 @@ void EventlogFileManager::componentMethodBegin(cComponent *from, cComponent *to,
             }
             EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog,
                 ((cModule *)from)->getId(), ((cModule *)to)->getId(), methodText);
+            isEmpty = false;
         }
     }
 }
 
 void EventlogFileManager::componentMethodEnd()
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         //XXX problem when channel method is called: we'll emit an "End" entry but no "Begin"
         //XXX same problem when the caller is not a module or is NULL
         EventLogWriter::recordModuleMethodEndEntry(feventlog);
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::moduleCreated(cModule *newmodule)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         cModule *m = newmodule;
-
         bool recordModuleEvents = ev.getConfig()->getAsBool(m->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
         m->setRecordEvents(recordModuleEvents);
-
         bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
-
         EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog,
             m->getId(), m->getClassName(), m->getNedTypeName(), m->getParentModule() ? m->getParentModule()->getId() : -1, m->getFullName(), isCompoundModule); //FIXME size() is missing
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::moduleDeleted(cModule *module)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordModuleDeletedEntry_id(feventlog, module->getId());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::moduleReparented(cModule *module, cModule *oldparent)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordModuleReparentedEntry_id_p(feventlog, module->getId(), module->getParentModule()->getId());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::gateCreated(cGate *newgate)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordGateCreatedEntry_m_g_n_i_o(feventlog,
             newgate->getOwnerModule()->getId(), newgate->getId(), newgate->getName(),
             newgate->isVector() ? newgate->getIndex() : -1, newgate->getType() == cGate::OUTPUT);
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::gateDeleted(cGate *gate)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordGateDeletedEntry_m_g(feventlog, gate->getOwnerModule()->getId(), gate->getId());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::connectionCreated(cGate *srcgate)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         cGate *destgate = srcgate->getNextGate();
         EventLogWriter::recordConnectionCreatedEntry_sm_sg_dm_dg(feventlog,
             srcgate->getOwnerModule()->getId(), srcgate->getId(), destgate->getOwnerModule()->getId(), destgate->getId());  //XXX channel, channel attributes, etc
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::connectionDeleted(cGate *srcgate)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordConnectionDeletedEntry_sm_sg(feventlog,
             srcgate->getOwnerModule()->getId(), srcgate->getId());
+        isEmpty = false;
     }
 }
 
 void EventlogFileManager::displayStringChanged(cComponent *component)
 {
-    if (isEventLogRecordingEnabled)
-    {
-        if (dynamic_cast<cModule *>(component))
-        {
+    if (isEventLogRecordingEnabled) {
+        if (dynamic_cast<cModule *>(component)) {
             cModule *module = (cModule *)component;
             EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog,
                 module->getId(), module->getDisplayString().str());
+            isEmpty = false;
         }
-        else if (dynamic_cast<cChannel *>(component))
-        {
+        else if (dynamic_cast<cChannel *>(component)) {
             cChannel *channel = (cChannel *)component;
             cGate *gate = channel->getSourceGate();
             EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog,
                 gate->getOwnerModule()->getId(), gate->getId(), channel->getDisplayString().str());
+            isEmpty = false;
         }
     }
 }
 
 void EventlogFileManager::sputn(const char *s, int n)
 {
-    if (isEventLogRecordingEnabled)
-    {
+    if (isEventLogRecordingEnabled) {
         EventLogWriter::recordLogLine(feventlog, s, n);
+        isEmpty = false;
     }
 }
-

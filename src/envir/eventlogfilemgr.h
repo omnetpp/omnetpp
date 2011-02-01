@@ -41,6 +41,7 @@ class ENVIR_API EventlogFileManager
     FILE *feventlog;
     ObjectPrinter *objectPrinter;
     Intervals *recordingIntervals;
+    bool isEmpty;
     bool isEventLogRecordingEnabled;
     bool isModuleEventLogRecordingEnabled;
     bool isIntervalEventLogRecordingEnabled;
@@ -51,6 +52,8 @@ class ENVIR_API EventlogFileManager
 
     virtual void configure();
     virtual void open();
+    virtual void close();
+    virtual void remove();
     virtual void startRun();
     virtual void endRun();
 
