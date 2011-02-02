@@ -415,9 +415,8 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         return componentNode.getEnclosingTypeElement() != null;
     }
 
-    public INedTypeInfo getEnclosingType() {
-        INedTypeElement enclosingTypeElement = componentNode.getEnclosingTypeElement();
-        return enclosingTypeElement == null ? null : enclosingTypeElement.getNedTypeInfo();
+    public INedTypeElement getEnclosingType() {
+        return componentNode.getEnclosingTypeElement();
     }
 
 	public INedTypeElement getNedElement() {

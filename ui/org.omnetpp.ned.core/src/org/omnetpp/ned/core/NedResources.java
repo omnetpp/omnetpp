@@ -516,24 +516,30 @@ public class NedResources implements INedResources, IResourceChangeListener {
         ProjectData projectData = projects.get(project);
         if (projectData == null)  // do not return type if the project is closed
             return null;
-        if (name.contains(".")) {
+        if (name.indexOf('.') != -1) {
             // contains dot, so it is a fully qualified name
-            if (lookupContext instanceof CompoundModuleElementEx) {
-                INedTypeInfo contextTypeInfo = ((CompoundModuleElementEx)lookupContext).getNedTypeInfo();
-
-                // inner type with fully qualified name
-                String prefix = StringUtils.substringBeforeLast(name, ".");
-                String simpleName = StringUtils.substringAfterLast(name, ".");
-                if (contextTypeInfo.getFullyQualifiedName().equals(prefix)) {
-                    INedTypeElement innerType = contextTypeInfo.getInnerTypes().get(simpleName);
-                    if (innerType != null)
-                        return innerType.getNedTypeInfo();
+            INedTypeInfo type = getToplevelOrInnerNedType(name, project);
+            if (type == null)
+                return null;
+            if (!type.isInnerType())
+                return type; // toplevel types are visible from anywhere
+            else {
+                // inner types are only visible from the same toplevel type
+                if (!(lookupContext instanceof CompoundModuleElementEx))
+                    return null; // no inner type is visible at file level
+                else {
+                    CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) lookupContext; 
+                    // if lookupContext is an inner type itself, go up to toplevel type to make sure an inner type sees its sibling inner type
+                    if (compoundModule.getEnclosingLookupContext() instanceof CompoundModuleElementEx)
+                        compoundModule = (CompoundModuleElementEx) compoundModule.getEnclosingLookupContext(); 
+                    if (type.getEnclosingType() == compoundModule)
+                        return type;
+                    else if (compoundModule.getNedTypeInfo().getInnerTypes().values().contains(type.getNedElement()))
+                        return type;
+                    else 
+                        return null;
                 }
             }
-
-            // fully qualified name (as we don't accept partially qualified names)
-            if (projectData.components.get(name) != null)
-                return projectData.components.get(name);
         }
         else {
             // no dot: name is an unqualified name (simple name); so, it can be:

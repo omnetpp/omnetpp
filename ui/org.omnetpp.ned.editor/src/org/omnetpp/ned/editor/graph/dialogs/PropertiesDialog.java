@@ -2367,7 +2367,7 @@ public class PropertiesDialog extends TrayDialog {
                 }
                 else if (nedType.isInnerType()) {
                     CompoundModuleElementEx compoundModule = compoundModuleOf(elements[0]);
-                    if (compoundModule == null || nedType.getEnclosingType() != compoundModule.getNedTypeInfo())
+                    if (compoundModule == null || nedType.getEnclosingType() != compoundModule)
                         addWarningIfNotNull(errors, fieldEditor, fieldName, "An inner type cannot be used outside its container type");
                 }
             }
