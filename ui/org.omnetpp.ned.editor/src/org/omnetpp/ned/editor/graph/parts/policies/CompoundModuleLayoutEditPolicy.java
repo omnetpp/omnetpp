@@ -195,15 +195,17 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         INedElement element = (INedElement)childToAdd.getModel();
 
         // if the add is not targeted to the title/border i.e. it is dropped inside
-        // a the submodule area, we should create a new submodule instead of creating an inner type
-        // (we should treat it as a clone command)
+        // a the submodule area (and the added element is a type), we should 
+        // create a new submodule with that type instead of creating an inner type
+        // (CloneCommand does this exactly so we reuse it)
         Point p = ((ChangeBoundsRequest)currentRequest).getLocation();
-        if (!((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
+        if (isAllowedType(element) && !((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
             return getCloneCommand((ChangeBoundsRequest)currentRequest);
 
-        if (!isAllowedType(element) || !isInsertable(element)) // do not allow networks for example
+        if (!isAllowedType(element) || !isInsertable(element)) // do not allow networks or nesting of inner types
             return UnexecutableCommand.INSTANCE;
 
+        // move the type to the new compound module
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
         CompoundCommand command = new CompoundCommand("Move type");
         command.add(new RemoveCommand(element));
