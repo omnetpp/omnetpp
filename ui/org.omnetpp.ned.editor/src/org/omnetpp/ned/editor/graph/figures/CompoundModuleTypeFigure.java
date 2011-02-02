@@ -106,15 +106,23 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
 	}
 
     /**
-     * Returns whether the point is on the border area, where dragging and selection and connection start/end is possible.
+     * Returns whether the point is on the border area, where dragging and selection
+     * and connection start/end is possible. Border are includes the title of the compound
+     * module but EXCLUDES the types area where inner types are shown.
      * Coordinates are viewport relative.
      */
     public boolean isOnBorder(int x, int y) {
         // translate the mouse coordinates to be relative to the root figure
         Point mouse = new Point(x,y);
         translateToRelative(mouse);
-        Rectangle r = getHandleBounds().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
-        return getBounds().contains(mouse) && !r.contains(mouse);
+
+        Rectangle submoduleAreaRectInner = getHandleBounds().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
+        Rectangle titleAreaOuter = titleArea.getBounds().getCopy();
+        translateToParent(titleAreaOuter);  // because we are using local coordinates
+
+        // either on the title area or on the border of compound module figure (submodule area)
+        return titleAreaOuter.contains(mouse) ||
+                (getHandleBounds().contains(mouse) && !submoduleAreaRectInner.contains(mouse));
     }
 
     public Rectangle getHandleBounds() {

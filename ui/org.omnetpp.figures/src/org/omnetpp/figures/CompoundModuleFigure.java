@@ -218,7 +218,6 @@ public class CompoundModuleFigure extends LayeredPane
      */
     public Rectangle getHandleBounds() {
         Rectangle result = getBounds().getCopy();
-        // translateToParent(result);
         return result;
     }
 
