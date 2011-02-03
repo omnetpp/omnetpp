@@ -175,10 +175,10 @@ proc draw_conn {c srcgateptr destgateptr chanptr chanstr dispstr} {
     set x  [expr ([lindex $destrect 0]+ [lindex $destrect 2])/2]
 
     if [catch {
-       if {![info exists tags(o)]} {set tags(o) {}}
-       set fill [lindex $tags(o) 0]
+       if {![info exists tags(ls)]} {set tags(ls) {}}
+       set fill [lindex $tags(ls) 0]
        if {$fill == ""} {set fill black}
-       set width [lindex $tags(o) 1]
+       set width [lindex $tags(ls) 1]
        if {$width == ""} {set width 2}
 
        $c create line $x $y0 $x $y1 -arrow last \
