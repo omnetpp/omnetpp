@@ -213,14 +213,14 @@ void EventlogFileManager::recordMessages()
 
 void EventlogFileManager::recordModules(cModule *module)
 {
-    for (cModule::GateIterator it(module); !it.end(); it++) {
-        cGate *gate = it();
-        gateCreated(gate);
-    }
     moduleCreated(module);
     // FIXME: records display string twice if it is lazily created right now
     if (strcmp(module->getDisplayString().str(), ""))
         displayStringChanged(module);
+    for (cModule::GateIterator it(module); !it.end(); it++) {
+        cGate *gate = it();
+        gateCreated(gate);
+    }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
         recordModules(it());
 }
