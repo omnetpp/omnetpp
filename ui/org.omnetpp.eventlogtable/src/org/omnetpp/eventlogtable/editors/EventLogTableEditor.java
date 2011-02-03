@@ -97,9 +97,9 @@ public class EventLogTableEditor
 	@Override
 	public void createPartControl(Composite parent) {
 		eventLogTable = new EventLogTable(parent, SWT.NONE);
-		eventLogTable.setFollowSelection(false);
 		eventLogTable.setInput(eventLogInput);
 		eventLogTable.setEventLogTableContributor(EventLogTableContributor.getDefault());
+		eventLogTable.setWorkbenchPart(this);
 
 		getSite().setSelectionProvider(eventLogTable);
 		addLocationProviderPaintListener(eventLogTable.getCanvas());
@@ -107,7 +107,7 @@ public class EventLogTableEditor
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != EventLogTableEditor.this && selection instanceof IEventLogSelection) {
+				if (followSelection && part != EventLogTableEditor.this && selection instanceof IEventLogSelection) {
 					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
 
 					if (eventLogSelection.getEventLogInput() == eventLogTable.getInput()) {
@@ -284,6 +284,7 @@ public class EventLogTableEditor
         // contents of the "Show In..." context menu
         return new String[] {
                 IConstants.SEQUENCECHART_VIEW_ID,
+                IConstants.ANIMATION_VIEW_ID,
                 //TODO IConstants.MODULEHIERARCHY_VIEW_ID,
                 };
     }

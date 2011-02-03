@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
@@ -88,6 +89,8 @@ public class EventLogTable
 
 	private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
 
+    private IWorkbenchPart workbenchPart;
+
 	/*************************************************************************************
 	 * CONSTRUCTION
 	 */
@@ -126,6 +129,14 @@ public class EventLogTable
 		eventLogTableContributor.contributeToPopupMenu(menuManager);
 		setMenu(menuManager.createContextMenu(this));
 	}
+
+    public IWorkbenchPart getWorkbenchPart() {
+        return workbenchPart;
+    }
+
+    public void setWorkbenchPart(IWorkbenchPart workbenchPart) {
+        this.workbenchPart = workbenchPart;
+    }
 
 	/*************************************************************************************
 	 * OVERRIDING BEHAVIOR
@@ -198,12 +209,10 @@ public class EventLogTable
 		else {
 			List<EventLogEntryReference> selectionElements = getSelectionElements();
 			ArrayList<Long> selectionEvents = new ArrayList<Long>();
-
 			if (selectionElements != null)
     			for (EventLogEntryReference selectionElement : selectionElements)
     				selectionEvents.add(selectionElement.getEventNumber());
-
-			return new EventLogSelection(eventLogInput, selectionEvents);
+			return new EventLogSelection(eventLogInput, selectionEvents, null);
 		}
 	}
 
@@ -212,41 +221,38 @@ public class EventLogTable
 	 */
 	@Override
 	public void setSelection(ISelection selection) {
-		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
-
-		IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
-		for (Long eventNumber : eventLogSelection.getEventNumbers())
-			eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
-
-		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
+	    if (selection instanceof IEventLogSelection) {
+    		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+    		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
+    		IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
+    		for (Long eventNumber : eventLogSelection.getEventNumbers())
+    			eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
+    		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
+	    }
 	}
 
 	@Override
 	public void setInput(Object input) {
-		// store current settings
-		if (eventLogInput != null) {
-			eventLogInput.removeEventLogChangedListener(this);
-			storeState(eventLogInput.getFile());
-		}
-
-		// remember input
-		eventLogInput = (EventLogInput)input;
-		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
-		eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
-
-		// clear state
-		followEnd = false;
-
-		super.setInput(input);
-
-		// restore last known settings
-		if (eventLogInput != null) {
-			eventLogInput.addEventLogChangedListener(this);
-
-			if (!restoreState(eventLogInput.getFile()))
-				scrollToBegin();
-		}
+	    if (input != eventLogInput) {
+    		// store current settings
+    		if (eventLogInput != null) {
+    			eventLogInput.removeEventLogChangedListener(this);
+    			storeState(eventLogInput.getFile());
+    		}
+    		// remember input
+    		eventLogInput = (EventLogInput)input;
+    		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
+    		eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
+    		// clear state
+    		followEnd = false;
+    		super.setInput(input);
+    		// restore last known settings
+    		if (eventLogInput != null) {
+    			eventLogInput.addEventLogChangedListener(this);
+    			if (!restoreState(eventLogInput.getFile()))
+    				scrollToBegin();
+    		}
+	    }
 	}
 
 	@Override

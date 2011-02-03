@@ -5,12 +5,13 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="OMNeT++ Event Log Table"
-            extensions="log"
-            icon="icons/eventlog.png"
-            contributorClass="org.omnetpp.eventlogtable.editors.EventLogTableContributor"
             class="org.omnetpp.eventlogtable.editors.EventLogTableEditor"
-            id="org.omnetpp.eventlogtable.editors.EventLogTableEditor">
+            contributorClass="org.omnetpp.eventlogtable.editors.EventLogTableContributor"
+            default="false"
+            extensions="elog"
+            icon="icons/eventlog.png"
+            id="org.omnetpp.eventlogtable.editors.EventLogTableEditor"
+            name="OMNeT++ Event Log Table">
       </editor>
    </extension>
 

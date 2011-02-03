@@ -18,7 +18,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -67,6 +66,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.GotoEventDialog;
 import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IFollowSelectionSupport;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
@@ -79,40 +79,27 @@ import org.omnetpp.eventlog.engine.MatchKind;
 import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
-
 @SuppressWarnings("restriction")
 public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
-	private static EventLogTableContributor singleton;
-
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
-
     public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
-
     public final static String IMAGE_LINE_FILTER_MODE = TOOL_IMAGE_DIR + "LineFilterMode.png";
 
-	protected EventLogTable eventLogTable;
+    private static EventLogTableContributor singleton;
+	private EventLogTable eventLogTable;
 
-	protected Separator separatorAction;
-
-	protected EventLogTableAction gotoMessageOriginAction;
-
-	protected EventLogTableAction gotoMessageReuseAction;
-
-    protected EventLogTableAction toggleBookmarkAction;
-
-    protected EventLogTableMenuAction typeModeAction;
-
-    protected EventLogTableMenuAction nameModeAction;
-
-    protected EventLogTableMenuAction lineFilterModeAction;
-
-	protected EventLogTableMenuAction displayModeAction;
-
-	protected EventLogTableAction filterAction;
-
-    protected EventLogTableAction refreshAction;
-
-    protected StatusLineContributionItem filterStatus;
+	private Separator separatorAction;
+	private EventLogTableAction gotoMessageOriginAction;
+	private EventLogTableAction gotoMessageReuseAction;
+    private EventLogTableAction toggleBookmarkAction;
+    private EventLogTableMenuAction typeModeAction;
+    private EventLogTableMenuAction nameModeAction;
+    private EventLogTableMenuAction lineFilterModeAction;
+	private EventLogTableMenuAction displayModeAction;
+	private EventLogTableAction filterAction;
+    private EventLogTableAction refreshAction;
+    private EventLogTableAction pinAction;
+    private StatusLineContributionItem filterStatus;
 
 	/*************************************************************************************
 	 * CONSTRUCTION
@@ -129,6 +116,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		this.displayModeAction = createDisplayModeAction();
 		this.filterAction = createFilterAction();
 		this.refreshAction = createRefreshAction();
+		this.pinAction = createPinAction();
 
 		this.filterStatus = createFilterStatus();
 
@@ -197,13 +185,13 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         menuManager.add(displayModeAction);
         menuManager.add(separatorAction);
         menuManager.add(toggleBookmarkAction);
+        menuManager.add(pinAction);
         menuManager.add(createRefreshCommandContributionItem());
         menuManager.add(separatorAction);
 
         MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
-        showInSubmenu.add(showInViewItem);
+        showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
         menuManager.add(showInSubmenu);
 
 	}
@@ -223,7 +211,10 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
-        toolBarManager.add(separatorAction);
+	    contributeToToolBar(toolBarManager, false);
+	}
+
+	public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
         toolBarManager.add(filterAction);
         toolBarManager.add(lineFilterModeAction);
         toolBarManager.add(separatorAction);
@@ -231,6 +222,8 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(displayModeAction);
         toolBarManager.add(separatorAction);
 		toolBarManager.add(refreshAction);
+		if (view)
+		    toolBarManager.add(pinAction);
 	}
 
 	@Override
@@ -1111,6 +1104,26 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             }
         };
 	}
+
+    private EventLogTableAction createPinAction() {
+        return new EventLogTableAction("Pin", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
+            @Override
+            protected void doRun() {
+                IWorkbenchPart workbenchPart = eventLogTable.getWorkbenchPart();
+                if (workbenchPart instanceof IFollowSelectionSupport) {
+                    IFollowSelectionSupport followSelectionSupport = (IFollowSelectionSupport)workbenchPart;
+                    followSelectionSupport.setFollowSelection(!followSelectionSupport.getFollowSelection());
+                }
+            }
+
+            @Override
+            public void update() {
+                IWorkbenchPart workbenchPart = eventLogTable.getWorkbenchPart();
+                if (workbenchPart instanceof IFollowSelectionSupport)
+                    setChecked(!((IFollowSelectionSupport)workbenchPart).getFollowSelection());
+            }
+        };
+    }
 
     private CommandContributionItem createRefreshCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.refresh", SWT.PUSH);

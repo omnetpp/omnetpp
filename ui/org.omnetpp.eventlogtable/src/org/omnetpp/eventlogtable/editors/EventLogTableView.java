@@ -37,52 +37,46 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-
-		// we want to provide selection for the sequence chart tool (an IEditPart)
 		IViewSite viewSite = (IViewSite)getSite();
 		viewSite.setSelectionProvider(eventLogTable);
 		IContextService contextService = (IContextService)viewSite.getService(IContextService.class);
 		contextService.activateContext("org.omnetpp.context.EventLogTable");
-
 		// contribute to toolbar
 		eventLogTableContributor = new EventLogTableContributor(eventLogTable);
 		eventLogTable.setEventLogTableContributor(eventLogTableContributor);
-		eventLogTableContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
-
+		eventLogTableContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager(), true);
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != EventLogTableView.this && selection instanceof IEventLogSelection)
-					updateSelection(selection);
+				if (followSelection && part != EventLogTableView.this && selection instanceof IEventLogSelection)
+					setSelection(selection);
 			}
 		};
 		viewSite.getPage().addSelectionListener(selectionListener);
-
 		// follow active editor changes
 		partListener = new IPartListener() {
 			public void partActivated(IWorkbenchPart part) {
 			}
 
 			public void partBroughtToTop(IWorkbenchPart part) {
-                if (part instanceof IEditorPart && !eventLogTable.isDisposed())
-                    updateSelectionFromActiveEditor();
+                if (followSelection && part instanceof IEditorPart && !eventLogTable.isDisposed())
+                    setSelectionFromActiveEditor();
 			}
 
 			public void partClosed(IWorkbenchPart part) {
-                if (part instanceof IEditorPart && !eventLogTable.isDisposed())
-                    updateSelectionFromActiveEditor();
+                if (followSelection && part instanceof IEditorPart && !eventLogTable.isDisposed())
+                    setSelectionFromActiveEditor();
 			}
 
 			public void partDeactivated(IWorkbenchPart part) {
 			}
 
 			public void partOpened(IWorkbenchPart part) {
-                if (part instanceof IEditorPart && !eventLogTable.isDisposed())
-                    updateSelectionFromActiveEditor();
+                if (followSelection && part instanceof IEditorPart && !eventLogTable.isDisposed())
+                    setSelectionFromActiveEditor();
 			}
 		};
 		viewSite.getPage().addPartListener(partListener);
-
 		// bootstrap with current selection
 		selectionListener.selectionChanged(null, getActiveEditorSelection());
 	}
@@ -113,15 +107,12 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
 	@Override
 	protected Control createViewControl(Composite parent) {
 		eventLogTable = new EventLogTable(parent, SWT.NONE);
-
+		eventLogTable.setWorkbenchPart(this);
 		return eventLogTable;
 	}
 
-	private void updateSelectionFromActiveEditor() {
-	    updateSelection(getActiveEditorSelection());
-	}
-
-    private void updateSelection(ISelection selection) {
+	@Override
+    public void setSelection(ISelection selection) {
 		if (selection instanceof IEventLogSelection) {
 			hideMessage();
 			eventLogTable.setSelection(selection);
@@ -130,7 +121,6 @@ public class EventLogTableView extends EventLogView implements IEventLogTablePro
 			eventLogTable.setInput(null);
 			showMessage("No event log available");
 		}
-
         updateTitleToolTip();
     }
 

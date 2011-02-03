@@ -90,10 +90,9 @@ public class VirtualTable<T>
     protected ListenerList selectionChangedListeners = new ListenerList();
 
 	/**
-	 * True means the table will jump to the selection and switch input automatically when it gets notified about a selection change
-	 * even if the input is different from the current one.
+	 * True means a selection change operation is in progress and subsequent ones will be ignored.
 	 */
-	protected boolean followSelection = true;
+    protected boolean isSelectionChangeInProgress;
 
 	/**
 	 * A list of selected elements;
@@ -164,7 +163,8 @@ public class VirtualTable<T>
 		scrolledComposite.setContent(composite);
 
 		getVerticalBar().addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			@Override
+            public void widgetSelected(SelectionEvent e) {
 				ScrollBar scrollBar = (ScrollBar)e.widget;
 				double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
 
@@ -214,7 +214,8 @@ public class VirtualTable<T>
 		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
 		scrolledComposite.getHorizontalBar().setIncrement(10);
 		scrolledComposite.addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
+			@Override
+            public void controlResized(ControlEvent e) {
 				composite.layout();
 		        composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 				scrolledComposite.getVerticalBar().setVisible(false);
@@ -247,7 +248,8 @@ public class VirtualTable<T>
 		});
 
 		canvas.addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
+			@Override
+            public void controlResized(ControlEvent e) {
 				configureVerticalScrollBar();
 				redraw();
 			}
@@ -280,7 +282,8 @@ public class VirtualTable<T>
 		});
 
 		canvas.addMouseListener(new MouseAdapter() {
-			public void mouseDown(MouseEvent e) {
+			@Override
+            public void mouseDown(MouseEvent e) {
 				if (input != null && contentProvider != null) {
 					T element = getVisibleElementAt(e.y / getRowHeight());
 
@@ -323,7 +326,8 @@ public class VirtualTable<T>
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 		table.addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
+			@Override
+            public void controlResized(ControlEvent e) {
 				composite.layout();
 			}
 		});
@@ -334,7 +338,8 @@ public class VirtualTable<T>
 	public TableColumn createColumn() {
 		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
 		tableColumn.addControlListener(new ControlAdapter() {
-			public void controlResized(ControlEvent e) {
+			@Override
+            public void controlResized(ControlEvent e) {
 				recomputeTableSize();
 			}
 		});
@@ -363,15 +368,16 @@ public class VirtualTable<T>
 	}
 
 	public void setInput(Object input) {
-		// remember input
-		this.input = input;
-		getContentProvider().inputChanged(null, null, input);
-		getRowRenderer().setInput(input);
-
-		// clear state
-		clearSelection();
-		configureVerticalScrollBar();
-		relocateFixPoint(null, 0);
+	    if (input != this.input) {
+    		// remember input
+    		this.input = input;
+    		getContentProvider().inputChanged(null, null, input);
+    		getRowRenderer().setInput(input);
+    		// clear state
+    		clearSelection();
+    		configureVerticalScrollBar();
+    		relocateFixPoint(null, 0);
+	    }
 	}
 
 	public IVirtualTableContentProvider<T> getContentProvider() {
@@ -442,24 +448,23 @@ public class VirtualTable<T>
 
 	@SuppressWarnings("unchecked")
 	public void setSelection(ISelection selection) {
-		if (debug)
-			Debug.println("VirtualTable got selection: " + selection);
-
-		IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
-		Object selectionInput = virtualTableSelection.getInput();
-
-		if (input != selectionInput) {
-			if (followSelection)
+		if (selection instanceof IVirtualTableSelection) {
+    		IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
+    		Object selectionInput = virtualTableSelection.getInput();
+    		if (input != selectionInput)
 				setInput(selectionInput);
-			else
-				throw new RuntimeException("Invalid selection");
-		}
-
-		if (!elementListEquals(selectionElements, virtualTableSelection.getElements())) {
-			setSelectionElements(virtualTableSelection.getElements());
-			scrollToSelectionElement();
-
-			fireSelectionChanged();
+    		boolean isSelectionReallyChanged = !elementListEquals(selectionElements, virtualTableSelection.getElements());
+    		if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
+    		    try {
+    		        isSelectionChangeInProgress = true;
+        			setSelectionElements(virtualTableSelection.getElements());
+        			scrollToSelectionElement();
+        			fireSelectionChanged();
+    		    }
+    		    finally {
+    		        isSelectionChangeInProgress = false;
+    		    }
+    		}
 		}
 	}
 
@@ -507,25 +512,6 @@ public class VirtualTable<T>
 		selectionElements = elements;
 
 		fireSelectionChanged();
-	}
-
-	/**
-	 * See setFollowSelection().
-	 */
-	public boolean getFollowSelection() {
-		return followSelection;
-	}
-
-	/**
-	 * Sets whether this widget should always switch to the element which comes in
-	 * the selection (=true), or stick to the input set with setInput() (=false).
-	 * The proper setting typically depends on whether the widget is used in an
-	 * editor (false) or in a view (true).
-	 *
-	 * Default is true.
-	 */
-	public void setFollowSelection(boolean followSelection) {
-		this.followSelection = followSelection;
 	}
 
 	/**
@@ -829,7 +815,8 @@ public class VirtualTable<T>
 		redraw();
 	}
 
-	public void redraw() {
+	@Override
+    public void redraw() {
 		if (debug)
 			Debug.println("Redrawing canvas");
 
