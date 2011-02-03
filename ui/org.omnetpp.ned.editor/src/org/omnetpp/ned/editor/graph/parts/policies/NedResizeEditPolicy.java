@@ -18,6 +18,7 @@ import org.eclipse.gef.Request;
 import org.eclipse.gef.editpolicies.ResizableEditPolicy;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.parts.EditPartUtil;
@@ -68,9 +69,15 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
     protected IFigure getCustomFeedbackFigure(GraphicalEditPart part, Object model) {
         RectangleFigure figure;
 
-        figure = new RectangleFigure();
-        figure.setFill(false);
-        figure.setLineStyle(SWT.LINE_DOT);
+        figure = new RectangleFigure() {
+           protected boolean useLocalCoordinates() {
+               return true;
+           };
+        };
+        figure.setFill(true);
+        figure.setBackgroundColor(ColorFactory.BLUE);
+        figure.setAlpha(40);
+//        figure.setLineStyle(SWT.LINE_DOT);
         return figure;
     }
 
