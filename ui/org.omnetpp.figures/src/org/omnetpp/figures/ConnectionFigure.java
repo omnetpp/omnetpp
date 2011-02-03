@@ -204,6 +204,13 @@ public class ConnectionFigure extends PolylineConnection
 	}
 
 	@Override
+	protected void outlineShape(Graphics g) {
+	    // override the line width so it will grow/shrink with the scale factor
+        g.setLineWidthFloat(getLineWidthFloat()*(float)g.getAbsoluteScale());
+	    super.outlineShape(g);
+	}
+
+	@Override
 	protected boolean useLocalCoordinates() {
 	    return false;  // locators are working correctly ONLY in non-local coordinate systems
 	}

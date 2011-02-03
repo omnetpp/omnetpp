@@ -20,18 +20,23 @@ import org.eclipse.draw2d.geometry.Rectangle;
 public class RangeFigure extends Ellipse {
 	public static final int ALPHA = 64;
 
-	// FIXME check this if the scaling is less than 1.0 (sides are chopped)
     // TODO: eclipse bug ID 199710
     @Override
     protected void outlineShape(Graphics graphics) {
     	Rectangle r = Rectangle.SINGLETON;
     	r.setBounds(getBounds());
-    	r.width--;
-    	r.height--;
-    	int t = lineWidth / 2;
-    	r.translate(t, t);
-    	int s = (lineWidth - 1) / 2;
-    	r.resize(-t - s, -t -s);
+        r.width--;
+        r.height--;
+	if (lineWidth % 2 == 0) {
+	    r.width--;
+	    r.height--;
+	}
+	float t = lineWidth / 2.0f;
+	r.translate((int)t, (int)t);
+	float s = (lineWidth - 1) / 2.0f;
+	r.resize((int)(-t - s), (int)(-t -s));
+	graphics.setClip(getBounds().getExpanded(1, 1));
+	graphics.setLineWidthFloat(lineWidth*(float)graphics.getAbsoluteScale());
     	graphics.setAlpha(ALPHA);
     	graphics.drawOval(r);
     }
@@ -40,8 +45,8 @@ public class RangeFigure extends Ellipse {
     protected void fillShape(Graphics graphics) {
     	Rectangle r = Rectangle.SINGLETON;
     	r.setBounds(getBounds());
-    	r.width--;
-    	r.height--;
+        r.width--;
+        r.height--;
     	int t = lineWidth;
     	r.translate(t, t);
     	int s = (lineWidth - 1);

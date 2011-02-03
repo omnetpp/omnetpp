@@ -39,15 +39,16 @@ public class CompoundModuleLineBorder extends LineBorder {
 	 * copied from {@link LineBorder#paint(IFigure, Graphics, Insets)}
 	 */
 	public void paint(IFigure figure, Graphics graphics, Insets insets) {
+	    if (getColor() != null)
+	        graphics.setForegroundColor(getColor());
+
 		tempRect.setBounds(getPaintRectangle(figure, insets));
-		if (getWidth() % 2 == 1) {
-			tempRect.width--;
-			tempRect.height--;
-		}
+        if (getWidth() % 2 == 1) {
+            tempRect.width--;
+            tempRect.height--;
+        }
 		tempRect.shrink(getWidth() / 2, getWidth() / 2);
-		graphics.setLineWidth(getWidth());
-		if (getColor() != null)
-			graphics.setForegroundColor(getColor());
+		graphics.setLineWidthFloat(getWidth()*(float)graphics.getAbsoluteScale());
 		// fixing an issue if we are using 0 as width
 		if(getWidth() > 0)
 			graphics.drawRectangle(tempRect);

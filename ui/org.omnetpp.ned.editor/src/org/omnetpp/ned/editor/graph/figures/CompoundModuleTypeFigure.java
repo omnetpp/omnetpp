@@ -116,7 +116,8 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
         Point mouse = new Point(x,y);
         translateToRelative(mouse);
 
-        Rectangle submoduleAreaRectInner = getHandleBounds().shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
+        int borderWidth = submoduleArea.getBorder().getWidth();
+        Rectangle submoduleAreaRectInner = getHandleBounds().shrink(borderWidth, borderWidth).shrink(2*BORDER_SNAP_WIDTH, 2*BORDER_SNAP_WIDTH);
         Rectangle titleAreaOuter = titleArea.getBounds().getCopy();
         translateToParent(titleAreaOuter);  // because we are using local coordinates
 

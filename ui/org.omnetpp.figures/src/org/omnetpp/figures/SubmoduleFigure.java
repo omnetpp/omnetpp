@@ -41,11 +41,6 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
 	protected static final int SHAPE_RECT = 2;
-	//	protected static final int SHAPE_RECT2 = 3;
-	//	protected static final int SHAPE_TRI = 4;
-	//	protected static final int SHAPE_TRI2 = 5;
-	//	protected static final int SHAPE_HEX = 6;
-	//	protected static final int SHAPE_HEX2 = 7;
 
 	protected static final int TEXTPOS_LEFT = 1;
 	protected static final int TEXTPOS_RIGHT = 2;
@@ -300,17 +295,6 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 			else
 				Assert.isTrue(false); // unhandled shape
 		}
-
-		// else if (shapeName.equalsIgnoreCase("rrect"))
-		// shape = SHAPE_RECT2;
-		// else if (shapeName.equalsIgnoreCase("tri"))
-		// shape = SHAPE_TRI;
-		// else if (shapeName.equalsIgnoreCase("tri2"))
-		// shape = SHAPE_TRI2;
-		// else if (shapeName.equalsIgnoreCase("hex"))
-		// shape = SHAPE_HEX;
-		// else if (shapeName.equalsIgnoreCase("hex2"))
-		// shape = SHAPE_HEX2;
 
 		this.shapeWidth = Math.max(shapeWidth, 0);
 		this.shapeHeight = Math.max(shapeHeight, 0);
@@ -669,9 +653,11 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 			graphics.pushState();
 			graphics.setForegroundColor(shapeBorderColor);
 			graphics.setBackgroundColor(shapeFillColor);
-			graphics.setLineWidth(shapeBorderWidth);
+			graphics.setLineWidthFloat(shapeBorderWidth*(float)graphics.getAbsoluteScale());
 			int left = centerLoc.x - shapeWidth/2;
 			int top = centerLoc.y - shapeHeight/2;
+            // expand the clipping a bit so the anti-alised sides would not be clipped
+            graphics.setClip(graphics.getClip(Rectangle.SINGLETON).getExpanded(1, 1));
 			if (shape == SHAPE_OVAL) {
 				if (2*shapeBorderWidth > shapeWidth || 2*shapeBorderWidth > shapeHeight) {
 					// special case: border is wider than the shape itself
