@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
@@ -61,6 +62,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
+import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.CachingCanvas;
 import org.omnetpp.common.canvas.LargeRect;
@@ -68,6 +70,7 @@ import org.omnetpp.common.canvas.RubberbandSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogSelection;
@@ -253,19 +256,17 @@ public class SequenceChart
 
 	private boolean followEnd = false; // when the eventlog changes should we follow it or not?
 
+    private IWorkbenchPart workbenchPart;
+
 	/*************************************************************************************
 	 * SELECTION STATE
 	 */
 
-	/**
-	 * True means the chart will jump to the selection and switch input automatically when it gets notified about a selection change
-	 * even if the input is different from the current one.
-	 */
-	private boolean followSelection = true;
-
-	private ArrayList<SelectionListener> selectionListenerList = new ArrayList<SelectionListener>(); // SWT selection listeners
-	private List<Long> selectionEventNumbers = new ArrayList<Long>(); // the selection
+	private ArrayList<SelectionListener> selectionListeners = new ArrayList<SelectionListener>(); // SWT selection listeners
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
+	private ArrayList<Long> selectedEventNumbers = new ArrayList<Long>(); // the selection
+    Double selectedTimelineCoordinate;
+    private boolean isSelectionChangeInProgress;
 
 	/*************************************************************************************
 	 * PUBLIC INNER TYPES
@@ -277,20 +278,6 @@ public class SequenceChart
 	public enum AxisSpacingMode {
 		MANUAL,
 		AUTO
-	}
-
-	/**
-	 * Timeline mode determines the horizontal coordinate system in the sequence chart.
-	 * Simulation time and event number based means proportional to distance measured in pixels.
-	 * Step means subsequent events follow each other with a constant distance.
-	 * Nonlinear mode means distance measured in pixels is proportional to a nonlinear function of the
-	 * simulation time difference between subsequent events.
-	 */
-	public enum TimelineMode {
-		SIMULATION_TIME,
-		EVENT_NUMBER,
-		STEP,
-		NONLINEAR
 	}
 
 	/**
@@ -321,6 +308,14 @@ public class SequenceChart
         setupKeyListener();
 		setupListeners();
 	}
+
+    public IWorkbenchPart getWorkbenchPart() {
+        return workbenchPart;
+    }
+
+    public void setWorkbenchPart(IWorkbenchPart workbenchPart) {
+        this.workbenchPart = workbenchPart;
+    }
 
     private void setupHoverSupport() {
         hoverSupport = new HoverSupport();
@@ -478,25 +473,6 @@ public class SequenceChart
         invalidateViewportSize();
         clearCanvasCacheAndRedraw();
     }
-
-    /**
-	 * See setFollowSelection().
-	 */
-	public boolean getFollowSelection() {
-		return followSelection;
-	}
-
-	/**
-	 * Sets whether this widget should always switch to the element which comes in
-	 * the selection (=true), or stick to the input set with setInput() (=false).
-	 * The proper setting typically depends on whether the widget is used in an
-	 * editor (false) or in a view (true).
-	 *
-	 * Default is true.
-	 */
-	public void setFollowSelection(boolean followSelection) {
-		this.followSelection = followSelection;
-	}
 
 	/**
 	 * Returns whether message names are displayed on the arrows.
@@ -697,6 +673,7 @@ public class SequenceChart
 	        leftRightSimulationTimes = getViewportSimulationTimeRange();
 
 	    sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
+	    selectedTimelineCoordinate = null;
 
 	    if (!eventLog.isEmpty())
 	        setViewportSimulationTimeRange(leftRightSimulationTimes);
@@ -1227,42 +1204,40 @@ public class SequenceChart
 	 * Sets a new EventLogInput to be displayed.
 	 */
 	public void setInput(final EventLogInput input) {
-		// store current settings
-		if (eventLogInput != null) {
-			eventLogInput.runWithProgressMonitor(new Runnable() {
-				public void run() {
-					eventLogInput.removeEventLogChangedListener(SequenceChart.this);
-					storeState(eventLogInput.getFile());
-				}
-			});
-		}
-
-		// remember input
-		eventLogInput = input;
-		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
-		sequenceChartFacade = eventLogInput == null ? null : eventLogInput.getSequenceChartFacade();
-
-		if (eventLogInput != null) {
-			eventLogInput.runWithProgressMonitor(new Runnable() {
-				public void run() {
-					// restore last known settings
-					if (eventLogInput != null) {
-						eventLogInput.addEventLogChangedListener(SequenceChart.this);
-
-						if (!restoreState(eventLogInput.getFile()) &&
-						    !eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
-						{
-						    // don't use relocateFixPoint, because viewportWidth is not yet set during initializing
-						    sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
-							fixPointViewportCoordinate = 0;
-						}
-					}
-
-					clearSelection();
-                    clearAxisModules();
-				}
-			});
-		}
+	    if (input != eventLogInput) {
+    		// store current settings
+    		if (eventLogInput != null) {
+    			eventLogInput.runWithProgressMonitor(new Runnable() {
+    				public void run() {
+    					eventLogInput.removeEventLogChangedListener(SequenceChart.this);
+    					storeState(eventLogInput.getFile());
+    				}
+    			});
+    		}
+            // remember input
+    		eventLogInput = input;
+    		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
+    		sequenceChartFacade = eventLogInput == null ? null : eventLogInput.getSequenceChartFacade();
+    		if (eventLogInput != null) {
+    			eventLogInput.runWithProgressMonitor(new Runnable() {
+    				public void run() {
+    					// restore last known settings
+    					if (eventLogInput != null) {
+    						eventLogInput.addEventLogChangedListener(SequenceChart.this);
+    						if (!restoreState(eventLogInput.getFile()) &&
+    						    !eventLog.isEmpty() && sequenceChartFacade.getTimelineCoordinateSystemOriginEventNumber() == -1)
+    						{
+    						    // don't use relocateFixPoint, because viewportWidth is not yet set during initializing
+    						    sequenceChartFacade.relocateTimelineCoordinateSystem(eventLog.getFirstEvent());
+    							fixPointViewportCoordinate = 0;
+    						}
+    					}
+    					clearSelection();
+                        clearAxisModules();
+    				}
+    			});
+    		}
+	    }
 	}
 
     /**
@@ -1518,9 +1493,9 @@ public class SequenceChart
 		    scrollToBegin();
 
 		// remove selected events that are not visible in the filter
-        for (long selectedEventNumber : new ArrayList<Long>(selectionEventNumbers))
+        for (long selectedEventNumber : new ArrayList<Long>(selectedEventNumbers))
             if (eventLog.getEventForEventNumber(selectedEventNumber) == null)
-                selectionEventNumbers.remove(selectedEventNumber);
+                selectedEventNumbers.remove(selectedEventNumber);
 
         sequenceChartContributor.update();
         clearAxisModules();
@@ -2345,6 +2320,7 @@ public class SequenceChart
 			    drawAxisLabels(graphics);
 	        drawEventBookmarks(graphics);
 	        drawEventSelectionMarks(graphics);
+	        drawTimelineSelectionMark(graphics);
 	        graphics.translate(0, -gutterHeight);
 
 	        drawGutters(graphics, getViewportHeight());
@@ -2915,15 +2891,27 @@ public class SequenceChart
 			graphics.setAntialias(SWT.ON);
 
 			// draw event selection marks
-			if (selectionEventNumbers != null) {
+			if (selectedEventNumbers != null) {
 				graphics.setLineStyle(SWT.LINE_SOLID);
 			    graphics.setForegroundColor(EVENT_SELECTION_COLOR);
 
-			    for (long selectedEventNumber : selectionEventNumbers)
+			    for (long selectedEventNumber : selectedEventNumbers)
 			    	if (startEventNumber <= selectedEventNumber && selectedEventNumber <= endEventNumber)
 			    	    drawEventMark(graphics, eventLog.getEventForEventNumber(selectedEventNumber));
 			}
 		}
+	}
+
+	/**
+	 * Draws a vertical line to represent the selected timeline coordinate if any.
+	 */
+	private void drawTimelineSelectionMark(Graphics graphics) {
+	    if (selectedTimelineCoordinate != null) {
+	        int x = (int)getViewportCoordinateForTimelineCoordinate(selectedTimelineCoordinate);
+            graphics.setLineStyle(SWT.LINE_SOLID);
+            graphics.setForegroundColor(EVENT_SELECTION_COLOR);
+	        graphics.drawLine(x, 0, x, getViewportHeight());
+	    }
 	}
 
 	/**
@@ -3921,7 +3909,7 @@ public class SequenceChart
 		// dragging
 		addMouseMoveListener(new MouseMoveListener() {
 			public void mouseMove(MouseEvent e) {
-				if (!eventLogInput.isCanceled()) {
+				if (eventLogInput != null && !eventLogInput.isCanceled()) {
 					if (dragStartX != -1 && dragStartY != -1 && (e.stateMask & SWT.BUTTON_MASK) != 0 && (e.stateMask & SWT.MODIFIER_MASK) == 0)
 						mouseDragged(e);
 					else {
@@ -3933,7 +3921,7 @@ public class SequenceChart
 			}
 
 			private void mouseDragged(MouseEvent e) {
-				if (!eventLogInput.isCanceled()) {
+				if (eventLogInput != null && !eventLogInput.isCanceled()) {
 					if (!isDragging)
 						setCursor(DRAG_CURSOR);
 
@@ -3954,7 +3942,7 @@ public class SequenceChart
 		addMouseListener(new MouseAdapter() {
 			@Override
             public void mouseDoubleClick(MouseEvent me) {
-				if (!eventLogInput.isCanceled()) {
+				if (eventLogInput != null && !eventLogInput.isCanceled()) {
 					ArrayList<IEvent> events = new ArrayList<IEvent>();
 					ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
 					collectStuffUnderMouse(me.x, me.y, events, messageDependencies, null);
@@ -3962,13 +3950,13 @@ public class SequenceChart
 					if (messageDependencies.size() == 1)
 						zoomToMessageDependency(messageDependencies.get(0));
 
-                    updateSelectionEvents(events, true);
+                    updateSelectionState(events, null, true);
 				}
 			}
 
 			@Override
             public void mouseDown(MouseEvent e) {
-				if (!eventLogInput.isCanceled()) {
+				if (eventLogInput != null && !eventLogInput.isCanceled()) {
 					setFocus();
 
 					if (e.button == 1) {
@@ -3980,18 +3968,15 @@ public class SequenceChart
 
 			@Override
             public void mouseUp(MouseEvent me) {
-				if (!eventLogInput.isCanceled()) {
+				if (eventLogInput != null && !eventLogInput.isCanceled()) {
 					if (me.button == 1) {
 						if (!isDragging) {
 							ArrayList<IEvent> events = new ArrayList<IEvent>();
-
 							if ((me.stateMask & SWT.MOD1) != 0) // CTRL key extends selection
-								for (Long eventNumber : selectionEventNumbers)
+								for (Long eventNumber : selectedEventNumbers)
 									events.add(eventLog.getEventForEventNumber(eventNumber));
-
 							collectStuffUnderMouse(me.x, me.y, events, null, null);
-
-							updateSelectionEvents(events, false);
+                            updateSelectionState(events, getTimelineCoordinateForViewportCoordinate(me.x), false);
 						}
 					}
 
@@ -4001,19 +3986,31 @@ public class SequenceChart
 				}
 			}
 
-			private void updateSelectionEvents(ArrayList<IEvent> events, boolean defaultSelection) {
-                ArrayList<Long> eventNumbers = new ArrayList<Long>();
-                for (IEvent event : events)
-                    eventNumbers.add(event.getEventNumber());
+			private void updateSelectionState(ArrayList<IEvent> events, Double timelineCoordinate, boolean defaultSelection) {
+			    if (events.isEmpty()) {
+			        if (!ObjectUtils.equals(selectedTimelineCoordinate, timelineCoordinate)) {
+			            selectedEventNumbers.clear();
+    			        selectedTimelineCoordinate = timelineCoordinate;
+                        fireSelection(defaultSelection);
+                        fireSelectionChanged();
+                        redraw();
+			        }
+			    }
+			    else {
+			        selectedTimelineCoordinate = null;
+                    ArrayList<Long> eventNumbers = new ArrayList<Long>();
+                    for (IEvent event : events)
+                        eventNumbers.add(event.getEventNumber());
 
-                if (eventNumbers.equals(selectionEventNumbers))
-                    fireSelection(defaultSelection);
-                else {
-                    selectionEventNumbers = eventNumbers;
-                    fireSelection(defaultSelection);
-                    fireSelectionChanged();
-                    redraw();
-                }
+                    if (eventNumbers.equals(selectedEventNumbers))
+                        fireSelection(defaultSelection);
+                    else {
+                        selectedEventNumbers = eventNumbers;
+                        fireSelection(defaultSelection);
+                        fireSelectionChanged();
+                        redraw();
+                    }
+			    }
             }
 		});
 	}
@@ -4503,14 +4500,14 @@ public class SequenceChart
 	 * is clicked or double-clicked.
 	 */
 	public void addSelectionListener(SelectionListener listener) {
-		selectionListenerList.add(listener);
+		selectionListeners.add(listener);
 	}
 
 	/**
 	 * Removes the given SWT selection listener.
 	 */
 	public void removeSelectionListener(SelectionListener listener) {
-		selectionListenerList.remove(listener);
+		selectionListeners.remove(listener);
 	}
 
 	/**
@@ -4521,7 +4518,7 @@ public class SequenceChart
 		event.display = getDisplay();
 		event.widget = this;
 		SelectionEvent se = new SelectionEvent(event);
-		for (SelectionListener listener : selectionListenerList) {
+		for (SelectionListener listener : selectionListeners) {
 			if (defaultSelection)
 				listener.widgetDefaultSelected(se);
 			else
@@ -4571,49 +4568,51 @@ public class SequenceChart
 	public ISelection getSelection() {
 		if (eventLogInput == null)
 			return null;
-		else
-			return new EventLogSelection(eventLogInput, selectionEventNumbers);
+		else {
+		    ArrayList<org.omnetpp.common.engine.BigDecimal> selectionSimulationTimes = new ArrayList<org.omnetpp.common.engine.BigDecimal>();
+		    if (selectedTimelineCoordinate != null)
+		        selectionSimulationTimes.add(sequenceChartFacade.getSimulationTimeForTimelineCoordinate(selectedTimelineCoordinate));
+			return new EventLogSelection(eventLogInput, selectedEventNumbers, selectionSimulationTimes);
+		}
 	}
 
 	/**
-	 * Sets the currently "selected" events. The selection must be an
-	 * instance of IEventLogSelection and refer to the current eventLog.
-	 * Selection is displayed as red circles on the chart.
+	 * Sets the currently "selected" events. The selection must be an instance of IEventLogSelection.
 	 */
 	public void setSelection(ISelection selection) {
-		if (debug)
-			Debug.println("SequencreChart got selection: " + selection);
-
-		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-		EventLogInput selectionEventLogInput = eventLogSelection.getEventLogInput();
-
-		if (eventLogInput != selectionEventLogInput) {
-			if (followSelection)
+	    if (selection instanceof IEventLogSelection) {
+    		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+    		EventLogInput selectionEventLogInput = eventLogSelection.getEventLogInput();
+    		if (eventLogInput != selectionEventLogInput)
 				setInput(selectionEventLogInput);
-			else
-				throw new RuntimeException("Invalid selection");
-		}
-
-		// if new selection differs from existing one, take over its contents
-		if (!eventLogSelection.getEventNumbers().equals(selectionEventNumbers)) {
-			selectionEventNumbers.clear();
-			selectionEventNumbers.addAll(eventLogSelection.getEventNumbers());
-
-			// go to the time of the first event selected
-			if (selectionEventNumbers.size() > 0)
-				gotoElement(eventLog.getEventForEventNumber(selectionEventNumbers.get(0)));
-
-			redraw();
-			fireSelectionChanged();
-		}
+            org.omnetpp.common.engine.BigDecimal simulationTime = eventLogSelection.getFirstSimulationTime();
+            Double newSelectedTimelineCoordinate = simulationTime != null ? sequenceChartFacade.getTimelineCoordinateForSimulationTime(simulationTime) : null;
+            boolean isSelectionReallyChanged = !eventLogSelection.getEventNumbers().equals(selectedEventNumbers) || !ObjectUtils.equals(newSelectedTimelineCoordinate, selectedTimelineCoordinate);
+    		if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
+    		    try {
+    		        isSelectionChangeInProgress = true;
+        			selectedEventNumbers.clear();
+        			selectedEventNumbers.addAll(eventLogSelection.getEventNumbers());
+        			selectedTimelineCoordinate = newSelectedTimelineCoordinate;
+        			// go to the time of the first event selected
+        			if (selectedEventNumbers.size() > 0)
+        				gotoElement(eventLog.getEventForEventNumber(selectedEventNumbers.get(0)));
+        			redraw();
+        			fireSelectionChanged();
+    		    }
+    		    finally {
+    		        isSelectionChangeInProgress = false;
+    		    }
+    		}
+	    }
 	}
 
 	/**
 	 * Removes all selection events.
 	 */
 	public void clearSelection() {
-		if (selectionEventNumbers != null && selectionEventNumbers.size() != 0) {
-			selectionEventNumbers.clear();
+		if (selectedEventNumbers != null && selectedEventNumbers.size() != 0) {
+			selectedEventNumbers.clear();
 
 			fireSelectionChanged();
 		}
@@ -4623,28 +4622,28 @@ public class SequenceChart
 	 * Returns the current selection.
 	 */
 	public IEvent getSelectionEvent() {
-		if (selectionEventNumbers != null && selectionEventNumbers.size() != 0)
-			return eventLog.getEventForEventNumber(selectionEventNumbers.get(0));
+		if (selectedEventNumbers != null && selectedEventNumbers.size() != 0)
+			return eventLog.getEventForEventNumber(selectedEventNumbers.get(0));
 		else
 			return null;
 	}
 
 	public List<Long> getSelectionEventNumbers() {
-		return selectionEventNumbers;
+		return selectedEventNumbers;
 	}
 
     public List<IEvent> getSelectionEvents() {
         ArrayList<IEvent> events = new ArrayList<IEvent>();
 
-        for (Long eventNumber : selectionEventNumbers)
+        for (Long eventNumber : selectedEventNumbers)
             events.add(eventLog.getEventForEventNumber(eventNumber));
 
         return events;
     }
 
 	public void setSelectionEvent(IEvent event) {
-		selectionEventNumbers.clear();
-		selectionEventNumbers.add(event.getEventNumber());
+		selectedEventNumbers.clear();
+		selectedEventNumbers.add(event.getEventNumber());
 		fireSelectionChanged();
 		redraw();
 	}
@@ -4745,7 +4744,7 @@ class SequenceChartState implements Serializable {
 	public long fixPointViewportCoordinate;
 	public double pixelPerTimelineCoordinate;
 	public AxisState[] axisStates;
-	public SequenceChart.TimelineMode timelineMode;
+	public TimelineMode timelineMode;
     public double axisSpacing;
     public SequenceChart.AxisSpacingMode axisSpacingMode;
 	public SequenceChart.AxisOrderingMode axisOrderingMode;

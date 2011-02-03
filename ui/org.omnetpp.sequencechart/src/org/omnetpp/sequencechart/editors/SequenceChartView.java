@@ -41,52 +41,46 @@ public class SequenceChartView extends EventLogView implements ISequenceChartPro
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-
-		// we want to provide selection for the sequence chart tool (an IEditPart)
 		IViewSite viewSite = (IViewSite)getSite();
 		viewSite.setSelectionProvider(sequenceChart);
         IContextService contextService = (IContextService)viewSite.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.SequenceChart");
-
 		// contribute to toolbar
 		sequenceChartContributor = new SequenceChartContributor(sequenceChart);
 		sequenceChart.setSequenceChartContributor(sequenceChartContributor);
-		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager());
-
+		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager(), true);
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != SequenceChartView.this && selection instanceof IEventLogSelection)
-					updateSelection(selection);
+				if (followSelection && part != SequenceChartView.this && selection instanceof IEventLogSelection)
+					setSelection(selection);
 			}
 		};
 		viewSite.getPage().addSelectionListener(selectionListener);
-
 		// follow active editor changes
 		partListener = new IPartListener() {
 			public void partActivated(IWorkbenchPart part) {
 			}
 
 			public void partBroughtToTop(IWorkbenchPart part) {
-			    if (part instanceof IEditorPart && !sequenceChart.isDisposed())
-			        updateSelectionFromActiveEditor();
+			    if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
+			        setSelectionFromActiveEditor();
 			}
 
 			public void partClosed(IWorkbenchPart part) {
-                if (part instanceof IEditorPart && !sequenceChart.isDisposed())
-                    updateSelectionFromActiveEditor();
+                if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
+                    setSelectionFromActiveEditor();
 			}
 
 			public void partDeactivated(IWorkbenchPart part) {
 			}
 
 			public void partOpened(IWorkbenchPart part) {
-                if (part instanceof IEditorPart && !sequenceChart.isDisposed())
-                    updateSelectionFromActiveEditor();
+                if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
+                    setSelectionFromActiveEditor();
 			}
 		};
 		viewSite.getPage().addPartListener(partListener);
-
 		// bootstrap with current selection
 		selectionListener.selectionChanged(null, getActiveEditorSelection());
 	}
@@ -117,15 +111,12 @@ public class SequenceChartView extends EventLogView implements ISequenceChartPro
 	@Override
 	protected Control createViewControl(Composite parent) {
 		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
-
+		sequenceChart.setWorkbenchPart(this);
 		return sequenceChart;
 	}
 
-    private void updateSelectionFromActiveEditor() {
-        updateSelection(getActiveEditorSelection());
-    }
-
-    private void updateSelection(ISelection selection) {
+	@Override
+    public void setSelection(ISelection selection) {
 		if (selection instanceof IEventLogSelection) {
 			hideMessage();
 			sequenceChart.setSelection(selection);

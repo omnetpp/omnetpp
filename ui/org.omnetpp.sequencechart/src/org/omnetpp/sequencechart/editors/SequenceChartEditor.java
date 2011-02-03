@@ -95,10 +95,10 @@ public class SequenceChartEditor
 	@Override
 	public void createPartControl(Composite parent) {
 		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
-		sequenceChart.setFollowSelection(false);
 		sequenceChart.setInput(eventLogInput);
 		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
+		sequenceChart.setWorkbenchPart(this);
 
 		getSite().setSelectionProvider(sequenceChart);
 		addLocationProviderPaintListener(sequenceChart);
@@ -106,7 +106,7 @@ public class SequenceChartEditor
 		// follow selection
 		selectionListener = new ISelectionListener() {
 			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
+				if (followSelection && part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
 					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
 
 					if (eventLogSelection.getEventLogInput() == sequenceChart.getInput()) {
@@ -299,6 +299,7 @@ public class SequenceChartEditor
         // contents of the "Show In..." context menu
         return new String[] {
                 IConstants.EVENTLOG_VIEW_ID,
+                IConstants.ANIMATION_VIEW_ID,
                 //TODO IConstants.MODULEHIERARCHY_VIEW_ID,
                 };
     }

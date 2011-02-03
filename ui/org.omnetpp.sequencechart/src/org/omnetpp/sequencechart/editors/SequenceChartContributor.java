@@ -41,7 +41,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gmf.runtime.draw2d.ui.render.awt.internal.svg.export.GraphicsSVG;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -111,6 +110,7 @@ import org.omnetpp.common.eventlog.FilterEventLogDialog;
 import org.omnetpp.common.eventlog.GotoEventDialog;
 import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IFollowSelectionSupport;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
@@ -136,7 +136,6 @@ import org.omnetpp.sequencechart.widgets.VectorFileUtil;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
-
 @SuppressWarnings("restriction")
 public class SequenceChartContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
@@ -160,40 +159,41 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_EXPORT_SVG = TOOL_IMAGE_DIR + "export_wiz.gif";
 
 	private static SequenceChartContributor singleton;
-	protected SequenceChart sequenceChart;
+	private SequenceChart sequenceChart;
 
-	protected Separator separatorAction;
-	protected SequenceChartMenuAction timelineModeAction;
-	protected SequenceChartMenuAction axisOrderingModeAction;
-	protected SequenceChartAction filterAction;
-	protected SequenceChartAction showEventNumbersAction;
-	protected SequenceChartAction showMessageNamesAction;
-    protected SequenceChartAction showMessageSendsAction;
-    protected SequenceChartAction showMessageReusesAction;
-    protected SequenceChartAction showSelfMessageSendsAction;
-    protected SequenceChartAction showSelfMessageReusesAction;
-	protected SequenceChartAction showArrowHeadsAction;
-    protected SequenceChartAction showZeroSimulationTimeRegionsAction;
-    protected SequenceChartAction showAxisLabelsAction;
-    protected SequenceChartAction showAxesWithoutEventsAction;
-    protected SequenceChartAction showTransmissionDurationsAction;
-    protected SequenceChartAction showModuleMethodCallsAction;
-    protected SequenceChartAction changeFontAction;
-    protected SequenceChartAction increaseSpacingAction;
-	protected SequenceChartAction decreaseSpacingAction;
-    protected SequenceChartAction defaultZoomAction;
-    protected SequenceChartAction zoomToFitAction;
-	protected SequenceChartAction zoomInAction;
-	protected SequenceChartAction zoomOutAction;
-	protected SequenceChartAction denseAxesAction;
-	protected SequenceChartAction balancedAxesAction;
-	protected SequenceChartAction toggleBookmarkAction;
-    protected SequenceChartAction releaseMemoryAction;
-    protected SequenceChartAction copyToClipboardAction;
-    protected SequenceChartAction exportToSVGAction;
-    protected SequenceChartAction refreshAction;
-	protected StatusLineContributionItem timelineModeStatus;
-	protected StatusLineContributionItem filterStatus;
+	private Separator separatorAction;
+	private SequenceChartMenuAction timelineModeAction;
+	private SequenceChartMenuAction axisOrderingModeAction;
+	private SequenceChartAction filterAction;
+	private SequenceChartAction showEventNumbersAction;
+	private SequenceChartAction showMessageNamesAction;
+    private SequenceChartAction showMessageSendsAction;
+    private SequenceChartAction showMessageReusesAction;
+    private SequenceChartAction showSelfMessageSendsAction;
+    private SequenceChartAction showSelfMessageReusesAction;
+	private SequenceChartAction showArrowHeadsAction;
+    private SequenceChartAction showZeroSimulationTimeRegionsAction;
+    private SequenceChartAction showAxisLabelsAction;
+    private SequenceChartAction showAxesWithoutEventsAction;
+    private SequenceChartAction showTransmissionDurationsAction;
+    private SequenceChartAction showModuleMethodCallsAction;
+    private SequenceChartAction changeFontAction;
+    private SequenceChartAction increaseSpacingAction;
+	private SequenceChartAction decreaseSpacingAction;
+    private SequenceChartAction defaultZoomAction;
+    private SequenceChartAction zoomToFitAction;
+	private SequenceChartAction zoomInAction;
+	private SequenceChartAction zoomOutAction;
+	private SequenceChartAction denseAxesAction;
+	private SequenceChartAction balancedAxesAction;
+	private SequenceChartAction toggleBookmarkAction;
+    private SequenceChartAction releaseMemoryAction;
+    private SequenceChartAction copyToClipboardAction;
+    private SequenceChartAction exportToSVGAction;
+    private SequenceChartAction refreshAction;
+    private SequenceChartAction pinAction;
+	private StatusLineContributionItem timelineModeStatus;
+	private StatusLineContributionItem filterStatus;
 
 	/*************************************************************************************
 	 * CONSTRUCTION
@@ -229,6 +229,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.copyToClipboardAction = createCopyToClipboardAction();
 		this.releaseMemoryAction = createReleaseMemoryAction();
 		this.refreshAction = createRefreshAction();
+		this.pinAction = createPinAction();
 
 		if (IConstants.IS_COMMERCIAL)
             this.exportToSVGAction = createExportToSVGAction();
@@ -359,8 +360,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 // Show In submenu
                 MenuManager showInSubmenu = new MenuManager(getShowInMenuLabel());
                 IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                IContributionItem showInViewItem = ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow);
-                showInSubmenu.add(showInViewItem);
+                showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
 
                 // context menu static part
                 menuManager.add(showHideSubmenu);
@@ -391,18 +391,22 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                     menuManager.add(exportToSVGAction);
                 menuManager.add(separatorAction);
 
+                menuManager.add(pinAction);
                 menuManager.add(createRefreshCommandContributionItem());
                 menuManager.add(releaseMemoryAction);
 				menuManager.add(separatorAction);
 
 		        menuManager.add(showInSubmenu);
-
 			}
 		});
 	}
 
 	@Override
 	public void contributeToToolBar(IToolBarManager toolBarManager) {
+	    contributeToToolBar(toolBarManager, false);
+	}
+
+	public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
 		toolBarManager.add(timelineModeAction);
 		toolBarManager.add(axisOrderingModeAction);
         toolBarManager.add(filterAction);
@@ -422,6 +426,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		toolBarManager.add(zoomOutAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(refreshAction);
+		if (view)
+		    toolBarManager.add(pinAction);
 	}
 
     @Override
@@ -556,7 +562,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		return new SequenceChartMenuAction("Timeline Mode", Action.AS_DROP_DOWN_MENU, SequenceChartPlugin.getImageDescriptor(IMAGE_TIMELINE_MODE)) {
 			@Override
 			protected void doRun() {
-				sequenceChart.setTimelineMode(SequenceChart.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % SequenceChart.TimelineMode.values().length]);
+				sequenceChart.setTimelineMode(EventLogInput.TimelineMode.values()[(sequenceChart.getTimelineMode().ordinal() + 1) % EventLogInput.TimelineMode.values().length]);
 				timelineModeStatus.update();
 				update();
 			}
@@ -571,10 +577,10 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				return new AbstractMenuCreator() {
 					@Override
 					protected void createMenu(Menu menu) {
-						addSubMenuItem(menu, "Linear", SequenceChart.TimelineMode.SIMULATION_TIME);
-						addSubMenuItem(menu, "Event number", SequenceChart.TimelineMode.EVENT_NUMBER);
-						addSubMenuItem(menu, "Step", SequenceChart.TimelineMode.STEP);
-						addSubMenuItem(menu, "Nonlinear", SequenceChart.TimelineMode.NONLINEAR);
+						addSubMenuItem(menu, "Linear", EventLogInput.TimelineMode.SIMULATION_TIME);
+						addSubMenuItem(menu, "Event number", EventLogInput.TimelineMode.EVENT_NUMBER);
+						addSubMenuItem(menu, "Step", EventLogInput.TimelineMode.STEP);
+						addSubMenuItem(menu, "Nonlinear", EventLogInput.TimelineMode.NONLINEAR);
 
 						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 						subMenuItem.setText("Custom nonlinear...");
@@ -587,7 +593,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 						});
 					}
 
-					private void addSubMenuItem(Menu menu, String text, final SequenceChart.TimelineMode timelineMode) {
+					private void addSubMenuItem(Menu menu, String text, final EventLogInput.TimelineMode timelineMode) {
 						MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
 						subMenuItem.setText(text);
 						subMenuItem.addSelectionListener( new SelectionAdapter() {
@@ -1607,7 +1613,27 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
-	private CommandContributionItem createRefreshCommandContributionItem() {
+    private SequenceChartAction createPinAction() {
+        return new SequenceChartAction("Pin", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
+            @Override
+            protected void doRun() {
+                IWorkbenchPart workbenchPart = sequenceChart.getWorkbenchPart();
+                if (workbenchPart instanceof IFollowSelectionSupport) {
+                    IFollowSelectionSupport followSelectionSupport = (IFollowSelectionSupport)workbenchPart;
+                    followSelectionSupport.setFollowSelection(!followSelectionSupport.getFollowSelection());
+                }
+            }
+
+            @Override
+            public void update() {
+                IWorkbenchPart workbenchPart = sequenceChart.getWorkbenchPart();
+                if (workbenchPart instanceof IFollowSelectionSupport)
+                    setChecked(!((IFollowSelectionSupport)workbenchPart).getFollowSelection());
+            }
+        };
+    }
+
+    private CommandContributionItem createRefreshCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.sequencechart.refresh", SWT.PUSH);
         parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH);
         return new CommandContributionItem(parameter);
@@ -1925,7 +1951,6 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 if (dialog.open() == Window.OK)
                     sequenceChart.scrollToSimulationTime(dialog.getSimulationTime());
             }
-
             return null;
         }
     }
