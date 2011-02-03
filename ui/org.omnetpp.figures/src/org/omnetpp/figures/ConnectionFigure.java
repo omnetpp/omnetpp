@@ -24,14 +24,15 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.misc.ConnectionLabelLocator;
 import org.omnetpp.figures.misc.FigureUtils;
+import org.omnetpp.figures.misc.ISelectableFigure;
 
 /**
  * A figure representing a connection between two modules
  *
  * @author rhornig
  */
-public class ConnectionFigure extends PolylineConnection 
-                              implements ITooltipTextProvider, IProblemDecorationSupport {
+public class ConnectionFigure extends PolylineConnection
+                              implements ITooltipTextProvider, IProblemDecorationSupport, ISelectableFigure {
 	protected int localLineStyle = Graphics.LINE_SOLID;
 	protected int localLineWidth = 1;
 	protected Color localLineColor = null;
@@ -50,6 +51,20 @@ public class ConnectionFigure extends PolylineConnection
     private int oldCumulativeHashCode;
     protected ITooltipTextProvider problemMarkerTextProvider;
     protected ImageFigure problemMarkerFigure = new ImageFigure(); // FIXME create it on demand
+    private boolean isSelected;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        if (isSelected == this.isSelected)
+            return;
+        else {
+            this.isSelected = isSelected;
+            repaint();
+        }
+    }
 
 	@Override
     public void addNotify() {
@@ -57,7 +72,7 @@ public class ConnectionFigure extends PolylineConnection
         add(problemMarkerFigure, new MidpointLocator(this, 0));
         add(textFigure, labelLocator);
     }
-	
+
     public Color getLocalLineColor() {
 		return localLineColor;
 	}
@@ -180,6 +195,10 @@ public class ConnectionFigure extends PolylineConnection
             graphics.setAlpha(16);
 
         graphics.setLineCap(SWT.CAP_FLAT);
+        if (isSelected)
+            setForegroundColor(ColorFactory.RED);
+        else
+            setForegroundColor(localLineColor);
 	    super.paint(graphics);
 	    graphics.popState();
 	}
@@ -188,7 +207,7 @@ public class ConnectionFigure extends PolylineConnection
 	protected boolean useLocalCoordinates() {
 	    return false;  // locators are working correctly ONLY in non-local coordinate systems
 	}
-	
+
     public String getTooltipText(int x, int y) {
         // if there is a problem marker and an associated tooltip text provider
         // and the cursor is over the marker, delegate to the problem marker text provider
@@ -204,7 +223,7 @@ public class ConnectionFigure extends PolylineConnection
         }
         return null;
     }
-	
+
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         Image image = FigureUtils.getProblemImageFor(maxSeverity);
         if (image != null)
@@ -214,5 +233,5 @@ public class ConnectionFigure extends PolylineConnection
         problemMarkerTextProvider = textProvider;
         repaint();
     }
-	
+
 }

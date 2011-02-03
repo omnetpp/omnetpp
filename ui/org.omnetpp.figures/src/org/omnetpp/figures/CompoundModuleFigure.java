@@ -27,6 +27,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.figures.misc.ILayerSupport;
+import org.omnetpp.figures.misc.ISelectableFigure;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 
@@ -44,7 +45,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
 // FIXME module size is not calculated again if we relayout the content
 public class CompoundModuleFigure extends LayeredPane
-				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport {
+				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
 
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
@@ -73,6 +74,7 @@ public class CompoundModuleFigure extends LayeredPane
     protected String unit = "px";
 	private long seed = 0;
 	private int oldCumulativeHashCode;
+	private boolean isSelected;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends Layer {
@@ -136,7 +138,7 @@ public class CompoundModuleFigure extends LayeredPane
 	        	}
 	        }
 	        // restore the graphics state
-      	graphics.popState();
+	        graphics.popState();
 		}
     }
 
@@ -209,8 +211,22 @@ public class CompoundModuleFigure extends LayeredPane
         connectionLayer.setConnectionRouter(new CompoundModuleConnectionRouter());
     }
 
+    @Override
     protected boolean useLocalCoordinates() {
         return true;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        if (isSelected == this.isSelected)
+            return;
+        else {
+            this.isSelected = isSelected;
+            repaint();
+        }
     }
 
     /**
@@ -244,7 +260,7 @@ public class CompoundModuleFigure extends LayeredPane
 		// background image
 		backgroundImage = image;
 		backgroundImageArrangement = arrangement != null ? arrangement : "";
-		
+
         getBorder().setColor(moduleBorderColor);
         getBorder().setWidth(moduleBorderWidth);
 	}
@@ -341,6 +357,16 @@ public class CompoundModuleFigure extends LayeredPane
         repaint();
 	}
 
+	@Override
+	public void paint(Graphics graphics) {
+	    super.paint(graphics);
+        if (isSelected) {
+            graphics.setForegroundColor(ColorFactory.RED);
+            Rectangle r = getHandleBounds();
+            graphics.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
+        }
+	}
+
     public Dimension getBackgroundSize() {
         return backgroundSize;
     }
@@ -379,5 +405,5 @@ public class CompoundModuleFigure extends LayeredPane
         Assert.isTrue(border instanceof CompoundModuleLineBorder,"Only CompoundModuleBorder is supported");
         super.setBorder(border);
     }
-    
+
 }

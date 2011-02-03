@@ -25,6 +25,7 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.anchors.IAnchorBounds;
 import org.omnetpp.figures.layout.ISubmoduleConstraint;
 import org.omnetpp.figures.misc.FigureUtils;
+import org.omnetpp.figures.misc.ISelectableFigure;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
 
 /**
@@ -35,7 +36,7 @@ import org.omnetpp.figures.misc.ISelectionHandleBounds;
 //FIXME support multiple texts: t/t1/t2/t3/t4
 //FIXME alignment of multi-line text
 public class SubmoduleFigure extends Figure implements ISubmoduleConstraint, IAnchorBounds,
-ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
+ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelectableFigure {
 	// supported shape types
 	protected static final int SHAPE_NONE = 0;
 	protected static final int SHAPE_OVAL = 1;
@@ -61,7 +62,7 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected int vectorIndex;
 	protected VectorArrangement vectorArrangement;
 	protected int vectorArrangementPar1, vectorArrangementPar2, vectorArrangementPar3;
-	protected Layer rangeFigureLayer; 
+	protected Layer rangeFigureLayer;
 
     // result of layouting
 	protected Point centerLoc;
@@ -89,9 +90,23 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 	protected String queueText;
 	protected RangeFigure rangeFigure = null;
 	private int oldCumulativeHashCode;
+    private boolean isSelected;
 
 	public SubmoduleFigure() {
 	}
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean isSelected) {
+        if (isSelected == this.isSelected)
+            return;
+        else {
+            this.isSelected = isSelected;
+            repaint();
+        }
+    }
 
 	/**
 	 * Adjust the properties using a display string object
@@ -759,6 +774,12 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport {
 			Rectangle r = getNameBounds(shapeBounds);
 			graphics.setForegroundColor(ColorFactory.BLACK);
 			graphics.drawText(nameText, r.x, r.y);
+		}
+
+		if (isSelected) {
+		    graphics.setForegroundColor(ColorFactory.RED);
+		    Rectangle r = getHandleBounds();
+		    graphics.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
 		}
 	}
 
