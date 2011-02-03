@@ -38,7 +38,9 @@ import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 /**
  * Serves as a base class for editors which show an event log file.
  */
-public abstract class EventLogEditor extends EditorPart implements IEventLogProvider, INavigationLocationProvider {
+public abstract class EventLogEditor extends EditorPart implements IEventLogProvider, INavigationLocationProvider, IFollowSelectionSupport {
+    protected boolean followSelection;
+
 	protected Runnable locationTimer;
 
 	protected EventLogInput eventLogInput;
@@ -46,6 +48,14 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	protected INavigationLocation lastLocation;
 
 	protected PropertySheetPage propertySheetPage;
+
+    public boolean getFollowSelection() {
+        return followSelection;
+    }
+
+    public void setFollowSelection(boolean followSelection) {
+        this.followSelection = followSelection;
+    }
 
 	public IEventLog getEventLog() {
 		return eventLogInput.getEventLog();
@@ -109,18 +119,29 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                     public IPropertySource getPropertySource(Object object) {
                         // TODO: kill this case and let the others live as soon as
                         // IEventLogSelection does not return the event numbers only and we can get more than that here
-                        if (object instanceof Long) {
+                        if (object instanceof IPropertySource)
+                            return (IPropertySource)object;
+                        else if (object instanceof Long) {
                             IEvent event = eventLogInput.getEventLog().getEventForEventNumber((Long)object);
-
-                            if (event != null)
+                            if (event == null)
+                                return null;
+                            else
                                 return new EventLogEntryPropertySource(event.getEventEntry());
                         }
                         else if (object instanceof EventLogEntry)
                             return new EventLogEntryPropertySource((EventLogEntry)object);
                         else if (object instanceof IEvent)
                             return new EventLogEntryPropertySource(((IEvent)object).getEventEntry());
-
-                        return null;
+                        else if (object instanceof EventLogModule)
+                            return new EventLogModulePropertySource(this, (EventLogModule)object);
+                        else if (object instanceof EventLogConnection)
+                            return new EventLogConnectionPropertySource(this, (EventLogConnection)object);
+                        else if (object instanceof EventLogGate)
+                            return new EventLogGatePropertySource(this, (EventLogGate)object);
+                        else if (object instanceof EventLogMessage)
+                            return new EventLogMessagePropertySource(this, (EventLogMessage)object);
+                        else
+                            return null;
                     }
                 });
             }

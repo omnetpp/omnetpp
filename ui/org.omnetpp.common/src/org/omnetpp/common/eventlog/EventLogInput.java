@@ -94,6 +94,19 @@ public class EventLogInput extends FileEditorInput
 	 */
 	private boolean longRunningOperationInProgress;
 
+    /**
+     * Simulation time and event number based means proportional to distance measured in pixels.
+     * Step means subsequent events follow each other with a constant distance.
+     * Nonlinear mode means distance measured in pixels is proportional to a nonlinear function of the
+     * simulation time difference between subsequent events.
+     */
+    public enum TimelineMode {
+        SIMULATION_TIME,
+        EVENT_NUMBER,
+        STEP,
+        NONLINEAR
+    }
+
 	/*************************************************************************************
 	 * CONSTRUCTION
 	 */
@@ -165,6 +178,14 @@ public class EventLogInput extends FileEditorInput
 	public IEventLog getEventLog() {
 		return eventLog;
 	}
+
+    public TimelineMode getTimelineMode() {
+        return TimelineMode.values()[sequenceChartFacade.getTimelineMode()];
+    }
+
+    public void setTimelineMode(TimelineMode timelineMode) {
+        sequenceChartFacade.setTimelineMode(timelineMode.ordinal());
+    }
 
     public EventLogFindTextDialog getFindTextDialog() {
         return findTextDialog;

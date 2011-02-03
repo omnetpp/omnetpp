@@ -9,31 +9,39 @@ package org.omnetpp.common.ui;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
-//XXX was: AnimationCanvas in org.omnetpp.experimental.animation
+/**
+ * This is a simple canvas containing a lightweight system that displays figures.
+ *
+ * @author levy
+ */
 public class FigureCanvas extends Canvas {
-	protected IFigure contents;
+	protected IFigure rootFigure;
 	protected LightweightSystem lws;
 
 	public FigureCanvas(Composite parent, int style) {
 		super(parent, style);
-		init();
-	}
+        rootFigure = new Figure();
+        rootFigure.setLayoutManager(new XYLayout());
+        rootFigure.addLayoutListener(new LayoutListener.Stub() {
+            @Override
+            public void postLayout(IFigure container) {
+                Dimension size = rootFigure.getPreferredSize();
+                setSize(size.width, size.height);
+            }
+        });
 
-	protected void init() {
-		contents = new Figure();
-		contents.setLayoutManager(new XYLayout());
-
-		lws = new LightweightSystem(this);
-		lws.setContents(contents);
+        lws = new LightweightSystem(this);
+        lws.setContents(rootFigure);
 	}
 
 	public IFigure getRootFigure() {
-		return contents;
+		return rootFigure;
 	}
-
 }

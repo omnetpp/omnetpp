@@ -93,7 +93,6 @@ Export-Package: au.com.bytecode.opencsv,
    org.eclipse.swt.widgets,
    org.xml.sax.helpers,
    org.xml.sax",
- org.omnetpp.common.simulation.model;uses:="org.omnetpp.common.displaymodel",
  org.omnetpp.common.util;uses:="org.eclipse.swt.graphics,org.eclipse.draw2d.geometry,org.apache.commons.lang",
  org.omnetpp.common.virtualtable;
   uses:="org.eclipse.core.runtime,

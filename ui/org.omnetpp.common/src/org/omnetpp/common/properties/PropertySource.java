@@ -264,7 +264,7 @@ public abstract class PropertySource implements IPropertySource2 {
 		if (declaredDescriptorClass == PropertyDescriptor.class) {
 			if (propType == String.class)
 				return TextPropertyDescriptor.class;
-			if (propType == Boolean.class || propType == boolean.class)
+			else if (propType == Boolean.class || propType == boolean.class)
 				return CheckboxPropertyDescriptor.class;
 			else if (propType == Integer.class || propType == int.class)
 				return IntegerPropertyDescriptor.class;

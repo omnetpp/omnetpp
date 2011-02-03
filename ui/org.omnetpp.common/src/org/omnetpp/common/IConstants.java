@@ -28,6 +28,7 @@ public interface IConstants extends ICoreConstants {
     public static final String NEDINHERITANCE_VIEW_ID = "org.omnetpp.inifile.NedInheritance";
 	public static final String DATASET_VIEW_ID = "org.omnetpp.scave.DatasetView";
 	public static final String VECTORBROWSER_VIEW_ID = "org.omnetpp.scave.VectorBrowserView";
+    public static final String ANIMATION_VIEW_ID = "org.omnetpp.animation.editors.AnimationView";
 	public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";
 	public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
 
@@ -43,7 +44,7 @@ public interface IConstants extends ICoreConstants {
     public static final String NEW_SCAVEFILE_WIZARD_ID = "org.omnetpp.scave.wizards.NewScaveFile";
     public static final String OMNETPP_EXPORT_WIZARD_ID = "org.omnetpp.common.wizards.ExportWizard";
     public static final String OMNETPP_IMPORT_WIZARD_ID = "org.omnetpp.common.wizards.ImportWizard";
-    public static final String NEW_OMNETPP_PROJECT_WIZARD_ID = "org.omnetpp.main.wizards.NewOmnetppProject"; // not actually registered, because we could not solve that it appears only when CDT is not present 
+    public static final String NEW_OMNETPP_PROJECT_WIZARD_ID = "org.omnetpp.main.wizards.NewOmnetppProject"; // not actually registered, because we could not solve that it appears only when CDT is not present
     public static final String NEW_OMNETPP_CC_PROJECT_WIZARD_ID = "org.omnetpp.cdt.wizards.NewOmnetppCCProject";
     public static final String NEW_OMNETPP_CLASS_WIZARD_ID = "org.omnetpp.cdt.wizards.NewOmnetppClass";
 

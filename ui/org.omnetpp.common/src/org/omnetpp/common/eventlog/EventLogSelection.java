@@ -9,10 +9,10 @@ package org.omnetpp.common.eventlog;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.virtualtable.IVirtualTableSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
 
@@ -21,6 +21,22 @@ import org.omnetpp.eventlog.engine.IEventLog;
  *
  * @author andras
  */
+/*
+ * TODO: change this class so that it can represent selection of
+ * - event
+ * - eventlogentry
+ * - simulation time
+ * - animation time
+ * - timeline coordinate
+ * - module
+ * - submodule
+ * - gate
+ * - connection
+ * - message
+ * - animation primitive
+ *
+ * It should support multiple selected elements. For some of those it should support ranges where it is applicable.
+ */
 public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<Long>, IStructuredSelection, Cloneable {
 	/**
 	 * The input where this selection is.
@@ -28,19 +44,27 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 	protected EventLogInput eventLogInput;
 
 	/**
-	 * The selected event numbers.
+	 * The selected elements.
 	 */
-	protected List<Long> eventNumbers;
+	protected ArrayList<Object> elements;
 
-	public EventLogSelection(EventLogInput eventLogInput, List<Long> eventNumbers) {
+    public EventLogSelection(EventLogInput eventLogInput, ArrayList<Object> elements) {
+        this.eventLogInput = eventLogInput;
+        this.elements = elements;
+    }
+
+    public EventLogSelection(EventLogInput eventLogInput, ArrayList<Long> eventNumbers, ArrayList<BigDecimal> simulationTimes) {
 		Assert.isTrue(eventLogInput != null);
-		Assert.isTrue(eventNumbers != null);
 		this.eventLogInput = eventLogInput;
-		this.eventNumbers = eventNumbers;
+		this.elements = new ArrayList<Object>();
+		if (eventNumbers != null)
+		    elements.addAll(eventNumbers);
+		if (simulationTimes != null)
+		    elements.addAll(simulationTimes);
 	}
 
-	public List<Long> getElements() {
-		return eventNumbers;
+    public ArrayList<Long> getElements() {
+		return getEventNumbers();
 	}
 
 	public Object getInput() {
@@ -55,61 +79,76 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
 		return eventLogInput;
 	}
 
-	public List<Long> getEventNumbers() {
+	public ArrayList<Long> getEventNumbers() {
+	    ArrayList<Long> eventNumbers = new ArrayList<Long>();
+	    for (Object element : elements)
+	        if (element instanceof Long)
+	            eventNumbers.add((Long)element);
 		return eventNumbers;
 	}
 
 	public Long getFirstEventNumber() {
+        ArrayList<Long> eventNumbers = getEventNumbers();
 		return eventNumbers.isEmpty() ? null : eventNumbers.get(0);
 	}
 
-	public boolean isEmpty() {
-		return eventNumbers.isEmpty();
+    public ArrayList<BigDecimal> getSimulationTimes() {
+        ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
+        for (Object element : elements)
+            if (element instanceof BigDecimal)
+                simulationTimes.add((BigDecimal)element);
+        return simulationTimes;
+    }
+
+    public BigDecimal getFirstSimulationTime() {
+        ArrayList<BigDecimal> simulationTimes = getSimulationTimes();
+        return simulationTimes.isEmpty() ? null : simulationTimes.get(0);
+    }
+
+    public boolean isEmpty() {
+		return elements.isEmpty();
 	}
 
 	@Override
 	public EventLogSelection clone() {
-		ArrayList<Long> list = new ArrayList<Long>();
-		for (Long e : eventNumbers)
-			list.add(e);
-		return new EventLogSelection(this.eventLogInput, list);
+		return new EventLogSelection(this.eventLogInput, elements);
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof EventLogSelection))
 			return false;
-		EventLogSelection sel = (EventLogSelection)o;
-		if (sel.eventLogInput != eventLogInput)
+		EventLogSelection other = (EventLogSelection)o;
+		if (other.eventLogInput != eventLogInput)
 			return false;
-		if (sel.eventNumbers.size() != eventNumbers.size())
+		if (other.elements.size() != elements.size())
 			return false;
-		for (int i = 0; i<eventNumbers.size(); i++)
-			if (sel.eventNumbers.get(i) != eventNumbers.get(i))
+		for (int i = 0; i < elements.size(); i++)
+			if (other.elements.get(i) != elements.get(i))
 				return false;
 		return true;
 	}
 
 	public Object getFirstElement() {
-		if (eventNumbers.size() == 0)
+		if (elements.size() == 0)
 			return null;
 		else
-			return eventNumbers.get(0);
+			return elements.get(0);
 	}
 
-	public Iterator<Long> iterator() {
-		return eventNumbers.iterator();
+	public Iterator<Object> iterator() {
+		return elements.iterator();
 	}
 
 	public int size() {
-		return eventNumbers.size();
+		return elements.size();
 	}
 
 	public Object[] toArray() {
-		return eventNumbers.toArray();
+		return elements.toArray();
 	}
 
-	public List<Long> toList() {
-		return eventNumbers;
+	public ArrayList<Object> toList() {
+		return elements;
 	}
 }

@@ -31,7 +31,8 @@ import org.eclipse.ui.part.ViewPart;
 public abstract class ViewWithMessagePart extends ViewPart {
 	private Control viewControl;
 
-	public void createPartControl(Composite parent) {
+	@Override
+    public void createPartControl(Composite parent) {
 		GridLayout layout = new GridLayout();
 		layout.marginWidth = layout.marginHeight = 0;
 		parent.setLayout(layout);

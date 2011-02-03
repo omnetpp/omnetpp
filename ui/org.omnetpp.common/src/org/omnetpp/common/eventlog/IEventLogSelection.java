@@ -10,12 +10,13 @@ package org.omnetpp.common.eventlog;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 /**
  * Selection that is published by event log editors/viewers.
  *
- * @author andras
+ * @author andras, levy
  */
 public interface IEventLogSelection extends ISelection {
 	/**
@@ -40,4 +41,15 @@ public interface IEventLogSelection extends ISelection {
 	 * Returns the first event number in the selection, or null.
 	 */
 	public Long getFirstEventNumber();
+
+    /**
+     * The list of selected simulation times. The returned list MUST NOT be modified
+     * by clients. Never returns null.
+     */
+	public List<BigDecimal> getSimulationTimes();
+
+    /**
+     * Returns the first simulation time in the selection, or null.
+     */
+    public BigDecimal getFirstSimulationTime();
 }
