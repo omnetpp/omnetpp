@@ -9,6 +9,8 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
@@ -19,6 +21,8 @@ public class AnimationTimeline
     public static int HEIGHT = 32;
 
     private AnimationController animationController;
+
+    private String oldSimulationTime = "";
 
     public AnimationTimeline(Composite parent, int style) {
         super(parent, style);
@@ -69,7 +73,20 @@ public class AnimationTimeline
     private void drawSimulationTime(Graphics graphics) {
         Rectangle clientArea = getClientArea();
         int width = Math.max(150, clientArea.width / 3);
-        graphics.drawText("T=" + animationController.getSimulationTime(), width, 0);
+        String header = "T=";
+        graphics.drawText(header, width, 0);
+        width += GraphicsUtils.getTextExtent(graphics, header).x;
+        String newSimulationTime = animationController.getSimulationTime().toString();
+        int i;
+        for (i = 0; i < oldSimulationTime.length() && i < newSimulationTime.length() && oldSimulationTime.charAt(i) == newSimulationTime.charAt(i); i++);
+        graphics.setForegroundColor(ColorFactory.BLACK);
+        String samePart = newSimulationTime.substring(0, i);
+        graphics.drawText(samePart, width, 0);
+        width += GraphicsUtils.getTextExtent(graphics, samePart).x;
+        graphics.setForegroundColor(ColorFactory.DARK_GREY);
+        graphics.drawText(newSimulationTime.substring(i), width, 0);
+        oldSimulationTime = newSimulationTime;
+        graphics.setForegroundColor(ColorFactory.BLACK);
     }
 
     private void drawAnimationTime(Graphics graphics) {

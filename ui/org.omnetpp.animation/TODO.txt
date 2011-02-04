@@ -98,3 +98,4 @@ TODO
 - module/connection tooltip, message tooltip, better timer tooltip
 + properties view a kulonfele selectalhato elemeknek
 - egyeb viewerek/inspectorok modulokra, connectionokre, gatekre, messagekre, stb.
++ legyen bold az elso par szamjegy a simulation time-ban ami jeloli, h hol valtozik (speedometer)
