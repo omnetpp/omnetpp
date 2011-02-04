@@ -13,6 +13,7 @@ import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.LightweightSystem;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 
@@ -27,7 +28,13 @@ public class FigureCanvas extends Canvas {
 
 	public FigureCanvas(Composite parent, int style) {
 		super(parent, style);
-        rootFigure = new Figure();
+        rootFigure = new Figure() {
+            @Override
+            public void paint(org.eclipse.draw2d.Graphics graphics) {
+                graphics.setAntialias(SWT.ON);
+                super.paint(graphics);
+            };
+        };
         rootFigure.setLayoutManager(new XYLayout());
         rootFigure.addLayoutListener(new LayoutListener.Stub() {
             @Override
