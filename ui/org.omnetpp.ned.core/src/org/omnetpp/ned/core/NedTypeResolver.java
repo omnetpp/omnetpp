@@ -82,14 +82,14 @@ public class NedTypeResolver implements INedTypeResolver {
     protected NedTypeResolver(NedTypeResolver other) {
         // clone NED file parse trees
         for (IFile file : other.nedFiles.keySet())
-            nedFiles.put(file, (NedFileElementEx)other.nedFiles.get(file).deepDup(this));
+            nedFiles.put(file, (NedFileElementEx)other.nedFiles.get(file).deepDup(this, true));
 
         // fill in reverse mapping
         for (Map.Entry<IFile, NedFileElementEx> entry : nedFiles.entrySet())
             nedElementFiles.put(entry.getValue(), entry.getKey());
 
         // clone other fields (note: no need to clone nedTypeLookupCache)
-        builtInDeclarationsFile = (NedFileElementEx) other.builtInDeclarationsFile.deepDup(this);
+        builtInDeclarationsFile = (NedFileElementEx) other.builtInDeclarationsFile.deepDup(this, true);
         lastChangeSerial = other.lastChangeSerial;
         
         // clone projects table

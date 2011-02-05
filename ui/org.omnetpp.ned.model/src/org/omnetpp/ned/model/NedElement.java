@@ -60,6 +60,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	private String source;
 	private int numChildren = 0;
 	private INedElement[] cachedChildArray; 
+	private INedElement original;
 	private static long lastid;
 
 	// store maximum severity of error markers associated with this element.
@@ -477,36 +478,43 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public INedElement dup() {
-        return dup(getDefaultNedTypeResolver());
+        return dup(getDefaultNedTypeResolver(), false);
     }
 
-    public INedElement dup(INedTypeResolver targetResolver) {
-        INedElement cloned = NedElementFactoryEx.getInstance().createElement(targetResolver, getTagCode());
+    public INedElement dup(INedTypeResolver targetResolver, boolean rememberOriginal) {
+        INedElement clone = NedElementFactoryEx.getInstance().createElement(targetResolver, getTagCode());
+        
+        if (rememberOriginal)
+            ((NedElement)clone).original = this;
 
         for (int i = 0; i < getNumAttributes(); ++i)
-        	cloned.setAttribute(i, getAttribute(i));
+        	clone.setAttribute(i, getAttribute(i));
 
-    	cloned.setSourceLocation(getSourceLocation());
-    	cloned.setSourceRegion(getSourceRegion());
-    	cloned.setSyntaxProblemMaxLocalSeverity(getSyntaxProblemMaxLocalSeverity());
-    	cloned.setConsistencyProblemMaxLocalSeverity(getConsistencyProblemMaxLocalSeverity());
+    	clone.setSourceLocation(getSourceLocation());
+    	clone.setSourceRegion(getSourceRegion());
+    	clone.setSyntaxProblemMaxLocalSeverity(getSyntaxProblemMaxLocalSeverity());
+    	clone.setConsistencyProblemMaxLocalSeverity(getConsistencyProblemMaxLocalSeverity());
 
-        return cloned;
+        return clone;
     }
 
     public INedElement deepDup() {
-        return deepDup(getDefaultNedTypeResolver());    
+        return deepDup(getDefaultNedTypeResolver(), false);    
     }
     
-    public INedElement deepDup(INedTypeResolver targetResolver) {
-        INedElement result = dup(targetResolver);
+    public INedElement deepDup(INedTypeResolver targetResolver, boolean rememberOriginal) {
+        INedElement result = dup(targetResolver, rememberOriginal);
 
         for (INedElement child : this)
-            result.appendChild(child.deepDup(targetResolver));
+            result.appendChild(child.deepDup(targetResolver, rememberOriginal));
 
         return result;
     }
 
+    public INedElement getOriginal() {
+        return original;
+    }
+    
 	public INedTypeElement getEnclosingTypeElement() {
 		INedElement node = getParent();
 		while (node != null && !(node instanceof INedTypeElement))

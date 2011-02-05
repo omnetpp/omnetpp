@@ -8,6 +8,7 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 
@@ -98,7 +99,10 @@ public interface INedResources extends INedTypeResolver {
     /**
      * Creates an immutable copy of the NED parse trees and all other data structures.
      * The immutable copy can be used for lengthy computations (e.g. validation or other
-     * analysis) in a background thread without locking the INedResources object. 
+     * analysis) in a background thread without locking the INedResources object.
+     * 
+     * Elements in the immutable copy can be related back to the original trees 
+     * with INedElement's getOriginal() method.
      * 
      * Any model change event (NedModelChangeEvent) will cause subsequent calls to this method 
      * to return a different, up-to-date instance. (Marker changes do not count.) 

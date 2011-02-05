@@ -318,25 +318,40 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 
     /**
      * Creates a shallow copy of the node, for use in the default NED type resolver.
+     * Equivalent to dup(NedElement.getDefaultNedTypeResolver(), false).
      * @see NedElement.getDefaultNedTypeResolver().
      */
     public INedElement dup();
 
 	/**
 	 * Creates a shallow copy of the node, for use in the given target NED type resolver.
+	 * The rememberOriginal parameter controls whether the clone should store a pointer 
+	 * back to the original element.
+	 * @see getOriginal()
 	 */
-	public INedElement dup(INedTypeResolver targetResolver);
+	public INedElement dup(INedTypeResolver targetResolver, boolean rememberOriginal);
 
 	/**
 	 * Creates a deep copy of the tree, for use in the default NED type resolver.
+	 * Equivalent to deepDup(NedElement.getDefaultNedTypeResolver(), false).
 	 * @see NedElement.getDefaultNedTypeResolver().
 	 */
 	public INedElement deepDup();
 	
 	/**
 	 * Creates a deep copy of the tree, for use in the given target NED type resolver.
+     * The rememberOriginal parameter controls whether the clone should store a pointer 
+     * back to the original element.
+     * @see getOriginal()
 	 */
-	public INedElement deepDup(INedTypeResolver targetResolver);
+	public INedElement deepDup(INedTypeResolver targetResolver, boolean rememberOriginal);
+
+	/**
+     * If this element was created by dup() or deepDup() called with rememberOriginal=true,
+     * this method returns the INedElement that was cloned to produce this object; 
+     * otherwise it returns null.
+     */
+    public INedElement getOriginal();
 
 	/**
 	 * Returns the first parent which is an INedTypeElement, or null. For example,
@@ -427,5 +442,4 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
      * problems on this element or any element below.
      */
     public int getMaxProblemSeverity();
-
 }

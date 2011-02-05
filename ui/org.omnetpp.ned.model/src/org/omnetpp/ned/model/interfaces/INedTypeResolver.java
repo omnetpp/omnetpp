@@ -24,7 +24,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 
-/*
+/**
  * For accessing NED types.
  *
  * @author Andras
