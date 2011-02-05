@@ -35,9 +35,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
-import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.INedErrorStore;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedTreeDifferenceUtils;
 import org.omnetpp.ned.model.NedTreeUtil;
@@ -93,11 +91,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     // delayed validation job
     private DelayedJob validationJob = new DelayedJob(400) {
         public void run() {
-            DisplayUtils.runNowOrSyncInUIThread(new Runnable() {
-                public void run() {
-                    validateAllFiles();
-                }
-            });
+            new NedValidationJob().schedule();
         }
     };
 
@@ -325,76 +319,31 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         }
     }
 
-    /**
-     * Validates all NED files for consistency (no such parameter/gate/module-type, redeclarations,
-     * duplicate types, cycles in the inheritance chain, etc). All consistency problem markers
-     * (NEDCONSISTENCYPROBLEM_MARKERID) are managed within this method.
-     */
-    public synchronized void validateAllFiles() {
-        long startMillis = System.currentTimeMillis();
+    public void issueErrorsForDuplicates(ProblemMarkerSynchronizer markerSync) {
+        // issue error message for duplicates
+        for (IProject project : projects.keySet()) {
+            ProjectData projectData = projects.get(project);
+            for (String name : projectData.duplicates.keySet()) {
+                List<INedTypeElement> duplicateList = projectData.duplicates.get(name);
+                for (int i = 0; i < duplicateList.size(); i++) {
+                    INedTypeElement element = duplicateList.get(i);
+                    INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
+                    IFile file = getNedFile(element.getContainingNedFileElement());
+                    IFile otherFile = getNedFile(otherElement.getContainingNedFileElement());
 
-        // During validation, we potentially fire a large number of NEDMarkerChangeEvents.
-        // So we'll surround the code with begin..end notifications, which allows the
-        // graphical editor to optimize refresh() calls. Otherwise it would have to
-        // refresh on each notification, which can be a disaster performance-wise.
-
-        // fake a begin change event, then "finally" an end change event
-        fireBeginChangeEvent();
-        if (debug)
-            Debug.println("Validation started");
-        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDCONSISTENCYPROBLEM_MARKERID);
-        try {
-            // clear consistency error markers from the ned tree
-            for (IFile file : nedFiles.keySet())
-                nedFiles.get(file).clearConsistencyProblemMarkerSeverities();
-
-            // issue error message for duplicates
-            for (IProject project : projects.keySet()) {
-                ProjectData projectData = projects.get(project);
-                for (String name : projectData.duplicates.keySet()) {
-                    List<INedTypeElement> duplicateList = projectData.duplicates.get(name);
-                    for (int i = 0; i < duplicateList.size(); i++) {
-                        INedTypeElement element = duplicateList.get(i);
-                        INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
-                        IFile file = getNedFile(element.getContainingNedFileElement());
-                        IFile otherFile = getNedFile(otherElement.getContainingNedFileElement());
-
-                        NedMarkerErrorStore errorStore = new NedMarkerErrorStore(file, markerSync);
-                        if (otherFile == null) {
-                            errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
-                        }
-                        else {
-                            // add error message to both files
-                            String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
-                            errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
-                            NedMarkerErrorStore otherErrorStore = new NedMarkerErrorStore(otherFile, markerSync);
-                            otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
-                        }
+                    NedMarkerErrorStore errorStore = new NedMarkerErrorStore(file, markerSync);
+                    if (otherFile == null) {
+                        errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
+                    }
+                    else {
+                        // add error message to both files
+                        String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
+                        errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
+                        NedMarkerErrorStore otherErrorStore = new NedMarkerErrorStore(otherFile, markerSync);
+                        otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
                     }
                 }
             }
-
-            // validate all files
-            for (IFile file : nedFiles.keySet()) {
-                NedFileElementEx nedFileElement = nedFiles.get(file);
-                markerSync.register(file);
-                INedErrorStore errorStore = new NedMarkerErrorStore(file, markerSync);
-                //INedErrorStore errorStore = new INedErrorStore.SysoutNedErrorStore(); // for debugging
-                new NedValidator(this, file.getProject(), errorStore).validate(nedFileElement);
-            }
-
-            // we need to do the synchronization in a background job, to avoid deadlocks
-            markerSync.runAsWorkspaceJob();
-
-        }
-        finally {
-            fireEndChangeEvent();
-        }
-
-        if (debug) {
-            long dt = System.currentTimeMillis() - startMillis;
-            Debug.println("validateAllFiles(): " + dt + "ms, " + markerSync.getNumberOfMarkers() + " markers on " + markerSync.getNumberOfFiles() + " files");
-            Debug.println("typeinfo: refreshLocalCount:" + NedTypeInfo.debugRefreshLocalCount + "  refreshInheritedCount:" + NedTypeInfo.debugRefreshInheritedCount);
         }
     }
 

@@ -118,4 +118,10 @@ public interface INedResources extends INedTypeResolver {
      */
     public boolean isImmutableCopyUpToDate(INedTypeResolver copy);
     
+    /**
+     * Generate errors for duplicate types; exposed for NedValidationJob.
+     */
+    public void issueErrorsForDuplicates(ProblemMarkerSynchronizer markerSync);
+    
+    
 }
