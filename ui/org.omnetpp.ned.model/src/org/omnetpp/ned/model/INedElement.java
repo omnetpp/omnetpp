@@ -171,8 +171,8 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 	public INedElement getParent();
 
 	/**
-	 * Returns the index'th child element, or null if this element
-	 * has no children.
+	 * Returns the index'th child element. Throws ArrayIndexOutOfBoundsException
+	 * if the index is out of bounds (see getNumChildren()).
 	 */
 	public INedElement getChild(int index);
 

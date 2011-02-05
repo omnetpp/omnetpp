@@ -130,7 +130,8 @@ public class NedTreeDifferenceUtils {
 					for (int i = start; i < end; i++)
 						parent.getChild(offset + start).removeFromParent();
 
-					INedElement startChild = parent.getChild(offset + start);
+					int k = offset + start;
+					INedElement startChild = (k >= parent.getNumChildren()) ? null : parent.getChild(k);
 
 					for (INedElement element : replacement)
 						parent.insertChildBefore(startChild, element);

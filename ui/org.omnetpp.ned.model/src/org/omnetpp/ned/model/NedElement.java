@@ -8,6 +8,7 @@
 package org.omnetpp.ned.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,6 +60,8 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	private NedElement nextsibling;
 	private String source;
 	private HashMap<Object,Object> userData;
+	private int numChildren = 0;
+	private INedElement[] cachedChildArray; 
 	private static long lastid;
 
 	// store maximum severity of error markers associated with this element.
@@ -295,12 +298,18 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	}
 
     public INedElement getChild(int index) {
-        int i = 0;
-        for (INedElement elem : this) {
-            if (i++ == index)
-                return elem;
+        ensureCachedChildArray();
+        return cachedChildArray[index];
+    }
+
+    private void ensureCachedChildArray() {
+        if (cachedChildArray == null) {
+            cachedChildArray = new INedElement[numChildren];
+            int i = 0;
+            for (INedElement child : this)
+                cachedChildArray[i++] = child;
+            Assert.isTrue(i == numChildren, "cached numChildren is off");
         }
-        return null;
     }
 
 	public INedElement getFirstChild() {
@@ -331,6 +340,8 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 		else
 			firstchild = node;
 		lastchild = node;
+		numChildren++;
+		cachedChildArray = null;
 		fireChildInsertedBefore(node,null);
 	}
 
@@ -352,6 +363,8 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 			node.prevsibling.nextsibling = node;
 		else
 			firstchild = node;
+		numChildren++;
+        cachedChildArray = null;
 		fireChildInsertedBefore(node, where);
 	}
 
@@ -367,6 +380,8 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 		else
 			lastchild = node.prevsibling;
 		node.parent = node.prevsibling = node.nextsibling = null;
+        numChildren--;
+        cachedChildArray = null;
 		fireChildRemoved(node);
 		return node;
 	}
@@ -377,10 +392,8 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public List<INedElement> getChildren() {
-        List<INedElement> result = new ArrayList<INedElement>();
-        for (INedElement child = getFirstChild(); child != null; child = child.getNextSibling())
-            result.add(child);
-        return result;
+        ensureCachedChildArray();
+        return Arrays.asList(cachedChildArray);
     }
 
     public INedElement getFirstChildWithTag(int tagcode) {
@@ -413,10 +426,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	}
 
 	public int getNumChildren() {
-		int n = 0;
-		for (INedElement node = firstchild; node!=null; node = node.getNextSibling())
-			n++;
-		return n;
+	    return numChildren;
 	}
 
 	public int getNumChildrenWithTag(int tagcode) {
