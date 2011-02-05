@@ -52,7 +52,6 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -381,7 +380,6 @@ public class PaletteManager {
         IProject contextProject = file.getProject();
         Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
 
-
         // get all the possible type names in alphabetical order including inner types
         List<INedTypeElement> matchingTypes = new ArrayList<INedTypeElement>();
         List<INedTypeElement> positiveScoreMatchingTypes = new ArrayList<INedTypeElement>();
@@ -691,14 +689,14 @@ public class PaletteManager {
                 if (labels.isEmpty() && editedCompoundModule.isNetwork())
                     labels.add("node");
 
-                for (SubmoduleElementEx submodule : editedCompoundModule.getSubmodules()) {
-                    INedTypeElement submoduleType = submodule.getEffectiveTypeRef();
-
-                    if (submoduleType != null) {
-                    	submoduleLabels.addAll(NedElementUtilEx.getLabels(submoduleType));
-
-                    	if (submoduleType == typeToScore)
-                            score += 10; // already used as a submodule
+                Set<INedTypeElement> usedTypes = editedCompoundModule.getNedTypeInfo().getUsedTypes();
+                if (usedTypes.contains(typeToScore))
+                    score += 10; // as a submodule
+                
+                for (INedTypeElement usedType : usedTypes) {
+                    if (usedType instanceof IModuleKindTypeElement) {
+                        INedTypeElement submoduleType = usedType;
+                        submoduleLabels.addAll(NedElementUtilEx.getLabels(submoduleType));
 
                         for (GateElementEx gate : submoduleType.getNedTypeInfo().getGateDeclarations().values())
                             gateLabels.addAll(getGateLabels(gate, false));
