@@ -221,7 +221,6 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
                 }
             }
         }
-        System.out.println(this + " has the following interfaces: " + interfaceElements + " and extends chain: " + extendsChain);
         return interfaceElements;
     }
 
@@ -326,12 +325,12 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 		if (!needsRefreshInherited)
 			return;
 
-        //long startMillis = System.currentTimeMillis();
+        long startMillis = System.currentTimeMillis();
 
         ++debugRefreshInheritedCount;
 
         if (debug)
-            Debug.println("NedTypeInfo for "+getName()+" inheritedRefresh: " + debugRefreshInheritedCount);
+            Debug.println("NedTypeInfo for "+getName()+" refreshInherited: " + debugRefreshInheritedCount);
 
         // first wee need our local members updated
         if (needsRefreshLocal)
@@ -342,6 +341,9 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         extendsType = extendsChain.size() >= 2 ? extendsChain.get(1).getNedElement() : null;
 
         allInterfaces = resolveInterfaces();
+        if (debug)
+            Debug.println("NedTypeInfo for " + getName() + ": has the following interfaces: " + allInterfaces + " and extends chain: " + extendsChain);
+        
 		allProperties.clear();
 		allParamDecls.clear();
         allParamValues.clear();
@@ -367,8 +369,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 			allMembers.putAll(component.getLocalMembers());
 		}
 
-		//long dt = System.currentTimeMillis() - startMillis;
-        //Debug.println("typeInfo " + getName() + " refreshInherited(): " + dt + "ms");
+        Debug.println("typeInfo " + getName() + " refreshInherited(): " + (System.currentTimeMillis() - startMillis) + "ms");
 
         needsRefreshInherited = false;
 	}
@@ -556,7 +557,6 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         return allParamValues;
     }
 
-    // TODO: properly implement property: name, index pair
     public Map<String, Map<String, PropertyElementEx>> getProperties() {
     	refreshInheritedMembersIfNeeded();
         return allProperties;

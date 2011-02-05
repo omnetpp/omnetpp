@@ -36,6 +36,7 @@ import org.eclipse.gef.tools.CreationTool;
 import org.eclipse.gef.tools.MarqueeSelectionTool;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IFileEditorInput;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.engine.PatternMatcher;
@@ -250,8 +251,8 @@ public class PaletteManager {
      * Builds the palette (all drawers)
      */
     public void refresh() {
-        // Debug.println("paletteManager refresh() start");
-        // long startMillis = System.currentTimeMillis();
+        Debug.println("paletteManager refresh() start");
+        long startMillis = System.currentTimeMillis();
 
         tempChannelsStackContent = new ArrayList<PaletteEntry>();
         tempTypesContainerContent = new ArrayList<PaletteEntry>();
@@ -283,8 +284,7 @@ public class PaletteManager {
         nedPalette.setChildren(drawers);
         defaultContainer.setLabel(getSubmodulesDrawerLabel());
 
-//        long dt = System.currentTimeMillis() - startMillis;
-//        Debug.println("paletteManager refresh(): " + dt + "ms");
+        Debug.println("paletteManager refresh(): " + (System.currentTimeMillis() - startMillis) + "ms");
     }
 
     /**
