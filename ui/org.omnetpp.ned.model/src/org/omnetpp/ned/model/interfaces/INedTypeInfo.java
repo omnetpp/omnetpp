@@ -173,10 +173,7 @@ public interface INedTypeInfo extends INedChangeListener {
      */
     public Set<INedTypeElement> getInterfaces();
 
-    /**
-     * Returns the map of all locally declared inner types, parameters, gates
-     * and submodules.
-     */
+    /** Locally declared inner types, parameters, gates and submodules */
     public Map<String, INedElement> getLocalMembers();
 
     /** Parameters declared locally within this type (i.e. where param type is not empty) */
@@ -206,14 +203,14 @@ public interface INedTypeInfo extends INedChangeListener {
     /** Submodules declared locally within this (compound module) type */
     public Map<String, SubmoduleElementEx> getLocalSubmodules();
 
-    /** Module and channel types used locally in this (compound module) type */
+    /** Types used locally in this (compound module) type as submodules or connections */
     public Set<INedTypeElement> getLocalUsedTypes();
 
 	// same as above, for inherited members as well
 
-    /** XXX ? */
+    /** Inner types, parameters, gates and submodules, including inherited ones */
     public Map<String, INedElement> getMembers();
-
+    
     /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
     public Map<String, ParamElementEx> getParamDeclarations();
 
@@ -226,7 +223,6 @@ public interface INedTypeInfo extends INedChangeListener {
      * (Given the special inheritance rules for properties, this may not be what you want;
      * see getPropertyInheritanceChain().
      */
-    // TODO: properly implement property: name, index pair
     public Map<String, Map<String, PropertyElementEx>> getProperties();
 
     /**
@@ -250,6 +246,8 @@ public interface INedTypeInfo extends INedChangeListener {
     /** All submodules in this (compound module) type, including inherited ones */
     public Map<String, SubmoduleElementEx> getSubmodules();
 
+    /** Types used in this (compound module) type as submodules or connections, including inherited ones */
+    public Set<INedTypeElement> getUsedTypes();
 
 	public List<ParamElementEx> getParameterInheritanceChain(String parameterName);
 	public List<GateElementEx> getGateInheritanceChain(String gateName);

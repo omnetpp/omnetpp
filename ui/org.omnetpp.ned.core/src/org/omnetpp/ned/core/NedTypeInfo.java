@@ -369,7 +369,8 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 			allMembers.putAll(component.getLocalMembers());
 		}
 
-        Debug.println("typeInfo " + getName() + " refreshInherited(): " + (System.currentTimeMillis() - startMillis) + "ms");
+		if (debug)
+		    Debug.println("typeInfo " + getName() + " refreshInherited(): " + (System.currentTimeMillis() - startMillis) + "ms");
 
         needsRefreshInherited = false;
 	}
@@ -595,7 +596,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         return allMembers;
     }
 
-    public Set<INedTypeElement> getAllUsedTypes() {
+    public Set<INedTypeElement> getUsedTypes() {
         if (allUsedTypes == null) {
             allUsedTypes = new HashSet<INedTypeElement>();
             refreshInheritedMembersIfNeeded();

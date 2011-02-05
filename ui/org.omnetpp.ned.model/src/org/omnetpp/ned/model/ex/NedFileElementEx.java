@@ -173,4 +173,10 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 		NedElementUtilEx.collectProperties(this, map);
 		return map;
     }
+    
+    @Override
+    public String toString() {
+        return super.toString() + getFilename();
+    }
+    
 }
