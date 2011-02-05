@@ -9,18 +9,21 @@ package org.omnetpp.ned.model.ex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections.ListUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
@@ -33,12 +36,19 @@ import org.omnetpp.ned.model.pojo.TypesElement;
 /**
  * TODO add documentation
  *
- * @author rhornig
+ * @author rhornig, andras (cleanup, performance)
  */
 public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeElement, IConnectableElement, INedTypeLookupContext {
 
 	private INedTypeInfo typeInfo;
 	protected DisplayString displayString = null;
+    
+    private long cacheUpdateSerial = -1; // resolver.getLastChangeSerial() when connection cache was filled in
+    private Map<String,List<ConnectionElementEx>> localSrcConnCache = null;  // list of non-inherited, valid connections by source module name
+    private Map<String,List<ConnectionElementEx>> localDestConnCache = null; // list of non-inherited, valid connections by destination module name
+    
+    @SuppressWarnings("unchecked")
+    private static final List<ConnectionElementEx> EMPTY_CONN_LIST = ListUtils.unmodifiableList(new ArrayList<ConnectionElementEx>());
 
     protected CompoundModuleElementEx() {
 		init();
@@ -106,6 +116,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      * Returns all inner types contained in THIS module.
      */
     public List<INedTypeElement> getOwnInnerTypes() {
+        // TODO cache!
+        // Note: cannot use INedTypeInfo's methods, because it loses types with duplicate names 
         List<INedTypeElement> result = new ArrayList<INedTypeElement>();
 
         TypesElement typesElement = getFirstTypesChild();
@@ -122,7 +134,10 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     /**
      * Returns all submodules contained in THIS module.
      */
+    //XXX currently unused (why?)
 	protected List<SubmoduleElementEx> getOwnSubmodules() {
+	    // TODO cache!
+        // Note: cannot use INedTypeInfo's methods, because it loses submodules with duplicate names 
 		List<SubmoduleElementEx> result = new ArrayList<SubmoduleElementEx>();
 
 		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
@@ -173,7 +188,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     /**
      * Remove a specific submodule child from this module.
-     * Submodules node will be removed if iw was the last child
+     * Submodules node will be removed if it was the last child
      */
 	public void removeSubmodule(SubmoduleElementEx child) {
         child.removeFromParent();
@@ -214,15 +229,72 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
     // connection related methods
 
+	@SuppressWarnings("unchecked")
+    private void ensureConnectionCache() {
+	    if (localSrcConnCache == null || cacheUpdateSerial != NedElement.getDefaultNedTypeResolver().getLastChangeSerial()) {
+	        localSrcConnCache = new HashMap<String, List<ConnectionElementEx>>();
+	        localDestConnCache = new HashMap<String, List<ConnectionElementEx>>();
+	        INedElement connectionsNode = getFirstConnectionsChild();
+	        if (connectionsNode != null) {
+	            // fill in the maps
+	            gatherConnectionsForCache(connectionsNode);
+	            
+	            // make the lists unmodifiable, because getters return them to clients
+	            for (Entry<String, List<ConnectionElementEx>> entry : localSrcConnCache.entrySet())
+	                entry.setValue(ListUtils.unmodifiableList(entry.getValue()));
+                for (Entry<String, List<ConnectionElementEx>> entry : localDestConnCache.entrySet())
+                    entry.setValue(ListUtils.unmodifiableList(entry.getValue()));
+	        }
+	        cacheUpdateSerial = NedElement.getDefaultNedTypeResolver().getLastChangeSerial();
+	    }
+	}
+
+    private void gatherConnectionsForCache(INedElement parent) {
+        for (INedElement child : parent) {
+            if (child instanceof ConnectionElementEx) {
+                ConnectionElementEx conn = (ConnectionElementEx) child;
+                if (conn.isValid()) {
+                    String src = conn.getSrcModule();
+                    List<ConnectionElementEx> srcList = localSrcConnCache.get(src);
+                    if (srcList == null)
+                        localSrcConnCache.put(src, srcList = new ArrayList<ConnectionElementEx>());
+                    srcList.add(conn);
+
+                    String dest = conn.getDestModule();
+                    List<ConnectionElementEx> destList = localDestConnCache.get(dest);
+                    if (destList == null)
+                        localDestConnCache.put(dest, destList = new ArrayList<ConnectionElementEx>());
+                    destList.add(conn);
+                }
+            }
+            else if (child instanceof ConnectionGroupElement) {
+                gatherConnectionsForCache(child);
+            }
+        }
+    }
+	
     /**
-     *
-     * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
-     * @param srcGate source gate name to filter or NULL if no filtering needed
-     * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
-     * @param destGate destination gate name to filter or NULL if no filtering needed
-     * @return ALL VALID!!! connections contained in this module with matching src and dest module name
+     * Returns a filtered list of local plus inherited valid (see ConnectionElementEx.isValid()) 
+     * connections. The four arguments correspond to connection attributes; any can be null
+     * to mean "no filtering".
+     * 
+     * Note: this method uses linear search, so it should not be used in performance-critical code.
+     * 
+     * @param srcName source module name to filter for; "" for compound module or null for no filtering
+     * @param srcGate source gate name to filter for, or null for no filtering
+     * @param destName destination module name to filter for; "" for compound module or null for no filtering 
+     * @param destGate destination gate name to filter for, or null for no filtering
+     * @return list of matching connections
      */
-    private List<ConnectionElementEx> getOwnConnections(String srcName, String srcGate, String destName, String destGate) {
+    public List<ConnectionElementEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
+        List<ConnectionElementEx> result = new ArrayList<ConnectionElementEx>();
+        for (INedTypeInfo typeInfo : getNedTypeInfo().getInheritanceChain())
+            if (typeInfo.getNedElement() instanceof CompoundModuleElementEx)
+                result.addAll(((CompoundModuleElementEx)typeInfo.getNedElement()).getOwnConnections(srcName, srcGate, destName, destGate));
+        return result;
+    }
+
+	private List<ConnectionElementEx> getOwnConnections(String srcName, String srcGate, String destName, String destGate) {
         List<ConnectionElementEx> result = new ArrayList<ConnectionElementEx>();
         INedElement connectionsNode = getFirstConnectionsChild();
         if (connectionsNode != null)
@@ -230,85 +302,95 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         return result;
     }
 
-    /**
-     * TODO add docu
-     */
     private void gatherConnections(INedElement parent, String srcName, String srcGate, String destName, String destGate, List<ConnectionElementEx> result) {
-        for (INedElement currChild : parent) {
-            if (currChild instanceof ConnectionElementEx) {
-                ConnectionElementEx connChild = (ConnectionElementEx)currChild;
-                // by default add the connection
-                if (srcName != null && !srcName.equals(connChild.getSrcModule()))
+        for (INedElement child : parent) {
+            if (child instanceof ConnectionElementEx) {
+                ConnectionElementEx conn = (ConnectionElementEx)child;
+                if (srcName != null && !srcName.equals(conn.getSrcModule()))
                     continue;
 
-                if (srcGate != null && !srcGate.equals(connChild.getSrcGate()))
+                if (srcGate != null && !srcGate.equals(conn.getSrcGate()))
                     continue;
 
-                if (destName != null && !destName.equals(connChild.getDestModule()))
+                if (destName != null && !destName.equals(conn.getDestModule()))
                     continue;
 
-                if (destGate != null && !destGate.equals(connChild.getDestGate()))
+                if (destGate != null && !destGate.equals(conn.getDestGate()))
                     continue;
 
-                // skip invalid connections (those that has unknown modules at either side)
-                if (!connChild.isValid())
+                // skip invalid connections (those that have unknown modules at either side)
+                if (!conn.isValid())
                     continue;
 
-                // if all was ok, add it to the list
-                result.add(connChild);
+                // if all was OK, add it to the list
+                result.add(conn);
             }
-            else if (currChild instanceof ConnectionGroupElement) {
-                // FIXME remove the comment is the layouter works without infinite loops
-                gatherConnections(currChild, srcName, srcGate, destName, destGate, result);
+            else if (child instanceof ConnectionGroupElement) {
+                gatherConnections(child, srcName, srcGate, destName, destGate, result);
             }
         }
     }
 
-
+    /**
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
+     * where this compound module is the source module of the connection.
+     */
+    public List<ConnectionElementEx> getSrcConnections() {
+        return getSrcConnectionsFor("");
+    }
 
     /**
-     * @param srcName srcModule to filter for ("" for compound module and NULL if not filtering is required)
-     * @param srcGate source gate name to filter or NULL if no filtering needed
-     * @param destName destModule to filter for ("" for compound module and NULL if not filtering is required)
-     * @param destGate destination gate name to filter or NULL if no filtering needed
-     * @return ALL VALID!!! connections contained in / and inherited by this module
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
+     * where this compound module is the destination module of the connection.
      */
-    public List<ConnectionElementEx> getConnections(String srcName, String srcGate, String destName, String destGate) {
-    	List<ConnectionElementEx> result = new ArrayList<ConnectionElementEx>();
-    	for (INedTypeInfo typeInfo : getNedTypeInfo().getInheritanceChain())
-    		if (typeInfo.getNedElement() instanceof CompoundModuleElementEx)
-    			result.addAll(((CompoundModuleElementEx)typeInfo.getNedElement()).getOwnConnections(srcName, srcGate, destName, destGate));
+    public List<ConnectionElementEx> getDestConnections() {
+        return getDestConnectionsFor("");
+    }
+
+    /**
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
+     * where the given submodule is the destination module of the connection. Returns an empty list 
+     * if such submodule does not exist.
+     */
+    public List<ConnectionElementEx> getSrcConnectionsFor(String submoduleName) {
+        ensureConnectionCache();
+        List<ConnectionElementEx> result = localSrcConnCache.get(submoduleName); // immutable list
+        if (result == null)
+            result = EMPTY_CONN_LIST;
+        
+        // add inherited connections too, if we have any (uncommon)
+        INedTypeElement superType = getNedTypeInfo().getSuperType();
+        if (superType instanceof CompoundModuleElementEx) {
+            List<ConnectionElementEx> inherited = ((CompoundModuleElementEx) superType).getSrcConnectionsFor(submoduleName);
+            if (!inherited.isEmpty()) {
+                result = new ArrayList<ConnectionElementEx>(result); // make a modifiable copy
+                result.addAll(inherited);
+            }
+        }
         return result;
     }
 
     /**
-     * Returns ALL VALID connections contained in / and inherited by this module where this module is the source
-     */
-    public List<ConnectionElementEx> getSrcConnections() {
-        return getConnections("", null, null, null);
-    }
-
-    /**
-     * Returns ALL VALID connections contained in / and inherited by this module where this module is the destination
-     */
-    public List<ConnectionElementEx> getDestConnections() {
-        return getConnections(null, null, "", null);
-    }
-
-    /**
-     * Returns ALL VALID connections contained in / and inherited by the provided module
-     * where this module is the source
-     */
-    public List<ConnectionElementEx> getSrcConnectionsFor(String submoduleName) {
-        return getConnections(submoduleName, null, null, null);
-    }
-
-    /**
-     * Returns ALL VALID connections contained in / and inherited by the provided module
-     * where this module is the destination
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
+     * where the given submodule is the destination module of the connection. Returns an empty list 
+     * if such submodule does not exist.
      */
     public List<ConnectionElementEx> getDestConnectionsFor(String submoduleName) {
-        return getConnections(null, null, submoduleName, null);
+        ensureConnectionCache();
+        List<ConnectionElementEx> result = localDestConnCache.get(submoduleName); // immutable list
+        if (result == null)
+            result = EMPTY_CONN_LIST;
+        
+        // add inherited connections too, if we have any (uncommon)
+        INedTypeElement superType = getNedTypeInfo().getSuperType();
+        if (superType instanceof CompoundModuleElementEx) {
+            List<ConnectionElementEx> inherited = ((CompoundModuleElementEx) superType).getDestConnectionsFor(submoduleName);
+            if (!inherited.isEmpty()) {
+                result = new ArrayList<ConnectionElementEx>(result); // make a modifiable copy
+                result.addAll(inherited);
+            }
+        }
+        return result;
     }
 
     /**
