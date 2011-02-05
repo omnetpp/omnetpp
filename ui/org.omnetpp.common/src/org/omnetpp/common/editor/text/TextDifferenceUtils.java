@@ -16,7 +16,10 @@ import org.eclipse.compare.rangedifferencer.RangeDifference;
 import org.eclipse.compare.rangedifferencer.RangeDifferencer;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentRewriteSession;
+import org.eclipse.jface.text.DocumentRewriteSessionType;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension4;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -28,21 +31,33 @@ public class TextDifferenceUtils {
 	}
 
 	public static void modifyTextEditorContentByApplyingDifferences(final IDocument document, String newText) {
-		applyTextDifferences(document.get(), newText, new ITextDifferenceApplier() {
-			public void replace(int start, int end, String replacement) {
-				try {
-					int numberOfLines = document.getNumberOfLines();
-					int startOffset = document.getLineOffset(start);
-					int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
+	    DocumentRewriteSession session = null;
+	    try {
+	        // use rewrite session: it joins replacements into a single undo/redo unit, and also brings huge performance improvement in the case of large documents
+	        if (document instanceof IDocumentExtension4)
+	            session = ((IDocumentExtension4)document).startRewriteSession(DocumentRewriteSessionType.SEQUENTIAL);
 
-					document.replace(startOffset, endOffset - startOffset, replacement);
-				}
-				catch (BadLocationException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
+	        applyTextDifferences(document.get(), newText, new ITextDifferenceApplier() {
+	            public void replace(int start, int end, String replacement) {
+	                try {
+	                    int numberOfLines = document.getNumberOfLines();
+	                    int startOffset = document.getLineOffset(start);
+	                    int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
 
+	                    document.replace(startOffset, endOffset - startOffset, replacement);
+	                }
+	                catch (BadLocationException e) {
+	                    throw new RuntimeException(e);
+	                }
+	            }
+	        });
+
+	    }
+	    finally {
+	        if (document instanceof IDocumentExtension4)
+	            ((IDocumentExtension4)document).stopRewriteSession(session);
+	    }
+		
 		Assert.isTrue(document.get().equals(newText));
 	}
 
@@ -57,7 +72,6 @@ public class TextDifferenceUtils {
 			}}
 		);
 
-		//TODO see IDocumentExtension4 which introduces "rewrite sessions"! --Andras
 		int offset = 0;
 		for (int i = 0 ; i < differences.length; i++) {
 			RangeDifference difference = differences[i];
