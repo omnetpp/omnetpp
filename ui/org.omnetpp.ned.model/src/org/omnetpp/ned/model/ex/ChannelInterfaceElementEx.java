@@ -11,14 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -30,18 +32,28 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  */
 public class ChannelInterfaceElementEx extends ChannelInterfaceElement implements IChannelKindTypeElement, IInterfaceTypeElement {
 
-	private INedTypeInfo typeInfo;
-	protected DisplayString displayString = null;
+    private INedTypeResolver resolver;
+    private INedTypeInfo typeInfo;
+    protected DisplayString displayString = null;
 
-	protected ChannelInterfaceElementEx() {
-		super();
-		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
-	}
+    protected ChannelInterfaceElementEx(INedTypeResolver resolver) {
+        init(resolver);
+    }
 
-    protected ChannelInterfaceElementEx(INedElement parent) {
-		super(parent);
-		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
-	}
+    protected ChannelInterfaceElementEx(INedTypeResolver resolver, INedElement parent) {
+        super(parent);
+        init(resolver);
+    }
+
+    private void init(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+        this.typeInfo = getResolver().createTypeInfoFor(this);
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
+    }
 
     public INedTypeInfo getNedTypeInfo() {
     	return typeInfo;

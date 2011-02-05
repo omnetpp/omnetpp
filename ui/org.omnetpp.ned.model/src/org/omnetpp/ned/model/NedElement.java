@@ -9,7 +9,6 @@ package org.omnetpp.ned.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -59,7 +58,6 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	private NedElement prevsibling;
 	private NedElement nextsibling;
 	private String source;
-	private HashMap<Object,Object> userData;
 	private int numChildren = 0;
 	private INedElement[] cachedChildArray; 
 	private static long lastid;
@@ -176,7 +174,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 	 * or returns null if the given string is null or "".
 	 */
 	public static INedTypeInfo resolveTypeName(String typeName, INedTypeLookupContext context) {
-		return StringUtils.isEmpty(typeName) ? null : getDefaultNedTypeResolver().lookupNedType(typeName, context);
+		return StringUtils.isEmpty(typeName) ? null : context.getResolver().lookupNedType(typeName, context);
 	}
 
 	/**
@@ -465,21 +463,6 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
 		return null;
 	}
 
-    public void setUserData(Object key, Object value) {
-        if (userData == null)
-            userData = new HashMap<Object,Object>();
-        if (value != null)
-            userData.put(key, value);
-        else
-            userData.remove(key);
-    }
-
-    public Object getUserData(Object key) {
-        if (userData != null)
-            return userData.get(key);
-        return null;
-    }
-
     public void removeFromParent() {
         if (getParent() != null)
         	getParent().removeChild(this);
@@ -494,7 +477,11 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public INedElement dup() {
-        INedElement cloned = NedElementFactoryEx.getInstance().createElement(getTagCode());
+        return dup(getDefaultNedTypeResolver());
+    }
+
+    public INedElement dup(INedTypeResolver targetResolver) {
+        INedElement cloned = NedElementFactoryEx.getInstance().createElement(targetResolver, getTagCode());
 
         for (int i = 0; i < getNumAttributes(); ++i)
         	cloned.setAttribute(i, getAttribute(i));
@@ -508,10 +495,14 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public INedElement deepDup() {
-        INedElement result = dup();
+        return deepDup(getDefaultNedTypeResolver());    
+    }
+    
+    public INedElement deepDup(INedTypeResolver targetResolver) {
+        INedElement result = dup(targetResolver);
 
         for (INedElement child : this)
-            result.appendChild(child.deepDup());
+            result.appendChild(child.deepDup(targetResolver));
 
         return result;
     }

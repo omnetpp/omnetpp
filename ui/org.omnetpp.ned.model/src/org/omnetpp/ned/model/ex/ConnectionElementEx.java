@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
@@ -20,6 +21,7 @@ import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
@@ -30,17 +32,25 @@ import org.omnetpp.ned.model.pojo.ParametersElement;
  *
  * @author rhornig
  */
-public class ConnectionElementEx extends ConnectionElement
-    implements ISubmoduleOrConnection
+public class ConnectionElementEx extends ConnectionElement implements ISubmoduleOrConnection
 {
-	private DisplayString displayString = null;
+    private INedTypeResolver resolver;
+    protected DisplayString displayString = null;
 
-    protected ConnectionElementEx() {
-	}
+    protected ConnectionElementEx(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+    }
 
-    protected ConnectionElementEx(INedElement parent) {
-		super(parent);
-	}
+    protected ConnectionElementEx(INedTypeResolver resolver, INedElement parent) {
+        super(parent);
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
+    }
 
     public IConnectableElement getSrcModuleRef() {
     	return resolveConnectedModule(getSrcModule());
@@ -112,7 +122,7 @@ public class ConnectionElementEx extends ConnectionElement
 		result += getSrcGateWithIndex();
 		return result;
 	}
-	
+
 	/**
 	 * Returns the fully qualified dest gate name (with module, index, gate, index)
 	 */

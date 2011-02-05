@@ -7,10 +7,7 @@
 
 package org.omnetpp.ned.core;
 
-import java.util.Collection;
-
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 
@@ -97,14 +94,24 @@ public interface INedResources extends INedTypeResolver {
      * setRefactoringInProgress() calls.
      */
     public boolean isRefactoringInProgress();
+    
+    /**
+     * Creates an immutable copy of the NED parse trees and all other data structures.
+     * The immutable copy can be used for lengthy computations (e.g. validation or other
+     * analysis) in a background thread without locking the INedResources object. 
+     * 
+     * Any model change event (NedModelChangeEvent) will cause subsequent calls to this method 
+     * to return a different, up-to-date instance. (Marker changes do not count.) 
+     * 
+     * Use isImmutableCopyUpToDate() to check whether an immutable copy you obtained 
+     * earlier is still current. 
+     */
+    public INedTypeResolver getImmutableCopy();
 
     /**
-     * Returns all built-in types' type infos.
+     * Checks whether an immutable copy returned from an earlier getImmutableCopy() call 
+     * is still up to date.
      */
-    public Collection<INedTypeInfo> getBuiltInDeclarations();
-
-    /**
-     * Returns true if the given ned type info is a descriptor for a built-in type.
-     */
-    public boolean isBuiltInDeclaration(INedTypeInfo typeInfo);
+    public boolean isImmutableCopyUpToDate(INedTypeResolver copy);
+    
 }

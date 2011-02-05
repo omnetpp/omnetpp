@@ -9,9 +9,11 @@ package org.omnetpp.ned.editor.graph.misc;
 
 import org.eclipse.gef.requests.CreationFactory;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
@@ -73,7 +75,8 @@ public class ModelFactory implements CreationFactory {
 	}
 	
 	public Object getNewObject() {
-		INedElement element = NedElementFactoryEx.getInstance().createElement(tagCode);
+	    INedTypeResolver resolver = NedResourcesPlugin.getNedResources();
+		INedElement element = NedElementFactoryEx.getInstance().createElement(resolver, tagCode);
 
 		if (!StringUtils.isEmpty(bannerComment)) {
 			// add trailing empty lines

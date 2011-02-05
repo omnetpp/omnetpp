@@ -19,7 +19,7 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  *
  * @author rhornig
  */
-public interface INedTypeElement extends ITypeElement, IHasDisplayString, IHasParameters {
+public interface INedTypeElement extends IHasResolver, ITypeElement, IHasDisplayString, IHasParameters {
 
 	/**
 	 * Returns the typeinfo belonging to this NED type. This can be trusted

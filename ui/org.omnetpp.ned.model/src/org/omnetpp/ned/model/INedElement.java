@@ -13,6 +13,7 @@ import org.omnetpp.ned.model.ex.MsgFileElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.NedElementTags;
@@ -301,17 +302,6 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 	public INedElement findElementWithId(long id);
 
 	/**
-	 * UserData not belonging directly to the model can be stored using a key. If the value
-	 * is NULL the data will be deleted.
-	 */
-	public void setUserData(Object key, Object value);
-
-	/**
-	 * Returns user specific data, not belonging to the model directly
-	 */
-	public Object getUserData(Object key);
-
-	/**
 	 * Remove this node from the parent if it has one.
 	 */
 	public void removeFromParent();
@@ -326,15 +316,27 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 	 */
 	public String debugString();
 
-	/**
-	 * Creates a shallow copy of the node.
-	 */
-	public INedElement dup();
+    /**
+     * Creates a shallow copy of the node, for use in the default NED type resolver.
+     * @see NedElement.getDefaultNedTypeResolver().
+     */
+    public INedElement dup();
 
 	/**
-	 * Creates a deep copy of the tree.
+	 * Creates a shallow copy of the node, for use in the given target NED type resolver.
+	 */
+	public INedElement dup(INedTypeResolver targetResolver);
+
+	/**
+	 * Creates a deep copy of the tree, for use in the default NED type resolver.
+	 * @see NedElement.getDefaultNedTypeResolver().
 	 */
 	public INedElement deepDup();
+	
+	/**
+	 * Creates a deep copy of the tree, for use in the given target NED type resolver.
+	 */
+	public INedElement deepDup(INedTypeResolver targetResolver);
 
 	/**
 	 * Returns the first parent which is an INedTypeElement, or null. For example,

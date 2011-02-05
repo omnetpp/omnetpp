@@ -36,6 +36,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -59,10 +60,10 @@ public class RefactoringTools {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        INedResources res = NedResourcesPlugin.getNedResources();
-        IFile file = res.getNedFile(nedFileElement);
+        INedTypeResolver resolver = nedFileElement.getResolver();
+        IFile file = resolver.getNedFile(nedFileElement);
 
-        String expectedPackage = res.getExpectedPackageFor(file);
+        String expectedPackage = resolver.getExpectedPackageFor(file);
 
         if (expectedPackage != null && !StringUtils.equals(nedFileElement.getPackage(), expectedPackage))
             nedFileElement.setPackage(expectedPackage);
@@ -77,8 +78,8 @@ public class RefactoringTools {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        INedResources res = NedResourcesPlugin.getNedResources();
-        IFile file = res.getNedFile(nedFileElement);
+        INedTypeResolver resolver = nedFileElement.getResolver();
+        IFile file = resolver.getNedFile(nedFileElement);
         IProject contextProject = file.getProject();
 
         // collect names to import
@@ -88,7 +89,7 @@ public class RefactoringTools {
         List<String> oldImports = nedFileElement.getImports();
         List<String> imports = new ArrayList<String>();
         for (String typeName : unqualifiedTypeNames)
-        	resolveImport(contextProject, typeName, nedFileElement.getQNameAsPrefix(), oldImports, imports);
+        	resolveImport(resolver, contextProject, typeName, nedFileElement.getQNameAsPrefix(), oldImports, imports);
 
         // update model if imports have changed
         Collections.sort(imports);
@@ -128,16 +129,14 @@ public class RefactoringTools {
 	/**
 	 * Find the fully qualified type for the given simple name, and add it to the imports list.
 	 */
-	protected static void resolveImport(IProject contextProject, String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
-		INedResources res = NedResourcesPlugin.getNedResources();
-
+	protected static void resolveImport(INedTypeResolver resolver, IProject contextProject, String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
 		// name is in the same package as this file, no need to add an import
-		if (res.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
+		if (resolver.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
 			return;
 
 		// find all potential types
         List<String> potentialMatches = new ArrayList<String>();
-		for (String qualifiedName : res.getNedTypeQNames(contextProject))
+		for (String qualifiedName : resolver.getNedTypeQNames(contextProject))
 			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
 				potentialMatches.add(qualifiedName);
 

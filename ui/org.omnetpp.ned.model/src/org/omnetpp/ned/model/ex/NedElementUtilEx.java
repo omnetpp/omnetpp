@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.IHasName;
@@ -37,7 +36,6 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.LiteralElement;
-import org.omnetpp.ned.model.pojo.NedElementFactory;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 import org.omnetpp.ned.model.pojo.PackageElement;
@@ -304,7 +302,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         String currentQName;
         if (context instanceof NedFileElementEx) {
             // top level type (work with fully qualified names)
-            INedTypeResolver res = NedElement.getDefaultNedTypeResolver();
+            INedTypeResolver res = context.getResolver();
             IProject project = res.getNedFile((NedFileElementEx)context).getProject();
             reservedNames = res.getReservedQNames(project);
             currentQName = context.getQNameAsPrefix() + currentName; 
@@ -398,7 +396,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
         String simpleName = fullyQualifiedTypeName.indexOf('.')==-1 ? fullyQualifiedTypeName : StringUtils.substringAfterLast(fullyQualifiedTypeName, ".");
 
         // check what this simple name already means in this lookup context
-        INedTypeInfo existingSimilarType = NedElement.getDefaultNedTypeResolver().lookupNedType(simpleName, lookupContext);
+        INedTypeInfo existingSimilarType = lookupContext.getResolver().lookupNedType(simpleName, lookupContext);
         if (existingSimilarType != null) {
             if (existingSimilarType.getFullyQualifiedName().equals(fullyQualifiedTypeName)) {
                 // it already means the same type we want: just use short name
@@ -602,7 +600,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     public static void addPropertyValues(IHasProperties element, String propertyName, String propertyIndex, Collection<String> values) {
-    	NedElementFactory factory = NedElementFactoryEx.getInstance();
+    	NedElementFactoryEx factory = NedElementFactoryEx.getInstance();
         PropertyElementEx propertyElement = NedElementUtilEx.getProperty(element, propertyName, propertyIndex);
 
         if (propertyElement == null) {

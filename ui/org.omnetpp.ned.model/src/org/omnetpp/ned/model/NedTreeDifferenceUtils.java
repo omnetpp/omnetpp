@@ -25,7 +25,6 @@ import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
-import org.omnetpp.ned.model.pojo.NedElementFactory;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 
 
@@ -237,7 +236,7 @@ class NedTreeDifferenceTest {
 
 		for (int i = 0; i < 100; i++) {
 			String nedFile = "C:\\Workspace\\Repository\\trunk\\omnetpp\\samples\\queuenet\\CallCenter.ned";
-			INedElement original = NedTreeUtil.parseNedFile(nedFile, new SysoutNedErrorStore(), "/queuenet/callcenter.ned");
+			INedElement original = NedTreeUtil.parseNedFile(nedFile, new SysoutNedErrorStore(), "/queuenet/callcenter.ned", NedElement.getDefaultNedTypeResolver());
 			test(original);
 		}
 	}
@@ -299,7 +298,7 @@ class NedTreeDifferenceTest {
 	private void insertRandomCommentNodes(INedElement element) {
 		if (!(element instanceof CommentElement)) {
 			for (int i = 0; i < random.nextInt(3); i++) {
-				CommentElement comment = (CommentElement)NedElementFactory.getInstance().createElement("comment");
+				CommentElement comment = (CommentElement)NedElementFactoryEx.getInstance().createElement("comment");
 				comment.setLocid("banner");
 				comment.setContent("// Comment: " + String.valueOf(random.nextInt(10000)));
 				element.insertChildBefore(element.getChild(random.nextInt(element.getNumChildren() + 1)), comment);

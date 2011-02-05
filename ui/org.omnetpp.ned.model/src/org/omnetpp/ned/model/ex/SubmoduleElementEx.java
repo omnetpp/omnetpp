@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
@@ -21,8 +22,9 @@ import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
 import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.GatesElement;
@@ -31,7 +33,7 @@ import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
- * TODO add documentation
+ * Represents a submodule.
  *
  * @author rhornig, andras
  */
@@ -42,6 +44,7 @@ public class SubmoduleElementEx extends SubmoduleElement
 
     public static final String DEFAULT_NAME = "unnamed";
 
+    private INedTypeResolver resolver;
     protected DisplayString displayString = null;
 
     // cached return value of getNedTypeInfo()
@@ -50,17 +53,23 @@ public class SubmoduleElementEx extends SubmoduleElement
     // the value of INedTypeResolver.getLastChangeSerial() when cachedTypeInfo was calculated
     private long cachedTypeInfoSerial;
 
-    protected SubmoduleElementEx() {
-        init();
+    protected SubmoduleElementEx(INedTypeResolver resolver) {
+        init(resolver);
 	}
 
-    protected SubmoduleElementEx(INedElement parent) {
+    protected SubmoduleElementEx(INedTypeResolver resolver, INedElement parent) {
 		super(parent);
-        init();
+        init(resolver);
 	}
 
-    private void init() {
+    private void init(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
         setName(DEFAULT_NAME);
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
     }
 
     public String getNameWithIndex() {
@@ -134,12 +143,12 @@ public class SubmoduleElementEx extends SubmoduleElement
 	}
 
 	public INedTypeInfo getNedTypeInfo() {
-	    if (cachedTypeInfoSerial != getDefaultNedTypeResolver().getLastChangeSerial()) {
+	    if (cachedTypeInfoSerial != getResolver().getLastChangeSerial()) {
 	        // determine and cache typeInfo
 	        INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
 	        INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
 	        cachedTypeInfo = (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
-	        cachedTypeInfoSerial = getDefaultNedTypeResolver().getLastChangeSerial();
+	        cachedTypeInfoSerial = getResolver().getLastChangeSerial();
 	    }
 	    return cachedTypeInfo;
     }

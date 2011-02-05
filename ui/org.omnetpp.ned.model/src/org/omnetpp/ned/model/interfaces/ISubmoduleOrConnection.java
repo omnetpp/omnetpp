@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
  *
  * @author rhornig, andras
  */
-public interface ISubmoduleOrConnection extends INedElement, IHasDisplayString, IHasParameters {
+public interface ISubmoduleOrConnection extends IHasResolver, IHasDisplayString, IHasParameters {
     /**
      * Returns the compound module that contains this submodule or connection
      */

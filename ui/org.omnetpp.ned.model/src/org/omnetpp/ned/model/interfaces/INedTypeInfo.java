@@ -78,6 +78,11 @@ public interface INedTypeInfo extends INedChangeListener {
      */
     public IProject getProject();
     
+    /**
+     * Returns the NED type resolver associated with this type info object; never null.
+     */
+    public INedTypeResolver getResolver();
+    
 	/**
 	 * Returns the C++ class name inherited along @class properties or from the root's NED type name.
 	 * The namespace is determined using the @namespace properties from the package.ned files.

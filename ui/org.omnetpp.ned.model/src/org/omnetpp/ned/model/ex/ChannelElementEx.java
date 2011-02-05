@@ -11,13 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
@@ -29,18 +31,28 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  */
 public class ChannelElementEx extends ChannelElement implements IChannelKindTypeElement {
 
+    private INedTypeResolver resolver;
 	private INedTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
-    protected ChannelElementEx() {
-		super();
-		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
+    protected ChannelElementEx(INedTypeResolver resolver) {
+        init(resolver);
 	}
 
-    protected ChannelElementEx(INedElement parent) {
+    protected ChannelElementEx(INedTypeResolver resolver, INedElement parent) {
 		super(parent);
-		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
+        init(resolver);
 	}
+
+    private void init(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+        typeInfo = getResolver().createTypeInfoFor(this);
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
+    }
 
     public INedTypeInfo getNedTypeInfo() {
     	return typeInfo;

@@ -23,7 +23,6 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
@@ -435,15 +434,15 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         return file != null ? file.getProject() : null;
     }
 
-	protected INedTypeResolver getResolver() {
-		return NedElement.getDefaultNedTypeResolver();
+	public INedTypeResolver getResolver() {
+		return componentNode.getResolver();
 	}
 
     public String getFullyQualifiedCppClassName() {
         String className = null;
         List<INedTypeInfo> extendsChain = getInheritanceChain();
 
-        // find the first type in the extends chain that have @class atribute and return that class name
+        // find the first type in the extends chain that have @class attribute and return that class name
         for (INedTypeInfo typeInfo : extendsChain) {
             PropertyElementEx property = typeInfo.getProperty("class", null);
             if (property != null) {

@@ -89,11 +89,6 @@ public interface INedTypeResolver {
 	 */
 	public INedTypeInfo createTypeInfoFor(INedTypeElement node);
 
-    /**
-     * Recalculate everything if the state is invalid
-     */
-    public void rehashIfNeeded();
-
 	/**
 	 * Returns NED files in the workspace.
 	 */
@@ -367,4 +362,14 @@ public interface INedTypeResolver {
      * (i.e. the containing NED source folder). Returns null if not found.
      */
     public PropertyElementEx getPropertyFor(IContainer folder, String propertyName);
+
+    /**
+     * Returns all built-in types' type info objects.
+     */
+    public Collection<INedTypeInfo> getBuiltInDeclarations();
+
+    /**
+     * Returns true if the given ned type info is a descriptor for a built-in type.
+     */
+    public boolean isBuiltInDeclaration(INedTypeInfo typeInfo);
 }

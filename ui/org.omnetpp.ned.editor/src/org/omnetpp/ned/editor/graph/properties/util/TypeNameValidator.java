@@ -10,8 +10,6 @@ package org.omnetpp.ned.editor.graph.properties.util;
 import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
-import org.omnetpp.ned.core.INedResources;
-import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
@@ -30,7 +28,7 @@ public class TypeNameValidator extends NedNameValidator {
 
     @Override
     public String isValid(Object simpleName) {
-        INedResources resolver = NedResourcesPlugin.getNedResources();
+        INedTypeResolver resolver = typeElement.getResolver();
         IProject project = resolver.getNedFile(typeElement.getContainingNedFileElement()).getProject();
         String namePrefix = typeElement.getNedTypeInfo().getNamePrefix();
         Set<String> existingQTypeNames = resolver.getReservedQNames(project);  // top level types

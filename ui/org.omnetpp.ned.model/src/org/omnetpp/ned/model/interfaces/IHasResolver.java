@@ -7,20 +7,18 @@
 
 package org.omnetpp.ned.model.interfaces;
 
-import java.util.Map;
-
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.ex.PropertyElementEx;
 
 /**
- * Interface for NED/MSG model elements that support properties.
+ * NED element that knows the INedTypeResolver it belongs to.
  *
- * @author levy
+ * @author andras
  */
-public interface IHasProperties extends INedElement {
+public interface IHasResolver extends INedElement {
+    
     /**
-     * Returns the name - property node association.
-     * The returned map must not be modified.
+     * The NED type resolver this element belongs to. Never null.
      */
-    public Map<String, Map<String, PropertyElementEx>> getProperties();
+    public INedTypeResolver getResolver();
+
 }

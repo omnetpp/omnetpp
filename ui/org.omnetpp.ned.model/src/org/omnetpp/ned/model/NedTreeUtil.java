@@ -26,8 +26,9 @@ import org.omnetpp.ned.engine.NEDSyntaxValidator;
 import org.omnetpp.ned.engine.NEDTools;
 import org.omnetpp.ned.engine.nedxml;
 import org.omnetpp.ned.model.ex.MsgFileElementEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
-import org.omnetpp.ned.model.pojo.NedElementFactory;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 import org.omnetpp.ned.model.ui.NedModelContentProvider;
@@ -84,8 +85,8 @@ public class NedTreeUtil {
      * whether a parse error occurred. All errors produced here will be syntax errors
      * (see NEDSYNTAXPROBLEM_MARKERID).
 	 */
-	public static synchronized NedFileElementEx parseNedFile(String filesystemFilename, INedErrorStore errors, String displayFilename) {
-        return doParseNedSource(null, filesystemFilename, errors, displayFilename);
+	public static synchronized NedFileElementEx parseNedFile(String filesystemFilename, INedErrorStore errors, String displayFilename, INedTypeResolver resolver) {
+        return doParseNedSource(null, filesystemFilename, errors, displayFilename, resolver);
 	}
 
     /**
@@ -96,11 +97,11 @@ public class NedTreeUtil {
      * whether a parse error occurred. All errors produced here will be syntax errors
      * (see NEDSYNTAXPROBLEM_MARKERID).
      */
-	public static synchronized NedFileElementEx parseNedText(String source, INedErrorStore errors, String displayFilename) {
-        return doParseNedSource(source, null, errors, displayFilename);
+	public static synchronized NedFileElementEx parseNedText(String source, INedErrorStore errors, String displayFilename, INedTypeResolver resolver) {
+        return doParseNedSource(source, null, errors, displayFilename, resolver);
 	}
 
-	private static synchronized NedFileElementEx doParseNedSource(String source, String filesystemFilename, INedErrorStore errors, String displayFilename) {
+	private static synchronized NedFileElementEx doParseNedSource(String source, String filesystemFilename, INedErrorStore errors, String displayFilename, INedTypeResolver resolver) {
 		Assert.isTrue(displayFilename != null);
 		NEDElement swigTree = null;
 		try {
@@ -112,7 +113,7 @@ public class NedTreeUtil {
 			swigTree = source!=null ? np.parseNEDText(source, displayFilename) : np.parseNEDFile(filesystemFilename, displayFilename);
 			if (swigTree == null) {
 				// return an empty NedFileElement if parsing totally failed
-				NedFileElementEx fileNode = (NedFileElementEx)NedElementFactory.getInstance().createElement(NedElementTags.NED_NED_FILE, null);
+				NedFileElementEx fileNode = (NedFileElementEx)NedElementFactoryEx.getInstance().createElement(resolver, NedElementTags.NED_NED_FILE, null);
 				fileNode.setFilename(displayFilename);
 				return fileNode;
 			}
@@ -139,7 +140,7 @@ public class NedTreeUtil {
 			syntaxValidator.validate(swigTree);
 
 			// convert tree to pure Java objects
-			INedElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
+			INedElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors, resolver);
 			Assert.isTrue(swigErrors.numMessages() == errors.getNumProblems(), "problems lost in translation");
 
 			// Debug.println(generateXmlFromPojoElementTree(pojoTree, ""));
@@ -166,7 +167,7 @@ public class NedTreeUtil {
             swigTree = source!=null ? np.parseMSGText(source, filename) : np.parseMSGFile(filename);
             if (swigTree == null) {
                 // return an empty MsgFileElement if parsing totally failed
-                MsgFileElementEx fileNode = (MsgFileElementEx)NedElementFactory.getInstance().createElement(NedElementTags.NED_MSG_FILE, null);
+                MsgFileElementEx fileNode = (MsgFileElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_MSG_FILE, null);
                 fileNode.setFilename(filename);
                 return fileNode;
             }
@@ -196,7 +197,7 @@ public class NedTreeUtil {
             syntaxValidator.validate(swigTree);
 
             // convert tree to pure Java objects
-            INedElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors);
+            INedElement pojoTree = swig2pojo(swigTree, null, swigErrors, errors, null);
             Assert.isTrue(swigErrors.numMessages() == errors.getNumProblems(), "problems lost in translation");
 
             // Debug.println(generateXmlFromPojoElementTree(pojoTree, ""));
@@ -233,9 +234,9 @@ public class NedTreeUtil {
 	 * Converts a native C++ (SWIG-wrapped) NedElement tree to a plain java tree.
 	 * NOTE: There are two different NedElement types handled in this function.
 	 */
-	public static INedElement swig2pojo(NEDElement swigNode, INedElement parent, NEDErrorStore swigErrors, INedErrorStore errors) {
+	public static INedElement swig2pojo(NEDElement swigNode, INedElement parent, NEDErrorStore swigErrors, INedErrorStore errors, INedTypeResolver resolver /*null for msgs*/) {
 		// convert tree
-		INedElement pojoTree = doSwig2pojo(swigNode, parent, swigErrors, errors);
+		INedElement pojoTree = doSwig2pojo(swigNode, parent, swigErrors, errors, resolver);
 
 		// piggyback errors which came without context node onto the tree root
 		if (swigErrors.findFirstErrorFor(null, 0) != -1) {
@@ -249,8 +250,8 @@ public class NedTreeUtil {
 		return pojoTree;
 	}
 
-	protected static INedElement doSwig2pojo(NEDElement swigNode, INedElement parent, NEDErrorStore swigErrors, INedErrorStore errors) {
-		INedElement pojoNode = NedElementFactory.getInstance().createElement(swigNode.getTagCode(), parent);
+	protected static INedElement doSwig2pojo(NEDElement swigNode, INedElement parent, NEDErrorStore swigErrors, INedErrorStore errors, INedTypeResolver resolver /*null for msgs*/) {
+		INedElement pojoNode = NedElementFactoryEx.getInstance().createElement(resolver, swigNode.getTagCode(), parent);
 
 		// set the attributes
 		for (int i = 0; i < swigNode.getNumAttributes(); ++i)
@@ -276,7 +277,7 @@ public class NedTreeUtil {
 
 		// create child nodes
 		for (NEDElement child = swigNode.getFirstChild(); child != null; child = child.getNextSibling())
-			doSwig2pojo(child, pojoNode, swigErrors, errors);
+			doSwig2pojo(child, pojoNode, swigErrors, errors, resolver);
 
 		return pojoNode;
 	}

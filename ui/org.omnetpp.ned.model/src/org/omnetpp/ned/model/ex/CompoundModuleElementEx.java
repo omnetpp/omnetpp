@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections.ListUtils;
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
@@ -25,6 +26,7 @@ import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.CompoundModuleElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
@@ -34,12 +36,13 @@ import org.omnetpp.ned.model.pojo.SubmodulesElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
- * TODO add documentation
+ * Represents a compound module type
  *
  * @author rhornig, andras (cleanup, performance)
  */
 public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeElement, IConnectableElement, INedTypeLookupContext {
 
+    private INedTypeResolver resolver;
 	private INedTypeInfo typeInfo;
 	protected DisplayString displayString = null;
     
@@ -50,18 +53,24 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     @SuppressWarnings("unchecked")
     private static final List<ConnectionElementEx> EMPTY_CONN_LIST = ListUtils.unmodifiableList(new ArrayList<ConnectionElementEx>());
 
-    protected CompoundModuleElementEx() {
-		init();
-	}
+    protected CompoundModuleElementEx(INedTypeResolver resolver) {
+        init(resolver);
+    }
 
-    protected CompoundModuleElementEx(INedElement parent) {
-		super(parent);
-		init();
-	}
+    protected CompoundModuleElementEx(INedTypeResolver resolver, INedElement parent) {
+        super(parent);
+        init(resolver);
+    }
 
-    private void init() {
-        setName("Unnamed");
-		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
+    private void init(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+		this.typeInfo = getResolver().createTypeInfoFor(this);
+		setName("Unnamed");
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
     }
 
     @Override
@@ -181,7 +190,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 	public void addSubmodule(SubmoduleElementEx child) {
         SubmodulesElement snode = getFirstSubmodulesChild();
         if (snode == null)
-            snode = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_SUBMODULES, this);
+            snode = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
 
         snode.appendChild(child);
 	}
@@ -205,7 +214,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 		// check whether Submodules node exists and create one if doesn't
 		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
 		if (submodulesElement == null)
-			submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_SUBMODULES, this);
+			submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
 
 		INedElement insertBefore = submodulesElement.getFirstChild();
 		for (int i=0; i<index && insertBefore!=null; ++i)
@@ -222,7 +231,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 		// check whether Submodules node exists and create one if doesn't
 		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
 		if (submodulesElement == null)
-			submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_SUBMODULES, this);
+			submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
 
 		submodulesElement.insertChildBefore(insertBefore, child);
 	}
@@ -231,7 +240,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 
 	@SuppressWarnings("unchecked")
     private void ensureConnectionCache() {
-	    if (localSrcConnCache == null || cacheUpdateSerial != NedElement.getDefaultNedTypeResolver().getLastChangeSerial()) {
+	    if (localSrcConnCache == null || cacheUpdateSerial != getResolver().getLastChangeSerial()) {
 	        localSrcConnCache = new HashMap<String, List<ConnectionElementEx>>();
 	        localDestConnCache = new HashMap<String, List<ConnectionElementEx>>();
 	        INedElement connectionsNode = getFirstConnectionsChild();
@@ -245,7 +254,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
                 for (Entry<String, List<ConnectionElementEx>> entry : localDestConnCache.entrySet())
                     entry.setValue(ListUtils.unmodifiableList(entry.getValue()));
 	        }
-	        cacheUpdateSerial = NedElement.getDefaultNedTypeResolver().getLastChangeSerial();
+	        cacheUpdateSerial = getResolver().getLastChangeSerial();
 	    }
 	}
 
@@ -413,7 +422,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
 		// check whether Submodules node exists and create one if doesn't
 		ConnectionsElement snode = getFirstConnectionsChild();
 		if (snode == null)
-			snode = (ConnectionsElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_CONNECTIONS, this);
+			snode = (ConnectionsElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_CONNECTIONS, this);
 
 		// add it to the connections node
 		snode.insertChildBefore(insertBefore, conn);

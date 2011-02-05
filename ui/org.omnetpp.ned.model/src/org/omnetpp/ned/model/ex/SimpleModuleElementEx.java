@@ -11,40 +11,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 
 /**
- * TODO add documentation
+ * Represents a simple module type
  *
  * @author rhornig
  */
 public class SimpleModuleElementEx extends SimpleModuleElement implements IModuleTypeElement {
 
+    private INedTypeResolver resolver;
 	private INedTypeInfo typeInfo;
 	protected DisplayString displayString = null;
 
-    protected SimpleModuleElementEx() {
-        init();
+    protected SimpleModuleElementEx(INedTypeResolver resolver) {
+        init(resolver);
 	}
 
-    protected SimpleModuleElementEx(INedElement parent) {
+    protected SimpleModuleElementEx(INedTypeResolver resolver, INedElement parent) {
 		super(parent);
-        init();
+        init(resolver);
 	}
 
-    private void init() {
+    private void init(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+        typeInfo = getResolver().createTypeInfoFor(this);
         setName("Unnamed");
-		typeInfo = getDefaultNedTypeResolver().createTypeInfoFor(this);
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
     }
 
     public INedTypeInfo getNedTypeInfo() {

@@ -60,7 +60,7 @@ public class ParamUtil {
      * Recurses down on submodules.
      */
     public static void mapParamDeclarationsRecursively(INedTypeInfo typeInfo, RecursiveParamDeclarationVisitor visitor, IProject contextProject) {
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor, contextProject);
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(typeInfo.getResolver(), visitor, contextProject);
         treeTraversal.traverse(typeInfo);
     }
 
@@ -69,7 +69,7 @@ public class ParamUtil {
      * Recurses down on submodules.
      */
     public static void mapParamDeclarationsRecursively(SubmoduleElementEx submodule, RecursiveParamDeclarationVisitor visitor, IProject contextProject) {
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(NedResourcesPlugin.getNedResources(), visitor, contextProject);
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(submodule.getResolver(), visitor, contextProject);
         treeTraversal.traverse(submodule);
     }
 

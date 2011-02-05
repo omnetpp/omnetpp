@@ -12,12 +12,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
+import org.omnetpp.ned.model.interfaces.IHasResolver;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ImportElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
@@ -30,14 +33,26 @@ import org.omnetpp.ned.model.pojo.PackageElement;
  * @author rhornig
  */
 public class NedFileElementEx extends NedFileElement implements IHasProperties, INedFileElement, INedTypeLookupContext {
+    private INedTypeResolver resolver;
 	protected boolean readOnly;
 
-    protected NedFileElementEx() {
+    protected NedFileElementEx(INedTypeResolver resolver) {
+        init(resolver);
 	}
 
-    protected NedFileElementEx(INedElement parent) {
+    protected NedFileElementEx(INedTypeResolver resolver, INedElement parent) {
 		super(parent);
+		init(resolver);
 	}
+
+    private void init(INedTypeResolver resolver) {
+        Assert.isNotNull(resolver, "This NED element type needs a resolver");
+        this.resolver = resolver;
+    }
+
+    public INedTypeResolver getResolver() {
+        return resolver;
+    }
 
     /**
      * Returns true if this NED file element has the readonly bit set.
@@ -99,7 +114,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	    }
 	    else {
 	        if (packageElement == null) {
-	            packageElement = (PackageElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_PACKAGE);
+	            packageElement = (PackageElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementTags.NED_PACKAGE);
 	            insertChildBefore(getFirstChild(), packageElement);
 	            packageElement.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n"));
 	        }
@@ -122,14 +137,14 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	 * Insert an import into the file. May add newlines to the import as trailing comment.
 	 */
 	public ImportElement addImport(String importSpec) {
-		ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_IMPORT);
+		ImportElement importElement = (ImportElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementTags.NED_IMPORT);
 		importElement.setImportSpec(importSpec);
 		insertImport(importElement);
 		return importElement;
 	}
 
 	/**
-     * Inserts the given import into the file. May add newlines to the import as trailing comment. 
+     * Inserts the given import into the file. May add newlines to the import as trailing comment.
      */
     public void insertImport(ImportElement importElement) {
         insertChildBefore(NedElementUtilEx.findInsertionPointForNewImport(this), importElement);
