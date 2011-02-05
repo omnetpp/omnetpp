@@ -8,7 +8,9 @@
 package org.omnetpp.figures.layout;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
@@ -38,7 +40,6 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 
     static class Node
     {
-        Object key;        // node "handle"
         boolean fixed;     // allowed to move?
         Anchor anchor;     // not NULL for anchored nodes
         double x, y;       // position (of the center of the shape)
@@ -57,8 +58,9 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     };
 
     List<Anchor> anchors = new ArrayList<Anchor>();
-    List<Node> nodes = new ArrayList<Node>();;
-    List<Edge> edges = new ArrayList<Edge>();;
+    List<Node> nodes = new ArrayList<Node>();
+    Map<Object,Node> nodeMap = new HashMap<Object, Node>();
+    List<Edge> edges = new ArrayList<Edge>();
 
 	//#ifdef USE_CONTRACTING_BOX
 	//    static class Box
@@ -136,13 +138,13 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    allNodesAreFixed = false;
 
 	    Node n = new Node();
-	    n.key = mod;
 	    n.fixed = false;
 	    n.anchor = null;
 	    n.sx = width/2;
 	    n.sy = height/2;
 
 	    nodes.add(n);
+        nodeMap.put(mod, n);
 	}
 
 	@Override
@@ -152,7 +154,6 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    haveFixedNode = true;
 
 	    Node n = new Node();
-	    n.key = mod;
 	    n.fixed = true;
 	    n.anchor = null;
 	    n.x = x;
@@ -161,6 +162,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    n.sy = height/2;
 
 	    nodes.add(n);
+        nodeMap.put(mod, n);
 	}
 
 	@Override
@@ -171,7 +173,6 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    allNodesAreFixed = false;
 
 	    Node n = new Node();
-	    n.key = mod;
 
 	    Anchor anchor = null;
 	    for (Anchor a : anchors) {
@@ -196,6 +197,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    n.sy = height/2;
 
 	    nodes.add(n);
+	    nodeMap.put(mod, n);
 	}
 
 	@Override
@@ -223,6 +225,8 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	public void execute() {
         long startMillis = System.currentTimeMillis();
 
+        Assert.isTrue(nodes.size() == nodeMap.size());
+        
 	    if (nodes.isEmpty() || allNodesAreFixed)
 	        return;
 
@@ -372,10 +376,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     // utility
 	protected Node findNode(Object mod)
 	{
-	    for (Node node : nodes)
-	        if (node.key == mod)
-	            return node;
-	    return null;
+	    return nodeMap.get(mod);
 	}
 
     /**
@@ -675,8 +676,9 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     }
 
     protected void debugPrintState() {
-    	for (Node n : nodes) {
-    		Debug.println("  " + n.key + ": color=" + n.color + " x=" + n.x + " y=" + n.y + " dx=" + n.dx + " dy=" + n.dy);
+    	for (Object key : nodeMap.keySet()) {
+    	    Node n = nodeMap.get(key);
+    		Debug.println("  " + key + ": color=" + n.color + " x=" + n.x + " y=" + n.y + " dx=" + n.dx + " dy=" + n.dy);
     	}
     }
 
