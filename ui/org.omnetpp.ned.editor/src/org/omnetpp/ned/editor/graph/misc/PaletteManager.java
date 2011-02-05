@@ -84,12 +84,12 @@ public class PaletteManager {
      * A comparator that uses dictionary ordering and the short name part of a
      * fully qualified name to order (the part after the last . char)
      */
-    private static class ShortNameComparator implements Comparator<INedTypeInfo> {
-        protected String getName(INedTypeInfo typeInfo) {
-            return typeInfo == null ? "" : typeInfo.getName();
+    private static class ShortNameComparator implements Comparator<INedTypeElement> {
+        protected String getName(INedTypeElement typeElement) {
+            return typeElement == null ? "" : typeElement.getName();
         }
 
-        public int compare(INedTypeInfo first, INedTypeInfo second) {
+        public int compare(INedTypeElement first, INedTypeElement second) {
             String firstShortName = getName(first);
             String secondShortName = getName(second);
 
@@ -106,10 +106,10 @@ public class PaletteManager {
      * the scores to avoid excessive calls to calculateScore()!
      */
     private class ScoreComparator extends ShortNameComparator {
-    	private Map<INedTypeInfo,Integer> cachedScores = new HashMap<INedTypeInfo, Integer>();
+    	private Map<INedTypeElement,Integer> cachedScores = new HashMap<INedTypeElement, Integer>();
 
         @Override
-        public int compare(INedTypeInfo first, INedTypeInfo second) {
+        public int compare(INedTypeElement first, INedTypeElement second) {
             int firstScore = getScore(first);
             int secondScore = getScore(second);
 
@@ -119,12 +119,12 @@ public class PaletteManager {
                 return secondScore - firstScore;
         }
 
-        private int getScore(INedTypeInfo typeInfo) {
-        	if (!cachedScores.containsKey(typeInfo)) {
-        		int score = calculateScore(typeInfo);
-        		cachedScores.put(typeInfo, score);
+        private int getScore(INedTypeElement typeElement) {
+        	if (!cachedScores.containsKey(typeElement)) {
+        		int score = calculateScore(typeElement);
+        		cachedScores.put(typeElement, score);
         	}
-            return cachedScores.get(typeInfo);
+            return cachedScores.get(typeElement);
         }
     }
 
@@ -355,20 +355,20 @@ public class PaletteManager {
      * Returns a map containing palette entries for inner channel types in this file.
      */
     private Map<String, PaletteEntry> createInnerChannelPaletteEntries(IFile file) {
-        List<INedTypeInfo> innerTypes = new ArrayList<INedTypeInfo>();
+        List<INedTypeElement> innerTypes = new ArrayList<INedTypeElement>();
 
         // add module and module interface *inner* types of NED types in this file
         for (INedElement element : NedResourcesPlugin.getNedResources().getNedFileElement(file))
             if (element instanceof INedTypeElement)
             	for (INedTypeElement typeElement : ((INedTypeElement)element).getNedTypeInfo().getInnerTypes().values())
             		if (typeElement instanceof IChannelKindTypeElement)
-            		    innerTypes.add(typeElement.getNedTypeInfo());
+            		    innerTypes.add(typeElement);
         // TODO: use SubmoduleComparator to sort the inner types
         Collections.sort(innerTypes, shortNameComparator);
 
         Map<String, PaletteEntry> entries = new LinkedHashMap<String, PaletteEntry>();
-        for(INedTypeInfo innerType : innerTypes)
-            addConnectionToolEntry((IChannelKindTypeElement)innerType.getNedElement(), entries);
+        for(INedTypeElement innerType : innerTypes)
+            addConnectionToolEntry((IChannelKindTypeElement)innerType, entries);
 
         return entries;
     }
@@ -383,32 +383,31 @@ public class PaletteManager {
 
 
         // get all the possible type names in alphabetical order including inner types
-        List<INedTypeInfo> matchingTypeInfos = new ArrayList<INedTypeInfo>();
-        List<INedTypeInfo> positiveScoreMatchingTypeInfos = new ArrayList<INedTypeInfo>();
+        List<INedTypeElement> matchingTypes = new ArrayList<INedTypeElement>();
+        List<INedTypeElement> positiveScoreMatchingTypes = new ArrayList<INedTypeElement>();
 
         for (INedElement element : NedResourcesPlugin.getNedResources().getNedFileElement(file))
             if (element instanceof INedTypeElement)
                 for (INedTypeElement typeElement : ((INedTypeElement)element).getNedTypeInfo().getInnerTypes().values())
                     if (typeElement instanceof IModuleKindTypeElement) {
-                        INedTypeInfo typeInfo = typeElement.getNedTypeInfo();
-                        matchingTypeInfos.add(typeInfo);
+                        matchingTypes.add(typeElement);
 
-                        if (calculateScore(typeInfo) > 0)
-                            positiveScoreMatchingTypeInfos.add(typeInfo);
+                        if (calculateScore(typeElement) > 0)
+                            positiveScoreMatchingTypes.add(typeElement);
                     }
                         
         for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getNedTypes(contextProject)) {
-            if (typeInfo.getNedElement() instanceof IModuleKindTypeElement) {
-                matchingTypeInfos.add(typeInfo);
+            INedTypeElement typeElement = typeInfo.getNedElement();
+            if (typeElement instanceof IModuleKindTypeElement) {
+                matchingTypes.add(typeElement);
 
-                if (calculateScore(typeInfo) > 0)
-                    positiveScoreMatchingTypeInfos.add(typeInfo);
+                if (calculateScore(typeElement) > 0)
+                    positiveScoreMatchingTypes.add(typeElement);
             }
         }
 
-        Collections.sort(positiveScoreMatchingTypeInfos, new ScoreComparator());
-        for (INedTypeInfo typeInfo : positiveScoreMatchingTypeInfos) {
-            INedTypeElement typeElement = typeInfo.getNedElement();
+        Collections.sort(positiveScoreMatchingTypes, new ScoreComparator());
+        for (INedTypeElement typeElement : positiveScoreMatchingTypes) {
 
             // skip this type if it is a network
             if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
@@ -422,9 +421,8 @@ public class PaletteManager {
 
         entries.put("separator", new PaletteSeparator());
 
-        Collections.sort(matchingTypeInfos, shortNameComparator);
-        for (INedTypeInfo typeInfo : matchingTypeInfos) {
-            INedTypeElement typeElement = typeInfo.getNedElement();
+        Collections.sort(matchingTypes, shortNameComparator);
+        for (INedTypeElement typeElement : matchingTypes) {
 
             // skip this type if it is a network
             if (typeElement instanceof CompoundModuleElementEx && ((CompoundModuleElementEx)typeElement).isNetwork())
@@ -669,46 +667,45 @@ public class PaletteManager {
     /**
      * In the Submodules drawer, types are ordered by score.
      */
-    protected int calculateScore(INedTypeInfo typeInfo) {
+    protected int calculateScore(INedTypeElement typeToScore) {
         int score = 0;
-        INedTypeElement element = typeInfo.getNedElement();
         HashSet<String> gateLabels = new HashSet<String>();
         HashSet<String> containsLabels = new HashSet<String>();
         HashSet<String> submoduleLabels = new HashSet<String>();
-        NedFileElementEx editedElement = hostingEditor.getModel();
+        NedFileElementEx editedFileElement = hostingEditor.getModel();
 
-        if (typeInfo.getNedElement().getContainingNedFileElement() == editedElement)
+        if (typeToScore.getContainingNedFileElement() == editedFileElement)
             score += 1;
         
         // fill in gateLabels, containsLabels, and submoduleLabels
         // also: score+=10 to all submodule types already used
-        for (INedTypeElement nedTypeElement : editedElement.getTopLevelTypeNodes()) {
-            List<String> labels = NedElementUtilEx.getPropertyValues(nedTypeElement, "contains");
+        for (INedTypeElement editedType : editedFileElement.getTopLevelTypeNodes()) {
+            List<String> labels = NedElementUtilEx.getPropertyValues(editedType, "contains");
 
-            if (nedTypeElement.getNedTypeInfo() == typeInfo)
+            if (editedType == typeToScore)
                 continue;
 
-            if (nedTypeElement instanceof CompoundModuleElementEx) {
-                CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)nedTypeElement;
+            if (editedType instanceof CompoundModuleElementEx) {
+                CompoundModuleElementEx editedCompoundModule = (CompoundModuleElementEx)editedType;
 
-                if (labels.isEmpty() && compoundModule.isNetwork())
+                if (labels.isEmpty() && editedCompoundModule.isNetwork())
                     labels.add("node");
 
-                for (SubmoduleElementEx submodule : compoundModule.getSubmodules()) {
-                    INedTypeInfo submoduleTypeInfo = submodule.getNedTypeInfo();
+                for (SubmoduleElementEx submodule : editedCompoundModule.getSubmodules()) {
+                    INedTypeElement submoduleType = submodule.getEffectiveTypeRef();
 
-                    if (submoduleTypeInfo != null) {
-                    	submoduleLabels.addAll(NedElementUtilEx.getLabels(submoduleTypeInfo.getNedElement()));
+                    if (submoduleType != null) {
+                    	submoduleLabels.addAll(NedElementUtilEx.getLabels(submoduleType));
 
-                    	if (submoduleTypeInfo == element.getNedTypeInfo())
+                    	if (submoduleType == typeToScore)
                             score += 10; // already used as a submodule
 
-                        for (GateElementEx gate : submoduleTypeInfo.getGateDeclarations().values())
+                        for (GateElementEx gate : submoduleType.getNedTypeInfo().getGateDeclarations().values())
                             gateLabels.addAll(getGateLabels(gate, false));
                     }
                 }
 
-                for (GateElementEx gate : compoundModule.getGateDeclarations().values())
+                for (GateElementEx gate : editedCompoundModule.getGateDeclarations().values())
                     gateLabels.addAll(getGateLabels(gate, false));
             }
 
@@ -717,7 +714,7 @@ public class PaletteManager {
 
         // honor if it has a @label also in compound module's @contains list,
         // or a @label common with the submodules already in the compound modules
-        for (String label : NedElementUtilEx.getLabels(element)) {
+        for (String label : NedElementUtilEx.getLabels(typeToScore)) {
             if (containsLabels.contains(label))
                 score += 5; // matching @contains and @labels
 
@@ -727,7 +724,7 @@ public class PaletteManager {
 
         // honor if it has a gate that can be connected to an existing submodule or
         // to the parent compound module
-        for (GateElementEx gate : typeInfo.getGateDeclarations().values())
+        for (GateElementEx gate : typeToScore.getNedTypeInfo().getGateDeclarations().values())
             for (String label : getGateLabels(gate, true))  // negate==true: among 2 submods, an input can be connected to an output, and vica versa
                 if (gateLabels.contains(label))
                     score += 1; // matching gate @labels
