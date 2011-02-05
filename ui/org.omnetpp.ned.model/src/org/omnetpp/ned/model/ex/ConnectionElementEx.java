@@ -320,4 +320,13 @@ public class ConnectionElementEx extends ConnectionElement
 
         return chain;
     }
+    
+    @Override
+    public String toString() {
+        String arrow = getIsBidirectional() ? "<-->" : "-->";
+        String type = StringUtils.nullToEmpty(getType()) + " " + StringUtils.nullToEmpty(getLikeType());
+        if (!StringUtils.isBlank(type))
+            arrow += type + arrow;
+        return getSrcGateFullyQualified() + arrow + getDestGateFullyQualified();
+    }
 }
