@@ -69,12 +69,8 @@ public class NedModelContentProvider implements ITreeContentProvider {
         for (INedElement child : currElem) {
             // display only the following classes
             if ((child instanceof NedFileElement) ||
-                    (child instanceof PropertyElement && parent instanceof ParametersElement) ||
-                    (child instanceof ChannelElement) ||
-                    (child instanceof ChannelInterfaceElement) ||
-                    (child instanceof SimpleModuleElement) ||
-                    (child instanceof CompoundModuleElement) ||
-                    (child instanceof ModuleInterfaceElement) ||
+                    (child instanceof PropertyElement && parent instanceof ParametersElement && !((PropertyElement)child).getIsImplicit()) ||
+                    (child instanceof INedTypeElement) ||
                     (child instanceof SubmoduleElement) ||
                     (child instanceof GateElement) ||
                     (child instanceof ParamElement) ||
