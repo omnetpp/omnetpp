@@ -19,7 +19,6 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.window.Window;
 
-// TODO take into account the current selection too if it is a project
 /**
  * This controls the documentation generation for one or multiple OMNeT++ projects.
  *
@@ -52,18 +51,17 @@ public class GenerateNeddocHandler extends AbstractHandler {
 	    }
 	}
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private List<IProject> getSelectedOpenProjects(ExecutionEvent event) {
 		List<IProject> projects = new ArrayList<IProject>();
 
 		EvaluationContext context = (EvaluationContext)event.getApplicationContext();
-		if (context == null)
-			return projects;
-		List selection = (List)context.getDefaultVariable();
-		if (!(selection instanceof List))
-			return projects;
+		if (context == null || !(context.getDefaultVariable() instanceof List))
+		    return projects;  // empty list
 
-		// collect the projects that are open
+		List selection = (List)context.getDefaultVariable();
+
+		// collect the selected projects that are open
 		for (Object element : selection) {
 			IProject project = null;
 			IResource resource = null;
