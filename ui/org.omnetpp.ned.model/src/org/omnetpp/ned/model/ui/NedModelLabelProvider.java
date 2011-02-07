@@ -36,6 +36,9 @@ public class NedModelLabelProvider extends LabelProvider {
 	    if (obj instanceof INedTypeInfo)
 	        obj = ((INedTypeInfo)obj).getNedElement();
 
+	    if (!(obj instanceof INedElement))
+	        return obj.toString();
+
         INedElement model = (INedElement)obj;
         String label = "???";
 
@@ -108,7 +111,7 @@ public class NedModelLabelProvider extends LabelProvider {
             INedElement dummyConn = model.dup();
             label = StringUtils.strip(dummyConn.getNedSource().trim(), ";");
         }
-        else if (model != null){
+        else {
             label = model.getReadableTagName();
         }
 
@@ -132,6 +135,9 @@ public class NedModelLabelProvider extends LabelProvider {
         if (obj instanceof INedTypeInfo)
             obj = ((INedTypeInfo)obj).getNedElement();
 
+        if (!(obj instanceof INedElement))
+            return null;
+        
         INedElement model = (INedElement)obj;
         Image image = null;
         if (model instanceof IHasDisplayString && !(model instanceof ChannelElementEx || model instanceof ChannelInterfaceElementEx)) {

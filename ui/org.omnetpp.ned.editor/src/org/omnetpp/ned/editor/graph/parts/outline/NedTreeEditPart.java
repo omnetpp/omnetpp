@@ -10,6 +10,7 @@ package org.omnetpp.ned.editor.graph.parts.outline;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
 import org.eclipse.gef.Request;
 import org.eclipse.gef.RootEditPart;
@@ -18,6 +19,7 @@ import org.eclipse.gef.commands.UnexecutableCommand;
 import org.eclipse.gef.editparts.AbstractTreeEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
 import org.eclipse.gef.tools.DirectEditManager;
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.swt.widgets.Tree;
 
 import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
@@ -32,15 +34,17 @@ import org.omnetpp.ned.model.ex.ModuleInterfaceElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
+import org.omnetpp.ned.model.ui.NedModelContentProvider;
 
 /**
  * EditPart for the NED Outline view.
  *
  * @author rhornig
  */
-// CHECK do we need the IPropertySourceSupport ?
 public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelProvider {
     protected DirectEditManager manager;
+
+    private static final int PER_GROUP_LIMIT = 1000;  // tree widget cannot handle more than a few thousand items 
 
     /**
      * Constructor initializes this with the given model.
@@ -94,7 +98,8 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
      */
     @Override
     protected List<Object> getModelChildren() {
-        return Arrays.asList(NedTreeUtil.getNedModelContentProvider().getChildren(getModel()));
+        ITreeContentProvider nedModelContentProvider = new NedModelContentProvider(PER_GROUP_LIMIT);
+        return Arrays.asList(nedModelContentProvider.getChildren(getModel()));
     }
 
     /**
@@ -121,7 +126,6 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
 
     	super.refresh();
         for (Object child : getChildren())
-            ((NedTreeEditPart)child).refresh();
-
+            ((EditPart)child).refresh();
     }
 }

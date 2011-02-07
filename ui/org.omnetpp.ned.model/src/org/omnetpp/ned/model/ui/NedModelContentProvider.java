@@ -14,31 +14,35 @@ import java.util.List;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.pojo.ChannelElement;
-import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
-import org.omnetpp.ned.model.pojo.CompoundModuleElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.GatesElement;
-import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.NedFileElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 import org.omnetpp.ned.model.pojo.ParametersElement;
 import org.omnetpp.ned.model.pojo.PropertyElement;
-import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 import org.omnetpp.ned.model.pojo.SubmodulesElement;
 import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
- * A content provider that gives a basic overview structure for a ned model tree
+ * A content provider that gives a basic overview structure for a ned model tree.
  *
  * @author rhornig
  */
 public class NedModelContentProvider implements ITreeContentProvider {
+    private int perGroupLimit = 0;
 
+    public NedModelContentProvider() {
+    }
+    
+    public NedModelContentProvider(int perGroupLimit) {
+        this.perGroupLimit = perGroupLimit;
+    }
+    
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 	}
 
@@ -82,8 +86,16 @@ public class NedModelContentProvider implements ITreeContentProvider {
                     (child instanceof GatesElement) ||
                     (child instanceof ConnectionsElement) ||
                     (child instanceof SubmodulesElement) ||
-                    (child instanceof TypesElement))
-                result.addAll(Arrays.asList(getChildren(child)));
+                    (child instanceof TypesElement)) {
+                Object children[] = getChildren(child);
+                List<Object> childList = Arrays.asList(children);
+                if (children.length > perGroupLimit && perGroupLimit != 0) { 
+                    result.addAll(childList.subList(0, perGroupLimit));
+                    result.add("And "+(children.length - perGroupLimit)+" more...");
+                }
+                else
+                    result.addAll(childList);
+            }
         }
         return result.toArray();
 	}

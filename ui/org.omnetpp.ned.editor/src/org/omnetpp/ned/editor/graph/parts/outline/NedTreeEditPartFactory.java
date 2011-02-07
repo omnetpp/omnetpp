@@ -9,6 +9,8 @@ package org.omnetpp.ned.editor.graph.parts.outline;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPartFactory;
+import org.eclipse.gef.editparts.AbstractTreeEditPart;
+import org.omnetpp.ned.model.INedElement;
 
 /**
  * Creates edit parts for the NEDElements used in outline view
@@ -17,8 +19,16 @@ import org.eclipse.gef.EditPartFactory;
  */
 public class NedTreeEditPartFactory implements EditPartFactory {
 
-    public EditPart createEditPart(EditPart context, Object model) {
-        return new NedTreeEditPart(model);
+    public EditPart createEditPart(EditPart context, final Object model) {
+        if (model instanceof INedElement)
+            return new NedTreeEditPart(model);
+        else
+            return new AbstractTreeEditPart() {
+            @Override
+            protected String getText() {
+                return model.toString();
+            }
+        };
     }
 
 }

@@ -10,7 +10,6 @@ package org.omnetpp.ned.model;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
@@ -31,7 +30,6 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
-import org.omnetpp.ned.model.ui.NedModelContentProvider;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
@@ -40,8 +38,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  * @author rhornig, andras
  */
 public class NedTreeUtil {
-
-	private static ITreeContentProvider nedModelContentProvider = new NedModelContentProvider();
     private static ILabelProvider nedModelLabelProvider = new NedModelLabelProvider();
 
     /**
@@ -254,7 +250,8 @@ public class NedTreeUtil {
 		INedElement pojoNode = NedElementFactoryEx.getInstance().createElement(resolver, swigNode.getTagCode(), parent);
 
 		// set the attributes
-		for (int i = 0; i < swigNode.getNumAttributes(); ++i)
+		int numAttributes = swigNode.getNumAttributes();
+        for (int i = 0; i < numAttributes; ++i)
 			pojoNode.setAttribute(i, swigNode.getAttribute(i));
 
 		// copy source line number info
@@ -397,13 +394,6 @@ public class NedTreeUtil {
         if (tree1==null || tree2==null)
             return false;
         return tree1.getNedSource().equals(tree2.getNedSource());
-    }
-
-    /**
-     * Returns the default content provider for ned model trees
-     */
-    public static ITreeContentProvider getNedModelContentProvider() {
-        return nedModelContentProvider;
     }
 
     /**
