@@ -34,6 +34,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.IPageSite;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
@@ -115,11 +116,17 @@ class NedOutlinePage extends ContentOutlinePage implements INedChangeListener, I
     }
 
     public void setContents(Object contents) {
+        Debug.println("NedOutLinePage: starting setContents");
+        long startTime = System.currentTimeMillis();
         getViewer().setContents(contents);
+        Debug.println("NedOutLinePage: setContents: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
     private void refresh() {
+        Debug.println("NedOutLinePage: starting refresh");
+        long startTime = System.currentTimeMillis();
         getViewer().getContents().refresh();
+        Debug.println("NedOutLinePage: refresh: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 
 	public void modelChanged(NedModelEvent event) {
