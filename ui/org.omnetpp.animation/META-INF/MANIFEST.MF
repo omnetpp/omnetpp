@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Animation Plug-in
+Bundle-Name: OMNeT++ Animation Player
 Bundle-SymbolicName: org.omnetpp.animation;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 4.2.0.qualifier
 Bundle-Activator: org.omnetpp.animation.AnimationPlugin
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
@@ -18,3 +18,4 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.ned.model,
  org.omnetpp.ide.nativelibs
 Eclipse-LazyStart: true
+Bundle-Vendor: OpenSim Ltd.
