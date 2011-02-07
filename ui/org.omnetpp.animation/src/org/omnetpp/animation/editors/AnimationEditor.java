@@ -68,7 +68,7 @@ public class AnimationEditor
         IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.AnimationCanvas");
         if (eventLogInput.getEventLog().getFileReader().getFileSize() > 1E+7) {
-            if (!MessageDialog.openQuestion(null, "Performance warning", "The size of the eventlog file is bigger than 10 Mbyte and that is over the suggested upper bound. At the moment the animation view is an experimental feature, so you may experience severe performance problems. Do you wish to continue?"))
+            if (!MessageDialog.openQuestion(null, "Performance Warning", "The size of the eventlog file is bigger than 10 Mbyte, and that is over the suggested upper bound. At the moment the animation view is an experimental feature, and you may experience severe performance problems. Do you wish to continue?"))
                 throw new RuntimeException("Opening the eventlog file is cancelled by the user");
         }
         // try to open the log view

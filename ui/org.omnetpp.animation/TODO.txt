@@ -1,3 +1,6 @@
+BUG: close all elog files, open the Animation View and click Play --> NPE
+TODO: throws NPE on older eventlog files; it should check the version number in the file and tell the user if the file is not supported
+
 NOTES
 
 - ket event kozotti simulation time ugy feleltetheto meg az animation time-nak, hogy arra a

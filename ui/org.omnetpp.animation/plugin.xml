@@ -11,7 +11,7 @@
             extensions="elog"
             icon="icons/full/eobj16/animation.gif"
             id="org.omnetpp.animation.editors.AnimationEditor"
-            name="OMNeT++ Animation">
+            name="OMNeT++ Animation Player (Technology Preview)">
       </editor>
    </extension>
    <extension
@@ -21,7 +21,7 @@
             class="org.omnetpp.animation.editors.AnimationView"
             icon="icons/full/eview16/animation.gif"
             id="org.omnetpp.animation.editors.AnimationView"
-            name="Animation">
+            name="Animation (Technology Preview)">
       </view>
    </extension>
    <extension
