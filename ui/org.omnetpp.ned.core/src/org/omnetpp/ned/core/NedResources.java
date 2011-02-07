@@ -88,10 +88,16 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     // can be used for computations in a background thread without locking NedResources
     private ImmutableNedTypeResolver immutableCopy = null;
 
-    // delayed validation job
-    private DelayedJob validationJob = new DelayedJob(400) {
+    // job that performs NED validation in the background
+    private Job nedValidationJob;
+
+    // a delayed job that initiates NED validation when the user idles a little
+    private DelayedJob nedValidationStarterJob = new DelayedJob(400) {
         public void run() {
-            new NedValidationJob().schedule();
+            if (nedValidationJob == null)
+                nedValidationJob =  new NedValidationJob();
+            if (nedValidationJob.getState() == Job.NONE)
+                nedValidationJob.schedule();
         }
     };
 
@@ -285,7 +291,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         internalRehash();
 
         // schedule a validation
-        validationJob.restartTimer();
+        nedValidationStarterJob.restartTimer();
     }
 
     public synchronized void invalidate() {
@@ -498,7 +504,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             INedElement source = ((NedModelChangeEvent)event).getSource();
             Assert.isTrue(source==null || refactoringInProgress || source instanceof NedFileElementEx || hasConnectedEditor(getNedFile(source.getContainingNedFileElement())), "NED trees not opened in any editor must NOT be changed");
             invalidate();
-            validationJob.restartTimer(); //FIXME obey begin/end notifications too!
+            nedValidationStarterJob.restartTimer(); //FIXME obey begin/end notifications too!
         }
 
         // notify generic listeners (like NedFileEditParts who refresh themselves

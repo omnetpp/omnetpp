@@ -62,7 +62,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
     protected void unhookListeners() {
         super.unhookListeners();
         if (nedChangeListener != null)
-            NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedChangeListener);
+            NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedChangeListener);
     }
 
     protected void nedModelChanged() {

@@ -584,9 +584,11 @@ public class PropertiesDialog extends TrayDialog {
         // set initial focus (without asyncExec() it apparently has no effect [Windows])
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
-                if (tabfolder.getSelection().length>0)
-                    tabfolder.getSelection()[0].getControl().setFocus();
-                validateDialogContents();
+                if (!PropertiesDialog.this.getShell().isDisposed()) {
+                    if (tabfolder.getSelection().length > 0)
+                        tabfolder.getSelection()[0].getControl().setFocus();
+                    validateDialogContents();
+                }
             }
         });
         
