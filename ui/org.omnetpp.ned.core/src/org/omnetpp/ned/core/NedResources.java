@@ -151,6 +151,8 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         INedElement targetTree = NedTreeUtil.parseNedText(text, errorStore, file.getFullPath().toString(), this);
 
         if (targetTree.getSyntaxProblemMaxCumulatedSeverity() == INedElement.SEVERITY_NONE) {
+            long startTime = System.currentTimeMillis();
+            
             NedTreeDifferenceUtils.Applier treeDifferenceApplier = new NedTreeDifferenceUtils.Applier();
             NedTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
 
@@ -168,6 +170,11 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                 // force rehash now, so that validation errors appear soon
                 rehash();
             }
+
+            long dt = System.currentTimeMillis() - startTime;
+            if (dt > 100)
+                Debug.println("setNedFileText(): textual changes applied as tree differences in " + dt + "ms");
+            
         }
         else {
             // mark the tree as having a syntax error, so that the graphical doesn't allow editing
