@@ -413,17 +413,69 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
 	 */
 	public String getNedSource();
 
-	//TODO comment
+	/** 
+	 * Clears stored syntax problem severities recursively on this subtree 
+	 */
     public void clearSyntaxProblemMarkerSeverities();
+    
+    /** 
+     * Clears stored consistency problem severities recursively on this subtree 
+     */
     public void clearConsistencyProblemMarkerSeverities();
+    
+    /** 
+     * To be called when a syntax problem (error or warning) is detected for this
+     * element. It invokes setSyntaxProblemMaxLocalSeverity(severity) if the new 
+     * is more severe than the currently stored maximum local severity, otherwise
+     * it does nothing. Severity is one of the IMarker severity constants. 
+     */
     public void syntaxProblemMarkerAdded(int severity);
+
+    /** 
+     * To be called when a consistency problem (error or warning) is detected for this
+     * element. It invokes setConsistencyProblemMaxLocalSeverity(severity) if the new 
+     * is more severe than the currently stored maximum local severity, otherwise
+     * it does nothing. Severity is one of the IMarker severity constants. 
+     */
     public void consistencyProblemMarkerAdded(int severity);
-    public int getSyntaxProblemMaxLocalSeverity();
-    public int getConsistencyProblemMaxLocalSeverity();
-    public int getSyntaxProblemMaxCumulatedSeverity();
-    public int getConsistencyProblemMaxCumulatedSeverity();
+
+    /**
+     * Sets the syntax problem max local severity to the given value.
+     * Use IMarker severity constants or INedElement.SEVERITY_NONE. 
+     */
     public void setSyntaxProblemMaxLocalSeverity(int severity);
+    
+    /**
+     * Sets the consistency problem max local severity to the given value.
+     * Use IMarker severity constants or INedElement.SEVERITY_NONE. 
+     */
     public void setConsistencyProblemMaxLocalSeverity(int severity);
+    
+    /**
+     * Returns the severity of the most severe syntax problem annotated onto 
+     * this element since error marker severities were last cleared. 
+     * Returns one of the IMarker severity constants or INedElement.SEVERITY_NONE. 
+     * @see clearSyntaxProblemMarkerSeverities(), syntaxProblemMarkerAdded() 
+     */
+    public int getSyntaxProblemMaxLocalSeverity();
+
+    /**
+     * Returns the severity of the most severe consistency problem annotated onto 
+     * this element since error marker severities were last cleared. 
+     * Returns one of the IMarker severity constants or INedElement.SEVERITY_NONE. 
+     * @see clearConsistencyProblemMarkerSeverities(), consistencyProblemMarkerAdded() 
+     */
+    public int getConsistencyProblemMaxLocalSeverity();
+    
+    /** 
+     * Returns the maximum of the local syntax problem max severities in this subtree.
+     */
+    public int getSyntaxProblemMaxCumulatedSeverity();
+
+    /** 
+     * Returns the maximum of the local consistency problem max severities in this subtree.
+     */
+    public int getConsistencyProblemMaxCumulatedSeverity();
 
     /**
      * Convenience method: returns true if this element or any element below
@@ -438,8 +490,10 @@ public interface INedElement extends Iterable<INedElement>, NedElementTags, NedE
     public boolean hasConsistencyError();
 
     /**
-     * Convenience method: returns the maximum severity of NED or NED consistency
-     * problems on this element or any element below.
+     * Convenience method: returns the maximum severity of syntax or consistency
+     * problems on this element or any element below, i.e.
+     * max(getSyntaxProblemMaxCumulatedSeverity(), getConsistencyProblemMaxCumulatedSeverity()).
+     * The result is one of the IMarker severity constants or INedElement.SEVERITY_NONE. 
      */
     public int getMaxProblemSeverity();
 }
