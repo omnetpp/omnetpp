@@ -77,7 +77,7 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 				public String getTooltipText(int x, int y) {
 					String message = "";
 					if (getModel().getMaxProblemSeverity() >= IMarker.SEVERITY_INFO) {
-						IMarker[] markers = NedResourcesPlugin.getNedResources().getMarkersForElement(getModel(), 11);
+						IMarker[] markers = NedResourcesPlugin.getNedResources().getMarkersForElement(getModel(), true, 11);
 						int i = 0;
 						for (IMarker marker : markers) {
 							message += marker.getAttribute(IMarker.MESSAGE , "")+"\n";

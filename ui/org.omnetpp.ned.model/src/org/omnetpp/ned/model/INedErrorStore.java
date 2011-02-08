@@ -7,6 +7,8 @@
 
 package org.omnetpp.ned.model;
 
+import org.eclipse.core.resources.IFile;
+
 
 
 /**
@@ -15,6 +17,11 @@ package org.omnetpp.ned.model;
  * @author andras
  */
 public interface INedErrorStore {
+
+    /**
+     * Sets the file that subsequent error/warning messages refer to.
+     */
+    public void setFile(IFile file);
 
 	public void addError(INedElement context, String message);
 
@@ -27,4 +34,5 @@ public interface INedErrorStore {
 	public void add(int severity, INedElement context, int line, String message);
 
 	public int getNumProblems();
+
 }

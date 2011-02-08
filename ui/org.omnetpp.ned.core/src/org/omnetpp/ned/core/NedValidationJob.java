@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
-import org.omnetpp.ned.model.INedErrorStore;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
@@ -53,16 +53,20 @@ public class NedValidationJob extends Job {
         INedTypeResolver immutableResolver = nedResources.getImmutableCopy(); 
 
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(INedTypeResolver.NEDCONSISTENCYPROBLEM_MARKERID);
+        NedMarkerErrorStore errorStore = new NedMarkerErrorStore(markerSync);
 
         //TODO handle progress monitor!!!
+
+        // clear old consistency error markers from NED trees
+        clearConsistencyProblemSeverities(immutableResolver);
+        
+        // issue error message for duplicates
+        immutableResolver.addErrorsForDuplicates(errorStore);
 
         // validate all files
         for (IFile file : immutableResolver.getNedFiles()) {
             NedFileElementEx nedFileElement = immutableResolver.getNedFileElement(file);
-            markerSync.register(file);
-            INedErrorStore errorStore = new NedMarkerErrorStore(file, markerSync);
-            //INedErrorStore errorStore = new INedErrorStore.SysoutNedErrorStore(); // for debugging
-
+            errorStore.setFile(file);
             new NedValidator(immutableResolver, file.getProject(), errorStore).validate(nedFileElement);
 
             if (!nedResources.isImmutableCopyUpToDate(immutableResolver)) {
@@ -80,14 +84,13 @@ public class NedValidationJob extends Job {
                     nedResources.fireBeginChangeEvent();
 
                     // clear old consistency error markers from NED trees
-                    for (IFile file : nedResources.getNedFiles())
-                        nedResources.getNedFileElement(file).clearConsistencyProblemMarkerSeverities();
-
-                    // issue error message for duplicates
-                    nedResources.issueErrorsForDuplicates(markerSync);
+                    clearConsistencyProblemSeverities(nedResources);
 
                     // put validation errors
-                    //FIXME TODO how to mark problemseverities on the original NedElements?
+                    for (INedElement element : errorStore.getAffectedElements()) {
+                        INedElement original = element.getOriginal();
+                        original.setConsistencyProblemMaxLocalSeverity(element.getConsistencyProblemMaxLocalSeverity());
+                    }
 
                     // we need to do the synchronization in a background job, to avoid deadlocks
                     markerSync.runAsWorkspaceJob();
@@ -104,6 +107,11 @@ public class NedValidationJob extends Job {
         }
         Debug.println("NED validation job: results discarded due to NED changes");
         return false;
+    }
+
+    private void clearConsistencyProblemSeverities(INedTypeResolver resolver) {
+        for (IFile file : resolver.getNedFiles())
+            resolver.getNedFileElement(file).clearConsistencyProblemMarkerSeverities();
     }
 
 }

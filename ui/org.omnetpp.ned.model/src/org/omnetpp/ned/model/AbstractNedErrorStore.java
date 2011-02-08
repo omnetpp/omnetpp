@@ -12,7 +12,7 @@ import org.eclipse.core.resources.IMarker;
 
 /**
  * Base class for implementing INedErrorStore's. All "add...()" methods
- * delegate to a single "add()" method.
+ * delegate to a common "add()" method.
  *
  * @author Andras
  */

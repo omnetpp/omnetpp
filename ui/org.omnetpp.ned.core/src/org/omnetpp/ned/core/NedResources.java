@@ -147,7 +147,8 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         // parse
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(NEDSYNTAXPROBLEM_MARKERID);
         markerSync.register(file);
-        NedMarkerErrorStore errorStore = new NedMarkerErrorStore(file, markerSync);
+        NedMarkerErrorStore errorStore = new NedMarkerErrorStore(markerSync);
+        errorStore.setFile(file);
         INedElement targetTree = NedTreeUtil.parseNedText(text, errorStore, file.getFullPath().toString(), this);
 
         if (targetTree.getSyntaxProblemMaxCumulatedSeverity() == INedElement.SEVERITY_NONE) {
@@ -237,7 +238,8 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             Debug.println("reading from disk: " + file.toString());
 
         // parse the NED file and put it into the hash table
-        NedMarkerErrorStore errorStore = new NedMarkerErrorStore(file, markerSync, NEDSYNTAXPROBLEM_MARKERID);
+        NedMarkerErrorStore errorStore = new NedMarkerErrorStore(markerSync, NEDSYNTAXPROBLEM_MARKERID);
+        errorStore.setFile(file);
         NedFileElementEx tree = NedTreeUtil.parseNedFile(file.getLocation().toOSString(), errorStore, file.getFullPath().toString(), this);
         Assert.isNotNull(tree);
 
@@ -327,34 +329,6 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                     INedElement typesSection = ((CompoundModuleElementEx)element).getFirstTypesChild();
                     if (typesSection != null)
                         invalidateTypeInfo(typesSection);
-                }
-            }
-        }
-    }
-
-    public void issueErrorsForDuplicates(ProblemMarkerSynchronizer markerSync) {
-        // issue error message for duplicates
-        for (IProject project : projects.keySet()) {
-            ProjectData projectData = projects.get(project);
-            for (String name : projectData.duplicates.keySet()) {
-                List<INedTypeElement> duplicateList = projectData.duplicates.get(name);
-                for (int i = 0; i < duplicateList.size(); i++) {
-                    INedTypeElement element = duplicateList.get(i);
-                    INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
-                    IFile file = getNedFile(element.getContainingNedFileElement());
-                    IFile otherFile = getNedFile(otherElement.getContainingNedFileElement());
-
-                    NedMarkerErrorStore errorStore = new NedMarkerErrorStore(file, markerSync);
-                    if (otherFile == null) {
-                        errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
-                    }
-                    else {
-                        // add error message to both files
-                        String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
-                        errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
-                        NedMarkerErrorStore otherErrorStore = new NedMarkerErrorStore(otherFile, markerSync);
-                        otherErrorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
-                    }
                 }
             }
         }

@@ -8,7 +8,6 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
-import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 
@@ -117,11 +116,5 @@ public interface INedResources extends INedTypeResolver {
      * is still up to date.
      */
     public boolean isImmutableCopyUpToDate(INedTypeResolver copy);
-    
-    /**
-     * Generate errors for duplicate types; exposed for NedValidationJob.
-     */
-    public void issueErrorsForDuplicates(ProblemMarkerSynchronizer markerSync);
-    
     
 }

@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.INedErrorStore;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -164,7 +165,8 @@ public interface INedTypeResolver {
     public String getExpectedPackageFor(IFile file);
 
 	/**
-	 * Returns the markers for the given element and its subtree.
+	 * Returns the markers for the given element or and the given element and
+	 * its subtree, depending on the 'recursive' argument
 	 *
 	 * IMPORTANT: Do NOT use this method to check whether an element actually
 	 * contains errors! Markers are written out in a background job, and there's
@@ -172,7 +174,7 @@ public interface INedTypeResolver {
 	 * and the likes from INedElement instead. This method will return the maximum
 	 * of "limit" markers (to constraint the CPU usage for elements containing a lot of errors)
 	 */
-    public IMarker[] getMarkersForElement(INedElement node, int limit);
+    public IMarker[] getMarkersForElement(INedElement node, boolean recursive, int limit);
 
     /**
      * Returns a INedElement at the given file/line/column. Returns null if no
@@ -372,4 +374,9 @@ public interface INedTypeResolver {
      * Returns true if the given ned type info is a descriptor for a built-in type.
      */
     public boolean isBuiltInDeclaration(INedTypeInfo typeInfo);
+    
+    /**
+     * Generate errors for duplicate types; exposed for NedValidationJob.
+     */
+    public void addErrorsForDuplicates(INedErrorStore errorStore);
 }

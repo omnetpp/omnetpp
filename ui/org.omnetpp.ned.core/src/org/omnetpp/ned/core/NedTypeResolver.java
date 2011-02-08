@@ -231,13 +231,33 @@ public class NedTypeResolver implements INedTypeResolver {
         return nedElementFiles.get(nedFileElement);
     }
 
-    public IMarker[] getMarkersForElement(INedElement node, int limit) {
+    public IMarker[] getMarkersForElement(INedElement element, boolean recursive, int limit) {
         try {
-            IFile file = getNedFile(node.getContainingNedFileElement());
+            IFile file = getNedFile(element.getContainingNedFileElement());
             List<IMarker> result = new ArrayList<IMarker>();
             for (IMarker marker : file.findMarkers(IMarker.PROBLEM, true, IFile.DEPTH_ZERO)) {
-                int elementId = marker.getAttribute(NedMarkerErrorStore.NEDELEMENT_ID, -1);
-                if (elementId != -1 && node.findElementWithId(elementId) != null)
+                // determine whether this marker belongs to the element in question
+                Object attr = marker.getAttribute(NedMarkerErrorStore.NEDELEMENT_ID);
+                boolean matches = false;
+                if (attr instanceof Long) {
+                    long markerElementId = ((Long)attr).longValue();
+                    if (!recursive)
+                        matches = element.getId()==markerElementId;
+                    else
+                        matches = element.findElementWithId(markerElementId) != null;
+                }
+                else if (attr instanceof long[]) {
+                    long[] markerElementIds = (long[])attr;
+                    if (!recursive)
+                        matches = ArrayUtils.contains(markerElementIds, element.getId());
+                    else 
+                        for (long id : markerElementIds)
+                            if (element.findElementWithId(id) != null)
+                                matches = true;
+                }
+
+                // if so, collect this marker
+                if (matches)
                     result.add(marker);
     
                 // skip the remaining after reaching limit
@@ -629,6 +649,35 @@ public class NedTypeResolver implements INedTypeResolver {
         // redefine
     }
 
+    public void addErrorsForDuplicates(INedErrorStore errorStore) {
+        // issue error message for duplicates
+        for (IProject project : projects.keySet()) {
+            ProjectData projectData = projects.get(project);
+            for (String name : projectData.duplicates.keySet()) {
+                List<INedTypeElement> duplicateList = projectData.duplicates.get(name);
+                for (int i = 0; i < duplicateList.size(); i++) {
+                    INedTypeElement element = duplicateList.get(i);
+                    INedTypeElement otherElement = duplicateList.get(i==0 ? 1 : 0);
+                    IFile file = getNedFile(element.getContainingNedFileElement());
+                    IFile otherFile = getNedFile(otherElement.getContainingNedFileElement());
+
+                    if (otherFile == null) {
+                        errorStore.setFile(file);
+                        errorStore.addError(element, element.getReadableTagName() + " '" + name + "' is a built-in type and cannot be redefined");
+                    }
+                    else {
+                        // add error message to both files
+                        errorStore.setFile(file);
+                        String messageHalf = element.getReadableTagName() + " '" + name + "' already defined in ";
+                        errorStore.addError(element, messageHalf + otherFile.getFullPath().toString());
+                        errorStore.setFile(otherFile);
+                        errorStore.addError(otherElement, messageHalf + file.getFullPath().toString());
+                    }
+                }
+            }
+        }
+    }
+    
     public void dumpProjectsTable() {
         Debug.println(projects.size() + " projects:");
         for (IProject project : projects.keySet()) {

@@ -7,6 +7,8 @@
 
 package org.omnetpp.ned.model;
 
+import org.eclipse.core.resources.IFile;
+
 /**
  * An error store that writes on the standard error.
  *
@@ -14,6 +16,10 @@ package org.omnetpp.ned.model;
  */
 public class SysoutNedErrorStore extends AbstractNedErrorStore {
 	int count;
+
+	public void setFile(IFile file) {
+	    System.err.println("While analyzing " + file.getFullPath() + ":");
+	}
 
 	public void add(int severity, INedElement context, int line, String message) {
 		System.err.println("Error/Warning: " + message + " at line " + line + " at " + context);
