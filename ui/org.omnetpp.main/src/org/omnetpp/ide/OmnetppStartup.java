@@ -91,7 +91,7 @@ public class OmnetppStartup implements IStartup {
                     // We need to turn off "build automatically", otherwise it'll start
                     // building during the import process and will take forever.
                     // Also, CDT is a pain with autobuild on.
-                    disableAutoBuild();
+                    //disableAutoBuild(); -- we now do it via plugin_customization.ini in the main plugin
                     importSampleProjects(false);
                 }
             }
