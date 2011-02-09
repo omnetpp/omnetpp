@@ -1,20 +1,46 @@
+2011-02-03  Levente Meszaros
+
+	* ev.moduleCreated() is now called from the simkernel before the
+	gateCreated() calls. (Eventlog readers prefer to see the "module
+	created" line in the file before the "gate created" lines for
+	the module's gates)
+
+2011-02-01  Levente Meszaros
+
+	* Eventlogmgr: properly support eventlog recording on/off even when
+	restarting simulations:
+	- Previous eventlog file is removed if no eventlog output is written.
+	- Envir handles eventlogmgr similarly to other managers (as much as possible)
+	- The eventlogmgr object is reused between runs.
+	- Fixed writing the simulation initialization entries twice.
+	- Corrected event log wording.
+
+2010-01-27  Tamas Borbely
+
+	* Ini file: fix for bug #214: bogus recursion test for ini file inclusion
+
+2010-07-19  Levente Meszaros
+
+	* Eventlog: fix for bug #187: turning on eventlog recording crashes
+	the simulation when an activity() module is present
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-05-31  ------ omnetpp-4.1rc2 released ------
 
 2010-05-28  Levente Meszaros
 
-	* Ini file inclusion now behaves as textual substition: if an included 
-	ini file does not contain [General] or [Config XXX] lines, the file's  
+	* Ini file inclusion now behaves as textual substition: if an included
+	ini file does not contain [General] or [Config XXX] lines, the file's
 	content will be treated as if copy/pasted into the section containing
 	the include. Ini files that do not start with a section heading will
 	now be accepted and treated as if they started with [General].
-	Rationale: allow factoring out orthogonal pieces of config into 
+	Rationale: allow factoring out orthogonal pieces of config into
 	separate files.
 
 2010-04-26  Andras Varga
 
-	* ValueIterator: fix bug #115: "1..4 step 0.1" went only up to 3.9 
+	* ValueIterator: fix bug #115: "1..4 step 0.1" went only up to 3.9
 	not 4, due to floating-point rounding error.
 
 2010-04-20  ------ omnetpp-4.1b4 released ------
@@ -30,12 +56,12 @@
 	* in the record= list of @statistic, now you can make items optional
 	by appending "?" to them. By default, only non-optional items
 	are used
-	
+
 	* result-recording-modes has changed: there are two keywords that
 	are accepted in the list: "all" and "default". "all" copies all items
 	from record= of @statistic() including optional ones (those suffixed
-	with "?"), and "default" copies only non-optional ones. "default" is 
-	the default setting; it is also implied if result-recording-modes 
+	with "?"), and "default" copies only non-optional ones. "default" is
+	the default setting; it is also implied if result-recording-modes
 	starts with '+'  or '-'. A lone '-' disables all recording modes.
 	Examples:
 	**.result-recording-modes = default  --> the default setting
@@ -52,20 +78,20 @@
 
 	* integrated statistics recording code (@statistic property)
 
-	* new configuration options: debug-statistics-recording, 
+	* new configuration options: debug-statistics-recording,
 	result-recording-mode
 
 	* new command-line options: -h resultfilters, -h resultrecorders
 
 2010-02-03  Andras Varga
 
-	* renamed "vector-recording-interval" configuration option to 
-	"vector-recording-intervals" (plural), to be consistent with 
+	* renamed "vector-recording-interval" configuration option to
+	"vector-recording-intervals" (plural), to be consistent with
 	eventlog-recoding-intervals.
 
 2010-01-31  Andras Varga
 
-	* checked in signals-based result recording; see the User Manual for more 
+	* checked in signals-based result recording; see the User Manual for more
 	info. New configuration options: warmup-period,  **.result-recording-mode
 
 2009-05-13  Levente Meszaros

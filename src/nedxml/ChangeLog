@@ -1,3 +1,10 @@
+2011-01-18  Andras Varga
+
+	* NED refactoring: <channel-spec> element was merged into <connection>;
+	its arrow-direction attribute was split to 2 booleans. 
+	Affects doc/ned/ned2.dtd, and generated classes ChannelSpecNode (which
+	was removed) and ConnectionNode.
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-06-11  Andras Varga
