@@ -6,7 +6,8 @@ backwards compatibility, to help you port models to more recent versions
 of the simulation framework.
 
 This file only describes changes that affect compiling and running models;
-for other changes or new features see WhatsNew.
+for other changes or new features see WhatsNew, and per source directory
+ChangeLog files.
 
 Legend:
 (+)     new feature
@@ -18,6 +19,150 @@ Legend:
         newname')
 (x)     removed a deprecated method, class or compatibility #define
 (i)     information
+
+
+OMNeT++ 4.2
+~~~~~~~~~~~
+
+(!)	Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
+	is that it conflicted with lwIP code recently integrated into INET.
+	<platdep/sockets.h> still includes <winsock.h>, but now
+	<platdep/sockets.h> MUST precede <omnetpp.h> in all source files.
+
+(i)	cChannel::MessageSentSignalValue: getMessage() return type fixed
+	(changed from cObject to cMessage)
+
+
+OMNeT++ 4.1
+~~~~~~~~~~~
+(+)     Introduced the signals mechanism; see the new "Signals" section
+        in the Manual. Implementation comprises new classes cIListener and
+        cListener; new cComponent methods registerSignal(), getSignalName(),
+        emit(), mayHaveListeners(), hasListeners(), subscribe(), unsubscribe(),
+        isSubscribed(), getLocalListenedSignals(), getLocalSignalListeners();
+        constants PRE_MODEL_CHANGE and POST_MODEL_CHANGE; new class
+        cModelChangeNotification and subclasses. Signal-based result recording
+        uses @statistic properties in NED files.
+
+(!!!)   cGate: removed isBusy() and getTransmissionFinishTime(), as they
+        were confusing (they ignored any propagation delay up to the
+        transmission channel); they had bad performance characteristics
+        (they linerarly searched for the transmission channel every time);
+        and they threw an error if the path didn't contain a transmission
+        channel at all.
+
+(!!!)   cChannel: change in the programming model. The old deliver() method's
+        semantics has changed, the method was renamed to processMessage()
+        and its and argument list changed. The reason is to decrease the
+        amount of code that needs to be written when implementing a new
+        channel class, and to improve reusability via subclassing.
+        See documentation in the code.
+
+(+)     cChannel: added forceTransmissionFinishTime(simtime t), so that
+        channels can support aborted transmissions (needed e.g. for Ethernet).
+
+(+)     cChannel: added getNominalDatarate(). This is often needed in models,
+        for example in INET to fill in the interface entry.
+
+(+)     cGate: added utility functions findTransmissionChannel(),
+        getIncomingTransmissionChannel(), findIncomingTransmissionChannel().
+
+(+)     cComponent: added isChannel() utility method (it already had an
+        isModule() method)
+
+(!)     cComponent: handleParameterChange() is now called for each component
+        with parameterName=NULL after the last stage of the initialization
+        phase. This allows the components to refresh their cached parameter
+        values if some parameters were changed during the initialization phase.
+        This is necessary because handleParameterChange() is not called during
+        the component's initialization phase.
+
+(!)     cPar: added a note to the xmlValue() method that the lifetime of
+        the returned objects may be limited. Modules should NOT hang on to
+        cXMLElement pointers between events!
+
+(+)     cGate: added getNameSuffix() method.
+
+(+)     cSimulation: added getSimulationStage()
+
+(+)     cException: exception object now stores simulation stage, event
+        number and simulation time as well; also added getFormattedMessage()
+        method that puts together the complete error message from its pieces.
+
+(+)     cMessage, cPacket: several methods were made virtual, most notably
+        encapsulate() and decapsulate(), to allow customizing the behavior
+        in subclasses
+
+(!)     cPacket: getEncapsulatedMsg() was renamed to getEncapsulatedPacket()
+        to better describe its function. The old method was left there for
+        backward compatibility; it is deprecated and delegates to the new
+        method.
+
+(+)     Enter_Method_Silent() now may take arguments (printf-like arg list).
+        Also, it now logs the call into the eventlog file (and the resulting
+        string (if given) is recorded as the method name).
+
+(+)     cModule::addGate() now returns the gate pointer whenever a single gate
+        is created (for inout gates [~gate pair] and vectors it returns NULL)
+
+(+)     cModuleType: added isSimple() method
+
+(+)     New NED function: expand(). It substitutes ${} config variables
+        into a string. Possible use: in NED parameters like the following:
+        string fname = default(expand("${resultdir}/${configname}-${runnumber}.txt"));
+
+(+)     Created cHistogram class by merging cDoubleHistogram and cLongHistogram
+        functionality.
+
+(i)     When recording a histogram object into the scalars file (see
+        cComponent::recordStatistic(), cStatistics::record(), etc.),
+        its transform() method gets invoked to force it set up the histogram
+        cells, provided it was not already invoked.
+
+(!)     cVarHistogram: createEquiProbableCells() renamed to createEquiprobable-
+        Cells() (lowercase "p")
+
+(+)     cOutVector: added setRecordDuringWarmupPeriod() and getRecordDuring-
+        WarmupPeriod() methods.
+
+(+)     cArray: added setCapacity(), getCapacity(). setCapacity() can be used
+        to trim back the internally allocated array after a large number of
+        items have been removed from it.
+
+(!)     cProperty: getNumValues() to return 0 (instead of thowing an error)
+        when the property does not contain the given property key.
+
+(+)     cClassDescriptor: added findField() method
+
+(+)     cConfiguration: substituteVariables() made public
+
+(+)     cEnvir: added forgetXMLDocument(filename) and flushXMLDocumentCache()
+        (see bug #131)
+
+(!)     cClassFactory was renamed to cObjectFactory
+
+(+)     cStringTokenizer: added copy constructor and assignment operator
+
+(i)     Corrected the definition of NULL according to C++ rules
+
+(i)     FES performance improvement: cMessageHeap was changed to more
+        efficiently handle the insertion and removal of events scheduled
+        for the current simulation time. Such events are actually quite common
+        due to plain (zero delay, zero datarate) connections between modules.
+        For more info, see src/sim/ChangeLog.
+
+(i)     Performance improvement: cMessage::getArrivalTime() was consuming
+        10-20% of CPU time in many configurations, see bug #22,
+        http://dev.omnetpp.org/bugs/view.php?id=22.
+            Solution: change return type of getArrivalTime() and other methods
+        from simtime_t to simtime_t_retval (which is a new typedef that maps to
+        const simtime_t&). Reason: on some platforms and configurations, esp.
+        in debug builds, returning a const reference is more efficient than
+        returning by value (even though SimTime is only 64 bits and would fit
+        in register(s)).
+            On 64-bit architectures and optimized builds (-O2/-O3) this change
+        may actually decrease performance; this is to be investigated, and
+        simtime_t_retval conditionally defined as plain simtime_t.
 
 
 OMNeT++ 4.0
@@ -167,7 +312,7 @@ OMNeT++ 4.0
           gate->transmissionFinishTime()) results in an error. Thus, using a
           special transmitter module (with an internal queue) is now sort of
           mandatory when channels with data rate are in use.
-        - setting channel parameters from the ini file: add 
+        - setting channel parameters from the ini file: add
             <fromgate-fullpath>.channel.<paramname> = <value>, e.g.:
             **.a.out.channel.delay = 10ms
         - now a connection path may only contain one cDatarateChannel (more

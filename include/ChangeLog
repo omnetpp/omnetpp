@@ -1,7 +1,21 @@
+2010-12-11  Andras Varga
+
+	* Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
+	is that it conflicted with lwIP code recently integrated into INET.
+	(<winsock.h> defines a lot of constants, functions etc that lwIP also
+	wants to define, making lwIP impossible to compile with <omnetpp.h>
+	pulled in.) <platdep/sockets.h> still includes <winsock.h>, but now 
+	<platdep/sockets.h> MUST precede <omnetpp.h> in all sources!
+  
 2010-07-17  Andras Varga
 
 	* platdep/sockets.h: closesocket() was incorrectly defined as no-op
 	on platforms other than Windows
+
+2010-07-06  Andras Varga
+
+	cChannel::MessageSentSignalValue: getMessage() return type fixed
+	(changed from cObject to cMessage)
 
 2010-06-11  ------ omnetpp-4.1 released ------
 
