@@ -1,3 +1,104 @@
+2011-02-05 Andras Varga
+
+   * Several performance optimizations for the NED Editor. It must be able to open networks containing
+     around 10.000 submodules.
+
+   * Performance: NED validation is done now in a background thread
+
+2011-02-03 Rudolf Hornig
+
+   * Graphical editor: Figure borders and outlines now correctly follow the zoom level.
+
+   * Graphical editor: The resize/move feedback figures have been changed to transparent blue from a simple outline.
+
+2011-02-03 Levente Meszaros
+
+   * Added Technology Preview version of the network animator. It works only on .elog files smaller than
+     10Mb. You can open it by right clicking on an .elog file and selection "Open width...".
+     This implementation is NOT optimized for larger files.
+
+2011-02-01 Rudolf Hornig
+
+   * NED Files are refreshed now before opening. No more file is out of sync messages if the opened
+     ned file was modified outside of the IDE.
+
+2011-02-01 Andras Varga
+
+   * Simulation launcher: Size of the popup information tooltip is limited when displaying all the runs.
+     (i.e. whan the parameter space is too big)
+
+2011-01-31 Levente Meszaros
+
+   * Added the possibility to go to a specific simulation time in event log view by specifying
+     relative values (+-) in the dialog (units are supported)
+
+   * In sequence chart added 'Goto simulation time' and 'Goto event number' in the context menu
+
+   * Sequence chart: the current position is shown in the gutter
+
+   * Completion proposals in inner types after @ are working properly in ned text editor
+
+2011-01-28 Andras Varga
+
+   * Ned type selection dialog now optionally shows the defining projects for the types.
+
+2011-01-24 Rudolf Hornig
+
+   * Context menu in graphical editor is reorganized for better and easier access of the
+     most used functions.
+
+   * Linux tools now included in the build. It allows to profile the simulation using VALGRIND
+     on LINUX systems. (Windows and Mac builds does not have this capability). Use the "Profile as"
+     menu item in the context menu of the project directory.
+
+2011-01-21 Rudolf Hornig
+
+   * Go to C++ definiton (CTRL-TAB) now correctly finds the appropriate C++ class even if the
+     NED type is extending and other type or it is using the @class property. (bug #238)
+
+2011-01-20 Rudolf Hornig
+
+   * In graphical editor the previous action used with double click (go to type or supertype)
+     has ben moved to the F3 key. It is also available from the conetxt menu.
+
+2011-01-20 Andras Varga
+
+   * Added a brand new Property dialog that can be accessed by double clicking on the module or type.
+     Type, name, vector size and graphical properties are supported. A preview is shown at the bottom
+     of the dialog.
+
+   * Enhanced Ned Type Selection dialog (CTRL-SHIFT-N)
+
+2011-01-18 Rudolf Hornig
+
+   * The package name for the ned file is shown at the top in the graphical editor
+
+   * Support for self connections in graphical editor as an arch in the upper right corner
+
+2011-01-13 Rudolf Hornig
+
+   * Connections in graphical editor now have an error marker to show possible problems.
+
+   * Validator used when entering type names (in property view) now correctly support inner types and packages
+
+2011-01-07 Rudolf Hornig
+
+   * NED Editor now suppoerts the drag and drop operations of inner types (move an inner type to top level
+     or the other way around). Types droppend inside the submodule area create a submodule with that type.
+     Types dropped on the title area of the compound module create an inner type.
+
+2011-01-06 Andras Varga
+
+   * Unit name now can be set in property editor for compound modules
+
+2011-01-04 Andras Varga
+
+   * Compound module border now can be set to 0 width
+
+2011-01-04 Rudolf Hornig
+
+   * In graphical editor inner types can be created by dropping a NED Type on the title of the compound module
+
 2011-01-03 Rudolf Hornig
 
    * The simulation process is now started by using relative paths. The command line displayed in the console
