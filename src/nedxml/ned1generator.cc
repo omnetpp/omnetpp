@@ -93,7 +93,8 @@ const char *NED1Generator::decreaseIndent(const char *indent)
 
 static bool _isNetwork(NEDElement *node)
 {
-    Assert(node->getTagCode()==NED_COMPOUND_MODULE || node->getTagCode()==NED_SIMPLE_MODULE);
+    if (node->getTagCode()!=NED_COMPOUND_MODULE && node->getTagCode()!=NED_SIMPLE_MODULE)
+        return false;
     return NEDElementUtil::getLocalBoolProperty(node, "isNetwork");
 }
 
