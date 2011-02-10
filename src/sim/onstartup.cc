@@ -21,7 +21,6 @@
 
 USING_NAMESPACE
 
-
 // Checks whether an other instance of the shared library has already loaded
 // this can happen if som eparts of the simulation are linked with debug
 // while others are linked with the release version of the oppsim shared library
@@ -40,8 +39,9 @@ class StartupChecker
                 exit(1);
             }
 
-            // we set the environment variable so a new instance will be able to detect it
-            setenv("__OPPSIM_LOADED__","yes",1);
+            // we set the environment variable so a new instance will be able to
+            // detect it (note: there is no setenv() on windows)
+            putenv("__OPPSIM_LOADED__=yes");
         }
 };
 
