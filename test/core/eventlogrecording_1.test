@@ -197,28 +197,28 @@ bool Node::publicSilent2Method(const char *arg1, int arg2)
 network = Test
 record-eventlog = true
 
-%subst: /(SB v 1025 rid) .*/$1 SOME_RUN_ID/
+%subst: /(SB v 1026 rid) .*/$1 SOME_RUN_ID/
 
 %contains: results/General-0.elog
 MC id 1 c cCompoundModule t Test n Test cm 1
-GC m 2 g 3 n out o 1
 MC id 2 c cCompoundModule t Compound pid 1 n compound cm 1
+GC m 2 g 3 n out o 1
+MC id 3 c @TESTNAME@::Node t Node pid 1 n node
 GC m 3 g 1 n out o 1
 GC m 3 g 6 n directIn o 0
-MC id 3 c @TESTNAME@::Node t Node pid 1 n node
 GC m 2 g 1048576 n in i 0 o 0
 CC sm 3 sg 1 dm 2 dg 1048576
 GC m 3 g 3145728 n in i 0 o 0
 CC sm 2 sg 3 dm 3 dg 3145728
+MC id 4 c @TESTNAME@::Node t Node pid 2 n node
 GC m 4 g 1 n out o 1
 GC m 4 g 6 n directIn o 0
-MC id 4 c @TESTNAME@::Node t Node pid 2 n node
 GC m 4 g 3145728 n in i 0 o 0
 CC sm 2 sg 1048576 dm 4 dg 3145728
 CC sm 4 sg 1 dm 2 dg 3
 
 E # 0 t 0 m 1 msg -1
-SB v 1025 rid SOME_RUN_ID
+SB v 1026 rid SOME_RUN_ID
 MB sm 1 tm 2 m initialize(0)
 ME
 MB sm 1 tm 4 m initialize(0)
@@ -332,9 +332,9 @@ DM id 14 pe 12
 
 E # 13 t 7 m 3 ce 0 msg 6
 - creating and connecting a module
+MC id 5 c @TESTNAME@::Node t Node pid 1 n dy
 GC m 5 g 1 n out o 1
 GC m 5 g 6 n directIn o 0
-MC id 5 c @TESTNAME@::Node t Node pid 1 n dy
 MB sm 3 tm 5 m initialize(0)
 - initializing...
 ME

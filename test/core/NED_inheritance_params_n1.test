@@ -24,4 +24,4 @@ network Test
 %exitcode: 1
 
 %contains: stdout
-redeclaration of parameter `p1'
+cannot add parameter `p1': already exists
