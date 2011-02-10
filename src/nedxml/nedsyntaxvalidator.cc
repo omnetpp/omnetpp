@@ -394,9 +394,9 @@ void NEDSyntaxValidator::validateElement(ConnectionsElement *node)
 void NEDSyntaxValidator::validateElement(ConnectionElement *node)
 {
     //FIXME revise
-    const char *expr[] = {"condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index"};
-    bool opt[] = {true, true, true, true, true};
-    checkExpressionAttributes(node, expr, opt, 5);
+    const char *expr[] = {"condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index", "like-param"};
+    bool opt[] = {true, true, true, true, true, true};
+    checkExpressionAttributes(node, expr, opt, 6);
 
     // plusplus and gate index expression cannot be both there
     bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL;
