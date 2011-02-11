@@ -1,6 +1,107 @@
 What's New
 ==========
 
+OMNeT++ 4.2b1 (Feb 2011)
+------------------------
+
+Partial list of changes since 4.1 (see ChangeLog files in individual folders
+for a more complete list):
+
+Simulation runtime:
+ - Resolved spurious errors: 'Class "..." not found -- perhaps its code
+   was not linked in, or the class wasn't registered with Register_Class()'
+   Added a check to ensure that the debug and the release versions of
+   the simulation library are not loaded at the same time. This problem
+   occurred when a model was built as 'release' and the debug version of
+   'opp_run' was used to start it. As a result, the simulation seemingly
+   started but complained about missing classes.
+
+ - Fix: Some classes were thrown out by the linker if OMNeT++ was statically
+   built, and the simulation was complaining at runtime about the missing
+   cCompoundModule class.
+
+IDE:
+ - Added IDE change log in: doc/IDE-Changes
+
+ - Added Technology Preview version of the network animator. It works only on
+   .elog files smaller than 10Mb. You can open it by right clicking on an .elog
+   file and selection "Open width...". This implementation is NOT optimized
+   for larger files.
+
+C++ Development:
+ - Added a new 'Clean local projects' option that does not clean the dependent
+   projects. E.g. if your project depends on INET only your project will be
+   cleaned but not INET.
+
+ - Added new "OMNeT++ Code Formatter" profile. This coding convention follows
+   the rules used in the OMNeT++ kernel and the INET Framework. (No tabs, etc.)
+
+ - Added MachO64 binary parsers and error parsers. This makes it possible to
+   debug a 64-bit executable on Mac OS X 10.6
+
+ - Linux only: Added support for profiling with valgrind. Just use the
+   'Project Explorer' context menu and select "Profile as... / OMNeT++ Simulation".
+   This feature needs 'valgrind' to be installed.
+
+Graphical Editor:
+ - Several performance optimizations for the NED Editor. It can open much larger
+   files than before. NED validation is done now in a background thread and
+   does not block the UI.
+
+ - Select 'NED Type Selection' dialog now works correctly on first open. It
+   shows the defining projects for the types.
+
+ - Enhanced drag and drop capabilities in NED Graphical Editor. You can
+   drop NED types into a compound module either to create submodules
+   (if you drop it into the submodule area), or to turn it into
+   an inner type (if you drop on the title of the compound module).
+
+ - The Graphical Editor now displays the file's package name at the top.
+
+ - Graphical Editor displays self-connections as arcs in the module's upper
+   right corner.
+
+ - The resize/move feedback figures have been changed from a simple outline
+   to translucent blue.
+
+ - Added a 'Properties' dialog that can edit one or several objects
+   at a time, and allows you to change graphical and type information.
+   It also has a preview panel.
+
+ - Enhanced editing of type fields in the 'Property View'. The editor correctly
+   enumerates the possible choices and adds an import statement if necessary.
+
+ - 'Open Type' and 'Open Supertype' have been reassigned to the F3 function key.
+   Double-click now opens the 'Properties' dialog.
+
+Sequence Chart:
+ - Added 'Goto Simulation Time' and 'Goto Event Number' in the context menu.
+
+ - 'Go to Simulation Time' in the 'Event Log' view now supports relative values.
+
+Launcher:
+ - The command-line for launching the simulation now uses relative paths instead
+   of absolute ones. This makes the starting command-line easier to understand.
+
+Tkenv:
+ - Placeholder modules in parallel simulation are now displayed with
+   semi-transparent icon or a shape with a dotted border.
+
+ - Tcl errors are now logged into .tkenvlog instead of dumping them on stdout.
+
+Misc:
+ - Added -g option to 'scavetool scalar' command. You can specify how the
+   scalars are grouped into columns/variables.
+
+ - The build system can now build large projects on windows. The 32K command-line
+   limitation has been resolved.
+
+ - Updated base system to Eclipse 3.6.1
+
+Several bugs have been fixed that were reported for 4.1.
+See: http://tinyurl.com/omnetpp42b1-fixes
+
+
 OMNeT++ 4.1 (June 2010)
 -----------------------
 Changes after 4.1rc2:
@@ -20,13 +121,13 @@ OMNeT++ 4.1 rc2 (June 2010)
 -------------------------------
 Simulation kernel:
 
- - cChannel: added forceTransmissionFinishTime(simtime t), so that 
+ - cChannel: added forceTransmissionFinishTime(simtime t), so that
    channels can support aborted transmissions (needed e.g. for Ethernet).
 
  - cChannel: added getNominalDatarate(). This is often needed in models,
    for example in INET to fill in the interface entry.
 
- - added forgetXMLDocument(filename) and flushXMLDocumentCache() to 
+ - added forgetXMLDocument(filename) and flushXMLDocumentCache() to
    cEnvir (see bug #131)
 
  - cPar: added a note to the xmlValue() method that the lifetime of
@@ -35,17 +136,17 @@ Simulation kernel:
 
 Envir:
 
- - Ini file inclusion now behaves as textual substition: if an included 
-   ini file does not contain [General] or [Config XXX] lines, the file's  
+ - Ini file inclusion now behaves as textual substition: if an included
+   ini file does not contain [General] or [Config XXX] lines, the file's
    content will be treated as if copy/pasted into the section containing
    the include. Ini files that do not start with a section heading will
    now be accepted and treated as if they started with [General].
-   Rationale: allow factoring out orthogonal pieces of config into 
+   Rationale: allow factoring out orthogonal pieces of config into
    separate files.
 
 IDE:
 
- - Added support for the `m` tag on connections allowing to set the preferred 
+ - Added support for the `m` tag on connections allowing to set the preferred
    directions of a connection between a submodule and its compound module.
 
 Misc:
