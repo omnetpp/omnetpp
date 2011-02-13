@@ -65,6 +65,7 @@ proc start_tkenv {} {
   load_plugins $OMNETPP_PLUGIN_PATH
   load_tkenvrc "~/.tkenvrc"
   load_tkenvrc ".tkenvrc"
+  reflectSettingsInGui
   determine_clocks_per_sec
 
   global tcl_platform

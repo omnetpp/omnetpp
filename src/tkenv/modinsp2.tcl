@@ -152,7 +152,7 @@ proc get_submod_coords {c tag} {
 #
 proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
    #puts "DEBUG: draw_submod $c $submodptr $x $y $name $dispstr $scaling $isplaceholder"
-   global icons inspectordata
+   global icons inspectordata fonts
 
    set zoomfactor $inspectordata($c:zoomfactor)
    if {$scaling!="" || $zoomfactor!=1} {
@@ -242,14 +242,14 @@ proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
                $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            }
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx"
+               $c create text $x [expr $y2+$width/2+3] -text $name -anchor n -tags "dx" -font $fonts(canvas)
            }
 
        } else {
            # draw an icon when no shape is present (only i tag, or neither i nor b tag)
            $c create image $x $y -image $img -anchor center -tags "dx tooltip submod $submodptr"
            if {$inspectordata($c:showlabels)} {
-               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx"
+               $c create text $x [expr $y+$sy/2+3] -text $name -anchor n -tags "dx" -font $fonts(canvas)
            }
        }
 
@@ -258,7 +258,7 @@ proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
            set r [get_submod_coords $c $submodptr]
            set qx [expr [lindex $r 2]+1]
            set qy [lindex $r 1]
-           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr"
+           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr" -font $fonts(canvas)
        }
 
        # modifier icon (i2 tag)
@@ -301,7 +301,7 @@ proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
+           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>; multiple r tags supported (r1,r2,etc)
@@ -346,7 +346,7 @@ proc draw_submod {c submodptr x y name dispstr scaling isplaceholder} {
 # This function is invoked from the module inspector C++ code.
 #
 proc draw_enclosingmod {c ptr name dispstr scaling} {
-   global icons bitmaps inspectordata
+   global icons bitmaps inspectordata fonts
    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr $scaling"
 
    set zoomfactor $inspectordata($c:zoomfactor)
@@ -416,7 +416,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
        $c create rect [expr $bx-$width/2] [expr $by-$width/2] [expr $bx+$sx+$width/2] [expr $by+$sy+$width/2] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr"
+       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr" -font $fonts(canvas)
 
        # background image
        if {![info exists tags(bgi)]} {set tags(bgi) {}}
@@ -518,7 +518,7 @@ proc draw_enclosingmod {c ptr name dispstr scaling} {
            set color [lindex $tags($bgttag) 3]
            if {$color == ""} {set color black}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
-           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx"
+           $c create text $x $y -text $txt -fill $color -anchor nw -justify left -tags "dx" -font $fonts(canvas)
        }
 
        $c lower mod
@@ -597,7 +597,7 @@ proc resizeimage {img sx sy} {
 # This function is invoked from the module inspector C++ code.
 #
 proc draw_connection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_i dest_n two_way} {
-    global inspectordata
+    global inspectordata fonts
 
     # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n $two_way"
 
@@ -689,7 +689,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_
               set anch "s"
            }
            set just "center"
-           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
+           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
        }
 
     } errmsg] {
@@ -824,7 +824,7 @@ proc draw_message {c msgptr x y} {
         append msglabel $msgname
     }
     if {$msglabel!=""} {
-        $c create text $labelx $labely -text $msglabel -anchor n -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
+        $c create text $labelx $labely -text $msglabel -anchor n -font $fonts(canvas) -tags "dx tooltip msgname $msgptr"
     }
 
 }
@@ -1432,7 +1432,7 @@ proc graphmodwin_qlen_rightclick {w X Y} {
 # This function is invoked from the module inspector C++ code.
 #
 proc graphmodwin_bubble {c x y scaling txt} {
-    global inspectordata
+    global inspectordata fonts
 
     set zoom $inspectordata($c:zoomfactor)
     if {$scaling == ""} {set scaling 1}
@@ -1441,7 +1441,7 @@ proc graphmodwin_bubble {c x y scaling txt} {
     set y [expr $y*$zoom*$scaling]
 
     while {[string length $txt]<5} {set txt " $txt "}
-    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble"]
+    set txtid  [$c create text $x $y -text " $txt " -anchor c -tags "bubble" -font $fonts(canvas)]
     set color #F8F8D8
     set bb [$c bbox $txtid]
 
@@ -1502,9 +1502,11 @@ proc graphmodwin_bubble {c x y scaling txt} {
 # Called from Layouter::debugDraw()
 #
 proc layouter_debugDraw_finish {c msg} {
+    global fonts
+
     # create label
     set bb [$c bbox bbox]
-    $c create text [lindex $bb 0] [lindex $bb 1] -tag bbox -anchor sw -text $msg
+    $c create text [lindex $bb 0] [lindex $bb 1] -tag bbox -anchor sw -text $msg -font $fonts(canvas)
     set bb [$c bbox bbox]
 
     # rescale to fit canvas

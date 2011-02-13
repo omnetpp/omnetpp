@@ -863,6 +863,20 @@ void Tkenv::updateInspectors()
     CHK(Tcl_VarEval(interp, "inspectorupdate_callback",NULL));
 }
 
+void Tkenv::redrawInspectors()
+{
+    // update inspectors (and close the ones marked for deletion)
+    updateInspectors();
+
+    // redraw them
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); it++)
+    {
+        TInspector *insp = *it;
+        if (dynamic_cast<TGraphicalModWindow*>(insp))
+            ((TGraphicalModWindow*)insp)->redrawAll();
+    }
+}
+
 void Tkenv::createSnapshot( const char *label )
 {
     simulation.snapshot(&simulation, label );

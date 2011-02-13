@@ -113,6 +113,7 @@ proc create_graphicalgatewindow {name geom} {
 
 
 proc draw_module_gate {c modptr gateptr modname gatename k xsiz dir highlight} {
+    global fonts
 
     # puts "DEBUG: draw_module_gate /$c/ /$modptr/ /$gateptr/ "
     #      "/$modname/ /$gatename/ /$k/ /$xsiz/ /$dir/ /$highlight/"
@@ -144,8 +145,8 @@ proc draw_module_gate {c modptr gateptr modname gatename k xsiz dir highlight} {
                              -width 2 -tags "tooltip gate $gateptr" ]
 
     if {$dir=="O"} {set anch "s"} else {set anch "n"}
-    $c create text 72 $y -text $gatename -anchor "$anch\e"
-    $c create text [expr 88+$dx] $y -text $modname -anchor "$anch\w"
+    $c create text 72 $y -text $gatename -anchor "$anch\e" -font $fonts(canvas)
+    $c create text [expr 88+$dx] $y -text $modname -anchor "$anch\w" -font $fonts(canvas)
 
     $c move $mod1 80 $y
     $c move $mod2 80 $y
@@ -162,6 +163,7 @@ proc draw_module_gate {c modptr gateptr modname gatename k xsiz dir highlight} {
 }
 
 proc draw_conn {c srcgateptr destgateptr chanptr chanstr dispstr} {
+    global fonts
 
     opp_displaystring $dispstr parse tags $chanptr 0
 
@@ -184,7 +186,7 @@ proc draw_conn {c srcgateptr destgateptr chanptr chanstr dispstr} {
        $c create line $x $y0 $x $y1 -arrow last \
            -fill $fill -width $width -tags "tooltip conn $srcgateptr"
 
-       $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w
+       $c create text [expr $x+3] [expr ($y0+$y1)/2] -text $chanstr -anchor w -font $fonts(canvas)
 
    } errmsg] {
        tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \

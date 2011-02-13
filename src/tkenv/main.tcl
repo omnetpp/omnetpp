@@ -356,27 +356,27 @@ proc create_omnetpp_window {} {
     set widgets(timeline) .timeline
 
     label .statusbar.networklabel \
-        -relief groove -text {(no network set up)} -width 18 -anchor w -font $fonts(normal)
+        -relief groove -text {(no network set up)} -width 18 -anchor w
     label .statusbar.eventlabel \
-        -relief groove -text {Event #0} -width 15  -anchor w -font $fonts(normal)
+        -relief groove -text {Event #0} -width 15  -anchor w
     label .statusbar.timelabel \
-        -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w -font $fonts(normal)
+        -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
     label .statusbar.nextlabel \
-        -relief groove -text {Next:} -width 23 -anchor w -font $fonts(normal)
+        -relief groove -text {Next:} -width 23 -anchor w
 
     label .statusbar2.feslength \
-        -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w -font $fonts(normal)
+        -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
     label .statusbar2.totalmsgs \
-        -relief groove -text {Msgs created: 0} -width 20 -anchor w -font $fonts(normal)
+        -relief groove -text {Msgs created: 0} -width 20 -anchor w
     label .statusbar2.livemsgs \
-        -relief groove -text {Msgs present: 0} -width 20 -anchor w -font $fonts(normal)
+        -relief groove -text {Msgs present: 0} -width 20 -anchor w
 
     label .statusbar3.eventspersec \
-        -relief groove -text {Ev/sec: n/a} -width 15 -anchor w -font $fonts(normal)
+        -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
     label .statusbar3.simsecpersec \
-        -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w -font $fonts(normal)
+        -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
     label .statusbar3.eventspersimsec \
-        -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w -font $fonts(normal)
+        -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
 
     pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left

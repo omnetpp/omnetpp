@@ -147,7 +147,10 @@ proc load_tkenvrc {fname} {
     }
     close $fin
 
-    opp_updateinspectors
+    set fonts(bold)     $fonts(normal)
+    set fonts(balloon)  $fonts(normal)
+    set fonts(timeline) $fonts(canvas)
+
     inspectorlist_openinspectors
     reflectSettingsInGui
 }
@@ -157,20 +160,57 @@ proc load_tkenvrc {fname} {
 #
 #
 proc reflectSettingsInGui {} {
-   global config fonts
+   global config fonts help_tips
 
    catch {wm state . $config(mainwin-state)}
    catch {wm geometry . $config(mainwin-geom)}
 
    catch {.main.text config -wrap $config(editor-wrap)}
 
-   applyFont Text $fonts(text)
-   applyFont Listbox $fonts(listbox)
-   applyFont TreeView $fonts(listbox)
+   applyFont Menubutton  $fonts(normal)
+   applyFont Menu        $fonts(normal)
+   applyFont Label       $fonts(normal)
+   applyFont Message     $fonts(normal)
+   applyFont Entry       $fonts(normal)
+   applyFont Button      $fonts(normal)
+   applyFont Checkbutton $fonts(normal)
+   applyFont Radiobutton $fonts(normal)
+   applyFont Scale       $fonts(normal)
+   applyFont Labelframe  $fonts(normal)
+   applyFont Canvas      $fonts(normal)
+   applyFont Combobox    $fonts(normal)
+   applyFont Listbox     $fonts(normal)
+   applyFont Tabset      $fonts(normal)
+   applyFont TreeView    $fonts(normal)
+   applyFont Text        $fonts(text)
+
+   option add *Menubutton.font  $fonts(normal)
+   option add *Menu.font        $fonts(normal)
+   option add *Label.font       $fonts(normal)
+   option add *Message.font     $fonts(normal)
+   option add *Entry.font       $fonts(normal)
+   option add *Button.font      $fonts(normal)
+   option add *Checkbutton.font $fonts(normal)
+   option add *Radiobutton.font $fonts(normal)
+   option add *Scale.font       $fonts(normal)
+   option add *Labelframe       $fonts(normal)
+   option add *Canvas.font      $fonts(normal)
+   option add *Combobox.font    $fonts(normal)
+   option add *ComboboxListbox.font $fonts(normal)
+   option add *Listbox.font     $fonts(normal)
+   option add *Tabset.font      $fonts(normal)
+   option add *TreeView.font    $fonts(normal)
+   option add *Text.font        $fonts(text)
+
+   set help_tips(font)  $fonts(balloon)
 
    toggle_treeview
    toggle_treeview
    toggle_timeline
    toggle_timeline
+
+   redraw_timeline
+
+   opp_redrawinspectors
 }
 

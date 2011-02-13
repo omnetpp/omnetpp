@@ -117,58 +117,51 @@ proc setupTkOptions {} {
    bindMouseWheel Canvas
    bindMouseWheel TreeView
 
-   #
-   # fonts() array elements:
-   #  normal:  menus, labels etc
-   #  bold:    buttons
-   #  big:     STOP button
-   #  msgname: message name during animation
-   #  fixed:   text windows and listboxes
-   #
-
+   # set up fonts.
+   # Note: font settings will take effect in reflectSettingsInGui,
+   # which is called after .tkenvrc has been read
    if {[string equal [tk windowingsystem] x11]} {
-      # note: "Helvetica 12" will look ugly [Ubuntu 8.10] because it maps to some other font
-      set fonts(normal)  "Helvetica 9"
-      set fonts(bold)    "Helvetica 9 bold"
-      set fonts(big)     "Helvetica 18"
-      set fonts(msgname) "Helvetica 9"
-      set fonts(text)    "fixed"
-      set fonts(listbox) "Helvetica 9"
-      set fonts(balloon) "Helvetica 9"
-
-      option add *Scrollbar.width  12
-      option add *Menubutton.font  $fonts(normal)
-      option add *Menu.font        $fonts(normal)
-      option add *Label.font       $fonts(normal)
-      option add *Entry.font       $fonts(normal)
-      option add *Button.font      $fonts(bold)
-      option add *Text.font        $fonts(text)
-      option add *TreeView.font    $fonts(listbox)
-      option add *Listbox.font     $fonts(listbox)
+      set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
+      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
+      # note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
+      if {[tk scaling] > 1.5} {set size 10} else {set size 8}
+      set fonts(normal)   [list $normalfamily $size]
+      set fonts(bold)     [list $normalfamily $size bold]
+      set fonts(big)      [list $normalfamily 18]
+      set fonts(text)     [list $normalfamily $size]
+      set fonts(balloon)  [list $normalfamily $size]
+      set fonts(canvas)   [list $normalfamily $size]
+      set fonts(timeline) [list $normalfamily $size]
+      set fonts(mono)     [list $monofamily $size]
    } elseif {[string equal [tk windowingsystem] aqua]} {
       # Mac
-      set fonts(normal)  "Helvetica 12"
-      set fonts(bold)    "Helvetica 12 bold"
-      set fonts(big)     "Helvetica 18"
-      set fonts(msgname) "Helvetica 11"
-      set fonts(text)    "Courier 12"
-      set fonts(listbox) "Courier 12"  ;# BLT is missing so we need fixed-width font for listboxes
-      set fonts(balloon) "Helvetica 12"
-
-      option add *Text.font        $fonts(text)
-      option add *TreeView.font    $fonts(listbox)
-      option add *Listbox.font     $fonts(listbox)
+      set normalfamily "Helvetica"
+      set monofamily "Courier"
+      set fonts(normal)   [list $normalfamily 12]
+      set fonts(bold)     [list $normalfamily 12 bold]
+      set fonts(big)      [list $normalfamily 18]
+      set fonts(text)     [list $normalfamily 12]
+      set fonts(balloon)  [list $normalfamily 12]
+      set fonts(timeline) [list $normalfamily 11]
+      set fonts(canvas)   [list $normalfamily 12]
+      set fonts(mono)     [list $monofamily $size]
    } else {
       # Windows
-      set fonts(normal)  "\"MS Sans Serif\" 8"
-      set fonts(bold)    "\"MS Sans Serif\" 8 bold"
-      set fonts(big)     "\"MS Sans Serif\" 18"
-      set fonts(msgname) "\"MS Sans Serif\" 7"
-      set fonts(text)    "\"MS Sans Serif\" 8"
-      set fonts(listbox) "\"MS Sans Serif\" 8"
-      set fonts(balloon) "\"MS Sans Serif\" 8"
-
-      option add *TreeView.font  $fonts(normal)
+      set normalfamily [getFirstAvailableFontFamily {"Segoe UI" "MS Sans Serif" "Arial"} unknown]
+      set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "Consolas" "Terminal"} unknown]
+      if {$normalfamily == "Segoe UI"} {
+          set size 9  ;# text in this font appears to be smaller than in MS Sans Serif or Arial
+      } else {
+          set size 8
+      }
+      set fonts(normal)   [list $normalfamily $size]
+      set fonts(bold)     [list $normalfamily $size]
+      set fonts(big)      [list $normalfamily 18]
+      set fonts(text)     [list $normalfamily $size]
+      set fonts(balloon)  [list $normalfamily $size]
+      set fonts(timeline) [list $normalfamily $size]
+      set fonts(canvas)   [list $normalfamily $size]
+      set fonts(mono)     [list $monofamily $size]
    }
 
    # remember default font settings (we'll only save the non-default ones to .tkenvrc)
@@ -182,6 +175,7 @@ proc setupTkOptions {} {
        set activebg [.tmp cget -activebackground]
        set activefg [.tmp cget -activeforeground]
        destroy .tmp
+       option add *Scrollbar.width  12
        option add *Menu.activeBorderWidth 0
        option add *Menu.relief raised
        option add *Menu.activeBackground #800000
@@ -191,6 +185,22 @@ proc setupTkOptions {} {
        option add *menubar.activeBackground $activebg
        option add *menubar.activeForeground $activefg
    }
+
+}
+
+#
+# Returns the first font family from the given preference list that is
+# available on the system. If none are available, returns $defaultvalue.
+#
+proc getFirstAvailableFontFamily {preferencelist defaultvalue} {
+    set families [font families]
+    foreach family $preferencelist {
+        set index [lsearch $families $family]
+        if {$index != -1} {
+            return [lindex $families $index]
+        }
+    }
+    return $defaultvalue
 }
 
 #
@@ -480,10 +490,13 @@ proc fontcombo-set {w oldfont} {
     # produce font list with the given size
     set fontlist {}
     foreach family [lsort [font families]] {
-        if {[llength $family]>1} {set family "\"$family\""}
-        lappend fontlist [string trim "$family $size"]
+        if {[string first "@" $family 0] == -1} {
+            if {[llength $family]>1} {set family "\"$family\""}
+            lappend fontlist [string trim "$family $size"]
+        }
     }
     comboconfig $w $fontlist
+    regsub -all "\[{}\]" $oldfont "\"" oldfont
     $w configure -value $oldfont
 }
 
@@ -555,6 +568,21 @@ proc actualFont {font} {
         set actualfont [string map {"{" "\"" "}" "\""} $actualfont]
     }
     return $actualfont
+}
+
+proc changeFontSize {font size} {
+    catch {
+        return [lreplace $font 1 1 $size]
+    }
+    return $font
+}
+
+proc makeBoldFont {font} {
+    if {[lsearch $font "bold"] != -1} {
+        return $font
+    } else {
+        return [lappend $font "bold"]
+    }
 }
 
 # recurse widget tree and apply font to all text widgets
@@ -658,10 +686,10 @@ proc helplabel_showhelp {text x y} {
 #  pack .x.p1.e
 #
 proc notebook {w {side top}} {
-    global HAVE_BLT
+    global HAVE_BLT fonts
 
     if {$HAVE_BLT} {
-        blt::tabset $w -tearoff no -relief flat -side top -samewidth no -highlightthickness 0
+        blt::tabset $w -tearoff no -relief flat -side top -samewidth no -highlightthickness 0 -font $fonts(normal)
     } else {
         # poor man's tabnotebook
         global nb
@@ -908,7 +936,7 @@ proc _focusTableEntry {e c} {
 proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT B2 B3 fonts
     if {$HAVE_BLT} {
-        blt::treeview $w -allowduplicates yes -flat yes -font $fonts(listbox)
+        blt::treeview $w -allowduplicates yes -flat yes
         $w column configure treeView -hide no -width 15 -state disabled
         if {$args!=""} {
              eval $w config $args
@@ -932,7 +960,7 @@ proc multicolumnlistbox {w columnlist args} {
     } else {
         # emulate it with listbox widget
         global mclistbox
-        listbox $w -font $fonts(listbox)
+        listbox $w -font $fonts(mono)
         if {$args!=""} {
              eval $w config $args
         }

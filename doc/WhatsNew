@@ -84,8 +84,18 @@ Launcher:
    of absolute ones. This makes the starting command-line easier to understand.
 
 Tkenv:
- - Placeholder modules in parallel simulation are now displayed with
-   semi-transparent icon or a shape with a dotted border.
+ - Placeholder modules in parallel simulation are now displayed with a
+   semi-transparent icon (or a shape with a dotted border).
+
+ - Improved font handling: the generic UI font and the font used in graphics 
+   are now configurable in the Simulation Options dialog; 
+
+ - Tkenv on Linux now detects and uses the Ubuntu, Arial, Verdana, etc. fonts
+   (in this order of preference); on Windows it uses Segoe UI if it's available;
+
+ - The default font for log text is now proportional (same as the generic UI
+   font), for better readability and space efficiency. It can be customized 
+   (switched back to a monospace font, etc) in the Simulation Options dialog.
 
  - Tcl errors are now logged into .tkenvlog instead of dumping them on stdout.
 

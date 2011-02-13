@@ -310,12 +310,13 @@ proc options_dialog {parent {defaultpage "g"}} {
     notebook_addpage $nb l Layouting
     notebook_addpage $nb a Animation
     notebook_addpage $nb t Timeline
+    notebook_addpage $nb f Fonts
     pack $nb -expand 1 -fill both
 
     notebook_showpage $nb $defaultpage
 
     # "General" page
-    labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2
+    labelframe $nb.g.f1 -text "Simulation Execution" -relief groove -borderwidth 2 -font $fonts(normal)
     label-entry $nb.g.f1.updfreq_fast    {Display update frequency for Fast Run (ms):}
     label-entry $nb.g.f1.updfreq_express {Display update frequency for Express Run (ms):}
     label-entry $nb.g.f1.stepdelay       {Per-event delay for slow execution (ms):}
@@ -328,7 +329,7 @@ proc options_dialog {parent {defaultpage "g"}} {
     pack $nb.g.f1.stepdelay -anchor w -fill x
     pack $nb.g.f1.confirmexit -anchor w
 
-    labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2
+    labelframe $nb.g.f2 -text "Logs" -relief groove -borderwidth 2 -font $fonts(normal)
     checkbutton $nb.g.f2.usemainwin -text {Use main window for module output} -variable opp(usemainwin)
     checkbutton $nb.g.f2.initbanners -text {Print initialization banners} -variable opp(initbanners)
     checkbutton $nb.g.f2.eventbanners -text {Print event banners} -variable opp(eventbanners)
@@ -344,27 +345,18 @@ proc options_dialog {parent {defaultpage "g"}} {
     pack $nb.g.f2.numlines -anchor w -fill x
     pack $nb.g.f2.c1 -anchor w
 
-    labelframe $nb.g.f3 -text "Fonts" -relief groove -borderwidth 2
-    label-fontcombo $nb.g.f3.fixedfont  {Text window font:} {}
-    label-fontcombo $nb.g.f3.listboxfont  {Listbox font:} {}
-    commentlabel $nb.g.f3.note {Examples: fixed, fixed 12, Courier 8, Helvetica 12 bold. NOTE: The font system may substitute another font if the given font is not available.}
-    pack $nb.g.f3.fixedfont -anchor w -fill x
-    pack $nb.g.f3.listboxfont -anchor w -fill x
-    pack $nb.g.f3.note -anchor w -fill x
-
     pack $nb.g.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.g.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
-    pack $nb.g.f3 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # "Layouting" page
-    labelframe $nb.l.f1 -text "Layouting" -relief groove -borderwidth 2
+    labelframe $nb.l.f1 -text "Layouting" -relief groove -borderwidth 2 -font $fonts(normal)
     label $nb.l.f1.layouterlabel -text "Layouting algorithm:"
     frame $nb.l.f1.layouter
     radiobutton  $nb.l.f1.layouter.fast -text "Fast" -variable opp(layouterchoice) -value "fast"
     radiobutton  $nb.l.f1.layouter.advanced -text "Advanced" -variable opp(layouterchoice) -value "advanced"
     radiobutton  $nb.l.f1.layouter.auto -text "Adaptive (Fast for large networks, Advanced for smaller ones)" -variable opp(layouterchoice) -value "auto"
     checkbutton $nb.l.f1.layouting -text {Show layouting process} -variable opp(layouting)
-    labelframe $nb.l.f2 -text "Display" -relief groove -borderwidth 2
+    labelframe $nb.l.f2 -text "Display" -relief groove -borderwidth 2 -font $fonts(normal)
     checkbutton $nb.l.f2.arrangevectorconnections -text {Arrange connections on vector gates parallel to each other} -variable opp(arrangevectorconnections)
     checkbutton $nb.l.f2.allowresize -text {Resize window to fit network with current zoom level first} -variable opp(allowresize)
     checkbutton $nb.l.f2.allowzoom -text {Zoom out if necessary to fit network into window} -variable opp(allowzoom)
@@ -401,7 +393,7 @@ proc options_dialog {parent {defaultpage "g"}} {
     pack $nb.t.c1 -anchor w
 
     # "Animation" page
-    labelframe $nb.a.f1 -text "General" -relief groove -borderwidth 2
+    labelframe $nb.a.f1 -text "General" -relief groove -borderwidth 2 -font $fonts(normal)
     checkbutton $nb.a.f1.anim -text {Animate messages} -variable opp(anim)
     label-scale $nb.a.f1.speed {Animation speed:}
     $nb.a.f1.speed.e config -length 200 -from 0 -to 3 -resolution 0.01 -variable opp(speed)
@@ -413,7 +405,7 @@ proc options_dialog {parent {defaultpage "g"}} {
     checkbutton $nb.a.f1.animmeth -text {Animate method calls} -variable opp(animmeth)
     label-scale $nb.a.f1.methdelay {Method call delay (ms):}
     $nb.a.f1.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
-    labelframe $nb.a.f2 -text "Messages" -relief groove -borderwidth 2
+    labelframe $nb.a.f2 -text "Messages" -relief groove -borderwidth 2 -font $fonts(normal)
     checkbutton $nb.a.f2.msgnam -text {Display message names during animation} -variable opp(msgnam)
     checkbutton $nb.a.f2.msgclass -text {Display message class during animation} -variable opp(msgclass)
     checkbutton $nb.a.f2.msgcol -text {Color messages by message kind} -variable opp(msgcol)
@@ -437,6 +429,19 @@ proc options_dialog {parent {defaultpage "g"}} {
 
     pack $nb.a.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
     pack $nb.a.f2 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
+
+    # "Fonts" page
+    labelframe $nb.f.f1 -text "Fonts" -relief groove -borderwidth 2 -font $fonts(normal)
+    label-fontcombo $nb.f.f1.normalfont {User interface:} {}
+    label-fontcombo $nb.f.f1.textfont  {Log windows:} {}
+    label-fontcombo $nb.f.f1.canvasfont {Graphics:} {}
+    commentlabel $nb.f.f1.note {Examples: Arial, Arial 10, Arial 10 bold. The system may silently use another font if the given font is not available.}
+    pack $nb.f.f1.normalfont -anchor w -fill x
+    pack $nb.f.f1.textfont -anchor w -fill x
+    pack $nb.f.f1.canvasfont -anchor w -fill x
+    pack $nb.f.f1.note -anchor w -fill x
+
+    pack $nb.f.f1 -anchor center -expand 0 -fill x -ipadx 0 -ipady 0 -padx 10 -pady 5 -side top
 
     # Configure dialog
     $nb.g.f1.updfreq_fast.e insert 0 [opp_getsimoption updatefreq_fast_ms]
@@ -472,8 +477,9 @@ proc options_dialog {parent {defaultpage "g"}} {
     set opp(timeline-wantselfmsgs)      $config(timeline-wantselfmsgs)
     set opp(timeline-wantnonselfmsgs)   $config(timeline-wantnonselfmsgs)
 
-    fontcombo-set $nb.g.f3.fixedfont.e $fonts(text)
-    fontcombo-set $nb.g.f3.listboxfont.e $fonts(listbox)
+    fontcombo-set $nb.f.f1.normalfont.e $fonts(normal)
+    fontcombo-set $nb.f.f1.textfont.e $fonts(text)
+    fontcombo-set $nb.f.f1.canvasfont.e $fonts(canvas)
 
     setinitialdialogfocus $nb.g.f2.usemainwin
 
@@ -516,23 +522,25 @@ proc options_dialog {parent {defaultpage "g"}} {
         set config(timeline-wantselfmsgs)    $opp(timeline-wantselfmsgs)
         set config(timeline-wantnonselfmsgs) $opp(timeline-wantnonselfmsgs)
 
-        set font [actualFont [fixupFontName [$nb.g.f3.fixedfont.e get]]]
+        set font [actualFont [fixupFontName [$nb.f.f1.normalfont.e get]]]
         if {$font != ""} {
-            set fonts(text) $font
-            applyFont Text $font
+            set fonts(normal)  $font
+            set fonts(bold)    $font
+            set fonts(balloon) $font
         }
 
-        set font [actualFont [fixupFontName [$nb.g.f3.listboxfont.e get]]]
+        set font [actualFont [fixupFontName [$nb.f.f1.textfont.e get]]]
         if {$font != ""} {
-            set fonts(listbox) $font
-            applyFont Listbox $font
-            applyFont TreeView $font  ;# BTL treeview
+            set fonts(text) $font
         }
-        if {$old_iconminsize != [opp_getsimoption iconminsize]} {
-            #TODO redraw all graphical inspectors
+
+        set font [actualFont [fixupFontName [$nb.f.f1.canvasfont.e get]]]
+        if {$font != ""} {
+            set fonts(canvas) $font
+            set fonts(timeline) $font
         }
-        opp_updateinspectors
-        redraw_timeline
+
+        reflectSettingsInGui
     }
     destroy $w
 }
@@ -909,7 +917,7 @@ proc getModuleTreeInfo {w op {key {}}} {
 # Implements the "Find/inspect objects" dialog.
 #
 proc filteredobjectlist_window {{ptr ""}} {
-    global config tmp icons help_tips helptexts
+    global config tmp icons help_tips helptexts fonts
     global HAVE_BLT B2 B3
 
     set w .objdlg
@@ -971,7 +979,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     label-entry $w.f.filter.searchin "Search inside:" [opp_getobjectfullpath $ptr]
     pack $w.f.filter.searchin -anchor w -expand 0 -fill x -side top
 
-    labelframe $w.f.filter.pars -text "Search by class and object name:"
+    labelframe $w.f.filter.pars -text "Search by class and object name:" -font $fonts(normal)
     pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
     set fp $w.f.filter.pars
 
@@ -993,7 +1001,7 @@ proc filteredobjectlist_window {{ptr ""}} {
     grid columnconfig $fp 1 -weight 3
 
     # category filters
-    labelframe $w.f.filter.cat -text "Object categories:"
+    labelframe $w.f.filter.cat -text "Object categories:" -font $fonts(normal)
     set cf $w.f.filter.cat
     checkbutton $cf.modules -text "modules" -variable tmp(cat-m)
     checkbutton $cf.modpars -text "module parameters" -variable tmp(cat-p)
@@ -1014,7 +1022,7 @@ proc filteredobjectlist_window {{ptr ""}} {
 
     # Sorting
     if {!$HAVE_BLT} {
-        labelframe $w.f.filter.order -text "Sorting:"
+        labelframe $w.f.filter.order -text "Sorting:" -font $fonts(normal)
         label-combo $w.f.filter.order.entry "Sort by:" {{Class} {Full name} {Name}}
         $w.f.filter.order.entry.e configure -textvariable tmp(order)
         pack $w.f.filter.order.entry -expand 0 -fill none -side top -anchor w
@@ -1416,7 +1424,7 @@ proc modelinfo_dialog {{w ""}} {
     catch {destroy $dlg}
     createOkCancelDialog $dlg "Model Information"
     $dlg.f config -border 0
-    message $dlg.f.txt -text $msg -font $fonts(normal) -width 400
+    message $dlg.f.txt -text $msg -width 400
     pack $dlg.f.txt -expand 1 -fill both
     destroy $dlg.buttons.cancelbutton
     execOkCancelDialog $dlg

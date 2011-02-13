@@ -1,3 +1,14 @@
+2010-02-12  Andras Varga
+
+	* Improved font handling:
+	- the generic UI font and the font used in graphics are now 
+	  configurable from the Simulation Options dialog
+	- on Linux, Tkenv now detects and uses the Ubuntu, Arial,
+	  Verdana, etc. fonts in this preference order (see full list
+	  in widgets.tcl)
+	- the default font for log windows is now the generic UI font
+	- internal refactoring
+
 2010-02-01  Andras Varga
 
 	* Log Tcl errors into .tkenvlog instead of dumping them on stdout

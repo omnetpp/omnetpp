@@ -47,7 +47,7 @@ proc redraw_timeline {} {
     set w [winfo width $c]
     incr w -10
     $c create line 20 29 $w 29 -arrow last -fill black -width 1
-    $c create text [expr $w+4] 30 -anchor ne -text "sec"
+    $c create text [expr $w+4] 30 -anchor ne -text "sec" -font $fonts(canvas)
 
     # draw ticks
     set dx [expr $w/($maxexp-$minexp+1)]
@@ -64,7 +64,7 @@ proc redraw_timeline {} {
         } else {
             set txt "1e$i"
         }
-        $c create text $x 30 -anchor n -text "+$txt" -fill "#808080" -font $fonts(msgname)
+        $c create text $x 30 -anchor n -text "+$txt" -fill "#808080" -font $fonts(timeline)
 
         # minor ticks at 2, 4, 6, 8
         foreach tick {0.301 0.602 0.778 0.903} {
@@ -112,11 +112,11 @@ proc redraw_timeline {} {
         if {$msglabel!=""} {
             set estlabelx [expr $x-3*[string length $msglabel]]
             if {$estlabelx>=$minlabelx} {
-                set labelid [$c create text $x 27 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"]
+                set labelid [$c create text $x 27 -text $msglabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $msgptr"]
                 set minlabelx [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0
             } elseif {$estlabelx>=$minlabelx2} {
-                set labelid [$c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"]
+                set labelid [$c create text $x 17 -text $msglabel -anchor $anchor -font $fonts(timeline) -tags "dx tooltip msgname $msgptr"]
                 $c create line $x 24 $x 14 -fill "#808080" -width 1 -tags "h"
                 set minlabelx2 [lindex [$c bbox $labelid] 2]
                 set labelssuppressed 0

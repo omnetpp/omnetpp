@@ -317,6 +317,7 @@ proc graphmodwin_animate_methodcall_horiz {win fromptr toptr methodlabel} {
 # Helper.
 #
 proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
+    global fonts
 
     set c $win.c
     #set arrow [$c create line $x1 $y1 $x2 $y2 -tags {methodcall} -width 2 -arrow last -arrowshape {15 20 6} -fill #808080]
@@ -324,7 +325,7 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
 
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
-    set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c]
+    set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c -font $fonts(canvas)]
     set color #F0F0F0
     #set color #F0F0D0
     #catch {set color [$c itemcget mod -fill]}

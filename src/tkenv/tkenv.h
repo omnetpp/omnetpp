@@ -217,6 +217,7 @@ class TKENV_API Tkenv : public EnvirBase
       void loadNedFile(const char *fname, const char *expectedPackage=NULL, bool isXML=false);
 
       void updateInspectors();
+      void redrawInspectors();
       TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
       TInspector *findInspector(cObject *obj, int type);
       void deleteInspector(TInspector *insp);
