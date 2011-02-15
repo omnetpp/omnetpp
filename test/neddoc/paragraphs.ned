@@ -1,12 +1,9 @@
 //
-// Well, not everything seems to pass in this test...
+// @page Paragraphs
 //
-
-
-
+// This NED files tests if paragraph boundaries are properly recognized. 
+// In the following test cases, "[]" denotes where the paragraph should end. 
 //
-// This NED files tests if paragraph boundaries are recognised properly
-// by opp_neddoc.
 //
 // Paragraphs are
 // separated by
@@ -14,7 +11,7 @@
 // The
 // length
 // of
-// the paragraph or a line is not significant.
+// the paragraph or a line is not significant. []
 //
 //                 It also
 //should  not matter how many
@@ -24,29 +21,17 @@
 //                                                line
 //.
 //(This should still be the same paragraph as
-//  above.) Next line contains several spaces:
-//
-// (a) and then some tabs:
-//
-//(b) and they should separate the paragraphs -- (a) and (b) marks above
-// should be at start of separate paragraphs.
-//
+//  above.) []
 //
 // If /// or //// or longer / sequnce is used at the start of the line,
 // that should be accepted (and ignored) as well,
 /// like
 ///here, or
-///////////////////////////////////////here.
+///////////////////////////////////////here. []
 //
-// A //------ sequence is translated to a horizontal divider line, see below:
-//       -----------------------------
-// OK.
 //
-simple Paragraphs_1a
-endsimple
-
-
-
+//
+// @page Bulleted lists
 //
 // Here we test enumerated lists. Basic version in several flavours:
 //
@@ -134,11 +119,9 @@ endsimple
 //
 // That was it...
 //
-simple Paragraphs_1b
-endsimple
-
-
-
+//
+//
+// @page Numbered lists
 //
 // This is the sames as the "b" version, only for numbered lists ("-#" instead
 // of "-".)
@@ -229,11 +212,9 @@ endsimple
 //
 // That was it...
 //
-simple Paragraphs_1c
-endsimple
-
-
-
+//
+//
+// @page Nested Lists
 //
 // Nested lists can be controlled with indentation level (3 spaces = 1 level).
 //
@@ -262,7 +243,5 @@ endsimple
 //
 // That was it...
 //
-simple Paragraphs_1d
-endsimple
 
-
+package org.omnetpp.neddoc;

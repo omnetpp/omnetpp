@@ -1,15 +1,12 @@
 //
-// This file is commented with this one sentence only, but HTML
-// formatting should work here too: <i>italic</i>, <b>bold</b>.
-//
-
-//
-// This comment tests HTML formatting of a module's comment.
+// @page Private comments
 //
 // Lines beginning with "//#" are ignored, so you should not see the
 // "this should be invisible text below".
 //
 //# THIS SHOULD BE INVISIBLE
+//
+// @page HTML Formatting
 //
 // Basic formatting: <b>bold</b>, <i>italic</i>, <u>underline</u>,
 // super<sup>script</sup>, sub<sub>script</sub>, <tt>teletype</tt> ("tt" tag),
@@ -39,30 +36,6 @@
 // <center>^^^ line<br>this text should be centered.
 // </center>
 //
-// Several hyphens should also produce a divider line, like the one below:
-// -----------------
-//
-// Invalid HTML tags are not interpreted: <><x><yy><zzz>foo</zzz></yy>.
-//
-// The "nohtml" tag can be used to turn off interpreting html tags:
-// <nohtml><i>This</i> <br>is <b>not</b> formatted</nohtml>,
-// but <font color="red">this</font> <b>is</b>!
-//
-// Printing "nohtml" itself: <nohtml><nohtml></nohtml> or &lt;/nohtml>.
-//
-// Some @-tags (a`la Doxygen) are also supported:
-//
-// @author Andras @date 17/07/2004
-// @todo more testing
-// @bug so far none noticed
-// @see manual
-//
-// Backslash handling: a single backslash should prevent hyperlinking a word.
-// So this should be hyperlinked: Formatting_1, but this not: \Formatting_1.
-// Single backslashes should also be removed, so none should be here:
-// \one,\Two, Th\ree. Double backslashes should become one, so you should
-// see one \\here, another here: \\, and two here: \\\\.
-//
 // Preformatted text ("pre" tag, should ideally be displayed in fixed-width font):
 // <pre>
 // // C++ code example (body should be 4 spaces indented)
@@ -71,21 +44,67 @@
 //     printf("<><><>"); // prints 3 angle brace pairs
 //     cout << "2+3 > 4"; // C++ stream I/O
 // }
-//
 // Indented text follows, with indent growing by 2 spaces:
 //   HTML tags are interpreted, so this is <i>italic</i>.
 //     - one
 //       - <b>two</b>, in bold
 //         - three
 //           - 7 special characters: < > / \ & ; ^
-//
-// And invalid HTML tags are not interpreted here either:
-// <><x><yy><zzz>foo</zzz></yy>.
-//
-// And this is the last line of the "pre" tag.
 // </pre>
 //
-module Formatting_1
-endmodule
+// This text is after the pre tag.
+//
+// @page Divider
+//
+// Several hyphens produce a divider line, like the one below:
+// -----------------
+// This text is after the divider.
+//
+// @page Non-HTML tags 
+//
+// Non-HTML tags are not interpreted.
+// 
+// <><x><yy><zzz>foo</zzz></yy> should read: <nohtml><><x><yy><zzz>foo</zzz></yy></nohtml>
+// (an empty tag, and "x", "yy" a d "zzz" tags, the first two unclosed.)
+//
+// An example XML document with "note", "to" and "title" tags, with the XML
+// declaration printed in italic and the values "Jack" and "Hello" in bold:
+//
+// <pre>
+//   <i><?xml version="1.0"?></i>
+//   <note>
+//     <to><b>Jack</b></to>
+//     <title><b>Hello</b></title>
+//   </note>
+// </pre>
+//
+// @page Escaping HTML tags
+//
+// The "nohtml" tag can be used to turn off interpreting html tags:
+// <nohtml><i>This</i> <br>is <b>not</b> formatted</nohtml>,
+// but <font color="red">this</font> <b>is</b>!
+//
+// Printing "nohtml" itself: <nohtml><nohtml></nohtml> or &lt;/nohtml>.
+//
+// Backslash inside "nohtml": <nohtml>\</nohtml> <== should display as a single backslash 
+//
+// @page @ Tags
+//
+// Some @-tags (a`la Doxygen) are also supported:
+//
+// @author Andras @date 17/07/2004
+// @todo more testing
+// @bug so far none noticed
+// @see manual
+//
+// @page Backslash handling
+//
+// Backslash handling: a single backslash should prevent hyperlinking a word.
+// So this should be hyperlinked: Formatting_1, but this not: \Formatting_1.
+// Single backslashes should also be removed, so none should be here:
+// \one,\Two, Th\ree. Double backslashes should become one, so you should
+// see one \\here, another here: \\, and two here: \\\\.
+//
 
+package org.omnetpp.neddoc;
 
