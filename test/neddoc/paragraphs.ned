@@ -243,5 +243,11 @@
 //
 // That was it...
 //
+// @page Included file
+//
+// See if @include works:
+//
+// @include included.txt
+//
 
 package org.omnetpp.neddoc;
