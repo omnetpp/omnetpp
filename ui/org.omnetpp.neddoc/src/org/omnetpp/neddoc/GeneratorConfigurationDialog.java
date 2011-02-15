@@ -73,7 +73,7 @@ public class GeneratorConfigurationDialog
     private Button generateFullInheritanceDiagrams;
     private Button generateFullUsageDiagrams;
     private Button generateSourceContent;
-    private Button generateExplicitLinksOnly;
+    private Button enableAutomaticHyperlinking;
 
     private Button generateDoxy;
     private Button doxySourceBrowser;
@@ -162,7 +162,7 @@ public class GeneratorConfigurationDialog
         buttons.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
 
         Button selectReferencedButton = new Button(buttons, SWT.PUSH);
-        selectReferencedButton.setText("Select referenced");
+        selectReferencedButton.setText("Select Referenced");
         selectReferencedButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
         selectReferencedButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -243,14 +243,15 @@ public class GeneratorConfigurationDialog
         
         generateSourceContent = createCheckbox(group, "Source listings (NED, MSG)", configuration.nedSourceListings);
         
-        generateExplicitLinksOnly = createCheckbox(group, "Require ~ prefix in NED comment links", configuration.generateExplicitLinksOnly);
-        
+        enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", !configuration.generateExplicitLinksOnly);
+        Label label = new Label(group, SWT.NONE);
+        label.setText("   Note: when turned off, use the tilde notation for names to be hyperlinked: ~Sink, ~TCP.");
 
         boolean doxygenAvailable = OmnetppPreferencePage.isDoxygenAvailable();
         generateDoxy = createCheckbox(group, "C++ documentation (requires Doxygen)", configuration.generateDoxy && doxygenAvailable);
         generateDoxy.setEnabled(doxygenAvailable);
 
-        Label label = new Label(group, SWT.NONE);
+        label = new Label(group, SWT.NONE);
         label.setText("   Note: Doxygen configuration file locations can be configured in the Project Properties dialog");
 
         doxySourceBrowser = createCheckbox(group, "Source listings (C++)", configuration.cppSourceListings);
@@ -343,7 +344,7 @@ public class GeneratorConfigurationDialog
         configuration.generateFullUsageDiagrams = generateFullUsageDiagrams.getSelection();
         configuration.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams.getSelection();
         configuration.nedSourceListings = generateSourceContent.getSelection();
-        configuration.generateExplicitLinksOnly = generateExplicitLinksOnly.getSelection();
+        configuration.generateExplicitLinksOnly = !enableAutomaticHyperlinking.getSelection();
 
         configuration.generateDoxy = generateDoxy.getSelection();
         configuration.cppSourceListings = doxySourceBrowser.getSelection();
