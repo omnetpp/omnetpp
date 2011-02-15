@@ -1,1 +1,20 @@
-This content is included by @include directive
+This content is included by the @include directive. 
+
+Separation of paragraphs by empty lines, and Neddoc formatting syntax
+should be supported here (check below).
+
+Horizontal ruler:
+---------
+
+Bulleted list:
+  - one
+  - two
+  - three
+
+Linked name: TCP (for autolinking mode), ~TCP (for tilde mode).
+
+Another file inclusion:
+
+@include included2.txt
+
+End.

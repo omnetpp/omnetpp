@@ -1,7 +1,7 @@
 //
 // @page Tilde notation for links
 //
-// THIS PAGE SHOULD REQUIRES the "AUTOLINKING OFF" SETTING.
+// THIS PAGE REQUIRES the "AUTOLINKING OFF" SETTING.
 //
 // Test cases with expected results:
 //

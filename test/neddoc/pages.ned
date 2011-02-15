@@ -10,6 +10,12 @@
 // <a href="foo.html">foo</a>.
 //
 //#---------------------------------------------------------------------
+// @page nasty-!@#$%^&*()[]{}"':;.\L<?>/+=-`ίιανφόσϊ, Nasty Filename
+// @-page nasty-!@#$%^&*()[]{}"':;.\L<?>/+=-`ίιανφόσϊ, Nasty Filename
+//
+// This is a page with a file name that contains nasty characters.
+//
+//#---------------------------------------------------------------------
 // @externalpage ext-one.html
 // @externalpage ext-two.html, ext-two, the second external page
 //

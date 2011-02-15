@@ -1,7 +1,7 @@
 //
 // @page Automatic linking
 //
-// THIS PAGE SHOULD REQUIRES the "AUTOLINKING ON" SETTING.
+// THIS PAGE REQUIRES the "AUTOLINKING ON" SETTING.
 //
 // In this mode, words that match existing NED of MSG types are hyperlinked.
 // You can prevent hyperlinking of a word by putting a backslash in front of it;

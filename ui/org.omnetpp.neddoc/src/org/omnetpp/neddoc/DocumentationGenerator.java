@@ -65,7 +65,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
@@ -1034,6 +1033,7 @@ public class DocumentationGenerator {
                             if (matcher.find()) {
                                 String fileName = matcher.group(1);
                                 String title = StringUtils.isEmpty(matcher.group(2)) ? fileName : matcher.group(2);
+                                fileName = sanitizeFileName(fileName, ".html");
                                 if (!visitor.visit(PageType.PAGE, fileName, title, content))
                                     return;
                             }
@@ -1042,6 +1042,21 @@ public class DocumentationGenerator {
                 }
             }
         }
+    }
+
+    protected String sanitizeFileName(String fileName, String requiredSuffix) {
+        // Replace characters that may cause trouble: control characters, characters that may 
+        // be invalid in a file name in some platform, may need quoting when put into a HTML 
+        // attribute (href), or may have different representations in different encodings 
+        // (i.e. non-ASCII chars). When changing this code, make sure that the page "Nasty-Filename"
+        // in test/neddoc can be generated and also opened!
+        fileName = fileName.trim().replaceAll("\\s+", "-").replace('[', '(').replace(']', ')');
+        fileName = fileName.replaceAll("[^-A-Za-z0-9!@$(){};+=]", "_");
+        
+        // add suffix
+        if (!fileName.endsWith(requiredSuffix))
+            fileName += requiredSuffix;
+        return fileName;
     }
 
     protected void generateDiagrams() throws Exception {
