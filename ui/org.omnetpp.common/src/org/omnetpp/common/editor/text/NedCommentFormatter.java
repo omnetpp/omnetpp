@@ -26,9 +26,10 @@ public class NedCommentFormatter {
      *
      * @param comment  The comment to be processed
      * @param brief    If true, only the first paragraph of the comment will be included
+     * @param tildeMode If true, then ~ is special before an identifier, otherwise \ is special
      * @param processor When not null, it will be invoked in the middle of the creation process.
      */
-    public static String makeHtmlDocu(String comment, boolean brief, INeddocProcessor processor) {
+    public static String makeHtmlDocu(String comment, boolean brief, boolean tildeMode, INeddocProcessor processor) {
         // add sentries to facilitate processing
         comment = "\n\n" + comment + "\n\n";
 
@@ -122,13 +123,6 @@ public class NedCommentFormatter {
                 return "<nohtml" + (nohtmlList.size() - 1) + "/>";
             }
         });
-        comment = StringUtils.replaceMatches(comment, "(?i)(\\\\[a-z_]+)", new IRegexpReplacementProvider() {
-            public String getReplacement(Matcher matcher) {
-                nohtmlList.add(matcher.group(1));
-
-                return "<nohtml" + (nohtmlList.size() - 1) + "/>";
-            }
-        });
 
         // put hyperlinks on type names
         if (processor != null)
@@ -144,18 +138,27 @@ public class NedCommentFormatter {
         comment = comment.replaceAll("&lt;((" + ANY_RECOGNIZED_HTML_TAG + ")( [^\n]*?)?/?)&gt;", "<$1>");
         comment = comment.replaceAll("&lt;(/(" + ANY_RECOGNIZED_HTML_TAG + "))&gt;", "<$1>");
 
+        // remove backslashes and tildes before identifiers; double backslashes and tildes become single ones
+        //  !tildeMode                          tildeMode
+        // \TCP    ->  TCP                   ~TCP   -> TCP
+        // \Hello  ->  Hello                 ~Hello -> Hello
+        // \\TCP   ->  \TCP                  ~~TCP  -> ~TCP
+        // \100    ->  \100                  ~100   -> 100
+        // \\100   ->  \\100                 ~~100  -> ~~100
+        String pattern = tildeMode ? "(?i)(~+)([a-z_])" : "(?i)(\\\\+)([a-z_])";
+        comment = StringUtils.replaceMatches(comment, pattern, new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                String prefix = matcher.group(1);
+                return prefix.substring(0, prefix.length() / 2) + matcher.group(2);
+            }
+        });
+
         // put back <nohtml> sections
         comment = StringUtils.replaceMatches(comment, "<nohtml(\\d+)/>", new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
                 return nohtmlList.get(Integer.parseInt(matcher.group(1)));
             }
         });
-
-        // remove backslashes; double backslashes become single ones
-        comment = comment.replaceAll("\\\\(.)", "$1");
-
-        // escape $ signs to avoid referring groups in appendReplacement
-        comment = comment.replace("$", "\\$");
 
         return comment;
     }

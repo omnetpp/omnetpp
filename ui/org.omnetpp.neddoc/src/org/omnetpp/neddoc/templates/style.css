@@ -23,3 +23,4 @@ FIXME.paramtable { border:2px ridge; border-collapse:collapse;}
 .src-comment { font-style:italic; color:#404040 }
 .src-string  { color:#006000 }
 .src-number  { color:#0000c0 }
+.error       { color:red}

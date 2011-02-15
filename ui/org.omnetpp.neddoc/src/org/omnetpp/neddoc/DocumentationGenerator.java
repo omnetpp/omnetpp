@@ -64,6 +64,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
@@ -73,6 +74,7 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.StringUtils.IRegexpReplacementProvider;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -221,7 +223,7 @@ public class DocumentationGenerator {
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
     protected Map<String, String> doxyMap = new HashMap<String, String>();
-    protected Pattern typeNamesPattern;
+    protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
     protected int treeFolderIndex = 0;
@@ -488,9 +490,9 @@ public class DocumentationGenerator {
         if (buffer.length() > 0)
             buffer.deleteCharAt(buffer.length() - 1);
 
-        String tilde = generateExplicitLinksOnly ? "~" : "~?";
-        typeNamesPattern = Pattern.compile("\\\\\\\\|\\\\~|"+tilde+"(" + buffer.toString() + ")(?=\\b)");
-
+        possibleTypeReferencesPattern = generateExplicitLinksOnly ?
+                                            Pattern.compile("(?i)(~+)([a-z_](\\w|\\.(?=\\w))*)") :
+                                            Pattern.compile("(\\\\*)\\b(" + buffer.toString() + ")\\b");
         monitor.worked(1);
     }
 
@@ -636,34 +638,32 @@ public class DocumentationGenerator {
     }
 
     protected String processHTMLContent(String clazz, String comment) {
-        return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), new INeddocProcessor() {
+        return NedCommentFormatter.makeHtmlDocu(comment, clazz.equals("briefcomment"), generateExplicitLinksOnly, new INeddocProcessor() {
             public String process(String comment) {
                 return replaceTypeReferences(comment);
             }});
     }
 
     protected String replaceTypeReferences(String comment) {
-        Matcher matcher = typeNamesPattern.matcher(comment);
-        StringBuffer buffer = new StringBuffer();
-
-        while (matcher.find()) {
-            String match = matcher.group();
-            if ("\\\\".equals(match))
-                ; // double backslashes are removed later (NedCommentFormatter.makeHtmlDocu) matcher.appendReplacement(buffer, "\\\\");
-            else if ("\\~".equals(match))
-                matcher.appendReplacement(buffer, "~");
-            else {
-                String typeName = match.charAt(0) == '~' ? match.substring(1) : match;
-                ITypeElement typeElement = typeNamesMap.get(typeName);
-
-                if (typeElement != null)
-                    matcher.appendReplacement(buffer, "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+        return StringUtils.replaceMatches(comment, possibleTypeReferencesPattern, new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                String prefix = matcher.group(1);
+                boolean evenPrefixes = prefix.length() % 2 == 0;
+                String identifier = matcher.group(2);
+                ITypeElement typeElement = typeNamesMap.get(identifier);
+                
+                if ((generateExplicitLinksOnly && !evenPrefixes) || (!generateExplicitLinksOnly && evenPrefixes && typeElement != null))
+                {
+                    prefix = prefix.substring(0, prefix.length() / 2); // remove double '\' or '~' here, because they won't be followed by an
+                                                                       // identifier in the generated output
+                    String replacement = typeElement != null ? prefix + "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>" :
+                                                               prefix + "<span class=\"error\" title=\"Unresolved link.\">" + identifier + "</span>";
+                    return replacement;
+                }
+                else
+                    return null;
             }
-        }
-
-        matcher.appendTail(buffer);
-
-        return buffer.toString();
+        });
     }
 
     protected void generateFileFromResource(String resourceName) throws Exception {

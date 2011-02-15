@@ -820,12 +820,14 @@ public class GraphicalNedEditor
 
 		String htmlComment = "";
 		if (!StringUtils.isEmpty(comment)) {
-			htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, null);
+		    boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
+		    htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
 		}
 
 		if (!StringUtils.isEmpty(typeComment)) {
 			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
-		    htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, null);
+            boolean tildeMode = typeComment.matches(".*(~[a-zA-Z_]).*");
+            htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, tildeMode, null);
 		}
 
 		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source  

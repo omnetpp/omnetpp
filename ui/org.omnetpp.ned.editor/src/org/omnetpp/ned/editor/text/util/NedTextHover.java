@@ -53,8 +53,10 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
 		String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
 
 		String comment = typeInfo.getNedElement().getComment();
-		if (StringUtils.isNotEmpty(comment))
-			text += "<br/>" + NedCommentFormatter.makeHtmlDocu(comment, false, null);
+		if (StringUtils.isNotEmpty(comment)) {
+	        boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
+			text += "<br/>" + NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
+		}
 
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
