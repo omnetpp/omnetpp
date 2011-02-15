@@ -265,6 +265,10 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      * Interface for replaceMatches().
      */
     public static interface IRegexpReplacementProvider {
+        /**
+         * Returns the replacement string of the currently matched input or
+         * {@code null} if the matching input should be left as is.
+         */
         public String getReplacement(Matcher matcher);
     }
 
@@ -273,17 +277,28 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
      * provided by the given IRegexpReplacementProvider instance.
      */
     public static String replaceMatches(String text, String regexp, IRegexpReplacementProvider provider) {
-        Matcher matcher = Pattern.compile(regexp).matcher(text);
+        return replaceMatches(text, Pattern.compile(regexp), provider);
+    }
+    
+    /**
+     * Performs regex substitution on the given string, where replacements are
+     * provided by the given IRegexpReplacementProvider instance.
+     */
+    public static String replaceMatches(String text, Pattern regexp, IRegexpReplacementProvider provider) {
+        Matcher matcher = regexp.matcher(text);
         StringBuffer buffer = new StringBuffer();
 
-        while (matcher.find())
-            matcher.appendReplacement(buffer, provider.getReplacement(matcher).replace("$", "\\$"));
+        while (matcher.find()) {
+            String replacement = provider.getReplacement(matcher);
+            if (replacement != null)
+                matcher.appendReplacement(buffer, replacement.replace("\\", "\\\\").replace("$", "\\$"));
+        }
 
         matcher.appendTail(buffer);
 
         return buffer.toString();
     }
-    
+
     /**
      * Prepares plain text for inclusion into HTML "pre" tag: replaces "<", ">"
      * with "&lt;", "&gt;", etc.
