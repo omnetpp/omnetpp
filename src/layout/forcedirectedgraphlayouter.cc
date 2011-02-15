@@ -35,7 +35,7 @@ ForceDirectedGraphLayouter::ForceDirectedGraphLayouter()
     hasFixedNode = false;
     hasMovableNode = false;
     hasAnchoredNode = false;
-	hasEdgeToBorder = false;
+    hasEdgeToBorder = false;
 
     topBorder = NULL;
     bottomBorder = NULL;
@@ -181,9 +181,9 @@ void ForceDirectedGraphLayouter::ensureBorders()
     if (!topBorder && (height || hasFixedNode || hasEdgeToBorder)) {
         topBorder = new WallBody(true, NaN);
         bottomBorder = new WallBody(true, NaN);
-	}
+    }
     // left and right borders are handled together
-	if (!leftBorder && (width || hasFixedNode || hasEdgeToBorder)) {
+    if (!leftBorder && (width || hasFixedNode || hasEdgeToBorder)) {
         leftBorder = new WallBody(false, NaN);
         rightBorder = new WallBody(false, NaN);
     }
@@ -195,33 +195,33 @@ void ForceDirectedGraphLayouter::addBorderForceProviders()
     const std::vector<IBody *>& bodies = embedding.getBodies();
     for (int i = 0; i < (int)bodies.size(); i++) {
         IBody *body = bodies[i];
-		if (topBorder) {
+        if (topBorder) {
             embedding.addForceProvider(new VerticalElectricRepulsion(topBorder, body));
             embedding.addForceProvider(new VerticalElectricRepulsion(bottomBorder, body));
-		}
-		if (leftBorder) {
+        }
+        if (leftBorder) {
             embedding.addForceProvider(new HorizontalElectricRepulsion(leftBorder, body));
             embedding.addForceProvider(new HorizontalElectricRepulsion(rightBorder, body));
-		}
+        }
     }
-	if (topBorder) {
+    if (topBorder) {
         // the positions for non constrained variables are not yet set
         topBorder->setVariable(hasFixedNode || height ? new PointConstrainedVariable(Pt(NaN, 0, NaN)) : new Variable(Pt::getNil()));
         bottomBorder->setVariable(height ? new PointConstrainedVariable(Pt(NaN, height, NaN)) : new Variable(Pt::getNil()));
         embedding.addBody(topBorder);
         embedding.addBody(bottomBorder);
-    	if (!height)
-	        embedding.addForceProvider(new VerticalSpring(topBorder, bottomBorder, -1, expectedEmbeddingHeight));
-	}
-	if (leftBorder) {
+        if (!height)
+            embedding.addForceProvider(new VerticalSpring(topBorder, bottomBorder, -1, expectedEmbeddingHeight));
+    }
+    if (leftBorder) {
         // the positions for non constrained variables are not yet set
         leftBorder->setVariable(hasFixedNode || width ? new PointConstrainedVariable(Pt(0, NaN, NaN)) : new Variable(Pt::getNil()));
         rightBorder->setVariable(width ? new PointConstrainedVariable(Pt(width, NaN, NaN)) : new Variable(Pt::getNil()));
         embedding.addBody(leftBorder);
         embedding.addBody(rightBorder);
-    	if (!width)
-	        embedding.addForceProvider(new HorizonalSpring(leftBorder, rightBorder, -1, expectedEmbeddingWidth));
-	}
+        if (!width)
+            embedding.addForceProvider(new HorizonalSpring(leftBorder, rightBorder, -1, expectedEmbeddingWidth));
+    }
 }
 
 void ForceDirectedGraphLayouter::setBorderPositions()
@@ -339,7 +339,7 @@ void ForceDirectedGraphLayouter::translate(Pt pt)
     }
 }
 
-void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int height)
+void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, double width, double height)
 {
     hasMovableNode = true;
 
@@ -350,10 +350,10 @@ void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, int width, int hei
     graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(width, height), variable));
 }
 
-void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int width, int height)
+void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, double x, double y, double width, double height)
 {
     hasFixedNode = true;
-	ensureBorders();
+    ensureBorders();
 
     // a fix node is a constrained variable which can only move on the z axes
     Variable *variable = new PointConstrainedVariable(Pt(x, y, NaN));
@@ -363,7 +363,7 @@ void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, int x, int y, int wi
     graphComponent.addVertex(new Vertex(Pt(x - width / 2, y - height / 2, NaN), Rs(width, height), variable));
 }
 
-void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
+void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height)
 {
     hasAnchoredNode = true;
 
@@ -381,7 +381,7 @@ void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *ancho
     }
 }
 
-void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, int len)
+void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, double len)
 {
     // an edge is a spring
     // the -1 edge length will be replaced with expectedEdgeLength
@@ -393,10 +393,10 @@ void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, int len)
                                     graphComponent.findVertex(spring->getBody2()->getVariable())));
 }
 
-void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, int len)
+void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, double len)
 {
-	hasEdgeToBorder = true;
-	ensureBorders();
+    hasEdgeToBorder = true;
+    ensureBorders();
     IBody *body = findBody(from);
 
     // add a force provider which uses four springs each connected to a wall
@@ -488,9 +488,9 @@ void ForceDirectedGraphLayouter::execute()
 
         // execute force directed embedding if requested
         if (forceDirectedEmbedding) {
-			if (width || height)
-				ensureBorders();
-			if (topBorder || leftBorder)
+            if (width || height)
+                ensureBorders();
+            if (topBorder || leftBorder)
                 addBorderForceProviders();
 
             addElectricRepulsions();
@@ -529,12 +529,12 @@ void ForceDirectedGraphLayouter::execute()
     }
 }
 
-void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, int& x, int& y)
+void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, double& x, double& y)
 {
     IBody *body = findBody(mod);
     const Pt& pt = body->getPosition();
-    x = (int) pt.x;
-    y = (int) pt.y;
+    x = pt.x;
+    y = pt.y;
 }
 
 void ForceDirectedGraphLayouter::debugDraw()

@@ -56,8 +56,8 @@ class LAYOUT_API GraphLayouter
 
     GraphLayouterEnvironment *environment;
 
-    int width, height;  // ==0 means unspecified
-    int border;
+    double width, height;  // ==0 means unspecified
+    double border;
 
     double privRand01() { return lcgRandom.next01(); }
     double privUniform(double a, double b) { return a + privRand01() * (b - a); }
@@ -74,12 +74,12 @@ class LAYOUT_API GraphLayouter
     /**
      * Add node that can be moved.
      */
-    virtual void addMovableNode(cModule *mod, int width, int height) = 0;
+    virtual void addMovableNode(cModule *mod, double width, double height) = 0;
 
     /**
      * Add fixed node. (x,y) denotes the center of the node.
      */
-    virtual void addFixedNode(cModule *mod, int x, int y, int width, int height) = 0;
+    virtual void addFixedNode(cModule *mod, double x, double y, double width, double height) = 0;
 
     /**
      * Add node that is anchored to a freely movable anchor point. Nodes anchored
@@ -89,18 +89,18 @@ class LAYOUT_API GraphLayouter
      *
      * offx, offy: offset of the node center to the anchor point
      */
-    virtual void addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height) = 0;
+    virtual void addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height) = 0;
 
     /**
      * Add connection (graph edge). len is the preferred length (0==unspecified)
      */
-    virtual void addEdge(cModule *from, cModule *to, int len=0) = 0;
+    virtual void addEdge(cModule *from, cModule *to, double len=0) = 0;
 
     /**
      * Add connection (graph edge) to enclosing (parent) module. len is the
      * preferred length (0==unspecified)
      */
-    virtual void addEdgeToBorder(cModule *from, int len=0) = 0;
+    virtual void addEdgeToBorder(cModule *from, double len=0) = 0;
 
     /**
      * Set parameters
@@ -124,7 +124,7 @@ class LAYOUT_API GraphLayouter
      * Sets the size of the enclosing module. A zero width or height means
      * unspecified value.
      */
-    void setSize(int width, int height, int border);
+    void setSize(double width, double height, double border);
     //@}
 
     /**
@@ -135,7 +135,7 @@ class LAYOUT_API GraphLayouter
     /**
      * Extracting the results. The returned position is the center of the module.
      */
-    virtual void getNodePosition(cModule *mod, int& x, int& y) = 0;
+    virtual void getNodePosition(cModule *mod, double& x, double& y) = 0;
 };
 
 NAMESPACE_END

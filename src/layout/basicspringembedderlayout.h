@@ -54,8 +54,8 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
         bool fixed;        // allowed to move?
         Anchor *anchor;    // non-NULL for anchored nodes
         double x, y;       // position (of the center of the shape)
-        int offx, offy;    // anchored nodes: offset to anchor point (and x,y are calculated)
-        int sx, sy;        // half width/height
+        double offx, offy; // anchored nodes: offset to anchor point (and x,y are calculated)
+        double sx, sy;     // half width/height
 
         double vx, vy;     // internal: distance moved at each step (preserved between relax() calls)
         int color;         // internal: connected nodes share the same color
@@ -66,7 +66,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     {
         Node *src;
         Node *target;
-        double len;        // preferred length; making it "double" reduces the number of int->double conversions during layouting
+        double len;        // preferred length
     };
 
     // AnchorList and NodeList must be vectors because iteration on std::map is very slow
@@ -78,7 +78,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     NodeList nodes;
     EdgeList edges;
 
-    int defaultEdgeLen;
+    double defaultEdgeLen;
 
     bool haveFixedNode;
     bool haveAnchoredNode;
@@ -132,13 +132,13 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     /** @name Redefined GraphLayouter methods */
     //@{
     virtual void setEnvironment(GraphLayouterEnvironment *environment);
-    void addMovableNode(cModule *mod, int width, int height);
-    void addFixedNode(cModule *mod, int x, int y, int width, int height);
-    void addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height);
-    void addEdge(cModule *src, cModule *target, int len=0);
-    void addEdgeToBorder(cModule *src, int len=0);
+    void addMovableNode(cModule *mod, double width, double height);
+    void addFixedNode(cModule *mod, double x, double y, double width, double height);
+    void addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height);
+    void addEdge(cModule *src, cModule *target, double len=0);
+    void addEdgeToBorder(cModule *src, double len=0);
     virtual void execute();
-    void getNodePosition(cModule *mod, int& x, int& y);
+    void getNodePosition(cModule *mod, double& x, double& y);
     //@}
 };
 

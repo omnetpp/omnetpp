@@ -1,3 +1,9 @@
+2011-02-15  Andras Varga
+
+	* In the external interface of layouters (GraphLayouter class), 
+	changed "int" to "double" for coordinates and distances. Internally
+	they all already calculated everything in floating point.
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-05-31  ------ omnetpp-4.1rc2 released ------

@@ -71,12 +71,12 @@ class TGraphicalModWindow : public TInspector
       int32 random_seed;
       bool not_drawn;
 
-      struct Point {int x,y;};
+      struct Point {double x,y;};
       typedef std::map<cModule*,Point> PositionMap;
       PositionMap submodPosMap;  // recalculateLayout() fills this map
 
    protected:
-      void drawSubmodule(Tcl_Interp *interp, cModule *submod, int x, int y, const char *scaling);
+      void drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling);
       void drawEnclosingModule(Tcl_Interp *interp, cModule *parentmodule, const char *scaling);
       void drawConnection(Tcl_Interp *interp, cGate *gate);
 
@@ -96,7 +96,7 @@ class TGraphicalModWindow : public TInspector
 
       // helper for layouting code
       void getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
-                                               int& x, int& y, int& sx, int& sy);
+                                               double& x, double& y, double& sx, double& sy);
 
       // does full layouting, stores results in submodPosMap
       virtual void recalculateLayout();

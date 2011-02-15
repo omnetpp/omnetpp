@@ -310,17 +310,18 @@ void TGraphicalModWindow::redrawAll()
 }
 
 void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoords, bool& obeyslayout,
-                                                              int& x, int& y, int& sx, int& sy)
+                                                              double& x, double& y, double& sx, double& sy)
 {
     const cDisplayString blank;
     const cDisplayString& ds = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString() : blank;
 
     // get size -- we'll need to return that too, and may be needed for matrix, ring etc. layout
-    int boxsx=0, boxsy=0, iconsx=0, iconsy=0;
+    double boxsx=0, boxsy=0;
+    int iconsx=0, iconsy=0;
     if (ds.containsTag("b") || !ds.containsTag("i"))
     {
-        boxsx = resolveLongDispStrArg(ds.getTagArg("b",0), submod, 40);
-        boxsy = resolveLongDispStrArg(ds.getTagArg("b",1), submod, 24);
+        boxsx = resolveDoubleDispStrArg(ds.getTagArg("b",0), submod, 40);
+        boxsy = resolveDoubleDispStrArg(ds.getTagArg("b",1), submod, 24);
     }
     if (ds.containsTag("i"))
     {
@@ -352,8 +353,8 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     sy = (boxsy>iconsy) ? boxsy : iconsy;
 
     // first, see if there's an explicit position ("p=" tag) given
-    x = resolveLongDispStrArg(ds.getTagArg("p",0), submod, -1);
-    y = resolveLongDispStrArg(ds.getTagArg("p",1), submod, -1);
+    x = resolveDoubleDispStrArg(ds.getTagArg("p",0), submod, -1);
+    y = resolveDoubleDispStrArg(ds.getTagArg("p",1), submod, -1);
     explicitcoords = x!=-1 && y!=-1;
 
     // set missing coordinates to zero
@@ -370,39 +371,40 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     }
     else if (!strcmp(layout,"e") || !strcmp(layout,"x") || !strcmp(layout,"exact"))
     {
-        int dx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 0);
-        int dy = resolveLongDispStrArg(ds.getTagArg("p",4), submod, 0);
+        double dx = resolveDoubleDispStrArg(ds.getTagArg("p",3), submod, 0);
+        double dy = resolveDoubleDispStrArg(ds.getTagArg("p",4), submod, 0);
         x += dx;
         y += dy;
     }
     else if (!strcmp(layout,"r") || !strcmp(layout,"row"))
     {
         // perhaps we should use the size of the 1st element in the vector?
-        int dx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 2*sx);
+        double dx = resolveDoubleDispStrArg(ds.getTagArg("p",3), submod, 2*sx);
         x += submod->getIndex()*dx;
     }
     else if (!strcmp(layout,"c") || !strcmp(layout,"col") || !strcmp(layout,"column"))
     {
-        int dy = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 2*sy);
+        double dy = resolveDoubleDispStrArg(ds.getTagArg("p",3), submod, 2*sy);
         y += submod->getIndex()*dy;
     }
     else if (!strcmp(layout,"m") || !strcmp(layout,"matrix"))
     {
         // perhaps we should use the size of the 1st element in the vector?
         int columns = resolveLongDispStrArg(ds.getTagArg("p",3), submod, 5);
-        int dx = resolveLongDispStrArg(ds.getTagArg("p",4), submod, 2*sx);
-        int dy = resolveLongDispStrArg(ds.getTagArg("p",5), submod, 2*sy);
+        double dx = resolveDoubleDispStrArg(ds.getTagArg("p",4), submod, 2*sx);
+        double dy = resolveDoubleDispStrArg(ds.getTagArg("p",5), submod, 2*sy);
+        if (columns < 1) columns = 1;
         x += (submod->getIndex() % columns)*dx;
         y += (submod->getIndex() / columns)*dy;
     }
     else if (!strcmp(layout,"i") || !strcmp(layout,"ri") || !strcmp(layout,"ring"))
     {
         // perhaps we should use the size of the 1st element in the vector?
-        int rx = resolveLongDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
-        int ry = resolveLongDispStrArg(ds.getTagArg("p",4), submod, rx);
+        double rx = resolveDoubleDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
+        double ry = resolveDoubleDispStrArg(ds.getTagArg("p",4), submod, rx);
 
-        x += (int) floor(rx - rx*sin(submod->getIndex()*2*PI/submod->size()));
-        y += (int) floor(ry - ry*cos(submod->getIndex()*2*PI/submod->size()));
+        x += rx - rx*sin(submod->getIndex()*2*PI/submod->size());
+        y += ry - ry*cos(submod->getIndex()*2*PI/submod->size());
     }
     else
     {
@@ -468,7 +470,7 @@ void TGraphicalModWindow::refreshLayout()
         cModule *submod = it();
 
         bool explicitcoords, obeyslayout;
-        int x, y, sx, sy;
+        double x, y, sx, sy;
         getSubmoduleCoords(submod, explicitcoords, obeyslayout, x, y, sx, sy);
 
         // add node into layouter:
@@ -602,10 +604,10 @@ void TGraphicalModWindow::redrawModules()
     CHK(Tcl_VarEval(interp, "graphmodwin_setscrollregion ", windowname, " 0",NULL));
 }
 
-void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, int x, int y, const char *scaling)
+void TGraphicalModWindow::drawSubmodule(Tcl_Interp *interp, cModule *submod, double x, double y, const char *scaling)
 {
-    char coords[32];
-    sprintf(coords,"%d %d ", x, y);
+    char coords[64];
+    sprintf(coords,"%g %g ", x, y);
     const char *dispstr = submod->hasDisplayString() && submod->parametersFinalized() ? submod->getDisplayString().str() : "";
 
     CHK(Tcl_VarEval(interp, "draw_submod ",
@@ -819,9 +821,9 @@ void TGraphicalModWindow::bubble(cModule *submod, const char *text)
     const char *scaling = substituteDisplayStringParamRefs(rawScaling, buffer, parentmodule, true);
 
     // invoke Tcl code to display bubble
-    char coords[32];
+    char coords[64];
     Point& pos = submodPosMap[submod];
-    sprintf(coords, " %d %d ", pos.x, pos.y);
+    sprintf(coords, " %g %g ", pos.x, pos.y);
     CHK(Tcl_VarEval(interp, "graphmodwin_bubble ", canvas, coords, " ", TclQuotedString(scaling).get(), " ", TclQuotedString(text).get(), NULL));
 }
 

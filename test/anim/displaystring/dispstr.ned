@@ -41,8 +41,11 @@ network DisplayStringTest
         scaling: scaling {
             @display("p=191,200");
         }
-        active: Active {
+        scaling2: scaling2 {
             @display("p=35,270");
+        }
+        active: Active {
+            @display("p=112,270");
         }
 }
 

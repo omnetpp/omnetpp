@@ -59,7 +59,7 @@ void BasicSpringEmbedderLayout::setEnvironment(GraphLayouterEnvironment *environ
 
     repulsiveForce = environment->getDoubleParameter("bgl", 0, repulsiveForce);
     attractionForce = environment->getDoubleParameter("bgl", 1, attractionForce);
-    defaultEdgeLen = environment->getLongParameter("bgl", 2, defaultEdgeLen);
+    defaultEdgeLen = environment->getDoubleParameter("bgl", 2, defaultEdgeLen);
     maxIterations = environment->getLongParameter("bgl", 3 , maxIterations);
 }
 
@@ -71,7 +71,7 @@ BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(cModule *mo
     return NULL;
 }
 
-void BasicSpringEmbedderLayout::addMovableNode(cModule *mod, int width, int height)
+void BasicSpringEmbedderLayout::addMovableNode(cModule *mod, double width, double height)
 {
     Assert(findNode(mod)==NULL);
 
@@ -87,7 +87,7 @@ void BasicSpringEmbedderLayout::addMovableNode(cModule *mod, int width, int heig
     nodes.push_back(n);
 }
 
-void BasicSpringEmbedderLayout::addFixedNode(cModule *mod, int x, int y, int width, int height)
+void BasicSpringEmbedderLayout::addFixedNode(cModule *mod, double x, double y, double width, double height)
 {
     Assert(findNode(mod)==NULL);
 
@@ -106,7 +106,7 @@ void BasicSpringEmbedderLayout::addFixedNode(cModule *mod, int x, int y, int wid
 }
 
 
-void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchorname, int offx, int offy, int width, int height)
+void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height)
 {
     Assert(findNode(mod)==NULL);
 
@@ -144,7 +144,7 @@ void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchor
     nodes.push_back(n);
 }
 
-void BasicSpringEmbedderLayout::addEdge(cModule *src, cModule *target, int len)
+void BasicSpringEmbedderLayout::addEdge(cModule *src, cModule *target, double len)
 {
     Assert(findNode(src)!=NULL && findNode(target)!=NULL);
 
@@ -159,18 +159,18 @@ void BasicSpringEmbedderLayout::addEdge(cModule *src, cModule *target, int len)
     edges.push_back(e);
 }
 
-void BasicSpringEmbedderLayout::addEdgeToBorder(cModule *, int)
+void BasicSpringEmbedderLayout::addEdgeToBorder(cModule *, double)
 {
     // this layouter algorithm ignores connections to border
 }
 
-void BasicSpringEmbedderLayout::getNodePosition(cModule *mod, int& x, int& y)
+void BasicSpringEmbedderLayout::getNodePosition(cModule *mod, double& x, double& y)
 {
     Assert(findNode(mod)!=NULL);
 
     Node *n = findNode(mod);
-    x = (int) n->x;
-    y = (int) n->y;
+    x = n->x;
+    y = n->y;
 }
 
 void BasicSpringEmbedderLayout::execute()
@@ -262,7 +262,7 @@ void BasicSpringEmbedderLayout::execute()
         computeBoundingBox(x1, y1, x2, y2, &isNotConnectedToFixed);
 
         // if bounding box is off the screen top and/or left, shift them back
-        int dx = 0, dy = 0;
+        double dx = 0, dy = 0;
         if (x1 < border)
             dx = border-x1;
         if (y1 < border)
@@ -288,8 +288,8 @@ void BasicSpringEmbedderLayout::assignInitialPositions()
     // (i.e. when placing newly created modules while the simulation is running)
     // all existing modules are taken as fixed.
     //
-    int initialAreaWidth, initialAreaHeight;
-    int initialAreaOffsetX, initialAreaOffsetY;
+    double initialAreaWidth, initialAreaHeight;
+    double initialAreaOffsetX, initialAreaOffsetY;
 
     if (width!=0 && height!=0)
     {
@@ -302,10 +302,10 @@ void BasicSpringEmbedderLayout::assignInitialPositions()
         // compute initialAreaWidth/height/offsetX/offsetY
         double area = std::max(60.0 * 60.0 * nodes.size(), 600.0 * 400.0);  // assume 1 node needs 60x60 pixels of space
         double aspectRatio = 1.5;
-        initialAreaWidth = (int)(sqrt(area)*aspectRatio);
-        initialAreaHeight = (int)(sqrt(area)/aspectRatio);
+        initialAreaWidth = sqrt(area)*aspectRatio;
+        initialAreaHeight = sqrt(area)/aspectRatio;
 
-        int margin = 0.25 * std::min(initialAreaWidth, initialAreaHeight);
+        double margin = 0.25 * std::min(initialAreaWidth, initialAreaHeight);
         initialAreaOffsetX = initialAreaOffsetY = margin; // leave some space (25%) top and left side, to reduce movable nodes getting pushed against the wall
         if (haveFixedNode)
         {
@@ -322,12 +322,12 @@ void BasicSpringEmbedderLayout::assignInitialPositions()
             y1 += ymargin; y2 -= ymargin;
 
             // union with initial area
-            int initialAreaRight = initialAreaOffsetX + initialAreaWidth;
-            int initialAreaBottom = initialAreaOffsetY + initialAreaHeight;
-            initialAreaOffsetX = std::min((int)x1, initialAreaOffsetX);
-            initialAreaOffsetY = std::min((int)y1, initialAreaOffsetY);
-            initialAreaRight = std::max((int)x2, initialAreaRight);
-            initialAreaBottom = std::max((int)y2, initialAreaBottom);
+            double initialAreaRight = initialAreaOffsetX + initialAreaWidth;
+            double initialAreaBottom = initialAreaOffsetY + initialAreaHeight;
+            initialAreaOffsetX = std::min(x1, initialAreaOffsetX);
+            initialAreaOffsetY = std::min(y1, initialAreaOffsetY);
+            initialAreaRight = std::max(x2, initialAreaRight);
+            initialAreaBottom = std::max(y2, initialAreaBottom);
             initialAreaWidth = initialAreaRight - initialAreaOffsetX;
             initialAreaHeight = initialAreaBottom - initialAreaOffsetY;
         }

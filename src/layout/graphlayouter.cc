@@ -24,7 +24,7 @@ GraphLayouter::GraphLayouter()
     width = height = border = 0;
 }
 
-void GraphLayouter::setSize(int w, int h, int bd)
+void GraphLayouter::setSize(double w, double h, double bd)
 {
     width = w; height = h; border = bd;
 
