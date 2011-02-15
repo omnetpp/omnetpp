@@ -101,7 +101,7 @@ simple Gen
 
 \subsection{More on Comment Placement}
 
-Comments should be written where nedtool will find them.
+Comments should be written where the tool will find them.
 This is a) immediately above the documented item, or b) after the
 documented item, on the same line.
 
@@ -122,6 +122,71 @@ simple Gen
 
 Do not try to comment groups of parameters together. The result
 will be awkward.
+
+\section{Referring to Other NED and Message Types}
+
+You can reference other NED and message types by name in comments. There
+are two styles in which references can be written: automatic linking and
+tilde linking. The same style must be following throughout the whole
+project, and the correct one must be selected in the documentation
+generator tool when it is run.
+
+\subsection{Automatic Linking}
+
+In the automatic linking style, words that match existing NED of message
+types are hyperlinked automatically. It is usually enough to write the
+simple name of the type (e.g. \ttt{TCP}), you don't need to spell out the
+fully qualified type (\ttt{inet.transport.tcp.TCP}), although you can.
+
+Automatic hyperlinking is sometimes overly agressive. For example, when you
+write \ttt{IP address} in a comment and an \ttt{IP} module exists
+in the project, it will create a hyperlink to the module, which is probably
+not what you want. You can prevent hyperlinking of a word by inserting a
+backslash in front it: \ttt{{\textbackslash}IP address}. The backslash will
+not appear in the HTML output. The \ttt{<nohtml>} tag will also prevent
+hyperlinking words in the enclosed text: \ttt{<nohtml>IP address</nohtml>}.
+On the other hand, if you deliberately want to print a backslash immediately
+in front of a word (e.g. output \textit{``use {\textbackslash}t to print a Tab''}),
+use either two backslashes (\ttt{use {\textbackslash}{\textbackslash}t...}) or the
+\ttt{<nohtml>} tag (\ttt{<nohtml>use {\textbackslash}t...</nohtml>}).
+Backslashes in other contexts (i.e. when not in front of a word) do not have
+a special meaning, and are preserved in the output.
+
+The detailed rules:
+
+\begin{enumerate}
+  \item Words matching a type name are automatically hyperlinked
+  \item A backslash immediately followed by an identifier (i.e. letter or underscore)
+        prevents hyperlinking, and the backslash is removed from the output
+  \item A double backslash followed by an identifier produces a single backslash,
+        plus the potentially hyperlinked identifier
+  \item Backslashes in any other contexts are not interpreted, and preserved in the output
+  \item Tildes are not interpreted, and are preserved in the output
+  \item Inside \ttt{<nohtml>}, no backslash processing or hyperlinking takes place
+\end{enumerate}
+
+\subsection{Tilde Linking}
+
+In the tilde style, only words that are explicitly marked with a tilde are
+subject to hyperlinking: \ttt{{\textasciitilde}TCP},
+\ttt{{\textasciitilde}inet.transport.tcp.TCP}.
+
+To produce a literal tilde followed by an identifier in the output (for example,
+to output \textit{``the {\textasciitilde}TCP() destructor''}), you need to
+double the tilde character: \ttt{the {\textasciitilde}{\textasciitilde}TCP() destructor}.
+
+The detailed rules:
+
+\begin{enumerate}
+  \item Words matching a type name are \textit{not} hyperlinked automatically
+  \item A tilde immediately followed by an identifier (i.e. letter or underscore)
+        will be hyperlinked, and the tilde is removed from the output. It is
+        considered an error if there is no type with that name.
+  \item A double tilde followed by an identifier produces a single tilde plus the identifier
+  \item Tildes in any other contexts are not interpreted, and preserved in the output
+  \item Backslashes are not interpreted, and are preserved in the output
+  \item Inside \ttt{<nohtml>}, no tilde processing or hyperlinking takes place
+\end{enumerate}
 
 \section{Text Layout and Formatting}
 
