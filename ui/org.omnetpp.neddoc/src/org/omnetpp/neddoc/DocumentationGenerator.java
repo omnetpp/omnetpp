@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.CancellationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -182,7 +183,7 @@ public class DocumentationGenerator {
             "Qvp8AAAAAElFTkSuQmCC");
     private static final boolean APPLY_CC = !IConstants.IS_COMMERCIAL;
 
-    private final static Pattern pageSeparatorPattern = Pattern.compile("(?m)^//[ \t]*(@page|@titlepage)(.*?)$");
+    private static final Pattern pageSeparatorPattern = Pattern.compile("(?m)^//[ \t]*(@page|@titlepage)(.*?)$");
 
     // matches a @titlepage
     private static final Pattern titlePagePattern = Pattern.compile("(?m)^//[ \t]*@titlepage(.*?)$");
@@ -192,6 +193,9 @@ public class DocumentationGenerator {
 
     // matches @page with name and URL
     private static final Pattern pagePattern = Pattern.compile("(?m)^//[ \t]*@page +([^,\n]+),? *(.*?)$");
+    
+    // matches @include and extracts filename
+    private final static Pattern includePattern = Pattern.compile("(?m)^//[ \t]*@include[ \t]+(.*?)$");
 
     // configuration flags
     protected boolean generateNedTypeFigures = true;
@@ -228,6 +232,8 @@ public class DocumentationGenerator {
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
     protected Map<String, String> doxyMap = new HashMap<String, String>();
+    protected Map<INedElement, String> commentCache = new HashMap<INedElement, String>();
+    protected Map<File, String> includedFileCache = new HashMap<File,String>();
     protected Pattern possibleTypeReferencesPattern;
 
     protected ArrayList<String> packageNames;
@@ -333,11 +339,14 @@ public class DocumentationGenerator {
                 catch (CancellationException e) {
                     return Status.CANCEL_STATUS;
                 }
+                catch (NeddocException e) {
+                    return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e); 
+                }
                 catch (final IllegalStateException e) {
                     if (e.getMessage() != null) {
                         DisplayUtils.runNowOrSyncInUIThread(new java.lang.Runnable() {
                             public void run() {
-                                MessageDialog.openError(null, "Error during generating NED documentation", e.getMessage());
+                                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error during generating NED documentation", e.getMessage());
                             }
                         });
                     }
@@ -989,9 +998,9 @@ public class DocumentationGenerator {
             String comment = null;
 
             if (nedResources.isNedFile(file))
-                comment = nedResources.getNedFileElement(file).getComment();
+                comment = getExpandedComment(nedResources.getNedFileElement(file));
             else if (msgResources.isMsgFile(file))
-                comment = msgResources.getMsgFileElement(file).getComment();
+                comment = getExpandedComment(msgResources.getMsgFileElement(file));
 
             if (comment != null) {
                 if (comment.contains("@page") || comment.contains("@titlepage") || comment.contains("@externalpage")) {
@@ -1197,7 +1206,7 @@ public class DocumentationGenerator {
                         if (typeElement instanceof SimpleModuleElementEx || typeElement instanceof IMsgTypeElement)
                             generateNedTypeCppDefinitionReference(typeElement);
 
-                        String comment = typeElement.getComment();
+                        String comment = getExpandedComment(typeElement);
                         if (comment == null)
                             out("<p>(no description)</p>");
                         else
@@ -1277,7 +1286,7 @@ public class DocumentationGenerator {
         		out("</i>\r\n" +
             		"   </td>\r\n" +
             		"   <td>");
-        		generateTableComment(field.getComment());
+        		generateTableComment(getExpandedComment(field));
         		out("</td>\r\n" +
             		"</tr>\r\n");
             }
@@ -1309,7 +1318,7 @@ public class DocumentationGenerator {
                 	generatePropertyLiteralValues(property);
                 	out("</i></td>\r\n" +
                 		"   <td>");
-                	generateTableComment(property.getComment());
+                	generateTableComment(getExpandedComment(property));
             		out("</td>\r\n" +
                 		"</tr>\r\n");
                 }
@@ -1390,7 +1399,7 @@ public class DocumentationGenerator {
             		"   </td>\r\n" +
             		"   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
                     "   <td>");
-                generateTableComment(paramDeclaration.getComment());
+                generateTableComment(getExpandedComment(paramDeclaration));
         		out("   </td>\r\n" +
             		"</tr>\r\n");
             }
@@ -1476,7 +1485,7 @@ public class DocumentationGenerator {
                         "   </td>\r\n" +
                         "   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
                         "   <td>");
-                    generateTableComment(paramDeclaration.getComment());
+                    generateTableComment(getExpandedComment(paramDeclaration));
                     out("   </td>\r\n" +
                         "</tr>\r\n");
             }
@@ -1542,7 +1551,7 @@ public class DocumentationGenerator {
                     "   <td width=\"100\"><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" +
                     "   <td width=\"50\">" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
                     "   <td>");
-                generateTableComment(gateDeclaration.getComment());
+                generateTableComment(getExpandedComment(gateDeclaration));
                 out("</td>\r\n" +
                     "</tr>\r\n");
             }
@@ -1564,7 +1573,7 @@ public class DocumentationGenerator {
             "   </td>\r\n" +
             "   <td>\r\n");
 
-        String comment = typeElement.getComment();
+        String comment = getExpandedComment(typeElement);
         if (comment != null)
             out(processHTMLContent("briefcomment", comment));
         else
@@ -2205,7 +2214,73 @@ public class DocumentationGenerator {
         }
         return result.toString();
     }
+    
+    /**
+     * Returns the comment of the given NED element with '@include' directives expanded.
+     */
+    protected String getExpandedComment(INedElement element) throws IOException {
+        if (commentCache.containsKey(element))
+            return commentCache.get(element);
 
+        String comment = element.getComment();
+        if (comment != null && comment.contains("@include")) {
+            Stack<File> parents = new Stack<File>();
+            IFile file = getNedOrMsgFile(element);
+            parents.push(file.getLocation().toFile().getCanonicalFile());
+            comment = processIncludes(comment, parents);
+        }
+        commentCache.put(element, comment);
+        return comment;
+    }
+    
+    private String getFileContent(File file, Stack<File> parents) {
+        try {
+            if (includedFileCache.containsKey(file))
+                return includedFileCache.get(file);
+            
+            int index = parents.indexOf(file);
+            if (index >= 0) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Circular @includes: ");
+                for (int i = index; i < parents.size(); ++i)
+                    sb.append(parents.get(i).getPath()).append(" --> ");
+                sb.append(file.getPath());
+                
+                throw new NeddocException(sb.toString());
+            }
+            
+            parents.push(file);
+            String content = FileUtils.readTextFile(file, null);
+            // add '// ' to the beginning of lines
+            content = content.replaceAll("(?m)^(.*)$", "// $1\r\n");
+            content = processIncludes(content, parents);
+            parents.pop();
+            includedFileCache.put(file, content);
+            return content;
+        }
+        catch (IOException e) {
+            throw new NeddocException("Cannot include file: " + file.getAbsolutePath(), e);
+        }
+    }
+    
+    private String processIncludes(String comment, Stack<File> parents) throws IOException {
+        if (comment.contains("@include")) {
+            Matcher matcher = includePattern.matcher(comment);
+            StringBuffer buffer = new StringBuffer();
+
+            while (matcher.find()) {
+                File dir = parents.peek().getParentFile();
+                File file = new File(dir, matcher.group(1)).getCanonicalFile();
+                String content = getFileContent(file, parents);
+                matcher.appendReplacement(buffer, content);
+            }
+
+            matcher.appendTail(buffer);
+            comment = buffer.toString();
+        }
+        return comment;
+    }
+    
     protected void out(String string) throws IOException {
         if (monitor.isCanceled())
             throw new CancellationException();

@@ -98,11 +98,15 @@ public class NeddocPlugin extends AbstractUIPlugin {
 
     public static void logError(String message, Throwable exception) {
         if (plugin != null) {
-            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+            plugin.getLog().log(getErrorStatus(message, exception));
         }
         else {
             System.err.println(message);
             exception.printStackTrace();
         }
+    }
+    
+    public static IStatus getErrorStatus(String message, Throwable exception) {
+        return new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception);
     }
 }

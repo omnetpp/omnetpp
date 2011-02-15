@@ -484,4 +484,21 @@ or not. It is your responsibility to copy it manually into
 the directory of the generated documentation, and to make
 sure the hyperlink works.
 
+\section{File inclusion}
+
+You can include content into the documentation comment with the
+\ttt{@include} directive. It expects the path of the file to be incuded
+relative to the file that includes it.
+
+The line of the \ttt{@include} directive will be replaced by the 
+content of the file. The lines of the included file does not need
+to start with \texttt{//}, otherwise they are processed
+as the ned comments. They can include other files, but circular
+includes are not allowed.
+
+\begin{ned}
+// ...
+// @include ../copyright.txt
+// ...
+\end{ned}
 
