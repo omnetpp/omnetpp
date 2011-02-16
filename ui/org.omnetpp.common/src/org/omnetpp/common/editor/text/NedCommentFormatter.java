@@ -30,7 +30,8 @@ public class NedCommentFormatter {
      * @param processor When not null, it will be invoked in the middle of the creation process.
      */
     public static String makeHtmlDocu(String comment, boolean brief, boolean tildeMode, INeddocProcessor processor) {
-        // add sentries to facilitate processing
+        // kill CRs, and add sentries to facilitate processing
+        comment = comment.replace("\r", "");
         comment = "\n\n" + comment + "\n\n";
 
         // remove '//#' lines (those are comments to be ignored by documentation generation)

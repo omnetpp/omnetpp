@@ -2267,7 +2267,7 @@ public class DocumentationGenerator {
             parents.push(file);
             String content = FileUtils.readTextFile(file, null);
             // add '// ' to the beginning of lines
-            content = content.replaceAll("(?m)^(.*)$", "// $1\r\n");
+            content = content.replaceAll("(?m)^(.*)$", "// $1");
             content = processIncludes(content, parents);
             parents.pop();
             includedFileCache.put(file, content);
