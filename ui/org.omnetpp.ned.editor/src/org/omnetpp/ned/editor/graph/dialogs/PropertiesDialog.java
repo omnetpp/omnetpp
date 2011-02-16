@@ -247,7 +247,8 @@ public class PropertiesDialog extends TrayDialog {
 
             try {
                 modifyInProgress = true;
-                updateEditedTypeOrSupertype();
+                if (e.widget == typeField.getTextControl())
+                    updateEditedTypeOrSupertype();
                 updateControlStates();
                 updatePreview();
                 validateDialogContents();

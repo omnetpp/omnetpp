@@ -142,6 +142,10 @@ public class NedTypeFieldEditor implements IFieldEditor {
         return composite;
     }
 
+    public Text getTextControl() {
+        return text;
+    }
+
     public boolean isGrayed() {
         return grayed;
     }
