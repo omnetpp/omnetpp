@@ -159,8 +159,8 @@ namespace std {
 %define FIXUP_GETNODEPOSITION(CLASS)
 %ignore CLASS::getNodePosition;
 %extend CLASS {
-   int getNodePositionX(cModule *mod) {int x,y; self->getNodePosition(mod, x, y); return x;}
-   int getNodePositionY(cModule *mod) {int x,y; self->getNodePosition(mod, x, y); return y;}
+   double getNodePositionX(cModule *mod) {double x,y; self->getNodePosition(mod, x, y); return x;}
+   double getNodePositionY(cModule *mod) {double x,y; self->getNodePosition(mod, x, y); return y;}
 }
 %enddef
 
