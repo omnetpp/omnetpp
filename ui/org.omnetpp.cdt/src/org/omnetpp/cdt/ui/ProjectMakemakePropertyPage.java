@@ -8,14 +8,12 @@
 package org.omnetpp.cdt.ui;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.core.cdtvariables.CdtVariableException;
-import org.eclipse.cdt.core.settings.model.ICBuildSetting;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
@@ -76,8 +74,8 @@ import org.omnetpp.cdt.makefile.BuildSpecification;
 import org.omnetpp.cdt.makefile.MakefileTools;
 import org.omnetpp.cdt.makefile.Makemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions;
-import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
+import org.omnetpp.cdt.makefile.MetaMakemake;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
@@ -102,14 +100,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected static final String OVR_CUSTOMMAKE_IMG = "icons/full/ovr16/ovr_custommake.png";
     protected static final String OVR_WARNING_IMG = "icons/full/ovr16/warning.gif";
     protected static final String OVR_BUILDROOT_IMG = "icons/full/ovr16/buildroot.png";
-
+    
     // state
     protected BuildSpecification buildSpec;
 
     protected static boolean suppressExcludeProjectRootQuestion = false; // per-session variable
 
     // controls
-    protected Label errorMessageLabel;
+    protected Link errorMessageLabel;
     protected TreeViewer treeViewer;
     protected Button makemakeButton;
     protected Button customMakeButton;
@@ -153,7 +151,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         bannerTextLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 2, 1));
         ((GridData)bannerTextLabel.getLayoutData()).widthHint = 300;
 
-        errorMessageLabel = new Label(composite, SWT.WRAP);
+        errorMessageLabel = new Link(composite, SWT.WRAP);
         errorMessageLabel.setForeground(ColorFactory.RED2);
         errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
         ((GridData)errorMessageLabel.getLayoutData()).widthHint = 300;
@@ -193,6 +191,14 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 //                gotoPathsAndSymbolsPage();
 //            }
 //        });
+        
+        errorMessageLabel.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ProjectConfigurationUtils.fixProblem(getProject(), buildSpec, e.text);
+                updatePageState();
+            }
+        });
 
         makemakeButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -587,7 +593,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected void updatePageState() {
         // display warnings about CDT misconfiguration, etc
-        String message = getDiagnosticMessage(getProject(), buildSpec);
+        String message = ProjectConfigurationUtils.getDiagnosticMessage(getProject(), buildSpec, true);
         setDiagnosticMessage(message);
 
         folderInfoCache.clear();
@@ -855,84 +861,6 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 new int[]{SWT.END, SWT.END, SWT.BEGINNING});
 
         return info;
-    }
-
-    // note: this is shared with MakemakeFolderPropertyPage (not very pretty)
-    public static String getDiagnosticMessage(IContainer folder, BuildSpecification buildSpec) {
-        // Check CDT settings
-        IProject project = folder.getProject();
-        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
-        if (projectDescription == null)
-            return "Cannot access CDT build information for this project. Is this a C/C++ project?";
-        ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
-        if (activeConfiguration == null)
-            return "No active build configuration -- please create one.";
-        boolean isOmnetppConfig = false;
-        for (ICConfigurationDescription c = activeConfiguration; c != null; c = (ICConfigurationDescription)c.getParent())
-            if (c.getId().startsWith("org.omnetpp.cdt.")) {
-                isOmnetppConfig = true; break;}
-        if (!isOmnetppConfig)
-            return "The active build configuration \""+ activeConfiguration.getName() + "\" is " +
-            		"not an OMNeT++ configuration. Please re-create the project it with the " +
-            		"New OMNeT++ Project wizard, overwriting the existing project settings.";
-        ICBuildSetting buildSetting = activeConfiguration.getBuildSetting();
-        if (buildSetting == null)
-            return "No CDT Project Builder. Activate one on the C/C++ Build / Tool Chain Editor page."; //???
-        String builderId = buildSetting.getId();
-        if (builderId==null || !builderId.startsWith("org.omnetpp.cdt."))
-            return "C/C++ Builder \"" + buildSetting.getName()+ "\" set in the active build configuration " +
-                   "is not suitable for OMNeT++. Please re-create the project with the " +
-                   "New OMNeT++ Project wizard, overwriting the existing project settings.";
-
-        // warn if referenced projects not present or not open
-        try {
-            List<String> badRefProjs = new ArrayList<String>();
-            for (IProject ref : project.getReferencedProjects())
-                if (!ref.isAccessible())
-                    badRefProjs.add(ref.getFullPath().toString());
-            if (!badRefProjs.isEmpty())
-                return "The following referenced projects are missing or closed: " + StringUtils.join(badRefProjs, ", ");
-        }
-        catch (CoreException e) {
-            Activator.logError(e);
-            return "Cannot query list of referenced projects: " + e.getMessage();
-        }
-
-        // warn if there're differences in source entries across configurations.
-        // first, collect which entries occur in which configurations
-        Map<String,List<String>> sourceEntryMap = new HashMap<String, List<String>>(); // srcEntry -> config*
-        for (ICConfigurationDescription cfg : projectDescription.getConfigurations()) {
-            for (ICSourceEntry e : cfg.getSourceEntries()) {
-                String entryText = StringUtils.defaultIfEmpty(CDataUtil.makeAbsolute(project, e).getFullPath().toString(), ".");
-                if (e.getExclusionPatterns().length > 0)
-                    entryText += " (excl: " + StringUtils.join(e.getExclusionPatterns(), ", ") + ")";
-                if (!sourceEntryMap.containsKey(entryText))
-                    sourceEntryMap.put(entryText, new ArrayList<String>());
-                sourceEntryMap.get(entryText).add(cfg.getName());
-            }
-        }
-        List<String> wrongSourceLocations = new ArrayList<String>();
-        int numConfigs = projectDescription.getConfigurations().length;
-        for (String e : sourceEntryMap.keySet())
-            if (sourceEntryMap.get(e).size() != numConfigs)
-                wrongSourceLocations.add(e + " in " + StringUtils.join(sourceEntryMap.get(e), ","));
-        Collections.sort(wrongSourceLocations);
-        if (!wrongSourceLocations.isEmpty())
-            return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ");
-
-        // warn if there's no makefile generated at all
-        if (buildSpec.getMakeFolders().isEmpty())
-            return "No makefile has been specified for this project.";
-
-        // check if build directory exists, and there's a makefile in it
-        String buildLocation = activeConfiguration.getBuildSetting().getBuilderCWD().toString();
-        IContainer buildFolder = resolveFolderLocation(buildLocation, project, activeConfiguration);
-        if (buildFolder == null)
-            return "Wrong build location: filesystem location \""+ buildLocation + "\" does not exist, or does not map to any folder in the workspace. Check the C/C++ Build page."; //FIXME also print what macro gets resolved to
-        if (!buildSpec.getMakeFolders().contains(buildFolder))
-            return "Root build folder " + buildFolder.getFullPath().toString() + " contains no makefile";
-
-        return null;
     }
 
     protected static IContainer resolveFolderLocation(String location, IProject withinProject, ICConfigurationDescription configuration) {

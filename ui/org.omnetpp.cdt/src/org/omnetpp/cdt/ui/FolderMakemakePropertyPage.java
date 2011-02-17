@@ -18,12 +18,15 @@ import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.makefile.BuildSpecification;
@@ -43,7 +46,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
     protected BuildSpecification buildSpec;
 
     // controls
-    protected Label errorMessageLabel;
+    protected Link errorMessageLabel;
     protected MakemakeOptionsPanel optionsPanel;
 
     /**
@@ -64,7 +67,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
         layout.marginWidth = layout.marginHeight = 0;
         composite.setLayout(layout);
 
-        errorMessageLabel = new Label(composite, SWT.WRAP);
+        errorMessageLabel = new Link(composite, SWT.WRAP);
         errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
         errorMessageLabel.setForeground(ColorFactory.RED2);
         //errorMessageLabel.setBackground(errorMessageLabel.getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -79,6 +82,14 @@ public class FolderMakemakePropertyPage extends PropertyPage {
             }
         });
 
+        errorMessageLabel.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                ProjectConfigurationUtils.fixProblem(getFolder().getProject(), buildSpec, e.text);
+                updatePageState();
+            }
+        });
+        
         loadBuildSpecFile();
 
         IContainer folder = getFolder();
@@ -113,7 +124,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
     }
 
     protected void updatePageState() {
-        String message = ProjectMakemakePropertyPage.getDiagnosticMessage(getFolder(), buildSpec);
+        String message = ProjectConfigurationUtils.getDiagnosticMessage(getFolder().getProject(), buildSpec, true);
         errorMessageLabel.setText(message==null ? "" : message);
     }
 
