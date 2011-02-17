@@ -180,10 +180,8 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         cParImpl *impl = currentDecl->getSharedParImplFor(paramNode);
         if (impl)
         {
-            //printf("   +++ reusing param impl for %s\n", paramName);
-
-            // we've already been at this point in the NED files sometime,
-            // so we can reuse what we produced then
+            // reuse impl for this parameter: we've already been at this point
+            // in the NED files sometime, so we can reuse what we produced then
             ASSERT(impl->isName(paramName));
             if (isNewParam)
                 component->addPar(impl);
@@ -198,7 +196,7 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
 
         ASSERT(impl==NULL);
         if (isNewParam) {
-            //printf("   +++ adding param %s\n", paramName);
+            // adding parameter
             impl = cParImpl::createWithType(translateParamType(paramNode->getType()));
             impl->setName(paramName);
             impl->setIsShared(false);
@@ -212,7 +210,8 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
             impl->setUnit(declUnit);
         }
         else {
-            cPar& par = component->par(paramName); // must exist already
+            // parameter must exist already. Un-share it so that we can modify its value
+            cPar& par = component->par(paramName);
             if (par.isSet())
                 throw cRuntimeError(component, "Cannot overwrite non-default value of parameter `%s'", paramName);
             impl = par.copyIfShared();
@@ -224,7 +223,6 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         ExpressionElement *exprNode = paramNode->getFirstExpressionChild();
         if (exprNode)
         {
-            //printf("   +++ assigning param %s\n", paramName);
             ASSERT(impl==component->par(paramName).impl() && !impl->isShared());
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
             cExpressionBuilder::setExpression(impl, dynamicExpr);
@@ -232,10 +230,11 @@ void cNEDNetworkBuilder::doParam(cComponent *component, ParamElement *paramNode,
         }
         else if (paramNode->getIsDefault())
         {
+            // default, but no value expression: set parameter to its existing default value
+            //
             // Note: this branch ("=default" in NED files) is currently not supported,
             // because it would be complicated to implement in the Inifile Editor.
-
-            //printf("   +++ setting param %s to default\n", paramName);
+            //
             if (!impl->containsValue())
                 throw cRuntimeError(component, "Cannot apply default value to parameter `%s': it has no default value", paramName);
             impl->setIsSet(true);
@@ -272,8 +271,6 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 {
     // go up the parent chain, and apply the parameter pattern assignments
     // to matching, still-unset parameters
-    //XXX printf("TRYING TO ASSIGN PARAMS OF %s USING PATTERNS\n", component->getFullPath().c_str());
-
     std::string prefix;
 
     for (cComponent *child = component; true; child = child->getParentModule())
@@ -282,9 +279,9 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         if (!parent)
             break;
 
-        //XXX printf(" CHECKING PATTERNS ON: %s\n", parent->getFullPath().c_str());
+        // check patterns in compound module "parent"
 
-        // find NED declaration. Note that decl may be NULL (if parent was not defined via NED)
+        // find NED declaration. Note that decl may be NULL (if parent was not defined via NED but created dynamically)
         const char *nedTypeName = parent->getNedTypeName();
         cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
 
@@ -321,19 +318,15 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
 void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalcontext)
 {
     int numPatterns = patterns.size();
-    //XXX for (int i=0; i<numPatterns; i++)
-    //XXX     printf("    pattern %d: %s  (from \"%s=\" at %s)\n", i, patterns[i].matcher->debugStr().c_str(), patterns[i].patternNode->getName(), patterns[i].patternNode->getSourceLocation());
-
     int numParams = component->getNumParams();
     for (int i=0; i<numParams; i++) {
         cPar& par = component->par(i);
         if (!par.isSet()) {
             // first match
             std::string paramPath = prefix + par.getFullName();
-            //XXX printf("  checking param %s as \"%s\"\n", par.getFullPath().c_str(), paramPath.c_str());
             for (int j=0; j<numPatterns; j++) {
                 if (patterns[j].matcher->matches(paramPath.c_str())) {
-                    //XXX printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
+                    // pattern matches the parameter's path, assign the value
                     doAssignParameterFromPattern(par, patterns[j].patternNode, isInSubcomponent, evalcontext);
                     if (par.isSet())
                         break;
@@ -352,7 +345,7 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
         ExpressionElement *exprNode = patternNode->getFirstExpressionChild();
         if (exprNode)
         {
-            //printf("   +++ assigning param %s\n", paramName);
+            // assign the parameter
             ASSERT(impl==par.impl() && !impl->isShared());
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isInSubcomponent);
             cExpressionBuilder::setExpression(impl, dynamicExpr);
@@ -361,18 +354,14 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
         }
         else if (patternNode->getIsDefault())
         {
+            // no expression: set parameter to its existing default value ("par=default;" syntax)
+            //
             // Note: this branch ("=default" in NED files) is currently not supported,
             // because it would be complicated to implement in the Inifile Editor.
-
-            //FIXME is this so??? ^^^
-
-            //printf("   +++ setting param %s to default\n", patternNode);
             if (!impl->containsValue())
                 throw cRuntimeError(par.getOwner(), "Cannot apply default value to parameter `%s': it has no default value", par.getName());
             impl->setIsSet(true);
         }
-        //XXX impl->setIsShared(true);
-        //XXX currentDecl->putSharedParImplFor(patternNode, impl);
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, patternNode); throw;
@@ -386,7 +375,7 @@ cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int i
         return NULL;
 
     ModulePtrVector& v = i->second;
-    if (idx<0)
+    if (idx < 0)
         return (v.size()!=1 || v[0]->isVector()) ? NULL : v[0];
     else
         return ((unsigned)idx>=v.size()) ? NULL : v[idx];
@@ -834,8 +823,6 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
                                              conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                                              conn->getDestGateSubg(), conn->getDestGatePlusplus());
 
-            //printf("creating connection: %s --> %s\n", srcg->getFullPath().c_str(), destg->getFullPath().c_str());
-
             // check directions
             cGate *errg = NULL;
             if (srcg->getOwnerModule()==modp ? srcg->getType()!=cGate::INPUT : srcg->getType()!=cGate::OUTPUT)
@@ -865,9 +852,6 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
                              conn->getDestGate(), findExpression(conn, "dest-gate-index"),
                              conn->getDestGatePlusplus(),
                              destg1, destg2);
-
-            //printf("Creating bidir conn: %s --> %s\n", srcg2->getFullPath().c_str(), destg1->getFullPath().c_str());
-            //printf("                and: %s <-- %s\n", srcg1->getFullPath().c_str(), destg2->getFullPath().c_str());
 
             doConnectGates(modp, srcg2, destg1, conn);
             doConnectGates(modp, destg2, srcg1, conn);
