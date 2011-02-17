@@ -18,6 +18,7 @@
 #define __FILTEREDEVENTLOG_H_
 
 #include <sstream>
+#include <deque>
 #include "patternmatcher.h"
 #include "matchexpression.h"
 #include "eventlogdefs.h"
@@ -85,6 +86,8 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         typedef std::map<eventnumber_t, bool> EventNumberToBooleanMap;
         EventNumberToBooleanMap eventNumberToFilterMatchesFlagMap; // a cache of whether the given event number matches the filter or not
         EventNumberToBooleanMap eventNumberToTraceableEventFlagMap;
+        std::deque<eventnumber_t> unseenTracedEventCauseEventNumbers; // the remaining cause event number of the traced event that is to be visited
+        std::deque<eventnumber_t> unseenTracedEventConsequenceEventNumbers; // the remaining consequence event number of the traced event that is to be visited
 
         FilteredEvent *firstMatchingEvent;
         FilteredEvent *lastMatchingEvent;
@@ -118,7 +121,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         void setMessageEncapsulationIds(std::vector<long> &messageEncapsulationIds) { this->messageEncapsulationIds = messageEncapsulationIds; }
         void setMessageEncapsulationTreeIds(std::vector<long> &messageEncapsulationTreeIds) { this->messageEncapsulationTreeIds = messageEncapsulationTreeIds; }
 
-        void setTracedEventNumber(eventnumber_t tracedEventNumber) { this->tracedEventNumber = tracedEventNumber; }
+        void setTracedEventNumber(eventnumber_t tracedEventNumber);
         void setTraceCauses(bool traceCauses) { this->traceCauses = traceCauses; }
         void setTraceConsequences(bool traceConsequences) { this->traceConsequences = traceConsequences; }
         void setTraceSelfMessages(bool traceSelfMessages) { this->traceSelfMessages = traceSelfMessages; }

@@ -58,6 +58,8 @@ void FilteredEventLog::clearInternalState()
     eventNumberToFilteredEventMap.clear();
     eventNumberToFilterMatchesFlagMap.clear();
     eventNumberToTraceableEventFlagMap.clear();
+    unseenTracedEventCauseEventNumbers.clear();
+    unseenTracedEventConsequenceEventNumbers.clear();
 }
 
 void FilteredEventLog::deleteAllocatedObjects()
@@ -548,91 +550,95 @@ FilteredEvent *FilteredEventLog::getMatchingEventInDirection(IEvent *event, bool
     return NULL;
 }
 
-// TODO: LONG RUNNING OPERATION
-// this does a recursive depth search
-bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
+void FilteredEventLog::setTracedEventNumber(eventnumber_t tracedEventNumber)
 {
-    eventLog->progress();
-    EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(cause->getEventNumber());
-
-    // check cache
-    if (it != eventNumberToTraceableEventFlagMap.end())
-        return it->second;
-
-    //printf("Checking if %ld is cause of %ld\n", cause->getEventNumber(), tracedEventNumber);
-
-    // returns true if "consequence" can be reached from "cause", using
-    // the consequences chain. We use depth-first search.
-    bool result = false;
-    IMessageDependencyList *consequences = cause->getConsequences();
-
-    for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
-    {
-        IMessageDependency *messageDependency = *it;
-        IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
-
-        if (consequenceEvent &&
-            (traceSelfMessages || !consequenceEvent->isSelfMessageProcessingEvent()) &&
-            (traceMessageReuses || !dynamic_cast<MessageReuseDependency *>(messageDependency)))
-        {
-            // if we reached the consequence event, we're done
-            if (tracedEventNumber == consequenceEvent->getEventNumber())
-                result = true;
-
-            // try depth-first search if we haven't passed the consequence event yet
-            if (tracedEventNumber > consequenceEvent->getEventNumber() &&
-                isCauseOfTracedEvent(consequenceEvent))
-                result = true;
-        }
-    }
-
-    eventNumberToTraceableEventFlagMap[cause->getEventNumber()] = result;
-
-    return result;
+    Assert(this->tracedEventNumber == -1);
+    this->tracedEventNumber = tracedEventNumber;
+    unseenTracedEventCauseEventNumbers.push_back(tracedEventNumber);
+    unseenTracedEventConsequenceEventNumbers.push_back(tracedEventNumber);
 }
 
 // TODO: LONG RUNNING OPERATION
 // this does a recursive depth search
-bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
+bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
 {
+    Assert(causeEvent);
     eventLog->progress();
-
-    if (!traceSelfMessages && consequence->isSelfMessageProcessingEvent())
-        return false;
-
-    EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(consequence->getEventNumber());
-
-    // check cache
+    EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(causeEvent->getEventNumber());
     if (it != eventNumberToTraceableEventFlagMap.end())
         return it->second;
+    //printf("Checking if %ld is cause of %ld\n", causeEvent->getEventNumber(), tracedEventNumber);
 
-    //printf("Checking if %ld is consequence of %ld\n", consequence->getEventNumber(), tracedEventNumber);
-
-    // like consequenceEvent(), but searching from the opposite direction
-    bool result = false;
-    IMessageDependencyList *causes = consequence->getCauses();
-
-    for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
-    {
-        IMessageDependency *messageDependency = *it;
-        IEvent *causeEvent = messageDependency->getCauseEvent();
-
-        if (causeEvent && (traceMessageReuses || !dynamic_cast<MessageReuseDependency *>(messageDependency)))
-        {
-            // if we reached the cause event, we're done
-            if (tracedEventNumber == causeEvent->getEventNumber())
-                result = true;
-
-            // try depth-first search if we haven't passed the cause event yet
-            if (tracedEventNumber < causeEvent->getEventNumber() &&
-                isConsequenceOfTracedEvent(causeEvent))
-                result = true;
+    eventnumber_t causeEventNumber = causeEvent->getEventNumber();
+    while (unseenTracedEventCauseEventNumbers.size() > 0 && unseenTracedEventCauseEventNumbers.front() >= causeEventNumber) {
+        eventnumber_t unseenTracedEventCauseEventNumber = unseenTracedEventCauseEventNumbers.front();
+        unseenTracedEventCauseEventNumbers.pop_front();
+        IEvent *unseenTracedEventCauseEvent = eventLog->getEventForEventNumber(unseenTracedEventCauseEventNumber);
+        if (unseenTracedEventCauseEvent) {
+            IMessageDependencyList *causes = unseenTracedEventCauseEvent->getCauses();
+            for (IMessageDependencyList::iterator it = causes->begin(); it != causes->end(); it++)
+            {
+                IMessageDependency *messageDependency = *it;
+                IEvent *newUnseenTracedEventCauseEvent = messageDependency->getCauseEvent();
+                if (newUnseenTracedEventCauseEvent &&
+                    (traceSelfMessages || !newUnseenTracedEventCauseEvent->isSelfMessageProcessingEvent()) &&
+                    (traceMessageReuses || !dynamic_cast<MessageReuseDependency *>(messageDependency)))
+                {
+                    eventnumber_t newUnseenTracedEventCauseEventNumber = newUnseenTracedEventCauseEvent->getEventNumber();
+                    eventNumberToTraceableEventFlagMap[newUnseenTracedEventCauseEventNumber] = true;
+                    unseenTracedEventCauseEventNumbers.push_back(newUnseenTracedEventCauseEventNumber);
+                    if (newUnseenTracedEventCauseEventNumber == causeEventNumber)
+                        return true;
+                }
+            }
+            // TODO: this is far from being optimal, inserting the items in the right place would be more desirable
+            sort(unseenTracedEventCauseEventNumbers.begin(), unseenTracedEventCauseEventNumbers.end());
         }
     }
 
-    eventNumberToTraceableEventFlagMap[consequence->getEventNumber()] = result;
+    return eventNumberToTraceableEventFlagMap[causeEventNumber] = false;
+}
 
-    return result;
+// TODO: LONG RUNNING OPERATION
+// this does a recursive depth search
+bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequenceEvent)
+{
+    Assert(consequenceEvent);
+    eventLog->progress();
+    EventNumberToBooleanMap::iterator it = eventNumberToTraceableEventFlagMap.find(consequenceEvent->getEventNumber());
+    if (it != eventNumberToTraceableEventFlagMap.end())
+        return it->second;
+    //printf("Checking if %ld is consequence of %ld\n", consequence->getEventNumber(), tracedEventNumber);
+
+    // like isCauseOfTracedEvent(), but searching from the opposite direction
+    eventnumber_t consequenceEventNumber = consequenceEvent->getEventNumber();
+    while (unseenTracedEventConsequenceEventNumbers.size() > 0 && unseenTracedEventConsequenceEventNumbers.front() <= consequenceEventNumber) {
+        eventnumber_t unseenTracedEventConsequenceEventNumber = unseenTracedEventConsequenceEventNumbers.front();
+        unseenTracedEventConsequenceEventNumbers.pop_front();
+        IEvent *unseenTracedEventConsequenceEvent = eventLog->getEventForEventNumber(unseenTracedEventConsequenceEventNumber);
+        if (unseenTracedEventConsequenceEvent) {
+            IMessageDependencyList *consequences = unseenTracedEventConsequenceEvent->getConsequences();
+            for (IMessageDependencyList::iterator it = consequences->begin(); it != consequences->end(); it++)
+            {
+                IMessageDependency *messageDependency = *it;
+                IEvent *newUnseenTracedEventConsequenceEvent = messageDependency->getConsequenceEvent();
+                if (newUnseenTracedEventConsequenceEvent &&
+                    (traceSelfMessages || !newUnseenTracedEventConsequenceEvent->isSelfMessageProcessingEvent()) &&
+                    (traceMessageReuses || !dynamic_cast<MessageReuseDependency *>(messageDependency)))
+                {
+                    eventnumber_t newUnseenTracedEventConsequenceEventNumber = newUnseenTracedEventConsequenceEvent->getEventNumber();
+                    eventNumberToTraceableEventFlagMap[newUnseenTracedEventConsequenceEventNumber] = true;
+                    unseenTracedEventConsequenceEventNumbers.push_back(newUnseenTracedEventConsequenceEventNumber);
+                    if (newUnseenTracedEventConsequenceEventNumber == consequenceEventNumber)
+                        return true;
+                }
+            }
+            // TODO: this is far from being optimal, inserting the items in the right place would be more desirable
+            sort(unseenTracedEventConsequenceEventNumbers.begin(), unseenTracedEventConsequenceEventNumbers.end());
+        }
+    }
+
+    return eventNumberToTraceableEventFlagMap[consequenceEventNumber] = false;
 }
 
 FilteredEvent *FilteredEventLog::cacheFilteredEvent(eventnumber_t eventNumber)
