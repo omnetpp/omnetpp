@@ -319,7 +319,7 @@ bool FilteredEventLog::matchesBeginSendEntry(BeginSendEntry *beginSendEntry)
 {
     return
         matchesExpression(messageExpression, beginSendEntry) ||
-        matchesPatterns(messageNames, beginSendEntry->messageFullName) ||
+        matchesPatterns(messageNames, beginSendEntry->messageName) ||
         matchesPatterns(messageClassNames, beginSendEntry->messageClassName) ||
         matchesList(messageIds, beginSendEntry->messageId) ||
         matchesList(messageTreeIds, beginSendEntry->messageTreeId) ||
@@ -573,7 +573,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *cause)
 
         if (consequenceEvent &&
             (traceSelfMessages || !consequenceEvent->isSelfMessageProcessingEvent()) &&
-            (traceMessageReuses || !messageDependency->getIsReuse()))
+            (traceMessageReuses || !dynamic_cast<MessageReuseDependency *>(messageDependency)))
         {
             // if we reached the consequence event, we're done
             if (tracedEventNumber == consequenceEvent->getEventNumber())
@@ -617,7 +617,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequence)
         IMessageDependency *messageDependency = *it;
         IEvent *causeEvent = messageDependency->getCauseEvent();
 
-        if (causeEvent && (traceMessageReuses || !messageDependency->getIsReuse()))
+        if (causeEvent && (traceMessageReuses || !dynamic_cast<MessageReuseDependency *>(messageDependency)))
         {
             // if we reached the cause event, we're done
             if (tracedEventNumber == causeEvent->getEventNumber())

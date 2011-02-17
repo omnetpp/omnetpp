@@ -83,7 +83,6 @@ import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
-import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
@@ -92,6 +91,8 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
 import org.omnetpp.eventlog.engine.IMessageDependencyList;
+import org.omnetpp.eventlog.engine.MessageEntry;
+import org.omnetpp.eventlog.engine.MessageReuseDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleMethodBeginEntry;
 import org.omnetpp.eventlog.engine.PtrVector;
@@ -160,13 +161,15 @@ public class SequenceChart
 
 	private static final Color MESSAGE_SEND_COLOR = ColorFactory.BLUE;
 	private static final Color MESSAGE_REUSE_COLOR = ColorFactory.GREEN4;
+    private static final Color MIXED_MESSAGE_DEPENDENCY_COLOR = ColorFactory.CYAN4;
     private static final Color MODULE_METHOD_CALL_COLOR = ColorFactory.ORANGE3;
 
 	private static final Color ZERO_SIMULATION_TIME_REGION_COLOR = ColorFactory.GREY90;
 
 	private static final Cursor DRAG_CURSOR = new Cursor(null, SWT.CURSOR_SIZEALL);
 
-	private static final int[] DOTTED_LINE_PATTERN = new int[] {2,2}; // 2px black, 2px gap
+	private static final int[] DOTTED_LINE_PATTERN = new int[] {2, 2}; // 2px black, 2px gap
+    private static final int[] DASHED_LINE_PATTERN = new int[] {4, 4}; // 4px black, 4px gap
 
 	private static final int ANTIALIAS_TURN_ON_AT_MSEC = 100;
 	private static final int ANTIALIAS_TURN_OFF_AT_MSEC = 300;
@@ -1609,9 +1612,8 @@ public class SequenceChart
      * New axes will be added on demand.
      */
     private void invalidateAxisModules() {
-        if (debug) {
+        if (debug)
             Debug.println("invalidateAxisModules(): enter");
-        }
 
         invalidAxisModules = true;
         invalidAxisRenderers = true;
@@ -2687,10 +2689,10 @@ public class SequenceChart
         if (isInitializationEvent(eventPtr)) {
 	        for (int i = 0; i < sequenceChartFacade.IEvent_getNumConsequences(eventPtr); i++) {
 	            long consequencePtr = sequenceChartFacade.IEvent_getConsequence(eventPtr, i);
-	            long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getBeginSendEntry(consequencePtr);
+	            long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(consequencePtr);
 
-                if (beginSendEntryPtr != 0) {
-                    int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr);
+                if (messageEntryPtr != 0) {
+                    int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr);
                     int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
                     int y = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
 	                drawEvent(graphics, eventPtr, moduleIndex, x, y);
@@ -3021,7 +3023,8 @@ public class SequenceChart
 
 		// cache message dependency state
         boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
-		long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getBeginSendEntry(messageDependencyPtr);
+        // TODO: not always BeginSendEntry?!
+		long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
         long endSendEntryPtr = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(beginSendEntryPtr);
 		int messageId = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getMessageId(beginSendEntryPtr);
 		long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
@@ -3029,6 +3032,7 @@ public class SequenceChart
 		long causeEventNumber = sequenceChartFacade.IEvent_getEventNumber(causeEventPtr);
 		long consequenceEventNumber = sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr);
         boolean isFilteredMessageDependency = sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependencyPtr);
+        int filteredMessageDependencyKind = isFilteredMessageDependency ? sequenceChartFacade.FilteredMessageDependency_getKind(messageDependencyPtr) : FilteredMessageDependency.Kind.UNDEFINED;
         boolean isReceptionStart = endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isReceptionStart(endSendEntryPtr);
 
         org.omnetpp.common.engine.BigDecimal transmissionDelay = null;
@@ -3098,14 +3102,34 @@ public class SequenceChart
 
 		// line color and style depends on message kind
 		if (graphics != null) {
-			if (isReuse) {
-				graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
-				graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
-			}
-			else {
-				graphics.setForegroundColor(MESSAGE_SEND_COLOR);
-				graphics.setLineStyle(SWT.LINE_SOLID);
-			}
+		    if (isFilteredMessageDependency) {
+		        switch (filteredMessageDependencyKind) {
+                    case FilteredMessageDependency.Kind.SENDS:
+                        graphics.setForegroundColor(MESSAGE_SEND_COLOR);
+                        graphics.setLineStyle(SWT.LINE_SOLID);
+                        break;
+                    case FilteredMessageDependency.Kind.REUSES:
+                        graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
+                        graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
+                        break;
+		            case FilteredMessageDependency.Kind.MIXED:
+                        graphics.setForegroundColor(MIXED_MESSAGE_DEPENDENCY_COLOR);
+                        graphics.setLineDash(DASHED_LINE_PATTERN);
+		                break;
+	                default:
+	                    throw new RuntimeException("Unknown kind");
+		        }
+		    }
+		    else {
+                if (isReuse) {
+                    graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
+                    graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
+                }
+                else {
+                    graphics.setForegroundColor(MESSAGE_SEND_COLOR);
+                    graphics.setLineStyle(SWT.LINE_SOLID);
+                }
+		    }
 		}
 
 		// test if self-message
@@ -3609,8 +3633,8 @@ public class SequenceChart
     }
 
     private int getInitializationEventContextModuleId(long messageDependencyPtr) {
-        long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getBeginSendEntry(messageDependencyPtr);
-        return sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr);
+        long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
+        return sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr);
     }
 
 	public long getEventXViewportCoordinate(long eventPtr) {
@@ -4137,40 +4161,54 @@ public class SequenceChart
 	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted, SizeConstraint outSizeConstraint) {
 		if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependency.getCPtr())) {
 			FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
-			BeginSendEntry beginBeginSendEntry = filteredMessageDependency.getBeginMessageDependency().getBeginSendEntry();
-			BeginSendEntry endBeginSendEntry = filteredMessageDependency.getEndMessageDependency().getBeginSendEntry();
-			boolean sameMessage = beginBeginSendEntry.getMessageId() == endBeginSendEntry.getMessageId();
+			MessageEntry beginMessageEntry = filteredMessageDependency.getBeginMessageDependency().getMessageEntry();
+			MessageEntry endMessageEntry = filteredMessageDependency.getEndMessageDependency().getMessageEntry();
+			boolean sameMessage = beginMessageEntry.getMessageId() == endMessageEntry.getMessageId();
 
-			String result = "Filtered " + (messageDependency.getIsReuse() ? "reusing " : "sending ") + getMessageNameText(beginBeginSendEntry, formatted);
+			String kind = "";
+			switch (((FilteredMessageDependency)messageDependency).getKind()) {
+                case FilteredMessageDependency.Kind.SENDS:
+                    kind = "message sends ";
+                    break;
+			    case FilteredMessageDependency.Kind.REUSES:
+                    kind = "message reuses ";
+                    break;
+                case FilteredMessageDependency.Kind.MIXED:
+                    kind = "message sends and message reuses ";
+                    break;
+                default:
+                    throw new RuntimeException("Unknown kind");
+			}
+			String result = "Filtered " + kind + getMessageNameText(beginMessageEntry, formatted);
             if (!sameMessage)
-                result += " -> " + getMessageNameText(endBeginSendEntry, formatted);
+                result += " -> " + getMessageNameText(endMessageEntry, formatted);
 
 			if (formatted)
 			    result += getMessageDependencyEventNumbersText(messageDependency) + getSimulationTimeDeltaText(messageDependency);
 
-			result += getMessageIdText(beginBeginSendEntry, formatted);
+			result += getMessageIdText(beginMessageEntry, formatted);
 			if (!sameMessage)
-			    result += " -> " + getMessageIdText(endBeginSendEntry, formatted);
+			    result += " -> " + getMessageIdText(endMessageEntry, formatted);
 
             if (formatted) {
-                if (beginBeginSendEntry.getDetail() != null) {
+                if (beginMessageEntry.getDetail() != null) {
                     if (!sameMessage)
                         result += "<br/>First: ";
 
-                    result += getMessageDetailText(beginBeginSendEntry, outSizeConstraint);
+                    result += getMessageDetailText(beginMessageEntry, outSizeConstraint);
                 }
 
-                if (!sameMessage && endBeginSendEntry.getDetail() != null) {
+                if (!sameMessage && endMessageEntry.getDetail() != null) {
                     result += "<br/>Last: ";
-                    result += getMessageDetailText(endBeginSendEntry, outSizeConstraint);
+                    result += getMessageDetailText(endMessageEntry, outSizeConstraint);
                 }
             }
 
             return result;
 		}
 		else {
-			BeginSendEntry beginSendEntry = messageDependency.getBeginSendEntry();
-			String result = (messageDependency.getIsReuse() ? "Reusing " : "Sending ") + getMessageNameText(beginSendEntry, formatted);
+			MessageEntry beginSendEntry = messageDependency.getMessageEntry();
+			String result = (messageDependency instanceof MessageReuseDependency ? "Reusing " : "Sending ") + getMessageNameText(beginSendEntry, formatted);
 
             if (formatted)
 	            result += getMessageDependencyEventNumbersText(messageDependency) + getSimulationTimeDeltaText(messageDependency);
@@ -4184,8 +4222,8 @@ public class SequenceChart
 		}
 	}
 
-    private String getMessageDetailText(BeginSendEntry beginSendEntry, SizeConstraint outSizeConstraint) {
-        String detail = beginSendEntry.getDetail();
+    private String getMessageDetailText(MessageEntry messageEntry, SizeConstraint outSizeConstraint) {
+        String detail = messageEntry.getDetail();
     	int longestLineLength = 0;
     	for (String line : detail.split("\n"))
     		longestLineLength = Math.max(longestLineLength, line.length());
@@ -4198,10 +4236,10 @@ public class SequenceChart
         return " (#" + messageDependency.getCauseEventNumber() + " -> #" + messageDependency.getConsequenceEventNumber() + ")";
     }
 
-    private String getMessageNameText(BeginSendEntry beginSendEntry, boolean formatted) {
+    private String getMessageNameText(MessageEntry messageEntry, boolean formatted) {
         String boldStart = formatted ? "<b>" : "";
         String boldEnd = formatted ? "</b>" : "";
-        return "(" + beginSendEntry.getMessageClassName() + ") " + boldStart + beginSendEntry.getMessageFullName() + boldEnd;
+        return "(" + messageEntry.getMessageClassName() + ") " + boldStart + messageEntry.getMessageName() + boldEnd;
     }
 
     private String getModuleMethodCallText(ModuleMethodBeginEntry moduleMethodCall, boolean formatted, SizeConstraint outSizeConstraint) {
@@ -4218,20 +4256,20 @@ public class SequenceChart
         return " dt = " + TimeUtils.secondsToTimeString(consequenceSimulationTime.subtract(causeSimulationTime));
     }
 
-    private String getMessageIdText(BeginSendEntry beginSendEntry, boolean formatted) {
-        int messageId = beginSendEntry.getMessageId();
+    private String getMessageIdText(MessageEntry messageEntry, boolean formatted) {
+        int messageId = messageEntry.getMessageId();
         String result = " (id = " + messageId;
 
         if (formatted) {
-            int messageTreeId = beginSendEntry.getMessageTreeId();
+            int messageTreeId = messageEntry.getMessageTreeId();
             if (messageTreeId != -1 && messageTreeId != messageId)
                 result += ", tree id = " + messageTreeId;
 
-            int messageEncapsulationId = beginSendEntry.getMessageEncapsulationId();
+            int messageEncapsulationId = messageEntry.getMessageEncapsulationId();
             if (messageEncapsulationId != -1 && messageEncapsulationId != messageId)
                 result += ", encapsulation id = " + messageEncapsulationId;
 
-            int messageEncapsulationTreeId = beginSendEntry.getMessageEncapsulationTreeId();
+            int messageEncapsulationTreeId = messageEntry.getMessageEncapsulationTreeId();
             if (messageEncapsulationTreeId != -1 && messageEncapsulationTreeId != messageEncapsulationId)
                 result += ", encapsulation tree id = " + messageEncapsulationTreeId;
         }
@@ -4261,17 +4299,17 @@ public class SequenceChart
         result += getModuleText(moduleCreatedEntry, formatted) + " (id = " + event.getModuleId() + ")";
 
 		IMessageDependency messageDependency = event.getCause();
-		BeginSendEntry beginSendEntry = null;
+		MessageEntry messageEntry = null;
 
 		if (messageDependency instanceof FilteredMessageDependency)
 			messageDependency = ((FilteredMessageDependency)messageDependency).getEndMessageDependency();
 
 		if (messageDependency != null)
-		    beginSendEntry = messageDependency.getBeginSendEntry();
+		    messageEntry = messageDependency.getMessageEntry();
 
-		if (formatted && beginSendEntry != null) {
-			result += " message (" + beginSendEntry.getMessageClassName() + ") " + boldStart + beginSendEntry.getMessageFullName() + boldEnd;
-			result += getMessageIdText(beginSendEntry, formatted);
+		if (formatted && messageEntry != null) {
+			result += " message (" + messageEntry.getMessageClassName() + ") " + boldStart + messageEntry.getMessageName() + boldEnd;
+			result += getMessageIdText(messageEntry, formatted);
 		}
 
 		if (debug)

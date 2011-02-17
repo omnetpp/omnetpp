@@ -26,10 +26,9 @@ USING_NAMESPACE
 
 /**************************************************/
 
-IMessageDependency::IMessageDependency(IEventLog *eventLog, bool isReuse)
+IMessageDependency::IMessageDependency(IEventLog *eventLog)
 {
     this->eventLog = eventLog;
-    this->isReuse = isReuse;
 }
 
 
@@ -37,101 +36,48 @@ bool IMessageDependency::corresponds(IMessageDependency *dependency1, IMessageDe
 {
     if (!dependency1 || !dependency2)
         return false;
-
-    BeginSendEntry *entry1 = dependency1->getBeginSendEntry();
-    BeginSendEntry *entry2 = dependency2->getBeginSendEntry();
-
-    if (!entry1 || !entry2)
-        return false;
-
-    return
-        (entry1->messageId != -1 && entry1->messageId == entry2->messageId) ||
-        (entry1->messageTreeId != -1 && entry1->messageTreeId == entry2->messageTreeId) ||
-        (entry1->messageEncapsulationId != -1 && entry1->messageEncapsulationId == entry2->messageEncapsulationId) ||
-        (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
+    else {
+        MessageEntry *entry1 = dependency1->getMessageEntry();
+        MessageEntry *entry2 = dependency2->getMessageEntry();
+        if (!entry1 || !entry2)
+            return false;
+        else
+            return
+                (entry1->messageId != -1 && entry1->messageId == entry2->messageId) ||
+                (entry1->messageTreeId != -1 && entry1->messageTreeId == entry2->messageTreeId) ||
+                (entry1->messageEncapsulationId != -1 && entry1->messageEncapsulationId == entry2->messageEncapsulationId) ||
+                (entry1->messageEncapsulationTreeId != -1 && entry1->messageEncapsulationTreeId == entry2->messageEncapsulationTreeId);
+    }
 }
 
 bool IMessageDependency::equals(IMessageDependency *other)
 {
     Assert(eventLog == other->eventLog);
-
-    return other->isReuse == isReuse;
+    return true;
 }
 
 /**************************************************/
 
-MessageDependency::MessageDependency(IEventLog *eventLog, bool isReuse, eventnumber_t eventNumber, int beginSendEntryNumber)
-    : IMessageDependency(eventLog, isReuse)
+MessageSendDependency::MessageSendDependency(IEventLog *eventLog, eventnumber_t eventNumber, int eventLogEntryIndex)
+    : IMessageDependency(eventLog)
 {
-    Assert(eventNumber >= 0 && beginSendEntryNumber >= 0);
-
-    if (isReuse) {
-        this->causeEventNumber = EVENT_NOT_YET_CALCULATED;
-        this->causeBeginSendEntryNumber = -1;
-        this->consequenceEventNumber = eventNumber;
-        this->consequenceBeginSendEntryNumber = beginSendEntryNumber;
-    }
-    else {
-        this->causeEventNumber = eventNumber;
-        this->causeBeginSendEntryNumber = beginSendEntryNumber;
-        this->consequenceEventNumber = EVENT_NOT_YET_CALCULATED;
-        this->consequenceBeginSendEntryNumber = -1;
-    }
+    Assert(eventNumber >= 0 && eventLogEntryIndex >= 0);
+    this->causeEventNumber = eventNumber;
+    this->eventLogEntryIndex = eventLogEntryIndex;
+    this->consequenceEventNumber = EVENT_NOT_YET_CALCULATED;
 }
 
-MessageDependency *MessageDependency::duplicate(IEventLog *eventLog)
+IEvent *MessageSendDependency::getCauseEvent()
 {
-    MessageDependency *messageDependency = new MessageDependency(*this);
-    messageDependency->eventLog = eventLog;
-    return messageDependency;
+    return eventLog->getEventForEventNumber(causeEventNumber);
 }
 
-BeginSendEntry *MessageDependency::getCauseBeginSendEntry()
-{
-    Assert(causeBeginSendEntryNumber != -1);
-    IEvent *event = getCauseEvent();
-    Assert(event);
-    return (BeginSendEntry *)event->getEventLogEntry(causeBeginSendEntryNumber);
-}
-
-eventnumber_t MessageDependency::getCauseEventNumber()
-{
-    if (causeEventNumber == EVENT_NOT_YET_CALCULATED)
-    {
-        // only consequence is present, calculate cause from it
-        IEvent *consequenceEvent = getConsequenceEvent();
-        Assert(consequenceEvent);
-        BeginSendEntry *beginSendEntry = (BeginSendEntry *)consequenceEvent->getEventLogEntry(consequenceBeginSendEntryNumber);
-        causeEventNumber = beginSendEntry->previousEventNumber;
-    }
-
-    return causeEventNumber;
-}
-
-IEvent *MessageDependency::getCauseEvent()
-{
-    eventnumber_t causeEventNumber = getCauseEventNumber();
-
-    if (causeEventNumber < 0)
-        return NULL;
-    else
-        return eventLog->getEventForEventNumber(causeEventNumber);
-}
-
-simtime_t MessageDependency::getCauseSimulationTime()
+simtime_t MessageSendDependency::getCauseSimulationTime()
 {
     return getCauseEvent()->getSimulationTime();
 }
 
-BeginSendEntry *MessageDependency::getConsequenceBeginSendEntry()
-{
-    Assert(consequenceBeginSendEntryNumber != -1);
-    IEvent *event = getConsequenceEvent();
-    Assert(event);
-    return (BeginSendEntry *)event->getEventLogEntry(consequenceBeginSendEntryNumber);
-}
-
-eventnumber_t MessageDependency::getConsequenceEventNumber()
+eventnumber_t MessageSendDependency::getConsequenceEventNumber()
 {
     if (consequenceEventNumber == EVENT_NOT_YET_CALCULATED || consequenceEventNumber == EVENT_NOT_YET_REACHED)
     {
@@ -147,6 +93,7 @@ eventnumber_t MessageDependency::getConsequenceEventNumber()
             consequenceEventNumber = NO_SUCH_EVENT;
         else {
             IEvent *event = eventLog->getEventForSimulationTime(consequenceTime, FIRST_OR_PREVIOUS);
+            MessageEntry *messageEntry = getMessageEntry();
 
             // TODO: LONG RUNNING OPERATION
             while (event)
@@ -154,7 +101,7 @@ eventnumber_t MessageDependency::getConsequenceEventNumber()
                 eventLog->progress();
 
                 if (event->getCauseEventNumber() == getCauseEventNumber() &&
-                    event->getMessageId() == getCauseMessageId())
+                    event->getMessageId() == messageEntry->messageId)
                 {
                     consequenceEventNumber = event->getEventNumber();
                     break;
@@ -181,7 +128,7 @@ eventnumber_t MessageDependency::getConsequenceEventNumber()
     return consequenceEventNumber;
 }
 
-IEvent *MessageDependency::getConsequenceEvent()
+IEvent *MessageSendDependency::getConsequenceEvent()
 {
     eventnumber_t consequenceEventNumber = getConsequenceEventNumber();
 
@@ -191,7 +138,7 @@ IEvent *MessageDependency::getConsequenceEvent()
         return eventLog->getEventForEventNumber(consequenceEventNumber);
 }
 
-simtime_t MessageDependency::getConsequenceSimulationTime()
+simtime_t MessageSendDependency::getConsequenceSimulationTime()
 {
     if (consequenceEventNumber >= 0)
         return getConsequenceEvent()->getSimulationTime();
@@ -199,7 +146,7 @@ simtime_t MessageDependency::getConsequenceSimulationTime()
     {
         // find the arrival time of the message
         IEvent *event = getCauseEvent();
-        BeginSendEntry *beginSendEntry = (BeginSendEntry *)(event->getEventLogEntry(causeBeginSendEntryNumber));
+        BeginSendEntry *beginSendEntry = (BeginSendEntry *)(event->getEventLogEntry(eventLogEntryIndex));
         EndSendEntry *endSendEntry = event->getEndSendEntry(beginSendEntry);
 
         if (endSendEntry)
@@ -209,78 +156,126 @@ simtime_t MessageDependency::getConsequenceSimulationTime()
     }
 }
 
-bool MessageDependency::isSelfMessageReuse()
+MessageEntry *MessageSendDependency::getMessageEntry()
 {
-    if (!isReuse)
-        return false;
-    else {
-        IEvent *causeEvent = getCauseEvent();
-        IEvent *consequenceEvent = getConsequenceEvent();
-        BeginSendEntry *beginSendEntry = getConsequenceBeginSendEntry();
-
-        return causeEvent && consequenceEvent && beginSendEntry &&
-            causeEvent->getModuleId() == consequenceEvent->getModuleId() &&
-            consequenceEvent->isSelfMessage(beginSendEntry);
-    }
-
+    Assert(eventLogEntryIndex != -1);
+    IEvent *event = getCauseEvent();
+    Assert(event);
+    return (MessageEntry *)event->getEventLogEntry(eventLogEntryIndex);
 }
 
-bool MessageDependency::isStoredMessageReuse()
+MessageSendDependency *MessageSendDependency::duplicate(IEventLog *eventLog)
 {
-    if (!isReuse)
-        return false;
-    else {
-        IEvent *causeEvent = getCauseEvent();
-        IEvent *consequenceEvent = getConsequenceEvent();
-        BeginSendEntry *beginSendEntry = getConsequenceBeginSendEntry();
-
-        return causeEvent && consequenceEvent && beginSendEntry &&
-            causeEvent->getModuleId() == consequenceEvent->getModuleId() &&
-            !consequenceEvent->isSelfMessage(beginSendEntry);
-    }
+    MessageSendDependency *messageSendDependency = new MessageSendDependency(*this);
+    messageSendDependency->eventLog = eventLog;
+    return messageSendDependency;
 }
 
-bool MessageDependency::equals(IMessageDependency *other)
+bool MessageSendDependency::equals(IMessageDependency *other)
 {
-    MessageDependency *otherMessageDependency = dynamic_cast<MessageDependency *>(other);
-    return IMessageDependency::equals(other) && otherMessageDependency &&
-        getCauseEventNumber() == otherMessageDependency->getCauseEventNumber() &&
-        getCauseBeginSendEntryNumber() == otherMessageDependency->getCauseBeginSendEntryNumber() &&
-        getConsequenceEventNumber() == otherMessageDependency->getConsequenceEventNumber() &&
-        getConsequenceBeginSendEntryNumber() == otherMessageDependency->getConsequenceBeginSendEntryNumber();
+    MessageSendDependency *otherMessageSendDependency = dynamic_cast<MessageSendDependency *>(other);
+    return IMessageDependency::equals(other) && otherMessageSendDependency &&
+        causeEventNumber == otherMessageSendDependency->causeEventNumber &&
+        consequenceEventNumber == otherMessageSendDependency->consequenceEventNumber &&
+        eventLogEntryIndex == otherMessageSendDependency->eventLogEntryIndex;
 }
 
-void MessageDependency::print(FILE *file)
+void MessageSendDependency::print(FILE *file)
 {
-    printCause(file);
-    printConsequence(file);
-}
-
-void MessageDependency::printCause(FILE *file)
-{
-    if (getCauseEventNumber() >= 0)
-        getCauseEvent()->getEventEntry()->print(file);
-
-    if (getCauseBeginSendEntryNumber() != -1)
-        getCauseBeginSendEntry()->print(file);
-}
-
-void MessageDependency::printConsequence(FILE *file)
-{
-    if (getConsequenceEventNumber() >= 0)
-       getConsequenceEvent()->getEventEntry()->print(file);
-
-    if (getConsequenceBeginSendEntryNumber() != -1)
-       getConsequenceBeginSendEntry()->print(file);
+    getCauseEvent()->getEventEntry()->print(file);
+    getMessageEntry()->print(file);
 }
 
 /**************************************************/
 
-FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
-    : IMessageDependency(eventLog, isReuse)
+MessageReuseDependency::MessageReuseDependency(IEventLog *eventLog, eventnumber_t eventNumber, int eventLogEntryIndex)
+    : IMessageDependency(eventLog)
+{
+    Assert(eventNumber >= 0 && eventLogEntryIndex >= 0);
+    this->causeEventNumber = EVENT_NOT_YET_CALCULATED;
+    this->consequenceEventNumber = eventNumber;
+    this->eventLogEntryIndex = eventLogEntryIndex;
+}
+
+eventnumber_t MessageReuseDependency::getCauseEventNumber()
+{
+    if (causeEventNumber == EVENT_NOT_YET_CALCULATED)
+    {
+        // only consequence is present, calculate cause from it
+        IEvent *consequenceEvent = getConsequenceEvent();
+        Assert(consequenceEvent);
+        MessageEntry *messageEntry = (MessageEntry *)consequenceEvent->getEventLogEntry(eventLogEntryIndex);
+        causeEventNumber = messageEntry->previousEventNumber;
+    }
+
+    return causeEventNumber;
+}
+
+IEvent *MessageReuseDependency::getCauseEvent()
+{
+    eventnumber_t causeEventNumber = getCauseEventNumber();
+
+    if (causeEventNumber < 0)
+        return NULL;
+    else
+        return eventLog->getEventForEventNumber(causeEventNumber);
+}
+
+simtime_t MessageReuseDependency::getCauseSimulationTime()
+{
+    if (causeEventNumber >= 0)
+        return getCauseEvent()->getSimulationTime();
+    else
+        return simtime_nil;
+}
+
+IEvent *MessageReuseDependency::getConsequenceEvent()
+{
+    return eventLog->getEventForEventNumber(consequenceEventNumber);
+}
+
+simtime_t MessageReuseDependency::getConsequenceSimulationTime()
+{
+    return getConsequenceEvent()->getSimulationTime();
+}
+
+MessageEntry *MessageReuseDependency::getMessageEntry()
+{
+    Assert(eventLogEntryIndex != -1);
+    IEvent *event = getConsequenceEvent();
+    Assert(event);
+    return (MessageEntry *)event->getEventLogEntry(eventLogEntryIndex);
+}
+
+MessageReuseDependency *MessageReuseDependency::duplicate(IEventLog *eventLog)
+{
+    MessageReuseDependency *messageReuseDependency = new MessageReuseDependency(*this);
+    messageReuseDependency->eventLog = eventLog;
+    return messageReuseDependency;
+}
+bool MessageReuseDependency::equals(IMessageDependency *other)
+{
+    MessageReuseDependency *otherMessageReuseDependency = dynamic_cast<MessageReuseDependency *>(other);
+    return IMessageDependency::equals(other) && otherMessageReuseDependency &&
+        causeEventNumber == otherMessageReuseDependency->causeEventNumber &&
+        consequenceEventNumber == otherMessageReuseDependency->consequenceEventNumber &&
+        eventLogEntryIndex == otherMessageReuseDependency->eventLogEntryIndex;
+}
+
+void MessageReuseDependency::print(FILE *file)
+{
+    getConsequenceEvent()->getEventEntry()->print(file);
+    getMessageEntry()->print(file);
+}
+
+/**************************************************/
+
+FilteredMessageDependency::FilteredMessageDependency(IEventLog *eventLog, Kind kind, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
+    : IMessageDependency(eventLog)
 {
     this->beginMessageDependency = beginMessageDependency;
     this->endMessageDependency = endMessageDependency;
+    this->kind = kind;
 }
 
 FilteredMessageDependency::~FilteredMessageDependency()
@@ -291,7 +286,7 @@ FilteredMessageDependency::~FilteredMessageDependency()
 
 FilteredMessageDependency *FilteredMessageDependency::duplicate(IEventLog *eventLog)
 {
-    return new FilteredMessageDependency(eventLog, isReuse, beginMessageDependency->duplicate(eventLog), endMessageDependency->duplicate(eventLog));
+    return new FilteredMessageDependency(eventLog, kind, beginMessageDependency->duplicate(eventLog), endMessageDependency->duplicate(eventLog));
 }
 
 IEvent *FilteredMessageDependency::getCauseEvent()
@@ -312,16 +307,6 @@ IEvent *FilteredMessageDependency::getConsequenceEvent()
         return NULL;
     else
         return eventLog->getEventForEventNumber(consequenceEventNumber);
-}
-
-BeginSendEntry *FilteredMessageDependency::getCauseBeginSendEntry()
-{
-    return beginMessageDependency->getBeginSendEntry();
-}
-
-BeginSendEntry *FilteredMessageDependency::getConsequenceBeginSendEntry()
-{
-    return endMessageDependency->getBeginSendEntry();
 }
 
 bool FilteredMessageDependency::equals(IMessageDependency *other)

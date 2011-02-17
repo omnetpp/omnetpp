@@ -1580,7 +1580,7 @@ public class AnimationController {
 
     private EventLogMessage createMessage(BeginSendEntry beginSendEntry, EndSendEntry endSendEntry) {
         EventLogMessage message = new EventLogMessage();
-        message.setName(beginSendEntry.getMessageFullName());
+        message.setName(beginSendEntry.getMessageName());
         message.setClassName(beginSendEntry.getMessageClassName());
         message.setId(beginSendEntry.getMessageId());
         message.setTreeId(beginSendEntry.getMessageTreeId());

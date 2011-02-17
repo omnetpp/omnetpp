@@ -21,6 +21,7 @@
 #include "eventlogdefs.h"
 #include "ievent.h"
 #include "event.h"
+#include "messagedependency.h"
 
 NAMESPACE_BEGIN
 
@@ -46,14 +47,14 @@ class EVENTLOG_API FilteredEvent : public IEvent
         struct BreadthSearchItem {
             IEvent *event;
             IMessageDependency *firstSeenMessageDependency;
-            bool effectiveIsReuse;
+            FilteredMessageDependency::Kind effectiveKind;
             int level;
 
-            BreadthSearchItem(IEvent *event, IMessageDependency *firstSeenMessageDependency, bool effectiveIsReuse, int level)
+            BreadthSearchItem(IEvent *event, IMessageDependency *firstSeenMessageDependency, FilteredMessageDependency::Kind effectiveKind, int level)
             {
                 this->event = event;
                 this->firstSeenMessageDependency = firstSeenMessageDependency;
-                this->effectiveIsReuse = effectiveIsReuse;
+                this->effectiveKind = effectiveKind;
                 this->level = level;
             }
         };
@@ -106,10 +107,10 @@ class EVENTLOG_API FilteredEvent : public IEvent
         void deleteConsequences();
         void deleteAllocatedObjects();
 
-        void getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool isReuse, int level);
-        void getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool isReuse, int level);
+        void getCauses(IEvent *event, IMessageDependency *endMessageDependency, bool IsMixed, int level);
+        void getConsequences(IEvent *event, IMessageDependency *beginMessageDependency, bool IsMixed, int level);
         int countFilteredMessageDependencies(IMessageDependencyList *messageDependencies);
-        void pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
+        void pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, FilteredMessageDependency::Kind kind, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
 };
 
 NAMESPACE_END

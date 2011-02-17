@@ -21,6 +21,16 @@
 
 USING_NAMESPACE
 
+static FilteredMessageDependency::Kind getMessageDependencyKind(IMessageDependency *messageDependency)
+{
+    if (dynamic_cast<MessageSendDependency *>(messageDependency))
+        return FilteredMessageDependency::SENDS;
+    else if (dynamic_cast<MessageReuseDependency *>(messageDependency))
+        return FilteredMessageDependency::REUSES;
+    else
+        return FilteredMessageDependency::MIXED;
+}
+
 FilteredEvent::FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t eventNumber)
 {
     this->eventNumber = eventNumber;
@@ -142,8 +152,13 @@ FilteredEvent *FilteredEvent::getCauseEvent()
 BeginSendEntry *FilteredEvent::getCauseBeginSendEntry()
 {
     IMessageDependency *cause = getCause();
-    if (cause)
-        return cause->getBeginSendEntry();
+    if (cause) {
+        MessageEntry *messageEntry = cause->getMessageEntry();
+        if (dynamic_cast<BeginSendEntry *>(messageEntry))
+            return (BeginSendEntry *)messageEntry;
+        else
+            return NULL;
+    }
     else
         return NULL;
 }
@@ -169,7 +184,7 @@ IMessageDependency *FilteredEvent::getCause()
                     if (messageDependency == causeMessageDependency)
                         cause = messageDependency->duplicate(filteredEventLog);
                     else
-                        cause = new FilteredMessageDependency(filteredEventLog, false,
+                        cause = new FilteredMessageDependency(filteredEventLog, FilteredMessageDependency::SENDS,
                                     messageDependency->duplicate(filteredEventLog->getEventLog()),
                                     causeMessageDependency->duplicate(filteredEventLog->getEventLog()));
                     break;
@@ -192,7 +207,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
         long begin = clock();
         causes = new IMessageDependencyList();
         std::list<BreadthSearchItem> todoList;
-        todoList.push_back(BreadthSearchItem(getEvent(), NULL, false, 0));
+        todoList.push_back(BreadthSearchItem(getEvent(), NULL, FilteredMessageDependency::UNDEFINED, 0));
 
         // TODO: LONG RUNNING OPERATION
         // this is recursive and might take some time
@@ -207,7 +222,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
             // unpack
             IEvent *currentEvent = searchItem.event;
             IMessageDependency *endMessageDependency = searchItem.firstSeenMessageDependency;
-            bool currentIsReuse = searchItem.effectiveIsReuse;
+            FilteredMessageDependency::Kind currentKind = searchItem.effectiveKind;
             int level = searchItem.level;
 
             IMessageDependencyList *eventCauses = currentEvent->getCauses();
@@ -215,24 +230,22 @@ IMessageDependencyList *FilteredEvent::getCauses()
                 IMessageDependency *messageDependency = *it;
                 IEvent *causeEvent = messageDependency->getCauseEvent();
 
-                if (causeEvent && (filteredEventLog->getCollectMessageReuses() || !messageDependency->getIsReuse())) {
+                if (causeEvent && (filteredEventLog->getCollectMessageReuses() || !dynamic_cast<MessageReuseDependency *>(messageDependency))) {
                     //printf("*** Checking at level %d for cause event number %ld\n", level, causeEvent->getEventNumber());
-                    bool effectiveIsReuse = currentIsReuse || messageDependency->getIsReuse();
+                    FilteredMessageDependency::Kind effectiveKind = (FilteredMessageDependency::Kind)((int)currentKind | (int)getMessageDependencyKind(messageDependency));
                     if (filteredEventLog->matchesFilter(causeEvent) &&
                         (level == 0 || IMessageDependency::corresponds(messageDependency, endMessageDependency)))
                     {
                         if (level == 0)
                             causes->push_back(messageDependency->duplicate(filteredEventLog));
                         else
-                            pushNewFilteredMessageDependency(causes, effectiveIsReuse, messageDependency, endMessageDependency);
+                            pushNewFilteredMessageDependency(causes, effectiveKind, messageDependency, endMessageDependency);
 
                         if (countFilteredMessageDependencies(causes) == filteredEventLog->getMaximumNumberOfCauses())
                             return causes;
                     }
                     else if (level < filteredEventLog->getMaximumCauseDepth())
-                        todoList.push_back(BreadthSearchItem(causeEvent,
-                            level == 0 ? messageDependency : endMessageDependency,
-                            effectiveIsReuse, level + 1));
+                        todoList.push_back(BreadthSearchItem(causeEvent, level == 0 ? messageDependency : endMessageDependency, effectiveKind, level + 1));
                 }
             }
         }
@@ -248,7 +261,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
         long begin = clock();
         consequences = new IMessageDependencyList();
         std::list<BreadthSearchItem> todoList;
-        todoList.push_back(BreadthSearchItem(getEvent(), NULL, false, 0));
+        todoList.push_back(BreadthSearchItem(getEvent(), NULL, FilteredMessageDependency::UNDEFINED, 0));
 
         // TODO: LONG RUNNING OPERATION
         // this is recursive and might take some time
@@ -263,7 +276,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
             // unpack
             IEvent *currentEvent = searchItem.event;
             IMessageDependency *beginMessageDependency = searchItem.firstSeenMessageDependency;
-            bool currentIsReuse = searchItem.effectiveIsReuse;
+            FilteredMessageDependency::Kind currentKind = searchItem.effectiveKind;
             int level = searchItem.level;
 
             IMessageDependencyList *eventConsequences = currentEvent->getConsequences();
@@ -271,24 +284,22 @@ IMessageDependencyList *FilteredEvent::getConsequences()
                 IMessageDependency *messageDependency = *it;
                 IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
 
-                if (consequenceEvent && (filteredEventLog->getCollectMessageReuses() || !messageDependency->getIsReuse())) {
+                if (consequenceEvent && (filteredEventLog->getCollectMessageReuses() || !dynamic_cast<MessageReuseDependency *>(messageDependency))) {
                     //printf("*** Checking at level %d for consequence event number %ld\n", level, consequenceEvent->getEventNumber());
-                    bool effectiveIsReuse = currentIsReuse | messageDependency->getIsReuse();
+                    FilteredMessageDependency::Kind effectiveKind = (FilteredMessageDependency::Kind)((int)currentKind | (int)getMessageDependencyKind(messageDependency));
                     if (filteredEventLog->matchesFilter(consequenceEvent) &&
                         (level == 0 || IMessageDependency::corresponds(beginMessageDependency, messageDependency)))
                     {
                         if (level == 0)
                             consequences->push_back(messageDependency->duplicate(filteredEventLog));
                         else
-                            pushNewFilteredMessageDependency(consequences, effectiveIsReuse, beginMessageDependency, messageDependency);
+                            pushNewFilteredMessageDependency(consequences, effectiveKind, beginMessageDependency, messageDependency);
 
                         if (countFilteredMessageDependencies(consequences) == filteredEventLog->getMaximumNumberOfConsequences())
                             return consequences;
                     }
                     else if (level < filteredEventLog->getMaximumConsequenceDepth())
-                        todoList.push_back(BreadthSearchItem(consequenceEvent,
-                            level == 0 ? messageDependency : beginMessageDependency,
-                            effectiveIsReuse, level + 1));
+                        todoList.push_back(BreadthSearchItem(consequenceEvent, level == 0 ? messageDependency : beginMessageDependency, effectiveKind, level + 1));
                 }
             }
         }
@@ -307,9 +318,9 @@ int FilteredEvent::countFilteredMessageDependencies(IMessageDependencyList *mess
     return count;
 }
 
-void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, bool isReuse, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
+void FilteredEvent::pushNewFilteredMessageDependency(IMessageDependencyList *messageDependencies, FilteredMessageDependency::Kind kind, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency)
 {
-    FilteredMessageDependency *newMessageDependency = new FilteredMessageDependency(filteredEventLog, isReuse,
+    FilteredMessageDependency *newMessageDependency = new FilteredMessageDependency(filteredEventLog, kind,
             beginMessageDependency->duplicate(filteredEventLog->getEventLog()),
             endMessageDependency->duplicate(filteredEventLog->getEventLog()));
 

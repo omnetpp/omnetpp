@@ -115,12 +115,12 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.util.UIUtils;
-import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.SequenceChartFacade;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
@@ -300,7 +300,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false, null));
 					menuManager.add(subMenuManager);
 
-					subMenuManager.add(createFilterMessageAction(msg.getBeginSendEntry()));
+					subMenuManager.add(createFilterMessageAction(msg.getMessageEntry()));
 					subMenuManager.add(createGotoCauseAction(msg));
 					subMenuManager.add(createGotoConsequenceAction(msg));
                     subMenuManager.add(createZoomToMessageAction(msg));
@@ -1102,7 +1102,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		};
 	}
 
-    private SequenceChartAction createFilterMessageAction(final BeginSendEntry beginSendEntry) {
+    private SequenceChartAction createFilterMessageAction(final MessageEntry messageEntry) {
         return new SequenceChartAction("Filter Message...", Action.AS_PUSH_BUTTON) {
             @Override
             protected void doRun() {
@@ -1117,7 +1117,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
                 if (filterParameters.messageEncapsulationTreeIds != null) {
                     for (EventLogFilterParameters.EnabledInt messageEncapsulationTreeId : filterParameters.messageEncapsulationTreeIds) {
-                        if (messageEncapsulationTreeId.value == beginSendEntry.getMessageEncapsulationId()) {
+                        if (messageEncapsulationTreeId.value == messageEntry.getMessageEncapsulationId()) {
                             enabledInt = messageEncapsulationTreeId;
                             messageEncapsulationTreeId.enabled = true;
                         }
@@ -1127,15 +1127,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 }
 
                 if (enabledInt == null) {
-                    enabledInt = new EventLogFilterParameters.EnabledInt(true, beginSendEntry.getMessageEncapsulationTreeId());
+                    enabledInt = new EventLogFilterParameters.EnabledInt(true, messageEntry.getMessageEncapsulationTreeId());
                     filterParameters.messageEncapsulationTreeIds = (EventLogFilterParameters.EnabledInt[])ArrayUtils.add(filterParameters.messageEncapsulationTreeIds, enabledInt);
                 }
 
                 // range filter
                 filterParameters.enableRangeFilter = true;
                 filterParameters.enableEventNumberFilter = true;
-                filterParameters.lowerEventNumberLimit = Math.max(0, beginSendEntry.getEvent().getEventNumber() - 1000);
-                filterParameters.upperEventNumberLimit = Math.min(getEventLog().getLastEvent().getEventNumber(), beginSendEntry.getEvent().getEventNumber() + 1000);
+                filterParameters.lowerEventNumberLimit = Math.max(0, messageEntry.getEvent().getEventNumber() - 1000);
+                filterParameters.upperEventNumberLimit = Math.min(getEventLog().getLastEvent().getEventNumber(), messageEntry.getEvent().getEventNumber() + 1000);
 
                 if (!(getEventLog() instanceof FilteredEventLog) &&
                     (filterParameters.isAnyEventFilterEnabled() || filterParameters.isAnyMessageFilterEnabled() || filterParameters.isAnyModuleFilterEnabled()))

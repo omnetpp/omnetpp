@@ -58,11 +58,6 @@ EventLogEntry *EventLogEntry::parseEntry(Event *event, int entryIndex, char *lin
     }
 }
 
-bool EventLogEntry::isMessageSend()
-{
-    return dynamic_cast<BeginSendEntry *>(this) != NULL;
-}
-
 eventnumber_t EventLogEntry::parseEventNumber(const char *str)
 {
     char *end;

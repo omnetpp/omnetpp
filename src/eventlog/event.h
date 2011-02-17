@@ -53,7 +53,7 @@ class EVENTLOG_API Event : public IEvent
         /**
          * A is a cause of B if and only if B is a consequence of A.
          */
-        MessageDependency *cause; // the message send which is processed in this event
+        MessageSendDependency *cause; // the message send which is processed in this event
         IMessageDependencyList *causes; // the arrival message sends of messages which we send in this event
         IMessageDependencyList *consequences; // message sends in this event
 
@@ -98,7 +98,7 @@ class EVENTLOG_API Event : public IEvent
 
         virtual Event *getCauseEvent();
         virtual BeginSendEntry *getCauseBeginSendEntry();
-        virtual MessageDependency *getCause();
+        virtual MessageSendDependency *getCause();
         virtual IMessageDependencyList *getCauses();
         virtual IMessageDependencyList *getConsequences();
 
@@ -108,7 +108,6 @@ class EVENTLOG_API Event : public IEvent
         void clearInternalState();
         void deleteConsequences();
         void deleteAllocatedObjects();
-        Event *getReuserEvent(int &beginSendEntryNumber);
 };
 
 NAMESPACE_END

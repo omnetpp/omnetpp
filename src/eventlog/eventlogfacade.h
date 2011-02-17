@@ -30,7 +30,8 @@ NAMESPACE_BEGIN
 #define MODULE_CREATED_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleCreatedEntry *>((ModuleCreatedEntry *)ptr));
 #define MODULE_METHOD_BEGIN_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleMethodBeginEntry *>((ModuleMethodBeginEntry *)ptr));
 #define IMESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IMessageDependency *>((IMessageDependency *)ptr));
-#define MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageDependency *>((MessageDependency *)ptr));
+#define MESSAGE_SEND_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageSendDependency *>((MessageSendDependency *)ptr));
+#define MESSAGE_REUSE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<MessageReuesDependency *>((MessageReuseDependency *)ptr));
 #define FILTERED_MESSAGE_DEPENDENCY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<FilteredMessageDependency *>((FilteredMessageDependency *)ptr));
 
 /**
@@ -88,17 +89,16 @@ class EVENTLOG_API EventLogFacade
         IMessageDependency *IMessageDependency_getMessageDependency(ptr_t ptr);
         const char *IMessageDependency_getMessageName(ptr_t ptr);
         bool IMessageDependency_isReuse(ptr_t ptr);
-        bool IMessageDependency_isSelfMessageReuse(ptr_t ptr);
-        bool IMessageDependency_isStoredMessageReuse(ptr_t ptr);
         bool IMessageDependency_isFilteredMessageDependency(ptr_t ptr);
         ptr_t IMessageDependency_getCauseEvent(ptr_t ptr);
         ptr_t IMessageDependency_getConsequenceEvent(ptr_t ptr);
-        ptr_t IMessageDependency_getBeginSendEntry(ptr_t ptr);
+        ptr_t IMessageDependency_getMessageEntry(ptr_t ptr);
         simtime_t IMessageDependency_getCauseSimulationTime(ptr_t ptr);
         simtime_t IMessageDependency_getConsequenceSimulationTime(ptr_t ptr);
 
         const char *FilteredMessageDependency_getBeginMessageName(ptr_t ptr);
         const char *FilteredMessageDependency_getEndMessageName(ptr_t ptr);
+        FilteredMessageDependency::Kind FilteredMessageDependency_getKind(ptr_t ptr);
 };
 
 NAMESPACE_END

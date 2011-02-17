@@ -447,7 +447,7 @@ void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
     // colllect begin send entry
     BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
     if (beginSendEntry) {
-        messageNames.insert(beginSendEntry->messageFullName);
+        messageNames.insert(beginSendEntry->messageName);
         messageClassNames.insert(beginSendEntry->messageClassName);
     }
 }

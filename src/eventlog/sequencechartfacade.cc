@@ -601,7 +601,11 @@ std::vector<int> SequenceChartFacade::getApproximateMessageDependencyCountAdjace
             IMessageDependency *messageDependency = *it;
             IEvent *causeEvent = messageDependency->getCauseEvent();
             IEvent *consequenceEvent = messageDependency->getConsequenceEvent();
-            int weight = messageDependency->getIsReuse() ? messageReuseWeight : messageSendWeight;
+            int weight = 0;
+            if (dynamic_cast<MessageSendDependency *>(messageDependency))
+                weight = messageSendWeight;
+            else if (dynamic_cast<MessageReuseDependency *>(messageDependency))
+                weight = messageReuseWeight;
 
             if (causeEvent && consequenceEvent && weight != 0) {
                 int causeModuleId = causeEvent->getModuleId();

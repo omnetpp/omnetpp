@@ -125,7 +125,8 @@ namespace std {
 
    %template(ModuleCreatedEntryList) vector<ModuleCreatedEntry*>;
    %template(IMessageDependencyList) vector<IMessageDependency*>;
-   %template(MessageDependencyList) vector<MessageDependency*>;
+   %template(MessageSendDependencyList) vector<MessageSendDependency*>;
+   %template(MessageReuseDependencyList) vector<MessageReuseDependency*>;
    %template(FilteredMessageDependencyList) vector<FilteredMessageDependency*>;
 
    %template(IntSet) set<int>;
@@ -372,7 +373,7 @@ FIX_CHARPTR_MEMBER(GateCreatedEntry, name, Name);
 FIX_CHARPTR_MEMBER(ConnectionDisplayStringChangedEntry, displayString, DisplayString);
 FIX_CHARPTR_MEMBER(ModuleDisplayStringChangedEntry, displayString, DisplayString);
 FIX_CHARPTR_MEMBER(BeginSendEntry, messageClassName, MessageClassName);
-FIX_CHARPTR_MEMBER(BeginSendEntry, messageFullName, MessageFullName);
+FIX_CHARPTR_MEMBER(BeginSendEntry, messageName, MessageName);
 FIX_CHARPTR_MEMBER(BeginSendEntry, detail, Detail);
 
 %include "ievent.h"

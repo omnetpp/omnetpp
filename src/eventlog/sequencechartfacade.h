@@ -94,7 +94,7 @@ class EVENTLOG_API SequenceChartFacade : public EventLogFacade
         std::vector<ptr_t> *getModuleMethodBeginEntries(ptr_t startEventPtr, ptr_t endEventPtr);
 
         std::vector<ptr_t> *getIntersectingMessageDependencies(ptr_t startEventPtr, ptr_t endEventPtr);
-        std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples, int messageSendWeight = 1, int messageReuseWeight = 0);
+        std::vector<int> getApproximateMessageDependencyCountAdjacencyMatrix(std::map<int, int> *moduleIdToAxisIdMap, int numberOfSamples, int messageSendWeight = 1, int messageReuseWeight = 1);
 
     protected:
         void extractSimulationTimesAndTimelineCoordinates(

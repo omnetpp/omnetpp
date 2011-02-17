@@ -31,9 +31,11 @@ import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.BubbleEntry;
 import org.omnetpp.eventlog.engine.CancelEventEntry;
+import org.omnetpp.eventlog.engine.CloneMessageEntry;
 import org.omnetpp.eventlog.engine.ConnectionCreatedEntry;
 import org.omnetpp.eventlog.engine.ConnectionDeletedEntry;
 import org.omnetpp.eventlog.engine.ConnectionDisplayStringChangedEntry;
+import org.omnetpp.eventlog.engine.CreateMessageEntry;
 import org.omnetpp.eventlog.engine.DeleteMessageEntry;
 import org.omnetpp.eventlog.engine.EndSendEntry;
 import org.omnetpp.eventlog.engine.Event;
@@ -44,6 +46,7 @@ import org.omnetpp.eventlog.engine.GateCreatedEntry;
 import org.omnetpp.eventlog.engine.GateDeletedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
@@ -200,7 +203,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 							drawText("Event in ", CONSTANT_TEXT_COLOR);
 							drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
 
-							BeginSendEntry beginSendEntry = cause != null ? cause.getBeginSendEntry() : null;
+							MessageEntry beginSendEntry = cause != null ? cause.getMessageEntry() : null;
 							if (beginSendEntry != null) {
 								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
 
@@ -372,12 +375,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawGateDescription(sendHopEntry.getSenderModuleId(), sendHopEntry.getSenderGateId());
 
 								if (sendHopEntry.getTransmissionDelay().doubleValue() != 0) {
-    								drawText(" with transmission delay ", CONSTANT_TEXT_COLOR);
+    								drawText(" transmission delay = ", CONSTANT_TEXT_COLOR);
     								drawText(sendHopEntry.getTransmissionDelay() + "s", DATA_COLOR);
 								}
 
 								if (sendHopEntry.getPropagationDelay().doubleValue() != 0) {
-    								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
+    								drawText(" propagation delay = ", CONSTANT_TEXT_COLOR);
     								drawText(sendHopEntry.getPropagationDelay() + "s", DATA_COLOR);
 								}
 							}
@@ -399,15 +402,20 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								drawText(" and propagation delay ", CONSTANT_TEXT_COLOR);
 								drawText(sendDirectEntry.getPropagationDelay() + "s", DATA_COLOR);
 							}
+                            else if (eventLogEntry instanceof CreateMessageEntry) {
+                                CreateMessageEntry createMessageEntry = (CreateMessageEntry)eventLogEntry;
+                                drawText("Creating ", CONSTANT_TEXT_COLOR);
+                                drawMessageDescription(createMessageEntry);
+                            }
+                            else if (eventLogEntry instanceof CloneMessageEntry) {
+                                CloneMessageEntry cloneMessageEntry = (CloneMessageEntry)eventLogEntry;
+                                drawText("Cloning ", CONSTANT_TEXT_COLOR);
+                                drawMessageDescription(cloneMessageEntry);
+                            }
 							else if (eventLogEntry instanceof DeleteMessageEntry) {
 								DeleteMessageEntry deleteMessageEntry = (DeleteMessageEntry)eventLogEntry;
 								drawText("Deleting ", CONSTANT_TEXT_COLOR);
-                                BeginSendEntry beginSendEntry = findBeginSendEntry(deleteMessageEntry.getPreviousEventNumber(), deleteMessageEntry.getMessageId());
-
-                                if (beginSendEntry == null)
-                                    beginSendEntry = findBeginSendEntry(contextEvent.getEventEntry().getCauseEventNumber(), deleteMessageEntry.getMessageId());
-
-								drawMessageDescription(beginSendEntry);
+								drawMessageDescription(deleteMessageEntry);
 							}
                             else if (eventLogEntry instanceof SimulationBeginEntry) {
                                 SimulationBeginEntry simulationBeginEntry = (SimulationBeginEntry)eventLogEntry;
@@ -561,12 +569,12 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         }
 	}
 
-	private void drawMessageDescription(BeginSendEntry beginSendEntry) {
+	private void drawMessageDescription(MessageEntry messageEntry) {
         drawText("message ", CONSTANT_TEXT_COLOR);
 
-        if (beginSendEntry != null) {
-			drawText("(" + beginSendEntry.getMessageClassName() + ") ", TYPE_COLOR);
-			drawText(beginSendEntry.getMessageFullName(), NAME_COLOR, true);
+        if (messageEntry != null) {
+			drawText("(" + messageEntry.getMessageClassName() + ") ", TYPE_COLOR);
+			drawText(messageEntry.getMessageName(), NAME_COLOR, true);
 		}
 		else
 			drawText("<unknown>", NAME_COLOR, true);

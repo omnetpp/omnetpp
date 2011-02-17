@@ -52,7 +52,6 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
 
         Event *getEvent() { return event; }
         int getEntryIndex() { return entryIndex; }
-        bool isMessageSend();
 
         virtual const std::vector<const char *> getAttributeNames() const = 0;
         virtual const char *getDefaultAttribute() const = 0;

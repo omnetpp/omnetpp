@@ -238,25 +238,13 @@ IMessageDependency *EventLogFacade::IMessageDependency_getMessageDependency(ptr_
 const char *EventLogFacade::IMessageDependency_getMessageName(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return ((IMessageDependency*)ptr)->getBeginSendEntry()->messageFullName;
+    return ((IMessageDependency*)ptr)->getMessageEntry()->messageName;
 }
 
 bool EventLogFacade::IMessageDependency_isReuse(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return ((IMessageDependency*)ptr)->getIsReuse();
-}
-
-bool EventLogFacade::IMessageDependency_isSelfMessageReuse(ptr_t ptr)
-{
-    MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((MessageDependency*)ptr)->isSelfMessageReuse();
-}
-
-bool EventLogFacade::IMessageDependency_isStoredMessageReuse(ptr_t ptr)
-{
-    MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((MessageDependency*)ptr)->isStoredMessageReuse();
+    return dynamic_cast<MessageReuseDependency*>((IMessageDependency*)ptr);
 }
 
 bool EventLogFacade::IMessageDependency_isFilteredMessageDependency(ptr_t ptr)
@@ -277,10 +265,10 @@ ptr_t EventLogFacade::IMessageDependency_getConsequenceEvent(ptr_t ptr)
     return (ptr_t)((IMessageDependency*)ptr)->getConsequenceEvent();
 }
 
-ptr_t EventLogFacade::IMessageDependency_getBeginSendEntry(ptr_t ptr)
+ptr_t EventLogFacade::IMessageDependency_getMessageEntry(ptr_t ptr)
 {
     IMESSAGE_DEPENDENCY_PTR(ptr);
-    return (ptr_t)((IMessageDependency*)ptr)->getBeginSendEntry();
+    return (ptr_t)((IMessageDependency*)ptr)->getMessageEntry();
 }
 
 simtime_t EventLogFacade::IMessageDependency_getCauseSimulationTime(ptr_t ptr)
@@ -298,11 +286,17 @@ simtime_t EventLogFacade::IMessageDependency_getConsequenceSimulationTime(ptr_t 
 const char *EventLogFacade::FilteredMessageDependency_getBeginMessageName(ptr_t ptr)
 {
     FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((FilteredMessageDependency*)ptr)->getBeginMessageDependency()->getBeginSendEntry()->messageFullName;
+    return ((FilteredMessageDependency*)ptr)->getBeginMessageDependency()->getMessageEntry()->messageName;
 }
 
 const char *EventLogFacade::FilteredMessageDependency_getEndMessageName(ptr_t ptr)
 {
     FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
-    return ((FilteredMessageDependency*)ptr)->getEndMessageDependency()->getBeginSendEntry()->messageFullName;
+    return ((FilteredMessageDependency*)ptr)->getEndMessageDependency()->getMessageEntry()->messageName;
+}
+
+FilteredMessageDependency::Kind EventLogFacade::FilteredMessageDependency_getKind(ptr_t ptr)
+{
+    FILTERED_MESSAGE_DEPENDENCY_PTR(ptr);
+    return ((FilteredMessageDependency*)ptr)->getKind();
 }
