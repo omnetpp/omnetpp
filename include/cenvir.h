@@ -226,6 +226,18 @@ class SIM_API cEnvir
     virtual void endSend(cMessage *msg) = 0;
 
     /**
+     * Notifies the environment that a message object is being created.
+     * This is called from the cMessage constructor.
+     */
+    virtual void messageCreated(cMessage *msg) = 0;
+
+    /**
+     * Notifies the environment that a message object is being cloned.
+     * This is called from the cMessage copy constructor.
+     */
+    virtual void messageCloned(cMessage *msg, cMessage* clone) = 0;
+
+    /**
      * Notifies the environment that a message object is being deleted.
      * This is called from the cMessage destructor, so any information added
      * to cMessage via subclassing is already lost at the time of the call.

@@ -78,6 +78,8 @@ class ENVIR_API EventlogFileManager
     virtual void messageSendHop(cMessage *msg, cGate *srcGate);
     virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
     virtual void endSend(cMessage *msg);
+    virtual void messageCreated(cMessage *msg);
+    virtual void messageCloned(cMessage *msg, cMessage *clone);
     virtual void messageDeleted(cMessage *msg);
     virtual void moduleReparented(cModule *module, cModule *oldparent);
     virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va);

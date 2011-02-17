@@ -57,12 +57,18 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     parlistp = NULL;
     ctrlp = NULL;
     heapindex = -1;
-    prev_event_num = -1;
     operator=(msg);
 
     msgid = next_id++;
     total_msgs++;
     live_msgs++;
+
+    cMessage *nonConstMsg = const_cast<cMessage*>(&msg);
+#ifndef WITHOUT_CPACKET
+    EVCB.messageCloned(nonConstMsg, this);
+#endif
+    // after envir notification
+    nonConstMsg->prev_event_num = prev_event_num = simulation.getEventNumber();
 }
 
 cMessage::cMessage(const char *name, short k) : cOwnedObject(name, false)
@@ -80,11 +86,16 @@ cMessage::cMessage(const char *name, short k) : cOwnedObject(name, false)
     created = simulation.getSimTime();
     sent = delivd = tstamp = 0;
     heapindex = -1;
-    prev_event_num = -1;
 
     msgtreeid = msgid = next_id++;
     total_msgs++;
     live_msgs++;
+
+#ifndef WITHOUT_CPACKET
+    EVCB.messageCreated(this);
+#endif
+    // after envir notification
+    prev_event_num = simulation.getEventNumber();
 }
 
 cMessage::~cMessage()

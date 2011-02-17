@@ -27,10 +27,16 @@ while (<FILE>)
    {
       # comment
    }
-   elsif ($_ =~ /^([\w]+) +([\w]+) *(\/\/.*)?$/)
+   elsif ($_ =~ /^([\w]+) +([\w]+)( +: +([\w]+))? *(\/\/.*)?$/)
    {
       $classCode = $1;
       $className = $2;
+      $classSuper = $4;
+      if ($classSuper eq "")
+      {
+         $classSuper = "EventLogTokenBasedEntry";
+      }
+      $classComment = $5;
       $classHasOptField = 0;
       print "$classCode $className\n" if ($verbose);
    }
@@ -108,6 +114,7 @@ while (<FILE>)
       $class = {
          CODE => $classCode,
          NAME => $className,
+         SUPER => $classSuper,
          HASOPT => $classHasOptField,
          FIELDS => [ @fields ],
       };
@@ -122,7 +129,6 @@ while (<FILE>)
 }
 
 close(FILE);
-
 
 
 #
@@ -151,7 +157,7 @@ class EventLogWriter
 foreach $class (@classes)
 {
    print H "    static void " . makeMethodDecl($class,0) . ";\n";
-   print H "    static void " . makeMethodDecl($class,1) . ";\n" if ($class->{HASOPT});
+   print H "    static void " . makeMethodDecl($class,1) . ";\n" if (getEffectiveHasOpt($class));
 }
 
 print H "};
@@ -196,7 +202,7 @@ void EventLogWriter::recordLogLine(FILE *f, const char *s, int n)
 foreach $class (@classes)
 {
    print CC makeMethodImpl($class,0);
-   print CC makeMethodImpl($class,1) if ($class->{HASOPT});
+   print CC makeMethodImpl($class,1) if (getEffectiveHasOpt($class));
 }
 
 close(CC);
@@ -213,7 +219,7 @@ sub makeMethodImpl ()
    $fmt = "\\n".$fmt if ($class->{CODE} eq "E");
    my $args = "";
 
-   foreach $field (@{ $class->{FIELDS} })
+   foreach $field ( getEffectiveFields($class) )
    {
       # if wantOptFields==false, skip optional fields
       next if (!$wantOptFields && $field->{DEFAULTVALUE} ne "");
@@ -247,13 +253,13 @@ sub makeMethodDecl ()
    my $wantOptFields = shift;
 
    my $txt = "record$class->{NAME}";
-   foreach $field (@{ $class->{FIELDS} })
+   foreach $field ( getEffectiveFields($class) )
    {
       my $code = ($field->{CODE} eq "#") ? "e" : $field->{CODE};
       $txt .= "_$code" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
    $txt .= "(FILE *f";
-   foreach $field (@{ $class->{FIELDS} })
+   foreach $field ( getEffectiveFields($class) )
    {
       $txt .= ", $field->{CTYPE} $field->{NAME}" if ($wantOptFields || $field->{DEFAULTVALUE} eq "");
    }
@@ -277,4 +283,56 @@ sub makeFileBanner ()
 ";
 }
 
+sub getEffectiveFields ()
+{
+   my $class = shift;
+   my @fields = ();
 
+   outer: while (true)
+   {
+      splice(@fields, 0, 0, @{ $class->{FIELDS} });
+      if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+      {
+         last outer;
+      }
+      else
+      {
+         inner: foreach $superClass (@classes)
+         {
+            if ($superClass->{NAME} eq $class->{SUPER})
+            {
+               $class = $superClass;
+               last inner;
+            }
+         }
+      }
+   }
+   @fields;
+}
+
+sub getEffectiveHasOpt ()
+{
+   my $class = shift;
+   my $hasOpt = 0;
+
+   outer: while (true)
+   {
+      $hasOpt = 1 if ($class->{HASOPT});
+      if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+      {
+         last outer;
+      }
+      else
+      {
+         inner: foreach $superClass (@classes)
+         {
+            if ($superClass->{NAME} eq $class->{SUPER})
+            {
+               $class = $superClass;
+               last inner;
+            }
+         }
+      }
+   }
+   $hasOpt;
+}

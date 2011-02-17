@@ -1258,6 +1258,18 @@ void EnvirBase::endSend(cMessage *msg)
         eventlogmgr->endSend(msg);
 }
 
+void EnvirBase::messageCreated(cMessage *msg)
+{
+    if (record_eventlog)
+        eventlogmgr->messageCreated(msg);
+}
+
+void EnvirBase::messageCloned(cMessage *msg, cMessage *clone)
+{
+    if (record_eventlog)
+        eventlogmgr->messageCloned(msg, clone);
+}
+
 void EnvirBase::messageDeleted(cMessage *msg)
 {
     if (record_eventlog)

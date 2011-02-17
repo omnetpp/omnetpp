@@ -28,11 +28,16 @@ while (<FILE>)
    {
       # comment
    }
-   elsif ($_ =~ /^([\w]+) +([\w]+) *(\/\/.*)?$/)
+   elsif ($_ =~ /^([\w]+) +([\w]+)( +: +([\w]+))? *(\/\/.*)?$/)
    {
       $classCode = $1;
       $className = $2;
-      $classComment = $4;
+      $classSuper = $4;
+      if ($classSuper eq "")
+      {
+         $classSuper = "EventLogTokenBasedEntry";
+      }
+      $classComment = $5;
       $classHasOptField = 0;
       print "$classCode $className\n" if ($verbose);
       foreach $class (@classes)
@@ -127,6 +132,7 @@ while (<FILE>)
       $class = {
          CODE => $classCode,
          NAME => $className,
+         SUPER => $classSuper,
          HASOPT => $classHasOptField,
          FIELDS => [ @fields ],
          COMMENT => $classComment,
@@ -179,7 +185,7 @@ $index = 1;
 foreach $class (@classes)
 {
    print ENTRIES_H_FILE "
-class EVENTLOG_API $class->{NAME} : public EventLogTokenBasedEntry
+class EVENTLOG_API $class->{NAME} : public $class->{SUPER}
 {
    public:
       $class->{NAME}();
@@ -248,8 +254,15 @@ foreach $class (@classes)
 
    # constructors
    print ENTRIES_CC_FILE "$className\::$className()\n";
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "    : $class->{SUPER}()\n";
+   }
    print ENTRIES_CC_FILE "{\n";
-   print ENTRIES_CC_FILE "    this->event = NULL;\n";
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "    this->event = NULL;\n";
+   }
    foreach $field (@{ $class->{FIELDS} })
    {
       print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
@@ -257,9 +270,16 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "}\n\n";
 
    print ENTRIES_CC_FILE "$className\::$className(Event *event, int entryIndex)\n";
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "    : $class->{SUPER}(event, entryIndex)\n";
+   }
    print ENTRIES_CC_FILE "{\n";
-   print ENTRIES_CC_FILE "    this->event = event;\n";
-   print ENTRIES_CC_FILE "    this->entryIndex = entryIndex;\n";
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "    this->event = event;\n";
+      print ENTRIES_CC_FILE "    this->entryIndex = entryIndex;\n";
+   }
    foreach $field (@{ $class->{FIELDS} })
    {
       print ENTRIES_CC_FILE "    $field->{NAME} = $field->{DEFAULTVALUE};\n";
@@ -269,6 +289,10 @@ foreach $class (@classes)
    # parse
    print ENTRIES_CC_FILE "void $className\::parse(char **tokens, int numTokens)\n";
    print ENTRIES_CC_FILE "{\n";
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "    $class->{SUPER}::parse(tokens, numTokens);\n";
+   }
    foreach $field (@{ $class->{FIELDS} })
    {
       if ($field->{TYPE} eq "int")
@@ -326,8 +350,14 @@ foreach $class (@classes)
    {
       print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
    }
-   print ENTRIES_CC_FILE "    fprintf(fout, \"$class->{CODE}\");\n";
-
+   if ($class->{CODE} ne "abstract")
+   {
+      print ENTRIES_CC_FILE "    fprintf(fout, \"$class->{CODE}\");\n";
+   }
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "    $class->{SUPER}::print(fout);\n";
+   }
    foreach $field (@{ $class->{FIELDS} })
    {
       if ($field->{TYPE} eq "string")
@@ -365,6 +395,12 @@ foreach $class (@classes)
    print ENTRIES_CC_FILE "const std::vector<const char *> $className\::getAttributeNames() const\n";
    print ENTRIES_CC_FILE "{\n";
    print ENTRIES_CC_FILE "    std::vector<const char *> names;\n";
+   if ($class->{SUPER} ne "EventLogTokenBasedEntry")
+   {
+
+      print ENTRIES_CC_FILE "    std::vector<const char *> superNames = $class->{SUPER}::getAttributeNames();\n";
+      print ENTRIES_CC_FILE "    names.insert(names.begin(), superNames.begin(), superNames.end());\n";
+   }  
    foreach $field (@{ $class->{FIELDS} })
    {
       print ENTRIES_CC_FILE "    names.push_back(\"$field->{CODE}\");\n";
@@ -398,7 +434,14 @@ foreach $class (@classes)
    }
 
    print ENTRIES_CC_FILE "    else\n";
-   print ENTRIES_CC_FILE "        return NULL;\n";
+   if ($class->{SUPER} eq "EventLogTokenBasedEntry")
+   {
+      print ENTRIES_CC_FILE "        return NULL;\n";
+   }
+   else
+   {
+      print ENTRIES_CC_FILE "        return $class->{SUPER}::getAttribute(name);\n";
+   }
    print ENTRIES_CC_FILE "}\n\n";
 }
 
@@ -442,16 +485,19 @@ EventLogTokenBasedEntry *EventLogEntryFactory::parseEntry(Event *event, int entr
 
 foreach $class (@classes)
 {
-   #print FACTORY_CC_FILE "    else if (!strcmp(code, \"$class->{CODE}\"))\n";
-   print FACTORY_CC_FILE "    else if (";
-   $i=0;
-   foreach $c (split(//, $class->{CODE})) {
-       print FACTORY_CC_FILE "code\[$i\]=='$c' && ";
-       $i++;
-   }
-   print FACTORY_CC_FILE "code[$i]==0)  // $class->{CODE}\n";
+   if ($class->{CODE} ne "abstract")
+   {
+      #print FACTORY_CC_FILE "    else if (!strcmp(code, \"$class->{CODE}\"))\n";
+      print FACTORY_CC_FILE "    else if (";
+      $i=0;
+      foreach $c (split(//, $class->{CODE})) {
+          print FACTORY_CC_FILE "code\[$i\]=='$c' && ";
+          $i++;
+      }
+      print FACTORY_CC_FILE "code[$i]==0)  // $class->{CODE}\n";
 
-   print FACTORY_CC_FILE "        entry = new $class->{NAME}(event, entryIndex);\n";
+      print FACTORY_CC_FILE "        entry = new $class->{NAME}(event, entryIndex);\n";
+   }
 }
 print FACTORY_CC_FILE "    else\n";
 print FACTORY_CC_FILE "        return NULL;\n\n";

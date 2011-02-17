@@ -129,7 +129,7 @@ class SIM_API cMessage : public cOwnedObject
     int heapindex;             // used by cMessageHeap (-1 if not on heap; all other values, including negative ones, means "on the heap")
     unsigned long insertordr;  // used by cMessageHeap
 
-    eventnumber_t prev_event_num; // event number of the sending/scheduling this message
+    eventnumber_t prev_event_num; // event number of the last time envir was notified about this message (e.g. creating/cloning/sending/scheduling/deleting this message)
 
     long msgid;                // a unique message identifier assigned upon message creation
     long msgtreeid;            // a message identifier that is inherited by dup, if non dupped it is msgid

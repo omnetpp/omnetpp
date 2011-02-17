@@ -1,10 +1,12 @@
-SB SimulationBeginEntry // recorded at the first event
+//XXX what about writing encapsulate/decapsulate as separate lines?
+
+SB SimulationBeginEntry // mandatory first line of an eventlog file
 {
-   v int version       // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
-   rid string runId    // identifies the simulation run
+   v int version          // OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
+   rid string runId       // identifies the simulation run
 }
 
-SE SimulationEndEntry // optional last line of an event log file
+SE SimulationEndEntry // optional last line of an eventlog file
 {
 }
 
@@ -104,22 +106,25 @@ CE CancelEventEntry // canceling an event caused by self message
    pe eventnumber_t previousEventNumber -1 // event number from which the message being cancelled was sent, or -1 if the message was sent from initialize
 }
 
-BS BeginSendEntry // beginning to send a message
+abstract MessageEntry
 {
-   id long messageId                       // life time unique id of the message being sent
-   //XXX what about writing dup, encapsulate/decapsulate as separate lines?
+   id long messageId                       // life time unique id of the message
    tid long messageTreeId                  // id of the message inherited by dup
    eid long messageEncapsulationId   -1    // id of the message inherited by encapsulation
    etid long messageEncapsulationTreeId -1 // id of the message inherited by both dup and encapsulation
    c string messageClassName               // C++ class name of the message
-   n string messageFullName                // message name
-   pe eventnumber_t previousEventNumber -1 // event number from which the message being sent was processed, or -1 if the message has not yet been processed before
+   n string messageName                    // message name
    k short messageKind     0               // message kind
    p short messagePriority 0               // message priority
    l int64 messageLength   0               // message length in bits
    er bool hasBitError   false             // true indicates that the message has bit errors
    d string detail       NULL              // detailed information of message content when recording message data is turned on
+   pe eventnumber_t previousEventNumber -1 // event number from which the message being cloned was sent, or -1 if the message was sent from initialize
    //XXX and many other fields, including message contents
+}
+
+BS BeginSendEntry : MessageEntry // beginning to send a message
+{
 }
 
 ES EndSendEntry // prediction of the arrival of a message
@@ -145,9 +150,15 @@ SH SendHopEntry // sending a message through a connection identified by its sour
    td simtime_t transmissionDelay 0 // transmission duration as the whole message is sent from the source gate
 }
 
-DM DeleteMessageEntry // deleting a message
+CM CreateMessageEntry : MessageEntry // creating a message
 {
-   id int messageId                        // id of the message being deleted
-   pe eventnumber_t previousEventNumber -1 // event number from which the message being deleted was sent, or -1 if the message was sent from initialize
 }
 
+CL CloneMessageEntry : MessageEntry // cloning a message either via the copy constructor or dup
+{
+   cid long cloneId                        // life time unique id of the clone
+}
+
+DM DeleteMessageEntry : MessageEntry // deleting a message
+{
+}

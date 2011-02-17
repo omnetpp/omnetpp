@@ -318,19 +318,21 @@ void EventlogFileManager::beginSend(cMessage *msg)
         //TODO record message display string as well?
         if (msg->isPacket()) {
             cPacket *pkt = (cPacket *)msg;
-            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
+            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
                 pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
-                pkt->getClassName(), pkt->getFullName(), pkt->getPreviousEventNumber(),
+                pkt->getClassName(), pkt->getFullName(),
                 pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
-                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL);
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                pkt->getPreviousEventNumber());
             isEmpty = false;
         }
         else {
-            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_pe_k_p_l_er_d(feventlog,
+            EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
                 msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
-                msg->getClassName(), msg->getFullName(), msg->getPreviousEventNumber(),
+                msg->getClassName(), msg->getFullName(),
                 msg->getKind(), msg->getSchedulingPriority(), 0, false,
-                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL);
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                msg->getPreviousEventNumber());
             isEmpty = false;
         }
     }
@@ -389,10 +391,81 @@ void EventlogFileManager::endSend(cMessage *msg)
     }
 }
 
+void EventlogFileManager::messageCreated(cMessage *msg)
+{
+    if (isEventLogRecordingEnabled) {
+
+        if (msg->isPacket()) {
+            cPacket *pkt = (cPacket *)msg;
+            EventLogWriter::recordCreateMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
+                pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
+                pkt->getClassName(), pkt->getFullName(),
+                pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                pkt->getPreviousEventNumber());
+            isEmpty = false;
+        }
+        else {
+            EventLogWriter::recordCreateMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
+                msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
+                msg->getClassName(), msg->getFullName(),
+                msg->getKind(), msg->getSchedulingPriority(), 0, false,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                msg->getPreviousEventNumber());
+            isEmpty = false;
+        }
+        isEmpty = false;
+    }
+}
+
+void EventlogFileManager::messageCloned(cMessage *msg, cMessage *clone)
+{
+    if (isEventLogRecordingEnabled) {
+        if (msg->isPacket()) {
+            cPacket *pkt = (cPacket *)msg;
+            EventLogWriter::recordCloneMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe_cid(feventlog,
+                pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
+                pkt->getClassName(), pkt->getFullName(),
+                pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                pkt->getPreviousEventNumber(), clone->getId());
+            isEmpty = false;
+        }
+        else {
+            EventLogWriter::recordCloneMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe_cid(feventlog,
+                msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
+                msg->getClassName(), msg->getFullName(),
+                msg->getKind(), msg->getSchedulingPriority(), 0, false,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                msg->getPreviousEventNumber(), clone->getId());
+            isEmpty = false;
+        }
+        isEmpty = false;
+    }
+}
+
 void EventlogFileManager::messageDeleted(cMessage *msg)
 {
     if (isEventLogRecordingEnabled) {
-        EventLogWriter::recordDeleteMessageEntry_id_pe(feventlog, msg->getId(), msg->getPreviousEventNumber());
+        if (msg->isPacket()) {
+            cPacket *pkt = (cPacket *)msg;
+            EventLogWriter::recordDeleteMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
+                pkt->getId(), pkt->getTreeId(), pkt->getEncapsulationId(), pkt->getEncapsulationTreeId(),
+                pkt->getClassName(), pkt->getFullName(),
+                pkt->getKind(), pkt->getSchedulingPriority(), pkt->getBitLength(), pkt->hasBitError(),
+                objectPrinter ? objectPrinter->printObjectToString(pkt).c_str() : NULL,
+                pkt->getPreviousEventNumber());
+            isEmpty = false;
+        }
+        else {
+            EventLogWriter::recordDeleteMessageEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
+                msg->getId(), msg->getTreeId(), msg->getId(), msg->getTreeId(),
+                msg->getClassName(), msg->getFullName(),
+                msg->getKind(), msg->getSchedulingPriority(), 0, false,
+                objectPrinter ? objectPrinter->printObjectToString(msg).c_str() : NULL,
+                msg->getPreviousEventNumber());
+            isEmpty = false;
+        }
         isEmpty = false;
     }
 }
