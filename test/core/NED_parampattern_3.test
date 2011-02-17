@@ -1,0 +1,70 @@
+%description:
+Check that expressions are evaluated in the right context (in the context
+where they appear, and not where the parameter was declared).
+
+%file: test.ned
+
+import testlib.Dump;
+
+module App
+{
+    parameters:
+        string p = "app's p";
+        string p1;
+        string p2;
+        string p3;
+}
+
+module Host
+{
+    parameters:
+        string p = "host's p";
+    submodules:
+        app: App;
+}
+
+network Test
+{
+    parameters:
+        string p = "network's p";
+        host[*].app.p1 = p;  // ==> network's p
+    submodules:
+        host[2]: Host {
+            app.p2 = p; // ==> network's p
+            app.p3 = this.p + " #" + string(index); // ==> host's p
+        }
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p = "network's p"
+    submodules:
+        module Test.host[0]: Host {
+            parameters:
+                p = "host's p"
+            submodules:
+                module Test.host[0].app: App {
+                    parameters:
+                        p = "app's p"
+                        p1 = "network's p"
+                        p2 = "network's p"
+                        p3 = "host's p #0"
+                }
+        }
+        module Test.host[1]: Host {
+            parameters:
+                p = "host's p"
+            submodules:
+                module Test.host[1].app: App {
+                    parameters:
+                        p = "app's p"
+                        p1 = "network's p"
+                        p2 = "network's p"
+                        p3 = "host's p #1"
+                }
+        }
+}
+

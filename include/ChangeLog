@@ -1,3 +1,8 @@
+2011-02-17  Andras Varga
+
+	* cPar: setExpression() now accepts an evaluationcontext parameter;
+	added getEvaluationContext() / setEvaluationContext() methods
+
 2010-12-11  Andras Varga
 
 	* Removed #include <winsock.h> from <platdep/timeutil.h>; the reason

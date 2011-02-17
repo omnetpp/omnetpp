@@ -293,7 +293,7 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         {
             const std::vector<PatternData>& submodPatterns = decl->getSubmoduleParamPatterns(child->getName());
             if (!submodPatterns.empty())
-                doAssignParametersFromPatterns(component, prefix, submodPatterns);
+                doAssignParametersFromPatterns(component, prefix, submodPatterns, true, child);
         }
 
         // for checking the patterns on the compound module, prefix with submodule name
@@ -313,12 +313,12 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
         {
             const std::vector<PatternData>& patterns = decl->getParamPatterns();
             if (!patterns.empty())
-                doAssignParametersFromPatterns(component, prefix, patterns);
+                doAssignParametersFromPatterns(component, prefix, patterns, false, parent);
         }
     }
 }
 
-void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns)
+void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalcontext)
 {
     int numPatterns = patterns.size();
     //XXX for (int i=0; i<numPatterns; i++)
@@ -334,7 +334,7 @@ void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
             for (int j=0; j<numPatterns; j++) {
                 if (patterns[j].matcher->matches(paramPath.c_str())) {
                     //XXX printf("   ^ %s matches it, assigning!\n", patterns[j].matcher->debugStr().c_str());
-                    doAssignParameterFromPattern(par, patterns[j].patternNode);
+                    doAssignParameterFromPattern(par, patterns[j].patternNode, isInSubcomponent, evalcontext);
                     if (par.isSet())
                         break;
                 }
@@ -343,7 +343,7 @@ void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
     }
 }
 
-void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode)
+void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalcontext)
 {
     // note: this code should look similar to relevant part of doParam()
     try {
@@ -354,9 +354,9 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
         {
             //printf("   +++ assigning param %s\n", paramName);
             ASSERT(impl==par.impl() && !impl->isShared());
-            bool isSubcomponent = false; //FIXME is this OK?
-            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isSubcomponent);
+            cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isInSubcomponent);
             cExpressionBuilder::setExpression(impl, dynamicExpr);
+            par.setEvaluationContext(evalcontext);
             impl->setIsSet(!patternNode->getIsDefault());
         }
         else if (patternNode->getIsDefault())
@@ -420,7 +420,7 @@ void cNEDNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
                     currentDecl->putSharedParImplFor(exprNode, value);
                 }
 
-                // evaluate the expresssion, and set the gate vector size
+                // evaluate the expression, and set the gate vector size
                 int gatesize = value->longValue(module);
                 module->setGateSize(gateNode->getName(), gatesize);
             }

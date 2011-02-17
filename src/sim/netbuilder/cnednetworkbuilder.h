@@ -82,8 +82,8 @@ class SIM_API cNEDNetworkBuilder
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
     void assignParametersFromPatterns(cComponent *component);
-    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns);
-    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode);
+    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalcontext);
+    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalcontext);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);

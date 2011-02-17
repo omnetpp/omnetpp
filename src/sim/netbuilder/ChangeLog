@@ -1,3 +1,10 @@
+2010-02-17  Andras Varga
+
+	* fix: deep parameter assignments containing parameter references
+	or the "index" operator were evaluated in the wrong context (in the
+	context of the module whose parameter was assigned, instead of the
+	context where the expression occurred in the code).
+
 2010-06-11  ------ omnetpp-4.1 released ------
 
 2010-05-31  ------ omnetpp-4.1rc2 released ------
@@ -12,7 +19,7 @@
 	by other modules. However, they can still be graphically edited in the
 	IDE, and the ini file editor can provide content assist for setting
 	their parameters.
-
+	
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2009-01-27 Andras Varga

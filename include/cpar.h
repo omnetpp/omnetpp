@@ -81,10 +81,11 @@ class SIM_API cPar : public cObject
   private:
     cComponent *ownercomponent;
     cParImpl *p;
+    cComponent *evalcontext;
 
   private:
     // private constructor -- only cComponent is allowed to create parameters
-    cPar() {ownercomponent = NULL; p = NULL;}
+    cPar() {ownercomponent = evalcontext = NULL; p = NULL;}
     // internal, called from cComponent
     void init(cComponent *ownercomponent, cParImpl *p);
     // internal
@@ -236,11 +237,26 @@ class SIM_API cPar : public cObject
      * Sets the value to the given expression. This object will assume
      * the responsibility to delete the expression object.
      *
+     * The evalcontext parameter determines the module or channel in the
+     * context of which the expression will be evaluated. If evalcontext
+     * is NULL, the owner of this parameter will be used.
+     *
      * Note: if the parameter is marked as non-volatile (isVolatile()==false),
      * one should not set an expression as value. This is not enforced
      * by cPar though.
+     *
+     * @see getOwner(), getEvaluationContext(), setEvaluationContext()
      */
-    cPar& setExpression(cExpression *e);
+    cPar& setExpression(cExpression *e, cComponent *evalcontext=NULL);
+
+    /**
+     * If the parameter contains an expression (see isExpression()), this method
+     * sets the evaluation context for the expression.
+     *
+     * @see getEvaluationContext(), isExpression(), setExpression()
+     */
+    void setEvaluationContext(cComponent *ctx)  {evalcontext = ctx;}
+
     //@}
 
     /** @name Getter functions. Note that overloaded conversion operators also exist. */
@@ -304,6 +320,18 @@ class SIM_API cPar : public cObject
      * Returns pointer to the expression stored by the object, or NULL.
      */
     cExpression *getExpression() const;
+
+    /**
+     * If the parameter contains an expression, this method returns the
+     * module or channel in the context of which the expression will be
+     * evaluated. (The context affects the resolution of parameter
+     * references, and NED operators like <tt>index</tt> or <tt>sizeof()</tt>.)
+     * If the parameter does not contain an expression, the return value is
+     * undefined.
+     *
+     * @see isExpression(), setEvaluationContext()
+     */
+    cComponent *getEvaluationContext() const  {return evalcontext;}
     //@}
 
     /** @name Miscellaneous utility functions. */
