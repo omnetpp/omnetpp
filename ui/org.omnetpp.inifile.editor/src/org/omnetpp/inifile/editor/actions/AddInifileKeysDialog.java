@@ -11,7 +11,7 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -199,13 +199,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         listViewer.getTable().setLayoutData(data);
 
         listViewer.setContentProvider(new ArrayContentProvider());
-        listViewer.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ParamResolution res = (ParamResolution) element;
-				return getKeyFor(res);
-			}
-        });
+        listViewer.setLabelProvider(new LabelProvider());
 
         addSelectionButtons(group2);
 
@@ -315,31 +309,26 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
         } catch (ParamResolutionDisabledException e) {
             Assert.isTrue(false, "This method should not be called.");
         }
-
+        
+        // map to key
+        Set<String> paramKeys = new LinkedHashSet<String>();
+        for (ParamResolution param : params)
+            paramKeys.add(getKeyFor(param));
+        
 		// filter them by text
 		String filterString = filterText.getText().trim();
 		if (!StringUtils.isEmpty(filterString)) {
-	        List<ParamResolution> tmp = new ArrayList<ParamResolution>();
-	        for (ParamResolution res : params)
-	            if (StringUtils.containsIgnoreCase(getKeyFor(res), filterString))
-	                tmp.add(res);
-	        params = tmp;
+	        Set<String> tmp = new LinkedHashSet<String>();
+	        for (String key : paramKeys)
+	            if (StringUtils.containsIgnoreCase(key, filterString))
+	                tmp.add(key);
+	        paramKeys = tmp;
 		}
-		// keep only those that generate unique keys
-		Set<String> uniqueKeys = new HashSet<String>();
-		List<ParamResolution> list = new ArrayList<ParamResolution>();
-		for (ParamResolution res : params) {
-			if (!uniqueKeys.contains(getKeyFor(res))) {
-				uniqueKeys.add(getKeyFor(res));
-				list.add(res);
-			}
-		}
-		params = list;
 
 		// fill the table
 		Object[] currentInput = (Object[]) listViewer.getInput();
-		if (!Arrays.equals(params.toArray(), currentInput)) {
-			listViewer.setInput(params.toArray());
+		if (!Arrays.equals(paramKeys.toArray(), currentInput)) {
+			listViewer.setInput(paramKeys.toArray());
 			listViewer.setAllChecked(true);
 		}
 
@@ -368,7 +357,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
     	// the dialog was disposed
     	ArrayList<String> result = new ArrayList<String>();
     	for (Object res : listViewer.getCheckedElements())
-    		result.add(getKeyFor((ParamResolution)res));
+    		result.add((String)res);
     	this.keysToAdd = result.toArray(new String[]{});
         super.okPressed();
     }
