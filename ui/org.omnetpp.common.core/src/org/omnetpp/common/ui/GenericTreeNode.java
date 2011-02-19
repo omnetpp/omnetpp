@@ -11,21 +11,25 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 
 /**
  * Node for a generic tree where every node contains a payload object.
  * We use this with GenericTreeContentProvider to display an arbitrary
  * object tree in a TreeViewer.
+ * 
+ * The children list of this node can be built by using the addChild() methods,
+ * or lazily by overriding computeChildren().
  *
  * @author andras
  */
 //XXX use org.eclipse.jface.viewers.TreeNode instead? (just discovered such thing exists)
 public class GenericTreeNode {
-	private static final GenericTreeNode[] EMPTY_ARRAY = new GenericTreeNode[0];
+	protected static final GenericTreeNode[] EMPTY_ARRAY = new GenericTreeNode[0];
 
 	private GenericTreeNode parent;
-	private GenericTreeNode[] children;
+	private GenericTreeNode[] children; // ==null, if not yet computed
 	private Object payload;
 	private Comparator<GenericTreeNode> childOrder; // order of the children (maybe null)
 
@@ -53,7 +57,7 @@ public class GenericTreeNode {
 	public GenericTreeNode(Object payload, Comparator<? extends Object> childOrder) {
 		Assert.isTrue(payload!=null);
 		this.payload = payload;
-		this.children = EMPTY_ARRAY;
+		this.children = null;
 		this.childOrder = childOrder != null ? new PayloadComparator(childOrder) : null;
 	}
 
@@ -65,9 +69,10 @@ public class GenericTreeNode {
 		if (child.parent!=null)
 			throw new RuntimeException("child node already has a parent");
 
-		GenericTreeNode[] childrenNew = new GenericTreeNode[children.length + 1];
-		if (childOrder == null) {
-			System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
+		GenericTreeNode[] childrenNew = new GenericTreeNode[children == null ? 1 : children.length + 1];
+		if (childOrder == null || childrenNew.length == 1) {
+		    if (children != null)
+		        System.arraycopy(children, 0, childrenNew, 0, children.length);  //XXX potential bottleneck -- use ArrayList? (Andras)
 			childrenNew[childrenNew.length - 1] = child;
 		}
 		else {
@@ -89,7 +94,7 @@ public class GenericTreeNode {
 
 	public void addChild(int index, GenericTreeNode child) {
 		Assert.isTrue(childOrder == null);
-		children = (GenericTreeNode[])ArrayUtils.add(children, index, child);
+		children = (GenericTreeNode[])ArrayUtils.add(children, index, child); // children == null is accepted by ArrayUtils.add().
 		child.parent = this;
 	}
 
@@ -109,33 +114,30 @@ public class GenericTreeNode {
 	}
 
 	public int getChildCount() {
-		return children.length;
+	    ensureChildren();
+	    return children.length;
+	}
+	
+	public boolean hasChildren() {
+	    ensureChildren();
+	    return children.length > 0;
 	}
 
 	/**
 	 * Returns the children. The result is never null.
 	 */
 	public GenericTreeNode[] getChildren() {
-		return children;
+	    ensureChildren();
+	    return children;
 	}
-
-	/**
-	 * Returns the children of the node in the specified range.
-	 *
-	 * @param start index of the first child, inclusive
-	 * @param end index of the last child, exclusive
-	 * @return an array of the children
-	 */
-	public GenericTreeNode[] getChildren(int start, int end) {
-		Assert.isLegal(0 <= start && start < children.length);
-		Assert.isLegal(start <= end && end <= children.length);
-		GenericTreeNode[] result = new GenericTreeNode[end-start];
-		System.arraycopy(children, start, result, 0, end-start);
-		return result;
+	
+	protected GenericTreeNode[] internalGetChildren() {
+	    return children;
 	}
 
 	public GenericTreeNode getChild(int index) {
-		Assert.isLegal(0 <= index && index < children.length);
+	    ensureChildren();
+	    Assert.isLegal(0 <= index && index < children.length);
 		return children[index];
 	}
 
@@ -154,6 +156,7 @@ public class GenericTreeNode {
 		if (parent == null)
 			return -1;
 		GenericTreeNode[] siblings = parent.children;
+		Assert.isNotNull(siblings);
 		for (int i = 0; i < siblings.length; ++i)
 			if (siblings[i] == this)
 				return i;
@@ -171,12 +174,11 @@ public class GenericTreeNode {
 	 * Adds a child node with the given payload and child order if it not already exists.
 	 */
 	public GenericTreeNode getOrCreateChild(Object payload, Comparator<? extends Object> childOrder) {
-		if (children != null) {
-			for (int i = 0; i < children.length; ++i) {
-				GenericTreeNode child = children[i];
-				if (child.payload.equals(payload))
-					return child;
-			}
+		ensureChildren();
+		for (int i = 0; i < children.length; ++i) {
+			GenericTreeNode child = children[i];
+			if (child.payload.equals(payload))
+				return child;
 		}
 
 		GenericTreeNode child = new GenericTreeNode(payload, childOrder);
@@ -187,6 +189,7 @@ public class GenericTreeNode {
 
 	public void unlink() {
 		Assert.isLegal(parent != null);
+		Assert.isNotNull(parent.children);
 		parent.children = (GenericTreeNode[])ArrayUtils.remove(parent.children, indexInParent());
 		parent = null;
 	}
@@ -195,10 +198,47 @@ public class GenericTreeNode {
 	    if (this.payload==payload || this.payload.equals(payload))
 	        return this;
 	    GenericTreeNode result;
+	    ensureChildren();
 	    for (GenericTreeNode child : children)
 	        if ((result=child.findPayload(payload)) != null)
 	            return result;
 	    return null;
+	}
+	
+	/**
+	 * Clones this node and its descendants recursively.
+	 * The comparators and the payloads are not cloned though.
+	 * The parent of the returned node is always null.
+	 * 
+	 * If there are any uncomputed child list in the tree,
+	 * they are computed before cloning.
+	 */
+	public GenericTreeNode cloneTree() {
+        ensureChildren();
+	    GenericTreeNode node = new GenericTreeNode(payload, childOrder);
+	    for (GenericTreeNode child : children)
+	        node.addChild(child.cloneTree());
+	    return node;
+	}
+	
+	/**
+	 * Ensures that the {@code children} field is filled in
+	 * by calling computeChildren() when needed.
+	 */
+	private void ensureChildren() {
+	    if (children == null) {
+	        children = computeChildren();
+	        Assert.isNotNull(children);
+	    }
+	}
+	
+	/**
+	 * Override this method if the children are computed on demand.
+	 * 
+	 * This method is not allowed to return null.
+	 */
+	protected GenericTreeNode[] computeChildren() {
+	    return EMPTY_ARRAY;
 	}
 	
 	/**
@@ -219,7 +259,7 @@ public class GenericTreeNode {
 		if (this==obj)
 			return true;
 		GenericTreeNode node = (GenericTreeNode)obj;
-		return node.payload==payload || node.payload.equals(payload);
+		return ObjectUtils.equals(node.payload, payload);
 	}
 	
 	@Override

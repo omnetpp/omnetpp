@@ -29,7 +29,8 @@ public class GenericTreeContentProvider implements ITreeContentProvider {
 	}
 
 	public boolean hasChildren(Object element) {
-		return getChildren(element).length > 0;
+        Assert.isTrue(element instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
+		return ((GenericTreeNode)element).hasChildren();
 	}
 
 	public Object[] getElements(Object inputElement) {
