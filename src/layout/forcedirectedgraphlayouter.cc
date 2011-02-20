@@ -84,15 +84,15 @@ void ForceDirectedGraphLayouter::setParameters()
     showSummaForce = environment->getBoolParameter("ssf", 0, false);
 }
 
-void ForceDirectedGraphLayouter::addBody(cModule *mod, IBody *body)
+void ForceDirectedGraphLayouter::addBody(int nodeId, IBody *body)
 {
     embedding.addBody(body);
-    moduleToBodyMap[mod] = body;
+    moduleToBodyMap[nodeId] = body;
 }
 
-IBody *ForceDirectedGraphLayouter::findBody(cModule *mod)
+IBody *ForceDirectedGraphLayouter::findBody(int nodeId)
 {
-    std::map<cModule *, IBody *>::iterator it = moduleToBodyMap.find(mod);
+    std::map<int, IBody *>::iterator it = moduleToBodyMap.find(nodeId);
 
     if (it != moduleToBodyMap.end())
         return it->second;
@@ -339,18 +339,18 @@ void ForceDirectedGraphLayouter::translate(Pt pt)
     }
 }
 
-void ForceDirectedGraphLayouter::addMovableNode(cModule *mod, double width, double height)
+void ForceDirectedGraphLayouter::addMovableNode(int nodeId, double width, double height)
 {
     hasMovableNode = true;
 
     // this is a free variable and body
     Variable *variable = new Variable(Pt::getNil());
-    addBody(mod, new Body(variable, Rs(width, height)));
+    addBody(nodeId, new Body(variable, Rs(width, height)));
 
     graphComponent.addVertex(new Vertex(Pt::getNil(), Rs(width, height), variable));
 }
 
-void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, double x, double y, double width, double height)
+void ForceDirectedGraphLayouter::addFixedNode(int nodeId, double x, double y, double width, double height)
 {
     hasFixedNode = true;
     ensureBorders();
@@ -358,18 +358,18 @@ void ForceDirectedGraphLayouter::addFixedNode(cModule *mod, double x, double y, 
     // a fix node is a constrained variable which can only move on the z axes
     Variable *variable = new PointConstrainedVariable(Pt(x, y, NaN));
     IBody *body = new Body(variable, Rs(width, height));
-    addBody(mod, body);
+    addBody(nodeId, body);
 
     graphComponent.addVertex(new Vertex(Pt(x - width / 2, y - height / 2, NaN), Rs(width, height), variable));
 }
 
-void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height)
+void ForceDirectedGraphLayouter::addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height)
 {
     hasAnchoredNode = true;
 
     // an anchored node is a relatively (to a variable, namely the anchor) positioned body
     Variable *variable = ensureAnchorVariable(anchorname);
-    addBody(mod, new RelativelyPositionedBody(variable, Pt(offx, offy, 0), Rs(width, height)));
+    addBody(nodeId, new RelativelyPositionedBody(variable, Pt(offx, offy, 0), Rs(width, height)));
 
     // update vertex size
     Vertex *vertex = graphComponent.findVertex(variable);
@@ -381,11 +381,11 @@ void ForceDirectedGraphLayouter::addAnchoredNode(cModule *mod, const char *ancho
     }
 }
 
-void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, double len)
+void ForceDirectedGraphLayouter::addEdge(int srcNodeId, int destNodeId, double len)
 {
     // an edge is a spring
     // the -1 edge length will be replaced with expectedEdgeLength
-    Spring *spring = new Spring(findBody(from), findBody(to), -1, len ? len : -1);
+    Spring *spring = new Spring(findBody(srcNodeId), findBody(destNodeId), -1, len ? len : -1);
     embedding.addForceProvider(spring);
 
     // and also an edge in the graph
@@ -393,11 +393,11 @@ void ForceDirectedGraphLayouter::addEdge(cModule *from, cModule *to, double len)
                                     graphComponent.findVertex(spring->getBody2()->getVariable())));
 }
 
-void ForceDirectedGraphLayouter::addEdgeToBorder(cModule *from, double len)
+void ForceDirectedGraphLayouter::addEdgeToBorder(int srcNodeId, double len)
 {
     hasEdgeToBorder = true;
     ensureBorders();
-    IBody *body = findBody(from);
+    IBody *body = findBody(srcNodeId);
 
     // add a force provider which uses four springs each connected to a wall
     // the least expanded spring will provided an attraction force
@@ -529,9 +529,9 @@ void ForceDirectedGraphLayouter::execute()
     }
 }
 
-void ForceDirectedGraphLayouter::getNodePosition(cModule *mod, double& x, double& y)
+void ForceDirectedGraphLayouter::getNodePosition(int nodeId, double& x, double& y)
 {
-    IBody *body = findBody(mod);
+    IBody *body = findBody(nodeId);
     const Pt& pt = body->getPosition();
     x = pt.x;
     y = pt.y;

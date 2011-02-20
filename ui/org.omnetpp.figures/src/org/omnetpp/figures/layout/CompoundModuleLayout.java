@@ -7,7 +7,9 @@
 
 package org.omnetpp.figures.layout;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.AssertionFailedException;
@@ -22,10 +24,11 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.layout.ISubmoduleConstraint.VectorArrangement;
+import org.omnetpp.layout.engine.BasicGraphLayouterEnvironment;
 
 
 /**
- * This layouts submodules inside a compound module.
+ * This lays out submodules inside a compound module.
  *
  * @author rhornig, andras
  */
@@ -35,8 +38,10 @@ public class CompoundModuleLayout extends AbstractLayout {
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
 	private static final int DEFAULT_MAX_WIDTH = 740;
 	private static final int DEFAULT_MAX_HEIGHT = 500;
+	protected Map<IFigure, Integer> moduleToId; 
 	protected long algSeed = 1971;
     private CompoundModuleFigure compoundFigure;
+    
 
 	/**
 	 * Constructor.
@@ -50,11 +55,8 @@ public class CompoundModuleLayout extends AbstractLayout {
 	 * Creates the autoLayout algorithm using all currently specified constraints.
 	 */
 	@SuppressWarnings("unchecked")
-	protected AbstractGraphLayoutAlgorithm createAutoLayouter() {
-	    BasicSpringEmbedderLayoutAlgorithm autoLayouter = new BasicSpringEmbedderLayoutAlgorithm();
-		autoLayouter.setDefaultEdgeLength(100);
-		autoLayouter.setRepulsiveForce(500.0);
-		autoLayouter.setMaxIterations(500);
+	protected ILayoutAlgorithm createAutoLayouter() {
+	    ILayoutAlgorithm autoLayouter = createLayouterAlgorithm();
 
 		// set the layouting area
 		int width = compoundFigure.getBackgroundSize().width;
@@ -63,35 +65,42 @@ public class CompoundModuleLayout extends AbstractLayout {
 		// if the size is not present, use a default size;
 		if (width <= 0) width = DEFAULT_MAX_WIDTH;
 		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
-		autoLayouter.setScaleToArea(width, height, 50);
+		autoLayouter.setSize(width, height, Math.min(Math.min(width, height)/2, 30));  // 1/2 of the width or height for border area, but maximum 30 (see modinsp.cc)
 
+		// use the current index of the figure as an ID so we will be able to identify
+		// the module when we get back it's coordinates from the layouter.
+		int nodeIndex = 0;
+		// we store the index as an ID using the map 
+		moduleToId = new HashMap<IFigure, Integer>();
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
 		IFigure nodeParent = compoundFigure.getSubmoduleLayer();
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
+		    moduleToId.put(node, nodeIndex);
+		    
 			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
-
 			Rectangle shapeBounds = constr.getShapeBounds();
 			Point centerLocation = constr.getCenterLocation();
 			if (centerLocation != null) {
 				// use cached (previously layouted) coordinates
-				autoLayouter.addFixedNode(node, centerLocation.x, centerLocation.y, shapeBounds.width, shapeBounds.height);
+				autoLayouter.addFixedNode(nodeIndex, centerLocation.x, centerLocation.y, shapeBounds.width, shapeBounds.height);
 			}
 			else {
 				// lay out this node, and store the coordinates with setCenterLocation()
 				Point baseLoc = constr.getBaseLocation();
 				if (baseLoc != null) {
 					Point offset = getArrangementOffset(constr, 80); // handle vector layouts; note: we use fixed spacing NOT shape size, because items in a vector may be of different sizes which would result in strange arrangements
-					autoLayouter.addFixedNode(node, baseLoc.x+offset.x, baseLoc.y+offset.y, shapeBounds.width, shapeBounds.height);
+					autoLayouter.addFixedNode(nodeIndex, baseLoc.x+offset.x, baseLoc.y+offset.y, shapeBounds.width, shapeBounds.height);
 				}
 				else if (constr.getVectorIdentifier()==null || constr.getVectorArrangement()==VectorArrangement.none) {
-					autoLayouter.addMovableNode(node, shapeBounds.width, shapeBounds.height);
+					autoLayouter.addMovableNode(nodeIndex, shapeBounds.width, shapeBounds.height);
 				}
 				else {
 					Point offset = getArrangementOffset(constr, 80); // handle vector layouts
-					autoLayouter.addAnchoredNode(node, constr.getVectorIdentifier(), offset.x, offset.y, shapeBounds.width, shapeBounds.height);
+					autoLayouter.addAnchoredNode(nodeIndex, constr.getVectorIdentifier().toString(), offset.x, offset.y, shapeBounds.width, shapeBounds.height);
 				}
 			}
+			nodeIndex++;
 		}
 
 		// iterate over the connections and add them to the algorithm
@@ -105,20 +114,38 @@ public class CompoundModuleLayout extends AbstractLayout {
                 // add the edge ONLY if it has figures at both side
                 if (srcFig == null || targetFig == null)
                     continue;
-				// if this is an edge coming from outside to a submodule
-				if (!(srcFig instanceof SubmoduleFigure)) {
-					autoLayouter.addEdgeToBorder(targetFig, 0);
-				} // else if this is an edge going out from a submodule
-				else if (!(targetFig instanceof SubmoduleFigure)) {
-					autoLayouter.addEdgeToBorder(srcFig, 0);
+                
+                if (srcFig instanceof SubmoduleFigure && targetFig instanceof SubmoduleFigure) {
+                    autoLayouter.addEdge(moduleToId.get(srcFig), moduleToId.get(targetFig), 0);
+                }
+                else if (targetFig instanceof SubmoduleFigure) {   // compound to submodule
+					autoLayouter.addEdgeToBorder(moduleToId.get(targetFig), 0);
+				} 
+				else if (srcFig instanceof SubmoduleFigure) {  // submodule to compound
+					autoLayouter.addEdgeToBorder(moduleToId.get(srcFig), 0);
 				}
-				else {  // both are submodules
-					autoLayouter.addEdge(srcFig, targetFig, 0);
-				}
+                // we do not care about compound --> compound connections in layouting
 			}
 		}
 		return autoLayouter;
 	}
+
+    protected ILayoutAlgorithm createLayouterAlgorithm() {
+        // Java implementation: 
+        // ILayoutAlgorithm layouter = new BasicSpringEmbedderLayoutAlgorithm();
+        
+        // Levy's C++ implementation (can be parameterized via BasicGraphLayouterEnvironment): 
+        // ILayoutAlgorithm layouter = new NativeForceDirectedLayoutAlgorithm(new BasicGraphLayouterEnvironment());
+
+        // Classic C++ implementation:
+        BasicGraphLayouterEnvironment environment = new BasicGraphLayouterEnvironment();
+        environment.setTimeout(15); //seconds
+        ILayoutAlgorithm layouter = new NativeBasicSpringEmbedderLayoutAlgorithm(environment);
+		layouter.setDefaultEdgeLength(100);
+        //autoLayouter.setRepulsiveForce(500.0);
+        //autoLayouter.setMaxIterations(500);
+        return layouter;
+    }
 
 	protected Point getArrangementOffset(ISubmoduleConstraint constr, int spacing) {
 		int x, y;
@@ -183,7 +210,7 @@ public class CompoundModuleLayout extends AbstractLayout {
 	    long startTime = System.currentTimeMillis();
 
 	    // create and run the layouter
-	    AbstractGraphLayoutAlgorithm alg = createAutoLayouter();
+	    ILayoutAlgorithm alg = createAutoLayouter();
 	    alg.setSeed((int)algSeed);
 	    alg.execute();
 
@@ -192,9 +219,12 @@ public class CompoundModuleLayout extends AbstractLayout {
 
     	// lay out the children according to the auto-layouter
         for (IFigure f : (List<IFigure>)parent.getChildren()) {
+            Integer id = moduleToId.get(f);
+            Assert.isNotNull(id);
+            
         	// get the computed location from the auto-layout algorithm (if there is an algorithm at all)
         	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
-        	Point locationFromAlg = alg.getNodePosition(f);
+        	Point locationFromAlg = alg.getNodePosition(id);
         	Assert.isNotNull(locationFromAlg);
 
         	// we write back the calculated locations

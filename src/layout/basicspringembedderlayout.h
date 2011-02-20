@@ -50,7 +50,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
 
     struct Node
     {
-        cModule *key;      // node "handle"
+        int nodeId;        // node "handle"
         bool fixed;        // allowed to move?
         Anchor *anchor;    // non-NULL for anchored nodes
         double x, y;       // position (of the center of the shape)
@@ -65,7 +65,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     struct Edge
     {
         Node *src;
-        Node *target;
+        Node *dest;
         double len;        // preferred length
     };
 
@@ -77,6 +77,9 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     AnchorList anchors;
     NodeList nodes;
     EdgeList edges;
+
+    typedef std::map<int,Node*> NodeMap;  // nodeId-to-Node mapping
+    NodeMap nodeMap;
 
     double defaultEdgeLen;
 
@@ -92,7 +95,7 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
 
   protected:
     // utility
-    Node *findNode(cModule *mod);
+    Node *findNode(int nodeId);
 
     // mark connected nodes with same color; return number of colors used
     virtual int doColoring();
@@ -132,14 +135,20 @@ class LAYOUT_API BasicSpringEmbedderLayout : public GraphLayouter
     /** @name Redefined GraphLayouter methods */
     //@{
     virtual void setEnvironment(GraphLayouterEnvironment *environment);
-    void addMovableNode(cModule *mod, double width, double height);
-    void addFixedNode(cModule *mod, double x, double y, double width, double height);
-    void addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height);
-    void addEdge(cModule *src, cModule *target, double len=0);
-    void addEdgeToBorder(cModule *src, double len=0);
+    void addMovableNode(int nodeId, double width, double height);
+    void addFixedNode(int nodeId, double x, double y, double width, double height);
+    void addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height);
+    void addEdge(int srcNodeId, int destNodeId, double preferredLength=0);
+    void addEdgeToBorder(int srcNodeId, double preferredLength=0);
     virtual void execute();
-    void getNodePosition(cModule *mod, double& x, double& y);
+    void getNodePosition(int nodeId, double& x, double& y);
     //@}
+
+    // set layouter paramaters
+    void setDefaultEdgeLength(int edgeLength) { defaultEdgeLen = edgeLength; }
+    void setMaxIterations(int iterations) { maxIterations = iterations; }
+    void setRepulsiveForce(double force) { repulsiveForce = force; }
+    void setAttractionForce(double force) { attractionForce = force; }
 };
 
 NAMESPACE_END

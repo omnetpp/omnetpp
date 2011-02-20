@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.geometry.Point;
+import org.eclipse.draw2d.geometry.PrecisionPoint;
 import org.omnetpp.common.Debug;
 
 /**
@@ -28,33 +28,29 @@ import org.omnetpp.common.Debug;
  *
  * @author andras
  */
-public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgorithm
-{
-    static class Anchor
-    {
+public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgorithm {
+    static class Anchor {
         Object name;      // anchor identifier
         double x, y;      // position
         int refcount;     // how many nodes are anchored to it
         double dx, dy;    // internal: movement at each step (NOT preserved across iterations!)
     };
 
-    static class Node
-    {
+    static class Node {
         boolean fixed;     // allowed to move?
         Anchor anchor;     // not NULL for anchored nodes
         double x, y;       // position (of the center of the shape)
-        int offx, offy;    // anchored nodes: offset to anchor point (and x,y are calculated)
-        int sx, sy;        // half width/height
+        double offx, offy; // anchored nodes: offset to anchor point (and x,y are calculated)
+        double sx, sy;     // half width/height
 
         double dx, dy;     // internal: movement at each step
         int color;         // internal: connected nodes share the same color
     };
 
-    static class Edge
-    {
+    static class Edge {
         Node from;
         Node to;
-        int len;
+        double len;
     };
 
     List<Anchor> anchors = new ArrayList<Anchor>();
@@ -84,7 +80,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     boolean haveAnchoredNode;
     boolean allNodesAreFixed;
 
-    int minx, miny, maxx, maxy;
+    double minx, miny, maxx, maxy;
 
     double repulsiveForce;
     double attractionForce;
@@ -113,27 +109,30 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     /**
      * Set repulsive force
      */
-    void setRepulsiveForce(double f) {
+    public void setRepulsiveForce(double f) {
         repulsiveForce = f;
     }
 
     /**
      * Set attraction force
      */
-    void setAttractionForce(double f) {
+    public void setAttractionForce(double f) {
         attractionForce = f;
     }
 
     /**
      * Set max number of iterations
      */
-    void setMaxIterations(int n) {
+    public void setMaxIterations(int n) {
         maxIterations = n;
     }
 
-	@Override
-	public void addMovableNode(Object mod, int width, int height) {
-	    Assert.isTrue(findNode(mod)==null);
+    public void setSize(double width, double height, double border) {
+            setScaleToArea(width, height, border);
+    }
+
+    public void addMovableNode(int nodeId, double width, double height) {
+	    Assert.isTrue(findNode(nodeId)==null);
 
 	    allNodesAreFixed = false;
 
@@ -144,12 +143,11 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    n.sy = height/2;
 
 	    nodes.add(n);
-        nodeMap.put(mod, n);
+        nodeMap.put(nodeId, n);
 	}
 
-	@Override
-	public void addFixedNode(Object mod, int x, int y, int width, int height) {
-	    Assert.isTrue(findNode(mod)==null);
+	public void addFixedNode(int nodeId, double x, double y, double width, double height) {
+	    Assert.isTrue(findNode(nodeId)==null);
 
 	    haveFixedNode = true;
 
@@ -162,12 +160,11 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    n.sy = height/2;
 
 	    nodes.add(n);
-        nodeMap.put(mod, n);
+        nodeMap.put(nodeId, n);
 	}
 
-	@Override
-	public void addAnchoredNode(Object mod, Object anchorname, int offx, int offy, int width, int height) {
-	    Assert.isTrue(findNode(mod)==null);
+	public void addAnchoredNode(int nodeId, String anchorname, double offx, double offy, double width, double height) {
+	    Assert.isTrue(findNode(nodeId)==null);
 
 	    haveAnchoredNode = true;
 	    allNodesAreFixed = false;
@@ -197,16 +194,19 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    n.sy = height/2;
 
 	    nodes.add(n);
-	    nodeMap.put(mod, n);
+	    nodeMap.put(nodeId, n);
 	}
 
-	@Override
-	public void addEdge(Object from, Object to, int len) {
-	   Assert.isTrue(findNode(from)!=null && findNode(to)!=null);
+    public void setAnchorPosition(String anchor, double x, double y) {
+        // TODO NOT YET IMPLEMENTED
+    }
+
+	public void addEdge(int srcNodeId, int destNodeId, double len) {
+	   Assert.isTrue(findNode(srcNodeId)!=null && findNode(destNodeId)!=null);
 
 	    Edge e = new Edge();
-	    e.from = findNode(from);
-	    e.to = findNode(to);
+	    e.from = findNode(srcNodeId);
+	    e.to = findNode(destNodeId);
 	    e.len = len>0 ? len : defaultEdgeLen;
 	    Assert.isTrue(e.to!=null && e.from!=null);
 
@@ -216,12 +216,10 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    edges.add(e);
 	}
 
-	@Override
-	public void addEdgeToBorder(Object from, int len) {
+	public void addEdgeToBorder(int nodeId, double len) {
 	    // XXX this layouter algorithm ignores connections to border
 	}
 
-	@Override
 	public void execute() {
         long startMillis = System.currentTimeMillis();
 
@@ -364,26 +362,28 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
 	    }
 	}
 
-	@Override
-	public Point getNodePosition(Object mod) {
-	    Node n = findNode(mod);
+	public PrecisionPoint getNodePosition(int nodeId) {
+	    Node n = findNode(nodeId);
 	    if (n == null)
 	        return null;
 
-	    return new Point(n.x, n.y);
+	    return new PrecisionPoint(n.x, n.y);
 	}
 
+    public PrecisionPoint getAnchorPosition(String anchor) {
+        // TODO NOT YET IMPLEMENTED
+        return null;
+    }
+	
     // utility
-	protected Node findNode(Object mod)
-	{
-	    return nodeMap.get(mod);
+	protected Node findNode(int nodeId) {
+	    return nodeMap.get(nodeId);
 	}
 
     /**
      * Mark connected nodes with same color (needed by relax())
      */
-    protected void doColoring()
-    {
+    protected void doColoring() {
         for (Node n : nodes)
             n.color = -1;
 
@@ -421,8 +421,7 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     /**
      * Main algorithm (modified spring embedder)
      */
-    protected double relax()
-    {
+    protected double relax() {
         // TBD revise:
         //   - calculates in double (slow)
         //   - ignores connections to parent module
@@ -682,14 +681,4 @@ public class BasicSpringEmbedderLayoutAlgorithm extends AbstractGraphLayoutAlgor
     	}
     }
 
-    @Override
-    public Point getAnchorPosition(Object anchor) {
-        // TODO NOT YET IMPLEMENTED
-        return null;
-    }
-
-    @Override
-    public void setAnchorPosition(Object anchor, int x, int y) {
-        // TODO NOT YET IMPLEMENTED
-    }
 }

@@ -1,3 +1,14 @@
+2011-02-18  Andras Varga
+
+	* in the layouter external interface (GraphLayouter), changed cModule*
+	pointers to int nodeId as a means of identifying nodes, because 
+	using cModule* was not very convenient with the SWIG JNI wrapper 
+	(nativelibs library).
+
+	* added BasicGraphLayouterEnvironment, for use from the IDE
+
+	* BasicSpringEmbedderLayout: findNode() is no longer linear search
+
 2011-02-15  Andras Varga
 
 	* In the external interface of layouters (GraphLayouter class), 
@@ -42,7 +53,7 @@
 	- initial random placement to use the area already occupied by fixed
 	  nodes (but minimum 600x400)
 	- removed scalingMode, setConfineToArea(), setScaleToArea(); related
-	  functionality is now interal to the layouter class
+	  functionality is now internal to the layouter class
 	- removed several tweaks and nonlinearities from layouting code
 	- removed unused CONTRACTING_BOX code
 	- renaming of variables ("from"/"to" to "src"/"target", etc)

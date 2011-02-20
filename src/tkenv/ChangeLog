@@ -1,3 +1,8 @@
+2011-02-18  Rudolf Hornig
+
+	* adapted to layouter external interface change (cModule*->int nodeId,
+	see ChangeLog entry)
+
 2011-02-15  Andras Varga
 
 	* fix for bug #248: compute coordinates and distances (rectangle size,

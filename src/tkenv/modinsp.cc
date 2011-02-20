@@ -477,23 +477,23 @@ void TGraphicalModWindow::refreshLayout()
         if (explicitcoords)
         {
             // e.g. "p=120,70" or "p=140,30,ring"
-            layouter->addFixedNode(submod, x, y, sx, sy);
+            layouter->addFixedNode(submod->getId(), x, y, sx, sy);
         }
         else if (submodPosMap.find(submod)!=submodPosMap.end())
         {
             // reuse coordinates from previous layout
             Point pos = submodPosMap[submod];
-            layouter->addFixedNode(submod, pos.x, pos.y, sx, sy);
+            layouter->addFixedNode(submod->getId(), pos.x, pos.y, sx, sy);
         }
         else if (obeyslayout)
         {
             // all modules are anchored to the anchor point with the vector's name
             // e.g. "p=,,ring"
-            layouter->addAnchoredNode(submod, submod->getName(), x, y, sx, sy);
+            layouter->addAnchoredNode(submod->getId(), submod->getName(), x, y, sx, sy);
         }
         else
         {
-            layouter->addMovableNode(submod, sx, sy);
+            layouter->addMovableNode(submod->getId(), sx, sy);
         }
     }
 
@@ -513,15 +513,15 @@ void TGraphicalModWindow::refreshLayout()
                 if (mod==parentmodule && destmod==parentmodule) {
                     // nop
                 } else if (destmod==parentmodule) {
-                    layouter->addEdgeToBorder(mod);
+                    layouter->addEdgeToBorder(mod->getId());
                 } else if (destmod->getParentModule()!=parentmodule) {
                     // connection goes to a module under a different parent!
                     // this in fact violates module encapsulation, but let's
                     // accept it nevertheless. Just skip this connection.
                 } else if (mod==parentmodule) {
-                    layouter->addEdgeToBorder(destmod);
+                    layouter->addEdgeToBorder(destmod->getId());
                 } else {
-                    layouter->addEdge(mod,destmod);
+                    layouter->addEdge(mod->getId(), destmod->getId());
                 }
             }
         }
@@ -552,7 +552,7 @@ void TGraphicalModWindow::refreshLayout()
         cModule *submod = it();
 
         Point pos;
-        layouter->getNodePosition(submod, pos.x, pos.y);
+        layouter->getNodePosition(submod->getId(), pos.x, pos.y);
         submodPosMap[submod] = pos;
     }
 

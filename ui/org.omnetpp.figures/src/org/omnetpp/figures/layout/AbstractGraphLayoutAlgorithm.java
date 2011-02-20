@@ -8,25 +8,24 @@
 package org.omnetpp.figures.layout;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.geometry.Point;
 
 /**
  * Abstract base class for graph layouting algorithms.
  *
  * @author andras
  */
-public abstract class AbstractGraphLayoutAlgorithm
+public abstract class AbstractGraphLayoutAlgorithm implements ILayoutAlgorithm
 {
 	protected static boolean debug = false;
 
 	protected static boolean firstTime = true;
 
-	protected int defaultEdgeLen;
+	protected double defaultEdgeLen;
 
     // params set by setConfineToArea()
-    protected int width;
-    protected int height;
-    protected int border;
+    protected double width;
+    protected double height;
+    protected double border;
 
     protected static final int SIZINGMODE_FREE = 1;
     protected static final int SIZINGMODE_CONFINE = 2;
@@ -71,51 +70,10 @@ public abstract class AbstractGraphLayoutAlgorithm
         sizingMode = SIZINGMODE_FREE;
     }
 
-    /**
-     * Add node that can be moved.
-     */
-    public abstract void addMovableNode(Object mod, int width, int height);
-
-    /**
-     * Add fixed node
-     */
-    public abstract void addFixedNode(Object mod, int x, int y, int width, int height);
-
-    /**
-     * May be called after addAnchoredNode.
-     */
-    public abstract void setAnchorPosition(Object anchor, int x, int y);
-
-    /**
-     * Add node that is anchored to a freely movable anchor point. Nodes anchored
-     * to the same anchor point can only move together. Anchor points are
-     * identified by name, and they need not be pre-declared (they are registered
-     * on demand.) Usage: module vectors in ring, matrix, etc. layout.
-     *
-     * offx, offy: offset to anchor point
-     */
-    public abstract void addAnchoredNode(Object mod, Object anchor, int offx, int offy, int width, int height);
-
-    /**
-     * Add connection (graph edge)
-     */
-    public abstract void addEdge(Object from, Object to, int len);
-
-    /**
-     * Add connection (graph edge) to enclosing (parent) module
-     */
-    public abstract void addEdgeToBorder(Object from, int len);
-
-    /**
-     * Set rng seed
-     */
     public void setSeed(int seed) {
         rndseed = seed;
     }
 
-    /**
-     * The current seed of the random number generator
-     */
     public int getSeed() {
     	return rndseed;
     }
@@ -123,7 +81,7 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * Set preferred graph edge length
      */
-    void setDefaultEdgeLength(int len) {
+    public void setDefaultEdgeLength(int len) {
         defaultEdgeLen = len;
     }
 
@@ -140,26 +98,11 @@ public abstract class AbstractGraphLayoutAlgorithm
     /**
      * After layouting, scale graph to fit into the given rectangle
      */
-    void setScaleToArea(int width, int height, int border) {
+    void setScaleToArea(double width, double height, double border) {
         this.width = width;
         this.height = height;
         this.border = border;
         sizingMode = SIZINGMODE_SCALE;
     }
-
-    /**
-     * Run the layouting algorithm.
-     */
-    public abstract void execute();
-
-    /**
-     * Extract the results after layouting
-     */
-    public abstract Point getNodePosition(Object mod);
-
-    /**
-     * Returns the position of the given anchor after layouting
-     */
-    public abstract Point getAnchorPosition(Object anchor);
 }
 

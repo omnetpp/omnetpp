@@ -159,8 +159,8 @@
 %define FIXUP_GETNODEPOSITION(CLASS)
 %ignore CLASS::getNodePosition;
 %extend CLASS {
-   double getNodePositionX(cModule *mod) {double x,y; self->getNodePosition(mod, x, y); return x;}
-   double getNodePositionY(cModule *mod) {double x,y; self->getNodePosition(mod, x, y); return y;}
+   double getNodePositionX(int mod) {double x,y; self->getNodePosition(mod, x, y); return x;}
+   double getNodePositionY(int mod) {double x,y; self->getNodePosition(mod, x, y); return y;}
 }
 %enddef
 

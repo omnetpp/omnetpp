@@ -108,7 +108,7 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     ForceDirectedEmbedding embedding;
 
     std::map<std::string, Variable *> anchorNameToVariableMap;
-    std::map<cModule *, IBody *> moduleToBodyMap;
+    std::map<int, IBody *> moduleToBodyMap;
 
   public:
     /**
@@ -124,12 +124,12 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     /**
      * Add node that can be moved.
      */
-    virtual void addMovableNode(cModule *mod, double width, double height);
+    virtual void addMovableNode(int nodeId, double width, double height);
 
     /**
      * Add fixed node
      */
-    virtual void addFixedNode(cModule *mod, double x, double y, double width, double height);
+    virtual void addFixedNode(int nodeId, double x, double y, double width, double height);
 
     /**
      * Add node that is anchored to a freely movable anchor point. Nodes anchored
@@ -139,17 +139,17 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
      *
      * offx, offy: offset to anchor point
      */
-    virtual void addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height);
+    virtual void addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height);
 
     /**
      * Add connection (graph edge)
      */
-    virtual void addEdge(cModule *from, cModule *to, double len=0);
+    virtual void addEdge(int srcNodeId, int destNodeId, double preferredLength=0);
 
     /**
      * Add connection (graph edge) to enclosing (parent) module
      */
-    virtual void addEdgeToBorder(cModule *from, double len=0);
+    virtual void addEdgeToBorder(int srcNodeId, double preferredLength=0);
 
     /**
      * The layouting algorithm.
@@ -159,11 +159,11 @@ class LAYOUT_API ForceDirectedGraphLayouter : public GraphLayouter
     /**
      * Extracting the results
      */
-    virtual void getNodePosition(cModule *mod, double& x, double& y);
+    virtual void getNodePosition(int nodeId, double& x, double& y);
 
   protected:
-    void addBody(cModule *mod, IBody *body);
-    IBody *findBody(cModule *mod);
+    void addBody(int nodeId, IBody *body);
+    IBody *findBody(int nodeId);
     Variable *ensureAnchorVariable(const char *anchorname);
 
     /**

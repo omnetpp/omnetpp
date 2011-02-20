@@ -63,38 +63,37 @@ void BasicSpringEmbedderLayout::setEnvironment(GraphLayouterEnvironment *environ
     maxIterations = environment->getLongParameter("bgl", 3 , maxIterations);
 }
 
-BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(cModule *mod)
+BasicSpringEmbedderLayout::Node *BasicSpringEmbedderLayout::findNode(int nodeId)
 {
-    for (NodeList::iterator i=nodes.begin(); i!=nodes.end(); ++i)
-        if ((*i)->key == mod)
-            return (*i);
-    return NULL;
+    NodeMap::iterator it = nodeMap.find(nodeId);
+    return it==nodeMap.end() ? NULL : it->second;
 }
 
-void BasicSpringEmbedderLayout::addMovableNode(cModule *mod, double width, double height)
+void BasicSpringEmbedderLayout::addMovableNode(int nodeId, double width, double height)
 {
-    Assert(findNode(mod)==NULL);
+    Assert(findNode(nodeId)==NULL);
 
     allNodesAreFixed = false;
 
     Node *n = new Node();
-    n->key = mod;
+    n->nodeId = nodeId;
     n->fixed = false;
     n->anchor = NULL;
     n->sx = width/2;
     n->sy = height/2;
 
     nodes.push_back(n);
+    nodeMap[nodeId] = n;
 }
 
-void BasicSpringEmbedderLayout::addFixedNode(cModule *mod, double x, double y, double width, double height)
+void BasicSpringEmbedderLayout::addFixedNode(int nodeId, double x, double y, double width, double height)
 {
-    Assert(findNode(mod)==NULL);
+    Assert(findNode(nodeId)==NULL);
 
     haveFixedNode = true;
 
     Node *n = new Node();
-    n->key = mod;
+    n->nodeId = nodeId;
     n->fixed = true;
     n->anchor = NULL;
     n->x = x;
@@ -103,18 +102,19 @@ void BasicSpringEmbedderLayout::addFixedNode(cModule *mod, double x, double y, d
     n->sy = height/2;
 
     nodes.push_back(n);
+    nodeMap[nodeId] = n;
 }
 
 
-void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchorname, double offx, double offy, double width, double height)
+void BasicSpringEmbedderLayout::addAnchoredNode(int nodeId, const char *anchorname, double offx, double offy, double width, double height)
 {
-    Assert(findNode(mod)==NULL);
+    Assert(findNode(nodeId)==NULL);
 
     haveAnchoredNode = true;
     allNodesAreFixed = false;
 
     Node *n = new Node();
-    n->key = mod;
+    n->nodeId = nodeId;
 
     Anchor *anchor;
     AnchorList::iterator a;
@@ -142,39 +142,42 @@ void BasicSpringEmbedderLayout::addAnchoredNode(cModule *mod, const char *anchor
     n->sy = height/2;
 
     nodes.push_back(n);
+    nodeMap[nodeId] = n;
 }
 
-void BasicSpringEmbedderLayout::addEdge(cModule *src, cModule *target, double len)
+void BasicSpringEmbedderLayout::addEdge(int srcNodeId, int destNodeId, double len)
 {
-    Assert(findNode(src)!=NULL && findNode(target)!=NULL);
+    Assert(findNode(srcNodeId)!=NULL && findNode(destNodeId)!=NULL);
 
     Edge e;
-    e.src = findNode(src);
-    e.target = findNode(target);
+    e.src = findNode(srcNodeId);
+    e.dest = findNode(destNodeId);
     e.len = len>0 ? len : defaultEdgeLen;
 
     // heuristics to take submodule size into account
-    e.len += std::min(e.src->sx,e.src->sy)/2 + std::min(e.target->sx,e.target->sy)/2;
+    e.len += std::min(e.src->sx,e.src->sy)/2 + std::min(e.dest->sx,e.dest->sy)/2;
 
     edges.push_back(e);
 }
 
-void BasicSpringEmbedderLayout::addEdgeToBorder(cModule *, double)
+void BasicSpringEmbedderLayout::addEdgeToBorder(int, double)
 {
     // this layouter algorithm ignores connections to border
 }
 
-void BasicSpringEmbedderLayout::getNodePosition(cModule *mod, double& x, double& y)
+void BasicSpringEmbedderLayout::getNodePosition(int nodeId, double& x, double& y)
 {
-    Assert(findNode(mod)!=NULL);
+    Assert(findNode(nodeId)!=NULL);
 
-    Node *n = findNode(mod);
+    Node *n = findNode(nodeId);
     x = n->x;
     y = n->y;
 }
 
 void BasicSpringEmbedderLayout::execute()
 {
+    Assert(environment!=NULL);
+
     if (nodes.empty() || allNodesAreFixed)
         return;
 
@@ -396,9 +399,9 @@ int BasicSpringEmbedderLayout::doColoring()
             for (k=edges.begin(); k!=edges.end(); ++k)
             {
                 Edge& e = *k;
-                if (e.src==n && e.target->color==-1)
-                    todoList.push_back(e.target);
-                else if (e.target==n && e.src->color==-1)
+                if (e.src==n && e.dest->color==-1)
+                    todoList.push_back(e.dest);
+                else if (e.dest==n && e.src->color==-1)
                     todoList.push_back(e.src);
             }
         }
@@ -490,20 +493,20 @@ double BasicSpringEmbedderLayout::relax()
     for (k=edges.begin(); k!=edges.end(); ++k)
     {
         Edge& e = *k;
-        if (e.src->fixed && e.target->fixed)
+        if (e.src->fixed && e.dest->fixed)
             continue;
-        if (e.src->anchor && e.src->anchor == e.target->anchor)
+        if (e.src->anchor && e.src->anchor == e.dest->anchor)
             continue;
-        double deltax = e.target->x - e.src->x;
-        double deltay = e.target->y - e.src->y;
+        double deltax = e.dest->x - e.src->x;
+        double deltay = e.dest->y - e.src->y;
         double dist = sqrt(deltax * deltax + deltay * deltay);
         dist = (dist == 0) ? 1.0 : dist;
         double f = attractionForce * double(e.len - dist) / dist;
         double vx = f * deltax;
         double vy = f * deltay;
 
-        e.target->vx += vx;
-        e.target->vy += vy;
+        e.dest->vx += vx;
+        e.dest->vy += vy;
         e.src->vx -= vx;
         e.src->vy -= vy;
     }
@@ -695,7 +698,7 @@ void BasicSpringEmbedderLayout::debugDraw(int step)
     {
         Edge& e = *j;
         const char *color = colors[e.src->color % (sizeof(colors)/sizeof(char*))];
-        environment->drawLine(e.src->x, e.src->y, e.target->x, e.target->y, "{edge bbox}", color);
+        environment->drawLine(e.src->x, e.src->y, e.dest->x, e.dest->y, "{edge bbox}", color);
     }
 
     char buf[80];
