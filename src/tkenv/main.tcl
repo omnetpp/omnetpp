@@ -157,12 +157,12 @@ proc create_omnetpp_window {} {
 
     # File menu
     foreach i {
-      {command -command new_run -label {Set up a configuration...} -underline 7}
+      {command -command new_run -label {Set Up a Configuration...} -underline 7}
       {separator}
-      {command -command load_nedfile -label {Load NED file...} -underline 0}
-      {command -command new_network -label {Set up an unconfigured network...} -underline 7}
+      {command -command load_nedfile -label {Load NED File...} -underline 0}
+      {command -command new_network -label {Set Up an Unconfigured Network...} -underline 7}
       {separator}
-      {command -command create_snapshot -label {Create snapshot...} -underline 7}
+      {command -command create_snapshot -label {Create Snapshot...} -underline 7}
       {separator}
       {command -command exit_omnetpp -label Exit -underline 1}
     } {
@@ -174,9 +174,9 @@ proc create_omnetpp_window {} {
       {command -command edit_copy -label {Copy} -accel {Ctrl+C} -underline 0}
       {separator}
       {command -command edit_find -label {Find...} -accel {Ctrl+F} -underline 0}
-      {command -command edit_findnext -label {Find next} -accel {Ctrl+N,F3} -underline 5}
+      {command -command edit_findnext -label {Find Next} -accel {Ctrl+N,F3} -underline 5}
       {separator}
-      {command -command edit_filterwindowcontents -label {Filter window contents...} -accel {Ctrl+H} -underline 0}
+      {command -command edit_filterwindowcontents -label {Filter Window Contents...} -accel {Ctrl+H} -underline 0}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -185,27 +185,27 @@ proc create_omnetpp_window {} {
     #  {command -command init_step -label {First real event} -underline 1}
     #  {separator}
     foreach i {
-      {command -command one_step -label {One step} -accel {F4} -underline 4}
-      {command -command run_slow -label {Slow execution} -underline 1}
+      {command -command one_step -label {One Step} -accel {F4} -underline 4}
+      {command -command run_slow -label {Slow Execution} -underline 1}
       {separator}
       {command -command run_normal -label {Run}  -accel {F5} -underline 0}
-      {command -command run_fast -label {Fast run (rare display updates)} -accel {F6} -underline 0}
-      {command -command run_express -label {Express run (tracing off)} -accel {F7} -underline 1}
-      {command -command run_until -label {Run until...} -underline 4}
+      {command -command run_fast -label {Fast Run (rare display updates)} -accel {F6} -underline 0}
+      {command -command run_express -label {Express Run (tracing off)} -accel {F7} -underline 1}
+      {command -command run_until -label {Run Until...} -underline 4}
       {separator}
-      {command -command stop_simulation -label {Stop execution} -accel {F8} -underline 0}
+      {command -command stop_simulation -label {Stop Execution} -accel {F8} -underline 0}
       {separator}
-      {command -command call_finish -label {Call finish() for all modules} -underline 0}
-      {command -command rebuild -label {Rebuild network} -underline 1}
+      {command -command call_finish -label {Call finish() for All Modules} -underline 0}
+      {command -command rebuild -label {Rebuild Network} -underline 1}
     } {
       eval .menubar.simulatemenu$m add $i
     }
 
     # Trace menu
     foreach i {
-      {command -command message_windows -label {Message sending...} -underline 8}
+      {command -command message_windows -label {Message Sending...} -underline 8}
       {separator}
-      {command -command clear_windows -label {Clear main window} -underline 0}
+      {command -command clear_windows -label {Clear Main Window} -underline 0}
     } {
       eval .menubar.tracemenu$m add $i
     }
@@ -216,15 +216,15 @@ proc create_omnetpp_window {} {
     #  {command -command inspect_matching -label {By pattern matching...} -underline 3}
     foreach i {
       {command -command inspect_systemmodule -label {Network} -underline 0}
-      {command -command inspect_messagequeue -label {Scheduled events (FES)} -underline 0}
+      {command -command inspect_messagequeue -label {Scheduled Events (FES)} -underline 0}
       {command -command inspect_simulation   -label {Simulation} -underline 1}
       {separator}
-      {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
+      {cascade -label {Available Components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspect_filteredobjectlist -label {Show 'Find/inspect objects' window} -accel {Ctrl+S} -underline 0}
-      {command -command inspect_bypointer -label {Inspect by pointer...} -underline 4}
+      {command -command inspect_filteredobjectlist -label {Show 'Find/Inspect Objects' Window} -accel {Ctrl+S} -underline 0}
+      {command -command inspect_bypointer -label {Inspect by Pointer...} -underline 4}
       {separator}
-      {command -command opp_updateinspectors -label {Refresh inspectors} -underline 0}
+      {command -command opp_updateinspectors -label {Refresh Inspectors} -underline 0}
     } {
       eval .menubar.inspectmenu$m add $i
     }
@@ -232,38 +232,38 @@ proc create_omnetpp_window {} {
     # Inspect|Components menu
     menu .menubar.inspectmenu$m.components -tearoff 0
     foreach i {
-      {command -command inspect_componenttypes -label {NED component types} -underline 0}
-      {command -command inspect_classes        -label {Registered classes} -underline 0}
-      {command -command inspect_functions      -label {NED functions} -underline 4}
+      {command -command inspect_componenttypes -label {NED Component Types} -underline 0}
+      {command -command inspect_classes        -label {Registered Classes} -underline 0}
+      {command -command inspect_functions      -label {NED Functions} -underline 4}
       {command -command inspect_enums          -label {Registered Enums} -underline 11}
-      {command -command inspect_configentries  -label {Supported configuration options} -underline 0}
+      {command -command inspect_configentries  -label {Supported Configuration Options} -underline 0}
     } {
       eval .menubar.inspectmenu$m.components add $i
     }
 
     # View menu
     foreach i {
-      {command -label {Ini file} -underline 0 -command view_inifile}
+      {command -label {Ini File} -underline 0 -command view_inifile}
       {command -label {README} -underline 0 -command {view_file README}}
       {separator}
-      {command -label {Output vector file} -underline 7 -command view_outputvectorfile}
-      {command -label {Output scalar file} -underline 7 -command view_outputscalarfile}
-      {command -label {Snapshot file} -underline 0 -command view_snapshotfile}
+      {command -label {Output Vector File} -underline 7 -command view_outputvectorfile}
+      {command -label {Output Scalar File} -underline 7 -command view_outputscalarfile}
+      {command -label {Snapshot File} -underline 0 -command view_snapshotfile}
       {separator}
-      {command -label {View text file...} -underline 0 -command {edit_textfile}}
+      {command -label {View Text File...} -underline 0 -command {edit_textfile}}
     } {
       eval .menubar.viewmenu$m add $i
     }
 
     # Options menu
     foreach i {
-      {command -command simulation_options -label {Simulation options...} -underline 0}
-      {command -command toggle_timeline -label {Show/hide timeline} -underline 10}
-      {command -command toggle_treeview -label {Show/hide object tree} -underline 1}
-      {command -command toggle_record_eventlog -label {Eventlog recording} -underline 10}
+      {command -command simulation_options -label {Simulation Options...} -underline 0}
+      {command -command toggle_timeline -label {Show/Hide Timeline} -underline 10}
+      {command -command toggle_treeview -label {Show/Hide Object Tree} -underline 1}
+      {command -command toggle_record_eventlog -label {Eventlog Recording} -underline 10}
       {separator}
-      {command -label {Load config...} -underline 0 -command load_tkenv_config}
-      {command -label {Save config...} -underline 1 -command save_tkenv_config}
+      {command -label {Load Config...} -underline 0 -command load_tkenv_config}
+      {command -label {Save Config...} -underline 1 -command save_tkenv_config}
     } {
       eval .menubar.optionsmenu$m add $i
     }
