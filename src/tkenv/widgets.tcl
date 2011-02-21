@@ -491,7 +491,7 @@ proc fontcombo-set {w oldfont} {
     # produce font list with the given size
     set fontlist {}
     foreach family [lsort [font families]] {
-        if {[string first "@" $family 0] == -1} {
+        if {[regexp {^[A-Za-z]} $family]} {
             if {[llength $family]>1} {set family "\"$family\""}
             lappend fontlist [string trim "$family $size"]
         }
