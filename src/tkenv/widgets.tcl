@@ -124,7 +124,7 @@ proc setupTkOptions {} {
       set normalfamily [getFirstAvailableFontFamily {Ubuntu Arial Verdana Helvetica Tahoma "DejaVu Sans" "Nimbus Sans L" FreeSans Sans} unknown]
       set monofamily [getFirstAvailableFontFamily {"DejaVu Sans Mono" "Courier New" "FreeMono" "Courier"} unknown]
       # note: standard font names (not families!) are: TkCaptionFont TkSmallCaptionFont TkTooltipFont TkFixedFont TkHeadingFont TkMenuFont TkIconFont TkTextFont TkDefaultFont
-      if {[tk scaling] > 1.5} {set size 10} else {set size 8}
+      if {[tk scaling] > 1.5} {set size 11} else {set size 9}
       set fonts(normal)   [list $normalfamily $size]
       set fonts(bold)     [list $normalfamily $size bold]
       set fonts(big)      [list $normalfamily 18]
@@ -135,12 +135,13 @@ proc setupTkOptions {} {
       set fonts(mono)     [list $monofamily $size]
    } elseif {[string equal [tk windowingsystem] aqua]} {
       # Mac
-      set normalfamily "Helvetica"
-      set monofamily "Courier"
+      set normalfamily [getFirstAvailableFontFamily {"Lucida Grande" Helvetica} unknown]
+      set monofamily [getFirstAvailableFontFamily {"Monaco" "Courier"} unknown]
+      set size 13
       set fonts(normal)   [list $normalfamily 12]
       set fonts(bold)     [list $normalfamily 12 bold]
       set fonts(big)      [list $normalfamily 18]
-      set fonts(text)     [list $normalfamily 12]
+      set fonts(text)     [list $monofamily 12]
       set fonts(balloon)  [list $normalfamily 12]
       set fonts(timeline) [list $normalfamily 11]
       set fonts(canvas)   [list $normalfamily 12]
