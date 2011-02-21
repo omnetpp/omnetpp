@@ -145,6 +145,9 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     // storage for values returned by substituteVariables()
     CommonStringPool stringPool;
 
+    // storage of section inheritance chains (precedence lists)
+    mutable std::vector<std::vector<int> > sectionChains;
+
   public:
     /**
      * Used during scenario resolution: an iteration variable in the
@@ -178,6 +181,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     int resolveConfigName(const char *configName) const;
     std::vector<int> resolveSectionChain(int sectionId) const;
     std::vector<int> resolveSectionChain(const char *section) const;
+    std::vector<int> computeSectionChain(int sectionId) const;
+    std::vector<int> getBaseConfigIds(int sectionId) const;
     void addEntry(const KeyValue1& entry);
     static void splitKey(const char *key, std::string& outOwnerName, std::string& outGroupName);
     static bool entryMatches(const KeyValue2& entry, const char *moduleFullPath, const char *paramName);
@@ -217,7 +222,8 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual std::vector<std::string> getConfigNames();
     virtual void activateConfig(const char *configName, int runNumber=0);
     virtual std::string getConfigDescription(const char *configName) const;
-    virtual std::string getBaseConfig(const char *configName) const;
+    virtual std::vector<std::string> getBaseConfigs(const char *configName) const;
+    virtual std::vector<std::string> getConfigChain(const char * configName) const;
     virtual int getNumRunsInConfig(const char *configName) const;
     virtual std::vector<std::string> unrollConfig(const char *configName, bool detailed) const;
     virtual const char *getActiveConfigName() const;

@@ -67,7 +67,7 @@ public class SectionDialog extends TitleAreaDialog {
 	// widgets
 	private Text configNameText;
 	private Text descriptionText;
-	private Combo extendsCombo;
+	private Text baseConfigsText;
 	private Combo networkCombo;
     private Button okButton;
 
@@ -76,7 +76,7 @@ public class SectionDialog extends TitleAreaDialog {
 	// initial parameters, which also double as dialog result
     private String sectionName;
     private String description;
-    private String extendsSection;
+    private String baseConfigNames;
     private String networkName;
 
 
@@ -98,7 +98,8 @@ public class SectionDialog extends TitleAreaDialog {
 			description = doc.getValue(sectionName, ConfigRegistry.CFGID_DESCRIPTION.getName());
 			if (description != null)
 				try {description = Common.parseQuotedString(description);} catch (RuntimeException e) {}
-			extendsSection = InifileUtils.resolveBaseSectionPretendingGeneralExists(doc, sectionName);
+			List<String> baseConfigs = InifileUtils.sectionNamesToConfigNames(InifileUtils.resolveBaseSectionsPretendingGeneralExists(doc, sectionName));
+			baseConfigNames = InifileUtils.formatExtendsList(baseConfigs);
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getName());;
 		}
 	}
@@ -125,7 +126,7 @@ public class SectionDialog extends TitleAreaDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1,false));
 
-        Group group1 = createGroup(composite, "Name and description");
+        Group group1 = createGroup(composite, "Name and description", 2);
 
 		// section name field
 		createLabel(group1, "Section Name:", parent.getFont());
@@ -138,28 +139,42 @@ public class SectionDialog extends TitleAreaDialog {
 		descriptionText = new Text(group1, SWT.SINGLE | SWT.BORDER);
 		descriptionText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-        Group group2 = createGroup(composite, "Basic configuration");
+        Group group2 = createGroup(composite, "Basic configuration", 3);
 
 		// "extends" section field
-		createLabel(group2, "Fall back to section:", parent.getFont());
-		extendsCombo = new Combo(group2, SWT.READ_ONLY | SWT.BORDER);
-		extendsCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		createLabel(group2, "Fall back to sections:", parent.getFont());
+		baseConfigsText = new Text(group2, SWT.BORDER);
+		baseConfigsText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+		Button button = new Button(group2, SWT.PUSH);
+		button.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+		button.setText("...");
+		button.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                openBaseConfigsSelectionDialog();
+            }
+		});
 
 		// network name field
 		createLabel(group2, "NED Network:", parent.getFont());
 		networkCombo = new Combo(group2, SWT.BORDER);
-		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+		
+		networkCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-		// fill "extends" combo
-		if (GENERAL.equals(originalSectionName))
-			extendsCombo.setEnabled(false);
+		// fill "extends" text's content assist
+		if (GENERAL.equals(originalSectionName)) {
+			baseConfigsText.setEnabled(false);
+			button.setEnabled(false);
+		}
 		else {
-			String[] sectionNames = getNonCycleSectionNames(originalSectionName);
-			if (sectionNames.length==0)
-				sectionNames = new String[] {GENERAL};  // we lie that [General] exists
-			extendsCombo.setItems(sectionNames);
-			extendsCombo.setVisibleItemCount(Math.min(20, extendsCombo.getItemCount()));
-			extendsCombo.select(0);
+			List<String> configNames = getNonCycleConfigNames(originalSectionName);
+			if (configNames.size() > 0)
+    			new ContentAssistCommandAdapter(baseConfigsText,
+    	                new TextContentAdapter(),
+    	                new SimpleContentProposalProvider(configNames.toArray(new String[configNames.size()])),
+    	                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,
+    	                ",".toCharArray() /*auto-activation*/,
+    	                true /*installDecoration*/);
 		}
 
 		// fill network combo
@@ -175,8 +190,8 @@ public class SectionDialog extends TitleAreaDialog {
 			configNameText.setText(sectionName.replaceFirst(CONFIG_+" *", ""));
 		if (description!=null)
 			descriptionText.setText(description);
-        if (extendsSection!=null)
-        	extendsCombo.setText(extendsSection);
+        if (baseConfigNames!=null)
+        	baseConfigsText.setText(baseConfigNames);
         if (networkName!=null)
         	networkCombo.setText(networkName);
 		configNameText.selectAll();
@@ -190,7 +205,7 @@ public class SectionDialog extends TitleAreaDialog {
         };
         configNameText.addModifyListener(listener);
         descriptionText.addModifyListener(listener);
-        extendsCombo.addModifyListener(listener);
+        baseConfigsText.addModifyListener(listener);
         networkCombo.addModifyListener(listener);
 
         // note: do initial validation when OK button is already created, from createButtonsForButtonBar()
@@ -205,17 +220,17 @@ public class SectionDialog extends TitleAreaDialog {
 	 * Return list of sections that would not create a cycle if the given
 	 * section extended them.
 	 */
-	protected String[] getNonCycleSectionNames(String section) {
+	protected List<String> getNonCycleConfigNames(String section) {
 		String[] sectionNames = doc.getSectionNames();
-		if (!doc.containsSection(section))
-			return sectionNames;  // a new section can extend anything
+		if (section == null || !doc.containsSection(section))
+			return InifileUtils.sectionNamesToConfigNames(Arrays.asList(sectionNames));  // a new section can extend anything
 
 		// choose sections whose fallback chain doesn't contain the given section
 		List<String> result = new ArrayList<String>();
 		for (String candidate : sectionNames)
 			if (!InifileUtils.sectionChainContains(doc, candidate, section))
 				result.add(candidate);
-		return result.toArray(new String[]{});
+		return InifileUtils.sectionNamesToConfigNames(result);
 	}
 
 	protected static Label createLabel(Composite parent, String text, Font font) {
@@ -226,11 +241,11 @@ public class SectionDialog extends TitleAreaDialog {
 		return label;
 	}
 
-	protected static Group createGroup(Composite parent, String text) {
+	protected static Group createGroup(Composite parent, String text, int numColumns) {
 		Group group = new Group(parent, SWT.NONE);
 		group.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 		group.setText(text);
-		group.setLayout(new GridLayout(2, false));
+		group.setLayout(new GridLayout(numColumns, false));
 		return group;
 	}
 
@@ -243,6 +258,27 @@ public class SectionDialog extends TitleAreaDialog {
         // do this here because setting the text will set enablement on the OK button
         validateDialogContents();
     }
+	
+	protected void openBaseConfigsSelectionDialog() {
+	    ElementListSelectionDialog dialog = new ElementListSelectionDialog(getShell(), new LabelProvider());
+	    dialog.setMultipleSelection(true);
+	    dialog.setTitle("Fallback configurations");
+	    String section = originalSectionName;
+	    dialog.setMessage(String.format("Select the base configurations%s.", section!=null?" of '" + section + "'" : ""));
+	    List<String> elements = getNonCycleConfigNames(section);
+	    dialog.setElements(elements.toArray());
+	    List<String> oldValue = InifileUtils.parseExtendsList(baseConfigsText.getText().trim());
+	    dialog.setInitialSelections(oldValue.toArray());
+	    if (dialog.open() == Window.OK) {
+	        List<Object> newValue = Arrays.asList(dialog.getResult());
+	        if (!oldValue.equals(newValue)) {
+	            List<String> configNames = new ArrayList<String>();
+	            for (Object configName : newValue)
+	                configNames.add((String)configName);
+	            baseConfigsText.setText(InifileUtils.formatExtendsList(configNames));
+	        }
+	    }
+	}
 
 	protected void validateDialogContents() {
 		// prevent notification loops
@@ -250,9 +286,14 @@ public class SectionDialog extends TitleAreaDialog {
 		insideValidation = true;
 
 		// when a base section with "network=" is selected, make it impossible to override it here
-        extendsSection = extendsCombo.getText();
+        baseConfigNames = baseConfigsText.getText();
         String ownNetworkName = doc.getValue(originalSectionName, ConfigRegistry.CFGID_NETWORK.getName());
-        String inheritedNetworkName = InifileUtils.lookupConfig(extendsSection, ConfigRegistry.CFGID_NETWORK.getName(), doc);
+        String inheritedNetworkName = null;
+        for (String configName : InifileUtils.parseExtendsList(baseConfigNames)) {
+            inheritedNetworkName = InifileUtils.lookupConfig(CONFIG_+configName, ConfigRegistry.CFGID_NETWORK.getName(), doc);
+            if (inheritedNetworkName != null)
+                break;
+        }
         if (ownNetworkName == null && inheritedNetworkName != null) {
         	networkCombo.setText(inheritedNetworkName);
         	networkCombo.setEnabled(false);
@@ -276,32 +317,34 @@ public class SectionDialog extends TitleAreaDialog {
 		if (configName.equals(""))
 			return "Config name cannot be empty";
 		if (configName.contains(" ") || configName.contains("\t"))
-			throw new RuntimeException("Config name must not contain spaces");
+			return "Config name must not contain spaces";
 		if (!configName.replaceAll("[a-zA-Z0-9-_]", "").equals(""))
-			throw new RuntimeException("Config name contains illegal character(s)");
+			return "Config name contains illegal character(s)";
 		if (!(CONFIG_+configName).equals(originalSectionName))
 			if (doc.containsSection(CONFIG_+configName))
 				return "A section named ["+CONFIG_+configName+"] already exists";
+		
+		// validate base config names
+		List<String> baseConfigNames = InifileUtils.parseExtendsList(baseConfigsText.getText().trim());
+		for (String baseConfigName : baseConfigNames)
+		{
+	        if (!baseConfigName.matches("[a-zA-Z0-9-_]+"))
+	            return "Base config name contains illegal character(s)";
+	        if (!doc.containsSection(CONFIG_+baseConfigName))
+	            return "Base config '"+baseConfigName+"' does not exist";
+		}
 
 		//XXX check that selected network exists
 
 		return null;
 	}
 
-	private String assembleSectionName() {
-		String configName = configNameText.getText().trim();
-		return configName.equals(GENERAL) ? GENERAL : CONFIG_+configName;
-	}
-
     @Override
-	@SuppressWarnings("unchecked")
 	protected void okPressed() {
     	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
-        sectionName = assembleSectionName();
+        sectionName = configNameToSectionName(configNameText.getText().trim());
         description = descriptionText.getText().trim();
-        extendsSection = extendsCombo.getText().trim();
-        if (extendsSection.equals(""))
-        	extendsSection = GENERAL;
+        baseConfigNames = baseConfigsText.getText().trim();
         networkName = networkCombo.isEnabled() ? networkCombo.getText().trim() : "";
         super.okPressed();
     }
@@ -327,12 +370,12 @@ public class SectionDialog extends TitleAreaDialog {
 	/**
 	 * Returns the section name the edited section extends, or "General". Never returns "" or null.
 	 */
-	public String getExtendsSection() {
-		return extendsSection;
+	public String getBaseConfigNames() {
+		return baseConfigNames;
 	}
 
-	public void setExtendsSection(String extendsSection) {
-		this.extendsSection = extendsSection;
+	public void setBaseConfigNames(String baseConfigNames) {
+		this.baseConfigNames = baseConfigNames;
 	}
 
 	public String getNetworkName() {

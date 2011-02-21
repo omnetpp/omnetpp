@@ -151,7 +151,7 @@ The \ttt{[General]} section itself is optional; when it is absent, it is
 treated like an empty \ttt{[General]} section.
 
 All named configurations fall back to \ttt{[General]} by default. However, for
-each configuration it is possible to specify a fall-back section
+each configuration it is possible to specify the fall-back sections
 explicitly, using the \fconfig{extends} key. Consider the following ini file
 skeleton:
 
@@ -160,11 +160,16 @@ skeleton:
 ...
 [Config SlottedAlohaBase]
 ...
+[Config LowTrafficSettings]
+...
+[Config HighTrafficSettings]
+...
+
 [Config SlottedAloha1]
-extends = SlottedAlohaBase
+extends = SlottedAlohaBase, LowTrafficSettings
 ...
 [Config SlottedAloha2]
-extends = SlottedAlohaBase
+extends = SlottedAlohaBase, HighTrafficSettings
 ...
 [Config SlottedAloha2a]
 extends = SlottedAloha2
@@ -178,15 +183,48 @@ extends = SlottedAloha2
 If you activate the \ttt{SlottedAloha2b} configuration, lookups will consider
 sections in the following order (this is also called the
 \textit{section fallback chain}): \ttt{SlottedAloha2b},
-\ttt{SlottedAloha2}, \ttt{SlottedAlohaBase}, \ttt{General}.
+\ttt{SlottedAloha2}, \ttt{SlottedAlohaBase}, \ttt{HighTrafficSettings},
+\ttt{General}.
 
 The effect is the same as if the contents of the sections
-SlottedAloha2b, SlottedAloha2, SlottedAlohaBase and General were copied
-together into one section, one after another, \ttt{[Config SlottedAloha2b]}
-being at the top, and \ttt{[General]} at the bottom. Lookups always start at
-the top, and stop at the first matching entry.
+SlottedAloha2b, SlottedAloha2, SlottedAlohaBase, HighTrafficSettings and
+General were copied together into one section, one after another, 
+\ttt{[Config SlottedAloha2b]} being at the top, and \ttt{[General]}
+at the bottom. Lookups always start at the top, and stop at the first
+matching entry.
 
-The concept is similar to inheritance in object-oriented languages,
+The order of the sections in the \textit{fallback chain} is computed
+using the \textit{C3 linearization algorithm} (\cite{Barrett1996}):
+
+The \textit{fallback chain} of a configuration \ttt{A} is
+\begin{itemize}
+  \item{if \ttt{A} does not have an \fpar{extends} key then
+        \ttt{A}, \ttt{General}}
+  \item{otherwise the merge of the configurations enumerated in
+        the \fpar{extends} key, and all of their
+        \textit{fallback section chains}.
+        The merge is \textit{monotonic}: if some configuration \ttt{X}
+        precedes configuration \ttt{Y} in one of the input chains,
+        it will precede it in the output chain too. } 
+\end{itemize}
+
+The \textit{section fallback chain} can be printed by the \ttt{-X} option
+of the command line of the simulation program:
+
+\begin{commandline}
+$ aloha -X SlottedAloha2b
+`\opp` Discrete Event Simulation
+...
+Config SlottedAloha2b
+Config SlottedAloha2
+Config SlottedAlohaBase
+Config HighTrafficSettings
+General
+\end{commandline}
+
+
+The \textit{section fallback} concept is similar to multiple inheritance
+in object-oriented languages,
 and benefits are similar too; you can factor out the common parts of
 several configurations into a "base"
 configuration, and additionally you can reuse existing

@@ -319,7 +319,7 @@ public class SectionsPage extends FormPage {
 		dialog.setSectionName("New");
 		String[] selection = getSectionNamesFromTreeSelection(treeViewer.getSelection());
 		if (selection.length != 0)
-			dialog.setExtendsSection(selection[0]);
+			dialog.setBaseConfigNames(InifileUtils.sectionNameToConfigName(selection[0]));
 
 		// open the dialog
 		if (dialog.open()==Window.OK) {
@@ -330,9 +330,8 @@ public class SectionsPage extends FormPage {
 				String description = dialog.getDescription();
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);
 
-				String extendsSection = dialog.getExtendsSection();
-				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);
+				String baseConfigNames = StringUtils.defaultIfEmpty(dialog.getBaseConfigNames(), null);
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, baseConfigNames);
 
 				String networkName = dialog.getNetworkName();
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);
@@ -367,9 +366,8 @@ public class SectionsPage extends FormPage {
 				String description = dialog.getDescription();
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_DESCRIPTION.getName(), description.equals("") ? null : description);
 
-				String extendsSection = dialog.getExtendsSection();
-				String extendsName = extendsSection.equals(GENERAL) ? null : InifileUtils.removeSectionNamePrefix(extendsSection);
-				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, extendsName);
+				String baseConfigNames = StringUtils.defaultIfEmpty(dialog.getBaseConfigNames(), null);
+				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, EXTENDS, baseConfigNames);
 
 				String networkName = dialog.getNetworkName();
 				InifileUtils.addOrSetOrRemoveEntry(doc, sectionName, CFGID_NETWORK.getName(), networkName.equals("") ? null : networkName);
@@ -447,7 +445,7 @@ public class SectionsPage extends FormPage {
 	@Override
 	public void reread() {
 		super.reread();
-		IInifileDocument doc = getInifileDocument();
+		IReadonlyInifileDocument doc = getInifileDocument();
 		InifileAnalyzer analyzer = getInifileAnalyzer();
 
 		try {
@@ -457,21 +455,32 @@ public class SectionsPage extends FormPage {
 		}
 
 		// build tree
-		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();
+		HashMap<String,List<GenericTreeNode>> nodes = new HashMap<String, List<GenericTreeNode>>();
 		GenericTreeNode rootNode = new GenericTreeNode("root");
-		GenericTreeNode generalSectionNode = getOrCreate(nodes, GENERAL);
+		GenericTreeNode generalSectionNode = getOrCreateNode(nodes, GENERAL);
 		rootNode.addChild(generalSectionNode);
 		for (String sectionName : doc.getSectionNames()) {
 			if (!sectionName.equals(GENERAL)) {
-				GenericTreeNode node = getOrCreate(nodes, sectionName);
-				String extendsSectionName = InifileUtils.resolveBaseSectionPretendingGeneralExists(doc, sectionName);
-				if (analyzer.isCausingCycle(sectionName) || extendsSectionName == null) {
+				List<String> baseSectionNames = InifileUtils.resolveBaseSectionsPretendingGeneralExists(doc, sectionName);
+				if (analyzer.isCausingCycle(sectionName) || baseSectionNames.isEmpty()) {
 					// bogus section, put it under the root
-					rootNode.addChild(node);
+	                GenericTreeNode childNode = getOrCreateNode(nodes, sectionName);
+	                Assert.isTrue(childNode != null && childNode.getParent() == null);
+	                rootNode.addChild(childNode);
 				}
 				else {
-					GenericTreeNode extendsSectionNode = getOrCreate(nodes, extendsSectionName);
-					extendsSectionNode.addChild(node);
+	                GenericTreeNode childNode = getOrCreateNode(nodes, sectionName);
+                    Assert.isTrue(childNode != null && childNode.getParent() == null);
+	                // need to clone child nodes here, to each copy has a different parent
+                    List<GenericTreeNode> parentNodes = new ArrayList<GenericTreeNode>();
+                    for (String baseSectionName : baseSectionNames)
+                        parentNodes.addAll(getOrCreateNodes(nodes, baseSectionName));
+                    
+                    List<GenericTreeNode> childNodes = getOrCreateNodes(nodes, sectionName, parentNodes.size());
+                    
+                    for (int i = 0; i < parentNodes.size(); ++i) {
+                        parentNodes.get(i).addChild(childNodes.get(i));
+                    }
 				}
 			}
 		}
@@ -485,22 +494,41 @@ public class SectionsPage extends FormPage {
 		treeViewer.refresh();  // refresh labels anyway
 		updateActions();
 	}
-
-	private GenericTreeNode getOrCreate(HashMap<String, GenericTreeNode> nodes, String sectionName) {
-		GenericTreeNode node = nodes.get(sectionName);
-		if (node==null) {
-			IInifileDocument doc = getInifileDocument();
-			if (doc.containsSection(sectionName)) {
-				IMarker[] markers = InifileUtils.getProblemMarkersForWholeSection(sectionName, doc);
-				int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
-				node = new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity, false));
-			}
-			else {
-				node = new GenericTreeNode(new SectionData(sectionName, -1, true));
-			}
-			nodes.put(sectionName, node);
+	
+	private GenericTreeNode getOrCreateNode(HashMap<String, List<GenericTreeNode>> nodes, String sectionName) {
+	    List<GenericTreeNode> sectionNodes = getOrCreateNodes(nodes, sectionName);
+	    Assert.isTrue(sectionNodes.size() == 1);
+	    return sectionNodes.get(0);
+	}
+	
+	private List<GenericTreeNode> getOrCreateNodes(HashMap<String, List<GenericTreeNode>> nodes, String sectionName, int count) {
+	    List<GenericTreeNode> sectionNodes = getOrCreateNodes(nodes, sectionName);
+        Assert.isTrue(sectionNodes.size() == 1);
+        GenericTreeNode node = sectionNodes.get(0);
+        for (int i = 1; i < count; ++i)
+            sectionNodes.add(node.cloneTree());
+        return sectionNodes;
+	}
+	
+	private List<GenericTreeNode> getOrCreateNodes(HashMap<String, List<GenericTreeNode>> nodes, String sectionName) {
+		List<GenericTreeNode> result = nodes.get(sectionName);
+		if (result==null) {
+            result = new ArrayList<GenericTreeNode>();
+            result.add(createNode(sectionName));
+			nodes.put(sectionName, result);
 		}
-		return node;
+		return result;
+	}
+	
+	private GenericTreeNode createNode(String sectionName) {
+        IReadonlyInifileDocument doc = getInifileDocument();
+        if (doc.containsSection(sectionName)) {
+            IMarker[] markers = InifileUtils.getProblemMarkersForWholeSection(sectionName, doc);
+            int maxProblemSeverity = InifileUtils.getMaximumSeverity(markers);
+            return new GenericTreeNode(new SectionData(sectionName, maxProblemSeverity, false));
+        }
+        else
+            return new GenericTreeNode(new SectionData(sectionName, -1, true));
 	}
 
 	@Override

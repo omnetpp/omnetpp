@@ -96,6 +96,7 @@ void SectionBasedConfiguration::setConfigurationReader(cConfigurationReader *ini
     clear();
     this->ini = ini;
     nullEntry.setBaseDirectory(ini->getDefaultBaseDirectory());
+    sectionChains.assign(ini->getNumSections(), std::vector<int>());
 }
 
 void SectionBasedConfiguration::setCommandLineConfigOptions(const std::map<std::string,std::string>& options)
@@ -188,7 +189,7 @@ std::string SectionBasedConfiguration::getConfigDescription(const char *configNa
     return opp_nulltoempty(internalGetValue(sectionChain, CFGID_DESCRIPTION->getName()));
 }
 
-std::string SectionBasedConfiguration::getBaseConfig(const char *configName) const
+std::vector<std::string> SectionBasedConfiguration::getBaseConfigs(const char *configName) const
 {
     int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
@@ -197,9 +198,70 @@ std::string SectionBasedConfiguration::getBaseConfig(const char *configName) con
     std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
     if (extends.empty())
         extends = "General";
-    int baseSectionId = resolveConfigName(extends.c_str());
-    return baseSectionId==-1 ? "" : extends;
+
+    std::vector<std::string> result;
+    StringTokenizer tokenizer(extends.c_str(), ", \t");
+    while (tokenizer.hasMoreTokens()) {
+        const char *sectionName = tokenizer.nextToken();
+        int sectionId = resolveConfigName(sectionName);
+        if (sectionId != -1)
+            result.push_back(sectionName);
+    }
+    return result;
 }
+
+std::vector<int> SectionBasedConfiguration::getBaseConfigIds(int sectionId) const
+{
+    int generalSectionId = internalFindSection("General");
+    int entryId = internalFindEntry(sectionId, CFGID_EXTENDS->getName());
+    std::string extends = entryId==-1 ? "" : ini->getEntry(sectionId, entryId).getValue();
+
+    std::vector<int> result;
+    if (sectionId == generalSectionId && generalSectionId != -1)
+    {
+        // 'General' can not have base config
+    }
+    else if (extends.empty())
+    {
+        // implicitly inherit form 'General'
+        if (generalSectionId != -1)
+            result.push_back(generalSectionId);
+    }
+    else
+    {
+        StringTokenizer tokenizer(extends.c_str(), ", \t");
+        while (tokenizer.hasMoreTokens()) {
+            const char *configName = tokenizer.nextToken();
+            int sectionId = resolveConfigName(configName);
+            if (sectionId != -1)
+                result.push_back(sectionId);
+            else
+                throw cRuntimeError("Section not found: %s", configName);
+        }
+    }
+    return result;
+}
+
+std::vector<std::string> SectionBasedConfiguration::getConfigChain(const char * configName) const
+{
+    std::vector<std::string> result;
+    int sectionId = resolveConfigName(configName);
+    if (sectionId == -1)
+        return result;
+    std::vector<int> sectionIds = resolveSectionChain(sectionId);
+    for (std::vector<int>::iterator it = sectionIds.begin(); it != sectionIds.end(); ++it)
+    {
+        const char *section = ini->getSectionName(*it);
+        if (strcmp(section, "General")==0)
+            result.push_back(section);
+        else if (strncmp(section, "Config ", 7)==0)
+            result.push_back(section+7);
+        else
+            ; // nothing - leave out bogus section names
+    }
+    return result;
+}
+
 
 int SectionBasedConfiguration::resolveConfigName(const char *configName) const
 {
@@ -640,11 +702,138 @@ bool SectionBasedConfiguration::isPredefinedVariable(const char *varname) const
     return false;
 }
 
+typedef std::vector<int> SectionChain;
+typedef std::vector<SectionChain> SectionChainList;
+
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const
 {
-    return resolveSectionChain(ini->getSectionName(sectionId));
+    Assert(sectionId >= 0);
+    if (sectionChains.at(sectionId).empty())
+        sectionChains[sectionId] = computeSectionChain(sectionId);
+    return sectionChains[sectionId];
 }
 
+std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
+{
+    int sectionId = internalFindSection(sectionName);
+    if (sectionId == -1)
+        throw cRuntimeError("Section not found: %s", sectionName);
+    return resolveSectionChain(sectionId);
+}
+
+static bool mergeSectionChains(SectionChainList &remainingInputs, std::vector<int> &result);
+
+/*
+ * Computes the linearization of given section and all of its base sections.
+ * The result is the merge of the linearization of base classes and base classes itself.
+ */
+std::vector<int> SectionBasedConfiguration::computeSectionChain(int sectionId) const
+{
+    std::vector<int> baseConfigs = getBaseConfigIds(sectionId);
+    SectionChainList chainsToBeMerged;
+    for (std::vector<int>::const_iterator it = baseConfigs.begin(); it != baseConfigs.end(); ++it)
+    {
+        SectionChain chain = resolveSectionChain(*it);
+        chainsToBeMerged.push_back(chain);
+    }
+    chainsToBeMerged.push_back(baseConfigs);
+
+    std::vector<int> result;
+    result.push_back(sectionId);
+    if (mergeSectionChains(chainsToBeMerged, result))
+        return result;
+    else
+        throw cRuntimeError("Detected section fallback chain inconsistency at: [%s]", ini->getSectionName(sectionId)); // TODO more details?
+}
+
+static int selectNext(const SectionChainList &remainingInputs);
+
+/*
+ * Merges the the section chains given as 'sectionChains' and collects the result in 'result'.
+ *
+ * The logic of selecting the next element for the output is implemented in the selectNext() function.
+ * The Dylan and C3 linearization differs only in the selectNext() function.
+ *
+ * The 'sectionChains' is modified during the merge. If the was successful then
+ * the function returns 'true' and all chain within 'sectionChains' is empty,
+ * otherwise it returns false and the 'sectionChains' contains conflicting chains.
+ */
+static bool mergeSectionChains(SectionChainList &sectionChains, std::vector<int> &result)
+{
+    SectionChainList::iterator begin = sectionChains.begin();
+    SectionChainList::iterator end = sectionChains.end();
+
+    // reverse the chains, so they are accessed at the end instead of the begin (more efficient to remove from the end of a vector)
+    bool allChainsAreEmpty = true;
+    for (SectionChainList::iterator chain = begin; chain != end; ++chain)
+    {
+        if (!chain->empty())
+        {
+            reverse(chain->begin(), chain->end());
+            allChainsAreEmpty = false;
+        }
+    }
+
+    while (!allChainsAreEmpty)
+    {
+        // select next
+        int nextId = selectNext(sectionChains);
+        if (nextId == -1)
+            break;
+        // add it to the output and remove from the inputs
+        result.push_back(nextId);
+        allChainsAreEmpty = true;
+        for (SectionChainList::iterator chain = begin; chain != end; ++chain)
+        {
+            if (!chain->empty())
+            {
+                if (chain->back() == nextId)
+                    chain->pop_back();
+                if (!chain->empty())
+                    allChainsAreEmpty = false;
+            }
+        }
+    }
+
+    return allChainsAreEmpty;
+}
+
+/*
+ * Select next element for the merge of 'sectionChains'.
+ *
+ * This implements C3 linearization:
+ *   When there are more that one possible candidates,
+ *   choose the section that appears in the linearization of the earliest
+ *   direct base section in the local precedence order (i.e. as enumerated in the 'extends' entry).
+ */
+static int selectNext(const SectionChainList &sectionChains)
+{
+    SectionChainList::const_iterator begin = sectionChains.begin();
+    SectionChainList::const_iterator end = sectionChains.end();
+
+    for (SectionChainList::const_iterator chain = begin; chain != end; ++chain)
+    {
+        if (!chain->empty())
+        {
+            int candidate = chain->back();
+
+            // check if candidate is not contained any tail of input chains
+            // note: the head of the chains are at their back()
+            bool found = false;
+            for (SectionChainList::const_iterator chainPtr = begin; !found && chainPtr != end; ++chainPtr)
+                if (!chainPtr->empty())
+                    for (SectionChain::const_reverse_iterator idPtr = chainPtr->rbegin()+1; !found && idPtr != chainPtr->rend(); ++idPtr)
+                        if (*idPtr == candidate)
+                            found = true;
+            if (!found)
+                return candidate;
+        }
+    }
+
+    return -1;
+}
+
+/*
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
 {
     // determine the list of sections, from this one following the "extends" chain up to [General]
@@ -669,6 +858,7 @@ std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sect
 
     return sectionChain;
 }
+*/
 
 void SectionBasedConfiguration::addEntry(const KeyValue1& entry)
 {
@@ -828,6 +1018,43 @@ static int findInArray(const char *s, const char **array)
     return -1;
 }
 
+enum { WHITE, GREY, BLACK };
+
+class SectionGraphNode
+{
+public:
+    int id;
+    std::vector<int> nextNodes;
+    int color;
+
+    SectionGraphNode(int id) : id(id), color(WHITE) {}
+};
+
+typedef std::vector<SectionGraphNode> SectionGraph;
+
+static bool visit(SectionGraph &graph, SectionGraphNode& node);
+
+static int findCycle(SectionGraph &graph)
+{
+    for (SectionGraph::iterator node = graph.begin(); node != graph.end(); ++node)
+        if (node->color == WHITE && visit(graph, *node))
+            return node->id;
+    return -1;
+}
+
+static bool visit(SectionGraph &graph, SectionGraphNode& node)
+{
+    node.color = GREY;
+    for (std::vector<int>::iterator nodeId = node.nextNodes.begin(); nodeId != node.nextNodes.end(); ++nodeId)
+    {
+        SectionGraphNode &node2 = graph[*nodeId];
+        if (node2.color == GREY || (node2.color == WHITE && visit(graph, node2)))
+            return true;
+    }
+    node.color = BLACK;
+    return false;
+}
+
 void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 {
     const char *obsoleteSections[] = {
@@ -892,9 +1119,12 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 
     }
 
-    // check keys
+    // check keys, build inheritance graph
+    SectionGraph graph;
     for (int i=0; i<ini->getNumSections(); i++)
     {
+        graph.push_back(SectionGraphNode(i));
+
         const char *section = ini->getSectionName(i);
         int numEntries = ini->getNumEntries(i);
         for (int j=0; j<numEntries; j++)
@@ -925,11 +1155,17 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
 
                     // warn for invalid "extends" names
                     const char *value = ini->getEntry(i, j).getValue();
-                    if (configNames.find(value)==configNames.end())
-                        throw cRuntimeError("No such config: %s", value);
-
-                    // check for section cycles
-                    resolveSectionChain(section);  //XXX move that check here?
+                    StringTokenizer tokenizer(value, ", \t");
+                    while (tokenizer.hasMoreTokens())
+                    {
+                        const char *configName = tokenizer.nextToken();
+                        std::string sectionName = std::string("Config ") + configName;
+                        int configId = internalFindSection(sectionName.c_str());
+                        if (strcmp(configName,"General")!=0 && configId == -1)
+                            throw cRuntimeError("No such config: %s", configName);
+                        if (configId != -1)
+                            graph.back().nextNodes.push_back(configId);
+                    }
                 }
             }
             else
@@ -952,6 +1188,15 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
             }
         }
     }
+
+    // check circularity in inheritance graph
+    int sectionId = findCycle(graph);
+    if (sectionId != -1)
+        throw cRuntimeError("Cycle detected in section fallback chain at: [%s]", ini->getSectionName(sectionId));
+
+    // check for inconsistent hierarchy
+    for (int i=0; i<ini->getNumSections(); i++)
+        resolveSectionChain(i);
 }
 
 cConfigOption *SectionBasedConfiguration::lookupConfigOption(const char *key)

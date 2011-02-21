@@ -17,9 +17,11 @@ import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
@@ -201,15 +203,8 @@ public class InifileUtils {
 	 * called during any calculation.
 	 */
 	public static String[] resolveSectionChain(IReadonlyInifileDocument doc, String section) {
-		ArrayList<String> sectionChain = new ArrayList<String>();
-		String currentSection = section;
-		while (true) {
-			sectionChain.add(currentSection);
-			currentSection = resolveBaseSection(doc, currentSection);
-			if (currentSection==null || sectionChain.contains(currentSection))
-				break; // [General] reached, or cycle in the fallback chain
-		}
-	    return sectionChain.toArray(new String[] {});
+	    SectionChainResolver resolver = new SectionChainResolver(doc);
+	    return resolver.resolveSectionChain(section);
 	}
 
 	/**
@@ -222,29 +217,69 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Returns the name of the section the given section extends.
-	 * Returns null for the [General] section (it doesn't extend anything),
-	 * on error (base section doesn't exist); also, it only returns [General]
+	 * Returns the names of the sections the given section extends.
+	 * Returns empty list for the [General] section (it doesn't extend anything).
+	 * Non-existing bases are omitted from the result; also, it only returns [General]
 	 * if such section really exists.
 	 */
-	public static String resolveBaseSection(IReadonlyInifileDocument doc, String section) {
+	public static List<String> resolveBaseSections(IReadonlyInifileDocument doc, String section) {
+	    ArrayList<String> baseSections = new ArrayList<String>();
 		if (section.equals(GENERAL))
-			return null;
-        String extendsName = doc.getValue(section, EXTENDS);
-        if (extendsName==null)
-        	return doc.containsSection(GENERAL) ? GENERAL : null;
-        else if (doc.containsSection(CONFIG_+extendsName))
-        	return CONFIG_+extendsName;
-        else
-        	return null;
+			return baseSections;
+		
+        List<String> extendsList = parseExtendsList(doc.getValue(section, EXTENDS));
+        if (extendsList.isEmpty()) {
+            if (doc.containsSection(GENERAL))
+                baseSections.add(GENERAL);
+        }
+        else {
+            for (String configName : extendsList) {
+                String sectionName = configNameToSectionName(configName);
+                if (doc.containsSection(sectionName))
+                    baseSections.add(sectionName);
+            }
+        }
+
+        return baseSections;
 	}
+	
+	/**
+	 * Returns the list of config names in the 'extends' value.
+	 * 
+	 * The value of the 'extends' is a comma or whitespace separated list of config names.
+	 * White space and empty names are omitted.
+	 * Example:
+	 *   " foo,, bar  baz " -> ["foo", "bar", "baz"]
+	 */
+	public static List<String> parseExtendsList(String extendsList) {
+	    List<String> configNames = new ArrayList<String>();
+	    if (extendsList != null)
+	        for (String configName : extendsList.split("[, \t]"))
+	            if (!StringUtils.isEmpty(configName))
+	                configNames.add(configName);
+	    return configNames;
+	}
+	
+    public static String formatExtendsList(List<String> configNames) {
+        StringBuilder sb = new StringBuilder();
+        boolean first = true;
+        for (String configName : configNames) {
+            if (!first)
+                sb.append(',');
+            sb.append(configName);
+            first = false;
+        }
+        return sb.toString();
+    }
+
 
 	/**
 	 * Same as resolveBaseSection(), but it returns [General] even if it doesn't exist
 	 */
-	public static String resolveBaseSectionPretendingGeneralExists(IReadonlyInifileDocument doc, String section) {
-		String baseSection = resolveBaseSection(doc, section);
-		return (baseSection==null && !section.equals(GENERAL) && !doc.containsKey(GENERAL, EXTENDS)) ? GENERAL : baseSection;
+	public static List<String> resolveBaseSectionsPretendingGeneralExists(IReadonlyInifileDocument doc, String section) {
+		List<String> baseSection = resolveBaseSections(doc, section);
+		return (baseSection.isEmpty() && !section.equals(GENERAL) && !doc.containsKey(GENERAL, EXTENDS)) ?
+		            Collections.singletonList(GENERAL) : baseSection;
 	}
 
 	/**
@@ -347,9 +382,16 @@ public class InifileUtils {
 		// change referring extends= keys in other sections
 		String oldName = removeSectionNamePrefix(oldSectionName);
 		String newName = removeSectionNamePrefix(newSectionName);
-		for (String section : doc.getSectionNames())
-			if (oldName.equals(doc.getValue(section, EXTENDS)))
-				doc.setValue(section, EXTENDS, newName);
+        Pattern pattern = Pattern.compile("(^|[, \t])\\Q" + oldName + "\\E($|[, \t])");
+		for (String section : doc.getSectionNames()) {
+		    String oldValue = doc.getValue(section, EXTENDS);
+		    if (oldValue != null && pattern.matcher(oldValue).find()) {
+    		    StringBuilder newValue = new StringBuilder();
+    		    for (String token : StringUtils.splitPreservingSeparators(oldValue, Pattern.compile("[, \t]")))
+    		        newValue.append(token.equals(oldName) ? newName : token);
+    		    doc.setValue(section, EXTENDS, newValue.toString());
+		    }
+		}
 	}
 
 	/**

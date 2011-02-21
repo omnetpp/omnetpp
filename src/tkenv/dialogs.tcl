@@ -152,8 +152,7 @@ proc runSelectionDialog {configname_var runnumber_var} {
 
 proc runSelectionDialog:groupAndSortConfigNames {} {
     foreach c [opp_getconfignames] {
-        set base [opp_getbaseconfig $c]
-        if {$base != ""} {
+        foreach base [opp_getbaseconfigs $c] {
             set hasderivedconfig($base) 1
         }
     }

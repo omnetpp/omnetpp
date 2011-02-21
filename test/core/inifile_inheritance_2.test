@@ -1,0 +1,21 @@
+%description:
+test circularity detection in config inheritance
+
+%activity:
+
+printf("FAILED\n");
+
+%inifile: omnetpp.ini
+
+[General]
+network = Test
+
+[Config A]
+extends = B
+
+[Config B]
+extends = A
+
+%exitcode: 1
+%contains: stderr
+<!> Error during startup: Cycle detected in section fallback chain at: [Config A].

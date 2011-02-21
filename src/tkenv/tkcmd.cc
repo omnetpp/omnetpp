@@ -74,7 +74,7 @@ int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigNames_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getConfigDescription_cmd(ClientData, Tcl_Interp *, int, const char **);
-int getBaseConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getBaseConfigs_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumRunsInConfig_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -203,7 +203,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getnetworktype",   getNetworkType_cmd       }, // args: -  ret: type of current network
    { "opp_getconfignames",   getConfigNames_cmd       }, // args: -
    { "opp_getconfigdescription",getConfigDescription_cmd}, // args: <configname>
-   { "opp_getbaseconfig",    getBaseConfig_cmd        }, // args: <configname>
+   { "opp_getbaseconfigs",   getBaseConfigs_cmd        }, // args: <configname>
    { "opp_getnumrunsinconfig",getNumRunsInConfig_cmd  }, // args: <configname>
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
    { "opp_getobjectname",    getObjectName_cmd        }, // args: <pointer>  ret: getName()
@@ -355,7 +355,7 @@ int getConfigDescription_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
    E_CATCH
 }
 
-int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int getBaseConfigs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    E_TRY
    if (argc!=2) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
@@ -363,8 +363,12 @@ int getBaseConfig_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    const char *configname = argv[1];
 
    cConfigurationEx *cfg = app->getConfigEx();
-   std::string result = cfg->getBaseConfig(configname);
-   Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
+   std::vector<std::string> confignames = cfg->getBaseConfigs(configname);
+
+   Tcl_Obj *listobj = Tcl_NewListObj(0, NULL);
+   for (int i=0; i<(int)confignames.size(); i++)
+       Tcl_ListObjAppendElement(interp, listobj, Tcl_NewStringObj(const_cast<char *>(confignames[i].c_str()), -1));
+   Tcl_SetObjResult(interp, listobj);
    return TCL_OK;
    E_CATCH
 }

@@ -1,0 +1,24 @@
+%description:
+test inconsistency in config inheritance
+
+%activity:
+
+printf("FAILED\n");
+
+%inifile: omnetpp.ini
+
+[General]
+network = Test
+
+[Config A]
+[Config B]
+[Config C]
+extends = A,B
+[Config D]
+extends = B,A
+[Config E]
+extends = C,D
+
+%exitcode: 1
+%contains: stderr
+<!> Error during startup: Detected section fallback chain inconsistency at: [Config E].

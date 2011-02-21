@@ -328,13 +328,20 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual std::string getConfigDescription(const char *configName) const = 0;
 
     /**
-     * Returns the name of the configuration the given configuration extends.
-     * Only names of *existing* configuration names are returned (that is,
+     * Returns the names of the configurations the given configuration extends directly.
+     * Only names of *existing* configurations are returned (that is,
      * if "extends" is bogus and refers to a nonexistent configuration,
-     * this method returns the empty string; also, "General" is only returned
+     * this method omits that configuration name; also, "General" is only returned
      * if such configuration actually exists.)
      */
-    virtual std::string getBaseConfig(const char *configName) const = 0;
+    virtual std::vector<std::string> getBaseConfigs(const char *configName) const = 0;
+
+    /**
+     * Returns the names of the configurations the given configuration extends transitively.
+     * This is the search order of parameter lookups from the given configuration.
+     * Only names of *existing* configurations are returned.
+     */
+    virtual std::vector<std::string> getConfigChain(const char * configName) const = 0;
 
     /**
      * Generates Cartesian product of all iterations within the config, and counts them.

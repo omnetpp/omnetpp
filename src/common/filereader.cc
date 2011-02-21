@@ -31,7 +31,7 @@ USING_NAMESPACE
 
 //#define TRACE_FILEREADER
 
-FileChangedError::FileChangedError(FileReader::FileChangedState changed, const char *messagefmt, ...) : change(change), opp_runtime_error("")
+FileChangedError::FileChangedError(FileReader::FileChangedState changed, const char *messagefmt, ...) : opp_runtime_error(""), change(change)
 {
     char buf[1024];
     VSNPRINTF(buf, 1024, messagefmt);
@@ -42,9 +42,9 @@ FileReader::FileReader(const char *fileName, size_t bufferSize)
    : fileName(fileName), bufferSize(bufferSize),
      bufferBegin(new char[bufferSize]),
      bufferEnd(bufferBegin + bufferSize),
+     maxLineSize(bufferSize / 2),
      lastSavedBufferBegin(new char[bufferSize]),
-     lastSavedBufferEnd(lastSavedBufferBegin + bufferSize),
-     maxLineSize(bufferSize / 2)
+     lastSavedBufferEnd(lastSavedBufferBegin + bufferSize)
 {
 #ifdef TRACE_FILEREADER
 	TRACE("FileReader::FileReader(%s, %d)", fileName, bufferSize);
@@ -141,7 +141,10 @@ FileReader::FileChangedState FileReader::checkFileForChanges()
     if (newFileSize == fileSize)
         return UNCHANGED; // NOTE: assuming that the content is not overwritten... :(
     else {
-        int readBytes = readFileEnd((void *)bufferBegin);
+#ifdef TRACE_FILEREADER
+        int readBytes =
+#endif
+            readFileEnd((void *)bufferBegin);
         dataBegin = dataEnd = NULL;
         FileChangedState change;
         if (newFileSize > fileSize && !memcmp(bufferBegin, lastSavedBufferBegin, lastSavedSize))
@@ -160,11 +163,15 @@ FileReader::FileChangedState FileReader::checkFileForChanges()
 void FileReader::signalFileChanges(FileChangedState change)
 {
     switch (change) {
+        case UNCHANGED:
+            break;
         case OVERWRITTEN:
             throw FileChangedError(change, "File changed: `%s' has been overwritten", fileName.c_str());
         case APPENDED:
             if (!enableIgnoreAppendChanges)
                 throw FileChangedError(change, "File changed: `%s' has been appended", fileName.c_str());
+            else
+                break;
     }
 }
 

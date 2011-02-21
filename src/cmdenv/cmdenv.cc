@@ -676,6 +676,8 @@ void Cmdenv::printUISpecificHelp()
     ev << "                Print the number of runs in the given configuration, and exit.\n";
     ev << "  -g, -G        Make -x verbose: print the unrolled configuration, iteration\n";
     ev << "                variables, etc. -G provides more details than -g.\n";
+    ev << "  -X <configname>\n";
+    ev << "                Print the fallback chain of the given configuration, and exit.\n";
 }
 
 unsigned Cmdenv::getExtraStackForEnvir() const

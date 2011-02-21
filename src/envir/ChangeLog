@@ -1,3 +1,12 @@
+2011-02-21  Tamas Borbely
+
+	* Ini files: checked in multiple inheritance support for sections.
+	Syntax: extends=Base1,Base2,Base3. The implementation uses the C3 
+	lineratization algorithm to determine section fallback order, 
+	see e.g. http://en.wikipedia.org/wiki/C3_linearization.
+	If you are unsure, use the new "-X <configname>" command-line option
+	that prints the fallback order of the given section for you.
+
 2011-02-03  Levente Meszaros
 
 	* ev.moduleCreated() is now called from the simkernel before the

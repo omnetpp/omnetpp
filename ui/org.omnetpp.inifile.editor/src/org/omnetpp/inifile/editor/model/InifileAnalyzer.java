@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -120,7 +119,7 @@ public final class InifileAnalyzer {
     private Object paramResolutionLock; // for threads that are waiting for the param resolution job
     
     // result of the analysis (that part not stored in the doc)
-    private Collection<String> sectionsCausingCycles;
+    private Collection<Set<String>> sectionsCausingCycles;
 
     // infrastructure
     private InifileProblemMarkerSynchronizer markers; // only used during analyze()
@@ -533,34 +532,30 @@ public final class InifileAnalyzer {
 				    markers.addError(section, "Invalid section name: config name must begin a letter or underscore");
 				else if (!section.matches("[^ ]+ [a-zA-Z0-9_@-]+"))
 				    markers.addError(section, "Invalid section name: contains illegal character(s)");
-				String configName = doc.getValue(section, EXTENDS);
-				if (!StringUtils.isEmpty(configName)) {
-				    if (!doc.containsSection(CONFIG_+configName))
-				        markers.addError(section, EXTENDS, "No such section: [Config "+configName+"]");
+				String extendsList = doc.getValue(section, EXTENDS);
+				if (!StringUtils.isEmpty(extendsList)) {
+				    for (String configName : InifileUtils.parseExtendsList(extendsList))
+				        if (!doc.containsSection(CONFIG_+configName))
+				            markers.addError(section, EXTENDS, "No such section: [Config "+configName+"]");
 				}
 			}
 		}
 
-		// check fallback chain for every section
-		for (String section : doc.getSectionNames()) {
-		    // follow section fallback sequence, and detect cycles in it
-		    Set<String> sectionChain = new HashSet<String>();
-		    String currentSection = section;
-		    while (true) {
-		        sectionChain.add(currentSection);
-		        currentSection = InifileUtils.resolveBaseSection(doc, currentSection);
-		        if (currentSection==null)
-		            break; // [General] reached
-		        if (sectionChain.contains(currentSection)) {
-		            sectionsCausingCycles.add(currentSection);
-		            break; // error: cycle in the fallback chain
-		        }
-		    }
-		}
-		
+        // check fallback chain for every section
+		SectionChainResolver resolver = new SectionChainResolver(doc);
+		resolver.resolveAll();
+		sectionsCausingCycles = resolver.getCycles();
+
 		// add error markers
-		for (String section : sectionsCausingCycles)
-		           markers.addError(section, "Cycle in the fallback chain at section ["+section+"]");
+		for (Set<String> cycle : sectionsCausingCycles)
+		    for (String section : cycle)
+		        markers.addError(section, "Cycle in the fallback chain at section ["+section+"]");
+		for (String section : doc.getSectionNames()) {
+		    Set<String> conflict = resolver.getConflict(section);
+		    if (conflict != null)
+		        markers.addError(section, String.format("Conflict in the fallback chain of %s: %s",
+		                                                    section, StringUtils.formatList(conflict, "%s", ",")));
+		}
 	}
 
 	/**
@@ -1214,7 +1209,10 @@ public final class InifileAnalyzer {
 
 	public boolean isCausingCycle(String section) {
         validateIfChanged();
-        return sectionsCausingCycles.contains(section);
+        for (Set<String> cycle : sectionsCausingCycles)
+            if (cycle.contains(section))
+                return true;
+        return false;
 	}
 
 	public interface Runnable<T> {

@@ -234,7 +234,7 @@ EnvirBase::~EnvirBase()
 int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
 {
     args = new ArgList();
-    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:agGv");  //TODO share spec with startup.cc!
+    args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGv");  //TODO share spec with startup.cc!
     cfg = dynamic_cast<cConfigurationEx *>(configobject);
     if (!cfg)
         throw cRuntimeError("Cannot cast configuration object %s to cConfigurationEx", configobject->getClassName());
@@ -320,6 +320,22 @@ bool EnvirBase::simulationRequired()
         }
         return false;
     }
+
+    // -X option: print fallback chain of the given config, and exit
+    configToPrint = args->optionValue('X');
+    if (configToPrint)
+    {
+        ev.printf("\n");
+        std::vector<std::string> configNames = cfg->getConfigChain(configToPrint);
+        for (int i=0; i<(int)configNames.size(); i++) {
+            const char *configName = configNames[i].c_str();
+            if (strcmp(configName, "General") != 0)
+                ev.printf("Config ", configName);
+            ev.printf("%s\n", configName);
+        }
+        return false;
+    }
+
 
     return true;
 }
