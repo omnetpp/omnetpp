@@ -33,7 +33,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.ResettableIterator;
-import org.apache.commons.lang.text.StrTokenizer;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
@@ -48,7 +47,10 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.engine.StringTokenizer2;
 import org.omnetpp.common.engine.UnitConversion;
+import org.omnetpp.common.engineext.StringTokenizerException;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.form.AnalysisTimeoutDialog;
@@ -657,14 +659,19 @@ public final class InifileAnalyzer {
 
 		// validate the first 100 values that come from iterating the constants in the variable definitions
 		if (foundAny && validateValues) {
-			IterationVariablesIterator values = new IterationVariablesIterator(value);
-			int count = 0;
-			while (values.hasNext() && count < 100) {
-				String v = values.next();
-				//System.out.format("Validating: %s%n", v);
-				validateParamKey(section, key, v);
-				count++;
-			}
+		    try {
+		        IterationVariablesIterator values = new IterationVariablesIterator(value);
+		        int count = 0;
+		        while (values.hasNext() && count < 100) {
+		            String v = values.next();
+		            //System.out.format("Validating: %s%n", v);
+		            validateParamKey(section, key, v);
+		            count++;
+		        }
+		    }
+		    catch (StringTokenizerException e) {
+		        markers.addError(section, key, "Syntax error: " + e.getMessage());
+		    }
 		}
 
 		return foundAny;
@@ -788,7 +795,35 @@ public final class InifileAnalyzer {
                 markers.addInfo(section, key, "Value is same as the NED default");
         }
     }
-
+    
+    static Pair<Integer,Integer> findNextIterationVariable(String value, int startPos) {
+        int index = value.indexOf("${", startPos);
+        if (index >= 0) {
+            StringTokenizer2 tokenizer = new StringTokenizer2(value.substring(index), "}", "{}()[]", "\"");
+            tokenizer.nextToken(); // does not contain ending '}' !
+            int start = index;
+            int end = start + tokenizer.getTokenLength() + 1;
+            return Pair.pair(start, end);
+        }
+        else
+            return null;
+    }
+    
+    static List<String> splitValueByIterationVariables(String value) {
+        List<String> tokens = new ArrayList<String>();
+        int pos = 0;
+        Pair<Integer,Integer> loc = null;
+        while((loc = findNextIterationVariable(value, pos)) != null) {
+            int start = loc.first;
+            int end = loc.second;
+            tokens.add(value.substring(pos, start));
+            tokens.add(value.substring(start, end));
+            pos = end;
+        }
+        tokens.add(value.substring(pos));
+        return tokens;
+    }
+    
 	/**
 	 * Iterates on the values, that comes from the substitutions of iteration variables
 	 * with the constants found in their definition.
@@ -810,7 +845,7 @@ public final class InifileAnalyzer {
 			this.format = new ArrayList<Object>();
 			this.sb = new StringBuilder(100);
 
-			List<String> tokens = StringUtils.splitPreservingSeparators(value, DOLLAR_BRACES_PATTERN);
+			List<String> tokens = splitValueByIterationVariables(value);
 			List<ResettableIterator> valueIterators = new ArrayList<ResettableIterator>();
 			int i = 0;
 			for (String token : tokens) {
@@ -864,7 +899,8 @@ public final class InifileAnalyzer {
 	 */
 	static class IterationVariableIterator implements ResettableIterator
 	{
-		StrTokenizer tokenizer;
+		String values;
+	    StringTokenizer2 tokenizer;
 		Matcher matcher;
 		int groupIndex;
 
@@ -874,7 +910,6 @@ public final class InifileAnalyzer {
 				throw new IllegalArgumentException("Illegal iteration");
 
 			String content = m.group(1);
-			String values;
 			if ((m = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches())
 				values = m.group(1);
 			else if ((m=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches())
@@ -882,24 +917,24 @@ public final class InifileAnalyzer {
 				values = "";
 			else // anonymous iteration
 				values = content;
-			tokenizer = StrTokenizer.getCSVInstance(values);
+			reset();
 		}
 
 		public void reset() {
-			tokenizer.reset();
+			tokenizer = new StringTokenizer2(values, ",", "()[]{}", "\"");
 			matcher = null;
 			groupIndex = 0;
 		}
 
 		public boolean hasNext() {
-			return tokenizer.hasNext() || matcher != null && groupIndex <= matcher.groupCount();
+			return tokenizer.hasMoreTokens() || matcher != null && groupIndex <= matcher.groupCount();
 		}
 
 		public Object next() {
 			if (matcher == null || groupIndex > matcher.groupCount()) {
-				if (!tokenizer.hasNext())
+				if (!tokenizer.hasMoreTokens())
 					return null;
-				String token = tokenizer.nextToken();
+				String token = tokenizer.nextToken().trim();
 				match(token);
 			}
 			if (matcher != null && groupIndex <= matcher.groupCount()) {
@@ -1100,29 +1135,44 @@ public final class InifileAnalyzer {
 				"\\s*\\}");  // closing brace
 
 		String value = doc.getValue(section, key);
-		Matcher m = p.matcher(value);
 		SectionData sectionData = (SectionData) doc.getSectionData(section);
 
 		// find all occurrences of the pattern in the input string
-		while (m.find()) {
-			IterationVariable v = new IterationVariable();
-			v.varname = m.group(2);
-			v.value = m.group(3);
-			v.parvar = m.group(5);
-			v.section = section;
-			v.key = key;
-			//Debug.println("itervar found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
-			if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(v.varname))
-			    markers.addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
-			else if (sectionData.namedIterations.containsKey(v.varname))
-				// Note: checking that it doesn't redefine a variable in a base section can only be done
-				// elsewhere, after all sections have been processed
-			    markers.addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}");
-			else {
-				sectionData.iterations.add(v);
-				if (v.varname != null)
-					sectionData.namedIterations.put(v.varname, v);
-			}
+		int pos = 0;
+		Pair<Integer,Integer> loc = null;
+		try {
+		    while ((loc = findNextIterationVariable(value, pos)) != null) {
+		        int start = loc.first;
+		        int end = loc.second;
+
+		        String iteration = value.substring(start, end);
+		        pos = end;
+
+		        Matcher m = p.matcher(iteration);
+		        boolean matches = m.matches();
+		        Assert.isTrue(matches);
+		        
+		        IterationVariable v = new IterationVariable();
+		        v.varname = m.group(2);
+		        v.value = m.group(3);
+		        v.parvar = m.group(5);
+		        v.section = section;
+		        v.key = key;
+		        //Debug.println("itervar found: $"+v.varname+" = ``"+v.value+"'' ! "+v.parvar);
+		        if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(v.varname))
+		            markers.addError(section, key, "${"+v.varname+"} is a predefined variable and cannot be changed");
+		        else if (sectionData.namedIterations.containsKey(v.varname))
+		            // Note: checking that it doesn't redefine a variable in a base section can only be done
+		            // elsewhere, after all sections have been processed
+		            markers.addError(section, key, "Redefinition of iteration variable ${"+v.varname+"}");
+		        else {
+		            sectionData.iterations.add(v);
+		            if (v.varname != null)
+		                sectionData.namedIterations.put(v.varname, v);
+		        }
+		    }
+		} catch (StringTokenizerException e) {
+		    markers.addError(section, key, "Syntax error: " + e.getMessage());
 		}
 	}
 

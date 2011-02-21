@@ -10,6 +10,7 @@
 #include "bigdecimal.h"
 #include "rwlock.h"
 #include "expression.h"
+#include "stringtokenizer2.h"
 %}
 
 %include "commondefs.i"
@@ -133,3 +134,29 @@ struct Value
 %{
 typedef Expression::Value Value;
 %}
+
+/* -------------------- stringtokenizer2.h -------------------------- */
+%define CHECK_STRINGTOKENIZER_EXCEPTION(METHOD)
+%exception METHOD {
+    try {
+        $action
+    } catch (StringTokenizerException& e) {
+        jclass clazz = jenv->FindClass("org/omnetpp/common/engineext/StringTokenizerException");
+        jmethodID methodId = jenv->GetMethodID(clazz, "<init>", "(Ljava/lang/String;)V");
+        jthrowable exception = (jthrowable)(jenv->NewObject(clazz, methodId, jenv->NewStringUTF(e.what())));
+        jenv->Throw(exception);
+        return $null;
+    } catch (std::exception& e) {
+        SWIG_JavaThrowException(jenv, SWIG_JavaRuntimeException, const_cast<char*>(e.what()));
+        return $null;
+    }
+}
+%enddef
+
+CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::StringTokenizer2)
+CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::setParentheses)
+CHECK_STRINGTOKENIZER_EXCEPTION(StringTokenizer2::nextToken)
+
+%ignore StringTokenizerException;
+
+%include "stringtokenizer2.h"

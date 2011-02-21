@@ -188,7 +188,7 @@ sections in the following order (this is also called the
 
 The effect is the same as if the contents of the sections
 SlottedAloha2b, SlottedAloha2, SlottedAlohaBase, HighTrafficSettings and
-General were copied together into one section, one after another, 
+General were copied together into one section, one after another,
 \ttt{[Config SlottedAloha2b]} being at the top, and \ttt{[General]}
 at the bottom. Lookups always start at the top, and stop at the first
 matching entry.
@@ -205,7 +205,7 @@ The \textit{fallback chain} of a configuration \ttt{A} is
         \textit{fallback section chains}.
         The merge is \textit{monotonic}: if some configuration \ttt{X}
         precedes configuration \ttt{Y} in one of the input chains,
-        it will precede it in the output chain too. } 
+        it will precede it in the output chain too. }
 \end{itemize}
 
 The \textit{section fallback chain} can be printed by the \ttt{-X} option
@@ -552,6 +552,24 @@ used):
 
 To write a literal \ttt{\$\{..\}} inside a string constant, quote
 the left brace with a backslash: \ttt{\${\textbackslash}\{..\}}.
+
+\begin{note}
+Inside \ttt{\$\{..\}}, the values are separated with commas. However,
+not every comma is taken as a value separator because the parser
+tries to be smart about what you meant. Commas inside (nested) parentheses,
+brackets or curly braces are ignored so that \ttt{\$\{uniform(0,3)\}} is
+parsed as one value and not as \ttt{uniform(0} plus \ttt{3)}. Commas, curly
+braces and other charachers inside double-quoted string literals are
+also ignored, so \ttt{\$\{"Hello, world"\}} yields a single \ttt{"Hello, world"}
+string and not \ttt{"Hello} plus \ttt{world"}. It is assumed that string literals
+use backslash as an escape characher, like in C/C++ and NED.
+
+If you want to have a literal comma or close-brace inside a value, you need
+to escape it with a backslash: \ttt{\$\{foo{\textbackslash},bar{\textbackslash}\}baz\}}
+will parse as a single value, \ttt{foo,bar\}baz}. Backslashes themselves must be doubled.
+As the above examples illustrate, the parser removes one level of backslashes,
+except inside string literals where they are left intact.
+\end{note}
 
 
 \subsection{Named Iteration Variables}

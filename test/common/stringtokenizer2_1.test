@@ -1,0 +1,37 @@
+%description:
+Positive test cases for StringTokenizer2.
+
+%includes:
+
+#include "stringtokenizer2.h"
+
+%global:
+
+static void tokenize(const char *text)
+{
+    try {
+    	StringTokenizer2 tokenizer(text, " ", "{}[]()", "'");
+    	while (tokenizer.hasMoreTokens()) {
+    		ev << tokenizer.nextToken();
+    		if (tokenizer.hasMoreTokens())
+    		    ev << "|";
+    	}
+        ev << "\n";
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+
+#define T(x) tokenize(x);
+
+T("This 'string contains' {a lot} (of {[{irritating}]}) 'parentheses: {,[ and ('");
+T("\\\\ \\  \\{ \\} \\( \\) \\[ \\] \\' \\n");
+
+ev << ".\n";
+
+%contains: stdout
+This|'string contains'|{a lot}|(of {[{irritating}]})|'parentheses: {,[ and ('
+\| |{|}|(|)|[|]|'|\n
+.

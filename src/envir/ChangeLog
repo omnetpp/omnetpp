@@ -1,8 +1,36 @@
 2011-02-21  Tamas Borbely
 
+	* Ini files: better parsing for iteration variables, i.e the ${...}
+	syntax. Now we use a tokenizer (StringTokenizer2 in src/common)
+	that honors nested parens/brackets/braces and also quotation marks
+	when parsing the list of values to iterate over.
+	For example, ${value=1,2,uniform(0,3)} is now correctly parsed as
+	'1', '2' and 'uniform(0,3)' and not as '1', '2', 'uniform(0' and
+	'3)' as before. Similarly, ${value="foo,bar"} now produces a single
+	value '"foo,bar"' and not two values ('"foo' and 'bar"') as before.
+
+	Backslash can be used to quote a literal comma or (unbalanced) paren,
+	bracket or brace. Backslash is also recognized inside string literals
+	as a means of escaping double-quote characters in the string.
+	The tokenizer removes one level of backslashes, except inside string
+	literals where they remain untouched. For example, the following
+	iteration variable
+	    ${var = 3, uniform(5,10), "}", {a,b}, foo\,bar, a\\b, "\"}",  "\\a"}
+	will produce the following values:
+ 	    3
+	    uniform(5,10)
+	    "}"
+	    {a,b}
+	    foo,bar
+	    a\b
+	    "\"}"
+	    "\\a"
+
+2011-02-21  Tamas Borbely
+
 	* Ini files: checked in multiple inheritance support for sections.
-	Syntax: extends=Base1,Base2,Base3. The implementation uses the C3 
-	lineratization algorithm to determine section fallback order, 
+	Syntax: extends=Base1,Base2,Base3. The implementation uses the C3
+	lineratization algorithm to determine section fallback order,
 	see e.g. http://en.wikipedia.org/wiki/C3_linearization.
 	If you are unsure, use the new "-X <configname>" command-line option
 	that prints the fallback order of the given section for you.

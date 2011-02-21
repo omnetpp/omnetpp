@@ -21,7 +21,7 @@
 #include "valueiterator.h"
 #include "stringutil.h"
 #include "commonutil.h"
-#include "stringtokenizer.h"
+#include "stringtokenizer2.h"
 #include "cexception.h"
 
 USING_NAMESPACE
@@ -43,7 +43,7 @@ ValueIterator::~ValueIterator()
 void ValueIterator::parse(const char *s)
 {
     items.clear();
-    StringTokenizer tokenizer(s, ","); //XXX turn on respecting quotes
+    StringTokenizer2 tokenizer(s, ",", "()[]{}", "\"");
     while (tokenizer.hasMoreTokens())
     {
         Item item;

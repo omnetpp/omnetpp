@@ -1,0 +1,77 @@
+%description:
+Test inifile iteration variable parsing.
+
+%global:
+static void printValues(const char *configName, const char *iterationVariable)
+{
+    cConfigurationEx *config = ev.getConfigEx();
+    int n = config->getNumRunsInConfig(configName);
+    ev << iterationVariable << "\n";
+    for (int i = 0; i < n; ++i)
+    {
+        config->activateConfig(configName, i);
+        const char *value = config->getVariable(iterationVariable);
+        ev << "  " << value << "\n";
+    }
+}
+
+%activity:
+printValues("A", "common");
+printValues("B", "quotes");
+printValues("C", "parens");
+printValues("D", "escape");
+ev << ".\n";
+
+%file: test.ned
+simple Test
+{
+    @isNetwork(true);
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+
+[Config A]
+Test.unused = ${common = 3, 0.5..1.0 step 0.5, uniform(5,10), "hello, world!"}
+
+[Config B]
+Test.unused = ${quotes = "foo,bar", "foo{bar", "foo}bar", "\"}",  "\\a", "foo\,bar", "foo\{bar", "foo\}bar", non-"f,[o\"o}"-sense }
+
+[Config C]
+Test.unused = ${parens = (a,b), {a,b}, [a,b], (a,[b,{c,d}]) }
+
+[Config D]
+Test.unused = ${escape = foo\,bar, foo\)bar, foo\}bar, foo\]bar, a\\b }
+
+%contains: stdout
+common
+  3
+  0.5
+  1
+  uniform(5,10)
+  "hello, world!"
+quotes
+  "foo,bar"
+  "foo{bar"
+  "foo}bar"
+  "\"}"
+  "\\a"
+  "foo\,bar"
+  "foo\{bar"
+  "foo\}bar"
+  non-"f,[o\"o}"-sense
+parens
+  (a,b)
+  {a,b}
+  [a,b]
+  (a,[b,{c,d}])
+escape
+  foo,bar
+  foo)bar
+  foo}bar
+  foo]bar
+  a\b
+.
+

@@ -1,0 +1,66 @@
+%description:
+Test inifile iteration variable parsing.
+
+%global:
+static void printConfigValues(const char *configName, const char *key)
+{
+    cConfigurationEx *config = ev.getConfigEx();
+    int nRuns = config->getNumRunsInConfig(configName);
+    printf("%s:\n", configName);
+    for (int i = 0; i < nRuns; ++i)
+    {
+        config->activateConfig(configName, i);
+        const char *value = config->getParameterValue("Test", key, true);
+        printf("  %s=%s\n", key, value);
+    }
+    printf("  .\n");
+}
+
+%activity:
+printConfigValues("A", "dblPar");
+printConfigValues("B", "strPar");
+printConfigValues("C", "strPar");
+
+%file: test.ned
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        double dblPar = default(1.0);
+        string strPar = default("");
+}
+
+%inifile: test.ini
+[General]
+network = Test
+
+[Config A]
+Test.dblPar=${ 1.0, 2.0, uniform(1.0,2.0) }ms
+
+[Config B]
+Test.strPar=${ "x", ",", "}" }
+
+[Config C]
+Test.strPar="x ${\\, \,, \{, \}, \(, \), \\\"} y"
+
+%contains: stdout
+A:
+  dblPar=1.0ms
+  dblPar=2.0ms
+  dblPar=uniform(1.0,2.0)ms
+  .
+B:
+  strPar="x"
+  strPar=","
+  strPar="}"
+  .
+C:
+  strPar="x \ y"
+  strPar="x , y"
+  strPar="x { y"
+  strPar="x } y"
+  strPar="x ( y"
+  strPar="x ) y"
+  strPar="x \" y"
+  .
+

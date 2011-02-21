@@ -36,7 +36,7 @@ OBJS= $O/lcgrandom.o $O/filereader.o $O/linetokenizer.o \
       $O/matchexpression.o $O/matchexpressionlexer.o $O/matchexpression.tab.o \
       $O/patternmatcher.o $O/unitconversion.o $O/displaystring.o $O/fileglobber.o \
       $O/fileutil.o $O/stringutil.o $O/commonutil.o $O/exception.o $O/bigdecimal.o \
-      $O/enumstr.o
+      $O/enumstr.o $O/stringtokenizer2.o
 
 ifeq ("$(BUILDING_UILIBS)","yes")
 OBJS+= $O/rwlock.o
@@ -208,6 +208,11 @@ $O/stringpool.o: stringpool.cc \
 $O/stringtokenizer.o: stringtokenizer.cc \
   commondefs.h \
   stringtokenizer.h
+$O/stringtokenizer2.o: stringtokenizer2.cc \
+  commonutil.h \
+  commondefs.h \
+  exception.h \
+  stringtokenizer2.h
 $O/stringutil.o: stringutil.cc \
   commonutil.h \
   commondefs.h \

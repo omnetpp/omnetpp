@@ -28,6 +28,7 @@
 #include "globals.h"
 #include "cconfigoption.h"
 #include "stringtokenizer.h"
+#include "stringtokenizer2.h"
 #include "timeutil.h"
 #include "platmisc.h"   //getpid()
 
@@ -534,9 +535,12 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
 void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outVarname, std::string& outValue, std::string& outParvar, const char *&outEndPos)
 {
     Assert(pos[0]=='$' && pos[1]=='{'); // this is the way we've got to be invoked
-    outEndPos = strchr(pos, '}');
-    if (!outEndPos)
+
+    StringTokenizer2 tokenizer(pos+1, "}", "{}", "\"");
+    const char *token = tokenizer.nextToken(); // ends at matching '}'
+    if (!token)
         throw cRuntimeError("missing '}' for '${'");
+    outEndPos = pos + 1 + tokenizer.getTokenLength();
 
     // parse what's inside the ${...}
     const char *varbegin = NULL;

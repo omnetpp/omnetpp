@@ -43,7 +43,7 @@ Thumbs.db
 /samples/.metadata
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
 /ui/org.omnetpp.ide.nativelibs/*.cxx
-/ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*
+/ui/org.omnetpp.ide.nativelibs/src/org/omnetpp/*/engine/
 /ui/org.omnetpp.ned.model/src/org/omnetpp/ned/model/pojo/*
 /ui/*/bin
 /samples/*/Makefile

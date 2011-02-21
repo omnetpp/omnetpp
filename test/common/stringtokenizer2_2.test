@@ -1,0 +1,45 @@
+%description:
+Negative test cases for StringTokenizer2.
+
+%includes:
+
+#include "stringtokenizer2.h"
+
+%global:
+
+static void tokenize(const char *text)
+{
+    try {
+    	StringTokenizer2 tokenizer(text, " ", "(){}", "'");
+    	while (tokenizer.hasMoreTokens()) {
+    		tokenizer.nextToken();
+    	}
+        ev << "FAILED\n";
+    } catch (StringTokenizerException& e) {
+        ev << e.what() << "\n";
+    } catch (std::exception& e) {
+        ev << "ERROR: " << e.what() << "\n";
+    }
+}
+
+%activity:
+
+#define T(x) tokenize(x);
+
+T("{");
+T("}");
+T("(");
+T(")");
+T("{(})")
+T("'bubu");
+
+ev << ".\n";
+
+%contains: stdout
+Unclosed parenthesis: {.
+Unmatched closing parenthesis: }.
+Unclosed parenthesis: (.
+Unmatched closing parenthesis: ).
+Unmatched closing parenthesis: }.
+Unclosed string constant.
+.
