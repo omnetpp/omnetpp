@@ -17,10 +17,14 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.PatternMatcher;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 import org.omnetpp.inifile.editor.model.PropertyResolution;
+import org.omnetpp.inifile.editor.model.Timeout;
 
 /**
  * Generate proposals for inifile parameters.
@@ -33,10 +37,10 @@ import org.omnetpp.inifile.editor.model.PropertyResolution;
 public class InifileParamKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;
-	private IInifileDocument doc;
+	private IReadonlyInifileDocument doc;
 	private InifileAnalyzer analyzer;
 
-	public InifileParamKeyContentProposalProvider(String section, boolean addEqualSign, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public InifileParamKeyContentProposalProvider(String section, boolean addEqualSign, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
 		super(true);
 		this.section = section;
 		this.addEqualSign = addEqualSign;
@@ -58,17 +62,24 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 		if (section != null) {
             Set<String> fullPaths = new HashSet<String>();
 
-            // collect unique param resolution full paths
-            //ParamResolution[] paramResolutions = analyzer.getUnassignedParams(section);
-			ParamResolution[] paramResolutions = analyzer.getParamResolutions(section);
-			for (ParamResolution res : paramResolutions)
-				if (res.type != ParamResolution.ParamResolutionType.NED)
-					fullPaths.add(res.fullPath + "." +res.paramDeclaration.getName());
-
-			// collect unique signals
-			PropertyResolution[] signalResolutions = analyzer.getPropertyResolutions(section);
-            for (PropertyResolution signalResolution : signalResolutions)
-                fullPaths.add(signalResolution.fullPath + ".");
+            try {
+                // collect unique param resolution full paths
+                //ParamResolution[] paramResolutions = analyzer.getUnassignedParams(section);
+    			ParamResolution[] paramResolutions = analyzer.getParamResolutions(section, new Timeout(InifileEditor.CONTENTASSIST_TIMEOUT));
+    			for (ParamResolution res : paramResolutions)
+    				if (res.type != ParamResolution.ParamResolutionType.NED)
+    					fullPaths.add(res.fullPath + "." +res.paramDeclaration.getName());
+    
+    			// collect unique signals
+    			PropertyResolution[] signalResolutions = analyzer.getPropertyResolutions(section, new Timeout(InifileEditor.CONTENTASSIST_TIMEOUT));
+                for (PropertyResolution signalResolution : signalResolutions)
+                    fullPaths.add(signalResolution.fullPath + ".");
+            } catch (ParamResolutionDisabledException e) {
+                // do not offer proposals depend on analysis
+            } catch (ParamResolutionTimeoutException e) {
+                // do not offer proposals depend on analysis
+                fullPaths.clear();
+            }
 
 			Set<String> moduleProposals = new HashSet<String>();
 			Set<String> paramProposals = new HashSet<String>();

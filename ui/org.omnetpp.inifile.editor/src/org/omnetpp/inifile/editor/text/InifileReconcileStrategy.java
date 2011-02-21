@@ -22,11 +22,12 @@ import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.editor.text.FoldingRegionSynchronizer;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.InifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileParser;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 import org.omnetpp.inifile.editor.model.ParseException;
-import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
+import org.omnetpp.inifile.editor.model.Timeout;
 
 /**
  * This class has one instance per editor. It performs
@@ -54,8 +55,8 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 		// force parsing and analyzing the file now (they are both lazy and
 		// wouldn't do that otherwise until a view, a tooltip or something
 		// needs data from them)
-		((InifileDocument)editorData.getInifileDocument()).parse();
-		editorData.getInifileAnalyzer().analyze();
+		editorData.getInifileDocument().parse();
+		editorData.getInifileAnalyzer().startAnalysisIfChanged();
 
 		// make inifile sections foldable
 		updateFoldingRegions();
@@ -69,7 +70,7 @@ public class InifileReconcileStrategy implements IReconcilingStrategy {
 		// collect positions
 		final Map<String,Position> newAnnotationPositions = new HashMap<String,Position>();
 		IDocument textDoc = editorData.getInifileEditor().getTextEditor().getDocument();
-		IInifileDocument doc = editorData.getInifileDocument();
+		IReadonlyInifileDocument doc = editorData.getInifileDocument();
 		for (String section : doc.getSectionNames()) {
 			LineInfo lines = doc.getSectionLineDetails(section);
 			addPosition(textDoc, lines.getLineNumber(), lines.getNumLines(), section+":"+lines.getLineNumber(), newAnnotationPositions);

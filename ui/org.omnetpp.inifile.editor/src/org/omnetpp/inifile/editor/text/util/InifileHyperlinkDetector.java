@@ -14,12 +14,16 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.KeyType;
 import org.omnetpp.inifile.editor.model.ParamResolution;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
+import org.omnetpp.inifile.editor.model.Timeout;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.core.ui.misc.NedHyperlink;
 import org.omnetpp.ned.model.INedElement;
@@ -44,7 +48,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 			int lineNumber = textDoc.getLineOfOffset(offset)+1;
 
 			// identify section+key being hovered
-			IInifileDocument doc = editorData.getInifileDocument();
+			IReadonlyInifileDocument doc = editorData.getInifileDocument();
 			String section = doc.getSectionForLine(lineNumber);
 			if (section==null)
 				return null;
@@ -53,7 +57,7 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 				return null;
 
 			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
-			if (InifileAnalyzer.getKeyType(key) == KeyType.CONFIG) {
+			if (KeyType.getKeyType(key) == KeyType.CONFIG) {
 				if (key.equals(ConfigRegistry.CFGID_NETWORK.getName())) {
 					// network key value hover
 					String networkName = doc.getValue(section, key);
@@ -69,14 +73,20 @@ public class InifileHyperlinkDetector implements IHyperlinkDetector {
 				// per object config key hovers
 
 				// NED element to go to
-				ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-				INedElement node = resList.length==0 ? null : resList[0].paramAssignment!=null ? resList[0].paramAssignment : resList[0].paramDeclaration;
-				if (node != null) {
-					// add hyperlink on the key
-					IRegion keyRegion = getKeyRegion(textDoc, lineNumber);
-					if (contains(keyRegion, offset))
-						return new IHyperlink[] {new NedHyperlink(keyRegion, node)};
-				}
+			    try {
+			        ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key, new Timeout(InifileEditor.HYPERLINKDETECTOR_TIMEOUT));
+			        INedElement node = resList.length==0 ? null : resList[0].paramAssignment!=null ? resList[0].paramAssignment : resList[0].paramDeclaration;
+			        if (node != null) {
+			            // add hyperlink on the key
+			            IRegion keyRegion = getKeyRegion(textDoc, lineNumber);
+			            if (contains(keyRegion, offset))
+			                return new IHyperlink[] {new NedHyperlink(keyRegion, node)};
+			        }
+			    } catch (ParamResolutionDisabledException e) {
+			        // no hyperlinks if param resolution is disabled
+			    } catch (ParamResolutionTimeoutException e) {
+			        // no hyperlinks if param resolution timed out
+			    }
 			}
 
     	} catch (BadLocationException e) {

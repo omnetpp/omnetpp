@@ -23,7 +23,7 @@ import org.eclipse.core.resources.IMarker;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
@@ -38,7 +38,7 @@ public class InifileHoverUtils {
 	 * Generates tooltip for an inifile section.
 	 * @param section  null is accepted
 	 */
-	public static String getSectionHoverText(String section, IInifileDocument doc, InifileAnalyzer analyzer, boolean allProblems) {
+	public static String getSectionHoverText(String section, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, boolean allProblems) {
 		if (section == null || !doc.containsSection(section))
 			return null;
 
@@ -96,17 +96,23 @@ public class InifileHoverUtils {
 
 		// unassigned parameters
 		if (analyzer != null) {
-			ParamResolution[] resList = analyzer.getUnassignedParams(section);
-			if (resList.length==0) {
-				if (networkName != null)
-					text += "<br>\nNo unassigned NED parameters in this section.";
-			}
-			else {
-				text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
-				for (ParamResolution res : resList)
-					text += " <li>" + res.fullPath + "." +res.paramDeclaration.getName() + "</li>\n";
-				text += "</ul>";
-			}
+		    try {
+		        ParamResolution[] resList = analyzer.getUnassignedParams(section, new Timeout(InifileEditor.HOVER_TIMEOUT));
+		        if (resList.length==0) {
+		            if (networkName != null)
+		                text += "<br>\nNo unassigned NED parameters in this section.";
+		        }
+		        else {
+		            text += "<br>\nThis section does not seem to assign the following NED parameters:\n<ul>";
+		            for (ParamResolution res : resList)
+		                text += " <li>" + res.fullPath + "." +res.paramDeclaration.getName() + "</li>\n";
+		            text += "</ul>";
+		        }
+		    } catch (ParamResolutionDisabledException e) {
+		        text += "<br>\nUnassigned parameters are unknown because ini file analysis has been turned off.";
+		    } catch (ParamResolutionTimeoutException e) {
+                text += "<br>\nUnassigned parameters are unknown because ini file analysis has timed out.";
+		    }
 		}
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
@@ -116,11 +122,11 @@ public class InifileHoverUtils {
 	 * @param section  null is accepted
 	 * @param key      null is accepted
 	 */
-	public static String getEntryHoverText(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public static String getEntryHoverText(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
 		if (section == null || key == null)
 			return null;
 
-		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
+		KeyType keyType = (key == null) ? KeyType.CONFIG : KeyType.getKeyType(key);
 		if (keyType==KeyType.CONFIG) {
 			// config key: display description
 			return getConfigHoverText(section, key, doc);
@@ -145,7 +151,7 @@ public class InifileHoverUtils {
     /**
 	 * Generates tooltip for a config entry.
 	 */
-	public static String getConfigHoverText(String section, String key, IInifileDocument doc) {
+	public static String getConfigHoverText(String section, String key, IReadonlyInifileDocument doc) {
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
 		String text = getProblemsHoverText(markers, false);
 		ConfigOption entry = ConfigRegistry.getOption(key);
@@ -157,7 +163,7 @@ public class InifileHoverUtils {
     /**
      * Generates tooltip for a per-object config entry.
      */
-	public static String getPerObjectConfigHoverText(String section, String key, IInifileDocument doc) {
+	public static String getPerObjectConfigHoverText(String section, String key, IReadonlyInifileDocument doc) {
         IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
         String text = getProblemsHoverText(markers, false);
 
@@ -201,32 +207,39 @@ public class InifileHoverUtils {
 		IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, analyzer.getDocument());
 		String text = getProblemsHoverText(markers, false);
 		text += "<b>[" + section + "] / " + key + "</b><br>\n";
-		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-		if (resList.length==0) {
-			text += "<br>Does not match any module parameters.";
-			return HoverSupport.addHTMLStyleSheet(text);
+		
+		try {
+    		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key, new Timeout(InifileEditor.HOVER_TIMEOUT));
+    		if (resList.length==0) {
+    			text += "<br>Does not match any module parameters.";
+    			return HoverSupport.addHTMLStyleSheet(text);
+    		}
+    
+    		// Maps NED parameters ==> section names. "In the following sections, the inifile key
+    		// matches exactly the following NED parameter declarations".
+    		// Example:
+            //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
+            //   {Ieee80211Mac.address} => {[Config Bar]}
+            Map<Set<ParamElementEx>, Set<String>> sectionsGroupedByParamDeclSet = organizeParamResolutions(resList);
+    
+            boolean isVerySimpleCase = sectionsGroupedByParamDeclSet.size()==1 && sectionsGroupedByParamDeclSet.keySet().toArray(new Set[]{})[0].size()==1;
+    
+            String[] allSectionNames = analyzer.getDocument().getSectionNames();
+            if (isVerySimpleCase) {
+                text += "<br><b>Applies to:</b><br>\n";
+                text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, true, true);
+            }
+            else {
+                text += "<br><b>Applies to:</b><br>\n";
+                text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, true, false);
+                text += "<br><b>Details:</b><br>\n";
+                text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, false, true);
+            }
+		} catch (ParamResolutionDisabledException e) {
+		    text += "<br>Unknown, because ini file analysis has been turned off.";
+		} catch (ParamResolutionTimeoutException e) {
+            text += "<br>Unknown, because ini file analysis has timed out.";
 		}
-
-		// Maps NED parameters ==> section names. "In the following sections, the inifile key
-		// matches exactly the following NED parameter declarations".
-		// Example:
-        //   {EtherMac.address, Ieee80211Mac.address} => {[General], [Config Foo]}
-        //   {Ieee80211Mac.address} => {[Config Bar]}
-        Map<Set<ParamElementEx>, Set<String>> sectionsGroupedByParamDeclSet = organizeParamResolutions(resList);
-
-        boolean isVerySimpleCase = sectionsGroupedByParamDeclSet.size()==1 && sectionsGroupedByParamDeclSet.keySet().toArray(new Set[]{})[0].size()==1;
-
-        String[] allSectionNames = analyzer.getDocument().getSectionNames();
-        if (isVerySimpleCase) {
-            text += "<br><b>Applies to:</b><br>\n";
-            text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, true, true);
-        }
-        else {
-            text += "<br><b>Applies to:</b><br>\n";
-            text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, true, false);
-            text += "<br><b>Details:</b><br>\n";
-            text += formatParamResolutions(sectionsGroupedByParamDeclSet, resList, allSectionNames, false, true);
-        }
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 

@@ -18,6 +18,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
@@ -50,12 +51,16 @@ import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
+import org.omnetpp.inifile.editor.actions.ToggleAnalysisAction;
 import org.omnetpp.inifile.editor.form.InifileFormEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileConverter;
 import org.omnetpp.inifile.editor.model.InifileDocument;
-import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
+import org.omnetpp.inifile.editor.model.Timeout;
 import org.omnetpp.inifile.editor.text.InifileTextEditor;
 import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 
@@ -64,14 +69,16 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
  */
 //FIXME File|Revert is always disabled
 //FIXME crashes if file gets renamed or moved
-//FIXME if workbench startup with an open inifile editor blocks for a while,
-// that's because forms are filled in an asyncExec() that refers to InifileAnalyzer,
-// and InifileAnalyzer is synchronized on NEDResources and has to wait until NED validation ends.
-// Solution: NED validation shouldn't lock NEDResources? (ie run validation on a *clone* of the trees)
 //TODO for units, tooltip should display "seconds" not only "s"
 public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
     public static final String ID = "org.omnetpp.inifile.editor";
-	/* editor pages */
+
+    // various paramresolution timeouts, all in milliseconds
+    public static final int CONTENTASSIST_TIMEOUT = 1000;
+    public static final int HOVER_TIMEOUT = 1000;
+    public static final int HYPERLINKDETECTOR_TIMEOUT = 500;
+    
+    /* editor pages */
 	private InifileTextEditor textEditor;
 	private InifileFormEditor formEditor;
 	public static final int FORMEDITOR_PAGEINDEX = 0;
@@ -81,6 +88,8 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 	private ResourceTracker resourceTracker = new ResourceTracker();
 	private InifileContentOutlinePage outlinePage;
 	private DelayedJob postSelectionChangedJob;
+	
+	private ToggleAnalysisAction toggleAnalysisAction = new ToggleAnalysisAction();
 
 	/**
 	 * Creates the ini file editor.
@@ -100,6 +109,10 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 
 	public InifileFormEditor getFormEditor() {
 		return formEditor;
+	}
+	
+	public IAction getToggleAnalysisAction() {
+	    return toggleAnalysisAction;
 	}
 
 	/**
@@ -133,8 +146,11 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		// set up editorData (the InifileDocument)
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
 		IDocument document = textEditor.getDocumentProvider().getDocument(getEditorInput());
-		InifileDocument inifileDocument = new InifileDocument(document, file);
+		IInifileDocument inifileDocument = new InifileDocument(document, file);
 		editorData.initialize(this, inifileDocument, new InifileAnalyzer(inifileDocument));
+		
+		// setTargetEditor can be called after editorData is initialized
+		toggleAnalysisAction.setTargetEditor(this);
 
 		// replace original MultiPageSelectionProvider with our own, as we want to
 		// publish our own selection (with InifileSelectionItem) for both pages.
@@ -189,8 +205,8 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 				// schedule initial analysis of the inifile
 				InifileDocument doc = (InifileDocument) editorData.getInifileDocument();
 				InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
-				doc.parse();
-				analyzer.analyze();
+				doc.parseIfChanged();
+				analyzer.startAnalysisIfChanged();
 
 				// open the "Module Parameters" view
 				try {
@@ -251,7 +267,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceTracker);
 		if (outlinePage != null)
 			outlinePage.setInput(null); //XXX ?
-		((InifileDocument)editorData.getInifileDocument()).dispose();
+		editorData.getInifileDocument().dispose();
 		super.dispose();
 	}
 

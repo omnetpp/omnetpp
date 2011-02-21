@@ -7,10 +7,6 @@
 
 package org.omnetpp.inifile.editor.model;
 
-import java.util.List;
-import java.util.Set;
-
-import org.eclipse.core.resources.IFile;
 
 /**
  * An interface for high-level manipulation of the contents of an ini file
@@ -34,44 +30,7 @@ import org.eclipse.core.resources.IFile;
  *
  * @author Andras
  */
-public interface IInifileDocument {
-	public class LineInfo {
-		private IFile file;
-		private int lineNumber;
-		private int numLines;
-		private boolean readOnly;
-
-		public LineInfo(IFile file, int lineNumber, int numLines, boolean readOnly) {
-			this.file = file;
-			this.lineNumber = lineNumber;
-			this.numLines = numLines;
-			this.readOnly = readOnly;
-		}
-
-		public IFile getFile() {
-			return file;
-		}
-		public int getLineNumber() {
-			return lineNumber;
-		}
-		public int getNumLines() {
-			return numLines;
-		}
-		public boolean isReadOnly() {
-			return readOnly;
-		}
-	}
-
-	/**
-	 * Returns true iff section and key exists.
-	 */
-	boolean containsKey(String section, String key);
-
-	/**
-	 * Returns the value of the given entry. Returns null if section,
-	 * or key in it does not exist.
-	 */
-	String getValue(String section, String key);
+public interface IInifileDocument extends IReadonlyInifileDocument {
 
 	/**
 	 * Sets the value of the given entry. Throws error if key does not exist
@@ -98,34 +57,12 @@ public interface IInifileDocument {
 	void addEntries(String section, String[] keys, String[] values, String[] rawComments, String beforeKey);
 
 	/**
-	 * Returns immutable value object with file/line/isReadonly info.
-	 * Returns null if section, or key in it does not exist.
-	 */
-	LineInfo getEntryLineDetails(String section, String key);
-
-	/**
-	 * Returns comment for the given key, or null if there's no comment.
-	 * The comment is returned without the leading "# " or "#".
-	 * Note: "" means empty comment ("#" followed by nothing.)
-	 * Throws error if key doesn't exist.
-	 */
-	String getComment(String section, String key);
-
-	/**
 	 * Sets the comment for an entry. Specify null to remove the comment.
 	 * The comment should be passed without the leading "# " or "#".
 	 * Note: "" means empty comment ("#" followed by nothing.)
 	 * Throws error if key doesn't exist, or the entry is readonly.
 	 */
 	void setComment(String section, String key, String comment);
-
-	/**
-	 * Returns the comment for the given key, including the leading "#" and
-	 * preceding whitespace. Returns "" if there is no comment (i.e. null
-	 * is never returned.)
-	 * Throws error if key doesn't exist.
-	 */
-	String getRawComment(String section, String key);
 
 	/**
 	 * Sets the comment for an entry. The comment should be passed with
@@ -161,31 +98,6 @@ public interface IInifileDocument {
 	void moveKey(String section, String key, String beforeKey);
 
 	/**
-	 * Returns keys in the given section, in the order they appear.
-	 * Returns null if section does not exist, and zero-length array if it
-	 * does not contain entries.
-	 */
-	Set<String> getKeys(String section);
-
-	/**
-	 * Returns keys in the given section that match the given regex. Keys are
-	 * returned in the order they appear. Returns null if section does not exist,
-	 * and zero-length array if it does not contain entries or no entries matched
-	 * the regex.
-	 */
-	List<String> getMatchingKeys(String section, String regex);
-
-	/**
-	 * Returns list of unique section names.
-	 */
-	String[] getSectionNames();
-
-	/**
-	 * Returns true iff section exists.
-	 */
-	boolean containsSection(String section);
-
-	/**
 	 * Removes all sections with that name. If there's no such section, nothing happens.
 	 * If some parts are in included files (i.e. readonly parts), those parts are
 	 * not skipped, and an exception is thrown at the end of the operation.
@@ -207,22 +119,6 @@ public interface IInifileDocument {
 	void renameSection(String sectionName, String newName);
 
 	/**
-	 * Returns immutable value object with file/line/numLines/isReadonly info,
-	 * where the number of lines includes section content (not only the header).
-	 * Returns null if section does not exist.
-	 */
-	LineInfo getSectionLineDetails(String section);
-
-	/**
-     * Returns comment on the section heading's line, or null if there's no comment.
-     * The comment is returned without the leading "# " or "#".
-     * Note: "" means empty comment ("#" followed by nothing.)
-     * Throws error if section doesn't exist; returns comment of the first heading
-     * if there're more than one.
-	 */
-	String getSectionComment(String section);
-
-	/**
 	 * Sets the comment on the section heading's line.
 	 * Sets the comment of the first heading if there're more than one.
 	 * The comment should be passed without the leading "# " or "#";
@@ -234,14 +130,6 @@ public interface IInifileDocument {
 	void setSectionComment(String section, String comment);
 
 	/**
-	 * Returns the comment on the section heading's line. Throws error if section
-	 * doesn't exist; returns comment of the first heading if there's more than one.
-	 * The comment is returned with the leading "#" and preceding whitespace.
-     * Returns "" if there is no comment (i.e. null is never returned.)
-	 */
-	String getRawSectionComment(String section);
-
-	/**
 	 * Sets the comment on the section heading's line.
 	 * Sets the comment of the first heading if there're more than one.
 	 * The comment should be passed with the leading "#" and preceding whitespace.
@@ -250,20 +138,6 @@ public interface IInifileDocument {
 	 * is readonly.
 	 */
 	void setRawSectionComment(String section, String comment);
-
-	/**
-	 * Interprets lineNumber as a position into the primary (edited) file,
-	 * and returns which section it is part of; null is returned for
-	 * positions above the first section heading.
-	 */
-	String getSectionForLine(int lineNumber);
-
-	/**
-	 * Interprets lineNumber as a position into the primary (edited) file,
-	 * and returns the key on which the cursor is positioned, or null if
-	 * it is not a key-value line.
-	 */
-	String getKeyForLine(int lineNumber);
 
 	/**
 	 * Performs basic syntactic validation on the section name string
@@ -314,19 +188,9 @@ public interface IInifileDocument {
 	void removeBottomInclude(String include);
 
 	/**
-	 * Get user data object attached to the given key.
-	 */
-	public Object getKeyData(String section, String key);
-
-	/**
 	 * Attach a (single, unnamed) user data object to the given key.
 	 */
 	void setKeyData(String section, String key, Object data);
-
-	/**
-	 * Get user data object attached to the given section.
-	 */
-	Object getSectionData(String section);
 
 	/**
 	 * Attach a (single, unnamed) user data object to the given section.
@@ -344,13 +208,23 @@ public interface IInifileDocument {
 	void removeInifileChangeListener(IInifileChangeListener listener);
 
 	/**
-	 * Returns the main (edited) inifile.
+	 * Creates a read-only copy of this ini file.
+	 * The copy is cached and returned until this document has not been changed. 
 	 */
-	IFile getDocumentFile();
-
-	/**
-	 * Returns all included files, including indirectly referenced ones
-	 */
-	IFile[] getIncludedFiles();
-
+    IReadonlyInifileDocument getImmutableCopy();
+    
+    /**
+     * Checks if the given copy is the current one.
+     */
+    boolean isImmutableCopyUpToDate(IReadonlyInifileDocument copy);
+    
+    /**
+     * Called when the editor is closed to allow freeing resources.
+     */
+    void dispose();
+    
+    /**
+     * Force parsing the document now.
+     */
+    void parse();
 }

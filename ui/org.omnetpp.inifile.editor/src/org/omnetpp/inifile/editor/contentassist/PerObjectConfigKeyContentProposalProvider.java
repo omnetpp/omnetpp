@@ -16,7 +16,7 @@ import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 
 /**
@@ -29,10 +29,10 @@ import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 public class PerObjectConfigKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;
-	private IInifileDocument doc;
+	private IReadonlyInifileDocument doc;
 	//private InifileAnalyzer analyzer;
 
-	public PerObjectConfigKeyContentProposalProvider(String section, boolean addEqualSign, IInifileDocument doc, InifileAnalyzer analyzer) {
+	public PerObjectConfigKeyContentProposalProvider(String section, boolean addEqualSign, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
 		super(true);
 		this.section = section;
 		this.addEqualSign = addEqualSign;
@@ -61,7 +61,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 	/**
 	 * Generate help text for the given config entry, to be displayed by the content assistant.
 	 */
-	protected static String getConfigHelpText(ConfigOption entry, String section, IInifileDocument doc) {
+	protected static String getConfigHelpText(ConfigOption entry, String section, IReadonlyInifileDocument doc) {
 		String key = entry.getName();
 		String text = "";
 

@@ -19,7 +19,7 @@ import org.eclipse.jface.text.information.IInformationProviderExtension2;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 
@@ -49,7 +49,7 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension, IInfor
 		}
 
 		// identify section+key being hovered
-		IInifileDocument doc = editorData.getInifileDocument();
+		IReadonlyInifileDocument doc = editorData.getInifileDocument();
 		String section = doc.getSectionForLine(lineNumber);
 		if (section==null)
 			return null;

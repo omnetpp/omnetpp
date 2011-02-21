@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.edit.ui.dnd.LocalTransfer;
 import org.eclipse.emf.edit.ui.dnd.ViewerDragAdapter;
 import org.eclipse.jface.action.Action;
@@ -64,9 +66,12 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
+import org.omnetpp.inifile.editor.model.Timeout;
 
 /**
  * Inifile editor page to manage the sections in the file.
@@ -100,6 +105,8 @@ public class SectionsPage extends FormPage {
 		}
 	};
 	private IAction addKeysAction = new AddInifileKeysAction();
+	
+	private IAction toggleAnalysisAction;
 
 	private static class SectionData {
 		String sectionName;
@@ -115,6 +122,8 @@ public class SectionsPage extends FormPage {
 
 	public SectionsPage(Composite parent, InifileEditor inifileEditor) {
 		super(parent, inifileEditor);
+
+        toggleAnalysisAction = inifileEditor.getToggleAnalysisAction();
 
 		// layout: 2x2 grid: (label, dummy) / (tree, buttonGroup)
 		setLayout(new GridLayout(2,false));
@@ -136,7 +145,7 @@ public class SectionsPage extends FormPage {
 
 		Composite buttonGroup = createButtons();
 		buttonGroup.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, true));
-
+		
 		reread();
 	}
 
@@ -217,6 +226,7 @@ public class SectionsPage extends FormPage {
 		menuManager.add(new Separator());
 		menuManager.add(gotoParametersAction);
 		menuManager.add(addKeysAction);
+		menuManager.add(toggleAnalysisAction);
 		treeViewer.getTree().setMenu(menuManager.createContextMenu(treeViewer.getTree()));
 
 		return treeViewer;
@@ -412,7 +422,7 @@ public class SectionsPage extends FormPage {
 	protected void sectionsDragged(String[] draggedSections, String targetSectionName) {
 		try {
 			//Debug.println(draggedSections.length + " items dropped to: "+targetSectionName);
-			IInifileDocument doc = getInifileDocument();
+			IReadonlyInifileDocument doc = getInifileDocument();
 			for (String draggedSectionName : draggedSections)
 				if (getInifileDocument().containsSection(draggedSectionName)) // might occur if it was dragged from a different editor's treeviewer...
 					if (!InifileUtils.sectionChainContains(doc, targetSectionName, draggedSectionName)) // avoid cycles
@@ -440,7 +450,11 @@ public class SectionsPage extends FormPage {
 		IInifileDocument doc = getInifileDocument();
 		InifileAnalyzer analyzer = getInifileAnalyzer();
 
-		analyzer.analyzeIfChanged(); // refresh error markers
+		try {
+		    analyzer.analyzeIfChanged(new Timeout(1000)); // refresh error markers
+		} catch (ParamResolutionTimeoutException e) {
+		    // ignore?
+		}
 
 		// build tree
 		HashMap<String,GenericTreeNode> nodes = new HashMap<String, GenericTreeNode>();

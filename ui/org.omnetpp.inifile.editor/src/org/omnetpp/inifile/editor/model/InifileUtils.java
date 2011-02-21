@@ -32,8 +32,7 @@ import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.IInifileDocument.LineInfo;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
@@ -71,6 +70,7 @@ public class InifileUtils {
     public static final Image ICON_PAR_ININEDDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_inineddefault.png");
     public static final Image ICON_PAR_IMPLICITDEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_implicitdefault.png");
     public static final Image ICON_PAR_GROUP = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_group.png");
+    public static final Image ICON_PAR_UNKNOWN = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_unknown.png");
 
     public static final Image ICON_SIGNAL = InifileEditorPlugin.getCachedImage("icons/full/obj16/signal.png");
     public static final Image ICON_STATISTIC = InifileEditorPlugin.getCachedImage("icons/full/obj16/statistic.png");
@@ -84,7 +84,7 @@ public class InifileUtils {
 	 * Looks up a configuration value in the given section or its fallback sections.
 	 * Returns null if not found.
 	 */
-	public static String lookupConfig(String section, String key, IInifileDocument doc) {
+	public static String lookupConfig(String section, String key, IReadonlyInifileDocument doc) {
 		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
 		return lookupConfig(sectionChain, key, doc);
 	}
@@ -92,7 +92,7 @@ public class InifileUtils {
 	/**
 	 * Looks up a configuration value. Returns null if not found.
 	 */
-	public static String lookupConfig(String[] sectionChain, String key, IInifileDocument doc) {
+	public static String lookupConfig(String[] sectionChain, String key, IReadonlyInifileDocument doc) {
 		for (String section : sectionChain)
 			if (doc.containsKey(section, key))
 				return doc.getValue(section, key);
@@ -104,7 +104,7 @@ public class InifileUtils {
 	 * inifile entry, or null if the parameter matches nothing. If hasNedDefault
 	 * is set, "=default" entries are also considered, otherwise they are ignored
 	 */
-	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IInifileDocument doc) {
+	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IReadonlyInifileDocument doc) {
 		//
 		// note: we need to return multiple matches because of keys like "*.node[0].power=...",
 	    // "*.node[1..5].power=...", and "net.node[6..].power=..." etc. Scanning stops at
@@ -133,22 +133,42 @@ public class InifileUtils {
 	public static String removeSectionNamePrefix(String sectionName) {
 		return sectionName.replaceFirst(".+ +", "");
 	}
+	
+	public static String sectionNameToConfigName(String sectionName) {
+	    return GENERAL.equals(sectionName) ? "" : removeSectionNamePrefix(sectionName);
+	}
+	
+	public static List<String> sectionNamesToConfigNames(List<String> sectionNames) {
+	    List<String> configNames = new ArrayList<String>();
+	    for (String sectionName : sectionNames) {
+	        String configName = sectionNameToConfigName(sectionName);
+	        if (!StringUtils.isEmpty(configName))
+	            configNames.add(configName);
+	    }
+	    return configNames;
+	}
+	
+	public static String configNameToSectionName(String configName) {
+	    return GENERAL.equals(configName) ? GENERAL : CONFIG_ + configName;
+	}
 
 	/**
 	 * Resolves the run-time NED type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
-	public static String resolveLikeParam(String moduleFullPath, ISubmoduleOrConnection element, String activeSection, InifileAnalyzer analyzer, IInifileDocument doc) {
+	public static String resolveLikeParam(String moduleFullPath, ISubmoduleOrConnection element, String activeSection,
+	                                        InifileAnalyzer analyzer, IReadonlyInifileDocument doc, ITimeout timeout)
+	    throws ParamResolutionDisabledException, ParamResolutionTimeoutException {
 		// get like parameter name
 		String likeParamName = element.getLikeParam();
 		if (likeParamName == null || !likeParamName.matches("[A-Za-z0-9_]+"))
 			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
 		// look up parameter value
-		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeParamName, activeSection);
+		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeParamName, activeSection, timeout);
 		if (res == null)
 			return null; // likely no such parameter
-		String value = InifileAnalyzer.getParamValue(res, doc);
+		String value = InifileUtils.getParamValue(res, doc);
 		if (value == null)
 			return null; // likely unassigned
 		try {
@@ -180,7 +200,7 @@ public class InifileUtils {
 	 * is returned without throwing an exception -- so this method may be safely
 	 * called during any calculation.
 	 */
-	public static String[] resolveSectionChain(IInifileDocument doc, String section) {
+	public static String[] resolveSectionChain(IReadonlyInifileDocument doc, String section) {
 		ArrayList<String> sectionChain = new ArrayList<String>();
 		String currentSection = section;
 		while (true) {
@@ -196,7 +216,7 @@ public class InifileUtils {
 	 * Whether the section chain contains the given section. Useful for detecting
 	 * cycles in the "extends" hierarchy.
 	 */
-	public static boolean sectionChainContains(IInifileDocument doc, String chainStartSection, String section) {
+	public static boolean sectionChainContains(IReadonlyInifileDocument doc, String chainStartSection, String section) {
 		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
 		return ArrayUtils.indexOf(sectionChain, section) >= 0;
 	}
@@ -207,7 +227,7 @@ public class InifileUtils {
 	 * on error (base section doesn't exist); also, it only returns [General]
 	 * if such section really exists.
 	 */
-	public static String resolveBaseSection(IInifileDocument doc, String section) {
+	public static String resolveBaseSection(IReadonlyInifileDocument doc, String section) {
 		if (section.equals(GENERAL))
 			return null;
         String extendsName = doc.getValue(section, EXTENDS);
@@ -222,7 +242,7 @@ public class InifileUtils {
 	/**
 	 * Same as resolveBaseSection(), but it returns [General] even if it doesn't exist
 	 */
-	public static String resolveBaseSectionPretendingGeneralExists(IInifileDocument doc, String section) {
+	public static String resolveBaseSectionPretendingGeneralExists(IReadonlyInifileDocument doc, String section) {
 		String baseSection = resolveBaseSection(doc, section);
 		return (baseSection==null && !section.equals(GENERAL) && !doc.containsKey(GENERAL, EXTENDS)) ? GENERAL : baseSection;
 	}
@@ -294,7 +314,7 @@ public class InifileUtils {
 		if (key.equals(CFGID_EXTENDS.getName())) return 1;
 		if (key.equals(CFGID_DESCRIPTION.getName())) return 2;
 		if (key.equals(CFGID_NETWORK.getName())) return 3;
-		KeyType type = InifileAnalyzer.getKeyType(key);
+		KeyType type = KeyType.getKeyType(key);
 		if (type == KeyType.CONFIG) return 4;
 		//FIXME "=default" should come here: if (key.endsWith(dot_APPLY_DEFAULT)) return 7; // (!!!)
         if (type == KeyType.PER_OBJECT_CONFIG) return 5;
@@ -335,7 +355,7 @@ public class InifileUtils {
 	/**
 	 * Returns problem markers for an inifile entry or section heading
 	 */
-	public static IMarker[] getProblemMarkersFor(String section, String key, IInifileDocument doc) {
+	public static IMarker[] getProblemMarkersFor(String section, String key, IReadonlyInifileDocument doc) {
 		LineInfo line = key==null ? doc.getSectionLineDetails(section) : doc.getEntryLineDetails(section, key);
 		return line==null ? new IMarker[0] : getProblemMarkersFor(line.getFile(), line.getLineNumber(), line.getLineNumber()+1);
 	}
@@ -343,7 +363,7 @@ public class InifileUtils {
 	/**
 	 * Returns problem markers for a whole inifile section
 	 */
-	public static IMarker[] getProblemMarkersForWholeSection(String section, IInifileDocument doc) {
+	public static IMarker[] getProblemMarkersForWholeSection(String section, IReadonlyInifileDocument doc) {
 		LineInfo line = doc.getSectionLineDetails(section);
 		return line==null ? new IMarker[0] : getProblemMarkersFor(line.getFile(), line.getLineNumber(), line.getLineNumber() + line.getNumLines());
 	}
@@ -384,7 +404,7 @@ public class InifileUtils {
 	 * Returns an image for the given section, complete with error/warning markers etc.
 	 */
 	public static Image getSectionImage(String sectionName, InifileAnalyzer analyzer) {
-		IInifileDocument doc = analyzer.getDocument();
+		IReadonlyInifileDocument doc = analyzer.getDocument();
 
 		// base image
 		boolean exists = analyzer.getDocument().containsSection(sectionName);
@@ -411,21 +431,27 @@ public class InifileUtils {
 	/**
 	 * Returns an image for a given inifile key, suitable for displaying in a table or tree.
 	 */
-	public static Image getKeyImage(String section, String key, InifileAnalyzer analyzer) {
+	public static Image getKeyImage(String section, String key, InifileAnalyzer analyzer, ITimeout timeout) {
 	    // return an icon based on ParamResolutions
-	    ParamResolution[] paramResolutions = analyzer.getParamResolutionsForKey(section, key);
-	    if (paramResolutions == null || paramResolutions.length == 0)
-	        return ICON_PAR_INI;
-        if (paramResolutions.length == 1)
-            return suggestImage(paramResolutions[0].type);
+	    try {
+	        ParamResolution[] paramResolutions = analyzer.getParamResolutionsForKey(section, key, timeout);
+	        if (paramResolutions == null || paramResolutions.length == 0)
+	            return ICON_PAR_INI;
+	        if (paramResolutions.length == 1)
+	            return suggestImage(paramResolutions[0].type);
 
-        // there are more than one ParamResolutions -- collect their types
-	    Set<ParamResolutionType> types = new HashSet<ParamResolutionType>();
-	    for (ParamResolution p : paramResolutions)
-	        types.add(p.type);
-        if (types.size() == 1)
-            return suggestImage(paramResolutions[0].type);
-        return ICON_INIPARMISC;
+	        // there are more than one ParamResolutions -- collect their types
+	        Set<ParamResolutionType> types = new HashSet<ParamResolutionType>();
+	        for (ParamResolution p : paramResolutions)
+	            types.add(p.type);
+	        if (types.size() == 1)
+	            return suggestImage(paramResolutions[0].type);
+	        return ICON_INIPARMISC;
+	    } catch (ParamResolutionDisabledException e) {
+	        return ICON_PAR_UNKNOWN;
+	    } catch (ParamResolutionTimeoutException e) {
+	        return ICON_PAR_UNKNOWN;
+	    }
 	}
 
 	/**
@@ -445,4 +471,48 @@ public class InifileUtils {
         return null;
     }
 
+    public static String getParamRemark(ParamResolution res, IReadonlyInifileDocument doc) {
+        String remark;
+        String nedDefaultIfPresent = res.paramAssignment != null ? " (NED default: " + res.paramAssignment.getValue() + ")" : "";
+    	switch (res.type) {
+    	    case UNASSIGNED: remark = "unassigned" + nedDefaultIfPresent; break;
+    	    case NED: remark = "NED"; break;
+    	    case INI: remark = "ini"; break;
+    	    case INI_ASK: remark = "ask" + nedDefaultIfPresent; break;
+    	    case INI_DEFAULT: remark = "NED default applied"; break;
+    	    case INI_OVERRIDE: remark = "ini (overrides NED default: " + res.paramAssignment.getValue() + ")"; break;
+    	    case INI_NEDDEFAULT: remark = "ini (sets same value as NED default)"; break;
+    	    case IMPLICITDEFAULT: remark = "NED default applied implicitly"; break;
+    	    default: throw new IllegalStateException("invalid param resolution type: "+res.type);
+    	}
+    	if (res.key!=null)
+    		remark += "; see [" + res.section + "] / " + res.key + "=" + doc.getValue(res.section, res.key);
+    	else if (res.paramAssignment != null && res.paramAssignment.getIsPattern())
+    	    remark += "; see (" + res.paramAssignment.getEnclosingTypeElement().getName() + ") / " + res.paramAssignment.getNedSource();
+    	return remark;
+    }
+
+    public static String getParamValue(ParamResolution res, IReadonlyInifileDocument doc) {
+        return getParamValue(res, doc, true);
+    }
+
+    public static String getParamValue(ParamResolution res, IReadonlyInifileDocument doc, boolean allowNull) {
+    	switch (res.type) {
+    		case UNASSIGNED:
+    		    if (allowNull)
+    		        return null;
+    		    else
+    		        return "(unassigned)";
+    		case INI_ASK:
+                if (allowNull)
+                    return null;
+                else
+                    return "(ask)";
+    		case NED: case INI_DEFAULT: case IMPLICITDEFAULT:
+    			return res.paramAssignment.getValue();
+    		case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:
+    			return doc.getValue(res.section, res.key);
+    		default: throw new IllegalArgumentException("invalid param resolution type: "+res.type);
+    	}
+    }
 }

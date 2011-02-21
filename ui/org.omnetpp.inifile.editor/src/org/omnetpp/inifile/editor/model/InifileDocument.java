@@ -55,52 +55,73 @@ public class InifileDocument implements IInifileDocument {
     public static final String INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileproblem";
 
     private IDocument document; // the document we are manipulating
-    private IFile documentFile; // the file of the document
+    IFile documentFile; // the file of the document
     private boolean changed; // whether changed since last parsed
+    private IReadonlyInifileDocument docCopy; // cached instance of last immutable copy
 
     // InifileDocument, InifileAnalyzer, and NEDResources are all accessed from
     // background threads (must be synchronized), and the analyze procedure needs
     // NEDResources -- so use NEDResources as lock to prevent deadlocks
     private Object lock = NedResourcesPlugin.getNedResources();
 
-    static class Line {
+    static class Line implements Cloneable {
         IFile file;
         int lineNumber; // 1-based
         int numLines;  // ==1 unless line continues on other lines (trailing backslash)
         String rawComment; // includes leading "#" and preceding whitespace; NEVER NULL
         Object data;
+        
     };
-    static class SectionHeadingLine extends Line {
+    static class SectionHeadingLine extends Line implements Cloneable {
         String sectionName;
         int lastLine; // last line of section contents
+        
+        public SectionHeadingLine clone() throws CloneNotSupportedException {
+            return (SectionHeadingLine)super.clone();
+        }
     }
-    static class KeyValueLine extends Line {
+    static class KeyValueLine extends Line implements Cloneable {
         String key;
         String value;
+        
+        protected KeyValueLine clone() throws CloneNotSupportedException {
+            return (KeyValueLine)super.clone();
+        }
     }
-    static class IncludeLine extends Line {
+    static class IncludeLine extends Line implements Cloneable {
         String includedFile;
     }
-
-    static class Section {
+    static class Section implements Cloneable {
         ArrayList<SectionHeadingLine> headingLines = new ArrayList<SectionHeadingLine>();
         LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
         Object data;
+        
+        @Override
+        protected Section clone() throws CloneNotSupportedException {
+            Section section = (Section)super.clone();
+            section.headingLines = new ArrayList<SectionHeadingLine>(this.headingLines.size());
+            for (SectionHeadingLine line : this.headingLines)
+                section.headingLines.add((SectionHeadingLine)line.clone());
+            section.entries = new LinkedHashMap<String,KeyValueLine>(this.entries.size());
+            for (Map.Entry<String, KeyValueLine> entry : this.entries.entrySet())
+                section.entries.put(entry.getKey(), entry.getValue().clone());
+            return section;
+        }
     }
 
     // primary data structure: sections, keys
-    private LinkedHashMap<String,Section> sections = new LinkedHashMap<String,Section>();
+    LinkedHashMap<String,Section> sections = new LinkedHashMap<String,Section>();
 
     // reverse (linenumber-to-section/key) mapping
-    private ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>();
-    private ArrayList<KeyValueLine> mainFileKeyValueLines = new ArrayList<KeyValueLine>();
+    ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>();
+    ArrayList<KeyValueLine> mainFileKeyValueLines = new ArrayList<KeyValueLine>();
 
     // include directives
-    private ArrayList<IncludeLine> topIncludes = new ArrayList<IncludeLine>();
-    private ArrayList<IncludeLine> bottomIncludes = new ArrayList<IncludeLine>();
+    ArrayList<IncludeLine> topIncludes = new ArrayList<IncludeLine>();
+    ArrayList<IncludeLine> bottomIncludes = new ArrayList<IncludeLine>();
 
     // included files, including indirectly referenced ones
-    private ArrayList<IFile> includedFiles = new ArrayList<IFile>();
+    ArrayList<IFile> includedFiles = new ArrayList<IFile>();
 
     // listeners
     private IDocumentListener documentListener; // we listen on IDocument
@@ -118,6 +139,20 @@ public class InifileDocument implements IInifileDocument {
 
         // listen on changes so we know when we need to re-parse
         hookListeners();
+    }
+    
+    public IReadonlyInifileDocument getImmutableCopy() {
+        synchronized (lock) {
+            if (docCopy == null)
+                docCopy = new ImmutableInifileDocument(this);
+            return docCopy;
+        }
+    }
+    
+    public boolean isImmutableCopyUpToDate(IReadonlyInifileDocument copy) {
+        synchronized (lock) {
+            return this.docCopy == copy;
+        }
     }
 
     protected void hookListeners() {
@@ -177,6 +212,7 @@ public class InifileDocument implements IInifileDocument {
     public void markAsChanged() {
         synchronized (lock) {
             changed = true;
+            docCopy = null;
             fireModelChanged();
         }
     }
@@ -410,6 +446,10 @@ public class InifileDocument implements IInifileDocument {
         if (!StringUtils.containsOnly(key.replaceAll("[a-zA-Z0-9]", "A"), "A_-.*?{}[]"))
             return "Key contains illegal character(s)";
         return null;
+    }
+    
+    Map<String,Section> getSections() {
+        return sections;
     }
 
     /**

@@ -17,13 +17,13 @@ import org.eclipse.ui.part.ShowInContext;
 import org.omnetpp.common.ui.PinnableView;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.ChannelElement;
@@ -127,7 +127,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
                 //
                 InifileSelectionItem sel = (InifileSelectionItem) element;
                 InifileAnalyzer analyzer = sel.getAnalyzer();
-                IInifileDocument doc = sel.getDocument();
+                IReadonlyInifileDocument doc = sel.getDocument();
 
                 if (sel.getSection()==null) {
                     showMessage("No section selected.");

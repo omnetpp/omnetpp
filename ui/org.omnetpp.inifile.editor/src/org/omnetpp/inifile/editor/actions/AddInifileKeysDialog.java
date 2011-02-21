@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
@@ -43,9 +44,12 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.ITimeout;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
+import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 
 
 /**
@@ -297,13 +301,20 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 
 		// get list of unassigned parameters
 		List<ParamResolution> params = new ArrayList<ParamResolution>();
-		if (filterCombo.getSelectionIndex() == FilterType.ALL.ordinal())
-		    params.addAll(Arrays.asList(analyzer.getParamResolutions(selectedSection)));
-		else {
-		    params.addAll(Arrays.asList(analyzer.getUnassignedParams(selectedSection)));
-		    if (filterCombo.getSelectionIndex() == FilterType.IMPLICITLY_ASSIGNED_AND_UNASSIGNED.ordinal())
-		        params.addAll(Arrays.asList(analyzer.getImplicitlyAssignedParams(selectedSection)));
-		}
+		try {
+		    ITimeout timeout = analyzer.getAdjustableTimeout(1000);
+            if (filterCombo.getSelectionIndex() == FilterType.ALL.ordinal())
+                params.addAll(Arrays.asList(analyzer.getParamResolutions(selectedSection, timeout)));
+            else {
+                params.addAll(Arrays.asList(analyzer.getUnassignedParams(selectedSection, timeout)));
+                if (filterCombo.getSelectionIndex() == FilterType.IMPLICITLY_ASSIGNED_AND_UNASSIGNED.ordinal())
+                    params.addAll(Arrays.asList(analyzer.getImplicitlyAssignedParams(selectedSection, timeout)));
+            }
+		} catch (ParamResolutionTimeoutException e) {
+		    throw new RuntimeException(e);
+        } catch (ParamResolutionDisabledException e) {
+            Assert.isTrue(false, "This method should not be called.");
+        }
 
 		// filter them by text
 		String filterString = filterText.getText().trim();

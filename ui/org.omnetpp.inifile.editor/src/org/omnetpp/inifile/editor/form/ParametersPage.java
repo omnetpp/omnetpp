@@ -64,10 +64,14 @@ import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvi
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.model.Timeout;
 
 /**
  * For editing module parameters,  and type-name lines.
@@ -184,7 +188,7 @@ public class ParametersPage extends FormPage {
 				if (element instanceof SectionKey) {
 					if (columnIndex == 0) {
                         SectionKey item = (SectionKey) element;
-                        return InifileUtils.getKeyImage(item.section, item.key, getInifileAnalyzer());
+                        return InifileUtils.getKeyImage(item.section, item.key, getInifileAnalyzer(), new Timeout(100));
 					}
 					else if (columnIndex == 1) {
 						SectionKey item = (SectionKey) element;
@@ -575,24 +579,36 @@ public class ParametersPage extends FormPage {
 		IInifileDocument doc = analyzer.getDocument();
 
 		// open the dialog
-		AddInifileKeysDialog dialog = new AddInifileKeysDialog(getShell(), analyzer, selectedSection);
-		if (dialog.open()==Dialog.OK) {
-			// save selection
-			IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
-
-			// add user-selected keys to the document
-			String[] keys = dialog.getKeys();
-			String section = dialog.getSection();
-			try {
-				doc.addEntries(section, keys, null, null, null);
-
-				// refresh table and restore selection
-				reread();
-			}
-			catch (RuntimeException ex) {
-				showErrorDialog(ex);
-			}
-			treeViewer.setSelection(sel);
+		try {
+		    if (!analyzer.isParamResolutionEnabled()) {
+                if (AnalysisDisabledDialog.openDialog(getShell()))
+                    analyzer.setParamResolutionEnabled(true);
+                else
+                    return;
+		    }
+		    
+    		AddInifileKeysDialog dialog = new AddInifileKeysDialog(getShell(), analyzer, selectedSection);
+    		if (dialog.open()==Dialog.OK) {
+    			// save selection
+    			IStructuredSelection sel = (IStructuredSelection) treeViewer.getSelection();
+    
+    			// add user-selected keys to the document
+    			String[] keys = dialog.getKeys();
+    			String section = dialog.getSection();
+    			try {
+    				doc.addEntries(section, keys, null, null, null);
+    
+    				// refresh table and restore selection
+    				reread();
+    			}
+    			catch (RuntimeException ex) {
+    				showErrorDialog(ex);
+    			}
+    			treeViewer.setSelection(sel);
+    		}
+		} catch (RuntimeException e) {
+		    if (!(e.getCause() instanceof ParamResolutionTimeoutException))
+		        throw e;
 		}
 	}
 
@@ -619,7 +635,7 @@ public class ParametersPage extends FormPage {
 		super.reread();
 
 		// refresh combo with the current section names, trying to preserve existing selection
-		IInifileDocument doc = getInifileDocument();
+		IReadonlyInifileDocument doc = getInifileDocument();
 		String selectedSection = sectionsCombo.getText();  // Note: "" if inifile is empty
 		String[] sectionNames = doc.getSectionNames();
 		sectionsCombo.setItems(sectionNames);
@@ -662,10 +678,17 @@ public class ParametersPage extends FormPage {
 
 		// update labels: "Network" and "Section fallback chain"
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
-		int numUnassigned = "".equals(selectedSection) ? 0 : getInifileAnalyzer().getUnassignedParams(selectedSection).length;
+		String numUnassigned;
+		try {
+		    numUnassigned = "".equals(selectedSection) ? "0" : String.valueOf(getInifileAnalyzer().getUnassignedParams(selectedSection, new Timeout(1000)).length);
+		} catch (ParamResolutionDisabledException e) {
+		    numUnassigned = "<unknown>";
+		} catch (ParamResolutionTimeoutException e) {
+		    numUnassigned = "<unknown>";
+		}
 		networkNameLabel.setText("Network: "+(networkName==null ? "<not configured>" : networkName));
 		sectionChainLabel.setText("Section fallback chain: "+(sectionChain.length==0 ? "<no sections>" : StringUtils.join(sectionChain, " > ")));
-		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameter"+(numUnassigned!=1 ? "s" : ""));
+		numUnassignedParamsLabel.setText(numUnassigned+" unassigned parameter"+(numUnassigned.equals("1") ? "" : "s"));
 		sectionChainLabel.getParent().layout();
 
 		updateButtonStates();

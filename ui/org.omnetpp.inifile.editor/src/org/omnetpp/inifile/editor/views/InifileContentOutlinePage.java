@@ -29,6 +29,7 @@ import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IInifileChangeListener;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
@@ -88,7 +89,7 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 				return null; //XXX
 			}
 			public boolean hasChildren(Object element) {
-				return (element instanceof IInifileDocument);
+				return (element instanceof IReadonlyInifileDocument);
 			}
 			public Object[] getElements(Object inputElement) {
 				return getChildren(inputElement);

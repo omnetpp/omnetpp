@@ -23,6 +23,7 @@ import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.eclipse.ui.texteditor.TextOperationAction;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
+import org.omnetpp.inifile.editor.actions.ToggleAnalysisAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
 
@@ -36,6 +37,7 @@ public class InifileTextEditor extends TextEditor {
     /** The projection support */
 	private ProjectionSupport projectionSupport;
 	private Runnable cursorPositionChangedJob;
+	private IAction toggleAnalysisAction;
 
 	/**
 	 * Default constructor.
@@ -48,6 +50,8 @@ public class InifileTextEditor extends TextEditor {
 		// setSourceViewerConfiguration() call there. Problem is, parentEditor
 		// is not yet available at that point.
 		setSourceViewerConfiguration(new InifileSourceViewerConfiguration(parentEditor.getEditorData()));
+		
+		toggleAnalysisAction = parentEditor.getToggleAnalysisAction();
 	}
 
 	/** The <code>TextualNedEditor</code> implementation of this
@@ -69,6 +73,9 @@ public class InifileTextEditor extends TextEditor {
 
         a = new AddInifileKeysAction();
 		setAction(a.getId(), a);
+		
+		a = toggleAnalysisAction;
+        setAction(a.getId(), a);
 	}
 
 	@Override
@@ -85,6 +92,7 @@ public class InifileTextEditor extends TextEditor {
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleCommentAction.ID);
         addAction(menu, ITextEditorActionConstants.GROUP_EDIT, AddInifileKeysAction.ID);
+        addAction(menu, ITextEditorActionConstants.GROUP_EDIT, ToggleAnalysisAction.ID);
     }
 
     /**

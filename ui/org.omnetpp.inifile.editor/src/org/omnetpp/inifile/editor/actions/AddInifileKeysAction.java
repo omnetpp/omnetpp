@@ -22,8 +22,10 @@ import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.editors.InifileSelectionItem;
+import org.omnetpp.inifile.editor.form.AnalysisDisabledDialog;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 import org.omnetpp.inifile.editor.text.InifileEditorMessages;
 import org.omnetpp.inifile.editor.text.actions.InifileTextEditorAction;
 
@@ -53,7 +55,7 @@ public class AddInifileKeysAction extends ResourceAction {
 			InifileEditorData editorData = inifileEditor.getEditorData();
 			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 			IInifileDocument doc = editorData.getInifileDocument();
-
+			
 			// does the inifile have sections at all?
 			if (doc.getSectionNames().length==0) {
 				MessageDialog.openConfirm(workbenchWindow.getShell(), "Empty Ini File",
@@ -63,6 +65,14 @@ public class AddInifileKeysAction extends ResourceAction {
 				inifileEditor.gotoEntry(GENERAL, CFGID_NETWORK.getName(), IGotoInifile.Mode.AUTO);
 				return;
 			}
+			
+			// check if analysis is enabled, offer to turn it on
+            if (!analyzer.isParamResolutionEnabled()) {
+                if (AnalysisDisabledDialog.openDialog(editor.getSite().getShell()))
+                    analyzer.setParamResolutionEnabled(true);
+                else
+                    return;
+            }
 
 			//XXX what if network name is invalid? check it inside the dialog??
 
@@ -72,12 +82,17 @@ public class AddInifileKeysAction extends ResourceAction {
 			String initialSection = selectionItem==null ? null : selectionItem.getSection();
 
 			// open the dialog
-			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), analyzer, initialSection);
-			if (dialog.open()==Dialog.OK) {
-				// add user-selected keys to the document
-				String[] keys = dialog.getKeys();
-				String section = dialog.getSection();
-				doc.addEntries(section, keys, null, null, null);
+			try {
+    			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), analyzer, initialSection);
+    			if (dialog.open()==Dialog.OK) {
+    				// add user-selected keys to the document
+    				String[] keys = dialog.getKeys();
+    				String section = dialog.getSection();
+    				doc.addEntries(section, keys, null, null, null);
+    			}
+			} catch (RuntimeException e) {
+			    if (!(e.getCause() instanceof ParamResolutionTimeoutException))
+			        throw e;
 			}
 		}
 	}

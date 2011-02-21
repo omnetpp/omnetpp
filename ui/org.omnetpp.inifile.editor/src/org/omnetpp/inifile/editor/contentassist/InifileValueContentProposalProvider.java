@@ -31,22 +31,26 @@ import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCompletionHelper;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.KeyType;
 import org.omnetpp.inifile.editor.model.ParamResolution;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
+import org.omnetpp.inifile.editor.model.Timeout;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.NedElementConstants;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
 import org.omnetpp.ned.model.pojo.ParamElement;
 
@@ -60,10 +64,10 @@ import org.omnetpp.ned.model.pojo.ParamElement;
 public class InifileValueContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private String key;
-	private IInifileDocument doc;
+	private IReadonlyInifileDocument doc;
 	private InifileAnalyzer analyzer;
 
-	public InifileValueContentProposalProvider(String section, String key, IInifileDocument doc, InifileAnalyzer analyzer, boolean replace) {
+	public InifileValueContentProposalProvider(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, boolean replace) {
 		super(false, replace);
 		this.section = section;
 		this.key = key;
@@ -81,7 +85,7 @@ public class InifileValueContentProposalProvider extends ContentProposalProvider
 	 * used to decide whether to install content assist support on a given edit field.
 	 */
 	public boolean isContentAssistAvailable() {
-		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
+		KeyType keyType = (key == null) ? KeyType.CONFIG : KeyType.getKeyType(key);
 		if (keyType == KeyType.CONFIG) {
 			// we call this for each edit field during form editor creation, so it should be reasonably fast
 			ConfigOption entry = ConfigRegistry.getOption(key);
@@ -106,7 +110,7 @@ s	 * before getting presented to the user.
 	 */
 	@Override
 	protected List<IContentProposal> getProposalCandidates(String prefix) {
-		KeyType keyType = (key == null) ? KeyType.CONFIG : InifileAnalyzer.getKeyType(key);
+		KeyType keyType = (key == null) ? KeyType.CONFIG : KeyType.getKeyType(key);
 		switch (keyType) {
 			case CONFIG: return getCandidatesForConfig(prefix);
 			case PARAM:  return getCandidatesForParam(prefix);
@@ -235,10 +239,17 @@ s	 * before getting presented to the user.
 		List<IContentProposal> p = new ArrayList<IContentProposal>();
 
 		// collect unique param nodes
-		ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key);
-		Set<ParamElement> paramSet = new HashSet<ParamElement>();
-		for (ParamResolution res : resList)
-			paramSet.add(res.paramDeclaration);
+        Set<ParamElement> paramSet = new HashSet<ParamElement>();
+        ParamResolution[] resList = null;
+        try {
+    		resList = analyzer.getParamResolutionsForKey(section, key, new Timeout(InifileEditor.CONTENTASSIST_TIMEOUT));
+    		for (ParamResolution res : resList)
+    			paramSet.add(res.paramDeclaration);
+        } catch (ParamResolutionDisabledException e) {
+            // analysis disabled, no param nodes
+        } catch (ParamResolutionTimeoutException e) {
+            // analysis timeout, no param nodes
+        }
 
 		// determine param type (all params matched must have the same type)
 		int dataType = -1;
@@ -280,14 +291,16 @@ s	 * before getting presented to the user.
 			break;
 		case NedElementConstants.NED_PARTYPE_STRING:
 		    // if the param is used in a "<param> like IFoo", propose all modules that implement IFoo
-		    Collection<INedTypeInfo> types = getProposedNedTypesFor(resList);
-		    if (types != null)
-	            for (INedTypeInfo type : types) {
-	                String docu = type.getFullyQualifiedName() + "\n\n";
-	                docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNedElement().getComment()));
-	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
-	            }
-			p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
+		    if (resList != null) {
+    		    Collection<INedTypeInfo> types = getProposedNedTypesFor(resList);
+    		    if (types != null)
+    	            for (INedTypeInfo type : types) {
+    	                String docu = type.getFullyQualifiedName() + "\n\n";
+    	                docu += StringUtils.nullToEmpty(NedCommentFormatter.makeTextDocu(type.getNedElement().getComment()));
+    	                p.add(new ContentProposal("\""+type.getName()+"\"", "\""+type.getName()+"\"", docu));
+    	            }
+    			p.addAll(toProposals(new String[] {"\"\""}, "or any string value"));
+		    }
 			break;
 		case NedElementConstants.NED_PARTYPE_XML:
 			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}));

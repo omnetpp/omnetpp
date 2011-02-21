@@ -113,7 +113,7 @@ import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 
 /**
  * Form page for configuration entries.
@@ -463,7 +463,7 @@ public class GenericConfigPage extends ScrolledFormPage {
     }
 
 	protected boolean occursOutsideGeneral(String key) {
-		IInifileDocument doc = getInifileDocument();
+		IReadonlyInifileDocument doc = getInifileDocument();
 		for (String section : doc.getSectionNames())
 			if (doc.containsKey(section, key) && !section.equals(GENERAL))
 				return true;

@@ -42,7 +42,7 @@ import org.omnetpp.inifile.editor.contentassist.InifileParamKeyContentProposalPr
 import org.omnetpp.inifile.editor.contentassist.InifileValueContentProposalProvider;
 import org.omnetpp.inifile.editor.contentassist.PerObjectConfigKeyContentProposalProvider;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
 
@@ -104,7 +104,7 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 		linePrefix = linePrefix.replaceFirst("^\\s+", "");
 
 		// try to determine which section we are in
-		IInifileDocument doc = editorData.getInifileDocument();
+		IReadonlyInifileDocument doc = editorData.getInifileDocument();
 		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
 		String section = doc.getSectionForLine(lineNumber);
 

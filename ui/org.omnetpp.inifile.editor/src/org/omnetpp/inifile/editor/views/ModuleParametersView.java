@@ -23,6 +23,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -55,19 +57,26 @@ import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
+import org.omnetpp.inifile.editor.model.ITimeout;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileAnalyzer.IAnalysisListener;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
 import org.omnetpp.inifile.editor.model.InifileUtils;
+import org.omnetpp.inifile.editor.model.ParamCollector;
 import org.omnetpp.inifile.editor.model.ParamResolution;
-import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
+import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
+import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
+import org.omnetpp.inifile.editor.model.SectionKey;
+import org.omnetpp.inifile.editor.model.Timeout;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 
 /**
@@ -80,7 +89,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private TableColumn parameterColumn;
 	private TableColumn valueColumn;
 	private TableColumn remarkColumn;
-	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
+	private IReadonlyInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
@@ -124,8 +133,8 @@ public class ModuleParametersView extends AbstractModuleView {
 					ParamResolution res = (ParamResolution) element;
 					switch (columnIndex) {
 						case 0: return res.fullPath + "." + res.paramDeclaration.getName();
-						case 1: return InifileAnalyzer.getParamValue(res, inifileDocument);
-						case 2: return InifileAnalyzer.getParamRemark(res, inifileDocument);
+						case 1: return InifileUtils.getParamValue(res, inifileDocument);
+						case 2: return InifileUtils.getParamRemark(res, inifileDocument);
 					}
 				}
 				return columnIndex==0 ? element.toString() : "";
@@ -345,7 +354,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	}
 
 	@Override
-	public void buildContent(INedElement element, InifileAnalyzer analyzer, String section, String key) {
+	public void buildContent(INedElement element, final InifileAnalyzer analyzer, String section, String key) {
 
 	    INedElement elementWithParameters = findAncestorWithParameters(element);
         if (elementWithParameters == null) {
@@ -358,23 +367,25 @@ public class ModuleParametersView extends AbstractModuleView {
 		//XXX why not unconditionally store analyzer and doc references???
 		if (analyzer==null) {
 			List<ParamResolution> pars = null;
+			
+			INedTypeResolver nedResolver = NedResourcesPlugin.getNedResources();
 
 			if (elementWithParameters instanceof SubmoduleElementEx) {
 			    SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;
                 INedTypeInfo typeInfo = submodule.getNedTypeInfo();
                 text = "Submodule " + submodule.getName() + ": " + (typeInfo==null ? "(invalid submodule type)" : typeInfo.getName());
-				pars = InifileAnalyzer.collectParameters(submodule);
+				pars = ParamCollector.collectParameters(submodule, nedResolver);
 			}
             else if (elementWithParameters instanceof ConnectionElementEx) {
                 ConnectionElementEx connection = (ConnectionElementEx)elementWithParameters;
                 INedTypeInfo typeInfo = connection.getNedTypeInfo();
                 text = "Connection " + connection.getSrcGateFullyQualified() + ": " + (typeInfo==null ? "(invalid channel type)" : typeInfo.getName());
-                pars = typeInfo!=null ? InifileAnalyzer.collectParameters(typeInfo) : new ArrayList<ParamResolution>();
+                pars = typeInfo!=null ? ParamCollector.collectParameters(typeInfo, nedResolver) : new ArrayList<ParamResolution>();
             }
 			else if (elementWithParameters instanceof INedTypeElement) {
 			    INedTypeInfo typeInfo = ((INedTypeElement)elementWithParameters).getNedTypeInfo();
 			    text = StringUtils.capitalize(elementWithParameters.getReadableTagName()) + ": " + typeInfo.getName();
-				pars = InifileAnalyzer.collectParameters(typeInfo);
+				pars = ParamCollector.collectParameters(typeInfo, nedResolver);
 			}
 			else {
 				showMessage("NED element should be a module type, a submodule or a connection.");
@@ -388,14 +399,37 @@ public class ModuleParametersView extends AbstractModuleView {
 				section = GENERAL;
 			hideMessage();
 
-			// update table contents
-			inifileAnalyzer = analyzer;
-			inifileDocument = analyzer.getDocument();
-			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section) : analyzer.getParamResolutions(section);
-			tableViewer.setInput(pars);
-
-			// update label
-			text = "Section ["+section+"]";
+            try {
+    			// update table contents
+    			inifileAnalyzer = analyzer;
+    			inifileDocument = analyzer.getDocument();
+    			ITimeout timeout = new Timeout(50); // do not block the UI -- we'll be called back when analysis is ready anyway
+    			ParamResolution[] pars = unassignedOnly ? analyzer.getUnassignedParams(section, timeout) : analyzer.getParamResolutions(section, timeout);
+    			tableViewer.setInput(pars);
+    
+    			// update label
+    			text = "Section ["+section+"]";
+			} catch (ParamResolutionDisabledException e) {
+			    tableViewer.setInput(new ParamResolution[0]);
+			    setContentDescription("Turn on ini file analysis to display the parameters.");
+			    return;
+			} catch (ParamResolutionTimeoutException e) {
+			    // Note: we continue to display the old data until new data become available, for smoother user experience. 
+			    // However, this is not without dangers: e.g. if user clicks on a parameter which has since been deleted
+			    // from the NED file, it will likely result in an NPE...
+			    // TODO resolve the above issue somehow...
+			    setContentDescription("Waiting for ini file analysis to complete, currently displayed data may be out of date.");
+			    
+                // add one-time listener to update the view once the data become available
+                analyzer.addAnalysisListener(new IAnalysisListener() {
+                    public void analysisCompleted(InifileAnalyzer analyzer) {
+                        analyzer.removeAnalysisListener(this);
+                        if (!ModuleParametersView.this.isDisposed())
+                            scheduleRebuildContent();
+                    }
+                });
+                return;
+			}
 		}
 
         // try to preserve selection

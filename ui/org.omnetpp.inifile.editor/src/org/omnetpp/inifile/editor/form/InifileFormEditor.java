@@ -38,9 +38,8 @@ import org.omnetpp.inifile.editor.TestSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer;
-import org.omnetpp.inifile.editor.model.InifileAnalyzer.KeyType;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
+import org.omnetpp.inifile.editor.model.KeyType;
 
 
 /**
@@ -128,7 +127,7 @@ public class InifileFormEditor extends Composite {
 			        return;
 				if (DUMP_FORGOTTEN_CONFIG_KEYS)
 					dumpForgottenConfigKeys(); // maintenance code
-				IInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
+				IReadonlyInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
 				String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE;
 				showCategoryPage(initialPage);
 			}
@@ -219,7 +218,7 @@ public class InifileFormEditor extends Composite {
 	}
 
 	public void gotoEntry(String section, String key) {
-		KeyType keyType = InifileAnalyzer.getKeyType(key);
+		KeyType keyType = KeyType.getKeyType(key);
 		if (keyType==KeyType.PARAM)
 			showCategoryPage(PARAMETERS_PAGE);
 		else if (keyType==KeyType.PER_OBJECT_CONFIG)

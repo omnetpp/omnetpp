@@ -9,6 +9,7 @@ package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CONFIG_;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.GENERAL;
+import static org.omnetpp.inifile.editor.model.InifileUtils.configNameToSectionName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,9 +20,15 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.fieldassist.SimpleContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -33,11 +40,14 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.ElementListSelectionDialog;
+import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
+import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
-import org.omnetpp.inifile.editor.model.IInifileDocument;
+import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 
@@ -47,7 +57,7 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
  */
 //FIXME sectionTypeCombo is not finished! to be used everywhere!!!!
 public class SectionDialog extends TitleAreaDialog {
-	private IInifileDocument doc;
+	private IReadonlyInifileDocument doc;
 
 	// dialog config
 	private String dialogTitle;
@@ -75,7 +85,7 @@ public class SectionDialog extends TitleAreaDialog {
 	 * existing section, that's interpreted as "rename/edit section"; if there's
 	 * no such section or sectionName is null, it's "create new section".
 	 */
-    public SectionDialog(Shell parentShell, String dialogTitle, String dialogMessage, IInifileDocument doc, String sectionName) {
+    public SectionDialog(Shell parentShell, String dialogTitle, String dialogMessage, IReadonlyInifileDocument doc, String sectionName) {
 		super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
 		this.doc = doc;
@@ -92,7 +102,7 @@ public class SectionDialog extends TitleAreaDialog {
 			networkName = doc.getValue(sectionName, ConfigRegistry.CFGID_NETWORK.getName());;
 		}
 	}
-
+    
     @Override
     protected IDialogSettings getDialogBoundsSettings() {
         return UIUtils.getDialogSettings(InifileEditorPlugin.getDefault(), getClass().getName());
