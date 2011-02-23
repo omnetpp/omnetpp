@@ -152,7 +152,7 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         manager.appendToGroup(GROUP_REST, action);
 
         action = ar.getAction(ExportImageAction.ID);
-        if (action.isEnabled()) 
+        if (action != null && action.isEnabled()) 
             manager.appendToGroup(GROUP_SAVE, action);
 
         IMenuService menuService = (IMenuService)serviceLocator.getService(IMenuService.class);
