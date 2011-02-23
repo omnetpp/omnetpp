@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Spinner;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.UIUtils;
 
 /**
@@ -51,12 +52,14 @@ public class SpinnerFieldEditor implements IFieldEditor {
             }
 
             private boolean isLosingFocus() {
-                // Hack: we are losing focus if Spinner's wmKillFocus() is on the stack (Windows-specific)
-                Exception e = new Exception();
+            	// Hack: we are losing focus if Spinner's wmKillFocus() is on the stack (Windows-specific)
+            	// or when textDidEndEditing() is on the stack (OS X)
+            	Exception e = new Exception();
                 e.fillInStackTrace();
                 for (StackTraceElement frame : e.getStackTrace()) {
-                    System.out.println(frame.getClassName() + " - " + frame.getMethodName());
-                    if (frame.getClassName().endsWith(".Spinner") && frame.getMethodName().startsWith("wmKillFocus")) 
+                    if (frame.getClassName().endsWith(".Spinner") && 
+                    		(frame.getMethodName().startsWith("wmKillFocus") ||       // Windows
+                    		 frame.getMethodName().startsWith("textDidEndEditing")))  // OS X
                         return true;
                 }
                 return false;
