@@ -1,6 +1,10 @@
 What's New
 ==========
 
+This file summarizes OMNeT++ changes in each release. For changes related to
+simulation model compatibity, see doc/API-Changes. For more detailed info
+about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
+
 OMNeT++ 4.2b1 (Feb 2011)
 ------------------------
 
@@ -8,6 +12,29 @@ Partial list of changes since 4.1 (see ChangeLog files in individual folders
 for a more complete list):
 
 Simulation runtime:
+ - Ini files: implemented multiple inheritance for sections. Syntax:
+     [Config Foobar]
+     extends = Foo, Bar
+   When the runtime looks for a config option or param assignment, sections
+   are examined in a "fallback order" until the first match is found. In the
+   above example the order would be: Foobar, Foo, Bar, General.
+   OMNeT++ uses C3 lineratization to compute the section fallback order,
+   see e.g. http://en.wikipedia.org/wiki/C3_linearization
+
+ - Ini files: better parsing for iteration variables, e.g. the value in
+   ${x=uniform(1,2)} is now parsed as one item, not as "uniform(1" and "2)".
+   Nested parens/brackets/braces and string literals are recognized;
+   escaping commas and close-braces is now possible using backslash.
+
+ - NED: fixed deep parameter assignments: parameter references were
+   interpreted in the wrong context. Deep parameter assignments are when
+   an inifile-like pattern is used to name the parameter(s) to be set, as in:
+      network Inet {
+          parameters:
+              host[*].tcp.nagleEnabled = true;
+          ...
+      }
+
  - Resolved spurious errors: 'Class "..." not found -- perhaps its code
    was not linked in, or the class wasn't registered with Register_Class()'
    Added a check to ensure that the debug and the release versions of
@@ -20,18 +47,26 @@ Simulation runtime:
    built, and the simulation was complaining at runtime about the missing
    cCompoundModule class.
 
-IDE:
- - Added IDE change log in: doc/IDE-Changes
+ - Eventlog recording: .elog file format change: message creations and
+   duplications (cloning) are now recorded; MC (ModuleCreated) entries now
+   precede GC (GateCreated) entries. IMPORTANT: The sequence chart in the
+   IDE will only work on .elog files in the new format, existing event logs
+   need to be re-recorded!
 
- - Added Technology Preview version of the network animator. It works only on
-   .elog files smaller than 10Mb. You can open it by right clicking on an .elog
-   file and selection "Open width...". This implementation is NOT optimized
-   for larger files.
+IDE/Animation Player:
+ - This is a new component in the IDE, you can access it by right-clicking
+   an .elog file and selecting "Open With / OMNeT++ Animation Player" from
+   the context menu. This is a preliminary implementation (Technology
+   Preview) not yet optimized for large files, the practical maximum file
+   size it can handle is about 10MB.
 
-C++ Development:
- - Added a new 'Clean local projects' option that does not clean the dependent
-   projects. E.g. if your project depends on INET only your project will be
-   cleaned but not INET.
+IDE/C++ Development:
+ - Added a new "Clean Local" item to the project's context menu that does
+   not clean referenced projects. This resolves the problem that CDT's
+   "Clean Project" command also cleans the referenced projects, e.g. if
+   you have a Foo project that depends on INET, cleaning Foo also cleans
+   INET which takes a long time to recompile. Now you can use the
+   "Clean Local" command to clean Foo only.
 
  - Added new "OMNeT++ Code Formatter" profile. This coding convention follows
    the rules used in the OMNeT++ kernel and the INET Framework. (No tabs, etc.)
@@ -39,11 +74,19 @@ C++ Development:
  - Added MachO64 binary parsers and error parsers. This makes it possible to
    debug a 64-bit executable on Mac OS X 10.6
 
- - Linux only: Added support for profiling with valgrind. Just use the
-   'Project Explorer' context menu and select "Profile as... / OMNeT++ Simulation".
-   This feature needs 'valgrind' to be installed.
+ - Linux only: Added support for profiling with Valgrind. To activate this
+   feature, select "Profile as... / OMNeT++ Simulation" from the Project
+   Exporer context menu. This feature requires Valgrind to be installed
+   on your system. (Note: the main IDE toolbar does not show a Profile button
+   next to the Run and Debug buttons at this time, but profiling is still
+   available via the Project Explorer context menu.)
 
-Graphical Editor:
+ - The Makemake page in Project Properties can now fix the "Source Folders
+   differ across configurations" problem in the project setup, which usually
+   occurs when you add a build configuration to an existing project later.
+   The dialog now displays a "Fix it" link.
+
+IDE/Graphical Editor:
  - Several performance optimizations for the NED Editor. It can open much larger
    files than before. NED validation is done now in a background thread and
    does not block the UI.
@@ -74,28 +117,74 @@ Graphical Editor:
  - 'Open Type' and 'Open Supertype' have been reassigned to the F3 function key.
    Double-click now opens the 'Properties' dialog.
 
-Sequence Chart:
+ - The IDE now uses the use native (C++) layouter code for placing unpinned
+   submodules, which means better performance and consistency with the
+   simulation runtime (Tkenv).
+
+IDE/Inifile Editor:
+ - Support for inifile improvements in this release, namely multiple section
+   inheritance and better parsing for iteration variables
+
+ - Performance improvements: inifile is now analyzed in the background so that
+   it does not block the UI, and features that need its results (hover text,
+   content assist, etc) have a timeout how long they are willing to wait for it
+   (see bug #132 for details). It is now also possible to disable inifile
+   analysis. Further performance and UI responsiveness improvements are planned.
+
+IDE/Sequence Chart:
  - Added 'Goto Simulation Time' and 'Goto Event Number' in the context menu.
 
  - 'Go to Simulation Time' in the 'Event Log' view now supports relative values.
 
-Launcher:
+ - The Sequence Chart tool now knows about message creations and duplications
+   (cloning), and as a result, in certain situations it is now able to better
+   identify relationships between events and draw a better sequence chart.
+   NOTE: Due to changes in the .elog file format, the tool will only work with
+   newly recorded files. Existing event logs need to be re-recorded!
+
+IDE/Launcher:
  - The command-line for launching the simulation now uses relative paths instead
    of absolute ones. This makes the starting command-line easier to understand.
 
+IDE/Documentation Generator:
+ - Added tilde notation as an alternative to automatic hyperlinking of module
+   names in comments. The latter was often too agressive (e.g. linking to the
+   IP module in the phrase "IP address" is wrong). Automatic hyperlinking can
+   now be turned off in the generator, and then the user is expected to mark
+   words to be hyperlinked with a tilde: "the ~IP module". The INET Framework
+   has already been converted to use the tilde notation.
+
+ - Added Javascript to autoload frameset page if a content page is opened by
+   itself. This is useful when URLs to specific content pages are posted on
+   the mailing list or sent over email.
+
+ - Implemented @include in NED comments. Lines in the included file don't have
+   to start with "//", but otherwise they are processed exactly as NED comment
+   text.
+
+ - Fix: External pages (@externalpage) now appear unded the "Selected Topics"
+   node of the navigation tree in the generated documentation.
+
+ - Several minor fixes: recognize the <u> (underline) HTML tag; sanitize the
+   file names for @page; added/refined test cases
+
 Tkenv:
- - Placeholder modules in parallel simulation are now displayed with a
-   semi-transparent icon (or a shape with a dotted border).
+ - Parallel simulation: Placeholder modules are now displayed with a semi-
+   transparent icon (or if it's a rectangle or oval, with dotted border).
 
- - Improved font handling: the generic UI font and the font used in graphics 
-   are now configurable in the Simulation Options dialog; 
+ - Fix (bug #248): compute coordinates (and sizes) in double and not int;
+   necessary if background scaling (bgs display string tag) is set up.
 
- - Tkenv on Linux now detects and uses the Ubuntu, Arial, Verdana, etc. fonts
-   (in this order of preference); on Windows it uses Segoe UI if it's available;
+ - Better choice of default user interface font, especially on Linux.
+
+ - The generic UI font and the font used in graphics are now configurable
+   in the Simulation Options dialog.
 
  - The default font for log text is now proportional (same as the generic UI
-   font), for better readability and space efficiency. It can be customized 
+   font), for better readability and space efficiency. It can be customized
    (switched back to a monospace font, etc) in the Simulation Options dialog.
+
+ - Minor: menu items have been changed to title case
 
  - Tcl errors are now logged into .tkenvlog instead of dumping them on stdout.
 
@@ -108,8 +197,10 @@ Misc:
 
  - Updated base system to Eclipse 3.6.1
 
-Several bugs have been fixed that were reported for 4.1.
-See: http://tinyurl.com/omnetpp42b1-fixes
+ - Added a detailed IDE change log file doc/IDE-Changes
+
+Several bugs have been fixed; you can see the detailed list at:
+http://tinyurl.com/omnetpp42b1-fixes
 
 
 OMNeT++ 4.1 (June 2010)

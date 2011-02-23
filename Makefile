@@ -199,9 +199,9 @@ makefiles:
 	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
 # copy the documentation to the UI doc folder too.
-# patch some files to have correct URLs and add generic eclipse stylsheet when needed
+# patch some files to have correct URLs and add generic eclipse stylesheet when needed
 copy-ui-docu:
-	txt2html $(OMNETPP_DOC_DIR)/WhatsNew --outfile $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
+	txt2html $(OMNETPP_ROOT)/WHATSNEW --outfile $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/api
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
