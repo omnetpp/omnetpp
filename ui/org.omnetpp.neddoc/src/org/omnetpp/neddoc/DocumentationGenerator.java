@@ -670,7 +670,7 @@ public class DocumentationGenerator {
                     prefix = prefix.substring(0, prefix.length() / 2); // remove double '\' or '~' here, because they won't be followed by an
                                                                        // identifier in the generated output
                     String replacement = typeElement != null ? prefix + "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>" :
-                                                               prefix + "<span class=\"error\" title=\"Unresolved link.\">" + identifier + "</span>";
+                                                               prefix + "<span class=\"error\" title=\"Unresolved link\">" + identifier + "</span>";
                     return replacement;
                 }
                 else
