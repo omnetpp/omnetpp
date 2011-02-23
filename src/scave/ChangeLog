@@ -1,3 +1,5 @@
+2011-02-23  ------ omnetpp-4.2b1 released ------
+
 2011-01-21  Tamas Borbely
 
     * added -g option to 'scavetool scalar' command. The user can specify

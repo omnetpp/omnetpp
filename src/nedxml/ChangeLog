@@ -1,3 +1,5 @@
+2011-02-23  ------ omnetpp-4.2b1 released ------
+
 2011-01-18  Andras Varga
 
 	* NED refactoring: <channel-spec> element was merged into <connection>;

@@ -1,3 +1,5 @@
+2011-02-23  ------ omnetpp-4.2b1 released ------
+
 2011-02-21  Tamas Borbely
 
 	* Ini files: better parsing for iteration variables, i.e the ${...}
