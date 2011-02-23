@@ -21,7 +21,7 @@ additional directories, e.g. containing software bundled with OMNeT++.)
 The simulation system itself:
 
   omnetpp/         OMNeT++ root directory
-    bin/           OMNeT++ executables (GNED, nedtool, etc.)
+    bin/           OMNeT++ executables (opp_run, nedtool, scavetool, etc.)
     include/       header files for simulation models
     lib/           library files
     images/        icons that can be used in network graphics
@@ -32,14 +32,13 @@ The simulation system itself:
       nedxml-api/  API reference for the NEDXML library
       src/         sources of the documentation
     src/           OMNeT++ sources
-      nedxml/      nedtool, message compiler, NED infrastructure
       sim/         simulation kernel
         parsim/    files for distributed execution
         netbuilder/files for dynamically reading NED files
       envir/       common code for runtime user interfaces
       cmdenv/      command-line runtime user interface
       tkenv/       Tcl/Tk-based graphical runtime user interface
-      guienv/      graphical runtime user interface
+      nedxml/      nedtool, message compiler, NED infrastructure
       layout/      graph layouting library
       scave/       library for processing result files
       eventlog/    library for processing event log files

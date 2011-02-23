@@ -3,7 +3,7 @@
 
 <toc label="OMNeT++ Development User Guide">
    <topic label="Getting Started">
-      <topic href="content/ide-overview/ide-overview.html" label="An Overview of the OMNeT++ 4.1 IDE">
+      <topic href="content/ide-overview/ide-overview.html" label="An Overview of the OMNeT++ IDE">
       </topic>
     <topic href="content/tictoc-tutorial/index.html" label="Tic-toc tutorial">
     </topic>
@@ -29,7 +29,7 @@
       </topic>
       <anchor id="api"/>
    </topic>
-   <topic href="content/WhatsNew.html" label="What&apos;s New in OMNeT++ 4.1">
+   <topic href="content/WhatsNew.html" label="What&apos;s New in This Version">
    </topic>
    <topic href="content/ide-changelog/ide-changelog.html" label="Visual ChangeLog">
    </topic>
