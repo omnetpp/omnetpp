@@ -1,23 +1,40 @@
 version 2
-run OneFifo-0-20081210-11:48:12-11130
+run OneFifo-0-20110223-16:56:19-17958
 attr configname OneFifo
-attr datetime 20081210-11:48:12
+attr datetime 20110223-16:56:19
 attr experiment OneFifo
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network SimpleQueue
-attr processid 11130
+attr processid 17958
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 
-scalar SimpleQueue.queue 	"min length" 	0
-scalar SimpleQueue.queue 	"max length" 	5
-scalar SimpleQueue.queue 	"avg length" 	3.771137113832
-scalar SimpleQueue.queue 	utilization 	0
-scalar SimpleQueue.queue 	"dropped jobs" 	8
-scalar SimpleQueue.source 	"jobs created" 	21
+scalar SimpleQueue.queue 	busy:timeavg 	0.67837338989322
+attr interpolationmode  sample-hold
+attr title  "server busy state, timeavg"
+scalar SimpleQueue.queue 	queueingTime:mean 	1.0830793341498
+attr interpolationmode  none
+attr title  "queueing time at dequeue, mean"
+attr unit  s
+scalar SimpleQueue.queue 	queueingTime:max 	4.563761324157
+attr interpolationmode  none
+attr title  "queueing time at dequeue, max"
+attr unit  s
+scalar SimpleQueue.queue 	queueLength:timeavg 	0.40535385012268
+attr interpolationmode  sample-hold
+attr title  "queue length, timeavg"
+scalar SimpleQueue.queue 	queueLength:max 	2
+attr interpolationmode  sample-hold
+attr title  "queue length, max"
+scalar SimpleQueue.queue 	dropped:count 	0
+attr interpolationmode  none
+attr title  "drop event, count"
+scalar SimpleQueue.source 	created:count 	1
+attr interpolationmode  none
+attr title  "the number of jobs created, count"

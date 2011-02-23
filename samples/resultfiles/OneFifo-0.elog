@@ -1,341 +1,244 @@
 MC id 1 c cCompoundModule t SimpleQueue n SimpleQueue cm 1
 MC id 2 c queueing::Sink t org.omnetpp.queueing.Sink pid 1 n sink
-GC m 3 g 3 n out o 1
 MC id 3 c queueing::Queue t org.omnetpp.queueing.Queue pid 1 n queue
-GC m 4 g 1 n out o 1
+GC m 3 g 3 n out o 1
 MC id 4 c queueing::Source t org.omnetpp.queueing.Source pid 1 n source
+GC m 4 g 1 n out o 1
 GC m 3 g 1048576 n in i 0 o 0
 CC sm 4 sg 1 dm 3 dg 1048576
 GC m 2 g 1048576 n in i 0 o 0
 CC sm 3 sg 3 dm 2 dg 1048576
 
 E # 0 t 0 m 1 msg -1
-SB v 1024 rid OneFifo-0-20081210-11:48:12-11130
-- Initializing module SimpleQueue, stage 0
-MB sm 1 tm 2 m initialize
-- Initializing module SimpleQueue.sink, stage 0
+SB v 1026 rid OneFifo-0-20110223-16:56:19-17958
+MB sm 1 tm 2 m initialize(0)
 ME
-MB sm 1 tm 3 m initialize
-- Initializing module SimpleQueue.queue, stage 0
+MB sm 1 tm 3 m initialize(0)
+CM id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 0
 ME
-MB sm 1 tm 4 m initialize
-- Initializing module SimpleQueue.source, stage 0
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer
-ES t 1.199993199098
+MB sm 1 tm 4 m initialize(0)
+CM id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 0
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 0
+ES t 1.591749009131
 ME
 MS id 1 d i=block/network2
 MS id 2 d p=273,101;i=block/sink
 MS id 3 d p=165.0,79.0;i=block/queue;q=queue
 MS id 4 d p=50.0,79.0;i=block/source
 
-E # 1 t 1.199993199098 m 4 ce 0 msg 1
+E # 1 t 1.591749009131 m 4 ce 0 msg 1
 BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 1
-ES t 2.245639087135
-BS id 2 tid 2 eid 2 etid 2 c queueing::Job n job-1
+ES t 3.388869786098
+CM id 2 tid 2 eid 2 etid 2 c cMessage n job-1 pe 0
+BS id 2 tid 2 eid 2 etid 2 c queueing::Job n job-1 pe 1
 SH sm 4 sg 1
-ES t 1.199993199098
+ES t 1.591749009131
 
-E # 2 t 1.199993199098 m 3 ce 1 msg 2
+E # 2 t 1.591749009131 m 3 ce 1 msg 2
 - Starting service of job-1
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service
-ES t 2.540824900056
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 0
+ES t 4.103610525225
 MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 3 t 2.245639087135 m 4 ce 1 msg 1
+E # 3 t 3.388869786098 m 4 ce 1 msg 1
 BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 3
-ES t 2.584215029693
-BS id 3 tid 3 eid 3 etid 3 c queueing::Job n job-2
+ES t 7.108078210247
+CM id 3 tid 3 eid 3 etid 3 c cMessage n job-2 pe 0
+BS id 3 tid 3 eid 3 etid 3 c queueing::Job n job-2 pe 3
 SH sm 4 sg 1
-ES t 2.245639087135
+ES t 3.388869786098
 
-E # 4 t 2.245639087135 m 3 ce 3 msg 3
+E # 4 t 3.388869786098 m 3 ce 3 msg 3
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 5 t 2.540824900056 m 3 ce 2 msg 0
+E # 5 t 4.103610525225 m 3 ce 2 msg 0
 - Finishing service of job-1
 BS id 2 tid 2 eid 2 etid 2 c queueing::Job n job-1 pe 2
 SH sm 3 sg 3
-ES t 2.540824900056
+ES t 4.103610525225
 - Starting service of job-2
 BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 5
-ES t 4.565747219545
+ES t 5.950056788166
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 6 t 2.540824900056 m 2 ce 5 msg 2
-DM id 2 pe 6
+E # 6 t 4.103610525225 m 2 ce 5 msg 2
+DM id 2 tid 2 eid 2 etid 2 c cMessage n job-1 pe 6
 
-E # 7 t 2.584215029693 m 4 ce 3 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 7
-ES t 2.890644152956
-BS id 4 tid 4 eid 4 etid 4 c queueing::Job n job-3
-SH sm 4 sg 1
-ES t 2.584215029693
-
-E # 8 t 2.584215029693 m 3 ce 7 msg 4
-
-E # 9 t 2.890644152956 m 4 ce 7 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 9
-ES t 4.105011874399
-BS id 5 tid 5 eid 5 etid 5 c queueing::Job n job-4
-SH sm 4 sg 1
-ES t 2.890644152956
-
-E # 10 t 2.890644152956 m 3 ce 9 msg 5
-
-E # 11 t 4.105011874399 m 4 ce 9 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 11
-ES t 4.43652671046
-BS id 6 tid 6 eid 6 etid 6 c queueing::Job n job-5
-SH sm 4 sg 1
-ES t 4.105011874399
-
-E # 12 t 4.105011874399 m 3 ce 11 msg 6
-
-E # 13 t 4.43652671046 m 4 ce 11 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 13
-ES t 6.154199338209
-BS id 7 tid 7 eid 7 etid 7 c queueing::Job n job-6
-SH sm 4 sg 1
-ES t 4.43652671046
-
-E # 14 t 4.43652671046 m 3 ce 13 msg 7
-
-E # 15 t 4.565747219545 m 3 ce 5 msg 0
+E # 7 t 5.950056788166 m 3 ce 5 msg 0
 - Finishing service of job-2
 BS id 3 tid 3 eid 3 etid 3 c queueing::Job n job-2 pe 4
 SH sm 3 sg 3
-ES t 4.565747219545
+ES t 5.950056788166
+MS id 3 d p=165.0,79.0;i=block/queue;q=queue
+
+E # 8 t 5.950056788166 m 2 ce 7 msg 3
+DM id 3 tid 3 eid 3 etid 3 c cMessage n job-2 pe 8
+
+E # 9 t 7.108078210247 m 4 ce 3 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 9
+ES t 11.011168882015
+CM id 4 tid 4 eid 4 etid 4 c cMessage n job-3 pe 0
+BS id 4 tid 4 eid 4 etid 4 c queueing::Job n job-3 pe 9
+SH sm 4 sg 1
+ES t 7.108078210247
+
+E # 10 t 7.108078210247 m 3 ce 9 msg 4
 - Starting service of job-3
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 15
-ES t 6.45496465819
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 7
+ES t 8.68248049021
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 16 t 4.565747219545 m 2 ce 15 msg 3
-DM id 3 pe 16
-
-E # 17 t 6.154199338209 m 4 ce 13 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 17
-ES t 7.028438732528
-BS id 8 tid 8 eid 8 etid 8 c queueing::Job n job-7
-SH sm 4 sg 1
-ES t 6.154199338209
-
-E # 18 t 6.154199338209 m 3 ce 17 msg 8
-
-E # 19 t 6.45496465819 m 3 ce 15 msg 0
+E # 11 t 8.68248049021 m 3 ce 10 msg 0
 - Finishing service of job-3
-BS id 4 tid 4 eid 4 etid 4 c queueing::Job n job-3 pe 8
+BS id 4 tid 4 eid 4 etid 4 c queueing::Job n job-3 pe 10
 SH sm 3 sg 3
-ES t 6.45496465819
+ES t 8.68248049021
+MS id 3 d p=165.0,79.0;i=block/queue;q=queue
+
+E # 12 t 8.68248049021 m 2 ce 11 msg 4
+DM id 4 tid 4 eid 4 etid 4 c cMessage n job-3 pe 12
+
+E # 13 t 11.011168882015 m 4 ce 9 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 13
+ES t 14.76909699042
+CM id 5 tid 5 eid 5 etid 5 c cMessage n job-4 pe 0
+BS id 5 tid 5 eid 5 etid 5 c queueing::Job n job-4 pe 13
+SH sm 4 sg 1
+ES t 11.011168882015
+
+E # 14 t 11.011168882015 m 3 ce 13 msg 5
 - Starting service of job-4
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 19
-ES t 10.27944141133
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 11
+ES t 12.113265855355
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 20 t 6.45496465819 m 2 ce 19 msg 4
-DM id 4 pe 20
-
-E # 21 t 7.028438732528 m 4 ce 17 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 21
-ES t 8.681397244445
-BS id 9 tid 9 eid 9 etid 9 c queueing::Job n job-8
-SH sm 4 sg 1
-ES t 7.028438732528
-
-E # 22 t 7.028438732528 m 3 ce 21 msg 9
-
-E # 23 t 8.681397244445 m 4 ce 21 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 23
-ES t 11.105846725595
-BS id 10 tid 10 eid 10 etid 10 c queueing::Job n job-9
-SH sm 4 sg 1
-ES t 8.681397244445
-
-E # 24 t 8.681397244445 m 3 ce 23 msg 10
-
-E # 25 t 10.27944141133 m 3 ce 19 msg 0
+E # 15 t 12.113265855355 m 3 ce 14 msg 0
 - Finishing service of job-4
-BS id 5 tid 5 eid 5 etid 5 c queueing::Job n job-4 pe 10
+BS id 5 tid 5 eid 5 etid 5 c queueing::Job n job-4 pe 14
 SH sm 3 sg 3
-ES t 10.27944141133
+ES t 12.113265855355
+MS id 3 d p=165.0,79.0;i=block/queue;q=queue
+
+E # 16 t 12.113265855355 m 2 ce 15 msg 5
+DM id 5 tid 5 eid 5 etid 5 c cMessage n job-4 pe 16
+
+E # 17 t 14.76909699042 m 4 ce 13 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 17
+ES t 16.723109843206
+CM id 6 tid 6 eid 6 etid 6 c cMessage n job-5 pe 0
+BS id 6 tid 6 eid 6 etid 6 c queueing::Job n job-5 pe 17
+SH sm 4 sg 1
+ES t 14.76909699042
+
+E # 18 t 14.76909699042 m 3 ce 17 msg 6
 - Starting service of job-5
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 25
-ES t 10.737616055825
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 15
+ES t 16.845415591747
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 26 t 10.27944141133 m 2 ce 25 msg 5
-DM id 5 pe 26
+E # 19 t 16.723109843206 m 4 ce 17 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 19
+ES t 17.693366170649
+CM id 7 tid 7 eid 7 etid 7 c cMessage n job-6 pe 15329512
+BS id 7 tid 7 eid 7 etid 7 c queueing::Job n job-6 pe 19
+SH sm 4 sg 1
+ES t 16.723109843206
 
-E # 27 t 10.737616055825 m 3 ce 25 msg 0
+E # 20 t 16.723109843206 m 3 ce 19 msg 7
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
+
+E # 21 t 16.845415591747 m 3 ce 18 msg 0
 - Finishing service of job-5
-BS id 6 tid 6 eid 6 etid 6 c queueing::Job n job-5 pe 12
+BS id 6 tid 6 eid 6 etid 6 c queueing::Job n job-5 pe 18
 SH sm 3 sg 3
-ES t 10.737616055825
+ES t 16.845415591747
 - Starting service of job-6
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 27
-ES t 22.216625038447
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 21
+ES t 17.996453985512
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 28 t 10.737616055825 m 2 ce 27 msg 6
-DM id 6 pe 28
+E # 22 t 16.845415591747 m 2 ce 21 msg 6
+DM id 6 tid 6 eid 6 etid 6 c cMessage n job-5 pe 22
 
-E # 29 t 11.105846725595 m 4 ce 23 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 29
-ES t 11.179874476379
-BS id 11 tid 11 eid 11 etid 11 c queueing::Job n job-10
+E # 23 t 17.693366170649 m 4 ce 19 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 23
+ES t 18.399684448924
+CM id 8 tid 8 eid 8 etid 8 c cMessage n job-7 pe 0
+BS id 8 tid 8 eid 8 etid 8 c queueing::Job n job-7 pe 23
 SH sm 4 sg 1
-ES t 11.105846725595
+ES t 17.693366170649
 
-E # 30 t 11.105846725595 m 3 ce 29 msg 11
+E # 24 t 17.693366170649 m 3 ce 23 msg 8
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 31 t 11.179874476379 m 4 ce 29 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 31
-ES t 13.778961019256
-BS id 12 tid 12 eid 12 etid 12 c queueing::Job n job-11
-SH sm 4 sg 1
-ES t 11.179874476379
-
-E # 32 t 11.179874476379 m 3 ce 31 msg 12
-
-E # 33 t 13.778961019256 m 4 ce 31 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 33
-ES t 15.696097332416
-BS id 13 tid 13 eid 13 etid 13 c queueing::Job n job-12
-SH sm 4 sg 1
-ES t 13.778961019256
-
-E # 34 t 13.778961019256 m 3 ce 33 msg 13
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 13 pe 34
-
-E # 35 t 15.696097332416 m 4 ce 33 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 35
-ES t 17.173788122934
-BS id 14 tid 14 eid 14 etid 14 c queueing::Job n job-13
-SH sm 4 sg 1
-ES t 15.696097332416
-
-E # 36 t 15.696097332416 m 3 ce 35 msg 14
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 14 pe 36
-
-E # 37 t 17.173788122934 m 4 ce 35 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 37
-ES t 17.64087037786
-BS id 15 tid 15 eid 15 etid 15 c queueing::Job n job-14
-SH sm 4 sg 1
-ES t 17.173788122934
-
-E # 38 t 17.173788122934 m 3 ce 37 msg 15
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 15 pe 38
-
-E # 39 t 17.64087037786 m 4 ce 37 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 39
-ES t 18.056964716246
-BS id 16 tid 16 eid 16 etid 16 c queueing::Job n job-15
-SH sm 4 sg 1
-ES t 17.64087037786
-
-E # 40 t 17.64087037786 m 3 ce 39 msg 16
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 16 pe 40
-
-E # 41 t 18.056964716246 m 4 ce 39 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 41
-ES t 19.330895722046
-BS id 17 tid 17 eid 17 etid 17 c queueing::Job n job-16
-SH sm 4 sg 1
-ES t 18.056964716246
-
-E # 42 t 18.056964716246 m 3 ce 41 msg 17
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 17 pe 42
-
-E # 43 t 19.330895722046 m 4 ce 41 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 43
-ES t 20.798929193624
-BS id 18 tid 18 eid 18 etid 18 c queueing::Job n job-17
-SH sm 4 sg 1
-ES t 19.330895722046
-
-E # 44 t 19.330895722046 m 3 ce 43 msg 18
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 18 pe 44
-
-E # 45 t 20.798929193624 m 4 ce 43 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 45
-ES t 21.930040005669
-BS id 19 tid 19 eid 19 etid 19 c queueing::Job n job-18
-SH sm 4 sg 1
-ES t 20.798929193624
-
-E # 46 t 20.798929193624 m 3 ce 45 msg 19
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 19 pe 46
-
-E # 47 t 21.930040005669 m 4 ce 45 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 47
-ES t 23.799026840059
-BS id 20 tid 20 eid 20 etid 20 c queueing::Job n job-19
-SH sm 4 sg 1
-ES t 21.930040005669
-
-E # 48 t 21.930040005669 m 3 ce 47 msg 20
-- Capacity full! Job dropped.
-BU id 3 txt Dropped!
-DM id 20 pe 48
-
-E # 49 t 22.216625038447 m 3 ce 27 msg 0
+E # 25 t 17.996453985512 m 3 ce 21 msg 0
 - Finishing service of job-6
-BS id 7 tid 7 eid 7 etid 7 c queueing::Job n job-6 pe 14
+BS id 7 tid 7 eid 7 etid 7 c queueing::Job n job-6 pe 20
 SH sm 3 sg 3
-ES t 22.216625038447
+ES t 17.996453985512
 - Starting service of job-7
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 49
-ES t 22.525892000462
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 25
+ES t 22.443502829584
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 50 t 22.216625038447 m 2 ce 49 msg 7
-DM id 7 pe 50
+E # 26 t 17.996453985512 m 2 ce 25 msg 7
+DM id 7 tid 7 eid 7 etid 7 c cMessage n job-6 pe 26
 
-E # 51 t 22.525892000462 m 3 ce 49 msg 0
+E # 27 t 18.399684448924 m 4 ce 23 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 27
+ES t 18.51645378711
+CM id 9 tid 9 eid 9 etid 9 c cMessage n job-8 pe 0
+BS id 9 tid 9 eid 9 etid 9 c queueing::Job n job-8 pe 27
+SH sm 4 sg 1
+ES t 18.399684448924
+
+E # 28 t 18.399684448924 m 3 ce 27 msg 9
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
+
+E # 29 t 18.51645378711 m 4 ce 27 msg 1
+BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 29
+ES t 25.146278346966
+CM id 10 tid 10 eid 10 etid 10 c cMessage n job-9 pe -5263507366255365184
+BS id 10 tid 10 eid 10 etid 10 c queueing::Job n job-9 pe 29
+SH sm 4 sg 1
+ES t 18.51645378711
+
+E # 30 t 18.51645378711 m 3 ce 29 msg 10
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
+
+E # 31 t 22.443502829584 m 3 ce 25 msg 0
 - Finishing service of job-7
-BS id 8 tid 8 eid 8 etid 8 c queueing::Job n job-7 pe 18
+BS id 8 tid 8 eid 8 etid 8 c queueing::Job n job-7 pe 24
 SH sm 3 sg 3
-ES t 22.525892000462
+ES t 22.443502829584
 - Starting service of job-8
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 51
-ES t 23.242021797457
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 31
+ES t 23.080215111267
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 52 t 22.525892000462 m 2 ce 51 msg 8
-DM id 8 pe 52
+E # 32 t 22.443502829584 m 2 ce 31 msg 8
+DM id 8 tid 8 eid 8 etid 8 c cMessage n job-7 pe 32
 
-E # 53 t 23.242021797457 m 3 ce 51 msg 0
+E # 33 t 23.080215111267 m 3 ce 31 msg 0
 - Finishing service of job-8
-BS id 9 tid 9 eid 9 etid 9 c queueing::Job n job-8 pe 22
+BS id 9 tid 9 eid 9 etid 9 c queueing::Job n job-8 pe 28
 SH sm 3 sg 3
-ES t 23.242021797457
+ES t 23.080215111267
 - Starting service of job-9
-BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 53
-ES t 33.820292444238
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-service pe 33
+ES t 24.047419321163
+MS id 3 d p=165.0,79.0;i=block/queue,cyan3;q=queue
 
-E # 54 t 23.242021797457 m 2 ce 53 msg 9
-DM id 9 pe 54
+E # 34 t 23.080215111267 m 2 ce 33 msg 9
+DM id 9 tid 9 eid 9 etid 9 c cMessage n job-8 pe 34
 
-E # 55 t 23.799026840059 m 4 ce 47 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 55
-ES t 25.972021810562
-BS id 21 tid 21 eid 21 etid 21 c queueing::Job n job-20
-SH sm 4 sg 1
-ES t 23.799026840059
+E # 35 t 24.047419321163 m 3 ce 33 msg 0
+- Finishing service of job-9
+BS id 10 tid 10 eid 10 etid 10 c queueing::Job n job-9 pe 30
+SH sm 3 sg 3
+ES t 24.047419321163
+MS id 3 d p=165.0,79.0;i=block/queue;q=queue
 
-E # 56 t 23.799026840059 m 3 ce 55 msg 21
-
-E # 57 t 25.972021810562 m 4 ce 55 msg 1
-BS id 1 tid 1 eid 1 etid 1 c cMessage n newJobTimer pe 57
-ES t 30.852745993652
-BS id 22 tid 22 eid 22 etid 22 c queueing::Job n job-21
-SH sm 4 sg 1
-ES t 25.972021810562
+E # 36 t 24.047419321163 m 2 ce 35 msg 10
+DM id 10 tid 10 eid 10 etid 10 c cMessage n job-9 pe 36
 SE
