@@ -92,6 +92,7 @@ cMessage::cMessage(const char *name, short k) : cOwnedObject(name, false)
     live_msgs++;
 
 #ifndef WITHOUT_CPACKET
+    prev_event_num = -1;
     EVCB.messageCreated(this);
 #endif
     // after envir notification
