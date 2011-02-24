@@ -201,7 +201,7 @@ makefiles:
 # copy the documentation to the UI doc folder too.
 # patch some files to have correct URLs and add generic eclipse stylesheet when needed
 copy-ui-docu:
-	txt2html $(OMNETPP_ROOT)/WHATSNEW --outfile $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
+	cat $(OMNETPP_ROOT)/WHATSNEW | sed 's/:$/ :/' | txt2html --outfile $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/WhatsNew.html
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/api
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/manual
 	rm -rf $(OMNETPP_UI_DIR)/org.omnetpp.doc/content/userguide
