@@ -12,6 +12,12 @@ Partial list of changes since 4.1 (see ChangeLog files in individual folders
 for a more complete list):
 
 Simulation runtime:
+ - Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
+   is that it conflicted with lwIP code recently integrated into INET.
+   <platdep/sockets.h> still includes <winsock.h>, but now
+   <platdep/sockets.h> (and <platdep/timeutil.h>) MUST precede <omnetpp.h>
+   in all source files.
+
  - Ini files: implemented multiple inheritance for sections. Syntax:
      [Config Foobar]
      extends = Foo, Bar
