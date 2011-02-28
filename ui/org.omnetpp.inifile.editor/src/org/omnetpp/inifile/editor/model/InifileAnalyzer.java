@@ -632,13 +632,13 @@ public final class InifileAnalyzer {
 
 	public final static Pattern
 		DOLLAR_BRACES_PATTERN = Pattern.compile("\\$\\{\\s*(.*?)\\s*\\}"),      // ${...}
-		VARIABLE_DEFINITION_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9@_-]*?\\s*=\\s*(.*)"), // name = values
+		VARIABLE_DEFINITION_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9@_-]*?\\s*=\\s*(.*)\\s*(!\\s*([a-zA-Z0-9@_-]+))?"), // name = values
 		VARIABLE_REFERENCE_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9@_-]*)"),             // name only
+		VALUES_PATTERN = Pattern.compile("\\s*(.*?)\\s*(!\\s*[a-zA-Z0-9@_-]+)?"),          // optionally ends with ! var
 		START_END_STEP_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)"),
 		START_END_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)"),
 		ANY_VALUE_PATTERN = Pattern.compile("(.*)");
-
-
+	
 	protected boolean validateValueWithIterationVars(String section, String key, String value) {
 		Matcher iterationVarMatcher = DOLLAR_BRACES_PATTERN.matcher(value);
 
@@ -915,6 +915,8 @@ public final class InifileAnalyzer {
 			else if ((m=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches())
 				// TODO follow the reference?
 				values = "";
+			else if ((m = VALUES_PATTERN.matcher(content)).matches())
+			    values = m.group(1);
 			else // anonymous iteration
 				values = content;
 			reset();
