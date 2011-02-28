@@ -372,6 +372,9 @@ public class InifileDocument implements IInifileDocument {
             // mark data structure as up to date (even if there was an error, because
             // we don't want to keep re-parsing again and again)
             changed = false;
+            
+            // old docCopy is obsolete, trigger new analysis
+            docCopy = null;
 
             // synchronize detected problems with the file's existing markers
             markerSynchronizer.runAsWorkspaceJob();
