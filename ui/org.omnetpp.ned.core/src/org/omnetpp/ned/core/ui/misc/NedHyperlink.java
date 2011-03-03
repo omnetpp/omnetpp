@@ -22,6 +22,8 @@ public class NedHyperlink implements IHyperlink {
 
     IRegion region;         // the region covered by the hyperlink
     INedElement target;      // the ned element which should be opened
+    String text;
+    
     /**
      * @param reg The region covered by the link
      * @param element The target NED element that should be opened
@@ -31,12 +33,23 @@ public class NedHyperlink implements IHyperlink {
         target = element;
     }
 
+    /**
+     * @param reg The region covered by the link
+     * @param element The target NED element that should be opened
+     * @param text The text shown when there are several target for the same region
+     */
+    public NedHyperlink(IRegion reg, INedElement element, String text) {
+        region = reg;
+        target = element;
+        this.text = text;
+    }
+
     public IRegion getHyperlinkRegion() {
         return region;
     }
 
     public String getHyperlinkText() {
-        return null;
+        return text;
     }
 
     public String getTypeLabel() {

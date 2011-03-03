@@ -17,6 +17,8 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.hyperlink.IHyperlinkPresenter;
+import org.eclipse.jface.text.hyperlink.MultipleHyperlinkPresenter;
 import org.eclipse.jface.text.hyperlink.URLHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -27,6 +29,7 @@ import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.graphics.RGB;
 import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.text.assist.InifileCompletionProcessor;
 import org.omnetpp.inifile.editor.text.highlight.InifileCodeColorizerScanner;
@@ -128,4 +131,11 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
     		//FIXME new NEDHyperlinkDetector()
         };
     }
+
+    @Override
+    public IHyperlinkPresenter getHyperlinkPresenter(ISourceViewer sourceViewer) {
+        return new MultipleHyperlinkPresenter(new RGB(0, 0, 255));
+    }
+    
+    
 }
