@@ -61,7 +61,7 @@ class EVENTLOG_API FilteredEvent : public IEvent
 
     public:
         FilteredEvent(FilteredEventLog *filteredEventLog, eventnumber_t eventNumber);
-        ~FilteredEvent();
+        virtual ~FilteredEvent();
 
         IEvent *getEvent();
 

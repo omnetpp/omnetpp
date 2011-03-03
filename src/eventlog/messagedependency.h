@@ -144,7 +144,7 @@ class EVENTLOG_API FilteredMessageDependency : public IMessageDependency
 
     public:
         FilteredMessageDependency(IEventLog *eventLog, Kind kind, IMessageDependency *beginMessageDependency, IMessageDependency *endMessageDependency);
-        ~FilteredMessageDependency();
+        virtual ~FilteredMessageDependency();
 
         IMessageDependency *getBeginMessageDependency() { return beginMessageDependency; }
         IMessageDependency *getEndMessageDependency() { return endMessageDependency; }

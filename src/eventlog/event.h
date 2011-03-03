@@ -59,7 +59,7 @@ class EVENTLOG_API Event : public IEvent
 
     public:
         Event(EventLog *eventLog);
-        ~Event();
+        virtual ~Event();
 
         /**
          * Parse an event starting at the given offset.

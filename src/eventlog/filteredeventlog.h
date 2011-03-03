@@ -94,7 +94,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
 
     public:
         FilteredEventLog(IEventLog *eventLog);
-        ~FilteredEventLog();
+        virtual ~FilteredEventLog();
 
     public:
         eventnumber_t getFirstEventNumber() { return firstEventNumber; }
