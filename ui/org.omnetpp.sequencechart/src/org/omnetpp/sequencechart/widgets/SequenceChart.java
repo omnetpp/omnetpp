@@ -751,6 +751,7 @@ public class SequenceChart
 
 	private void relocateFixPoint(IEvent event, long fixPointViewportCoordinate) {
 		this.fixPointViewportCoordinate = fixPointViewportCoordinate;
+		selectedTimelineCoordinate = null;
 		invalidateAxisModules();
 
 		// the new event will be the origin of the timeline coordinate system
