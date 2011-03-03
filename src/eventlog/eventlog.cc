@@ -27,6 +27,7 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
 {
     reader->setIgnoreAppendChanges(false);
     clearInternalState();
+    parseKeyframes();
     parseInitializationLogEntries();
 }
 
@@ -48,6 +49,7 @@ void EventLog::clearInternalState()
     initializationLogEntries.clear();
     moduleIdToModuleCreatedEntryMap.clear();
     moduleIdAndGateIdToGateCreatedEntryMap.clear();
+    previousEventNumberToMessageEntriesMap.clear();
     simulationBeginEntry = NULL;
     eventNumberToEventMap.clear();
     beginOffsetToEventMap.clear();
@@ -177,6 +179,37 @@ Event *EventLog::getApproximateEventAt(double percentage)
         Assert(event);
 
         return event;
+    }
+}
+
+void EventLog::parseKeyframes()
+{
+    // NOTE: optimized for performance
+    char *line;
+    keyframeBlockSize = getSimulationBeginEntry()->keyframeBlockSize;
+    consequenceLookaheadLimits.resize((getLastEventNumber() / keyframeBlockSize) + 1, 0);
+    reader->seekTo(reader->getFileSize());
+    while (line = reader->getPreviousLineBufferPointer()) {
+        int length = reader->getCurrentLineLength();
+        if (length > 3 && line[0] == 'K' && line[1] == 'F' && line[2] == ' ') {
+            progress();
+            KeyframeEntry *keyframeEntry = (KeyframeEntry *)EventLogEntry::parseEntry(NULL, 0, line, length);
+            // store consequenceLookaheadLimits
+            char *s = const_cast<char *>(keyframeEntry->consequenceLookaheadLimits);
+            while (*s != '\0') {
+                eventnumber_t eventNumber = strtol(s, &s, 10);
+                long keyframeIndex = eventNumber / keyframeBlockSize;
+                s++;
+                eventnumber_t consequenceLookaheadLimit = strtol(s, &s, 10);
+                s++;
+                consequenceLookaheadLimits[keyframeIndex] = std::max(consequenceLookaheadLimits[keyframeIndex], consequenceLookaheadLimit);
+            }
+            // TODO: store simulation state data
+            // jump to previous keyframe
+            reader->seekTo(keyframeEntry->previousKeyframeFileOffset + 1);
+            reader->getNextLineBufferPointer();
+            delete keyframeEntry;
+        }
     }
 }
 
@@ -477,6 +510,37 @@ void EventLog::cacheEvent(Event *event)
     eventNumberToEventMap[eventNumber] = event;
     beginOffsetToEventMap[event->getBeginOffset()] = event;
     endOffsetToEventMap[event->getEndOffset()] = event;
+}
+
+std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(eventnumber_t previousEventNumber)
+{
+    std::map<eventnumber_t, std::vector<MessageEntry *> >::iterator it = previousEventNumberToMessageEntriesMap.find(previousEventNumber);
+    if (it != previousEventNumberToMessageEntriesMap.end())
+        return it->second;
+    else {
+        long keyframeBlockIndex = previousEventNumber / keyframeBlockSize;
+        eventnumber_t beginEventNumber = (eventnumber_t)keyframeBlockIndex * keyframeBlockSize;
+        eventnumber_t endEventNumber = beginEventNumber + keyframeBlockSize;
+        eventnumber_t consequenceLookahead = getConsequenceLookahead(previousEventNumber);
+        for (eventnumber_t eventNumber = beginEventNumber; eventNumber < endEventNumber; eventNumber++)
+            previousEventNumberToMessageEntriesMap[eventNumber] = std::vector<MessageEntry *>();
+        Event *event = getEventForEventNumber(beginEventNumber);
+        Assert(event);
+        while (event && event->getEventNumber() < endEventNumber + consequenceLookahead) {
+            for (int i = 0; i < (int)event->getNumEventLogEntries(); i++) {
+                MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(event->getEventLogEntry(i));
+                if (messageEntry) {
+                    eventnumber_t messageEntryPreviousEventNumber =  messageEntry->previousEventNumber;
+                    if (beginEventNumber <= messageEntryPreviousEventNumber && messageEntryPreviousEventNumber < endEventNumber && messageEntryPreviousEventNumber != event->getEventNumber()) {
+                        it = previousEventNumberToMessageEntriesMap.find(messageEntry->previousEventNumber);
+                        it->second.push_back(messageEntry);
+                    }
+                }
+            }
+            event = event->getNextEvent();
+        }
+        return previousEventNumberToMessageEntriesMap.find(previousEventNumber)->second;
+    }
 }
 
 NAMESPACE_END

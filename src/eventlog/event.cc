@@ -340,15 +340,9 @@ IMessageDependencyList *Event::getCauses()
         eventnumber_t eventNumber = getEventNumber();
         for (int i = 0; i < (int)eventLogEntries.size(); i++) {
             EventLogEntry *eventLogEntry = eventLogEntries[i];
-            BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
-            CloneMessageEntry *cloneMessageEntry = dynamic_cast<CloneMessageEntry *>(eventLogEntry);
-            DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
-            if ((beginSendEntry && beginSendEntry->previousEventNumber != -1 && beginSendEntry->previousEventNumber != eventNumber) ||
-                (cloneMessageEntry && cloneMessageEntry->previousEventNumber != -1 && cloneMessageEntry->previousEventNumber != eventNumber) ||
-                (deleteMessageEntry && deleteMessageEntry->previousEventNumber != -1 && deleteMessageEntry->previousEventNumber != eventNumber))
-            {
+            MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(eventLogEntry);
+            if (messageEntry && messageEntry->previousEventNumber != -1 && messageEntry->previousEventNumber != eventNumber)
                 causes->push_back(new MessageReuseDependency(eventLog, eventNumber, i));
-            }
         }
     }
 
@@ -365,28 +359,11 @@ IMessageDependencyList *Event::getConsequences()
                 // using "t" from "ES" lines
                 consequences->push_back(new MessageSendDependency(eventLog, getEventNumber(), beginSendEntryNumber));
         }
-        // TODO: LONG RUNNING OPERATION
-        // TODO: maybe the result of this calculation should be put into an index file lazily?
-        // TODO: and first we should look it up there, so that the expensive computation is not repeated when the file is reopened
-        // TODO: the limit on this loop should be configurable
-        Event *current = getNextEvent();
-        int maxLookAhead = 10000;
-        eventnumber_t eventNumber = getEventNumber();
-        while (current && maxLookAhead--) {
-            eventLog->progress();
-            for (int i = 0; i < (int)current->eventLogEntries.size(); i++) {
-                EventLogEntry *eventLogEntry = current->eventLogEntries[i];
-                BeginSendEntry *beginSendEntry = dynamic_cast<BeginSendEntry *>(eventLogEntry);
-                CloneMessageEntry *cloneMessageEntry = dynamic_cast<CloneMessageEntry *>(eventLogEntry);
-                DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
-                if ((beginSendEntry && beginSendEntry->previousEventNumber == eventNumber) ||
-                    (cloneMessageEntry && cloneMessageEntry->previousEventNumber == eventNumber) ||
-                    (deleteMessageEntry && deleteMessageEntry->previousEventNumber == eventNumber))
-                {
-                    consequences->push_back(new MessageReuseDependency(eventLog, current->getEventNumber(), i));
-                }
-            }
-            current = current->getNextEvent();
+        std::vector<MessageEntry *> messageEntries = eventLog->getMessageEntriesWithPreviousEventNumber(getEventNumber());
+        for (int i = 0; i < (int)messageEntries.size(); i++) {
+            MessageEntry *messageEntry = messageEntries[i];
+            Assert(messageEntry->previousEventNumber == getEventNumber());
+            consequences->push_back(new MessageReuseDependency(eventLog, messageEntry->getEvent()->getEventNumber(), messageEntry->getEntryIndex()));
         }
     }
     return consequences;

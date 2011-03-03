@@ -46,6 +46,7 @@ import org.omnetpp.eventlog.engine.GateCreatedEntry;
 import org.omnetpp.eventlog.engine.GateDeletedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IMessageDependency;
+import org.omnetpp.eventlog.engine.KeyframeEntry;
 import org.omnetpp.eventlog.engine.MessageEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDeletedEntry;
@@ -424,6 +425,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                             }
                             else if (eventLogEntry instanceof SimulationEndEntry) {
                                 drawText("Simulation finished", CONSTANT_TEXT_COLOR);
+                            }
+                            else if (eventLogEntry instanceof KeyframeEntry) {
+                                drawText("Keyframe", CONSTANT_TEXT_COLOR);
                             }
 							else
 								throw new RuntimeException("Unknown eventlog entry: " + eventLogEntry.getClassName());

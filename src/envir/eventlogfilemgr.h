@@ -41,10 +41,59 @@ class ENVIR_API EventlogFileManager
     FILE *feventlog;
     ObjectPrinter *objectPrinter;
     Intervals *recordingIntervals;
-    bool isEmpty;
+    int entryIndex;
+    int keyframeBlockSize;
+    file_offset_t previousKeyframeFileOffset;
     bool isEventLogRecordingEnabled;
     bool isModuleEventLogRecordingEnabled;
     bool isIntervalEventLogRecordingEnabled;
+
+    // keyframe data structures
+    struct EventLogEntryReference
+    {
+        eventnumber_t eventNumber;
+        int entryIndex;
+
+        EventLogEntryReference()
+        {
+            this->eventNumber = -1;
+            this->entryIndex = -1;
+        }
+
+        EventLogEntryReference(eventnumber_t eventNumber, int entryIndex)
+        {
+            this->eventNumber = eventNumber;
+            this->entryIndex = entryIndex;
+        }
+    };
+
+    struct EventLogEntryRange
+    {
+        eventnumber_t eventNumber;
+        int beginEntryIndex;
+        int endEntryIndex;
+
+        EventLogEntryRange(eventnumber_t eventNumber, int beginEntryIndex, int endEntryIndex)
+        {
+            this->eventNumber = eventNumber;
+            this->beginEntryIndex = beginEntryIndex;
+            this->endEntryIndex = endEntryIndex;
+        }
+
+        void print(FILE *file)
+        {
+            if (beginEntryIndex == endEntryIndex)
+                fprintf(file, "%"INT64_PRINTF_FORMAT"d:%d", eventNumber, beginEntryIndex);
+            else
+                fprintf(file, "%"INT64_PRINTF_FORMAT"d:%d-%d", eventNumber, beginEntryIndex, endEntryIndex);
+        }
+    };
+
+    // keyframe state
+    std::vector<eventnumber_t> consequenceLookaheadLimits;
+    std::map<eventnumber_t, std::vector<EventLogEntryRange>> eventNumberToSimulationStateEventLogEntryRanges;
+    std::map<int, EventLogEntryReference> moduleIdToModuleDisplayStringChangedEntryReferenceMap;
+    std::map<int, EventLogEntryReference> messageIdToBeginSendEntryReferenceMap;
 
   public:
     EventlogFileManager();
@@ -92,6 +141,19 @@ class ENVIR_API EventlogFileManager
     virtual void connectionDeleted(cGate *srcgate);
     virtual void displayStringChanged(cComponent *component);
     virtual void sputn(const char *s, int n);
+    //@}
+
+  private:
+    /** @name Keyframe functions */
+    //@{
+    void addSimulationStateEventLogEntry(EventLogEntryReference reference);
+    void addSimulationStateEventLogEntry(eventnumber_t eventNumber, int entryIndex);
+    void removeSimulationStateEventLogEntry(EventLogEntryReference reference);
+    void removeSimulationStateEventLogEntry(eventnumber_t eventNumber, int entryIndex);
+
+    void removeBeginSendEntryReference(int messageId);
+    void recordKeyframe();
+    void addPreviousEventNumber(eventnumber_t previousEventNumber);
     //@}
 };
 

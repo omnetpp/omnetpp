@@ -73,6 +73,10 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         OffsetToEventMap beginOffsetToEventMap; // all parsed events so far
         OffsetToEventMap endOffsetToEventMap; // all parsed events so far
 
+        int keyframeBlockSize;
+        std::vector<eventnumber_t> consequenceLookaheadLimits;
+        std::map<eventnumber_t, std::vector<MessageEntry *> > previousEventNumberToMessageEntriesMap;
+
     public:
         EventLog(FileReader *index);
         virtual ~EventLog();
@@ -81,7 +85,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual void setProgressCallInterval(double seconds) { progressCallInterval = (long)(seconds * CLOCKS_PER_SEC); lastProgressCall = clock(); }
         virtual void progress();
 
-        void parseInitializationLogEntries();
+        eventnumber_t getConsequenceLookahead(eventnumber_t eventNumber) { return consequenceLookaheadLimits[eventNumber / keyframeBlockSize]; }
+        std::vector<MessageEntry *> getMessageEntriesWithPreviousEventNumber(eventnumber_t eventNumber);
 
         /**
          * Returns the event exactly starting at the given offset or NULL if there is no such event.
@@ -102,7 +107,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual std::vector<ModuleCreatedEntry *> getModuleCreatedEntries();
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId);
         virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId);
-        virtual SimulationBeginEntry *getSimulationBeginEntry() { return simulationBeginEntry; }
+        virtual SimulationBeginEntry *getSimulationBeginEntry() { getFirstEvent(); return simulationBeginEntry; }
 
         virtual Event *getFirstEvent();
         virtual Event *getLastEvent();
@@ -128,6 +133,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void uncacheEventLogEntry(EventLogEntry *eventLogEntry);
         void clearInternalState();
         void deleteAllocatedObjects();
+        void parseKeyframes();
+        void parseInitializationLogEntries();
 };
 
 NAMESPACE_END
