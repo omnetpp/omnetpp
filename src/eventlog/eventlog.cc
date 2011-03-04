@@ -54,6 +54,8 @@ void EventLog::clearInternalState()
     eventNumberToEventMap.clear();
     beginOffsetToEventMap.clear();
     endOffsetToEventMap.clear();
+    consequenceLookaheadLimits.clear();
+    previousEventNumberToMessageEntriesMap.clear();
 }
 
 void EventLog::deleteAllocatedObjects()
