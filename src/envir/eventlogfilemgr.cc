@@ -632,7 +632,7 @@ void EventlogFileManager::addSimulationStateEventLogEntry(EventLogEntryReference
 
 void EventlogFileManager::addSimulationStateEventLogEntry(eventnumber_t eventNumber, int entryIndex)
 {
-    std::map<eventnumber_t, std::vector<EventLogEntryRange>>::iterator it = eventNumberToSimulationStateEventLogEntryRanges.find(eventNumber);
+    std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.find(eventNumber);
     if (it != eventNumberToSimulationStateEventLogEntryRanges.end()) {
         std::vector<EventLogEntryRange> &ranges = it->second;
         EventLogEntryRange &back = ranges.back();
@@ -655,7 +655,7 @@ void EventlogFileManager::removeSimulationStateEventLogEntry(EventLogEntryRefere
 
 void EventlogFileManager::removeSimulationStateEventLogEntry(eventnumber_t eventNumber, int entryIndex)
 {
-    std::map<eventnumber_t, std::vector<EventLogEntryRange>>::iterator it = eventNumberToSimulationStateEventLogEntryRanges.find(eventNumber);
+    std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.find(eventNumber);
     if (it != eventNumberToSimulationStateEventLogEntryRanges.end()) {
         std::vector<EventLogEntryRange> &ranges = it->second;
         for (std::vector<EventLogEntryRange>::iterator jt = ranges.begin(); jt != ranges.end(); jt++) {
@@ -707,7 +707,7 @@ void EventlogFileManager::recordKeyframe()
         }
         // simulationStateEntries
         fprintf(feventlog, "\" s \"");
-        for (std::map<eventnumber_t, std::vector<EventLogEntryRange>>::iterator it = eventNumberToSimulationStateEventLogEntryRanges.begin(); it != eventNumberToSimulationStateEventLogEntryRanges.end(); it++) {
+        for (std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.begin(); it != eventNumberToSimulationStateEventLogEntryRanges.end(); it++) {
             std::vector<EventLogEntryRange> &ranges = it->second;
             for (std::vector<EventLogEntryRange>::iterator jt = ranges.begin(); jt != ranges.end(); jt++) {
                 (*jt).print(feventlog);

@@ -92,7 +92,7 @@ class ENVIR_API EventlogFileManager
 
     // keyframe state
     std::vector<eventnumber_t> consequenceLookaheadLimits;
-    std::map<eventnumber_t, std::vector<EventLogEntryRange>> eventNumberToSimulationStateEventLogEntryRanges;
+    std::map<eventnumber_t, std::vector<EventLogEntryRange> > eventNumberToSimulationStateEventLogEntryRanges;
     std::map<int, EventLogEntryReference> moduleIdToModuleDisplayStringChangedEntryReferenceMap;
     std::map<int, EventLogEntryReference> messageIdToBeginSendEntryReferenceMap;
 
