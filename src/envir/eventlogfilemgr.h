@@ -41,6 +41,7 @@ class ENVIR_API EventlogFileManager
     FILE *feventlog;
     ObjectPrinter *objectPrinter;
     Intervals *recordingIntervals;
+    eventnumber_t eventNumber;
     int entryIndex;
     int keyframeBlockSize;
     file_offset_t previousKeyframeFileOffset;
@@ -144,6 +145,8 @@ class ENVIR_API EventlogFileManager
     //@}
 
   private:
+    void clearInternalState();
+
     /** @name Keyframe functions */
     //@{
     void addSimulationStateEventLogEntry(EventLogEntryReference reference);
