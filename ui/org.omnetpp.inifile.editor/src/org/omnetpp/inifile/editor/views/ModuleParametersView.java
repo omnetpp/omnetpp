@@ -23,8 +23,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -37,6 +35,9 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -44,6 +45,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -57,7 +59,7 @@ import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
-import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
+import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.ITimeout;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer.IAnalysisListener;
@@ -89,7 +91,7 @@ public class ModuleParametersView extends AbstractModuleView {
 	private TableColumn parameterColumn;
 	private TableColumn valueColumn;
 	private TableColumn remarkColumn;
-	private IReadonlyInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
+	private IInifileDocument inifileDocument; // corresponds to the current selection; unfortunately needed by the label provider
 	private InifileAnalyzer inifileAnalyzer; // corresponds to the current selection; unfortunately needed by the label provider
 	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
@@ -116,7 +118,7 @@ public class ModuleParametersView extends AbstractModuleView {
 
 	private void createTableViewer(Composite container) {
 		// create table with columns
-		Table table = new Table(container, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		Table table = new Table(container, SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 		parameterColumn = addTableColumn(table, "Parameter", 300);
@@ -267,10 +269,43 @@ public class ModuleParametersView extends AbstractModuleView {
 		};
 		ActionExt gotoNedDeclarationAction = new GotoNedFileAction("Open NED Declaration", null, true);
 		ActionExt gotoNedValueAction = new GotoNedFileAction("Open NED Value", null, false);
+		
+		final ActionExt copyParametersAction = new ActionExt("Copy") {
+            public void run() {
+                List<ParamResolution> selection = getSelectedParamResolutions();
+                if (!selection.isEmpty()) {
+                    String text = "";
+                    for (ParamResolution param : selection) {
+                        String key = param.fullPath + "." + param.paramDeclaration.getName();
+                        String value = StringUtils.defaultString(InifileUtils.getParamValue(param, inifileDocument));
+                        text += key + " = " + value + "\n";
+                    }
+    
+                    Clipboard clipboard = new Clipboard(Display.getDefault());
+                    TextTransfer textTransfer = TextTransfer.getInstance();
+                    clipboard.setContents(new String[] {text}, new Transfer[] {textTransfer});
+                    clipboard.dispose();
+                }
+            }
+            
+            public void selectionChanged(SelectionChangedEvent event) {
+                setEnabled(inifileDocument != null && !getSelectedParamResolutions().isEmpty());
+            }
+            
+            private List<ParamResolution> getSelectedParamResolutions() {
+                IStructuredSelection selection = (IStructuredSelection)tableViewer.getSelection();
+                List<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
+                for (Object object : selection.toList())
+                    if (object instanceof ParamResolution)
+                        paramResolutions.add((ParamResolution)object);
+                return paramResolutions;
+            }
+		};
 
 		tableViewer.addSelectionChangedListener(gotoInifileAction);
 		tableViewer.addSelectionChangedListener(gotoNedValueAction);
 		tableViewer.addSelectionChangedListener(gotoNedDeclarationAction);
+		tableViewer.addSelectionChangedListener(copyParametersAction);
 
 		// add double-click support to the table
         tableViewer.addDoubleClickListener(new IDoubleClickListener() {
@@ -283,10 +318,11 @@ public class ModuleParametersView extends AbstractModuleView {
 		contextMenuManager.add(gotoInifileAction);
 		contextMenuManager.add(gotoNedValueAction);
 		contextMenuManager.add(gotoNedDeclarationAction);
+		contextMenuManager.add(copyParametersAction);
 		contextMenuManager.add(new Separator());
 		contextMenuManager.add(toggleModeAction);
 		contextMenuManager.add(pinAction);
-
+		
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		toolBarManager.add(toggleModeAction);
 		toolBarManager.add(pinAction);
