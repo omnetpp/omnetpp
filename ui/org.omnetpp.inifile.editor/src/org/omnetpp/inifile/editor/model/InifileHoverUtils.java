@@ -7,6 +7,7 @@
 
 package org.omnetpp.inifile.editor.model;
 
+import static org.omnetpp.common.util.Pair.pair;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.EXTENDS;
 
@@ -20,13 +21,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.text.IRegion;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
+import org.omnetpp.inifile.editor.text.util.InifileTextUtil;
+import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ParamElementEx;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
+
 
 /**
  * Produces hover information for various Inifile parts.
@@ -117,12 +125,16 @@ public class InifileHoverUtils {
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
 
+    public static String getEntryHoverText(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
+        return getEntryHoverText(section, key, null, doc, analyzer);
+    }
+	
 	/**
 	 * Generate tooltip for an inifile entry.
 	 * @param section  null is accepted
 	 * @param key      null is accepted
 	 */
-	public static String getEntryHoverText(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
+	public static String getEntryHoverText(String section, String key, IRegion regionInKey, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
 		if (section == null || key == null)
 			return null;
 
@@ -135,6 +147,22 @@ public class InifileHoverUtils {
 		    if (analyzer == null)
 		        return null;
 		    else {
+		        if (regionInKey != null) {
+    		        try {
+    		            ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key, new Timeout(InifileEditor.HOVER_TIMEOUT));
+    		            String pattern = key.substring(regionInKey.getOffset(), regionInKey.getOffset() + regionInKey.getLength());
+    		            List<INedElement> elements = InifileTextUtil.findNamedElements(pattern, resList);
+    		            if (!elements.isEmpty()) {
+    		                if (elements.size() == 1 && elements.get(0) instanceof ParamElement)
+    		                    return getParamKeyHoverText(section, key, analyzer);
+    		                else
+    		                    return getNedElementsHoverText(elements);
+    		            }
+    		        }
+    		        catch (ParamResolutionDisabledException e) {}
+    		        catch (ParamResolutionTimeoutException e) {}
+		        }
+
     			// parameter assignment: display which parameters it matches
     			return getParamKeyHoverText(section, key, analyzer);
 		    }
@@ -242,6 +270,78 @@ public class InifileHoverUtils {
 		}
 		return HoverSupport.addHTMLStyleSheet(text);
 	}
+	
+    public static String getNedElementsHoverText(List<INedElement> elements) {
+        
+        Map<Pair<String,String>, INedElement> uniqueSections = new LinkedHashMap<Pair<String,String>, INedElement>();
+        for (INedElement element : elements) {
+            String title = StringUtils.quoteForHtml(NedTreeUtil.getNedModelLabelProvider().getText(element));
+            String body = getNedElementHoverText(element);
+            Pair<String,String> thisSection = pair(title, body);
+            if (!uniqueSections.containsKey(thisSection))
+                uniqueSections.put(thisSection, element);
+        }
+
+        String contents = "";
+        String sections = "";
+        boolean generateContents = uniqueSections.size() > 1;
+        int i = 0;
+        for (Map.Entry<Pair<String,String>, INedElement> entry : uniqueSections.entrySet()) {
+            String title = entry.getKey().first;
+            String body = entry.getKey().second;
+            INedElement element = entry.getValue();
+            if (generateContents) {
+                String linkText = InifileTextUtil.getLinkText(element);
+                contents += "<li><a href=\"#"+(i++)+"\">" + linkText + "</a></li>\n";
+                title += " (" + linkText + ")";
+            }
+            
+            sections += "<b><a name=\""+i+"\">" + title + "</a></b>\n";
+            sections += body;
+        }
+        
+        
+        if (contents.length() > 0)
+            contents = "<h2>One of</h2>\n" +
+                       "<ul>\n" + contents + "</ul>\n";
+        
+        return HoverSupport.addHTMLStyleSheet(contents + sections);
+    }
+    
+    // copied from GraphicalNedEditor.getHTMLHoverTextFor()
+    private static String getNedElementHoverText(INedElement element) {
+        String hoverText = "";
+        
+        // comment
+        String comment = StringUtils.trimToEmpty(element.getComment());
+
+        // comment from the submodule's or connection channel's type
+        String typeComment = "";
+        if (element instanceof ISubmoduleOrConnection) {
+            INedTypeElement typeElement = ((ISubmoduleOrConnection)element).getEffectiveTypeRef();
+            if (typeElement != null)
+                typeComment = StringUtils.trimToEmpty(typeElement.getComment());
+        }
+
+        String htmlComment = "";
+        if (!StringUtils.isEmpty(comment)) {
+            boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
+            htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
+        }
+
+        if (!StringUtils.isEmpty(typeComment)) {
+            //typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
+            boolean tildeMode = typeComment.matches(".*(~[a-zA-Z_]).*");
+            htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, tildeMode, null);
+        }
+
+        hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source  
+
+        String nedCode = StringUtils.stripLeadingCommentLines(element.getNedSource().trim(), "//");
+        hoverText += "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
+        
+        return hoverText;
+    }
 
     private static String formatParamResolutions(Map<Set<ParamElementEx>,Set<String>> sectionsGroupedByParamDeclSet,
             ParamResolution[] resList, String[] allSectionNames, boolean printComment, boolean printDetails) {
