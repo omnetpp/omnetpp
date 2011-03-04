@@ -85,6 +85,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual void setProgressCallInterval(double seconds) { progressCallInterval = (long)(seconds * CLOCKS_PER_SEC); lastProgressCall = clock(); }
         virtual void progress();
 
+        int getKeyframeBlockSize() { return keyframeBlockSize; }
         eventnumber_t getConsequenceLookahead(eventnumber_t eventNumber) { return consequenceLookaheadLimits[eventNumber / keyframeBlockSize]; }
         std::vector<MessageEntry *> getMessageEntriesWithPreviousEventNumber(eventnumber_t eventNumber);
 

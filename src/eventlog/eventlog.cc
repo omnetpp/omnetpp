@@ -76,6 +76,7 @@ void EventLog::synchronize(FileReader::FileChangedState change)
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
                 clearInternalState();
+                parseKeyframes();
                 parseInitializationLogEntries();
                 break;
             case FileReader::APPENDED:
@@ -94,6 +95,8 @@ void EventLog::synchronize(FileReader::FileChangedState change)
                     delete lastEvent;
                     lastEvent = NULL;
                 }
+                // TODO: we could do this incrementally
+                parseKeyframes();
                 break;
         }
     }
