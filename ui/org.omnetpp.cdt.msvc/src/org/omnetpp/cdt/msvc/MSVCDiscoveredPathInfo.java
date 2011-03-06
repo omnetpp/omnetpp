@@ -22,7 +22,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.cdt.build.MakefileTools;
 
 /**
  * Discover the include path for the VC installation and optionally for the SDK

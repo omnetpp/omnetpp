@@ -21,7 +21,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Platform;
-import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.cdt.build.MakefileTools;
 
 /**
  * Special InfoCollector based on the CDT's GCC per project collector, but adds

@@ -33,7 +33,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.internal.ide.dialogs.ProjectContentsLocationArea;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification;
+import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.wizard.CreationContext;

@@ -21,7 +21,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.cdt.build.MakefileTools;
 
 public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
     private static String INCLUDE_DIRS_MACRO = "IncludeDirs"; // all non excluded dirs containing a *.h file in the project

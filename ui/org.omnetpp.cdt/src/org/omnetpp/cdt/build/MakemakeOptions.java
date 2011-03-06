@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.cdt.makefile;
+package org.omnetpp.cdt.build;
 
 import java.util.ArrayList;
 import java.util.Arrays;

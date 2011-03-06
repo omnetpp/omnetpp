@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.statushandlers.StatusManager;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification;
+import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.common.util.StringUtils;
 
 

@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.cdt.makefile;
+package org.omnetpp.cdt.build;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -30,7 +30,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.MakemakeOptions.Type;
+import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;

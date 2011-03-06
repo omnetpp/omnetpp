@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification;
+import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.common.color.ColorFactory;
 
 /**

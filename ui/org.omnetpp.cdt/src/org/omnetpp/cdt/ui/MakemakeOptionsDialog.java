@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.build.BuildSpecification;
+import org.omnetpp.cdt.build.MakemakeOptions;
 import org.omnetpp.common.util.UIUtils;
 
 /**

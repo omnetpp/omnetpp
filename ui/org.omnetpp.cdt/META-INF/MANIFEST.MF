@@ -33,7 +33,7 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.6.0",
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
+ org.omnetpp.cdt.build,
  org.omnetpp.cdt.launch,
- org.omnetpp.cdt.makefile,
  org.omnetpp.cdt.ui,
  org.omnetpp.cdt.wizard

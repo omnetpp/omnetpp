@@ -11,7 +11,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 import org.junit.Test;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.build.MakemakeOptions;
 
 public class MakemakeOptionsTest extends TestCase {
     private void checkArgs(String args) {

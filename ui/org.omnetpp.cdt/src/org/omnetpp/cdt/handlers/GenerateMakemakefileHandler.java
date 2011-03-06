@@ -28,8 +28,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.MakefileTools;
+import org.omnetpp.cdt.build.BuildSpecification;
+import org.omnetpp.cdt.build.MakefileTools;
 import org.omnetpp.common.util.StringUtils;
 
 /**

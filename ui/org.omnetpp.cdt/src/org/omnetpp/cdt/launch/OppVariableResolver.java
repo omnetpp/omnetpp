@@ -22,8 +22,8 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.makefile.BuildSpecification;
-import org.omnetpp.cdt.makefile.MakemakeOptions;
+import org.omnetpp.cdt.build.BuildSpecification;
+import org.omnetpp.cdt.build.MakemakeOptions;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 

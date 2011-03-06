@@ -145,7 +145,7 @@
             callOnEmptyDelta="true"
             hasNature="false">
          <run
-               class="org.omnetpp.cdt.makefile.MakefileBuilder">
+               class="org.omnetpp.cdt.build.MakefileBuilder">
          </run>
       </builder>
    </extension>
