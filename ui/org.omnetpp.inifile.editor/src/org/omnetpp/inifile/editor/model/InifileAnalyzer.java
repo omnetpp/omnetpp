@@ -33,6 +33,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.collections.ResettableIterator;
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
@@ -458,7 +459,7 @@ public final class InifileAnalyzer {
             String activeSection = entry.section;
             List<ParamResolution> paramResolutions = entry.paramResolutions;
             List<PropertyResolution> propertyResolutions = entry.propertyResolutions;
-
+            
             // store with the section the list of all parameter resolutions (including unassigned params)
             // store with every key the list of parameters it resolves
             SectionData sectionData = ((SectionData)doc.getSectionData(activeSection));
@@ -1361,7 +1362,7 @@ public final class InifileAnalyzer {
 			// Note: linear search -- can be made more efficient with some lookup table if needed
 			ArrayList<ParamResolution> result = new ArrayList<ParamResolution>();
 			for (ParamResolution par : pars)
-				if (elementPath.equals(Arrays.asList(par.elementPath)))
+				if (elementPathEquals(elementPath, par.elementPath))
 					result.add(par);
 			return result.toArray(new ParamResolution[]{});
             }
@@ -1455,11 +1456,24 @@ public final class InifileAnalyzer {
             ArrayList<PropertyResolution> result = new ArrayList<PropertyResolution>();
             for (PropertyResolution propertyResolution : propertyResolutions)
                 if (propertyName.equals(propertyResolution.propertyDeclaration.getName()) &&
-                        elementPath.equals(Arrays.asList(propertyResolution.elementPath)))
+                        elementPathEquals(elementPath, propertyResolution.elementPath))
                     result.add(propertyResolution);
             return result.toArray(new PropertyResolution[]{});
             }
         });
+    }
+    
+    private static boolean elementPathEquals(Vector<ISubmoduleOrConnection> original, ISubmoduleOrConnection[] copy) {
+        if (original.size() != copy.length)
+            return false;
+        int i = 0;
+        for (ISubmoduleOrConnection first : original) {
+            ISubmoduleOrConnection second = copy[i++];
+            if (!(ObjectUtils.equals(first, second) ||
+                  (second != null && second.getOriginal() != null && ObjectUtils.equals(first, second.getOriginal()))))
+                  return false;
+        }
+        return true;
     }
 
     /**
