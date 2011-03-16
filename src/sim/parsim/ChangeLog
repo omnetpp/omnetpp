@@ -1,3 +1,10 @@
+2011-03-16  Andras Varga
+
+	* cmpicomm.cc: fix: use status.MPI_SOURCE in MPI_Recv() call after
+	MPI_Probe()/MPI_Iprobe(), not MPI_ANY_SOURCE; more info at:
+	http://www.mpi-forum.org/docs/mpi-11-html/node50.html [reported by
+	Cyriel Minkenberg and Robert Birke]
+
 2011-02-23  ------ omnetpp-4.2b1 released ------
 
 2010-11-26  Andras Varga

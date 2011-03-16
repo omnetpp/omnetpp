@@ -156,7 +156,8 @@ bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& 
     MPI_Probe(MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
     MPI_Get_count(&status, MPI_PACKED, &msgsize);
     b->allocateAtLeast(msgsize);
-    int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
+    // Note: Source needs to be specific source not MPI_SOURCE_ANY, see example here: http://www.mpi-forum.org/docs/mpi-11-html/node50.html
+    int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, status.MPI_SOURCE, filtTag, MPI_COMM_WORLD, &status);
     if (err!=MPI_SUCCESS)
         throw cRuntimeError("cMPICommunications::receiveBlocking(): MPI error %d", err);
     b->setMessageSize(msgsize);
@@ -180,7 +181,8 @@ bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, in
         int msgsize;
         MPI_Get_count(&status, MPI_PACKED, &msgsize);
         b->allocateAtLeast(msgsize);
-        int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
+        // Note: source needs to be specific source not MPI_SOURCE_ANY, see example here: http://www.mpi-forum.org/docs/mpi-11-html/node50.html
+        int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, status.MPI_SOURCE, filtTag, MPI_COMM_WORLD, &status);
         if (err!=MPI_SUCCESS)
             throw cRuntimeError("cMPICommunications::receiveNonBlocking(): MPI error %d", err);
         b->setMessageSize(msgsize);
