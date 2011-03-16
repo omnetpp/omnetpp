@@ -199,8 +199,8 @@ When recording signals as scalars, one has to define how to derive the
 scalar value from the sequence of values emitted. One may be interested
 in the final value, in the count of the values, in their mean, the minimum
 or maximum value or other properties. This can be configured using the
-\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-mode=}
-configuration option. If \ttt{result-recording-mode=} is not defined
+\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-modes=}
+configuration option. If \ttt{result-recording-modes=} is not defined
 in the configuration or it is set to \ttt{auto}, the \ttt{record} key
 from the \ttt{@statistic} property is used.
 
@@ -231,7 +231,7 @@ New modes cannot be defined at this time; this feature is planned for future ver
 An example:
 
 \begin{inifile}
-**.queueLength.result-recording-mode = timeavg,max
+**.queueLength.result-recording-modes = timeavg,max
 \end{inifile}
 
 In the result file, the recorded scalars will be suffixed with the name
