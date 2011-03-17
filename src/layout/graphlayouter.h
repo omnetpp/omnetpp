@@ -21,8 +21,11 @@
 #include <map>
 #include "layoutdefs.h"
 #include "lcgrandom.h"
+#include "commonutil.h"
 
 NAMESPACE_BEGIN
+
+//#define TRACE_LAYOUTER
 
 /**
  * Allows drawing during layouting for debug purposes, and makes it possible to
@@ -144,12 +147,23 @@ class LAYOUT_API GraphLayouter
      * own RNG, i.e. does not use the simulation kernel's RNGs. The same seed
      * and same input results in the same layout.
      */
-    void setSeed(int32 seed) { lcgRandom.setSeed(seed);}
+    void setSeed(int32 seed) { 
+#ifdef TRACE_LAYOUTER
+        TRACE("GraphLayouter::setSeed(seed: %d)", seed);
+#endif
+        lcgRandom.setSeed(seed);
+    }
 
     /**
      * Return the seed value
      */
-    int32 getSeed() { return lcgRandom.getSeed(); }
+    int32 getSeed() {
+        int32 seed = lcgRandom.getSeed();
+#ifdef TRACE_LAYOUTER
+        TRACE("GraphLayouter::getSeed(): %d", seed);
+#endif
+        return seed;
+    }
 
     /**
      * Sets the size of the enclosing module. A zero width or height means
