@@ -72,7 +72,7 @@ public class CompoundModuleFigure extends LayeredPane
     // TODO implement ruler
     protected float scale = 1.0f;
     protected String unit = "px";
-	private long seed = 0;
+	private int seed = 0;
 	private int oldCumulativeHashCode;
 	private boolean isSelected;
 
@@ -340,7 +340,7 @@ public class CompoundModuleFigure extends LayeredPane
         // can affect the size of bounding box
         backgroundSize = dps.getCompoundSize(null);
 
-        long newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
+        int newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
 
 		if (seed != newSeed) {

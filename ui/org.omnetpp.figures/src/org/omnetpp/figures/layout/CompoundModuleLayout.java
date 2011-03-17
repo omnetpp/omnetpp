@@ -36,12 +36,10 @@ public class CompoundModuleLayout extends AbstractLayout {
     private static boolean debug = false;
 
     private static final Dimension DEFAULT_SIZE = new Dimension(300, 200);
-	private static final int DEFAULT_MAX_WIDTH = 740;
-	private static final int DEFAULT_MAX_HEIGHT = 500;
-	protected Map<IFigure, Integer> moduleToId; 
-	protected long algSeed = 1971;
+	protected Map<IFigure, Integer> moduleToId;
+	protected int algSeed = 1;
     private CompoundModuleFigure compoundFigure;
-    
+
 
 	/**
 	 * Constructor.
@@ -57,47 +55,53 @@ public class CompoundModuleLayout extends AbstractLayout {
 	@SuppressWarnings("unchecked")
 	protected ILayoutAlgorithm createAutoLayouter() {
 	    ILayoutAlgorithm autoLayouter = createLayouterAlgorithm();
+	    autoLayouter.setSeed(algSeed);
 
 		// set the layouting area
 		int width = compoundFigure.getBackgroundSize().width;
 		int height = compoundFigure.getBackgroundSize().height;
 
-		// if the size is not present, use a default size;
-		if (width <= 0) width = DEFAULT_MAX_WIDTH;
-		if (height <= 0) height = DEFAULT_MAX_HEIGHT;
-		autoLayouter.setSize(width, height, Math.min(Math.min(width, height)/2, 30));  // 1/2 of the width or height for border area, but maximum 30 (see modinsp.cc)
+		// 1/2 of the width or height for border area, but maximum 30 (see modinsp.cc)
+		if (width < 0) width = 0;
+		if (height < 0) height = 0;
+		int border = 30;
+	    if (width != 0 && width < 2 * border)
+	        border = width / 2;
+	    if (height != 0 && height < 2 * border)
+	        border = height / 2;
+		autoLayouter.setSize(width, height, border);
 
 		// use the current index of the figure as an ID so we will be able to identify
 		// the module when we get back it's coordinates from the layouter.
 		int nodeIndex = 0;
-		// we store the index as an ID using the map 
+		// we store the index as an ID using the map
 		moduleToId = new HashMap<IFigure, Integer>();
 		// iterate over the nodes and add them to the algorithm
 		// all child figures on this layer are considered as node
 		IFigure nodeParent = compoundFigure.getSubmoduleLayer();
 		for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
 		    moduleToId.put(node, nodeIndex);
-		    
+
 			ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
 			Rectangle shapeBounds = constr.getShapeBounds();
 			Point centerLocation = constr.getCenterLocation();
 			if (centerLocation != null) {
 				// use cached (previously layouted) coordinates
-				autoLayouter.addFixedNode(nodeIndex, centerLocation.x, centerLocation.y, shapeBounds.width, shapeBounds.height);
+				autoLayouter.addFixedNode(nodeIndex, centerLocation.preciseX(), centerLocation.preciseY(), shapeBounds.preciseWidth(), shapeBounds.preciseHeight());
 			}
 			else {
 				// lay out this node, and store the coordinates with setCenterLocation()
 				Point baseLoc = constr.getBaseLocation();
 				if (baseLoc != null) {
 					Point offset = getArrangementOffset(constr, 80); // handle vector layouts; note: we use fixed spacing NOT shape size, because items in a vector may be of different sizes which would result in strange arrangements
-					autoLayouter.addFixedNode(nodeIndex, baseLoc.x+offset.x, baseLoc.y+offset.y, shapeBounds.width, shapeBounds.height);
+					autoLayouter.addFixedNode(nodeIndex, baseLoc.preciseX() + offset.preciseX(), baseLoc.preciseY() + offset.preciseY(), shapeBounds.width, shapeBounds.height);
 				}
 				else if (constr.getVectorIdentifier()==null || constr.getVectorArrangement()==VectorArrangement.none) {
-					autoLayouter.addMovableNode(nodeIndex, shapeBounds.width, shapeBounds.height);
+					autoLayouter.addMovableNode(nodeIndex, shapeBounds.preciseWidth(), shapeBounds.preciseHeight());
 				}
 				else {
 					Point offset = getArrangementOffset(constr, 80); // handle vector layouts
-					autoLayouter.addAnchoredNode(nodeIndex, constr.getVectorIdentifier().toString(), offset.x, offset.y, shapeBounds.width, shapeBounds.height);
+					autoLayouter.addAnchoredNode(nodeIndex, constr.getVectorIdentifier().toString(), offset.preciseX(), offset.preciseY(), shapeBounds.preciseWidth(), shapeBounds.preciseHeight());
 				}
 			}
 			nodeIndex++;
@@ -114,13 +118,13 @@ public class CompoundModuleLayout extends AbstractLayout {
                 // add the edge ONLY if it has figures at both side
                 if (srcFig == null || targetFig == null)
                     continue;
-                
+
                 if (srcFig instanceof SubmoduleFigure && targetFig instanceof SubmoduleFigure) {
                     autoLayouter.addEdge(moduleToId.get(srcFig), moduleToId.get(targetFig), 0);
                 }
                 else if (targetFig instanceof SubmoduleFigure) {   // compound to submodule
 					autoLayouter.addEdgeToBorder(moduleToId.get(targetFig), 0);
-				} 
+				}
 				else if (srcFig instanceof SubmoduleFigure) {  // submodule to compound
 					autoLayouter.addEdgeToBorder(moduleToId.get(srcFig), 0);
 				}
@@ -131,17 +135,17 @@ public class CompoundModuleLayout extends AbstractLayout {
 	}
 
     protected ILayoutAlgorithm createLayouterAlgorithm() {
-        // Java implementation: 
+        // Java implementation:
         // ILayoutAlgorithm layouter = new BasicSpringEmbedderLayoutAlgorithm();
-        
-        // Levy's C++ implementation (can be parameterized via BasicGraphLayouterEnvironment): 
+
+        // Levy's C++ implementation (can be parameterized via BasicGraphLayouterEnvironment):
         // ILayoutAlgorithm layouter = new NativeForceDirectedLayoutAlgorithm(new BasicGraphLayouterEnvironment());
 
         // Classic C++ implementation:
         BasicGraphLayouterEnvironment environment = new BasicGraphLayouterEnvironment();
         environment.setTimeout(15); //seconds
         ILayoutAlgorithm layouter = new NativeBasicSpringEmbedderLayoutAlgorithm(environment);
-		layouter.setDefaultEdgeLength(100);
+		//layouter.setDefaultEdgeLength(100);
         //autoLayouter.setRepulsiveForce(500.0);
         //autoLayouter.setMaxIterations(500);
         return layouter;
@@ -208,28 +212,27 @@ public class CompoundModuleLayout extends AbstractLayout {
     @SuppressWarnings("unchecked")
     public void layout(IFigure parent) {
 	    long startTime = System.currentTimeMillis();
+	    if (parent.getChildren().size() != 0) {
+    	    // create and run the layouter
+    	    ILayoutAlgorithm alg = createAutoLayouter();
+    	    alg.execute();
+    	    // store back the new seed - otherwise unpinned modules created one-by-one would pop up at the exact same place
+    	    algSeed = alg.getSeed();
 
-	    // create and run the layouter
-	    ILayoutAlgorithm alg = createAutoLayouter();
-	    alg.setSeed((int)algSeed);
-	    alg.execute();
+        	// lay out the children according to the auto-layouter
+            for (IFigure f : (List<IFigure>)parent.getChildren()) {
+                Integer id = moduleToId.get(f);
+                Assert.isNotNull(id);
 
-	    // store back the new seed - otherwise unpinned modules created one-by-one would pop up at the exact same place
-	    algSeed = alg.getSeed();
+            	// get the computed location from the auto-layout algorithm (if there is an algorithm at all)
+            	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
+            	Point locationFromAlg = alg.getNodePosition(id);
+            	Assert.isNotNull(locationFromAlg);
 
-    	// lay out the children according to the auto-layouter
-        for (IFigure f : (List<IFigure>)parent.getChildren()) {
-            Integer id = moduleToId.get(f);
-            Assert.isNotNull(id);
-            
-        	// get the computed location from the auto-layout algorithm (if there is an algorithm at all)
-        	ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
-        	Point locationFromAlg = alg.getNodePosition(id);
-        	Assert.isNotNull(locationFromAlg);
-
-        	// we write back the calculated locations
-        	constr.setCenterLocation(locationFromAlg);
-        }
+            	// we write back the calculated locations
+            	constr.setCenterLocation(locationFromAlg);
+            }
+	    }
         if (debug)
             Debug.println("CompoundModuleLayout: " + (System.currentTimeMillis()-startTime) + "ms");
     }
@@ -237,14 +240,15 @@ public class CompoundModuleLayout extends AbstractLayout {
 	/**
 	 * Set a new seed for the layouting algorithm. The next layout will use this seed.
 	 */
-	public void setSeed(long algSeed) {
-		this.algSeed = algSeed;
+	public void setSeed(int algSeed) {
+        // NOTE: this increment is not a mistake, see modinsp.cc where random_seed gets incremented before relayouting starts
+		this.algSeed = algSeed + 1;
 	}
 
 	/**
 	 * Returns the current seed value
 	 */
-	public long getSeed() {
+	public int getSeed() {
 		return algSeed;
 	}
 
@@ -299,7 +303,8 @@ public class CompoundModuleLayout extends AbstractLayout {
 	        union(getBorderPreferredSize(f));
 		return result;
 	}
-	
+
+    @Override
     public Object getConstraint(IFigure child) {
         return child;  // submodules are their own constraints
     }
