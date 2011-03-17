@@ -145,7 +145,7 @@ void ForceDirectedEmbedding::reinitialize() {
  *
  * a1 = a[pn, vn]
  * a2 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a1]
- * a3 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a2]
+ * a3 = a[pn + h / 2 * vn + h * h / 8 * a2, vn + h / 2 * a2]
  * a4 = a[pn + h * vn + h * h / 2 * a3, vn + h * a3]
  *
  * pn+1 = pn + h * vn + h * h / 6 * [a1 + a2 + a3]
@@ -187,7 +187,7 @@ void ForceDirectedEmbedding::embed() {
 
             // a3 = a[pn + h / 2 * vn + h * h / 8 * a1, vn + h / 2 * a2]
             addMultiplied(tpn, pn, updatedTimeStep / 2, vn);
-            incrementWithMultiplied(tpn, updatedTimeStep * updatedTimeStep / 8, a1);
+            incrementWithMultiplied(tpn, updatedTimeStep * updatedTimeStep / 8, a2);
             addMultiplied(tvn, vn, updatedTimeStep / 2, a2);
             a(a3, tpn, tvn);
 
