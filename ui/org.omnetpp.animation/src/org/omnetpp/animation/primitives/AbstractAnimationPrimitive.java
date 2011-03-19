@@ -250,8 +250,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
 	protected CompoundModuleFigure getEnclosingCompoundModuleFigure(int submoduleId) {
 		EventLogModule enclosingModule = getSimulation().getModuleById(submoduleId).getParentModule();
-		CompoundModuleFigure enclosingModuleFigure = getCompoundModuleFigure(enclosingModule);
-		return enclosingModuleFigure;
+		return getCompoundModuleFigure(enclosingModule);
 	}
 
     protected CompoundModuleFigure getEnclosingCompoundModuleFigure(EventLogGate sourceGate) {

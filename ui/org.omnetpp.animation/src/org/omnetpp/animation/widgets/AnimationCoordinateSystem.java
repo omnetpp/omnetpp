@@ -10,7 +10,6 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 // TODO: binary search
-// TODO: shall we reuse the C++ timeline coordinate system used by the sequence chart?
 public class AnimationCoordinateSystem {
     private EventLogInput eventLogInput;
 

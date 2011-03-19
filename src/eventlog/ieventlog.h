@@ -90,6 +90,11 @@ class EVENTLOG_API IEventLog
         virtual FileReader *getFileReader() = 0;
 
         /**
+         * Returns the distance between subsequent keyframes in terms of event numbers.
+         */
+        virtual int getKeyframeBlockSize() = 0;
+
+        /**
          * Returns the number of events parsed so far.
          */
         virtual eventnumber_t getNumParsedEvents() = 0;

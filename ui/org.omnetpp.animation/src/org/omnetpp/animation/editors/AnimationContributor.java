@@ -655,7 +655,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                     int selection = slider.getSelection();
                     AnimationController animationController = animationCanvas.getAnimationController();
                     animationController.stopAnimation();
-                    animationController.gotoAnimationTime(Math.min(selection, animationController.getAnimationEnd().getAnimationTime()));
+                    animationController.gotoEventNumber(selection);
                     AnimationContributor.this.update();
                 }
 
@@ -670,14 +670,14 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         public void update() {
             super.update();
             if (slider != null && !slider.isDisposed())
-                slider.setSelection((int)animationCanvas.getAnimationController().getAnimationTime());
+                slider.setSelection((int)animationCanvas.getAnimationController().getEventNumber());
         }
 
         public void configureSlider() {
             if (slider != null && animationCanvas != null) {
                 AnimationController animationController = animationCanvas.getAnimationController();
                 if (animationController != null)
-                    slider.setValues((int)animationController.getAnimationTime(), 0, (int)Math.ceil(animationController.getAnimationEnd().getAnimationTime()) + 1, 1, 1, 10);
+                    slider.setValues((int)animationController.getEventNumber(), 0, (int)animationController.getAnimationEnd().getEventNumber() + 1, 1, 1, 10);
             }
         }
     }
