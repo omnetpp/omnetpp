@@ -224,8 +224,8 @@ void EventlogFileManager::recordMessages()
         }
         if (eventNumber == 0)
             componentMethodEnd();
-        eventNumber = oldEventNumber;
     }
+    eventNumber = oldEventNumber;
 }
 
 void EventlogFileManager::recordModules(cModule *module)
