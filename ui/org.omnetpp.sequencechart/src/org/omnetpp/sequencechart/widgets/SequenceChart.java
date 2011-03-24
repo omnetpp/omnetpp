@@ -1684,72 +1684,54 @@ public class SequenceChart
     }
 
     /**
-     * Collects the modules which need to have an axis in the currently visible region.
-     * It considers all events and all message dependencies within the viewport.
+     * Collects the modules which may have an axis in the currently visible region.
+     * It checks all events and all message dependencies within the visible region
+     * but ignores whether the module is selected or not. The result may contain
+     * module ids that will not be used in the chart.
      */
-    private Set<Integer> collectModuleIdsForVisibleModules() {
+    private Set<Integer> collectPotentiallyVisibleModuleIds() {
         Set<Integer> axisModuleIds = new HashSet<Integer>();
-
-        // consider visible events
+        // check potentially visible events
         int extraClipping = getExtraClippingForEvents() + 30; // add an extra for the caching canvas tile cache width (clipping may be negative in paint)
         long[] eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
         long startEventPtr = eventPtrRange[0];
         long endEventPtr = eventPtrRange[1];
-
         if (startEventPtr != 0 && endEventPtr != 0) {
             if (debug)
                 Debug.println("Collecting axis modules for events using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-
             for (long eventPtr = startEventPtr;; eventPtr = sequenceChartFacade.IEvent_getNextEvent(eventPtr)) {
                 if (!isInitializationEvent(eventPtr))
                     axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(eventPtr));
-
                 if (eventPtr == endEventPtr)
                     break;
             }
         }
-
-        // consider visible message dependencies
+        // check potentially visible message dependencies
         eventPtrRange = getFirstLastEventPtrForMessageDependencies();
         startEventPtr = eventPtrRange[0];
         endEventPtr = eventPtrRange[1];
-
         if (startEventPtr != 0 && endEventPtr != 0) {
             if (debug)
                 Debug.println("Collecting axis modules for message dependencies using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-
             PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
-
             for (int i = 0; i < messageDependencies.size(); i++) {
                 long messageDependencyPtr = messageDependencies.get(i);
                 long causeEventPtr = sequenceChartFacade.IMessageDependency_getCauseEvent(messageDependencyPtr);
                 long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
-
-                if (causeEventPtr != 0) {
-//                    if (debug)
-//                        Debug.println("Collecting axis module for message dependency cause event: #" + sequenceChartFacade.IEvent_getEventNumber(causeEventPtr));
-
-                    if (isInitializationEvent(causeEventPtr))
-                        axisModuleIds.add(getInitializationEventContextModuleId(messageDependencyPtr));
-                    else
-                        axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(causeEventPtr));
-                }
-
-                if (consequenceEventPtr != 0) {
-//                    if (debug)
-//                        Debug.println("Collecting axis module for message dependency consequence event: #" + sequenceChartFacade.IEvent_getEventNumber(consequenceEventPtr));
-
-                    axisModuleIds.add(sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr));
-                }
+                long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
+                boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
+                axisModuleIds.add(isInitializationEvent(causeEventPtr) ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) :
+                    !isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) :
+                        sequenceChartFacade.IEvent_getModuleId(causeEventPtr));
+                if (consequenceEventPtr != 0)
+                    axisModuleIds.add(isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) : sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr));
             }
         }
-
-        // consider visible module method calls
+        // check potentially visible module method calls
         extraClipping = getExtraClippingForEvents();
         eventPtrRange = getFirstLastEventPtrForViewportRange(-extraClipping, getViewportWidth() + extraClipping);
         startEventPtr = eventPtrRange[0];
         endEventPtr = eventPtrRange[1];
-
         if (startEventPtr != 0 && endEventPtr != 0) {
             if (debug)
                 Debug.println("Collecting axis modules for module method calls using event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " -> " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
@@ -1758,16 +1740,12 @@ public class SequenceChart
 
             for (int i = 0; i < moduleMethodBeginEntries.size(); i++) {
                 long moduleMethodCallPtr = moduleMethodBeginEntries.get(i);
-                int fromModuleId = sequenceChartFacade.ModuleMethodBeginEntry_getFromModuleId(moduleMethodCallPtr);
-                int toModuleId = sequenceChartFacade.ModuleMethodBeginEntry_getToModuleId(moduleMethodCallPtr);
-                axisModuleIds.add(fromModuleId);
-                axisModuleIds.add(toModuleId);
+                axisModuleIds.add(sequenceChartFacade.ModuleMethodBeginEntry_getFromModuleId(moduleMethodCallPtr));
+                axisModuleIds.add(sequenceChartFacade.ModuleMethodBeginEntry_getToModuleId(moduleMethodCallPtr));
             }
         }
-
         if (debug)
-            Debug.println("Module ids that will have axes: " + axisModuleIds);
-
+            Debug.println("Module ids that will potentially have axes: " + axisModuleIds);
         return axisModuleIds;
     }
 
@@ -1789,7 +1767,7 @@ public class SequenceChart
             });
         }
         else {
-            for (int moduleId : collectModuleIdsForVisibleModules()) {
+            for (int moduleId : collectPotentiallyVisibleModuleIds()) {
                 ModuleTreeItem moduleTreeRoot = eventLogInput.getModuleTreeRoot();
                 ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(moduleId);
 
@@ -1803,10 +1781,10 @@ public class SequenceChart
                     ModuleCreatedEntry entry = eventLog.getModuleCreatedEntry(moduleId);
 
                     if (entry != null)
-                        moduleTreeItem = moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
+                        moduleTreeItem = moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getNedTypeName(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
                     else
                         // FIXME: this is not correct and will not be replaced automagically when the ModuleCreatedEntry is found later on
-                        moduleTreeItem = new ModuleTreeItem(moduleId, "<unknown>", "<unknown>", moduleTreeRoot, false);
+                        moduleTreeItem = new ModuleTreeItem(moduleId, "<unknown>", "<unknown>", "<unknown>", moduleTreeRoot, false);
                 }
 
                 // find the selected module axis and add it
@@ -2631,34 +2609,36 @@ public class SequenceChart
 
 	        int fromAxisIndex = getAxisModuleIndexByModuleId(fromModuleId);
             int toAxisIndex = getAxisModuleIndexByModuleId(toModuleId);
-            int fromY = getModuleYViewportCoordinateByModuleIndex(fromAxisIndex);
-            int toY = getModuleYViewportCoordinateByModuleIndex(toAxisIndex);
-            int x = (int)getEventXViewportCoordinate(eventPtr);
+            if (fromAxisIndex != -1 && toAxisIndex != -1) {
+                int fromY = getModuleYViewportCoordinateByModuleIndex(fromAxisIndex);
+                int toY = getModuleYViewportCoordinateByModuleIndex(toAxisIndex);
+                int x = (int)getEventXViewportCoordinate(eventPtr);
 
-            if (graphics != null) {
-                graphics.setForegroundColor(MODULE_METHOD_CALL_COLOR);
-                graphics.setLineDash(DOTTED_LINE_PATTERN);
-                graphics.drawLine(x, fromY, x, toY);
+                if (graphics != null) {
+                    graphics.setForegroundColor(MODULE_METHOD_CALL_COLOR);
+                    graphics.setLineDash(DOTTED_LINE_PATTERN);
+                    graphics.drawLine(x, fromY, x, toY);
 
-                if (showArrowHeads && toY != fromY)
-                    drawArrowHead(graphics, null, x, toY, 0, toY - fromY);
+                    if (showArrowHeads && toY != fromY)
+                        drawArrowHead(graphics, null, x, toY, 0, toY - fromY);
 
-                if (showMessageNames) {
-                    graphics.setFont(getFont());
-                    int dy = Math.abs(fromY - toY);
-                    int fontHeight = getFontHeight(graphics);
-                    int numberOfRows = dy / fontHeight / 2;
+                    if (showMessageNames) {
+                        graphics.setFont(getFont());
+                        int dy = Math.abs(fromY - toY);
+                        int fontHeight = getFontHeight(graphics);
+                        int numberOfRows = dy / fontHeight / 2;
 
-                    if (numberOfRows == 0)
-                        dy = 0;
-                    else
-                        dy = fontHeight * ((sequenceChartFacade.EventLogEntry_getEntryIndex(moduleMethodCallPtr) % numberOfRows) - numberOfRows / 2);
+                        if (numberOfRows == 0)
+                            dy = 0;
+                        else
+                            dy = fontHeight * ((sequenceChartFacade.EventLogEntry_getEntryIndex(moduleMethodCallPtr) % numberOfRows) - numberOfRows / 2);
 
-                    drawText(graphics, sequenceChartFacade.ModuleMethodBeginEntry_getMethod(moduleMethodCallPtr), x + 7, (fromY + toY) / 2 + dy);
+                        drawText(graphics, sequenceChartFacade.ModuleMethodBeginEntry_getMethod(moduleMethodCallPtr), x + 7, (fromY + toY) / 2 + dy);
+                    }
                 }
+                else
+                    return lineContainsPoint(x, fromY, x, toY, fitX, fitY, tolerance);
             }
-            else
-                return lineContainsPoint(x, fromY, x, toY, fitX, fitY, tolerance);
 	    }
 
 	    return false;
@@ -2671,16 +2651,12 @@ public class SequenceChart
 		long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
 		long startEventPtr = eventPtrRange[0];
 		long endEventPtr = eventPtrRange[1];
-
 		if (startEventPtr != 0 && endEventPtr != 0) {
             if (debug)
                 Debug.println("Drawing message dependencies in event range: " + sequenceChartFacade.IEvent_getEventNumber(startEventPtr) + " ->: " + sequenceChartFacade.IEvent_getEventNumber(endEventPtr));
-
 			PtrVector messageDependencies = sequenceChartFacade.getIntersectingMessageDependencies(startEventPtr, endEventPtr);
-
 			if (debug)
 				Debug.println("Drawing " + messageDependencies.size() + " message dependencies");
-
 			VLineBuffer vlineBuffer = new VLineBuffer();
 			for (int i = 0; i < messageDependencies.size(); i++)
 				drawOrFitMessageDependency(messageDependencies.get(i), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
@@ -2733,8 +2709,10 @@ public class SequenceChart
                 if (messageEntryPtr != 0) {
                     int contextModuleId = sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr);
                     int moduleIndex = getAxisModuleIndexByModuleId(contextModuleId);
-                    int y = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
-	                drawEvent(graphics, eventPtr, moduleIndex, x, y);
+                    if (moduleIndex != -1) {
+                        int y = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
+    	                drawEvent(graphics, eventPtr, moduleIndex, x, y);
+                    }
                 }
 	        }
 	    }
@@ -2862,11 +2840,10 @@ public class SequenceChart
 	            long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
 	            long startEventPtr = eventPtrRange[0];
 	            long endEventPtr = eventPtrRange[1];
-
-	            int i = getAxisModuleIndexByModuleId(axisModule.getModuleId());
-
-	            drawAxisLabel(graphics, i, axisModule);
-				drawAxis(graphics, startEventPtr, endEventPtr, i, axisModule);
+	            int moduleIndex = getAxisModuleIndexByModuleId(axisModule.getModuleId());
+	            Assert.isTrue(moduleIndex != -1);
+	            drawAxisLabel(graphics, moduleIndex, axisModule);
+				drawAxis(graphics, startEventPtr, endEventPtr, moduleIndex, axisModule);
 			}
 		}
 	}
@@ -3082,14 +3059,27 @@ public class SequenceChart
         // calculate pixel coordinates for message arrow endings
         // TODO: what about integer overflow in (int) casts? now that we have converted to long
         int invalid = Integer.MAX_VALUE;
-        int x1 = invalid;
-        int x2 = invalid;
-        int y1 = isInitializationEvent(causeEventPtr) ? getInitializationEventYViewportCoordinate(messageDependencyPtr) :
-            !isReuse && beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
-                getEventYViewportCoordinate(causeEventPtr);
-        int y2 = isReuse && beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
-            getEventYViewportCoordinate(consequenceEventPtr);
+        int x1 = invalid, x2 = invalid, y1 = invalid, y2 = invalid;
         int fontHeight = getFontHeight(graphics);
+        if (isInitializationEvent(causeEventPtr))
+            y1 = getInitializationEventYViewportCoordinate(messageDependencyPtr);
+        else if (!isReuse && beginSendEntryPtr != 0) {
+            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr));
+            if (moduleIndex != -1)
+                y1 = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
+        }
+        else
+            y1 = getEventYViewportCoordinate(causeEventPtr);
+        if (isReuse && beginSendEntryPtr != 0) {
+            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr));
+            if (moduleIndex != -1)
+                y2 = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
+        }
+        else
+            y2 = getEventYViewportCoordinate(consequenceEventPtr);
+        // skip if one of the axes is filtered out
+        if (y1 == invalid || y2 == invalid)
+            return false;
         boolean isSelfArrow = y1 == y2;
         // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
@@ -3303,9 +3293,6 @@ public class SequenceChart
 			}
 		}
 		else {
-            if (isReuse ? !showMessageReuses : !showMessageSends)
-                return false;
-
             int y = (y2 + y1) / 2;
 			Color arrowHeadFillColor = null;
 
@@ -3650,9 +3637,12 @@ public class SequenceChart
     }
 
 	private int getAxisModuleIndexByModuleId(int moduleId) {
-	    // NOTE: if you get an NPE here that means the lazy calculation of axis modules is wrong
-	    // by the time we get here the moduleId must be always present in the map
-        return getModuleIdToAxisModuleIndexMap().get(moduleId);
+	    // NOTE: a module may be filtered out even if there's a need to draw something related to it
+        Integer moduleIndex = getModuleIdToAxisModuleIndexMap().get(moduleId);
+        if (moduleIndex == null)
+            return -1;
+        else
+            return moduleIndex;
 	}
 
     private int getModuleYViewportCoordinateByModuleIndex(int index) {
