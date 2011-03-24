@@ -241,7 +241,7 @@ public class EventLogInput extends FileEditorInput
             if (entry != null) {
                 if (entry.getParentModuleId() == -1) {
                     if (moduleTreeRoot == null)
-                        moduleTreeRoot = new ModuleTreeItem(entry.getModuleId(), entry.getFullName(), entry.getModuleClassName(), null, entry.getCompoundModule());
+                        moduleTreeRoot = new ModuleTreeItem(entry.getModuleId(), entry.getFullName(), entry.getNedTypeName(), entry.getModuleClassName(), null, entry.getCompoundModule());
                 }
                 else {
                     ModuleTreeItem moduleTreeItem = moduleTreeRoot.findDescendantModule(entry.getModuleId());
@@ -253,7 +253,7 @@ public class EventLogInput extends FileEditorInput
                     }
 
                     if (moduleTreeItem == null)
-                        moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
+                        moduleTreeRoot.addDescendantModule(entry.getParentModuleId(), entry.getModuleId(), entry.getNedTypeName(), entry.getModuleClassName(), entry.getFullName(), entry.getCompoundModule());
                 }
             }
         }

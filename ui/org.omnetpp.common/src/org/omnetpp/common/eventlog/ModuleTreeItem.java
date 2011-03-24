@@ -26,6 +26,8 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 
 	private String moduleName;
 
+    private String nedTypeName;
+
 	private String moduleClassName;
 
 	private ModuleTreeItem parentModule;
@@ -45,9 +47,10 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	 * @param moduleName cannot be null
 	 * @param parent null is allowed
 	 */
-	public ModuleTreeItem(int moduleId, String moduleName, String moduleClassName, ModuleTreeItem parent, boolean isCompoundModule) {
+	public ModuleTreeItem(int moduleId, String moduleName, String nedTypeName, String moduleClassName, ModuleTreeItem parent, boolean isCompoundModule) {
         setModuleId(moduleId);
 		setModuleName(moduleName);
+		setNedTypeName(nedTypeName);
 		setModuleClassName(moduleClassName);
 		this.isCompoundModule = isCompoundModule;
 		parentModule = parent;
@@ -72,11 +75,11 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	    parentModule = null;
 	}
 
-	public ModuleTreeItem addDescendantModule(int parentModuleId, int moduleId, String moduleClassName, String moduleFullName, boolean isCompoundModule) {
+	public ModuleTreeItem addDescendantModule(int parentModuleId, int moduleId, String nedTypeName, String moduleClassName, String moduleFullName, boolean isCompoundModule) {
 	    Assert.isTrue(findDescendantModule(moduleId) == null);
 	    ModuleTreeItem parentModule = findDescendantModule(parentModuleId);
 	    Assert.isTrue(parentModuleId == -1 || parentModule != null);
-	    ModuleTreeItem module = new ModuleTreeItem(moduleId, moduleFullName, moduleClassName, parentModule, isCompoundModule);
+	    ModuleTreeItem module = new ModuleTreeItem(moduleId, moduleFullName, nedTypeName, moduleClassName, parentModule, isCompoundModule);
 
 	    return module;
 	}
@@ -134,6 +137,14 @@ public class ModuleTreeItem implements Comparable<ModuleTreeItem> {
 	public void setModuleId(int moduleId) {
 		this.moduleId = moduleId;
 	}
+
+	public String getNedTypeName() {
+        return nedTypeName;
+    }
+
+	public void setNedTypeName(String nedTypeName) {
+        this.nedTypeName = nedTypeName;
+    }
 
 	public String getModuleClassName() {
 		return moduleClassName;

@@ -72,11 +72,11 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
 				ModuleTreeItem mod = (ModuleTreeItem)element;
 				String text = mod.getModuleName();
 				text += " -";
-				if (mod.getModuleClassName()!=null)
-					text += " (" + mod.getModuleClassName() + ")";
-				text += " "+mod.getModuleFullPath();
-				if (mod.getModuleId()!=-1)
-					text += " (id=" + mod.getModuleId() + ")";
+				if (mod.getNedTypeName() != null)
+					text += " (" + mod.getNedTypeName() + ")";
+				text += " " + mod.getModuleFullPath();
+				if (mod.getModuleId() != -1)
+					text += " (id = " + mod.getModuleId() + ")";
 				return text;
 			}
 
@@ -85,8 +85,8 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         setInput(root);
         expandAll();
 
-        if (root != null && ((ModuleTreeItem)root).getSubmodules().length > 0)
-        	reveal(((ModuleTreeItem)root).getSubmodules()[0]); // scroll to top
+        if (root != null && (root).getSubmodules().length > 0)
+        	reveal((root).getSubmodules()[0]); // scroll to top
 
         Control control = getControl();
         Menu menu = new Menu(control);
@@ -95,6 +95,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Check Children");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setChildrenChecked((ModuleTreeItem)element, true);
@@ -106,6 +107,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Check Leaves");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setLeafChecked((ModuleTreeItem)element, true);
@@ -117,6 +119,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Check Subtree");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setSubtreeChecked(element, true);
@@ -130,6 +133,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Uncheck Children");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setChildrenChecked((ModuleTreeItem)element, false);
@@ -141,6 +145,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Uncheck Leaves");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setLeafChecked((ModuleTreeItem)element, false);
@@ -152,6 +157,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Uncheck Subtree");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget()) {
                     setSubtreeChecked(element, false);
@@ -165,6 +171,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Collapse Subtree");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget())
                     collapseToLevel(element, ALL_LEVELS);
@@ -174,6 +181,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         menuItem = new MenuItem(menu, SWT.NONE);
         menuItem.setText("Expand Subtree");
         menuItem.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 for (Object element : getSelectionFromWidget())
                     expandToLevel(element, ALL_LEVELS);
