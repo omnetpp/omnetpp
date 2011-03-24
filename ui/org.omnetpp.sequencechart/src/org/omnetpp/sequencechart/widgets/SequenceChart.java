@@ -206,9 +206,11 @@ public class SequenceChart
 	private boolean showArrowHeads = true; // show or hide arrow heads
 	private boolean showMessageNames = true; // show or hide message names
     private boolean showMessageSends = true; // show or hide message send arrows
-    private boolean showMessageReuses = false; // show or hide message reuse arrows
     private boolean showSelfMessageSends = true; // show or hide self message send arrows
+    private boolean showMessageReuses = false; // show or hide message reuse arrows
     private boolean showSelfMessageReuses = false; // show or hide self message reuse arrows
+    private boolean showMixedMessageDependencies = true; // show or hide mixed message dependency arrows
+    private boolean showMixedSelfMessageDependencies = true; // show or hide mixed self message dependency arrows
     private boolean showModuleMethodCalls = false; // show or hide module method call arrows
 	private boolean showEventNumbers = true;
     private boolean showZeroSimulationTimeRegions = true;
@@ -508,21 +510,6 @@ public class SequenceChart
     }
 
     /**
-     * Returns whether reuse messages are shown on the chart.
-     */
-    public boolean getShowMessageReuses() {
-        return showMessageReuses;
-    }
-
-    /**
-     * Shows/Hides reuse messages.
-     */
-    public void setShowMessageReuses(boolean showMessageReuses) {
-        this.showMessageReuses = showMessageReuses;
-        clearCanvasCacheAndRedraw();
-    }
-
-    /**
      * Returns whether self messages are shown on the chart.
      */
     public boolean getShowSelfMessageSends() {
@@ -540,6 +527,21 @@ public class SequenceChart
     /**
      * Returns whether reuse messages are shown on the chart.
      */
+    public boolean getShowMessageReuses() {
+        return showMessageReuses;
+    }
+
+    /**
+     * Shows/Hides reuse messages.
+     */
+    public void setShowMessageReuses(boolean showMessageReuses) {
+        this.showMessageReuses = showMessageReuses;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
+     * Returns whether reuse messages are shown on the chart.
+     */
     public boolean getShowSelfMessageReuses() {
         return showSelfMessageReuses;
     }
@@ -549,6 +551,36 @@ public class SequenceChart
      */
     public void setShowSelfMessageReuses(boolean showSelfMessageReuses) {
         this.showSelfMessageReuses = showSelfMessageReuses;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
+     * Returns whether mixed messages dependencies are shown on the chart.
+     */
+    public boolean getShowMixedMessageDependencies() {
+        return showMixedMessageDependencies;
+    }
+
+    /**
+     * Shows/Hides mixed messages dependencies.
+     */
+    public void setShowMixedMessageDependencies(boolean showMessageDependencies) {
+        this.showMixedMessageDependencies = showMessageDependencies;
+        clearCanvasCacheAndRedraw();
+    }
+
+    /**
+     * Returns whether mixed self messages dependencies are shown on the chart.
+     */
+    public boolean getShowMixedSelfMessageDependencies() {
+        return showMixedSelfMessageDependencies;
+    }
+
+    /**
+     * Shows/Hides dependenci messages.
+     */
+    public void setShowMixedSelfMessageDependencies(boolean showMixedSelfMessageDependencies) {
+        this.showMixedSelfMessageDependencies = showMixedSelfMessageDependencies;
         clearCanvasCacheAndRedraw();
     }
 
@@ -1309,12 +1341,16 @@ public class SequenceChart
 						setShowEventNumbers(sequenceChartState.showEventNumbers);
                     if (sequenceChartState.showMessageSends != null)
                         setShowMessageSends(sequenceChartState.showMessageSends);
+                    if (sequenceChartState.showSelfMessageSends != null)
+                        setShowSelfMessageSends(sequenceChartState.showSelfMessageSends);
 					if (sequenceChartState.showMessageReuses != null)
 						setShowMessageReuses(sequenceChartState.showMessageReuses);
-					if (sequenceChartState.showSelfMessageSends != null)
-                        setShowSelfMessageSends(sequenceChartState.showSelfMessageSends);
 					if (sequenceChartState.showSelfMessageReuses != null)
                         setShowSelfMessageReuses(sequenceChartState.showSelfMessageReuses);
+                    if (sequenceChartState.showMixedMessageDependencies != null)
+                        setShowMixedMessageDependencies(sequenceChartState.showMixedMessageDependencies);
+                    if (sequenceChartState.showMixedSelfMessageDependencies != null)
+                        setShowMixedMessageDependencies(sequenceChartState.showMixedSelfMessageDependencies);
                     if (sequenceChartState.showModuleMethodCalls != null)
                         setShowModuleMethodCalls(sequenceChartState.showModuleMethodCalls);
 					if (sequenceChartState.showArrowHeads != null)
@@ -1400,9 +1436,11 @@ public class SequenceChart
                 sequenceChartState.showMessageNames = getShowMessageNames();
                 sequenceChartState.showEventNumbers = getShowEventNumbers();
                 sequenceChartState.showMessageSends = getShowMessageSends();
-                sequenceChartState.showMessageReuses = getShowMessageReuses();
                 sequenceChartState.showSelfMessageSends = getShowSelfMessageSends();
+                sequenceChartState.showMessageReuses = getShowMessageReuses();
                 sequenceChartState.showSelfMessageReuses = getShowSelfMessageReuses();
+                sequenceChartState.showMixedMessageDependencies = getShowMixedMessageDependencies();
+                sequenceChartState.showMixedSelfMessageDependencies = getShowMixedSelfMessageDependencies();
                 sequenceChartState.showModuleMethodCalls = getShowModuleMethodCalls();
                 sequenceChartState.showArrowHeads = getShowArrowHeads();
                 sequenceChartState.showZeroSimulationTimeRegions = getShowZeroSimulationTimeRegions();
@@ -2808,9 +2846,7 @@ public class SequenceChart
 			long[] eventPtrRange = getFirstLastEventPtrForMessageDependencies();
 			long startEventPtr = eventPtrRange[0];
 			long endEventPtr = eventPtrRange[1];
-
 			VLineBuffer vlineBuffer = new VLineBuffer();
-
 			for (IMessageDependency messageDependency : messageDependencies)
 				drawOrFitMessageDependency(messageDependency.getCPtr(), -1, -1, -1, graphics, vlineBuffer, startEventPtr, endEventPtr);
 		}
@@ -3054,7 +3090,7 @@ public class SequenceChart
         int y2 = isReuse && beginSendEntryPtr != 0 ? getModuleYViewportCoordinateByModuleIndex(getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr))) :
             getEventYViewportCoordinate(consequenceEventPtr);
         int fontHeight = getFontHeight(graphics);
-
+        boolean isSelfArrow = y1 == y2;
         // calculate horizontal coordinates based on timeline coordinate limit
         double timelineCoordinateLimit = getMaximumMessageDependencyDisplayWidth() / getPixelPerTimelineUnit();
         if (consequenceEventNumber < startEventNumber || endEventNumber < consequenceEventNumber) {
@@ -3096,48 +3132,60 @@ public class SequenceChart
                     x1 = invalid;
             }
         }
-
         // at least one of the events must be in range or we don't draw anything
         if (x1 == invalid && x2 == invalid)
             return false;
-
 		// line color and style depends on message kind
-		if (graphics != null) {
-		    if (isFilteredMessageDependency) {
-		        switch (filteredMessageDependencyKind) {
-                    case FilteredMessageDependency.Kind.SENDS:
+	    if (isFilteredMessageDependency) {
+	        switch (filteredMessageDependencyKind) {
+                case FilteredMessageDependency.Kind.SENDS:
+                    if ((isSelfArrow && !showSelfMessageSends) || (!isSelfArrow && !showMessageSends))
+                        return false;
+                    if (graphics != null) {
                         graphics.setForegroundColor(MESSAGE_SEND_COLOR);
                         graphics.setLineStyle(SWT.LINE_SOLID);
-                        break;
-                    case FilteredMessageDependency.Kind.REUSES:
+                    }
+                    break;
+                case FilteredMessageDependency.Kind.REUSES:
+                    if ((isSelfArrow && !showSelfMessageReuses) || (!isSelfArrow && !showMessageReuses))
+                        return false;
+                    if (graphics != null) {
                         graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
                         graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
-                        break;
-		            case FilteredMessageDependency.Kind.MIXED:
+                    }
+                    break;
+	            case FilteredMessageDependency.Kind.MIXED:
+	                if ((isSelfArrow && !showMixedSelfMessageDependencies) || (!isSelfArrow && !showMixedMessageDependencies))
+	                    return false;
+	                if (graphics != null) {
                         graphics.setForegroundColor(MIXED_MESSAGE_DEPENDENCY_COLOR);
                         graphics.setLineDash(DASHED_LINE_PATTERN);
-		                break;
-	                default:
-	                    throw new RuntimeException("Unknown kind");
-		        }
-		    }
-		    else {
-                if (isReuse) {
+	                }
+	                break;
+                default:
+                    throw new RuntimeException("Unknown kind");
+	        }
+	    }
+	    else {
+            if (isReuse) {
+                if ((isSelfArrow && !showSelfMessageReuses) || (!isSelfArrow && !showMessageReuses))
+                    return false;
+                if (graphics != null) {
                     graphics.setForegroundColor(MESSAGE_REUSE_COLOR);
                     graphics.setLineDash(DOTTED_LINE_PATTERN); // SWT.LINE_DOT style is not what we want
                 }
-                else {
+            }
+            else {
+                if ((isSelfArrow && !showSelfMessageSends) || (!isSelfArrow && !showMessageSends))
+                    return false;
+                if (graphics != null) {
                     graphics.setForegroundColor(MESSAGE_SEND_COLOR);
                     graphics.setLineStyle(SWT.LINE_SOLID);
                 }
-		    }
-		}
-
-		// test if self-message
-        if (y1 == y2) {
-            if (isReuse ? !showSelfMessageReuses : !showSelfMessageSends)
-                return false;
-
+            }
+	    }
+	    // and finally the actual drawing
+        if (isSelfArrow) {
 		    long eventNumberDelta = messageId + consequenceEventNumber - causeEventNumber;
 			int numberOfPossibleEllipseHeights = Math.max(1, (int)Math.round((getAxisSpacing() - fontHeight) / (fontHeight + 10)));
 			int halfEllipseHeight = (int)Math.max(getAxisSpacing() * (eventNumberDelta % numberOfPossibleEllipseHeights + 1) / (numberOfPossibleEllipseHeights + 1), MINIMUM_HALF_ELLIPSE_HEIGHT);
@@ -4406,10 +4454,6 @@ public class SequenceChart
 
 				        		for (int i = 0; i < messageDependencies.size(); i++) {
 				        			long messageDependencyPtr = messageDependencies.get(i);
-
-				        			// TODO: cast ptr_t as (ptr_t)(unsigned int)
-				        			// TODO: PtrVector should return Java long
-
 				        			if (drawOrFitMessageDependency(messageDependencyPtr, mouseX, mouseY - getGutterHeight(null), MOUSE_TOLERANCE, null, null, startEventPtr, endEventPtr))
 				            			msgs.add(sequenceChartFacade.IMessageDependency_getMessageDependency(messageDependencyPtr));
 				        		}
@@ -4791,9 +4835,11 @@ class SequenceChartState implements Serializable {
 	public Boolean showEventNumbers;
 	public Boolean showMessageNames;
 	public Boolean showMessageSends;
-    public Boolean showMessageReuses;
     public Boolean showSelfMessageSends;
+    public Boolean showMessageReuses;
     public Boolean showSelfMessageReuses;
+    public Boolean showMixedMessageDependencies;
+    public Boolean showMixedSelfMessageDependencies;
     public Boolean showModuleMethodCalls;
     public Boolean showArrowHeads;
     public Boolean showZeroSimulationTimeRegions;

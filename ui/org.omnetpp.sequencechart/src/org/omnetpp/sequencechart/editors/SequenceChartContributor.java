@@ -142,11 +142,13 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
     public final static String IMAGE_SHOW_EVENT_NUMBERS = TOOL_IMAGE_DIR + "eventnumbers.png";
-    public final static String IMAGE_SHOW_SELF_MESSAGES = TOOL_IMAGE_DIR + "selfmessages.png";
-    public final static String IMAGE_SHOW_MESSAGE_SENDS = TOOL_IMAGE_DIR + "messagesends.png";
     public final static String IMAGE_SHOW_MESSAGE_NAMES = TOOL_IMAGE_DIR + "messagenames.png";
-    public final static String IMAGE_SHOW_REUSE_SELF_MESSAGES = TOOL_IMAGE_DIR + "selfmsgreusearrows.png";
-    public final static String IMAGE_SHOW_REUSE_MESSAGES = TOOL_IMAGE_DIR + "reusearrows.png";
+    public final static String IMAGE_SHOW_MESSAGE_SENDS = TOOL_IMAGE_DIR + "messagesends.png";
+    public final static String IMAGE_SHOW_SELF_MESSAGE_SENDS = TOOL_IMAGE_DIR + "selfmessagesends.png";
+    public final static String IMAGE_SHOW_MESSAGE_REUSES = TOOL_IMAGE_DIR + "messagereuses.png";
+    public final static String IMAGE_SHOW_SELF_MESSAGES_REUSES = TOOL_IMAGE_DIR + "selfmessagereuses.png";
+    public final static String IMAGE_SHOW_MIXED_MESSAGE_DEPENDENCIES = TOOL_IMAGE_DIR + "mixedmessagedependencies.png";
+    public final static String IMAGE_SHOW_MIXED_SELF_MESSAGES_DEPENDENCIES = TOOL_IMAGE_DIR + "mixedselfmessagedependencies.png";
     public final static String IMAGE_SHOW_MODULE_METHOD_CALLS = TOOL_IMAGE_DIR + "modulemethodcall.png";
     public final static String IMAGE_SHOW_TRANSMISSION_DURATIONS = TOOL_IMAGE_DIR + "transmissiondurations.png";
     public final static String IMAGE_SHOW_ARROW_HEADS = TOOL_IMAGE_DIR + "arrowhead.png";
@@ -168,9 +170,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	private SequenceChartAction showEventNumbersAction;
 	private SequenceChartAction showMessageNamesAction;
     private SequenceChartAction showMessageSendsAction;
-    private SequenceChartAction showMessageReusesAction;
     private SequenceChartAction showSelfMessageSendsAction;
+    private SequenceChartAction showMessageReusesAction;
     private SequenceChartAction showSelfMessageReusesAction;
+    private SequenceChartAction showMixedMessageDependenciesAction;
+    private SequenceChartAction showMixedSelfMessageDependenciesAction;
 	private SequenceChartAction showArrowHeadsAction;
     private SequenceChartAction showZeroSimulationTimeRegionsAction;
     private SequenceChartAction showAxisLabelsAction;
@@ -207,9 +211,11 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		this.showEventNumbersAction = createShowEventNumbersAction();
 		this.showMessageNamesAction = createShowMessageNamesAction();
 		this.showMessageSendsAction = createShowMessageSendsAction();
-        this.showMessageReusesAction = createShowMessageReusesAction();
         this.showSelfMessageSendsAction = createShowSelfMessageSendsAction();
+        this.showMessageReusesAction = createShowMessageReusesAction();
 		this.showSelfMessageReusesAction = createShowSelfMessageReusesAction();
+        this.showMixedMessageDependenciesAction = createShowMessageDependenciesAction();
+        this.showMixedSelfMessageDependenciesAction = createShowSelfMessageDependenciesAction();
 		this.showArrowHeadsAction = createShowArrowHeadsAction();
         this.showZeroSimulationTimeRegionsAction = createShowZeroSimulationTimeRegionsAction();
         this.showAxisLabelsAction = createShowAxisLabelsAction();
@@ -332,6 +338,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
                 showHideSubmenu.add(showSelfMessageSendsAction);
                 showHideSubmenu.add(showMessageReusesAction);
                 showHideSubmenu.add(showSelfMessageReusesAction);
+                showHideSubmenu.add(showMixedMessageDependenciesAction);
+                showHideSubmenu.add(showMixedSelfMessageDependenciesAction);
                 showHideSubmenu.add(showModuleMethodCallsAction);
                 showHideSubmenu.add(separatorAction);
                 showHideSubmenu.add(showAxesWithoutEventsAction);
@@ -417,6 +425,8 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         toolBarManager.add(showSelfMessageSendsAction);
         toolBarManager.add(showMessageReusesAction);
         toolBarManager.add(showSelfMessageReusesAction);
+        toolBarManager.add(showMixedMessageDependenciesAction);
+        toolBarManager.add(showMixedSelfMessageDependenciesAction);
         toolBarManager.add(showModuleMethodCallsAction);
 		toolBarManager.add(separatorAction);
 		toolBarManager.add(increaseSpacingAction);
@@ -838,7 +848,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
 	private SequenceChartAction createShowSelfMessageSendsAction() {
-		return new SequenceChartAction("Show Self-Messages", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_SELF_MESSAGES)) {
+		return new SequenceChartAction("Show Self-Message Sends", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_SELF_MESSAGE_SENDS)) {
 			@Override
 			protected void doRun() {
 				sequenceChart.setShowSelfMessageSends(!sequenceChart.getShowSelfMessageSends());
@@ -853,7 +863,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	}
 
     private SequenceChartAction createShowMessageReusesAction() {
-        return new SequenceChartAction("Show Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_MESSAGES)) {
+        return new SequenceChartAction("Show Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MESSAGE_REUSES)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowMessageReuses(!sequenceChart.getShowMessageReuses());
@@ -868,7 +878,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
     }
 
     private SequenceChartAction createShowSelfMessageReusesAction() {
-        return new SequenceChartAction("Show Self-Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_REUSE_SELF_MESSAGES)) {
+        return new SequenceChartAction("Show Self-Message Reuses", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_SELF_MESSAGES_REUSES)) {
             @Override
             protected void doRun() {
                 sequenceChart.setShowSelfMessageReuses(!sequenceChart.getShowSelfMessageReuses());
@@ -882,7 +892,37 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
         };
     }
 
-	private SequenceChartAction createShowArrowHeadsAction() {
+    private SequenceChartAction createShowMessageDependenciesAction() {
+        return new SequenceChartAction("Show Message Dependencies", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MIXED_MESSAGE_DEPENDENCIES)) {
+            @Override
+            protected void doRun() {
+                sequenceChart.setShowMixedMessageDependencies(!sequenceChart.getShowMixedMessageDependencies());
+                update();
+            }
+
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowMixedMessageDependencies());
+            }
+        };
+    }
+
+    private SequenceChartAction createShowSelfMessageDependenciesAction() {
+        return new SequenceChartAction("Show Self-Message Dependencies", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_MIXED_SELF_MESSAGES_DEPENDENCIES)) {
+            @Override
+            protected void doRun() {
+                sequenceChart.setShowMixedSelfMessageDependencies(!sequenceChart.getShowMixedSelfMessageDependencies());
+                update();
+            }
+
+            @Override
+            public void update() {
+                setChecked(sequenceChart.getShowMixedSelfMessageDependencies());
+            }
+        };
+    }
+
+    private SequenceChartAction createShowArrowHeadsAction() {
 		return new SequenceChartAction("Show Arrowheads", Action.AS_CHECK_BOX, SequenceChartPlugin.getImageDescriptor(IMAGE_SHOW_ARROW_HEADS)) {
 			@Override
 			protected void doRun() {
