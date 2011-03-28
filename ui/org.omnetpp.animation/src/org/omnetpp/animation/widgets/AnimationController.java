@@ -224,8 +224,8 @@ public class AnimationController {
                 else if (sameSimulationTime && eventNumber1 >= eventNumber && eventNumber2 >= eventNumber && eventNumber1 != eventNumber2)
                     return (int)Math.signum(eventNumber1 - eventNumber2);
                 else {
-                    double relativeAnimationTime1 = animationPosition1.getRelativeAnimationTime();
-                    double relativeAnimationTime2 = animationPosition2.getRelativeAnimationTime();
+                    double relativeAnimationTime1 = animationPosition1.getFrameRelativeAnimationTime();
+                    double relativeAnimationTime2 = animationPosition2.getFrameRelativeAnimationTime();
                     return (int)Math.signum(relativeAnimationTime1 - relativeAnimationTime2);
                 }
             }
@@ -418,7 +418,7 @@ public class AnimationController {
 	 * Returns the first valid animation position.
 	 */
 	public AnimationPosition getAnimationBegin() {
-        if (!beginAnimationPosition.isValid()) {
+        if (!beginAnimationPosition.isCompletelySpecified()) {
             long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
             beginAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
         }
@@ -426,11 +426,15 @@ public class AnimationController {
         return beginAnimationPosition;
 	}
 
+	public AnimationPosition getInitialAnimationPosition() {
+	    return null;
+	}
+
     /**
      * Returns the last valid animation position.
      */
     public AnimationPosition getAnimationEnd() {
-        if (!endAnimationPosition.isValid()) {
+        if (!endAnimationPosition.isCompletelySpecified()) {
             long lastEventNumber = eventLogInput.getEventLog().getLastEvent().getEventNumber();
             endAnimationPosition = getAnimationPositionForEventNumber(lastEventNumber);
         }
@@ -511,7 +515,7 @@ public class AnimationController {
 	 * Returns the current animation time.
 	 */
 	public double getAnimationTime() {
-		return currentAnimationPosition.getAnimationTime();
+		return currentAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
 	/**
@@ -559,7 +563,7 @@ public class AnimationController {
 	 * Returns the animation time for the given real time.
 	 */
 	private double getAnimationTimeForRealTime(double realTime) {
-		return lastStartAnimationPosition.getAnimationTime() + (isPlayingForward ? 1 : -1) * (realTime - lastStartRealTime) * realTimeToAnimationTimeScale;
+		return lastStartAnimationPosition.getOriginRelativeAnimationTime() + (isPlayingForward ? 1 : -1) * (realTime - lastStartRealTime) * realTimeToAnimationTimeScale;
 	}
 
 	/**
@@ -603,16 +607,16 @@ public class AnimationController {
         AnimationPosition stopAnimationPosition = getAnimationBegin();
         int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
             public double getValue(int index) {
-                return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getAnimationTime();
+                return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
             }
-        }, endAnimationTimeOrderedPrimitives.size(), currentAnimationPosition.getAnimationTime(), false);
+        }, endAnimationTimeOrderedPrimitives.size(), currentAnimationPosition.getOriginRelativeAnimationTime(), false);
         // find last inactive animation primitive that ends in the past
         if (endOrderedIndex == endAnimationTimeOrderedPrimitives.size())
             endOrderedIndex--;
         while (endOrderedIndex >= 0) {
             AnimationPosition endAnimationPosition = endAnimationTimeOrderedPrimitives.get(endOrderedIndex).getEndAnimationPosition();
             endOrderedIndex--;
-            if (currentAnimationPosition.getAnimationTime() > endAnimationPosition.getAnimationTime()) {
+            if (currentAnimationPosition.getOriginRelativeAnimationTime() > endAnimationPosition.getOriginRelativeAnimationTime()) {
                 stopAnimationPosition = endAnimationPosition;
                 break;
             }
@@ -620,7 +624,7 @@ public class AnimationController {
         // find last active animation primitive that starts in the past
         for (IAnimationPrimitive animationPrimitive : activeAnimationPrimitives) {
             AnimationPosition beginAnimationPosition = animationPrimitive.getBeginAnimationPosition();
-            if (currentAnimationPosition.getAnimationTime() > beginAnimationPosition.getAnimationTime() && beginAnimationPosition.getAnimationTime() > stopAnimationPosition.getAnimationTime())
+            if (currentAnimationPosition.getOriginRelativeAnimationTime() > beginAnimationPosition.getOriginRelativeAnimationTime() && beginAnimationPosition.getOriginRelativeAnimationTime() > stopAnimationPosition.getOriginRelativeAnimationTime())
                 stopAnimationPosition = beginAnimationPosition;
         }
         startAnimationInternal(false, stopAnimationPosition);
@@ -650,14 +654,14 @@ public class AnimationController {
         AnimationPosition stopAnimationPosition = getAnimationEnd();
         int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
             public double getValue(int index) {
-                return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getAnimationTime();
+                return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
             }
-        }, beginAnimationTimeOrderedPrimitives.size(), currentAnimationPosition.getAnimationTime(), true);
+        }, beginAnimationTimeOrderedPrimitives.size(), currentAnimationPosition.getOriginRelativeAnimationTime(), true);
         // find first incactive animation primitive that starts in the future
         while (beginOrderedIndex < beginAnimationTimeOrderedPrimitives.size()) {
             AnimationPosition beginAnimationPosition = beginAnimationTimeOrderedPrimitives.get(beginOrderedIndex).getBeginAnimationPosition();
             beginOrderedIndex++;
-            if (currentAnimationPosition.getAnimationTime() < beginAnimationPosition.getAnimationTime()) {
+            if (currentAnimationPosition.getOriginRelativeAnimationTime() < beginAnimationPosition.getOriginRelativeAnimationTime()) {
                 stopAnimationPosition = beginAnimationPosition;
                 break;
             }
@@ -665,7 +669,7 @@ public class AnimationController {
         // find first active animation primitive that ends in the future
 	    for (IAnimationPrimitive animationPrimitive : activeAnimationPrimitives) {
 	        AnimationPosition endAnimationPosition = animationPrimitive.getEndAnimationPosition();
-            if (currentAnimationPosition.getAnimationTime() < endAnimationPosition.getAnimationTime() && endAnimationPosition.getAnimationTime() < stopAnimationPosition.getAnimationTime())
+            if (currentAnimationPosition.getOriginRelativeAnimationTime() < endAnimationPosition.getOriginRelativeAnimationTime() && endAnimationPosition.getOriginRelativeAnimationTime() < stopAnimationPosition.getOriginRelativeAnimationTime())
 	            stopAnimationPosition = endAnimationPosition;
 	    }
 	    startAnimationInternal(true, stopAnimationPosition);
@@ -778,17 +782,17 @@ public class AnimationController {
 			try {
 			    double animationTime = getAnimationTimeForRealTime(getRealTime());
 		        // first check for stop at end
-		        if (isPlayingForward && getAnimationEnd().isValid() && endAnimationPosition.getAnimationTime() <= animationTime) {
+		        if (isPlayingForward && getAnimationEnd().isCompletelySpecified() && endAnimationPosition.getOriginRelativeAnimationTime() <= animationTime) {
 		            setAnimationPosition(endAnimationPosition);
 		            stopAnimationInternal();
 		        }
 		        // stop at begin
-		        else if (!isPlayingForward && getAnimationBegin().isValid() && animationTime <= beginAnimationPosition.getAnimationTime()) {
+		        else if (!isPlayingForward && getAnimationBegin().isCompletelySpecified() && animationTime <= beginAnimationPosition.getOriginRelativeAnimationTime()) {
 		            setAnimationPosition(beginAnimationPosition);
 		            stopAnimationInternal();
 		        }
 		        // stop at requested stop position
-		        else if (stopAnimationPosition.isValid() && (isPlayingForward ? stopAnimationPosition.getAnimationTime() <= animationTime : stopAnimationPosition.getAnimationTime() >= animationTime)) {
+		        else if (stopAnimationPosition.isCompletelySpecified() && (isPlayingForward ? stopAnimationPosition.getOriginRelativeAnimationTime() <= animationTime : stopAnimationPosition.getOriginRelativeAnimationTime() >= animationTime)) {
 		            setAnimationPosition(stopAnimationPosition);
 		            stopAnimationInternal();
 		        }
@@ -813,11 +817,11 @@ public class AnimationController {
 		setRunning(true);
 
 		// start from beginning if no position
-		if (!currentAnimationPosition.isValid())
+		if (!currentAnimationPosition.isCompletelySpecified())
 			setAnimationPosition(getAnimationBegin());
 
-		if ((forward && (!endAnimationPosition.isValid() || currentAnimationPosition.compareTo(endAnimationPosition) < 0)) ||
-			(!forward && (!beginAnimationPosition.isValid() || currentAnimationPosition.compareTo(beginAnimationPosition) > 0)))
+		if ((forward && (!endAnimationPosition.isCompletelySpecified() || currentAnimationPosition.compareTo(endAnimationPosition) < 0)) ||
+			(!forward && (!beginAnimationPosition.isCompletelySpecified() || currentAnimationPosition.compareTo(beginAnimationPosition) > 0)))
 		{
 			timerQueue.resetTimer(animationTimer);
 			lastStartRealTime = getRealTime();
@@ -848,15 +852,15 @@ public class AnimationController {
 	 * and call (de)activate in order.
 	 */
 	private void updateAnimationModel() {
-	    BigDecimal oldSimulationTime = modelAnimationPosition.isValid() ? modelAnimationPosition.getSimulationTime() : BigDecimal.getZero();
-		double oldAnimationTime = modelAnimationPosition.isValid() ? modelAnimationPosition.getAnimationTime() : 0;
+	    BigDecimal oldSimulationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getSimulationTime() : BigDecimal.getZero();
+		double oldAnimationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getOriginRelativeAnimationTime() : 0;
 		BigDecimal newSimulationTime = currentAnimationPosition.getSimulationTime();
-		double newAnimationTime = currentAnimationPosition.getAnimationTime();
+		double newAnimationTime = currentAnimationPosition.getOriginRelativeAnimationTime();
 		boolean forward = newAnimationTime >= oldAnimationTime;
 
 		int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 		        public double getValue(int index) {
-		            return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getAnimationTime();
+		            return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
 		        }
 		    }, beginAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward ? true : false);
 
@@ -864,7 +868,7 @@ public class AnimationController {
 			sortEndOrderedAnimationPrimitivesFragment(oldSimulationTime, newSimulationTime);
 		int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			    public double getValue(int index) {
-			        return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getAnimationTime();
+			        return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
 		        }
 		    }, endAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward ? true : false);
 
@@ -885,8 +889,8 @@ public class AnimationController {
 			IAnimationPrimitive beginOrderedAnimationPrimitive = beginOrderedIndexValid ? beginAnimationTimeOrderedPrimitives.get(beginOrderedIndex) : null;
 			IAnimationPrimitive endOrderedAnimationPrimitive = endOrderedIndexValid ? endAnimationTimeOrderedPrimitives.get(endOrderedIndex) : null;
 
-			double beginAnimationTime = beginOrderedIndexValid ? beginOrderedAnimationPrimitive.getBeginAnimationPosition().getAnimationTime() : -1;
-			double endAnimationTime = endOrderedIndexValid ? endOrderedAnimationPrimitive.getEndAnimationPosition().getAnimationTime() : -1;
+			double beginAnimationTime = beginOrderedIndexValid ? beginOrderedAnimationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() : -1;
+			double endAnimationTime = endOrderedIndexValid ? endOrderedAnimationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime() : -1;
 
 			// check correct ordering
 			if (debug) {
@@ -999,8 +1003,8 @@ public class AnimationController {
 			// sort based on end animation time
 			Arrays.sort(endOrderedAnimationPrimitivesFragment, new Comparator<IAnimationPrimitive>() {
 				public int compare(IAnimationPrimitive p1, IAnimationPrimitive p2) {
-					double time1 = p1.getEndAnimationPosition().getAnimationTime();
-					double time2 = p2.getEndAnimationPosition().getAnimationTime();
+					double time1 = p1.getEndAnimationPosition().getOriginRelativeAnimationTime();
+					double time2 = p2.getEndAnimationPosition().getOriginRelativeAnimationTime();
 
 					if (time1 == time2)
 						return 0;
@@ -1107,9 +1111,9 @@ public class AnimationController {
 		// keeps list ordered by begin animation time
 		int index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			    public double getValue(int index) {
-			        return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getAnimationTime();
+			        return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
 			    }
-		    }, beginAnimationTimeOrderedPrimitives.size(), animationPrimitive.getBeginAnimationPosition().getAnimationTime(), false);
+		    }, beginAnimationTimeOrderedPrimitives.size(), animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime(), false);
 		beginAnimationTimeOrderedPrimitives.add(index, animationPrimitive);
 		// keeps list ordered by end simulation time
 		// later it will be sorted in small fragments by end animation time on demand
@@ -1170,9 +1174,9 @@ public class AnimationController {
             System.out.println("*** ANIMATION PRIMITIVES AFTER ASSIGNING ANIMATION TIMES ***");
         for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
             Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getSimulationTime() != null);
-            Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getAnimationTime() != -1);
+            Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() != -1);
             Assert.isTrue(animationPrimitive.getEndAnimationPosition().getSimulationTime() != null);
-            Assert.isTrue(animationPrimitive.getEndAnimationPosition().getAnimationTime() != -1);
+            Assert.isTrue(animationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime() != -1);
             // TODO: should not need to set the animation time duration
             if (animationPrimitive.getAnimationTimeDuration() == -1) {
                 AbstractAnimationPrimitive abstractAnimationPrimitive = (AbstractAnimationPrimitive)animationPrimitive;
@@ -1234,7 +1238,7 @@ public class AnimationController {
             if (previousAnimationPosition != null) {
                 BigDecimal simulationTimeDelta = animationPosition.getSimulationTime().subtract(previousAnimationPosition.getSimulationTime());
                 if (simulationTimeDelta.equals(BigDecimal.getZero())) {
-                    double animationTimeDelta = animationPosition.getRelativeAnimationTime() - previousAnimationPosition.getRelativeAnimationTime();
+                    double animationTimeDelta = animationPosition.getFrameRelativeAnimationTime() - previousAnimationPosition.getFrameRelativeAnimationTime();
                     if (animationTimeDelta > 0)
                         animationTime += animationTimeDelta;
                 }
@@ -1242,7 +1246,7 @@ public class AnimationController {
                     animationTime += coordinateSystem.getAnimationTimeDelta(simulationTimeDelta.doubleValue());
             }
             Assert.isTrue(!Double.isNaN(animationTime));
-            animationPosition.setAnimationTime(animationTime);
+            animationPosition.setOriginRelativeAnimationTime(animationTime);
             previousAnimationPosition = animationPosition;
         }
     }
@@ -1251,8 +1255,8 @@ public class AnimationController {
         beginAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>(animationPrimitives);
         Collections.sort(beginAnimationTimeOrderedPrimitives, new Comparator<IAnimationPrimitive>() {
             public int compare(IAnimationPrimitive animationPrimitive1, IAnimationPrimitive animationPrimitive2) {
-                double animationTime1 = animationPrimitive1.getBeginAnimationPosition().getAnimationTime();
-                double animationTime2 = animationPrimitive2.getBeginAnimationPosition().getAnimationTime();
+                double animationTime1 = animationPrimitive1.getBeginAnimationPosition().getOriginRelativeAnimationTime();
+                double animationTime2 = animationPrimitive2.getBeginAnimationPosition().getOriginRelativeAnimationTime();
                 return (int)Math.signum(animationTime1 - animationTime2);
             }
         });
@@ -1262,8 +1266,8 @@ public class AnimationController {
         endAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>(animationPrimitives);
         Collections.sort(endAnimationTimeOrderedPrimitives, new Comparator<IAnimationPrimitive>() {
             public int compare(IAnimationPrimitive animationPrimitive1, IAnimationPrimitive animationPrimitive2) {
-                double animationTime1 = animationPrimitive1.getEndAnimationPosition().getAnimationTime();
-                double animationTime2 = animationPrimitive2.getEndAnimationPosition().getAnimationTime();
+                double animationTime1 = animationPrimitive1.getEndAnimationPosition().getOriginRelativeAnimationTime();
+                double animationTime2 = animationPrimitive2.getEndAnimationPosition().getOriginRelativeAnimationTime();
                 return (int)Math.signum(animationTime1 - animationTime2);
             }
         });

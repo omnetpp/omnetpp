@@ -36,14 +36,14 @@ public class AnimationCoordinateSystem {
             for (int i = 0; i < animationPositions.size(); i++) {
                 AnimationPosition animationPosition = animationPositions.get(i);
                 if (animationPosition.getEventNumber() == eventNumber) {
-                    animationTime = animationPosition.getAnimationTime();
+                    animationTime = animationPosition.getOriginRelativeAnimationTime();
                     break;
                 }
                 else if (animationPosition.getEventNumber() > eventNumber) {
                     if (i == 0)
                         animationTime = 0.0;
                     else
-                        animationTime = animationPositions.get(i - 1).getAnimationTime();
+                        animationTime = animationPositions.get(i - 1).getOriginRelativeAnimationTime();
                     break;
                 }
             }
@@ -61,8 +61,8 @@ public class AnimationCoordinateSystem {
                 double ratio = simulationTime.subtract(beginAnimationPosition.getSimulationTime()).doubleValue() / endAnimationPosition.getSimulationTime().subtract(beginAnimationPosition.getSimulationTime()).doubleValue();
                 if (Double.isNaN(ratio)) // all times are equal
                     ratio = 0;
-                double beginAnimationTime = beginAnimationPosition.getAnimationTime();
-                double endAnimationTime = endAnimationPosition.getAnimationTime();
+                double beginAnimationTime = beginAnimationPosition.getOriginRelativeAnimationTime();
+                double endAnimationTime = endAnimationPosition.getOriginRelativeAnimationTime();
                 // make sure we are precise at the boundaries and never return invalid values due to double arithmetic
                 if (ratio == 0.0)
                     return beginAnimationTime;
@@ -91,8 +91,8 @@ public class AnimationCoordinateSystem {
         for (int i = 0; i < animationPositions.size() - 1; i++) {
             AnimationPosition beginAnimationPosition = animationPositions.get(i);
             AnimationPosition endAnimationPosition = animationPositions.get(i + 1);
-            if (beginAnimationPosition.getAnimationTime() <= animationTime && animationTime <= endAnimationPosition.getAnimationTime()) {
-                double ratio = (animationTime - beginAnimationPosition.getAnimationTime()) / (endAnimationPosition.getAnimationTime() - beginAnimationPosition.getAnimationTime());
+            if (beginAnimationPosition.getOriginRelativeAnimationTime() <= animationTime && animationTime <= endAnimationPosition.getOriginRelativeAnimationTime()) {
+                double ratio = (animationTime - beginAnimationPosition.getOriginRelativeAnimationTime()) / (endAnimationPosition.getOriginRelativeAnimationTime() - beginAnimationPosition.getOriginRelativeAnimationTime());
                 if (Double.isNaN(ratio)) // all times are equal
                     ratio = 0;
                 BigDecimal beginSimulationTime = beginAnimationPosition.getSimulationTime();

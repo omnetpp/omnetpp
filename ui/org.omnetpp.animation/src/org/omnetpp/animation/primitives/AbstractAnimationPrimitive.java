@@ -29,6 +29,8 @@ import org.omnetpp.figures.anchors.NoncentralChopboxAnchor;
 
 /**
  * Base class for animation primitives. The default behavior is that the animation primitive does not draw anything.
+ *
+ * @author levy
  */
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
     protected boolean isActive;
@@ -119,45 +121,45 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
     }
 
 	public double getBeginAnimationTime() {
-		return beginAnimationPosition.getAnimationTime();
+		return beginAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
     public void setBeginAnimationTime(double beginAnimationTime) {
-        Assert.isTrue(beginAnimationPosition.getAnimationTime() == -1);
-        beginAnimationPosition.setAnimationTime(beginAnimationTime);
+        Assert.isTrue(beginAnimationPosition.getOriginRelativeAnimationTime() == -1);
+        beginAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime);
         if (animationTimeDuration != -1)
-            endAnimationPosition.setAnimationTime(beginAnimationTime + animationTimeDuration);
-        else if (endAnimationPosition.getAnimationTime() != -1)
-            animationTimeDuration = endAnimationPosition.getAnimationTime() - beginAnimationTime;
+            endAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime + animationTimeDuration);
+        else if (endAnimationPosition.getOriginRelativeAnimationTime() != -1)
+            animationTimeDuration = endAnimationPosition.getOriginRelativeAnimationTime() - beginAnimationTime;
     }
 
 	public double getEndAnimationTime() {
-		return endAnimationPosition.getAnimationTime();
+		return endAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
     public void setEndAnimationTime(double endAnimationTime) {
-        Assert.isTrue(endAnimationPosition.getAnimationTime() == -1);
-        endAnimationPosition.setAnimationTime(endAnimationTime);
+        Assert.isTrue(endAnimationPosition.getOriginRelativeAnimationTime() == -1);
+        endAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime);
         if (animationTimeDuration != -1)
-            beginAnimationPosition.setAnimationTime(endAnimationTime - animationTimeDuration);
-        else if (beginAnimationPosition.getAnimationTime() != -1)
-            animationTimeDuration = endAnimationTime - beginAnimationPosition.getAnimationTime();
+            beginAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime - animationTimeDuration);
+        else if (beginAnimationPosition.getOriginRelativeAnimationTime() != -1)
+            animationTimeDuration = endAnimationTime - beginAnimationPosition.getOriginRelativeAnimationTime();
     }
 
     public double getRelativeBeginAnimationTime() {
-	    return beginAnimationPosition.getRelativeAnimationTime();
+	    return beginAnimationPosition.getFrameRelativeAnimationTime();
 	}
 
     public void setRelativeBeginAnimationTime(double relativeBeginAnimationTime) {
-        beginAnimationPosition.setRelativeAnimationTime(relativeBeginAnimationTime);
+        beginAnimationPosition.setFrameRelativeAnimationTime(relativeBeginAnimationTime);
     }
 
     public double getRelativeEndAnimationTime() {
-        return endAnimationPosition.getRelativeAnimationTime();
+        return endAnimationPosition.getFrameRelativeAnimationTime();
     }
 
     public void setRelativeEndAnimationTime(double relativeEndAnimationTime) {
-        endAnimationPosition.setRelativeAnimationTime(relativeEndAnimationTime);
+        endAnimationPosition.setFrameRelativeAnimationTime(relativeEndAnimationTime);
     }
 
     public BigDecimal getSimulationTimeDuration() {
@@ -180,10 +182,10 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
     public void setAnimationTimeDuration(Double animationTimeDuration) {
         // TODO: Assert.isTrue(this.animationTimeDuration == -1 && animationTimeDuration >= 0);
         this.animationTimeDuration = animationTimeDuration;
-        if (beginAnimationPosition.getAnimationTime() != -1)
-            endAnimationPosition.setAnimationTime(beginAnimationPosition.getAnimationTime() + animationTimeDuration);
-        else if (endAnimationPosition.getAnimationTime() != -1)
-            beginAnimationPosition.setAnimationTime(endAnimationPosition.getAnimationTime() - animationTimeDuration);
+        if (beginAnimationPosition.getOriginRelativeAnimationTime() != -1)
+            endAnimationPosition.setOriginRelativeAnimationTime(beginAnimationPosition.getOriginRelativeAnimationTime() + animationTimeDuration);
+        else if (endAnimationPosition.getOriginRelativeAnimationTime() != -1)
+            beginAnimationPosition.setOriginRelativeAnimationTime(endAnimationPosition.getOriginRelativeAnimationTime() - animationTimeDuration);
     }
 
 	public void activate() {

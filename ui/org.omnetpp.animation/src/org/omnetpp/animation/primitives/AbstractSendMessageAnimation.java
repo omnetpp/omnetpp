@@ -54,7 +54,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 		if (simulationTimeDelta != 0)
 			alpha = animationPosition.getSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / simulationTimeDelta;
 		else
-			alpha = (animationPosition.getAnimationTime() - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
+			alpha = (animationPosition.getOriginRelativeAnimationTime() - getBeginAnimationTime()) / (getEndAnimationTime() - getBeginAnimationTime());
 		alpha = Math.max(0, Math.min(alpha, 1));
 
 		Point pAlpha;
