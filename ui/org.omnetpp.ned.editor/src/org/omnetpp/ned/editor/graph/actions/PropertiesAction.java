@@ -24,7 +24,7 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
 
 
 /**
- * Action to edit graphical and other properties of an item (module, submodule, 
+ * Action to edit graphical and other properties of an item (module, submodule,
  * channel, connection, etc.)
  *
  * @author andras
@@ -40,7 +40,7 @@ public class PropertiesAction extends org.eclipse.gef.ui.actions.SelectionAction
         setText(MENUNAME);
         setId(ID);
         setActionDefinitionId(ID);
-        setAccelerator(SWT.CR);  // affects only the display. actual mapping is done in GraphicalNedEditor.getCommonHandler()
+        setAccelerator(SWT.CONTROL + SWT.CR);  // affects only the display. actual mapping is done in GraphicalNedEditor.getCommonHandler()
         setToolTipText(TOOLTIP);
         setImageDescriptor(IMAGE);
     }
@@ -64,8 +64,8 @@ public class PropertiesAction extends org.eclipse.gef.ui.actions.SelectionAction
 
     @Override
     public void run() {
-        //  collect elements to edit. According to calculateEnabled(), this is 
-        // not empty, contains homogeneous items, all items are editable, etc.  
+        //  collect elements to edit. According to calculateEnabled(), this is
+        // not empty, contains homogeneous items, all items are editable, etc.
         List<INedElement> tmp = new ArrayList<INedElement>();
         for (Object obj : getSelectedObjects())
             if (obj instanceof INedModelProvider)
@@ -76,7 +76,7 @@ public class PropertiesAction extends org.eclipse.gef.ui.actions.SelectionAction
 
         if (dialog.open() != Dialog.OK)
             return; // cancelled
-        
+
         Command command = dialog.getResultCommand();
         execute(command);
     }

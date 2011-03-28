@@ -89,7 +89,6 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory;
@@ -100,7 +99,6 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
-import org.omnetpp.common.editor.ShowViewAction;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.HoverSupport;
@@ -115,15 +113,14 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.editor.NedEditor;
 import org.omnetpp.ned.editor.NedEditorPlugin;
 import org.omnetpp.ned.editor.NedEditorPreferenceInitializer;
-import org.omnetpp.ned.editor.graph.actions.ChooseIconAction;
 import org.omnetpp.ned.editor.graph.actions.ConvertToNewFormatAction;
 import org.omnetpp.ned.editor.graph.actions.CopyAction;
 import org.omnetpp.ned.editor.graph.actions.CutAction;
 import org.omnetpp.ned.editor.graph.actions.ExportImageAction;
 import org.omnetpp.ned.editor.graph.actions.GNedContextMenuProvider;
-import org.omnetpp.ned.editor.graph.actions.OpenTypeAction;
 import org.omnetpp.ned.editor.graph.actions.NedDirectEditAction;
 import org.omnetpp.ned.editor.graph.actions.NedSelectAllAction;
+import org.omnetpp.ned.editor.graph.actions.OpenTypeAction;
 import org.omnetpp.ned.editor.graph.actions.PaletteFilterAction;
 import org.omnetpp.ned.editor.graph.actions.ParametersDialogAction;
 import org.omnetpp.ned.editor.graph.actions.PasteAction;
@@ -485,7 +482,7 @@ public class GraphicalNedEditor
                     getActionRegistry().getAction(GEFActionConstants.DIRECT_EDIT));
             sharedKeyHandler.put(KeyStroke.getPressed(SWT.F3, 0),
                     getActionRegistry().getAction(OpenTypeAction.ID));
-            sharedKeyHandler.put(KeyStroke.getPressed(SWT.CR, SWT.CR, 0),
+            sharedKeyHandler.put(KeyStroke.getPressed(SWT.CR, SWT.CR, SWT.CONTROL),
                     getActionRegistry().getAction(PropertiesAction.ID));
         }
         return sharedKeyHandler;
@@ -830,8 +827,8 @@ public class GraphicalNedEditor
             htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, tildeMode, null);
 		}
 
-		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source  
-		    
+		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source
+
 		//debug code:
 		//hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
 		//			", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
@@ -883,11 +880,13 @@ public class GraphicalNedEditor
                     }
                 });
                 text.addFocusListener(new org.eclipse.swt.events.FocusAdapter() {
+                    @Override
                     public void focusLost(org.eclipse.swt.events.FocusEvent e) {
                         text.setVisible(false);
                     }
                 });
                 text.addKeyListener(new KeyAdapter() {
+                    @Override
                     public void keyPressed(KeyEvent e) {
                         if (e.keyCode == '\r')
                             text.setVisible(false);
@@ -961,7 +960,7 @@ public class GraphicalNedEditor
                 	int bd = text.getBorderWidth();
                 	text.setBounds(text.getLocation().x-bd, text.getLocation().y-5-bd, text.getSize().x+2*bd, text.getSize().y+2*bd+8);
                 }
-                
+
             }
 
             private void updateFilterFigureBounds() {
@@ -983,6 +982,7 @@ public class GraphicalNedEditor
             figure.setPinned(getDrawer().isInitiallyPinned());
 
             figure.getCollapseToggle().addFocusListener(new FocusListener.Stub() {
+                @Override
                 public void focusGained(FocusEvent fe) {
                     getViewer().select(LocalDrawerEditPart.this);
                 }
@@ -1005,6 +1005,7 @@ public class GraphicalNedEditor
         // with begin/end. "begin" must be fired after all PRE listeners,
         // and "end" must be fired before all normal commandStackListeners and
         // POST listeners. See super.execute() for why the code look like this.
+        @Override
         protected void notifyListeners(Command command, int state) {
             if (state==POST_EXECUTE || state==POST_UNDO || state==POST_REDO) {
                 NedResourcesPlugin.getNedResources().fireEndChangeEvent();
@@ -1022,6 +1023,7 @@ public class GraphicalNedEditor
             }
         }
 
+        @Override
         @SuppressWarnings("deprecation")
         protected void notifyListeners() {
             if (!insideBeginEnd)
