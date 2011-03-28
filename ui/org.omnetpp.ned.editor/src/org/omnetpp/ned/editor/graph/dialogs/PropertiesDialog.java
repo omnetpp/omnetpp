@@ -2273,7 +2273,8 @@ public class PropertiesDialog extends TrayDialog {
         // validate type and type list fields
         if (elements[0] instanceof INedTypeElement) {
             validateNedTypeField(errors, "Extends", extendsField, true);
-            validateNedTypeField(errors, "Interfaces", interfacesField, true);
+            if (!(elements[0] instanceof IInterfaceTypeElement))
+                validateNedTypeField(errors, "Interfaces", interfacesField, true);
         }
         if (elements[0] instanceof ISubmoduleOrConnection) {
             if (fixedTypeRadioButton.getSelection())
