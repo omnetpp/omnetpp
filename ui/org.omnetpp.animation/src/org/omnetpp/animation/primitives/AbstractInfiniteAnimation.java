@@ -16,6 +16,6 @@ public class AbstractInfiniteAnimation extends AbstractAnimationPrimitive {
 		IEvent lastEvent = animationController.getEventLogInput().getEventLog().getLastEvent();
 		setEndEventNumber(lastEvent.getEventNumber());
 		setEndSimulationTime(lastEvent.getSimulationTime());
-		setRelativeEndAnimationTime(0);
+		setFrameRelativeEndAnimationTime(0);
 	}
 }

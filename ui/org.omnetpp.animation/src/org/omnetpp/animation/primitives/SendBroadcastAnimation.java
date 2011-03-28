@@ -56,7 +56,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 		double width = Math.max(10, r - ps[1].getDistance(p));
 		//System.out.println("Radius: " + r + " width:" + width);
 		int radius = (int)r;
-        BigDecimal currentSimulationTime = animationController.getAnimationPosition().getSimulationTime();
+        BigDecimal currentSimulationTime = animationController.getCurrentAnimationPosition().getSimulationTime();
         double alpha = 64 * (currentSimulationTime.doubleValue() < getEndSimulationTime().doubleValue() - fadeOutTime ?
                 1 : (1 - (currentSimulationTime.subtract(getEndSimulationTime()).doubleValue() + fadeOutTime) / fadeOutTime));
         circle.setAlpha((int)alpha);

@@ -81,7 +81,7 @@ public class AnimationCompoundModuleFigure extends Figure {
 
     private void removeFigure() {
         animationController.stopAnimation();
-        long eventNumber = animationController.getEventNumber();
+        long eventNumber = animationController.getCurrentEventNumber();
         animationController.getAnimationCanvas().removeShownCompoundModule(moduleId);
         getParent().remove(this);
         animationController.reloadAnimationPrimitives();

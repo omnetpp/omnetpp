@@ -9,6 +9,10 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
+/**
+ *
+ * @author levy
+ */
 // TODO: binary search
 public class AnimationCoordinateSystem {
     private EventLogInput eventLogInput;

@@ -71,7 +71,7 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 				        AnimationCanvas animationCanvas = animationController.getAnimationCanvas();
                         if (!animationCanvas.showsCompoundModule(module.getId())) {
                             animationController.stopAnimation();
-				            long eventNumber = animationController.getEventNumber();
+				            long eventNumber = animationController.getCurrentEventNumber();
                             animationCanvas.addShownCompoundModule(module.getId());
 				            animationController.reloadAnimationPrimitives();
                             animationController.gotoEventNumber(eventNumber);

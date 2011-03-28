@@ -210,7 +210,7 @@ public class AnimationEditor
         if (!canCreateNavigationLocation())
             return null;
         else
-            return new AnimationLocation(animationCanvas.getAnimationController().getAnimationPosition());
+            return new AnimationLocation(animationCanvas.getAnimationController().getCurrentAnimationPosition());
     }
 
     private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {

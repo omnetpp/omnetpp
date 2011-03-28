@@ -38,12 +38,12 @@ import org.omnetpp.common.util.StringUtils;
  * An animation position consist of the following values:
  * </p>
  * <ul>
- * <li>An event number or <code>-1</code> if not yet set.</li>
+ * <li>An event number or <code>null</code> if not yet set.</li>
  * <li>A simulation time or <code>null</code> if not yet set.</li>
  * <li>A double value specifying the frame relative animation time or
- * <code>Double.NaN</code> if not yet set.</li>
+ * <code>null</code> if not yet set.</li>
  * <li>A double value specifying the origin relative animation time or
- * <code>Double.NaN</code> if not yet set.</li>
+ * <code>null</code> if not yet set.</li>
  * </ul>
  * <p>
  * An animation position may be partially set and may only become complete
@@ -67,7 +67,7 @@ import org.omnetpp.common.util.StringUtils;
  * </ul>
  * <p>
  * The <b>initialize animation position</b> is the first moment of the
- * initialization animation specified as follows:
+ * initialize animation specified as follows:
  * </p>
  * <ul>
  * <li>Event number is <code>0</code>.</li>
@@ -108,7 +108,7 @@ import org.omnetpp.common.util.StringUtils;
 public class AnimationPosition implements Comparable<AnimationPosition> {
     /**
      * The event number of the event that is immediately preceding this
-     * animation position. The value <code>-1</code> means that it is not yet
+     * animation position. The value <code>null</code> means that it is not yet
      * set or there is no such event (i.e. during network setup). The value
      * <code>0</code> means initialize. The event numbers monotonically increase
      * along the animation. This means that if an animation position designates
@@ -130,21 +130,20 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     /**
      * The animation time relative to the beginning of the animation frame. See
      * above for the definition of animation frame. The value must be greater
-     * than or equal to zero. The value <code>Double.NaN</code> means that it is
-     * not yet set.
+     * than or equal to zero. The value <code>null</code> means that it is not
+     * yet set.
      */
-    protected double frameRelativeAnimationTime;
+    protected Double frameRelativeAnimationTime;
 
     /**
      * The animation time relative to the origin of the animation. The origin is
      * specified with an event number and it refers to the first animation
      * moment of that event. The value may be any finite double number. The
-     * value <code>Double.NaN</code> means that it is not yet set.
+     * value <code>null</code> means that it is not yet set.
      */
-    protected double originRelativeAnimationTime;
+    protected Double originRelativeAnimationTime;
 
     public AnimationPosition() {
-        setAnimationPosition(null, null, Double.NaN, Double.NaN);
     }
 
     public AnimationPosition(long eventNumber, BigDecimal simulationTime, double frameRelativeAnimationTime, double originRelativeAnimationTime) {
@@ -166,7 +165,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
         setOriginRelativeAnimationTime(originRelativeAnimationTime);
     }
 
-    public long getEventNumber() {
+    public Long getEventNumber() {
         return eventNumber;
     }
 
@@ -176,7 +175,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     }
 
     public void setEventNumber(Long eventNumber) {
-        Assert.isTrue(this.eventNumber == null);
+        Assert.isTrue(this.eventNumber == null || this.eventNumber.equals(eventNumber));
         this.eventNumber = eventNumber;
     }
 
@@ -185,34 +184,38 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     }
 
     public void setSimulationTime(BigDecimal simulationTime) {
-        Assert.isTrue(this.simulationTime == null);
+        Assert.isTrue(this.simulationTime == null || this.simulationTime.equals(simulationTime));
         this.simulationTime = simulationTime;
     }
 
-    public double getFrameRelativeAnimationTime() {
+    public Double getFrameRelativeAnimationTime() {
         return frameRelativeAnimationTime;
     }
 
     public void setFrameRelativeAnimationTime(double frameRelativeAnimationTime) {
-        Assert.isTrue(Double.isNaN(this.frameRelativeAnimationTime));
+        Assert.isTrue(this.frameRelativeAnimationTime == null || this.frameRelativeAnimationTime.equals(frameRelativeAnimationTime));
         this.frameRelativeAnimationTime = frameRelativeAnimationTime;
     }
 
-    public double getOriginRelativeAnimationTime() {
+    public Double getOriginRelativeAnimationTime() {
         return originRelativeAnimationTime;
     }
 
     public void setOriginRelativeAnimationTime(double originRelativeAnimationTime) {
-        Assert.isTrue(Double.isNaN(this.originRelativeAnimationTime));
+        Assert.isTrue(this.originRelativeAnimationTime == null || this.originRelativeAnimationTime.equals(originRelativeAnimationTime));
         this.originRelativeAnimationTime = originRelativeAnimationTime;
     }
 
     public boolean isCompletelyUnspecified() {
-        return eventNumber == null && simulationTime == null && Double.isNaN(frameRelativeAnimationTime) && Double.isNaN(originRelativeAnimationTime);
+        return eventNumber == null && simulationTime == null && frameRelativeAnimationTime == null && originRelativeAnimationTime == null;
     }
 
     public boolean isCompletelySpecified() {
-        return eventNumber != null && simulationTime != null && !Double.isNaN(frameRelativeAnimationTime) && !Double.isNaN(originRelativeAnimationTime);
+        return eventNumber != null && simulationTime != null && frameRelativeAnimationTime != null && originRelativeAnimationTime != null;
+    }
+
+    public boolean isPartiallySpecified() {
+        return !isCompletelyUnspecified() && !isCompletelySpecified();
     }
 
     public int compareTo(AnimationPosition other) {
@@ -222,23 +225,19 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
             return (int)Math.signum(eventNumber - other.eventNumber);
         else if (simulationTime != null && other.simulationTime != null && !simulationTime.equals(other.simulationTime))
             return simulationTime.less(other.simulationTime) ? -1 : 1;
-        else if (!Double.isNaN(originRelativeAnimationTime) && !Double.isNaN(other.originRelativeAnimationTime))
+        else if (originRelativeAnimationTime != null && other.originRelativeAnimationTime != null)
             return (int)Math.signum(originRelativeAnimationTime - other.originRelativeAnimationTime);
         else
             throw new RuntimeException("Cannot compare the provided partially specified animation positions: " + this + " & " + other);
     }
-
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((eventNumber == null) ? 0 : eventNumber.hashCode());
-        long temp;
-        temp = Double.doubleToLongBits(frameRelativeAnimationTime);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
-        temp = Double.doubleToLongBits(originRelativeAnimationTime);
-        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + ((frameRelativeAnimationTime == null) ? 0 : frameRelativeAnimationTime.hashCode());
+        result = prime * result + ((originRelativeAnimationTime == null) ? 0 : originRelativeAnimationTime.hashCode());
         result = prime * result + ((simulationTime == null) ? 0 : simulationTime.hashCode());
         return result;
     }
@@ -258,9 +257,17 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
         }
         else if (!eventNumber.equals(other.eventNumber))
             return false;
-        if (Double.doubleToLongBits(frameRelativeAnimationTime) != Double.doubleToLongBits(other.frameRelativeAnimationTime))
+        if (frameRelativeAnimationTime == null) {
+            if (other.frameRelativeAnimationTime != null)
+                return false;
+        }
+        else if (!frameRelativeAnimationTime.equals(other.frameRelativeAnimationTime))
             return false;
-        if (Double.doubleToLongBits(originRelativeAnimationTime) != Double.doubleToLongBits(other.originRelativeAnimationTime))
+        if (originRelativeAnimationTime == null) {
+            if (other.originRelativeAnimationTime != null)
+                return false;
+        }
+        else if (!originRelativeAnimationTime.equals(other.originRelativeAnimationTime))
             return false;
         if (simulationTime == null) {
             if (other.simulationTime != null)

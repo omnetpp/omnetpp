@@ -67,9 +67,11 @@ import org.omnetpp.common.image.ImageFactory;
 public class AnimationContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_ANIMATION_MODE = TOOL_IMAGE_DIR + "animationmode.png";
-    public final static String IMAGE_SPEED_UP = TOOL_IMAGE_DIR + "speedup.gif";
-    public final static String IMAGE_SPEED_DOWN = TOOL_IMAGE_DIR + "speeddown.gif";
+    public final static String IMAGE_INCREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "speedup.gif";
+    public final static String IMAGE_DECREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "speeddown.gif";
     public final static String IMAGE_GOTO_BEGIN = TOOL_IMAGE_DIR + "gotobegin.gif";
+    public final static String IMAGE_GOTO_INITIALIZE = TOOL_IMAGE_DIR + "gotobegin.gif";
+    public final static String IMAGE_GOTO_FIRST_EVENT = TOOL_IMAGE_DIR + "gotobegin.gif";
     public final static String IMAGE_GOTO_END = TOOL_IMAGE_DIR + "gotoend.gif";
     public final static String IMAGE_PLAY_FORWARD = TOOL_IMAGE_DIR + "playforward.gif";
     public final static String IMAGE_STEP_FORWARD = TOOL_IMAGE_DIR + "stepforward.gif";
@@ -88,9 +90,11 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
 	private Separator separatorAction;
     private AnimationAction animationModeAction;
-    private AnimationAction speedUpAction;
-    private AnimationAction speedDownAction;
+    private AnimationAction increaseAnimationSpeedAction;
+    private AnimationAction decreaseAnimationSpeedAction;
     private AnimationAction gotoBeginAction;
+    private AnimationAction gotoInitializeAction;
+    private AnimationAction gotoFirstEventAction;
     private AnimationAction gotoEndAction;
     private AnimationAction playForwardAction;
     private AnimationAction stepForwardAction;
@@ -112,9 +116,11 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	public AnimationContributor() {
 		this.separatorAction = new Separator();
 		this.animationModeAction = createAnimationModeAction();
-		this.speedUpAction = createSpeedUpActionAction();
-        this.speedDownAction = createSpeedDownActionAction();
+		this.increaseAnimationSpeedAction = createIncreaseAnimationSpeedActionAction();
+        this.decreaseAnimationSpeedAction = createDecreaseAnimationSpeedActionAction();
 		this.gotoBeginAction = createGotoBeginAction();
+        this.gotoInitializeAction = createGotoInitializeAction();
+        this.gotoFirstEventAction = createGotoFirstEventAction();
         this.gotoEndAction = createGotoEndAction();
         this.playForwardAction = createPlayForwardAction();
         this.stepForwardAction = createStepForwardAction();
@@ -176,13 +182,15 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
                 IMenuManager subMenuManager = new MenuManager("Speed");
                 menuManager.add(subMenuManager);
-                subMenuManager.add(speedUpAction);
-                subMenuManager.add(speedDownAction);
+                subMenuManager.add(increaseAnimationSpeedAction);
+                subMenuManager.add(decreaseAnimationSpeedAction);
 
                 subMenuManager = new MenuManager("Play");
                 menuManager.add(subMenuManager);
 
                 subMenuManager.add(gotoBeginAction);
+                subMenuManager.add(gotoInitializeAction);
+                subMenuManager.add(gotoFirstEventAction);
                 subMenuManager.add(playBackwardAction);
                 subMenuManager.add(stepBackwardAction);
                 subMenuManager.add(stopAction);
@@ -219,8 +227,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         // TODO: doesn't work at the moment
 	    // toolBarManager.add(animationModeAction);
         toolBarManager.add(separatorAction);
-        toolBarManager.add(speedUpAction);
-        toolBarManager.add(speedDownAction);
+        toolBarManager.add(increaseAnimationSpeedAction);
+        toolBarManager.add(decreaseAnimationSpeedAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(gotoBeginAction);
         toolBarManager.add(playBackwardAction);
@@ -366,20 +374,20 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	 * ACTIONS
 	 */
 
-    private AnimationAction createSpeedUpActionAction() {
-        return new AnimationAction("Speed Up", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_SPEED_UP)) {
+    private AnimationAction createIncreaseAnimationSpeedActionAction() {
+        return new AnimationAction("Increase Animation Speed", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_INCREASE_ANIMATION_SPEED)) {
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().speedUp();
+                animationCanvas.getAnimationController().increaseAnimationSpeed();
             }
         };
     }
 
-    private AnimationAction createSpeedDownActionAction() {
-        return new AnimationAction("Speed Down", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_SPEED_DOWN)) {
+    private AnimationAction createDecreaseAnimationSpeedActionAction() {
+        return new AnimationAction("Decrease Animation Speed", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_DECREASE_ANIMATION_SPEED)) {
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().speedDown();
+                animationCanvas.getAnimationController().decreaseAnimationSpeed();
             }
         };
     }
@@ -388,12 +396,40 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Goto Begin", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_BEGIN)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationBegin());
+                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
             }
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().gotoAnimationBegin();
+                animationCanvas.getAnimationController().gotoBeginAnimationPosition();
+            }
+        };
+    }
+
+    private AnimationAction createGotoInitializeAction() {
+        return new AnimationAction("Goto Initialize", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_INITIALIZE)) {
+            @Override
+            public void update() {
+                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
+            }
+
+            @Override
+            protected void doRun() {
+                animationCanvas.getAnimationController().gotoInitializeAnimationPosition();
+            }
+        };
+    }
+
+    private AnimationAction createGotoFirstEventAction() {
+        return new AnimationAction("Goto First Event", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_FIRST_EVENT)) {
+            @Override
+            public void update() {
+                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
+            }
+
+            @Override
+            protected void doRun() {
+                animationCanvas.getAnimationController().gotoFirstEventAnimationPosition();
             }
         };
     }
@@ -402,12 +438,12 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Goto End", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_END)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationEnd());
+                setEnabled(!animationCanvas.getAnimationController().isAtEndAnimationPosition());
             }
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().gotoAnimationEnd();
+                animationCanvas.getAnimationController().gotoEndAnimationPosition();
             }
         };
     }
@@ -416,7 +452,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Play Forward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_PLAY_FORWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationEnd());
+                setEnabled(!animationCanvas.getAnimationController().isAtEndAnimationPosition());
             }
 
             @Override
@@ -430,12 +466,12 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Step Forward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_STEP_FORWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationEnd());
+                setEnabled(!animationCanvas.getAnimationController().isAtEndAnimationPosition());
             }
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().stepAnimationForwardToNextAnimationChange();
+                animationCanvas.getAnimationController().stepAnimationForwardTowardsNextAnimationChange();
             }
         };
     }
@@ -444,7 +480,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Play Backward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_PLAY_BAKWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationBegin());
+                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
             }
 
             @Override
@@ -458,12 +494,12 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Step Backward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_STEP_BACKWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationBegin());
+                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
             }
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().stepAnimationBackwardToPreviousAnimationChange();
+                animationCanvas.getAnimationController().stepAnimationBackwardTowardsPreviousAnimationChange();
             }
         };
     }
@@ -554,7 +590,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
             if (part instanceof IAnimationCanvasProvider) {
                 AnimationCanvas animationCanvas = ((IAnimationCanvasProvider)part).getAnimationCanvas();
-                GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(animationCanvas.getEventLog(), animationCanvas.getAnimationController().getSimulationTime());
+                GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(animationCanvas.getEventLog(), animationCanvas.getAnimationController().getCurrentSimulationTime());
                 if (dialog.open() == Window.OK)
                     animationCanvas.getAnimationController().gotoSimulationTime(dialog.getSimulationTime());
             }
@@ -595,7 +631,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             protected void doRun() {
                 AnimationController animationController = animationCanvas.getAnimationController();
                 AnimationConfigurationDialog configurationDialog = new AnimationConfigurationDialog(Display.getCurrent().getActiveShell(), animationController.getAnimationParameters());
-                org.omnetpp.common.engine.BigDecimal simulationTime = animationController.getSimulationTime();
+                org.omnetpp.common.engine.BigDecimal simulationTime = animationController.getCurrentSimulationTime();
                 if (configurationDialog.open() == Window.OK) {
                     animationController.reloadAnimationPrimitives();
                     animationController.gotoSimulationTime(simulationTime);
@@ -630,7 +666,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 			@Override
 		    public void update() {
 			    AnimationController animationController = animationCanvas.getAnimationController();
-				setText("#" + animationController.getEventNumber() + " " + animationController.getSimulationTime() + "s " + animationController.getAnimationTime());
+				setText("#" + animationController.getCurrentEventNumber() + " " + animationController.getCurrentSimulationTime() + "s " + animationController.getCurrentAnimationTime());
 		    }
 		};
 	}
@@ -670,14 +706,14 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         public void update() {
             super.update();
             if (slider != null && !slider.isDisposed())
-                slider.setSelection((int)animationCanvas.getAnimationController().getEventNumber());
+                slider.setSelection((int)animationCanvas.getAnimationController().getCurrentEventNumber());
         }
 
         public void configureSlider() {
             if (slider != null && animationCanvas != null) {
                 AnimationController animationController = animationCanvas.getAnimationController();
                 if (animationController != null)
-                    slider.setValues((int)animationController.getEventNumber(), 0, (int)animationController.getAnimationEnd().getEventNumber() + 1, 1, 1, 10);
+                    slider.setValues((int)animationController.getCurrentEventNumber(), 0, animationController.getEndAnimationPosition().getEventNumber().intValue() + 1, 1, 1, 10);
             }
         }
     }

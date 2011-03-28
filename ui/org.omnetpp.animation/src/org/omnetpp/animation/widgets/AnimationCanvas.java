@@ -179,8 +179,8 @@ public class AnimationCanvas
         else {
             ArrayList<Long> eventNumbers = new ArrayList<Long>();
             ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
-            eventNumbers.add(animationController.getEventNumber());
-            simulationTimes.add(animationController.getSimulationTime());
+            eventNumbers.add(animationController.getCurrentEventNumber());
+            simulationTimes.add(animationController.getCurrentSimulationTime());
             return new EventLogSelection(eventLogInput, eventNumbers, simulationTimes);
         }
     }
@@ -194,8 +194,8 @@ public class AnimationCanvas
             BigDecimal firstSimulationTime = eventLogSelection.getFirstSimulationTime();
             Long firstEventNumber = eventLogSelection.getFirstEventNumber();
             boolean isSelectionReallyChanged =
-                ((firstSimulationTime != null && !firstSimulationTime.equals(animationController.getSimulationTime())) ||
-                 (firstEventNumber != null) && !firstEventNumber.equals(animationController.getEventNumber()));
+                ((firstSimulationTime != null && !firstSimulationTime.equals(animationController.getCurrentSimulationTime())) ||
+                 (firstEventNumber != null) && !firstEventNumber.equals(animationController.getCurrentEventNumber()));
             if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
                 try {
                     isSelectionChangeInProgress = true;
