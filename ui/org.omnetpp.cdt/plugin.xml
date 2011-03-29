@@ -398,7 +398,7 @@
             name="Open C++ Definition">
       </command>
       <command
-            defaultHandler="org.omnetpp.cdt.handlers.CleanSelectedProjects"
+            defaultHandler="org.omnetpp.cdt.handlers.CleanSelectedProjectsHandler"
             description="Clean the selected project(s) without cleaning referred projects."
             id="org.omnetpp.cdt.cleanSelectedProjects"
             name="Clean Local">

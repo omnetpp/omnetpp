@@ -21,8 +21,13 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-public class CleanSelectedProjects implements IHandler {
-
+/**
+ * Implements the "Clean Local" action. This action cleans exactly the selected projects,
+ * and not their referenced projects or projects that reference the selected ones.
+ * 
+ * @author rhornig
+ */
+public class CleanSelectedProjectsHandler implements IHandler {
 	
 	public Object execute(ExecutionEvent ev) throws ExecutionException {
 		final String JOB_NAME = "Cleaning selected projects";
