@@ -41,6 +41,7 @@ public class SetFilterAction extends AbstractScaveAction {
 		if (filterUtil != null) {
 			Filter filter = new Filter(filterUtil.getFilterPattern());
 			BrowseDataPage page = scaveEditor.getBrowseDataPage();
+			page.getAllPanel().setFilterParams(filter);
 			page.getScalarsPanel().setFilterParams(filter);
 			page.getVectorsPanel().setFilterParams(filter);
 			page.getHistogramsPanel().setFilterParams(filter);
