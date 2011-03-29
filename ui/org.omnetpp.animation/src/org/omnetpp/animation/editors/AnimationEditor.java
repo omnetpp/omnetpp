@@ -257,7 +257,6 @@ public class AnimationEditor
     public String[] getShowInTargetIds() {
         // contents of the "Show In..." context menu
         return new String[] {
-                IConstants.ANIMATION_VIEW_ID,
                 IConstants.SEQUENCECHART_VIEW_ID,
                 IConstants.EVENTLOG_VIEW_ID
                 };

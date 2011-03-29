@@ -139,17 +139,27 @@ public class AnimationController {
 	private AnimationPosition modelAnimationPosition;
 
 	/**
-	 * The begin of the whole animation, may be invalid.
+	 * The begin of the whole animation, may be unspecified.
 	 */
 	private AnimationPosition beginAnimationPosition;
 
+    /**
+     * The start of initialize, may be unspecified.
+     */
+    private AnimationPosition initializeAnimationPosition;
+
+    /**
+     * The start of the first event, may be unspecified.
+     */
+    private AnimationPosition firstEventAnimationPosition;
+
 	/**
-	 * The end of the whole animation, may be invalid.
+	 * The end of the whole animation, may be unspecified.
 	 */
 	private AnimationPosition endAnimationPosition;
 
 	/**
-	 * The animation position when the animation will be next stopped if there's no such limit, then this position is invalid.
+	 * The animation position when the animation will be next stopped if there's no such limit, then this position is unspecified.
 	 */
 	private AnimationPosition stopAnimationPosition;
 
@@ -271,15 +281,17 @@ public class AnimationController {
 	public void reloadAnimationPrimitives() {
         figureMap = new HashMap<Object, Object>();
         coordinateSystem = new AnimationCoordinateSystem(eventLogInput, new ArrayList<AnimationPosition>());
-		currentAnimationPosition = new AnimationPosition();
-		modelAnimationPosition = new AnimationPosition();
-		beginAnimationPosition = new AnimationPosition();
-		endAnimationPosition = new AnimationPosition();
-		stopAnimationPosition = new AnimationPosition();
-		lastStartAnimationPosition = new AnimationPosition();
-	    beginAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
-	    endAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
-	    activeAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
+        currentAnimationPosition = new AnimationPosition();
+        modelAnimationPosition = new AnimationPosition();
+        beginAnimationPosition = new AnimationPosition();
+        initializeAnimationPosition = new AnimationPosition();
+        firstEventAnimationPosition = new AnimationPosition();
+        endAnimationPosition = new AnimationPosition();
+        stopAnimationPosition = new AnimationPosition();
+        lastStartAnimationPosition = new AnimationPosition();
+        beginAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
+        endAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
+        activeAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
         addAnimationPrimitivesForPosition(currentAnimationPosition);
         for (Timer timer : timerQueue.getTimers())
             if (timer != animationTimer)
@@ -414,14 +426,28 @@ public class AnimationController {
 	 * Checks if the current animation position is at the very beginning.
 	 */
 	public boolean isAtBeginAnimationPosition() {
-		return currentAnimationPosition.equals(beginAnimationPosition);
+		return currentAnimationPosition.equals(getBeginAnimationPosition());
 	}
+
+    /**
+     * Checks if the current animation position is at the very beginning.
+     */
+    public boolean isAtInitializeAnimationPosition() {
+        return currentAnimationPosition.equals(getInitializeAnimationPosition());
+    }
+
+    /**
+     * Checks if the current animation position is at the very beginning.
+     */
+    public boolean isAtFirstEventAnimationPosition() {
+        return currentAnimationPosition.equals(getFirstEventAnimationPosition());
+    }
 
 	/**
 	 * Checks if the current animation position is at the very end.
 	 */
 	public boolean isAtEndAnimationPosition() {
-		return currentAnimationPosition.equals(endAnimationPosition);
+		return currentAnimationPosition.equals(getEndAnimationPosition());
 	}
 
 	/**
@@ -429,6 +455,7 @@ public class AnimationController {
 	 */
 	public AnimationPosition getBeginAnimationPosition() {
         if (!beginAnimationPosition.isCompletelySpecified()) {
+            // TODO: check
             long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
             beginAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
         }
@@ -437,19 +464,29 @@ public class AnimationController {
 	}
 
     /**
-     * Returns the animation position for the first moment of initialize animation.
+     * Returns the animation position for the first moment of the initialize animation.
      */
 	public AnimationPosition getInitializeAnimationPosition() {
-	    // TODO:
-	    return null;
+        if (!initializeAnimationPosition.isCompletelySpecified()) {
+            // TODO: check
+            long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
+            initializeAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
+        }
+
+        return initializeAnimationPosition;
 	}
 
     /**
      * Returns the animation position for the first moment of the first event animation.
      */
     public AnimationPosition getFirstEventAnimationPosition() {
-        // TODO:
-        return null;
+        if (!firstEventAnimationPosition.isCompletelySpecified()) {
+            // TODO: check
+            long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
+            firstEventAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
+        }
+
+        return firstEventAnimationPosition;
     }
 
     /**
@@ -606,7 +643,7 @@ public class AnimationController {
 	 * Starts animation backward from the current animation position and stops at the previous event number.
 	 * Asynchronous operation.
 	 */
-	public void stepAnimationBackwardTowardsPreviousEvent() {
+	public void stepAnimationBackwardToPreviousEvent() {
 		long eventNumber = getCurrentEventNumber();
         AnimationPosition animationPosition = getAnimationPositionForEventNumber(eventNumber);
 		animationPosition = currentAnimationPosition.equals(animationPosition) ? getAnimationPositionForEventNumber(eventNumber - 1) : animationPosition;
@@ -617,7 +654,7 @@ public class AnimationController {
      * Starts animation backward from the current animation position and stops at the previous visible animation change.
      * Asynchronous operation.
      */
-    public void stepAnimationBackwardTowardsPreviousAnimationChange() {
+    public void stepAnimationBackwardToPreviousAnimationChange() {
         AnimationPosition stopAnimationPosition = getBeginAnimationPosition();
         int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
             public double getValue(int index) {
@@ -656,7 +693,7 @@ public class AnimationController {
 	 * Starts animation forward from the current animation position and stops at the next event number.
 	 * Asynchronous operation.
 	 */
-	public void stepAnimationForwardTowardsNextEvent() {
+	public void stepAnimationForwardToNextEvent() {
 		startAnimationInternal(true, getAnimationPositionForEventNumber(getCurrentEventNumber() + 1));
 	}
 
@@ -664,7 +701,7 @@ public class AnimationController {
      * Starts animation forward from the current animation position and stops at the next visible animation change.
      * Asynchronous operation.
      */
-	public void stepAnimationForwardTowardsNextAnimationChange() {
+	public void stepAnimationForwardToNextAnimationChange() {
         AnimationPosition stopAnimationPosition = getEndAnimationPosition();
         int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
             public double getValue(int index) {
@@ -1208,7 +1245,7 @@ public class AnimationController {
             // TODO: should not need to set the animation time duration
             if (animationPrimitive.getAnimationTimeDuration() == -1) {
                 AbstractAnimationPrimitive abstractAnimationPrimitive = (AbstractAnimationPrimitive)animationPrimitive;
-                abstractAnimationPrimitive.setAnimationTimeDuration(abstractAnimationPrimitive.getEndAnimationTime() - abstractAnimationPrimitive.getBeginAnimationTime());
+                abstractAnimationPrimitive.setAnimationTimeDuration(abstractAnimationPrimitive.getOriginRelativeEndAnimationTime() - abstractAnimationPrimitive.getOriginRelativeBeginAnimationTime());
             }
             if (debug)
                 System.out.println(animationPrimitive);

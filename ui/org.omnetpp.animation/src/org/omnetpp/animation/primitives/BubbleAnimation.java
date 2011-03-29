@@ -9,6 +9,7 @@ package org.omnetpp.animation.primitives;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -60,8 +61,9 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
 			Dimension size = new Dimension(10 * text.length(), 20);
             Rectangle r = new Rectangle(moduleFigure.getLocation().translate(0, -20), size);
-			setConstraint(background, r);
-			setConstraint(label, r);
+            LayoutManager layoutManager = getLayoutManager();
+            layoutManager.setConstraint(background, r);
+            layoutManager.setConstraint(label, r);
 		}
 	}
 

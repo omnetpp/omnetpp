@@ -67,11 +67,11 @@ import org.omnetpp.common.image.ImageFactory;
 public class AnimationContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_ANIMATION_MODE = TOOL_IMAGE_DIR + "animationmode.png";
-    public final static String IMAGE_INCREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "speedup.gif";
-    public final static String IMAGE_DECREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "speeddown.gif";
+    public final static String IMAGE_INCREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "increaseanimationspeed.gif";
+    public final static String IMAGE_DECREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "decreaseanimationspeed.gif";
     public final static String IMAGE_GOTO_BEGIN = TOOL_IMAGE_DIR + "gotobegin.gif";
-    public final static String IMAGE_GOTO_INITIALIZE = TOOL_IMAGE_DIR + "gotobegin.gif";
-    public final static String IMAGE_GOTO_FIRST_EVENT = TOOL_IMAGE_DIR + "gotobegin.gif";
+    public final static String IMAGE_GOTO_INITIALIZE = TOOL_IMAGE_DIR + "gotoinitialize.gif";
+    public final static String IMAGE_GOTO_FIRST_EVENT = TOOL_IMAGE_DIR + "gotofirstevent.gif";
     public final static String IMAGE_GOTO_END = TOOL_IMAGE_DIR + "gotoend.gif";
     public final static String IMAGE_PLAY_FORWARD = TOOL_IMAGE_DIR + "playforward.gif";
     public final static String IMAGE_STEP_FORWARD = TOOL_IMAGE_DIR + "stepforward.gif";
@@ -231,6 +231,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         toolBarManager.add(decreaseAnimationSpeedAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(gotoBeginAction);
+        toolBarManager.add(gotoInitializeAction);
+        toolBarManager.add(gotoFirstEventAction);
         toolBarManager.add(playBackwardAction);
         toolBarManager.add(stepBackwardAction);
         toolBarManager.add(stopAction);
@@ -393,7 +395,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private AnimationAction createGotoBeginAction() {
-        return new AnimationAction("Goto Begin", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_BEGIN)) {
+        return new AnimationAction("Go To Begin", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_BEGIN)) {
             @Override
             public void update() {
                 setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
@@ -407,10 +409,10 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private AnimationAction createGotoInitializeAction() {
-        return new AnimationAction("Goto Initialize", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_INITIALIZE)) {
+        return new AnimationAction("Go To Initialize", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_INITIALIZE)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
+                setEnabled(!animationCanvas.getAnimationController().isAtInitializeAnimationPosition());
             }
 
             @Override
@@ -421,10 +423,10 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private AnimationAction createGotoFirstEventAction() {
-        return new AnimationAction("Goto First Event", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_FIRST_EVENT)) {
+        return new AnimationAction("Go To First Event", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_FIRST_EVENT)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtBeginAnimationPosition());
+                setEnabled(!animationCanvas.getAnimationController().isAtFirstEventAnimationPosition());
             }
 
             @Override
@@ -435,7 +437,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private AnimationAction createGotoEndAction() {
-        return new AnimationAction("Goto End", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_END)) {
+        return new AnimationAction("Go To End", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_END)) {
             @Override
             public void update() {
                 setEnabled(!animationCanvas.getAnimationController().isAtEndAnimationPosition());
@@ -471,7 +473,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().stepAnimationForwardTowardsNextAnimationChange();
+                animationCanvas.getAnimationController().stepAnimationForwardToNextAnimationChange();
             }
         };
     }
@@ -499,7 +501,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().stepAnimationBackwardTowardsPreviousAnimationChange();
+                animationCanvas.getAnimationController().stepAnimationBackwardToPreviousAnimationChange();
             }
         };
     }

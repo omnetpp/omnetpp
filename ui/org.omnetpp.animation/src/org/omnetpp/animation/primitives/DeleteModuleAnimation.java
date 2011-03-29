@@ -25,7 +25,7 @@ public class DeleteModuleAnimation extends AbstractAnimationPrimitive {
 	}
 
 	@Override
-	public double getEndAnimationTime() {
+	public double getOriginRelativeEndAnimationTime() {
 		return Double.POSITIVE_INFINITY;
 	}
 

@@ -74,7 +74,7 @@ public class SendSelfMessageAnimation extends AbstractAnimationPrimitive {
         Dimension size = imageFigure.getSize();
         imageFigure.setLocation(location.translate(-size.width, -size.height));
         imageFigure.setToolTip(new Label("Timer expires at " + message.getArrivalTime() + "s, after " + message.getArrivalTime().subtract(animationController.getCurrentSimulationTime()) + "s"));
-        double alpha = (animationController.getCurrentAnimationTime() - getBeginAnimationTime()) / getAnimationTimeDuration();
+        double alpha = (animationController.getCurrentAnimationTime() - getOriginRelativeBeginAnimationTime()) / getAnimationTimeDuration();
         // TODO: add a small line segment that shrinks as time goes by
 	}
 

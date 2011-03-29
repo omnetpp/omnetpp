@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
 import org.omnetpp.animation.widgets.AnimationSimulation;
@@ -46,7 +45,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
      * The owner animation controller that is responsible to manage this
      * animation primitive.
      */
-    protected AnimationController animationController;
+    protected final AnimationController animationController;
 
     /**
      * Specifies that whether this animation primitive is active or not.
@@ -166,11 +165,11 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
             simulationTimeDuration = endSimulationTime.subtract(beginAnimationPosition.getSimulationTime());
     }
 
-	public double getBeginAnimationTime() {
+	public double getOriginRelativeBeginAnimationTime() {
 		return beginAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
-    public void setBeginAnimationTime(double beginAnimationTime) {
+    public void setOriginRelativeBeginAnimationTime(double beginAnimationTime) {
         Assert.isTrue(beginAnimationPosition.getOriginRelativeAnimationTime() == null);
         beginAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime);
         if (animationTimeDuration != -1)
@@ -179,11 +178,11 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
             animationTimeDuration = endAnimationPosition.getOriginRelativeAnimationTime() - beginAnimationTime;
     }
 
-	public double getEndAnimationTime() {
+	public double getOriginRelativeEndAnimationTime() {
 		return endAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
-    public void setEndAnimationTime(double endAnimationTime) {
+    public void setOriginRelativeEndAnimationTime(double endAnimationTime) {
         Assert.isTrue(endAnimationPosition.getOriginRelativeAnimationTime() == null);
         endAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime);
         if (animationTimeDuration != -1)
@@ -206,22 +205,6 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
     public void setFrameRelativeEndAnimationTime(double frameRelativeEndAnimationTime) {
         endAnimationPosition.setFrameRelativeAnimationTime(frameRelativeEndAnimationTime);
-    }
-
-    public double getOriginRelativeBeginAnimationTime() {
-        return beginAnimationPosition.getOriginRelativeAnimationTime();
-    }
-
-    public void setOriginRelativeBeginAnimationTime(double originRelativeBeginAnimationTime) {
-        beginAnimationPosition.setOriginRelativeAnimationTime(originRelativeBeginAnimationTime);
-    }
-
-    public double getOriginRelativeEndAnimationTime() {
-        return endAnimationPosition.getOriginRelativeAnimationTime();
-    }
-
-    public void setOriginRelativeEndAnimationTime(double originRelativeEndAnimationTime) {
-        endAnimationPosition.setOriginRelativeAnimationTime(originRelativeEndAnimationTime);
     }
 
     public BigDecimal getSimulationTimeDuration() {
@@ -306,10 +289,6 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
 	protected CompoundModuleFigure getCompoundModuleFigure(EventLogModule module) {
 		return (CompoundModuleFigure)animationController.getFigure(module, CompoundModuleFigure.class);
-	}
-
-	protected void setConstraint(IFigure figure, Rectangle constraint) {
-		getLayoutManager().setConstraint(figure, constraint);
 	}
 
 	protected CompoundModuleFigure getEnclosingCompoundModuleFigure(int submoduleId) {
