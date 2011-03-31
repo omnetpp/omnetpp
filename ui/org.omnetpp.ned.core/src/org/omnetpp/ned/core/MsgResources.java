@@ -116,12 +116,11 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
         job.schedule();
     }
 
-    public synchronized void readAllMsgFiles() {
+    public synchronized void readAllMsgFiles() throws CoreException {
         IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
-
         for (IProject project : omnetppProjects) {
-            for (IFile file : getMsgFiles(project))
-                if (!msgFiles.containsKey(file))
+            for (IFile file : getMsgFiles(project)) {
+                if (!msgFiles.containsKey(file)) {
                     try {
                         readMsgFile(file);
                     }
@@ -131,6 +130,8 @@ public class MsgResources implements IMsgTypeResolver, IResourceChangeListener {
                     catch (CoreException e) {
                         NedResourcesPlugin.logError("Error during gathering message files: "+file.getName(), e);
                     }
+                }
+            }
         }
     }
 

@@ -12,10 +12,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
 import org.omnetpp.common.project.ProjectUtils;
@@ -32,18 +35,27 @@ public class ToggleNatureAction implements IObjectActionDelegate {
      * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
      */
     public void run(IAction action) {
-        List<IProject> projects = getSelectedOpenProjects();
-        if (anyProjectMissesNature(projects)) {
-            // add OMNeT++ Nature
-            for (IProject project : projects)
-                if (!ProjectUtils.hasOmnetppNature(project))
-                    ProjectUtils.addOmnetppNature(project, null);
-        }
-        else {
-            // remove OMNeT++ Nature
-            for (IProject project : projects)
-                if (ProjectUtils.hasOmnetppNature(project))
-                    ProjectUtils.removeOmnetppNature(project);
+        try {
+            List<IProject> projects = getSelectedOpenProjects();
+            if (anyProjectMissesNature(projects)) {
+                // add OMNeT++ Nature
+                for (IProject project : projects)
+                    if (!ProjectUtils.hasOmnetppNature(project))
+                        ProjectUtils.addOmnetppNature(project, null);
+            }
+            else {
+                // remove OMNeT++ Nature
+                for (IProject project : projects)
+                    if (ProjectUtils.hasOmnetppNature(project))
+                        ProjectUtils.removeOmnetppNature(project);
+            }
+        } catch (CoreException e) {
+            OmnetppMainPlugin.logError(e);
+            ErrorDialog.openError(
+                    Display.getCurrent().getActiveShell(), 
+                    "Error", 
+                    "Could not add or remove OMNeT++ nature.", 
+                    e.getStatus());
         }
     }
 
@@ -71,7 +83,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
     public void setActivePart(IAction action, IWorkbenchPart targetPart) {
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     private List<IProject> getSelectedOpenProjects() {
         List<IProject> projects = new ArrayList<IProject>();
         if (selection instanceof IStructuredSelection) {

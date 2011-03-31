@@ -364,7 +364,7 @@ public class TemplateSelectionPage extends WizardPage {
     /**
      * Loads built-in templates that support the given wizard type from the given plugin.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected List<IContentTemplate> loadBuiltinTemplates(Bundle bundle, String folderName, String wizardType) {
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
         try {
@@ -399,24 +399,28 @@ public class TemplateSelectionPage extends WizardPage {
     protected List<IContentTemplate> loadTemplatesFromWorkspace(String wizardType) {
         // check the "templates/" subdirectory of each OMNeT++ project
         List<IContentTemplate> result = new ArrayList<IContentTemplate>();
-        for (IProject project : ProjectUtils.getOmnetppProjects()) {
-            IFolder rootFolder = project.getFolder(new Path(TEMPLATES_FOLDER_NAME));
-            if (rootFolder.exists()) {
-                try {
-                    // each template is a folder which contains a "template.properties" file
-                    for (IResource resource : rootFolder.members()) {
-                        if (resource instanceof IFolder && FileBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
-                            IFolder folder = (IFolder)resource;
-                            IContentTemplate template = loadTemplateFromWorkspace(folder);
-                            if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
-                                if (isSuitableTemplate(template))
-                                    result.add(template);
+        try {
+            for (IProject project : ProjectUtils.getOmnetppProjects()) {
+                IFolder rootFolder = project.getFolder(new Path(TEMPLATES_FOLDER_NAME));
+                if (rootFolder.exists()) {
+                    try {
+                        // each template is a folder which contains a "template.properties" file
+                        for (IResource resource : rootFolder.members()) {
+                            if (resource instanceof IFolder && FileBasedContentTemplate.looksLikeTemplateFolder((IFolder)resource)) {
+                                IFolder folder = (IFolder)resource;
+                                IContentTemplate template = loadTemplateFromWorkspace(folder);
+                                if (wizardType==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(wizardType))
+                                    if (isSuitableTemplate(template))
+                                        result.add(template);
+                            }
                         }
+                    } catch (CoreException e) {
+                        CommonPlugin.logError("Error loading project templates from " + rootFolder.toString(), e);
                     }
-                } catch (CoreException e) {
-                    CommonPlugin.logError("Error loading project templates from " + rootFolder.toString(), e);
                 }
             }
+        } catch (CoreException e) {
+            CommonPlugin.logError("Error loading project templates", e);
         }
         return result;
     }

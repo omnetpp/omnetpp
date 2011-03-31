@@ -30,6 +30,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.FileUtils;
@@ -41,35 +43,41 @@ import org.omnetpp.common.util.StringUtils;
  *
  * @author Andras
  */
-//FIXME this "potential CoreExceptions are re-thrown as RuntimeException" looks like a dubious practice...
 public class ProjectUtils {
 	public static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
 	/**
 	 * Checks whether the provided project is open, has the OMNeT++ nature,
 	 * and it is enabled.
-	 *
-	 * Potential CoreExceptions are re-thrown as RuntimeException.
 	 */
-	public static boolean isOpenOmnetppProject(IProject project) {
-		try {
-			// project is open, nature is set and also enabled
-			return project.isAccessible() && project.isNatureEnabled(IConstants.OMNETPP_NATURE_ID);
-		}
-		catch (CoreException e) {
-			throw new RuntimeException(e);
-		}
+	public static boolean isOpenOmnetppProject(IProject project) throws CoreException {
+	    // project is open, nature is set and also enabled
+	    return project.isAccessible() && project.isNatureEnabled(IConstants.OMNETPP_NATURE_ID);
 	}
 
 	/**
 	 * Returns all open projects with the OMNeT++ nature. Based on isOpenOmnetppProject().
 	 */
-	public static IProject[] getOmnetppProjects() {
+	public static IProject[] getOmnetppProjects() throws CoreException {
 		List<IProject> omnetppProjects = new ArrayList<IProject>();
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
         	if (isOpenOmnetppProject(project))
         		omnetppProjects.add(project);
         return omnetppProjects.toArray(new IProject[]{});
+	}
+
+	/**
+	 * Same as getOmnetppProjects(), but CoreExceptions are caught and displayed 
+	 * in an error dialog and an empty project list is returned.
+	 */
+	public static IProject[] getOmnetppProjectsSafely(Shell parentForErrorDialog) {
+	    try {
+	        return getOmnetppProjects();
+	    }
+	    catch (CoreException e) {
+	        ErrorDialog.openError(parentForErrorDialog, "Error", "Could not get list of open OMNeT++ projects", e.getStatus());
+	        return new IProject[0];
+	    }
 	}
 
     /**
@@ -91,30 +99,24 @@ public class ProjectUtils {
 	 *
 	 * Potential CoreExceptions are re-thrown as RuntimeException.
 	 */
-	public static IProject[] getAllReferencedOmnetppProjects(IProject project) {
+	public static IProject[] getAllReferencedOmnetppProjects(IProject project) throws CoreException {
         return getAllReferencedProjects(project, true, false);
 	}
 
 	/**
      * Returns the transitive closure of all projects referenced from the given project,
      * excluding the project itself. Nonexistent and closed projects are ignored.
-     *
-     * Potential CoreExceptions are re-thrown as RuntimeException.
      */
-    public static IProject[] getAllReferencedProjects(IProject project) {
+    public static IProject[] getAllReferencedProjects(IProject project) throws CoreException {
         return getAllReferencedProjects(project, false, false);
     }
 
-    public static IProject[] getAllReferencedProjects(IProject project, boolean requireOmnetppNature, boolean includeSelf) {
-        try {
-            Set<IProject> result = new HashSet<IProject>();
-            if (includeSelf && (requireOmnetppNature ? isOpenOmnetppProject(project) : project.isAccessible()))
-                result.add(project);
-            collectReferencedProjects(project, requireOmnetppNature, result);
-            return result.toArray(new IProject[]{});
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
+    public static IProject[] getAllReferencedProjects(IProject project, boolean requireOmnetppNature, boolean includeSelf) throws CoreException {
+        Set<IProject> result = new HashSet<IProject>();
+        if (includeSelf && (requireOmnetppNature ? isOpenOmnetppProject(project) : project.isAccessible()))
+            result.add(project);
+        collectReferencedProjects(project, requireOmnetppNature, result);
+        return result.toArray(new IProject[]{});
     }
 
 	// helper for getAllReferencedOmnetppProjects()
@@ -188,6 +190,9 @@ public class ProjectUtils {
 		return container.equals(project) ? "." : container.getProjectRelativePath().toString();
 	}
 
+	/**
+	 * In case of CoreException it simply return false.
+	 */
     public static boolean hasOmnetppNature(IProject project) {
         try {
         	if (project == null)
@@ -205,37 +210,27 @@ public class ProjectUtils {
     /**
      * Add the omnetpp nature to the project (if the project does not have it already)
      */
-    public static void addOmnetppNature(IProject project, IProgressMonitor monitor) {
-        try {
-            if (hasOmnetppNature(project))
-                return;
-            IProjectDescription description = project.getDescription();
-            String[] natures = description.getNatureIds();
-            description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
-            project.setDescription(description, monitor);
-            // note: builders are added automatically, by OmnetppNature.configure()
-        }
-        catch (CoreException e) {
-            CommonPlugin.logError(e);
-        }
+    public static void addOmnetppNature(IProject project, IProgressMonitor monitor) throws CoreException {
+        if (hasOmnetppNature(project))
+            return;
+        IProjectDescription description = project.getDescription();
+        String[] natures = description.getNatureIds();
+        description.setNatureIds((String[])ArrayUtils.add(natures, IConstants.OMNETPP_NATURE_ID));
+        project.setDescription(description, monitor);
+        // note: builders are added automatically, by OmnetppNature.configure()
     }
 
     /**
      * Removes the omnetpp project nature
      */
-    public static void removeOmnetppNature(IProject project) {
-        try {
-            if (!hasOmnetppNature(project))
-                return;
-            IProjectDescription description = project.getDescription();
-            String[] natures = description.getNatureIds();
-            description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.OMNETPP_NATURE_ID));
-            project.setDescription(description, null);
-            // note: builders are removed automatically, by OmnetppNature.deconfigure()
-        }
-        catch (CoreException e) {
-            CommonPlugin.logError(e);
-        }
+    public static void removeOmnetppNature(IProject project) throws CoreException {
+        if (!hasOmnetppNature(project))
+            return;
+        IProjectDescription description = project.getDescription();
+        String[] natures = description.getNatureIds();
+        description.setNatureIds((String[])ArrayUtils.removeElement(natures, IConstants.OMNETPP_NATURE_ID));
+        project.setDescription(description, null);
+        // note: builders are removed automatically, by OmnetppNature.deconfigure()
     }
 
     /**

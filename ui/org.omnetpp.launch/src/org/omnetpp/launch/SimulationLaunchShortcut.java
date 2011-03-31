@@ -624,11 +624,11 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             // offer all executables found in the projects
             // FIXME we should actually offer shared libs as well, and add selected ones to the launch config!
             final List<IFile> exeFiles = new ArrayList<IFile>();
-            IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
-            projects = (IProject[]) ArrayUtils.add(projects, project);
+            try {
+                IProject[] projects = ProjectUtils.getAllReferencedProjects(project);
+                projects = (IProject[]) ArrayUtils.add(projects, project);
 
-            for (IProject pr : projects) {
-                try {
+                for (IProject pr : projects) {
                     pr.accept(new IResourceVisitor() {
                         public boolean visit(IResource resource) {
                             if (OmnetppLaunchUtils.isExecutable(resource))
@@ -636,9 +636,14 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             return true;
                         }
                     });
-                } catch (CoreException e) {
-                    LaunchPlugin.logError(e);
                 }
+            } catch (CoreException e) {
+                LaunchPlugin.logError(e);
+                ErrorDialog.openError(
+                        Display.getCurrent().getActiveShell(), 
+                        "Error", 
+                        "Could not collect list of executables from project " + project.getName() + " and its referenced projects.", 
+                        e.getStatus());
             }
 
             if (exeFiles.size() == 1)

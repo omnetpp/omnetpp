@@ -4,8 +4,10 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -25,6 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.TemplateSelectionPage;
@@ -54,15 +57,16 @@ public class NewWizardProjectSelectionPage extends WizardPage {
         Label label1 = new Label(composite, SWT.NONE);
         label1.setText("Select the project that will hold the wizard files:");
 
+        // set up table
         table = new TableViewer(composite, SWT.BORDER|SWT.V_SCROLL);
         GridData gridData;
         table.getTable().setLayoutData(gridData = new GridData(SWT.FILL, SWT.FILL, true, true));
         gridData.heightHint = 100;
         table.setContentProvider(new ArrayContentProvider());
         table.setLabelProvider(new WorkbenchLabelProvider());
-        table.setInput(ProjectUtils.getOmnetppProjects());
         table.setComparator(new ResourceComparator(ResourceComparator.NAME));
 
+        // wizard name
         Label label2 = new Label(composite, SWT.NONE);
         label2.setText("Enter wizard name:");
 
@@ -83,6 +87,16 @@ public class NewWizardProjectSelectionPage extends WizardPage {
                 textModified();
             }});
         setControl(composite);
+
+        // set table input
+        try {
+            table.setInput(ProjectUtils.getOmnetppProjects());
+        }
+        catch (CoreException e) {
+            table.setInput(new Object[0]);
+            CommonPlugin.logError(e);
+            ErrorDialog.openError(getShell(), "Error", "Could not get list of OMNeT++ projects.", e.getStatus());
+        }
         
         // initial selection
         IResource resource = null;

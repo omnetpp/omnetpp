@@ -360,20 +360,25 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
      * the editor's input file might not qualify as "NED file" and that'll cause an error).
      */
     public synchronized void rebuildProjectsTable() {
-        // rebuild table
-        projects.clear();
-        IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
-        for (IProject project : omnetppProjects) {
-            try {
+        // gather projects data
+        Map<IProject,ProjectData> tmp = new HashMap<IProject, ProjectData>();
+        try {
+            IProject[] omnetppProjects = ProjectUtils.getOmnetppProjects();
+            for (IProject project : omnetppProjects) {
                 ProjectData projectData = new ProjectData();
                 projectData.referencedProjects = ProjectUtils.getAllReferencedOmnetppProjects(project);
                 projectData.nedSourceFolders = ProjectUtils.readNedFoldersFile(project);
-                projects.put(project, projectData);
+                tmp.put(project, projectData);
             }
-            catch (Exception e) {
-                NedResourcesPlugin.logError(e); //XXX anything else? asyncExec errorDialog?
-            }
+        } catch (Exception e) {
+            NedResourcesPlugin.logError("Failed to rebuild projects table", e);
+            return;
         }
+
+        // replace table with updated one 
+        projects.clear();
+        projects.putAll(tmp);
+
         dumpProjectsTable();
 
         // forget those files which are no longer in our projects or NED folders

@@ -225,7 +225,12 @@ public class DependencyCache {
             // determine project group (this project plus all referenced projects)
             data.projectGroup = new ArrayList<IProject>();
             data.projectGroup.add(project);
-            data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
+            try {
+                data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
+            }
+            catch (CoreException e) {
+                Activator.logError("Error getting the list of referenced projects", e);
+            }
 
             ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
 

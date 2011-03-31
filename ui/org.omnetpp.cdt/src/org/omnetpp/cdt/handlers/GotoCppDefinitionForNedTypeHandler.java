@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -105,7 +106,14 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
             String className = nedTypeElement.getNedTypeInfo().getFullyQualifiedCppClassName();
             IProject project = nedTypeElement.getNedTypeInfo().getProject();
             Assert.isNotNull(project);
-            IProject[] projects = ProjectUtils.getAllReferencedProjects(project, false, true);
+
+            IProject[] projects;
+            try {
+                projects = ProjectUtils.getAllReferencedProjects(project, false, true);
+            }
+            catch (CoreException e) {
+                throw new ExecutionException("Error getting list of referenced projects", e);
+            }
 
             if (!gotoCppDefinition(page, projects, className)) {
                 if (page.getActiveEditor()!=null && page.getActiveEditor().getEditorInput() instanceof FileEditorInput) {
