@@ -45,9 +45,9 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 
     private XYArray data;
 
-	private String[] valueNames;
-
     private ResultItem.Type type;
+
+    private EnumType enumType;
 
     public AxisVectorBarRenderer(SequenceChart sequenceChart, String vectorFileName, String vectorRunName, String vectorModuleFullPath, String vectorName, ResultItem resultItem, XYArray data) {
 		this.sequenceChart = sequenceChart;
@@ -57,11 +57,8 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	    this.vectorName = vectorName;
 		this.data = data;
         this.type = resultItem.getType();
-
-        if (type == ResultItem.Type.TYPE_ENUM) {
-            EnumType enumType = resultItem.getEnum();
-            valueNames = enumType.getNames().toArray();
-        }
+        if (type == ResultItem.Type.TYPE_ENUM)
+            enumType = resultItem.getEnum();
     }
 
     public String getVectorFileName() {
@@ -317,7 +314,7 @@ public class AxisVectorBarRenderer implements IAxisRenderer {
 	private String getValueText(int index)
 	{
 	    if (type == ResultItem.Type.TYPE_ENUM)
-            return valueNames[getValueIndex(index)];
+            return enumType.nameOf((int)getValue(index));
 	    else {
 	        double value = getValue(index);
 
