@@ -87,20 +87,42 @@ public class InifileUtils {
 	 * Returns null if not found.
 	 */
 	public static String lookupConfig(String section, String key, IReadonlyInifileDocument doc) {
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
-		return lookupConfig(sectionChain, key, doc);
+	    return lookupConfig(section, key, doc, null);
 	}
 
-	/**
+    /**
+     * Looks up a configuration value in the given section or its fallback sections.
+     * Returns {@code defaultValue} if not found.
+     */
+    public static String lookupConfig(String section, String key, IReadonlyInifileDocument doc, String defaultValue) {
+        String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+        return lookupConfig(sectionChain, key, doc);
+    }
+
+    /**
 	 * Looks up a configuration value. Returns null if not found.
 	 */
 	public static String lookupConfig(String[] sectionChain, String key, IReadonlyInifileDocument doc) {
-		for (String section : sectionChain)
-			if (doc.containsKey(section, key))
-				return doc.getValue(section, key);
-		return null;
+	    return lookupConfig(sectionChain, key, doc, null);
 	}
+	
+	/**
+	 * Looks up the network name.
+	 */
+    public static String lookupNetwork(IReadonlyInifileDocument doc, String section) {
+        return InifileUtils.lookupConfig(section, CFGID_NETWORK.getName(), doc, CFGID_NETWORK.getDefaultValue());
+    }
 
+    /**
+     * Looks up a configuration value. Returns {@code defaultValue} if not found.
+     */
+    public static String lookupConfig(String[] sectionChain, String key, IReadonlyInifileDocument doc, String defaultValue) {
+        for (String section : sectionChain)
+            if (doc.containsKey(section, key))
+                return doc.getValue(section, key);
+        return defaultValue;
+    }
+	
 	/**
 	 * Given a parameter's fullPath, returns the key of the matching
 	 * inifile entry, or null if the parameter matches nothing. If hasNedDefault

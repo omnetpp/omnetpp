@@ -87,18 +87,9 @@ class ParamResolutionJob extends Job {
                 if (monitor.isCanceled() || !doc.isImmutableCopyUpToDate(docCopy) || !nedResources.isImmutableCopyUpToDate(nedResolver))
                     throw new OperationCanceledException();
                 
-                monitor.subTask("Resolving module parameters.");
-                List<ParamResolution> paramResolutions =
-                    ParamCollector.collectParameters(docCopy, nedResolver, activeSection, new SubMonitor(monitor, 50));
-
-                monitor.subTask("Resolving module properties.");
-                List<PropertyResolution> propertyResolutions =
-                    ParamCollector.collectSignalResolutions(docCopy, nedResolver, activeSection, new SubMonitor(monitor, 50));  
-                
-                Entry entry = new Entry();
-                entry.section = activeSection;
-                entry.paramResolutions = paramResolutions;
-                entry.propertyResolutions = propertyResolutions;
+                monitor.subTask("Resolving module parameters and properties.");
+                Entry entry =
+                    ParamCollector.collectParametersAndProperties(docCopy, nedResolver, activeSection, new SubMonitor(monitor, 100));
                 entries.add(entry);
             }
 

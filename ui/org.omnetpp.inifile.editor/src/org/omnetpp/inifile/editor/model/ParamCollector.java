@@ -1,22 +1,16 @@
 package org.omnetpp.inifile.editor.model;
 
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.OperationCanceledException;
-import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
-import org.omnetpp.ned.core.IModuleTreeVisitor;
 import org.omnetpp.ned.core.NedTreeTraversal;
 import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -28,226 +22,75 @@ import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 public class ParamCollector {
     
-    private static class ParamCollectingVisitor extends ParamUtil.RecursiveParamDeclarationVisitor {
-        private final IReadonlyInifileDocument doc;
-        private final String[] sectionChain;
-        private final List<ParamResolution> resultList;
-        private final IProgressMonitor monitor;
-
-        public ParamCollectingVisitor() {
-            this.doc = null;
-            this.sectionChain = null;
-            this.resultList = new ArrayList<ParamResolution>();
-            this.monitor = null;
-        }
+    /**
+     * Collect parameters, signals and statistics from the network configured in the given
+     * section of the ini file document.
+     */
+    public static ParamResolutionStatus.Entry collectParametersAndProperties(IReadonlyInifileDocument doc,
+            INedTypeResolver nedResolver, String activeSection, IProgressMonitor monitor) {
         
-        public ParamCollectingVisitor(IReadonlyInifileDocument doc, String[] sectionChain, IProgressMonitor monitor) {
-            this.doc = doc;
-            this.resultList = new ArrayList<ParamResolution>();
-            this.sectionChain = sectionChain;
-            this.monitor = monitor;
-        }
+        Assert.isNotNull(doc);
+        Assert.isNotNull(activeSection);
         
-        public List<ParamResolution> getResult() {
-            return resultList;
-        }
-        
-        
-
-        @Override
-        public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
-            if (monitor != null && monitor.isCanceled())
-                throw new OperationCanceledException();
-            return super.enter(element, typeInfo);
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(doc, activeSection, true, true, monitor);
+        String networkName = InifileUtils.lookupNetwork(doc, activeSection);
+        INedTypeInfo network = networkName != null ? resolveNetwork(doc, nedResolver, networkName) : null;
+        if (network != null) {
+            IProject contextProject = doc.getDocumentFile().getProject();
+            NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, contextProject);
+            treeTraversal.traverse(network.getFullyQualifiedName());
         }
 
-        @Override
-        protected boolean visitParamDeclaration(String fullPath, Stack<INedTypeInfo> typeInfoPath, Stack<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
-            ParamCollector.resolveParameter(resultList, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
-            return true;
-        }
-
-        @Override
-        public String resolveLikeType(ISubmoduleOrConnection element) {
-            // Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
-            // resolveLikeParam() which relies on the data structure we are currently building
-
-            // get like parameter name
-            String likeParamName = element.getLikeParam();
-            if (likeParamName != null && !likeParamName.matches("[A-Za-z_][A-Za-z0-9_]*"))
-                return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
-
-            // look up parameter value (note: we cannot use resolveLikeParam() here yet)
-            String fullPath = StringUtils.join(fullPathStack, ".");
-            ParamResolution res = null;
-            for (ParamResolution r : resultList)
-                if (r.paramDeclaration.getName().equals(likeParamName) && r.fullPath.equals(fullPath))
-                    {res = r; break;}
-            if (res == null)
-                return null; // likely no such parameter
-            String value = getParamValue(res, doc);
-            if (value == null)
-                return null; // likely unassigned
-            try {
-                value = Common.parseQuotedString(value);
-            } catch (RuntimeException e) {
-                return null; // something is wrong: value is not a string constant?
-            }
-            // note: value is likely a simple (unqualified) name, it'll be resolved
-            // to fully qualified name in the caller (NedTreeTraversal)
-            return value;
-        }
-    }
-    
-    private static final class SignalCollectingVisitor implements IModuleTreeVisitor {
-        private final ArrayList<PropertyResolution> list;
-        private final String activeSection;
-        protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
-        protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
-        protected IProgressMonitor monitor;
-        
-        public SignalCollectingVisitor(String activeSection, IProgressMonitor monitor) {
-            this.list = new ArrayList<PropertyResolution>();
-            this.activeSection = activeSection;
-            this.monitor = monitor;
-        }
-        
-        public List<PropertyResolution> getResult() {
-            return list;
-        }
-
-        public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
-            if (monitor != null && monitor.isCanceled())
-                throw new OperationCanceledException();
-            
-            elementPath.push(element);
-            fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
-            for (String propertyName : new String[] {"signal", "statistic"}) {
-                Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get(propertyName);
-                String fullPath = StringUtils.join(fullPathStack, ".");
-                if (propertyMap != null)
-                    for (PropertyElementEx property : propertyMap.values())
-                        list.add(new PropertyResolution(fullPath + "." + property.getIndex(), elementPath, property, activeSection));
-            }
-            return true;
-        }
-
-        public void leave() {
-            elementPath.pop();
-            fullPathStack.pop();
-        }
-
-        public void recursiveType(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
-        }
-
-        public String resolveLikeType(ISubmoduleOrConnection element) {
-            return null;
-        }
-
-        public void unresolvedType(ISubmoduleOrConnection element, String typeName) {
-        }
-    }
-    
-    public static List<ParamResolution> collectParameters(IReadonlyInifileDocument doc, INedTypeResolver nedResolver, String activeSection,
-                                                            IProgressMonitor monitor) {
-        // resolve section chain and network
-        INedTypeInfo network = findConfiguredNetwork(doc, nedResolver, activeSection);
-        if (network == null)
-            return new ArrayList<ParamResolution>();
-    
-        // traverse the network and collect resolutions meanwhile
-        final String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-        IProject contextProject = doc.getDocumentFile().getProject();
-        ParamCollectingVisitor visitor = new ParamCollectingVisitor(doc, sectionChain, monitor);
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, contextProject);
-        treeTraversal.traverse(network.getFullyQualifiedName());
-    
-        return visitor.getResult();
+        ParamResolutionStatus.Entry result = new ParamResolutionStatus.Entry();
+        result.section = activeSection;
+        result.paramResolutions = visitor.getParamResolutions();
+        result.propertyResolutions = visitor.getPropertyResolutions();
+        return result;
     }
 
     /**
      * Collects parameters of a module type (recursively), *without* an inifile present.
      */
     public static List<ParamResolution> collectParameters(INedTypeInfo moduleType, INedTypeResolver nedResolver) {
-        return collectParameters(moduleType, nedResolver, moduleType.getProject());
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(true, false);
+        // the contextProject parameter affects the resolution of parametric submodule types ("like").
+        NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, moduleType.getProject());
+        treeTraversal.traverse(moduleType);
+        return visitor.getParamResolutions();
     }
     
     /**
      * Collects parameters of a submodule subtree, *without* an inifile present.
      */
     public static List<ParamResolution> collectParameters(SubmoduleElementEx submodule, INedTypeResolver nedResolver) {
+        // the contextProject parameter affects the resolution of parametric submodule types ("like").
         IProject contextProject = submodule.getEnclosingTypeElement().getNedTypeInfo().getProject();
-        return collectParameters(submodule, nedResolver, contextProject);
-    }
-    
-    public static List<PropertyResolution> collectSignalResolutions(IReadonlyInifileDocument doc, INedTypeResolver nedResolver, String activeSection,
-                                                                     IProgressMonitor monitor) {
-        INedTypeInfo network = findConfiguredNetwork(doc, nedResolver, activeSection);
-        if (network == null )
-            return new ArrayList<PropertyResolution>();
-    
-        // traverse the network and collect resolutions meanwhile
-        SignalCollectingVisitor visitor = new SignalCollectingVisitor(activeSection, monitor);
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, doc.getDocumentFile().getProject());
-        treeTraversal.traverse(network.getFullyQualifiedName());
-        return visitor.getResult();
-    }
-
-
-    /**
-     * Collects parameters of a module type (recursively), *without* an inifile present.
-     * The contextProject parameter affects the resolution of parametric submodule types ("like").
-     */
-    private static List<ParamResolution> collectParameters(INedTypeInfo moduleType, INedTypeResolver nedResolver, IProject contextProject) {
-        ParamCollectingVisitor visitor = new ParamCollectingVisitor();
-        NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, contextProject);
-        treeTraversal.traverse(moduleType);
-        return visitor.getResult();
-    }
-
-    /**
-     * Collects parameters of a submodule subtree, *without* an inifile present.
-     * The contextProject parameter affects the resolution of parametric submodule types ("like").
-     */
-    private static List<ParamResolution> collectParameters(SubmoduleElementEx submodule, INedTypeResolver nedResolver, IProject contextProject) {
         // TODO: this ignores deep parameter settings from the compound module above the submodule
-        ParamCollectingVisitor visitor = new ParamCollectingVisitor();
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(true, false);
         NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver,  visitor, contextProject);
         treeTraversal.traverse(submodule);
-        return visitor.getResult();
-    }
-
-    private static String getParamValue(ParamResolution res, IReadonlyInifileDocument doc) {
-        return getParamValue(res, doc, true);
-    }
-
-    private static String getParamValue(ParamResolution res, IReadonlyInifileDocument doc, boolean allowNull) {
-        switch (res.type) {
-            case UNASSIGNED:
-                if (allowNull)
-                    return null;
-                else
-                    return "(unassigned)";
-            case INI_ASK:
-                if (allowNull)
-                    return null;
-                else
-                    return "(ask)";
-            case NED: case INI_DEFAULT: case IMPLICITDEFAULT:
-                return res.paramAssignment.getValue();
-            case INI: case INI_OVERRIDE: case INI_NEDDEFAULT:
-                return doc.getValue(res.section, res.key);
-            default: throw new IllegalArgumentException("invalid param resolution type: "+res.type);
-        }
+        return visitor.getParamResolutions();
     }
     
     /**
-     * Resolve parameters of a module type or submodule, based solely on NED information,
-     * without inifile. This is useful for views when a NED editor is active.
+     * Resolve parameters of a module type or submodule.
      */
-    public static void resolveModuleParameters(List<ParamResolution> resultList, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
+    public static void resolveModuleParameters(List<ParamResolution> resultList, String fullPath, Vector<INedTypeInfo> typeInfoPath,
+            Vector<ISubmoduleOrConnection> elementPath, String[] sectionChain, IReadonlyInifileDocument doc) {
         for (ParamElementEx paramDeclaration : typeInfoPath.lastElement().getParamDeclarations().values())
-            resolveParameter(resultList, fullPath, typeInfoPath, elementPath, null, null, paramDeclaration);
+            resolveParameter(resultList, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
+    }
+    
+    /**
+     * Resolve properties of a module type or submodule.
+     */
+    public static void resolveModuleProperties(String propertyName, List<PropertyResolution> list,
+            String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, String activeSection) {
+        INedTypeInfo typeInfo = typeInfoPath.lastElement();
+        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get(propertyName);
+        if (propertyMap != null)
+            for (PropertyElementEx property : propertyMap.values())
+                list.add(new PropertyResolution(fullPath + "." + property.getIndex(), elementPath, property, activeSection));
     }
 
     /**
@@ -363,22 +206,5 @@ public class ParamCollector {
             network = ned.getToplevelNedType(value, contextProject);
     
         return network;
-    }
-    
-    private static INedTypeInfo findConfiguredNetwork(IReadonlyInifileDocument doc, INedTypeResolver nedResolver, String section) {
-        String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
-        String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
-        if (networkName == null)
-            networkName = CFGID_NETWORK.getDefaultValue();
-        INedTypeInfo network = networkName != null ? resolveNetwork(doc, nedResolver, networkName) : null;
-        return network;
-    }
-
-    public static void resolveModuleProperties(String propertyName, List<PropertyResolution> list, String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath) {
-        INedTypeInfo typeInfo = typeInfoPath.lastElement();
-        Map<String, PropertyElementEx> propertyMap = typeInfo.getProperties().get(propertyName);
-        if (propertyMap != null)
-            for (PropertyElementEx property : propertyMap.values())
-                list.add(new PropertyResolution(fullPath + "." + property.getIndex(), elementPath, property, null));
     }
 }

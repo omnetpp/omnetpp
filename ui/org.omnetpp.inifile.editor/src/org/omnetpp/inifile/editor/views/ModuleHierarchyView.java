@@ -721,15 +721,15 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		    Vector<INedTypeInfo> typeInfoPath = treeNode.getTypeInfoPath();
 		    
 		    ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
-			ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath);
+			ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath, null, null);
 			addParamResolutions(treeNode, paramResolutions.toArray(new ParamResolution[0]));
             
 			ArrayList<PropertyResolution> propertyResolutions = new ArrayList<PropertyResolution>();
-            ParamCollector.resolveModuleProperties("signal", propertyResolutions, fullPath, typeInfoPath, elementPath);
+            ParamCollector.resolveModuleProperties("signal", propertyResolutions, fullPath, typeInfoPath, elementPath, null);
             addSignalResolutions(treeNode, propertyResolutions.toArray(new PropertyResolution[0]));
             
             propertyResolutions = new ArrayList<PropertyResolution>();
-            ParamCollector.resolveModuleProperties("statistic", propertyResolutions, fullPath, typeInfoPath, elementPath);
+            ParamCollector.resolveModuleProperties("statistic", propertyResolutions, fullPath, typeInfoPath, elementPath, null);
             addStatisticResolutions(treeNode, propertyResolutions.toArray(new PropertyResolution[0]));
 		}
 		else {
@@ -778,17 +778,17 @@ public class ModuleHierarchyView extends AbstractModuleView {
             Vector<INedTypeInfo> typeInfoPath = treeNode.getTypeInfoPath();
             
             ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
-            ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath);
+            ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath, null, null);
             if (!paramResolutions.isEmpty())
                 return true;
             
             ArrayList<PropertyResolution> propertyResolutions = new ArrayList<PropertyResolution>();
-            ParamCollector.resolveModuleProperties("signal", propertyResolutions, fullPath, typeInfoPath, elementPath);
+            ParamCollector.resolveModuleProperties("signal", propertyResolutions, fullPath, typeInfoPath, elementPath, null);
             if (!propertyResolutions.isEmpty())
                 return true;
             
             propertyResolutions = new ArrayList<PropertyResolution>();
-            ParamCollector.resolveModuleProperties("statistic", propertyResolutions, fullPath, typeInfoPath, elementPath);
+            ParamCollector.resolveModuleProperties("statistic", propertyResolutions, fullPath, typeInfoPath, elementPath, null);
             if (!propertyResolutions.isEmpty())
                 return true;
         }
