@@ -216,7 +216,6 @@ sub makeMethodImpl ()
 
    # class code goes into initial fprintf
    my $fmt .= "$class->{CODE}";
-   $fmt = "\\n".$fmt if ($class->{CODE} eq "E");
    my $args = "";
 
    foreach $field ( getEffectiveFields($class) )

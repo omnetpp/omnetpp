@@ -9,6 +9,9 @@ SB SimulationBeginEntry // mandatory first line of an eventlog file
 
 SE SimulationEndEntry // optional last line of an eventlog file
 {
+   e bool isError // specifies if the simulation terminated due to an error
+   c int resultCode // the error code in case of an error, otherwise the normal result code
+   m string message // human readable description
 }
 
 BU BubbleEntry // display a bubble message

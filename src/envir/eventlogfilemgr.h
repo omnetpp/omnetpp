@@ -24,10 +24,11 @@
 #include "objectprinter.h"
 #include "intervals.h"
 
+class cComponent;
 class cModule;
+class cChannel;
 class cMessage;
 class cGate;
-class cComponent;
 
 NAMESPACE_BEGIN
 
@@ -93,8 +94,9 @@ class ENVIR_API EventlogFileManager
     // keyframe state
     std::vector<eventnumber_t> consequenceLookaheadLimits;
     std::map<eventnumber_t, std::vector<EventLogEntryRange> > eventNumberToSimulationStateEventLogEntryRanges;
-    std::map<int, EventLogEntryReference> moduleIdToModuleDisplayStringChangedEntryReferenceMap;
-    std::map<int, EventLogEntryReference> messageIdToBeginSendEntryReferenceMap;
+    std::map<cModule *, EventLogEntryReference> moduleToModuleDisplayStringChangedEntryReferenceMap;
+    std::map<cChannel *, EventLogEntryReference> channelToConnectionDisplayStringChangedEntryReferenceMap;
+    std::map<cMessage *, EventLogEntryReference> messageToBeginSendEntryReferenceMap;
 
   public:
     EventlogFileManager();
@@ -105,12 +107,13 @@ class ENVIR_API EventlogFileManager
     virtual void close();
     virtual void remove();
     virtual void startRun();
-    virtual void endRun();
+    virtual void endRun(bool isError, int resultCode, const char *message);
 
     virtual bool hasRecordingIntervals() const;
     virtual void clearRecordingIntervals();
 
     virtual void recordSimulation();
+    virtual void recordInitialize();
     virtual void recordMessages();
     virtual void recordModules(cModule *module);
     virtual void recordConnections(cModule *module);
@@ -154,7 +157,7 @@ class ENVIR_API EventlogFileManager
     void removeSimulationStateEventLogEntry(EventLogEntryReference reference);
     void removeSimulationStateEventLogEntry(eventnumber_t eventNumber, int entryIndex);
 
-    void removeBeginSendEntryReference(int messageId);
+    void removeBeginSendEntryReference(cMessage *message);
     void recordKeyframe();
     void addPreviousEventNumber(eventnumber_t previousEventNumber);
     //@}

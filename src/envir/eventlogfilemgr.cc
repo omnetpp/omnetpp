@@ -115,8 +115,9 @@ void EventlogFileManager::clearInternalState()
     isModuleEventLogRecordingEnabled = true;
     consequenceLookaheadLimits.clear();
     eventNumberToSimulationStateEventLogEntryRanges.clear();
-    moduleIdToModuleDisplayStringChangedEntryReferenceMap.clear();
-    messageIdToBeginSendEntryReferenceMap.clear();
+    moduleToModuleDisplayStringChangedEntryReferenceMap.clear();
+    channelToConnectionDisplayStringChangedEntryReferenceMap.clear();
+    messageToBeginSendEntryReferenceMap.clear();
 }
 
 void EventlogFileManager::configure()
@@ -172,38 +173,45 @@ void EventlogFileManager::recordSimulation()
 {
     if (entryIndex == -1) {
         cModule *systemModule = simulation.getSystemModule();
+        recordInitialize();
         recordModules(systemModule);
         recordConnections(systemModule);
         recordMessages();
     }
 }
 
+void EventlogFileManager::recordInitialize()
+{
+    eventNumber = 0;
+    EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, 0, 1, -1, -1);
+    entryIndex = 0;
+    const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
+    EventLogWriter::recordSimulationBeginEntry_v_rid_b(feventlog, OMNETPP_VERSION, runId, keyframeBlockSize);
+    entryIndex++;
+    recordKeyframe();
+}
+
 void EventlogFileManager::recordMessages()
 {
-    const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
     std::vector<cMessage *> messages;
     for (cMessageHeap::Iterator it = cMessageHeap::Iterator(simulation.getMessageQueue()); !it.end(); it++)
         messages.push_back(it());
     std::stable_sort(messages.begin(), messages.end(), compareMessageEventNumbers);
     eventnumber_t oldEventNumber = eventNumber;
-    eventNumber = -1;
     for (std::vector<cMessage *>::iterator it = messages.begin(); it != messages.end(); it++) {
         cMessage *msg = *it;
         if (eventNumber != msg->getPreviousEventNumber()) {
+            fprintf(feventlog, "\n");
             eventNumber = msg->getPreviousEventNumber();
-            EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, msg->getSendingTime(), eventNumber == 0 ? simulation.getSystemModule()->getId() : msg->getSenderModuleId(), -1, -1);
+            EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, msg->getSendingTime(), msg->getSenderModuleId(), -1, -1);
             entryIndex = 0;
-            if (eventNumber == 0) {
-                EventLogWriter::recordSimulationBeginEntry_v_rid_b(feventlog, OMNETPP_VERSION, runId, keyframeBlockSize);
-                entryIndex++;
-            }
-            removeBeginSendEntryReference(msg->getId());
+            removeBeginSendEntryReference(msg);
             recordKeyframe();
         }
-        if (eventNumber == 0) {
-        	cModule *senderModule = msg->getSenderModule();
-            componentMethodBegin(simulation.getSystemModule(), senderModule ? senderModule : msg->getArrivalModule(), senderModule ? "initialize(0)" : "scheduleStart()", empty_va);
-        }
+        eventnumber_t previousEventNumber = msg->getPreviousEventNumber();
+        msg->setPreviousEventNumber(-1);
+        messageCreated(msg);
+        msg->setPreviousEventNumber(previousEventNumber);
         if (msg->isSelfMessage())
             messageScheduled(msg);
         else if (!msg->getSenderGate()) {
@@ -222,8 +230,6 @@ void EventlogFileManager::recordMessages()
             messageSendHop(msg, msg->getSenderGate());
             endSend(msg);
         }
-        if (eventNumber == 0)
-            componentMethodEnd();
     }
     eventNumber = oldEventNumber;
 }
@@ -261,9 +267,9 @@ void EventlogFileManager::startRun()
     if (isEventLogRecordingEnabled) {
         eventNumber = 0;
         const char *runId = ev.getConfigEx()->getVariable(CFGVAR_RUNID);
-        // TODO: we can't use simulation.getEventNumber() and simulation.getSimTime(), because when we start a new run
+        // we can't use simulation.getEventNumber() and simulation.getSimTime(), because when we start a new run
         // these numbers are still set from the previous run (i.e. not zero)
-        EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, 0, simulation.getSystemModule()->getId(), -1, -1);
+        EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, 0, 1, -1, -1);
         entryIndex = 0;
         EventLogWriter::recordSimulationBeginEntry_v_rid_b(feventlog, OMNETPP_VERSION, runId, keyframeBlockSize);
         entryIndex++;
@@ -272,10 +278,10 @@ void EventlogFileManager::startRun()
     }
 }
 
-void EventlogFileManager::endRun()
+void EventlogFileManager::endRun(bool isError, int resultCode, const char *message)
 {
     if (isEventLogRecordingEnabled) {
-        EventLogWriter::recordSimulationEndEntry(feventlog);
+        EventLogWriter::recordSimulationEndEntry_e_c_m(feventlog, isError, resultCode, message);
         eventNumber = -1;
         entryIndex++;
         fflush(feventlog);
@@ -309,9 +315,10 @@ void EventlogFileManager::simulationEvent(cMessage *msg)
     isEventLogRecordingEnabled = isModuleEventLogRecordingEnabled && isIntervalEventLogRecordingEnabled;
     if (isEventLogRecordingEnabled) {
         eventNumber = simulation.getEventNumber();
+        fprintf(feventlog, "\n");
         EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, simulation.getSimTime(), mod->getId(), msg->getPreviousEventNumber(), msg->getId());
         entryIndex = 0;
-        removeBeginSendEntryReference(msg->getId());
+        removeBeginSendEntryReference(msg);
         recordKeyframe();
     }
 }
@@ -354,7 +361,7 @@ void EventlogFileManager::beginSend(cMessage *msg)
         entryIndex++;
         addPreviousEventNumber(msg->getPreviousEventNumber());
         addSimulationStateEventLogEntry(eventNumber, entryIndex);
-        messageIdToBeginSendEntryReferenceMap[msg->getId()] = EventLogEntryReference(eventNumber, entryIndex);
+        messageToBeginSendEntryReferenceMap[msg] = EventLogEntryReference(eventNumber, entryIndex);
     }
 }
 
@@ -388,7 +395,7 @@ void EventlogFileManager::messageCancelled(cMessage *msg)
         }
         entryIndex++;
         addPreviousEventNumber(msg->getPreviousEventNumber());
-        removeBeginSendEntryReference(msg->getId());
+        removeBeginSendEntryReference(msg);
     }
 }
 
@@ -534,7 +541,8 @@ void EventlogFileManager::moduleCreated(cModule *newmodule)
         bool recordModuleEvents = ev.getConfig()->getAsBool(m->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
         m->setRecordEvents(recordModuleEvents);
         bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
-        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, m->getId(), m->getClassName(), m->getNedTypeName(), m->getParentModule() ? m->getParentModule()->getId() : -1, m->getFullName(), isCompoundModule); //FIXME size() is missing
+        // FIXME: size() is missing
+        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, m->getId(), m->getClassName(), m->getNedTypeName(), m->getParentModule() ? m->getParentModule()->getId() : -1, m->getFullName(), isCompoundModule);
         entryIndex++;
         addSimulationStateEventLogEntry(eventNumber, entryIndex);
     }
@@ -577,7 +585,8 @@ void EventlogFileManager::connectionCreated(cGate *srcgate)
 {
     if (isEventLogRecordingEnabled) {
         cGate *destgate = srcgate->getNextGate();
-        EventLogWriter::recordConnectionCreatedEntry_sm_sg_dm_dg(feventlog, srcgate->getOwnerModule()->getId(), srcgate->getId(), destgate->getOwnerModule()->getId(), destgate->getId());  // TODO: channel, channel attributes, etc
+        // TODO: channel, channel attributes, etc
+        EventLogWriter::recordConnectionCreatedEntry_sm_sg_dm_dg(feventlog, srcgate->getOwnerModule()->getId(), srcgate->getId(), destgate->getOwnerModule()->getId(), destgate->getId());
         entryIndex++;
         addSimulationStateEventLogEntry(eventNumber, entryIndex);
     }
@@ -599,10 +608,10 @@ void EventlogFileManager::displayStringChanged(cComponent *component)
             EventLogWriter::recordModuleDisplayStringChangedEntry_id_d(feventlog, module->getId(), module->getDisplayString().str());
             entryIndex++;
             addSimulationStateEventLogEntry(eventNumber, entryIndex);
-            std::map<int, EventLogEntryReference>::iterator it = moduleIdToModuleDisplayStringChangedEntryReferenceMap.find(module->getId());
-            if (it != moduleIdToModuleDisplayStringChangedEntryReferenceMap.end())
+            std::map<cModule *, EventLogEntryReference>::iterator it = moduleToModuleDisplayStringChangedEntryReferenceMap.find(module);
+            if (it != moduleToModuleDisplayStringChangedEntryReferenceMap.end())
                 removeSimulationStateEventLogEntry((*it).second);
-            moduleIdToModuleDisplayStringChangedEntryReferenceMap[module->getId()] = EventLogEntryReference(eventNumber, entryIndex);
+            moduleToModuleDisplayStringChangedEntryReferenceMap[module] = EventLogEntryReference(eventNumber, entryIndex);
         }
         else if (dynamic_cast<cChannel *>(component)) {
             cChannel *channel = (cChannel *)component;
@@ -610,7 +619,10 @@ void EventlogFileManager::displayStringChanged(cComponent *component)
             EventLogWriter::recordConnectionDisplayStringChangedEntry_sm_sg_d(feventlog, gate->getOwnerModule()->getId(), gate->getId(), channel->getDisplayString().str());
             entryIndex++;
             addSimulationStateEventLogEntry(eventNumber, entryIndex);
-            // TODO: remove overwritten entries
+            std::map<cChannel *, EventLogEntryReference>::iterator it = channelToConnectionDisplayStringChangedEntryReferenceMap.find(channel);
+            if (it != channelToConnectionDisplayStringChangedEntryReferenceMap.end())
+                removeSimulationStateEventLogEntry((*it).second);
+            channelToConnectionDisplayStringChangedEntryReferenceMap[channel] = EventLogEntryReference(eventNumber, entryIndex);
         }
     }
 }
@@ -678,12 +690,12 @@ void EventlogFileManager::removeSimulationStateEventLogEntry(eventnumber_t event
     }
 }
 
-void EventlogFileManager::removeBeginSendEntryReference(int messageId)
+void EventlogFileManager::removeBeginSendEntryReference(cMessage *message)
 {
-    std::map<int, EventLogEntryReference>::iterator it = messageIdToBeginSendEntryReferenceMap.find(messageId);
-    if (it != messageIdToBeginSendEntryReferenceMap.end())
+    std::map<cMessage *, EventLogEntryReference>::iterator it = messageToBeginSendEntryReferenceMap.find(message);
+    if (it != messageToBeginSendEntryReferenceMap.end())
         removeSimulationStateEventLogEntry((*it).second);
-    messageIdToBeginSendEntryReferenceMap.erase(messageId);
+    messageToBeginSendEntryReferenceMap.erase(message);
 }
 
 void EventlogFileManager::recordKeyframe()
