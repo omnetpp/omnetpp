@@ -697,7 +697,8 @@ void Tkenv::newNetwork(const char *networkname)
         // finish & cleanup previous run if we haven't done so yet
         if (simstate!=SIM_NONET)
         {
-            endRun();
+            if (simstate!=SIM_FINISHCALLED)
+                endRun();
             simulation.deleteNetwork();
             simstate = SIM_NONET;
         }
@@ -739,7 +740,8 @@ void Tkenv::newRun(const char *configname, int runnumber)
         // finish & cleanup previous run if we haven't done so yet
         if (simstate!=SIM_NONET)
         {
-            endRun();
+            if (simstate!=SIM_FINISHCALLED)
+                endRun();
             simulation.deleteNetwork();
             simstate = SIM_NONET;
         }
