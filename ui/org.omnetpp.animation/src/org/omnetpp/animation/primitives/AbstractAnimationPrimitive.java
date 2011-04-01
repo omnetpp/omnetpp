@@ -34,8 +34,8 @@ import org.omnetpp.figures.anchors.NoncentralChopboxAnchor;
  * </p>
  * <p>
  * This class automatically keeps the invariant between the begin and end
- * animation positions and the durations (both in terms of simulation and
- * animation times).
+ * animation positions and the corresponding durations (both in terms of
+ * simulation and animation times).
  * </p>
  *
  * @author levy
@@ -54,6 +54,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
     /**
      * The event number of the event that provided this animation primitive.
+     * Note that this might be different from the event numbers present in the
+     * begin and end animation positions.
      */
 	private long sourceEventNumber;
 
@@ -83,9 +85,9 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 
     /**
      * Returns the total duration of this animation primitive in terms of
-     * animation time. The value <code>null</code> means that it is not yet
-     * set. Note that the time duration is automatically updated when both the
-     * begin and end animation times are set.
+     * animation time. The value <code>-1</code> means that it is not yet set.
+     * Note that the time duration is automatically updated when both the begin
+     * and end animation times are set.
      */
 	private double animationTimeDuration;
 
@@ -170,7 +172,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	}
 
     public void setOriginRelativeBeginAnimationTime(double beginAnimationTime) {
-        Assert.isTrue(beginAnimationPosition.getOriginRelativeAnimationTime() == null);
+        // Assert.isTrue(beginAnimationPosition.getOriginRelativeAnimationTime() == null);
         beginAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime);
         if (animationTimeDuration != -1)
             endAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime + animationTimeDuration);
@@ -183,7 +185,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	}
 
     public void setOriginRelativeEndAnimationTime(double endAnimationTime) {
-        Assert.isTrue(endAnimationPosition.getOriginRelativeAnimationTime() == null);
+        // Assert.isTrue(endAnimationPosition.getOriginRelativeAnimationTime() == null);
         endAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime);
         if (animationTimeDuration != -1)
             beginAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime - animationTimeDuration);

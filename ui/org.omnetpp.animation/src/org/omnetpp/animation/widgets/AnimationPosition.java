@@ -15,92 +15,95 @@ import org.omnetpp.common.util.StringUtils;
  * <p>
  * A completely specified animation position designates a single moment in the
  * animation. The animation is pretty much like a movie that flows from the
- * begin to the end with the current animation speed. Animation positions have a
- * natural ordering based on the moments they designate in the animation. An
- * animation position is said to be less than another if it designates a moment
- * before the moment designated by the other animation position.
+ * beginning to the end with the current animation speed. Animation positions
+ * have a natural ordering based on the moments they designate in the animation.
+ * An animation position is said to be less than another if it designates a
+ * moment before the moment designated by the other animation position.
  * </p>
  * <p>
- * An absolute animation time would be sufficient to specify an animation
- * position by simply measuring the distance from the very begin of the
- * animation. Unfortunately expressing animation positions this way would make
- * impossible to compute animation positions lazily and would prevent handling
- * huge animations effectively.
+ * An absolute animation time, which is simply measuring the distance from the
+ * very beginning of the animation, would be sufficient to specify an animation
+ * position. Unfortunately, expressing animation positions this way would make
+ * it impossible to compute animation positions lazily, and would prevent
+ * handling huge animations effectively.
  * </p>
  * <p>
  * A relative animation time helps to achieve the above goals by specifying
- * animation positions relative to another moment called the origin within the
- * same animation. One such moment might be the very first moment of the
- * animation of a single event. Another might be the first moment of an
- * animation frame. An animation frame is a coherent part of the whole animation
- * that belongs to the very same simulation time.
+ * animation positions relative to another moment (called the origin) within the
+ * same animation. One such moment is the very first moment of the animation of
+ * a single simulation event.
+ * </p>
+ * <p>
+ * Another important concept is the animation frame. It is a continuous part of
+ * the whole animation that belongs to the very same simulation time. It might
+ * span across multiple subsequent events.
+ * </p>
  * <p>
  * An animation position consist of the following values:
  * </p>
  * <ul>
  * <li>An event number or <code>null</code> if not yet set.</li>
  * <li>A simulation time or <code>null</code> if not yet set.</li>
- * <li>A double value specifying the frame relative animation time or
+ * <li>A double value specifying the frame-relative animation time or
  * <code>null</code> if not yet set.</li>
- * <li>A double value specifying the origin relative animation time or
+ * <li>A double value specifying the origin-relative animation time or
  * <code>null</code> if not yet set.</li>
  * </ul>
  * <p>
  * An animation position may be partially set and may only become complete
  * later. If none of the elements are set then the position is said to be
  * completely unspecified. If all of the elements are set then the position is
- * said to be completely specified. An animation position cannot change its
- * designated moment in the animation. This means that it always designates the
- * very same moment even if some parts have not yet been set.
+ * said to be completely specified.
  * </p>
  * <p>
- * The <b>begin animation position</b> is the first moment of the network setup
- * animation specified as follows:
+ * An animation position is not allowed change its designated moment in the
+ * animation while the program is running. This means that it always designates
+ * the very same moment even if some parts have not yet been set. It is almost
+ * like an immutable data structure.
  * </p>
- * <ul>
- * <li>Event number is <code>-1</code>.</li>
- * <li>Simulation time is <code>-1</code>.</li>
- * <li>Frame relative animation time is <code>0</code> (the first moment in the
- * animation frame).</li>
- * <li>Origin relative animation time is a negative value equal to the first
- * animation frame's size (assuming initialize as being the origin).</li>
- * </ul>
  * <p>
- * The <b>initialize animation position</b> is the first moment of the
- * initialize animation specified as follows:
+ * Note that there are strict relationships between the parts of an animation
+ * position and also where the animation time coordinate system origin is. The
+ * following examples assume certain coordinate system origins to simplify the
+ * descriptions. Other origins are also possible but they would only change the
+ * origin-relative animation time.
+ * </p>
+ * <p>
+ * The <b>begin animation position</b> is the first moment of the initialize
+ * animation specified as follows (assuming initialize as being the origin):
  * </p>
  * <ul>
  * <li>Event number is <code>0</code>.</li>
- * <li>Simulation time is to <code>0</code>.</li>
- * <li>Frame relative animation time is <code>0</code> (the first moment in the
- * animation frame starting with the initialize).</li>
- * <li>Origin relative animation time is <code>0</code> (assuming initialize as
- * being the origin).</li>
+ * <li>Simulation time is <code>0</code>.</li>
+ * <li>frame-relative animation time is <code>0</code> (the first moment in the
+ * animation frame).</li>
+ * <li>Origin-relative animation time is <code>0</code>.</li>
  * </ul>
  * <p>
  * The <b>first event animation position</b> is the first moment of the first
- * event's animation specified as follows:
+ * event's animation specified as follows (assuming the first event as being the
+ * origin):
  * </p>
  * <ul>
  * <li>Event number is the event number of the first event.</li>
  * <li>Simulation time is the simulation time of the first event.</li>
- * <li>Frame relative animation time is either <code>0</code> (the first moment
+ * <li>frame-relative animation time is either <code>0</code> (the first moment
  * in the animation frame starting with the first event) or some non-zero value
- * (the animation frame starts with initialize and expands into the first
- * event).</li>
- * <li>Origin relative animation time is <code>0</code> (assuming the first
- * event as being the origin).</li>
+ * (the animation frame starts with initialize and expands into the first event
+ * because they have equal simulation times).</li>
+ * <li>Origin-relative animation time is <code>0</code>.</li>
  * </ul>
  * <p>
  * The <b>end animation position</b> is the last moment of the last event's
- * animation specified as follows:
+ * animation specified as follows (assuming the last event as being the origin):
  * </p>
  * <ul>
  * <li>Event number is the event number of the last event.</li>
  * <li>Simulation time is the simulation time of the last event.</li>
- * <li>Frame relative animation time is the animation frame's size.</li>
- * <li>Origin relative animation time is <code>0</code> (assuming the last event
- * as being the origin).</li>
+ * <li>frame-relative animation time is the animation frame's size.</li>
+ * <li>Origin-relative animation time is either the animation frame's size or a
+ * smaller positive value because the animation frame starts in a previous event
+ * and expands into the last event.</li>
  * </ul>
  *
  * @author levy
@@ -109,11 +112,10 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     /**
      * The event number of the event that is immediately preceding this
      * animation position. The value <code>null</code> means that it is not yet
-     * set or there is no such event (i.e. during network setup). The value
-     * <code>0</code> means initialize. The event numbers monotonically increase
-     * along the animation. This means that if an animation position designates
-     * a moment later in the animation then it will also have greater than or
-     * equal event number.
+     * set. The value <code>0</code> means initialize. The event numbers
+     * monotonically increase along the animation. This means that if an
+     * animation position designates a moment later in the animation then it
+     * will also have greater than or equal event number.
      */
     protected Long eventNumber;
 
@@ -121,7 +123,8 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
      * The simulation time that corresponds to this animation position. There is
      * a range of animation times that correspond to the very same simulation
      * time. This range is called the animation frame. The value
-     * <code>null</code> means that it is not yet set. This means that if an
+     * <code>null</code> means that it is not yet set. The simulation times
+     * monotonically increase along the animation. This means that if an
      * animation position designates a moment later in the animation then it
      * will also have greater than or equal simulation time.
      */
@@ -131,7 +134,9 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
      * The animation time relative to the beginning of the animation frame. See
      * above for the definition of animation frame. The value must be greater
      * than or equal to zero. The value <code>null</code> means that it is not
-     * yet set.
+     * yet set. The frame-relative animation times do not increase monotonically
+     * along the animation. They are also independent of the selected animation
+     * time origin.
      */
     protected Double frameRelativeAnimationTime;
 
@@ -139,18 +144,18 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
      * The animation time relative to the origin of the animation. The origin is
      * specified with an event number and it refers to the first animation
      * moment of that event. The value may be any finite double number. The
-     * value <code>null</code> means that it is not yet set.
+     * value <code>null</code> means that it is not yet set. The origin-relative
+     * animation times monotonically increase along the animation. This means
+     * that if an animation position designates a moment later in the animation
+     * then it will also have greater than or equal origin-relative animation
+     * time.
      */
     protected Double originRelativeAnimationTime;
 
     public AnimationPosition() {
     }
 
-    public AnimationPosition(long eventNumber, BigDecimal simulationTime, double frameRelativeAnimationTime, double originRelativeAnimationTime) {
-        setAnimationPosition(eventNumber, simulationTime, frameRelativeAnimationTime, originRelativeAnimationTime);
-    }
-
-    public AnimationPosition(Long eventNumber, BigDecimal simulationTime, double frameRelativeAnimationTime, double originRelativeAnimationTime) {
+    public AnimationPosition(Long eventNumber, BigDecimal simulationTime, Double frameRelativeAnimationTime, Double originRelativeAnimationTime) {
         setAnimationPosition(eventNumber, simulationTime, frameRelativeAnimationTime, originRelativeAnimationTime);
     }
 
@@ -158,7 +163,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
         setAnimationPosition(animationPosition.eventNumber, animationPosition.simulationTime, animationPosition.frameRelativeAnimationTime, animationPosition.originRelativeAnimationTime);
     }
 
-    public void setAnimationPosition(Long eventNumber, BigDecimal simulationTime, double frameRelativeAnimationTime, double originRelativeAnimationTime) {
+    public void setAnimationPosition(Long eventNumber, BigDecimal simulationTime, Double frameRelativeAnimationTime, Double originRelativeAnimationTime) {
         setEventNumber(eventNumber);
         setSimulationTime(simulationTime);
         setFrameRelativeAnimationTime(frameRelativeAnimationTime);
@@ -167,11 +172,6 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
 
     public Long getEventNumber() {
         return eventNumber;
-    }
-
-    public void setEventNumber(long eventNumber) {
-        Assert.isTrue(this.eventNumber == null);
-        this.eventNumber = eventNumber;
     }
 
     public void setEventNumber(Long eventNumber) {
@@ -192,7 +192,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
         return frameRelativeAnimationTime;
     }
 
-    public void setFrameRelativeAnimationTime(double frameRelativeAnimationTime) {
+    public void setFrameRelativeAnimationTime(Double frameRelativeAnimationTime) {
         Assert.isTrue(this.frameRelativeAnimationTime == null || this.frameRelativeAnimationTime.equals(frameRelativeAnimationTime));
         this.frameRelativeAnimationTime = frameRelativeAnimationTime;
     }
@@ -201,8 +201,9 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
         return originRelativeAnimationTime;
     }
 
-    public void setOriginRelativeAnimationTime(double originRelativeAnimationTime) {
-        Assert.isTrue(this.originRelativeAnimationTime == null || this.originRelativeAnimationTime.equals(originRelativeAnimationTime));
+    public void setOriginRelativeAnimationTime(Double originRelativeAnimationTime) {
+        // we must allow this change because the animation time coordinate system origin might change
+        // Assert.isTrue(this.originRelativeAnimationTime == null || this.originRelativeAnimationTime.equals(originRelativeAnimationTime));
         this.originRelativeAnimationTime = originRelativeAnimationTime;
     }
 

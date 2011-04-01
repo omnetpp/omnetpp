@@ -119,7 +119,7 @@ public class AnimationCanvas
 
     public void removeDecorationFigures() {
         for (IFigure figure : getEditableFigures().toArray(new IFigure[0]))
-            if (!(figure instanceof AnimationCompoundModuleFigure))
+//            if (!(figure instanceof AnimationCompoundModuleFigure))
                 getRootFigure().remove(figure);
     }
 
@@ -179,8 +179,10 @@ public class AnimationCanvas
         else {
             ArrayList<Long> eventNumbers = new ArrayList<Long>();
             ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
-            eventNumbers.add(animationController.getCurrentEventNumber());
-            simulationTimes.add(animationController.getCurrentSimulationTime());
+            if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+                eventNumbers.add(animationController.getCurrentEventNumber());
+                simulationTimes.add(animationController.getCurrentSimulationTime());
+            }
             return new EventLogSelection(eventLogInput, eventNumbers, simulationTimes);
         }
     }

@@ -10,12 +10,19 @@ package org.omnetpp.animation.primitives;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.eventlog.engine.IEvent;
 
+/**
+ * Abstract base class for animation primitives that are infinite extent with
+ * respect to their end animation position.
+ *
+ * @author levy
+ */
 public class AbstractInfiniteAnimation extends AbstractAnimationPrimitive {
 	public AbstractInfiniteAnimation(AnimationController animationController) {
 		super(animationController);
 		IEvent lastEvent = animationController.getEventLogInput().getEventLog().getLastEvent();
 		setEndEventNumber(lastEvent.getEventNumber());
 		setEndSimulationTime(lastEvent.getSimulationTime());
-		setFrameRelativeEndAnimationTime(0);
+		// TODO: how do we figure out the correct maximum frame relative animation time?
+		setFrameRelativeEndAnimationTime(Double.MAX_VALUE);
 	}
 }

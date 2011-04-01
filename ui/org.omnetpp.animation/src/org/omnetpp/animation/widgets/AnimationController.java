@@ -42,6 +42,7 @@ import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogMessage;
 import org.omnetpp.common.eventlog.EventLogModule;
 import org.omnetpp.common.util.Pair;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.Timer;
 import org.omnetpp.common.util.TimerQueue;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
@@ -54,6 +55,7 @@ import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.GateCreatedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.KeyframeEntry;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
 import org.omnetpp.eventlog.engine.ModuleMethodBeginEntry;
@@ -62,147 +64,163 @@ import org.omnetpp.eventlog.engine.SendHopEntry;
 import org.omnetpp.ned.model.DisplayString;
 
 /**
- * The animation controller is responsible for managing the animation primitives while it is playing the animation backward or forward.
+ * <p>
+ * The animation controller is responsible for managing the animation primitives
+ * while it is playing the animation. The animation can be played in both
+ * forward and backward direction. The controller keeps track of the active
+ * animation primitives as real time goes by and calls the appropriate
+ * activate/deactivate functions as needed. It is also possible to immediately
+ * go to animation positions, event numbers or simulation times.
+ * </p>
+ * <p>
+ * Animation primitives are loaded lazily based on the current animation
+ * position. At any given moment animation primitives are loaded for a
+ * continuous range of events plus the extra events marked in the corresponding
+ * eventlog keyframes.
+ * </p>
+ * <p>
+ * The animation controller ensures that when the eventlog file is appended, the
+ * animation that is already done by the previous version of the file will not
+ * change. In other words it is not allowed to animate into the not completely
+ * known future.
+ * </p>
  *
  * @author levy
  */
 public class AnimationController {
 	private final static boolean debug = false;
 
-	/**
-	 * A list of timers used during the animation. The queue contains the animationTimer and
-	 * animation primitives may add their own timers here. As real time goes by the timer queue
-	 * will call its timers based on their settings, so that they can update their figures.
-	 */
-	private TimerQueue timerQueue;
+    /**
+     * A list of timers used during the animation. The queue contains the
+     * animationTimer and animation primitives may add their own timers here. As
+     * real time goes by the timer queue will call its timers based on their
+     * settings, so that they can update their figures.
+     */
+    private TimerQueue timerQueue;
 
-	/**
-	 * The main timer that is responsible for updating the animation position during the animation.
-	 */
-	private AnimationTimer animationTimer;
+    /**
+     * The main timer that is responsible for updating the animation position
+     * during the animation.
+     */
+    private AnimationTimer animationTimer;
 
-	/**
-	 * The list of loaded animation primitives. This may contain more animation primitives than
-	 * that is rendered to the canvas. This list is ordered by begin animation time.
-	 */
-	private ArrayList<IAnimationPrimitive> beginAnimationTimeOrderedPrimitives;
+    /**
+     * The list of loaded animation primitives. This may contain more animation
+     * primitives than that is rendered to the canvas. This list is ordered by
+     * begin animation time.
+     */
+    private ArrayList<IAnimationPrimitive> beginAnimationTimeOrderedPrimitives;
 
-	/**
-	 * The list of loaded animation primitives. This may contain more animation primitives than
-	 * that is rendered to the canvas. This list is ordered by end animation time.
-	 *
-	 * In fact the list is ordered by end simulation time and as soon as any item is required at a given simulation time,
-	 * then all the primitives at the very same end simulation time are ordered in place by their end animation time.
-	 */
-	private ArrayList<IAnimationPrimitive> endAnimationTimeOrderedPrimitives;
+    /**
+     * The list of loaded animation primitives. This may contain more animation
+     * primitives than that is rendered to the canvas. This list is ordered by
+     * end animation time.
+     *
+     * In fact the list is ordered by end simulation time and as soon as any
+     * item is required at a given simulation time, then all the primitives at
+     * the very same end simulation time are ordered in place by their end
+     * animation time.
+     */
+    private ArrayList<IAnimationPrimitive> endAnimationTimeOrderedPrimitives;
 
-	/**
-	 * The list of currently active animation primitives. These will be called to refresh their animation at the
-	 * current animation position. At any given time it should contain an animation primitive iff the current animation
-	 * position is between the begin and end animation time of that primitive.
-	 */
-	private ArrayList<IAnimationPrimitive> activeAnimationPrimitives;
+    /**
+     * The list of currently active animation primitives. These will be called
+     * to refresh their animation at the current animation position. At any
+     * given time it should contain an animation primitive iff the current
+     * animation position is between the begin and end animation time of that
+     * primitive.
+     */
+    private ArrayList<IAnimationPrimitive> activeAnimationPrimitives;
 
-	/**
-	 * The simulation environment is responsible for managing modules, connections, gates, messages.
-	 */
-	private AnimationSimulation simulation;
+    /**
+     * The simulation environment is responsible for managing modules,
+     * connections, gates, messages.
+     */
+    private AnimationSimulation simulation;
 
     /**
      * Specifies whether the animation is currently running or not.
      */
     private boolean isRunning;
 
-	/**
-	 * Current direction of the animation.
-	 */
-	private boolean isPlayingForward;
-
-	/**
-	 * The animation position when the animation was last started or continued. The current animation position
-	 * will be calculated by a linear approximation using the elapsed real time and the last start animation position.
-	 */
-	private AnimationPosition lastStartAnimationPosition;
-
-	/**
-	 * The current animation position. It is updated periodically from a timer callback during animation.
-	 * This is where the animation is right now. It may be different from the live simulation position
-	 * if it is also running and the handling of the last message has not yet finished or the eventlog file
-	 * is not yet flushed.
-	 */
-	private AnimationPosition currentAnimationPosition;
-
-	/**
-	 * The animation position which is reflected in the model state. This may be different from the current
-	 * animation position temporarily. It is only updated when the model gets updated.
-	 */
-	private AnimationPosition modelAnimationPosition;
-
-	/**
-	 * The begin of the whole animation, may be unspecified.
-	 */
-	private AnimationPosition beginAnimationPosition;
+    /**
+     * Current direction of the animation.
+     */
+    private boolean isPlayingForward;
 
     /**
-     * The start of initialize, may be unspecified.
+     * The animation position when the animation was last started or continued.
+     * The current animation position will be calculated by a linear
+     * approximation using the elapsed real time and the last start animation
+     * position.
      */
-    private AnimationPosition initializeAnimationPosition;
+    private AnimationPosition lastStartAnimationPosition;
 
     /**
-     * The start of the first event, may be unspecified.
+     * The current animation position. It is updated periodically from a timer
+     * callback during animation. This is where the animation is right now. It
+     * may be different from the live simulation position if it is also running
+     * and the handling of the last message has not yet finished or the eventlog
+     * file is not yet flushed.
      */
-    private AnimationPosition firstEventAnimationPosition;
+    private AnimationPosition currentAnimationPosition;
 
-	/**
-	 * The end of the whole animation, may be unspecified.
-	 */
-	private AnimationPosition endAnimationPosition;
+    /**
+     * The animation position which is reflected in the model state. This may be
+     * different from the current animation position temporarily. It is only
+     * updated when the model gets updated.
+     */
+    private AnimationPosition modelAnimationPosition;
 
-	/**
-	 * The animation position when the animation will be next stopped if there's no such limit, then this position is unspecified.
-	 */
-	private AnimationPosition stopAnimationPosition;
+    /**
+     * The animation position when the animation will be next stopped if there's
+     * no such limit, then this position is unspecified.
+     */
+    private AnimationPosition stopAnimationPosition;
 
-	/**
-	 * The real time when the animation was last started or continued.
-	 */
-	private double lastStartRealTime;
+    /**
+     * The real time when the animation was last started or continued.
+     */
+    private double lastStartRealTime;
 
-	/**
-	 * This multiplier controls the speed of the animation, it defaults to 1.
-	 */
-	private double realTimeToAnimationTimeScale;
+    /**
+     * This multiplier controls the speed of the animation, it defaults to 1.
+     */
+    private double realTimeToAnimationTimeScale;
 
-	/**
-	 * The widget used to display the animation figures.
-	 */
-	private AnimationCanvas animationCanvas;
+    /**
+     * The widget used to display the animation figures.
+     */
+    private AnimationCanvas animationCanvas;
 
-	/**
-	 * A map for figures and animation related objects. Animation primitives may store information in this map and
-	 * may communicate with each other.
-	 */
-	private Map<Object, Object> figureMap;
+    /**
+     * A map for figures and animation related objects. Animation primitives may
+     * store information in this map and may communicate with each other.
+     */
+    private Map<Object, Object> figureMap;
 
-	/**
-	 * Animation listeners are notified for various events such as changes in the current animation position.
-	 */
-	private ArrayList<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
+    /**
+     * Animation listeners are notified for various events such as changes in
+     * the current animation position.
+     */
+    private ArrayList<IAnimationListener> animationListeners = new ArrayList<IAnimationListener>();
 
-	/**
-	 * The eventlog input that is used to construct the animation primitives.
-	 */
-	private EventLogInput eventLogInput;
+    /**
+     * The eventlog input that is used to construct the animation primitives.
+     */
+    private EventLogInput eventLogInput;
 
-	/**
-	 * The coordinate system that maps between animation times, simulation times and event numbers.
-	 */
+    /**
+     * The coordinate system that maps between animation times, simulation times
+     * and event numbers.
+     */
     private AnimationCoordinateSystem coordinateSystem;
 
     /**
-     * Last time in milliseconds.
+     * Last time the animation position changed notification was sent (in
+     * milliseconds). This helps to avoid sending notifications too often.
      */
-    private long lastTimeAnimationPositionChangeNotificationWasSent;
+    private long lastTimeAnimationPositionChangedNotificationWasSent;
 
     /**
      * The parameters that specifies what is animated and how.
@@ -210,9 +228,22 @@ public class AnimationController {
     private AnimationParameters animationParameters;
 
     /**
-     * This is a special purpose comparator for animation positions.
-     * It uses the event numbers when the simulation times are equal.
-     * Otherwise it uses the relative animation times.
+     * An event number specifying the current origin of the animation time
+     * coordinate system. The value <code>null</code> means the coordinate
+     * system is not yet specified. The value must be greater than or equal to
+     * <code>0</code>.
+     */
+    private Long animationTimeOriginEventNumber;
+
+    /**
+     * TODO:
+     */
+    private Map<Long, Double> eventNumberToFrameRelativeAnimationTime;
+
+    /**
+     * This is a special purpose comparator for animation positions. It uses the
+     * event numbers when the simulation times are equal. Otherwise it uses the
+     * relative animation times.
      */
     private Comparator<AnimationPosition> animationPositionComparator = new Comparator<AnimationPosition>() {
         public int compare(AnimationPosition animationPosition1, AnimationPosition animationPosition2) {
@@ -259,8 +290,12 @@ public class AnimationController {
         this.animationTimer = new AnimationTimer();
         this.simulation = null;
         this.animationParameters = new AnimationParameters();
-		reloadAnimationPrimitives();
-		gotoBeginAnimationPosition();
+        clearInternalState();
+        IEvent firstEvent = eventLogInput.getEventLog().getFirstEvent();
+        if (firstEvent != null && firstEvent.getNextEvent() != null)
+            gotoFirstEventAnimationPosition();
+        else if (firstEvent != null)
+            gotoBeginAnimationPosition();
 	}
 
     public AnimationCoordinateSystem getAnimationCoordinateSystem() {
@@ -278,21 +313,17 @@ public class AnimationController {
 	/**
 	 * Reloads the animation primitives.
 	 */
-	public void reloadAnimationPrimitives() {
+	public void clearInternalState() {
         figureMap = new HashMap<Object, Object>();
         coordinateSystem = new AnimationCoordinateSystem(eventLogInput, new ArrayList<AnimationPosition>());
         currentAnimationPosition = new AnimationPosition();
         modelAnimationPosition = new AnimationPosition();
-        beginAnimationPosition = new AnimationPosition();
-        initializeAnimationPosition = new AnimationPosition();
-        firstEventAnimationPosition = new AnimationPosition();
-        endAnimationPosition = new AnimationPosition();
         stopAnimationPosition = new AnimationPosition();
         lastStartAnimationPosition = new AnimationPosition();
         beginAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
         endAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
         activeAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
-        addAnimationPrimitivesForPosition(currentAnimationPosition);
+        eventNumberToFrameRelativeAnimationTime = new HashMap<Long, Double>();
         for (Timer timer : timerQueue.getTimers())
             if (timer != animationTimer)
                 timerQueue.removeTimer(timer);
@@ -316,9 +347,9 @@ public class AnimationController {
     }
 
 
-	/**
-	 * Returns the canvas on which the animation figures will be drawn.
-	 */
+    /**
+     * Returns the canvas on which the animation figures will be drawn.
+     */
 	public AnimationCanvas getAnimationCanvas() {
 		return animationCanvas;
 	}
@@ -330,16 +361,17 @@ public class AnimationController {
 		return animationCanvas.getRootFigure();
 	}
 
-	/**
-	 * Returns the current simulation attached to this controller.
-	 */
+    /**
+     * Returns the current simulation attached to this controller.
+     */
 	public AnimationSimulation getAnimationSimulation() {
 		return simulation;
 	}
 
-	/**
-	 * Returns the timer queue that is used to schedule timer events during the animation.
-	 */
+    /**
+     * Returns the timer queue that is used to schedule timer events during the
+     * animation.
+     */
 	public TimerQueue getTimerQueue() {
 		return timerQueue;
 	}
@@ -385,12 +417,10 @@ public class AnimationController {
      */
     public void setAnimationMode(TimelineMode timelineMode) {
         eventLogInput.setTimelineMode(timelineMode);
-        BigDecimal simulationTime = getCurrentSimulationTime();
+        long eventNumber = getCurrentEventNumber();
         lastStartRealTime = getCurrentRealTime();
-        setCurrentSimulationTime(simulationTime);
+        gotoEventNumber(eventNumber);
         lastStartAnimationPosition = currentAnimationPosition;
-        timerQueue.resetTimer(animationTimer);
-        refreshAnimation();
     }
 
     /**
@@ -408,6 +438,17 @@ public class AnimationController {
     }
 
     /**
+     * Relocates the animation coordinate system origin to the animation begin
+     * of the event with the provided event number. Calling this function also
+     * clears all dependent internal state such as stored animation positions
+     * and animation primitives.
+     */
+    private void relocateAnimationTimeOrigin(long eventNumber) {
+        animationTimeOriginEventNumber = eventNumber;
+        clearInternalState();
+    }
+
+    /**
      * Returns the current animation position.
      */
     public AnimationPosition getCurrentAnimationPosition() {
@@ -419,6 +460,12 @@ public class AnimationController {
      */
     private void setCurrentAnimationPosition(AnimationPosition animationPosition) {
         currentAnimationPosition = animationPosition;
+        loadAnimationPrimitivesForAnimationPosition(animationPosition);
+        if (currentAnimationPosition.getFrameRelativeAnimationTime() == null) {
+            // TODO: plus some extra defined by origin relative?
+            currentAnimationPosition.setFrameRelativeAnimationTime(eventNumberToFrameRelativeAnimationTime.get(currentAnimationPosition.getEventNumber()));
+        }
+        refreshAnimation();
         animationPositionChanged();
     }
 
@@ -426,80 +473,27 @@ public class AnimationController {
 	 * Checks if the current animation position is at the very beginning.
 	 */
 	public boolean isAtBeginAnimationPosition() {
-		return currentAnimationPosition.equals(getBeginAnimationPosition());
+		return animationTimeOriginEventNumber == 0 && currentAnimationPosition.getOriginRelativeAnimationTime() == 0;
 	}
 
     /**
      * Checks if the current animation position is at the very beginning.
      */
-    public boolean isAtInitializeAnimationPosition() {
-        return currentAnimationPosition.equals(getInitializeAnimationPosition());
-    }
-
-    /**
-     * Checks if the current animation position is at the very beginning.
-     */
     public boolean isAtFirstEventAnimationPosition() {
-        return currentAnimationPosition.equals(getFirstEventAnimationPosition());
+        return animationTimeOriginEventNumber == 1 && currentAnimationPosition.getOriginRelativeAnimationTime() == 0;
     }
 
 	/**
 	 * Checks if the current animation position is at the very end.
 	 */
 	public boolean isAtEndAnimationPosition() {
-		return currentAnimationPosition.equals(getEndAnimationPosition());
+	    // TODO: something like this
+//      IEvent lastEvent = eventLogInput.getEventLog().getLastEvent();
+//      loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), lastEvent.getSimulationTime(), null, null));
+//      IAnimationPrimitive lastAnimationPrimitive = endAnimationTimeOrderedPrimitives.get(endAnimationTimeOrderedPrimitives.size() - 1);
+//    return currentAnimationPosition.equals(lastAnimationPrimitive.getEndAnimationPosition());
+	    return false;
 	}
-
-	/**
-	 * Returns the animation position for the very begin of the animation.
-	 */
-	public AnimationPosition getBeginAnimationPosition() {
-        if (!beginAnimationPosition.isCompletelySpecified()) {
-            // TODO: check
-            long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
-            beginAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
-        }
-
-        return beginAnimationPosition;
-	}
-
-    /**
-     * Returns the animation position for the first moment of the initialize animation.
-     */
-	public AnimationPosition getInitializeAnimationPosition() {
-        if (!initializeAnimationPosition.isCompletelySpecified()) {
-            // TODO: check
-            long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
-            initializeAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
-        }
-
-        return initializeAnimationPosition;
-	}
-
-    /**
-     * Returns the animation position for the first moment of the first event animation.
-     */
-    public AnimationPosition getFirstEventAnimationPosition() {
-        if (!firstEventAnimationPosition.isCompletelySpecified()) {
-            // TODO: check
-            long firstEventNumber = eventLogInput.getEventLog().getFirstEvent().getEventNumber();
-            firstEventAnimationPosition = getAnimationPositionForEventNumber(firstEventNumber);
-        }
-
-        return firstEventAnimationPosition;
-    }
-
-    /**
-     * Returns the animation position for the very end of the animation.
-     */
-    public AnimationPosition getEndAnimationPosition() {
-        if (!endAnimationPosition.isCompletelySpecified()) {
-            long lastEventNumber = eventLogInput.getEventLog().getLastEvent().getEventNumber();
-            endAnimationPosition = getAnimationPositionForEventNumber(lastEventNumber);
-        }
-
-        return endAnimationPosition;
-    }
 
 	/**
      * Retrieves a figure or an animation related object.
@@ -529,21 +523,18 @@ public class AnimationController {
 		return currentAnimationPosition.getEventNumber();
 	}
 
-	/**
-	 * Changes the current event number and notifies listeners.
-	 */
-	private void setCurrentEventNumber(long eventNumber) {
-		setCurrentAnimationPosition(getAnimationPositionForEventNumber(eventNumber));
-	}
-
     /**
      * Returns an animation position representing the processing of the given event number.
      */
     private AnimationPosition getAnimationPositionForEventNumber(long eventNumber) {
         IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
         BigDecimal simulationTime = event.getSimulationTime();
-        double animationTime = coordinateSystem.getAnimationTime(event);
-        return new AnimationPosition(eventNumber, simulationTime, 0, animationTime);
+        if (eventNumber == animationTimeOriginEventNumber)
+            return new AnimationPosition(eventNumber, simulationTime, eventNumberToFrameRelativeAnimationTime.get(eventNumber), 0.0);
+        else {
+            double animationTime = coordinateSystem.getAnimationTime(event);
+            return new AnimationPosition(eventNumber, simulationTime, 0.0, animationTime);
+        }
     }
 
     /**
@@ -553,44 +544,30 @@ public class AnimationController {
 		return currentAnimationPosition.getSimulationTime();
 	}
 
-	/**
-	 * Changes the current simulation time and notifies listeners.
-	 */
-	private void setCurrentSimulationTime(BigDecimal simulationTime) {
-        setCurrentAnimationPosition(getAnimationPositionForSimulationTime(simulationTime));
-	}
-
     /**
      * Returns an animation position representing the simulation time.
      */
     private AnimationPosition getAnimationPositionForSimulationTime(BigDecimal simulationTime) {
         double animationTime = coordinateSystem.getAnimationTimeForSimulationTime(simulationTime);
         long eventNumber = coordinateSystem.getLastEventNotAfterAnimationTime(animationTime).getEventNumber();
-        AnimationPosition animationPosition = new AnimationPosition(eventNumber, simulationTime, 0, animationTime);
+        AnimationPosition animationPosition = new AnimationPosition(eventNumber, simulationTime, 0.0, animationTime);
         return animationPosition;
     }
 
 	/**
-	 * Returns the current animation time.
+	 * Returns the current animation time relative to the origin.
 	 */
 	public double getCurrentAnimationTime() {
 		return currentAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
 	/**
-	 * Changes the current animation position according to the given animation time.
-	 */
-	private void setCurrentAnimationTime(double animationTime) {
-		setCurrentAnimationPosition(getAnimationPositionForAnimationTime(animationTime));
-	}
-
-	/**
-	 * Returns an animation position representing the given animation time.
+	 * Returns an animation position representing the given origin relative animation time.
 	 */
     private AnimationPosition getAnimationPositionForAnimationTime(double animationTime) {
         long eventNumber = coordinateSystem.getLastEventNotAfterAnimationTime(animationTime).getEventNumber();
         BigDecimal simulationTime = coordinateSystem.getSimulationTimeForAnimationTime(animationTime);
-        return new AnimationPosition(eventNumber, simulationTime, 0, animationTime);
+        return new AnimationPosition(eventNumber, simulationTime, null, animationTime);
     }
 
 	/**
@@ -655,7 +632,7 @@ public class AnimationController {
      * Asynchronous operation.
      */
     public void stepAnimationBackwardToPreviousAnimationChange() {
-        AnimationPosition stopAnimationPosition = getBeginAnimationPosition();
+        AnimationPosition stopAnimationPosition = null;
         int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
             public double getValue(int index) {
                 return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
@@ -702,13 +679,13 @@ public class AnimationController {
      * Asynchronous operation.
      */
 	public void stepAnimationForwardToNextAnimationChange() {
-        AnimationPosition stopAnimationPosition = getEndAnimationPosition();
+        AnimationPosition stopAnimationPosition = null;
         int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
             public double getValue(int index) {
                 return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
             }
         }, beginAnimationTimeOrderedPrimitives.size(), currentAnimationPosition.getOriginRelativeAnimationTime(), true);
-        // find first incactive animation primitive that starts in the future
+        // find first inactive animation primitive that starts in the future
         while (beginOrderedIndex < beginAnimationTimeOrderedPrimitives.size()) {
             AnimationPosition beginAnimationPosition = beginAnimationTimeOrderedPrimitives.get(beginOrderedIndex).getBeginAnimationPosition();
             beginOrderedIndex++;
@@ -732,7 +709,7 @@ public class AnimationController {
 	 * Asynchronous operation.
 	 */
 	public void runAnimationToSimulationTime(BigDecimal simulationTime) {
-		startAnimationInternal(simulationTime.greaterOrEqual(getCurrentSimulationTime()), new AnimationPosition(-1, simulationTime, -1, -1));
+		startAnimationInternal(simulationTime.greaterOrEqual(getCurrentSimulationTime()), new AnimationPosition(null, simulationTime, null, null));
 	}
 
     /**
@@ -757,35 +734,30 @@ public class AnimationController {
 		stopAnimationInternal();
 		timerQueue.resetTimer(animationTimer);
 		setCurrentAnimationPosition(animationPosition);
-		refreshAnimation();
 	}
 
 	/**
      * Stops animation and jumps to the very begin.
 	 */
 	public void gotoBeginAnimationPosition() {
-		gotoAnimationPosition(getBeginAnimationPosition());
-	}
-
-    /**
-     * Stops animation and jumps to initialize.
-     */
-	public void gotoInitializeAnimationPosition() {
-        gotoAnimationPosition(getInitializeAnimationPosition());
+        gotoEventNumber(0);
 	}
 
     /**
      * Stops animation and jumps to the first event.
      */
     public void gotoFirstEventAnimationPosition() {
-        gotoAnimationPosition(getFirstEventAnimationPosition());
+        gotoEventNumber(1);
     }
 
 	/**
      * Stops animation and jumps to the very end.
 	 */
 	public void gotoEndAnimationPosition() {
-		gotoAnimationPosition(getEndAnimationPosition());
+	    IEvent lastEvent = eventLogInput.getEventLog().getLastEvent();
+	    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), lastEvent.getSimulationTime(), null, null));
+	    IAnimationPrimitive lastAnimationPrimitive = endAnimationTimeOrderedPrimitives.get(endAnimationTimeOrderedPrimitives.size() - 1);
+		gotoAnimationPosition(lastAnimationPrimitive.getEndAnimationPosition());
 	}
 
     /**
@@ -793,8 +765,10 @@ public class AnimationController {
      */
     public void gotoEventNumber(long eventNumber) {
         timerQueue.resetTimer(animationTimer);
-        setCurrentEventNumber(eventNumber);
-        refreshAnimation();
+        // TODO: do not relocate if already loaded!!!!
+        if (eventNumberToFrameRelativeAnimationTime.get(eventNumber) == null)
+            relocateAnimationTimeOrigin(eventNumber);
+        setCurrentAnimationPosition(getAnimationPositionForEventNumber(eventNumber));
     }
 
 	/**
@@ -802,24 +776,22 @@ public class AnimationController {
 	 */
 	public void gotoSimulationTime(BigDecimal simulationTime) {
 		timerQueue.resetTimer(animationTimer);
-		setCurrentSimulationTime(simulationTime);
-		refreshAnimation();
+        setCurrentAnimationPosition(getAnimationPositionForSimulationTime(simulationTime));
 	}
 
 	/**
-	 * Goes to the given animation time without animating.
+	 * Goes to the given origin relative animation time without animating.
 	 */
 	public void gotoAnimationTime(double animationTime) {
 		timerQueue.resetTimer(animationTimer);
-		setCurrentAnimationTime(animationTime);
-		refreshAnimation();
+        setCurrentAnimationPosition(getAnimationPositionForAnimationTime(animationTime));
 	}
 
 	/**
 	 * Refreshes the animation according to the current animation position.
 	 */
 	public void refreshAnimation() {
-		if (!animationCanvas.isDisposed()) {
+		if (!animationCanvas.isDisposed() && currentAnimationPosition.isCompletelySpecified()) {
             updateAnimationModel();
             if (debug)
                 System.out.println("Displaying " + activeAnimationPrimitives.size() + " primitives at -> " + currentAnimationPosition);
@@ -846,24 +818,25 @@ public class AnimationController {
         public void run() {
 			try {
 			    double animationTime = getAnimationTimeForRealTime(getCurrentRealTime());
+			    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(null, null, null, animationTime));
 		        // first check for stop at end
-		        if (isPlayingForward && getEndAnimationPosition().isCompletelySpecified() && endAnimationPosition.getOriginRelativeAnimationTime() <= animationTime) {
-		            setCurrentAnimationPosition(endAnimationPosition);
-		            stopAnimationInternal();
-		        }
-		        // stop at begin
-		        else if (!isPlayingForward && getBeginAnimationPosition().isCompletelySpecified() && animationTime <= beginAnimationPosition.getOriginRelativeAnimationTime()) {
-		            setCurrentAnimationPosition(beginAnimationPosition);
-		            stopAnimationInternal();
-		        }
-		        // stop at requested stop position
-		        else if (stopAnimationPosition.isCompletelySpecified() && (isPlayingForward ? stopAnimationPosition.getOriginRelativeAnimationTime() <= animationTime : stopAnimationPosition.getOriginRelativeAnimationTime() >= animationTime)) {
-		            setCurrentAnimationPosition(stopAnimationPosition);
-		            stopAnimationInternal();
-		        }
-		        else
+			    // TODO:
+//		        if (isPlayingForward && getEndAnimationPosition().isCompletelySpecified() && endAnimationPosition.getOriginRelativeAnimationTime() <= animationTime) {
+//		            setCurrentAnimationPosition(endAnimationPosition);
+//		            stopAnimationInternal();
+//		        }
+//		        // stop at begin
+//		        else if (!isPlayingForward && getBeginAnimationPosition().isCompletelySpecified() && animationTime <= beginAnimationPosition.getOriginRelativeAnimationTime()) {
+//		            setCurrentAnimationPosition(beginAnimationPosition);
+//		            stopAnimationInternal();
+//		        }
+//		        // stop at requested stop position
+//		        else if (stopAnimationPosition.isCompletelySpecified() && (isPlayingForward ? stopAnimationPosition.getOriginRelativeAnimationTime() <= animationTime : stopAnimationPosition.getOriginRelativeAnimationTime() >= animationTime)) {
+//		            setCurrentAnimationPosition(stopAnimationPosition);
+//		            stopAnimationInternal();
+//		        }
+//		        else
 		            setCurrentAnimationPosition(getAnimationPositionForAnimationTime(animationTime));
-				refreshAnimation();
 			}
 			catch (RuntimeException e) {
 				MessageDialog.openError(null, "Internal error", e.toString());
@@ -880,18 +853,13 @@ public class AnimationController {
 		this.isPlayingForward = forward;
 		this.stopAnimationPosition = stopAnimationPosition;
 		setRunning(true);
-
-		// start from beginning if no position
-		if (!currentAnimationPosition.isCompletelySpecified())
-			setCurrentAnimationPosition(getBeginAnimationPosition());
-
-		if ((forward && (!endAnimationPosition.isCompletelySpecified() || currentAnimationPosition.compareTo(endAnimationPosition) < 0)) ||
-			(!forward && (!beginAnimationPosition.isCompletelySpecified() || currentAnimationPosition.compareTo(beginAnimationPosition) > 0)))
+		// TODO:
+//		if ((forward && (!endAnimationPosition.isCompletelySpecified() || currentAnimationPosition.compareTo(endAnimationPosition) < 0)) ||
+//			(!forward && (!beginAnimationPosition.isCompletelySpecified() || currentAnimationPosition.compareTo(beginAnimationPosition) > 0)))
 		{
 			timerQueue.resetTimer(animationTimer);
 			lastStartRealTime = getCurrentRealTime();
 			lastStartAnimationPosition = currentAnimationPosition;
-
 			if (!timerQueue.hasTimer(animationTimer))
 				timerQueue.addTimer(animationTimer);
 		}
@@ -909,17 +877,18 @@ public class AnimationController {
 		animationPositionChanged();
 	}
 
-
-	/**
-	 * Updates the animation model according to the current animation position. This will result in a bunch of (de)activate
-	 * calls on the appropriate animation primitives. The idea is to go through the animation primitives from
-	 * the old animation time to the new animation time in both ordered animation primitive arrays at the same time
-	 * and call (de)activate in order.
-	 */
+    /**
+     * Updates the animation model according to the current animation position.
+     * This will result in a bunch of activate/deactivate calls on the
+     * appropriate animation primitives. The idea is to go through the animation
+     * primitives from the old animation time to the new animation time in both
+     * ordered animation primitive arrays at the same time and call
+     * activate/deactivate in order.
+     */
 	private void updateAnimationModel() {
-	    BigDecimal oldSimulationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getSimulationTime() : BigDecimal.getZero();
-		double oldAnimationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getOriginRelativeAnimationTime() : 0;
-		BigDecimal newSimulationTime = currentAnimationPosition.getSimulationTime();
+//	    BigDecimal oldSimulationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getSimulationTime() : BigDecimal.getZero();
+		double oldAnimationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getOriginRelativeAnimationTime() : Double.NEGATIVE_INFINITY;
+//		BigDecimal newSimulationTime = currentAnimationPosition.getSimulationTime();
 		double newAnimationTime = currentAnimationPosition.getOriginRelativeAnimationTime();
 		boolean forward = newAnimationTime >= oldAnimationTime;
 
@@ -929,8 +898,8 @@ public class AnimationController {
 		        }
 		    }, beginAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward ? true : false);
 
-		if (forward)
-			sortEndOrderedAnimationPrimitivesFragment(oldSimulationTime, newSimulationTime);
+//		if (forward)
+//			sortEndOrderedAnimationPrimitivesFragment(oldSimulationTime, newSimulationTime);
 		int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			    public double getValue(int index) {
 			        return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
@@ -942,7 +911,7 @@ public class AnimationController {
 			endOrderedIndex--;
 		}
 
-		double previousBeginAnimationTime = forward ? 0 : Double.MAX_VALUE;
+		double previousBeginAnimationTime = forward ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
 		double previousEndAnimationTime = previousBeginAnimationTime;
 
 		while (true) {
@@ -1091,8 +1060,8 @@ public class AnimationController {
 	 */
 	private void animationPositionChanged() {
 	    long currentTime = System.currentTimeMillis();
-	    if (currentTime - lastTimeAnimationPositionChangeNotificationWasSent > 100 || !isRunning) {
-	        lastTimeAnimationPositionChangeNotificationWasSent = currentTime;
+	    if (currentTime - lastTimeAnimationPositionChangedNotificationWasSent > 100 || !isRunning) {
+	        lastTimeAnimationPositionChangedNotificationWasSent = currentTime;
     		for (IAnimationListener listener : animationListeners)
     			listener.animationPositionChanged(currentAnimationPosition);
 	    }
@@ -1169,28 +1138,6 @@ public class AnimationController {
 	}
 
 	/**
-	 * Stores a loaded animation primitive.
-	 */
-	private void addAnimationPrimitive(IAnimationPrimitive animationPrimitive) {
-	    Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getSimulationTime() != null && animationPrimitive.getEndAnimationPosition().getSimulationTime() != null);
-		// keeps list ordered by begin animation time
-		int index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
-			    public double getValue(int index) {
-			        return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
-			    }
-		    }, beginAnimationTimeOrderedPrimitives.size(), animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime(), false);
-		beginAnimationTimeOrderedPrimitives.add(index, animationPrimitive);
-		// keeps list ordered by end simulation time
-		// later it will be sorted in small fragments by end animation time on demand
-		index = getAnimationPrimitiveIndexForValue(new IValueProvider() {
-			    public double getValue(int index) {
-			        return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getSimulationTime().doubleValue();
-			    }
-		    }, endAnimationTimeOrderedPrimitives.size(), animationPrimitive.getEndAnimationPosition().getSimulationTime().doubleValue(), false);
-		endAnimationTimeOrderedPrimitives.add(index, animationPrimitive);
-	}
-
-	/**
 	 * Creates and stores all animation primitives for the given animation position.
      *
 	 * The first step is to generate the primitives and fill in the begin/end simulation times and simulation/animation
@@ -1199,18 +1146,58 @@ public class AnimationController {
 	 * In the second step the begin/end animation times are calculated by doing a topological sort on all the animation
 	 * positions of the collected animation primitives.
 	 */
-    private void addAnimationPrimitivesForPosition(AnimationPosition animationPosition) {
-        if (beginAnimationTimeOrderedPrimitives.size() == 0 && animationCanvas.getEventLog() != null) {
-            long begin = System.currentTimeMillis();
-            IEventLog eventLog = animationCanvas.getEventLog();
-            ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
-            animationPrimitives.addAll(collectAnimationPrimitivesForInitializationEventLogEntries(eventLog));
-            //animationPrimitives.addAll(collectAnimationPrimitivesForEvents(eventLog.getFirstEvent(), eventLog.getLastEvent()));
-            animationPrimitives.addAll(collectAnimationPrimitivesForEvents(eventLog.getFirstEvent(), eventLog.getEventForEventNumber(1000)));
-            calculateAnimationTimes(animationPrimitives);
-            if (debug)
-                System.out.println("addAnimationPrimitivesForPosition:" + (System.currentTimeMillis() - begin) + "ms");
+    private void loadAnimationPrimitivesForAnimationPosition(AnimationPosition animationPosition) {
+        long begin = System.currentTimeMillis();
+        IEventLog eventLog = animationCanvas.getEventLog();
+        if (eventLog != null && !eventLog.isEmpty()) {
+            if (animationPosition.getEventNumber() != null) {
+                int keyframeBlockSize = eventLog.getKeyframeBlockSize();
+                int keyframeBlockIndex = (int)(animationPosition.getEventNumber() / keyframeBlockSize);
+                long firstEventNumber = keyframeBlockIndex * keyframeBlockSize;
+                long lastEventNumber = firstEventNumber + keyframeBlockSize - 1;
+                IEvent firstEvent = eventLog.getEventForEventNumber(firstEventNumber);
+                IEvent lastEvent = eventLog.getEventForEventNumber(lastEventNumber);
+                if (lastEvent == null)
+                    lastEvent = eventLog.getLastEvent();
+                ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
+                animationPrimitives.addAll(collectAnimationPrimitivesForKeyframeSimulationState(firstEvent));
+                animationPrimitives.addAll(collectAnimationPrimitivesForEvents(firstEvent, lastEvent));
+                if (!animationPrimitives.isEmpty()) {
+                    animationPrimitives.addAll(beginAnimationTimeOrderedPrimitives);
+                    calculateAnimationTimes(animationPrimitives);
+                    calculateBeginAnimationTimeOrderedPrimitives(animationPrimitives);
+                    calculateEndAnimationTimeOrderedPrimitives(animationPrimitives);
+                }
+            }
+            else {
+                // TODO: we don't seem to get here, because even during playing
+                // the animation event numbers are always present in the
+                // animation position
+            }
         }
+        if (debug)
+            System.out.println("loadAnimationPrimitivesForAnimationPosition:" + (System.currentTimeMillis() - begin) + "ms");
+    }
+
+    private ArrayList<IAnimationPrimitive> collectAnimationPrimitivesForKeyframeSimulationState(IEvent keyframeEvent) {
+        KeyframeEntry keyframeEntry = null;
+        for (int i = 0; i < keyframeEvent.getNumEventLogEntries(); i++) {
+            EventLogEntry eventLogEntry = keyframeEvent.getEventLogEntry(i);
+            if (eventLogEntry instanceof KeyframeEntry)
+                keyframeEntry = (KeyframeEntry)eventLogEntry;
+        }
+        String[] simulationStateEntries = keyframeEntry.getSimulationStateEntries().split(",");
+        ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
+        for (String simulationStateEntry : simulationStateEntries) {
+            if (!StringUtils.isEmpty(simulationStateEntry)) {
+                long eventNumber = Long.parseLong(simulationStateEntry.split(":")[0]);
+                if (eventNumber != -1) {
+                    IEvent event = keyframeEvent.getEventLog().getEventForEventNumber(eventNumber);
+                    animationPrimitives.addAll(collectAnimationPrimitivesForEvents(event, event));
+                }
+            }
+        }
+        return animationPrimitives;
     }
 
     /**
@@ -1225,11 +1212,6 @@ public class AnimationController {
     private void calculateAnimationTimes(ArrayList<IAnimationPrimitive> animationPrimitives) {
         ArrayList<AnimationPosition> animationPositions = calculateSortedAnimationPositions(animationPrimitives);
         if (debug) {
-            System.out.println("*** SORTED ANIMATION POSITIONS ***");
-            for (AnimationPosition animationPosition : animationPositions)
-                System.out.println(animationPosition);
-        }
-        if (debug) {
             System.out.println("*** ANIMATION PRIMITIVES BEFORE ASSIGNING ANIMATION TIMES ***");
             for (IAnimationPrimitive animationPrimitive : animationPrimitives)
                 System.out.println(animationPrimitive);
@@ -1239,27 +1221,15 @@ public class AnimationController {
             System.out.println("*** ANIMATION PRIMITIVES AFTER ASSIGNING ANIMATION TIMES ***");
         for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
             Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getSimulationTime() != null);
-            Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() != -1);
+            Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() != null);
             Assert.isTrue(animationPrimitive.getEndAnimationPosition().getSimulationTime() != null);
-            Assert.isTrue(animationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime() != -1);
+            Assert.isTrue(animationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime() != null);
             // TODO: should not need to set the animation time duration
             if (animationPrimitive.getAnimationTimeDuration() == -1) {
                 AbstractAnimationPrimitive abstractAnimationPrimitive = (AbstractAnimationPrimitive)animationPrimitive;
                 abstractAnimationPrimitive.setAnimationTimeDuration(abstractAnimationPrimitive.getOriginRelativeEndAnimationTime() - abstractAnimationPrimitive.getOriginRelativeBeginAnimationTime());
             }
             if (debug)
-                System.out.println(animationPrimitive);
-        }
-        calculateBeginAnimationTimeOrderedPrimitives(animationPrimitives);
-        if (debug) {
-            System.out.println("*** BEGIN ANIMATION TIME ORDERED ANIMATION PRIMITIVES ***");
-            for (IAnimationPrimitive animationPrimitive : beginAnimationTimeOrderedPrimitives)
-                System.out.println(animationPrimitive);
-        }
-        calculateEndAnimationTimeOrderedPrimitives(animationPrimitives);
-        if (debug) {
-            System.out.println("*** END ANIMATION TIME ORDERED ANIMATION PRIMITIVES ***");
-            for (IAnimationPrimitive animationPrimitive : endAnimationTimeOrderedPrimitives)
                 System.out.println(animationPrimitive);
         }
         // TODO: fill in the interpolation lists in the animation coordinate system for each event
@@ -1269,7 +1239,7 @@ public class AnimationController {
     @SuppressWarnings("unchecked")
     private ArrayList<AnimationPosition> calculateSortedAnimationPositions(ArrayList<IAnimationPrimitive> animationPrimitives) {
         MultiValueMap animationPositionsMap = new MultiValueMap();
-        AnimationPosition zeroAnimationPosition = new AnimationPosition(-1, BigDecimal.getZero(), 0, 0);
+        AnimationPosition zeroAnimationPosition = new AnimationPosition(null, BigDecimal.getZero(), 0.0, null);
         animationPositionsMap.put(zeroAnimationPosition, zeroAnimationPosition);
         ArrayList<AnimationPosition> uniqueAnimationPositions = new ArrayList<AnimationPosition>();
         for (IAnimationPrimitive animationPrimitive : animationPrimitives) {
@@ -1280,9 +1250,14 @@ public class AnimationController {
         ArrayList<AnimationPosition> animationPositions = new ArrayList<AnimationPosition>();
         for (AnimationPosition uniqueAnimationPosition : uniqueAnimationPositions)
             animationPositions.addAll(animationPositionsMap.getCollection(uniqueAnimationPosition));
-        if (debug)
-            for (int i = 0; i < animationPositions.size() - 1; i++)
-                Assert.isTrue(animationPositionComparator.compare(animationPositions.get(i), animationPositions.get(i + 1)) <= 0);
+        if (debug) {
+            System.out.println("*** SORTED ANIMATION POSITIONS ***");
+            for (int i = 0; i < animationPositions.size() - 1; i++) {
+                AnimationPosition animationPosition = animationPositions.get(i);
+                System.out.println(animationPosition);
+                Assert.isTrue(animationPositionComparator.compare(animationPosition, animationPositions.get(i + 1)) <= 0);
+            }
+        }
         return animationPositions;
     }
 
@@ -1300,20 +1275,31 @@ public class AnimationController {
         double animationTime = 0;
         AnimationPosition previousAnimationPosition = null;
         for (AnimationPosition animationPosition : animationPositions) {
-            if (previousAnimationPosition != null) {
-                BigDecimal simulationTimeDelta = animationPosition.getSimulationTime().subtract(previousAnimationPosition.getSimulationTime());
-                if (simulationTimeDelta.equals(BigDecimal.getZero())) {
-                    double animationTimeDelta = animationPosition.getFrameRelativeAnimationTime() - previousAnimationPosition.getFrameRelativeAnimationTime();
-                    if (animationTimeDelta > 0)
-                        animationTime += animationTimeDelta;
-                }
-                else
-                    animationTime += coordinateSystem.getAnimationTimeDelta(simulationTimeDelta.doubleValue());
-            }
+            if (previousAnimationPosition != null)
+                animationTime += getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+            previousAnimationPosition = animationPosition;
+            if (animationPosition.getEventNumber().equals(animationTimeOriginEventNumber))
+                break;
+        }
+        animationTime *= -1;
+        if (debug)
+            System.out.println("Animation time of first animation position: " + animationTime);
+        previousAnimationPosition = null;
+        for (AnimationPosition animationPosition : animationPositions) {
+            if (previousAnimationPosition != null)
+                animationTime += getAnimationTimeDelta(previousAnimationPosition, animationPosition);
             Assert.isTrue(!Double.isNaN(animationTime));
             animationPosition.setOriginRelativeAnimationTime(animationTime);
             previousAnimationPosition = animationPosition;
         }
+    }
+
+    private double getAnimationTimeDelta(AnimationPosition previousAnimationPosition, AnimationPosition animationPosition) {
+        BigDecimal simulationTimeDelta = animationPosition.getSimulationTime().subtract(previousAnimationPosition.getSimulationTime());
+        if (simulationTimeDelta.equals(BigDecimal.getZero()))
+            return animationPosition.getFrameRelativeAnimationTime() - previousAnimationPosition.getFrameRelativeAnimationTime();
+        else
+            return coordinateSystem.getAnimationTimeDelta(simulationTimeDelta.doubleValue());
     }
 
     private void calculateBeginAnimationTimeOrderedPrimitives(ArrayList<IAnimationPrimitive> animationPrimitives) {
@@ -1325,6 +1311,11 @@ public class AnimationController {
                 return (int)Math.signum(animationTime1 - animationTime2);
             }
         });
+        if (debug) {
+            System.out.println("*** BEGIN ANIMATION TIME ORDERED ANIMATION PRIMITIVES ***");
+            for (IAnimationPrimitive animationPrimitive : beginAnimationTimeOrderedPrimitives)
+                System.out.println(animationPrimitive);
+        }
     }
 
     private void calculateEndAnimationTimeOrderedPrimitives(ArrayList<IAnimationPrimitive> animationPrimitives) {
@@ -1336,15 +1327,11 @@ public class AnimationController {
                 return (int)Math.signum(animationTime1 - animationTime2);
             }
         });
-    }
-
-    private ArrayList<IAnimationPrimitive> collectAnimationPrimitivesForInitializationEventLogEntries(IEventLog eventLog) {
-        AnimationPrimitiveContext eventAnimationContext = new AnimationPrimitiveContext();
-        ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
-        eventAnimationContext.isCollectingHandleMessageAnimations = false;
-        for (int i = 0; i < eventLog.getNumInitializationLogEntries(); i++)
-            collectAnimationPrimitivesForEventLogEntry(eventAnimationContext, eventLog.getInitializationLogEntry(i), animationPrimitives);
-        return animationPrimitives;
+        if (debug) {
+            System.out.println("*** END ANIMATION TIME ORDERED ANIMATION PRIMITIVES ***");
+            for (IAnimationPrimitive animationPrimitive : endAnimationTimeOrderedPrimitives)
+                System.out.println(animationPrimitive);
+        }
     }
 
     /**
@@ -1354,7 +1341,7 @@ public class AnimationController {
     private ArrayList<IAnimationPrimitive> collectAnimationPrimitivesForEvents(IEvent beginEvent, IEvent endEvent) {
         AnimationPrimitiveContext animationPrimitiveContext = new AnimationPrimitiveContext();
         ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
-        // NOTE: we have to begin after an event having a fresh simulation time to find out the proper relativeAnimationTime
+        // we have to begin collecting after an event having a fresh simulation time to find out the proper relativeAnimationTime
         BigDecimal beginSimulationTime = beginEvent.getSimulationTime();
         while (true) {
             IEvent previousEvent = beginEvent.getPreviousEvent();
@@ -1363,7 +1350,7 @@ public class AnimationController {
             else
                 beginEvent = previousEvent;
         }
-        // NOTE: we have to end before an event having a fresh simulation time
+        // we have to end collecting before an event having a fresh simulation time
         BigDecimal endSimulationTime = endEvent.getSimulationTime();
         while (true) {
             IEvent nextEvent = endEvent.getNextEvent();
@@ -1375,22 +1362,27 @@ public class AnimationController {
         IEvent event = beginEvent;
         while (true) {
             long eventNumber = event.getEventNumber();
-            animationPrimitiveContext.handleMessageAnimation = null;
-            animationPrimitiveContext.isCollectingHandleMessageAnimations = true;
-            for (int i = 0; i < event.getNumEventLogEntries(); i++)
-                collectAnimationPrimitivesForEventLogEntry(animationPrimitiveContext, event.getEventLogEntry(i), animationPrimitives);
-            animationPrimitiveContext.isCollectingHandleMessageAnimations = false;
-            for (int i = 0; i < event.getNumEventLogEntries(); i++)
-                collectAnimationPrimitivesForEventLogEntry(animationPrimitiveContext, event.getEventLogEntry(i), animationPrimitives);
+            if (eventNumberToFrameRelativeAnimationTime.get(eventNumber) == null) {
+                animationPrimitiveContext.handleMessageAnimation = null;
+                animationPrimitiveContext.isCollectingHandleMessageAnimations = true;
+                for (int i = 0; i < event.getNumEventLogEntries(); i++)
+                    collectAnimationPrimitivesForEventLogEntry(animationPrimitiveContext, event.getEventLogEntry(i), animationPrimitives);
+                animationPrimitiveContext.isCollectingHandleMessageAnimations = false;
+                for (int i = 0; i < event.getNumEventLogEntries(); i++)
+                    collectAnimationPrimitivesForEventLogEntry(animationPrimitiveContext, event.getEventLogEntry(i), animationPrimitives);
+                eventNumberToFrameRelativeAnimationTime.put(eventNumber, animationPrimitiveContext.frameRelativeAnimationTime);
+            }
             if (eventNumber == endEvent.getEventNumber())
                 break;
             else {
                 IEvent nextEvent = event.getNextEvent();
                 if (nextEvent != null && !event.getSimulationTime().equals(nextEvent.getSimulationTime()))
-                    animationPrimitiveContext.relativeAnimationTime = 0;
+                    animationPrimitiveContext.frameRelativeAnimationTime = 0;
                 event = nextEvent;
             }
         }
+        if (/*debug && */animationPrimitives.size() != 0)
+            System.out.println("Loaded " + animationPrimitives.size() + " animation primitives for events " + beginEvent.getEventNumber() + " - " + endEvent.getEventNumber());
         return animationPrimitives;
     }
 
@@ -1401,9 +1393,9 @@ public class AnimationController {
         IEvent event = eventLogEntry.getEvent();
         long eventNumber = event == null ? -1 : event.getEventNumber();
         BigDecimal simulationTime = event == null ? BigDecimal.getZero() : event.getSimulationTime();
-        if (eventLogEntry instanceof EventEntry && event.getModuleId() != 1) {
+        if (eventLogEntry instanceof EventEntry) {
             EventEntry eventEntry = (EventEntry)eventLogEntry;
-            if (isSubmoduleVisible(eventEntry.getModuleId())) {
+            if (eventEntry.getModuleId() == 1 || isSubmoduleVisible(eventEntry.getModuleId())) {
                 if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                     if (animationParameters.enableHandleMessageAnimations) {
                         double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
@@ -1411,27 +1403,27 @@ public class AnimationController {
                         animationPrimitive.setBeginEventNumber(eventNumber);
                         animationPrimitive.setEndEventNumber(eventNumber);
                         animationPrimitive.setBeginSimulationTime(simulationTime);
-                        animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                        animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                         animationPrimitive.setSourceEventNumber(eventNumber);
                         animationPrimitives.add(animationPrimitive);
-                        animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
                         animationPrimitiveContext.handleMessageAnimation = animationPrimitive;
+                        animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
                     }
                 }
                 else {
                     if (animationPrimitiveContext.handleMessageAnimation != null) {
-                        animationPrimitiveContext.handleMessageAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                        animationPrimitiveContext.handleMessageAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         double relativeBeginAnimationTime = animationPrimitiveContext.handleMessageAnimation.getFrameRelativeBeginAnimationTime();
-                        animationPrimitiveContext.handleMessageAnimation.setAnimationTimeDuration(animationPrimitiveContext.relativeAnimationTime - relativeBeginAnimationTime);
+                        animationPrimitiveContext.handleMessageAnimation.setAnimationTimeDuration(animationPrimitiveContext.frameRelativeAnimationTime - relativeBeginAnimationTime);
                     }
                     double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
-                    animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
                 }
             }
         }
         else if (eventLogEntry instanceof ModuleCreatedEntry) {
-            if (!animationPrimitiveContext.isCollectingHandleMessageAnimations) {
+            if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
                 int parentModuleId = moduleCreatedEntry.getParentModuleId();
                 EventLogModule parentModule = parentModuleId == -1 ? null : simulation.getModuleById(parentModuleId);
@@ -1452,7 +1444,7 @@ public class AnimationController {
                 CreateModuleAnimation animationPrimitive = new CreateModuleAnimation(this, module, parentModuleId);
                 animationPrimitive.setBeginEventNumber(eventNumber);
                 animationPrimitive.setBeginSimulationTime(simulationTime);
-                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                 animationPrimitive.setSourceEventNumber(eventNumber);
                 animationPrimitives.add(animationPrimitive);
             }
@@ -1465,14 +1457,14 @@ public class AnimationController {
                     SetModuleDisplayStringAnimation animationPrimitive = new SetModuleDisplayStringAnimation(this, moduleDisplayStringChangedEntry.getModuleId(), displayString);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
-                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
         }
         else if (eventLogEntry instanceof GateCreatedEntry) {
-            if (!animationPrimitiveContext.isCollectingHandleMessageAnimations) {
+            if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 GateCreatedEntry gateCreatedEntry = (GateCreatedEntry)eventLogEntry;
                 EventLogModule module = simulation.getModuleById(gateCreatedEntry.getModuleId());
                 EventLogGate gate = new EventLogGate(module, gateCreatedEntry.getGateId());
@@ -1482,13 +1474,13 @@ public class AnimationController {
                 CreateGateAnimation animationPrimitive = new CreateGateAnimation(this, gate);
                 animationPrimitive.setBeginEventNumber(eventNumber);
                 animationPrimitive.setBeginSimulationTime(simulationTime);
-                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                 animationPrimitive.setSourceEventNumber(eventNumber);
                 animationPrimitives.add(animationPrimitive);
             }
         }
         else if (eventLogEntry instanceof ConnectionCreatedEntry) {
-            if (!animationPrimitiveContext.isCollectingHandleMessageAnimations) {
+            if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
                 EventLogModule sourceModule = simulation.getModuleById(connectionCreatedEntry.getSourceModuleId());
                 EventLogGate sourceGate = sourceModule.getGateById(connectionCreatedEntry.getSourceGateId());
@@ -1497,7 +1489,7 @@ public class AnimationController {
                 CreateConnectionAnimation animationPrimitive = new CreateConnectionAnimation(this, new EventLogConnection(sourceModule, sourceGate, destinationModule, destinationGate));
                 animationPrimitive.setBeginEventNumber(eventNumber);
                 animationPrimitive.setBeginSimulationTime(simulationTime);
-                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                 animationPrimitive.setSourceEventNumber(eventNumber);
                 animationPrimitives.add(animationPrimitive);
             }
@@ -1517,7 +1509,7 @@ public class AnimationController {
                     SetConnectionDisplayStringAnimation animationPrimitive = new SetConnectionDisplayStringAnimation(this, sourceGate, displayString);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
-                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
@@ -1533,8 +1525,8 @@ public class AnimationController {
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setAnimationTimeDuration(0.0);
                     animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
-                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
-                    animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
@@ -1551,9 +1543,9 @@ public class AnimationController {
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                     animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
-                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
-                    animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
-                    animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                    animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
@@ -1580,9 +1572,9 @@ public class AnimationController {
                             animationPrimitive.setBeginSimulationTime(simulationTime);
                             animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
-                            animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
-                            animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
-                            animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                            animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                            animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                            animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(animationPrimitive);
                         }
@@ -1595,12 +1587,12 @@ public class AnimationController {
                             animationPrimitive.setBeginSimulationTime(simulationTime);
                             BigDecimal simulationTimeDuration = endSendEntry.getArrivalTime().subtract(simulationTime);
                             animationPrimitive.setSimulationTimeDuration(simulationTimeDuration);
-                            animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                            animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             if (simulationTimeDuration.equals(BigDecimal.getZero())) {
                                 double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                                 animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
-                                animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
-                                animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                                animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                                animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             }
                             else
                                 animationPrimitive.setFrameRelativeEndAnimationTime(0.0);
@@ -1630,9 +1622,9 @@ public class AnimationController {
                             animationPrimitive.setBeginSimulationTime(simulationTime);
                             animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
-                            animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
-                            animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
-                            animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                            animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                            animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                            animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(animationPrimitive);
                         }
@@ -1646,7 +1638,7 @@ public class AnimationController {
                             sendDirectAnimation.setBeginEventNumber(eventNumber);
                             sendDirectAnimation.setEndEventNumber(eventNumber); // FIXME: should be calculated based on simulation time
                             sendDirectAnimation.setBeginSimulationTime(simulationTime);
-                            sendDirectAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                            sendDirectAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             sendDirectAnimation.setFrameRelativeEndAnimationTime(0.0);
                             sendDirectAnimation.setSimulationTimeDuration(simulationTimeDuration);
                             if (simulationTimeDuration.equals(BigDecimal.getZero()))
@@ -1658,7 +1650,7 @@ public class AnimationController {
                             sendBroadcastAnimation.setBeginEventNumber(eventNumber);
                             sendBroadcastAnimation.setEndEventNumber(eventNumber); // FIXME: should be calculated based on simulation time
                             sendBroadcastAnimation.setBeginSimulationTime(simulationTime);
-                            sendBroadcastAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                            sendBroadcastAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             sendBroadcastAnimation.setFrameRelativeEndAnimationTime(0.0);
                             sendBroadcastAnimation.setSimulationTimeDuration(simulationTimeDuration);
                             if (simulationTimeDuration.equals(BigDecimal.getZero()))
@@ -1684,9 +1676,9 @@ public class AnimationController {
                         animationPrimitive.setBeginSimulationTime(simulationTime);
                         animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                         animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
-                        animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.relativeAnimationTime);
-                        animationPrimitiveContext.relativeAnimationTime += animationTimeDuration;
-                        animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.relativeAnimationTime);
+                        animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                        animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                        animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitive.setSourceEventNumber(eventNumber);
                         animationPrimitives.add(animationPrimitive);
                     }
@@ -1694,7 +1686,7 @@ public class AnimationController {
                 else {
                     if (animationParameters.enableSendMessageAnimations) {
                         BigDecimal simulationTimeDelta = BigDecimal.getZero();
-                        double localAnimationTime = animationPrimitiveContext.relativeAnimationTime;
+                        double localAnimationTime = animationPrimitiveContext.frameRelativeAnimationTime;
                         for (int i = beginSendEntryIndex + 1; i < endSendEntryIndex; i++) {
                             SendHopEntry sendHopEntry = (SendHopEntry)event.getEventLogEntry(i);
                             BigDecimal transmissionDelay = sendHopEntry.getTransmissionDelay();
@@ -1755,7 +1747,7 @@ public class AnimationController {
 
     private static class AnimationPrimitiveContext {
         public HandleMessageAnimation handleMessageAnimation;
-        public double relativeAnimationTime;
+        public double frameRelativeAnimationTime;
         public boolean isCollectingHandleMessageAnimations;
     }
 }

@@ -60,9 +60,11 @@ public class AnimationTimeline
 
     private void paint(GC gc) {
         Graphics graphics = new SWTGraphics(gc);
-        drawEventNumber(graphics);
-        drawSimulationTime(graphics);
-        drawAnimationTime(graphics);
+        if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+            drawEventNumber(graphics);
+            drawSimulationTime(graphics);
+            drawAnimationTime(graphics);
+        }
         drawEventLine(graphics);
     }
 
@@ -99,15 +101,17 @@ public class AnimationTimeline
         Rectangle clientArea = getClientArea();
         int y = clientArea.y + clientArea.height / 2;
         graphics.drawLine(clientArea.x, y, clientArea.x + clientArea.width, y);
-        IEventLog eventLog = animationController.getEventLogInput().getEventLog();
-        IEvent event = eventLog.getEventForEventNumber(animationController.getCurrentEventNumber());
-        IEvent firstEvent = event;
-        IEvent lastEvent = event;
-        for (int i = 0; i < 10; i++) {
-            if (firstEvent.getPreviousEvent() != null)
-                firstEvent = firstEvent.getPreviousEvent();
-            if (lastEvent.getNextEvent() != null)
-                lastEvent = lastEvent.getNextEvent();
+        if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+            IEventLog eventLog = animationController.getEventLogInput().getEventLog();
+            IEvent event = eventLog.getEventForEventNumber(animationController.getCurrentEventNumber());
+            IEvent firstEvent = event;
+            IEvent lastEvent = event;
+            for (int i = 0; i < 10; i++) {
+                if (firstEvent.getPreviousEvent() != null)
+                    firstEvent = firstEvent.getPreviousEvent();
+                if (lastEvent.getNextEvent() != null)
+                    lastEvent = lastEvent.getNextEvent();
+            }
         }
     }
 }

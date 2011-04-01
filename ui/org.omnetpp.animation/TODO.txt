@@ -15,7 +15,7 @@ Relocation is done by setting the coordinate system origin event number to a new
 An important result of these changes is that the animation times might be negative, because now it specifies a position relative to the
 fixpoint. Extending the range of loaded animation primitives is done by reading another block of events until the next or previous keyframe
 event. To properly have all AnimationPrimitives. we also have to load the events listed in the keyframe state. When we are reading forward
-there's no need to look back and read those events because they are have been already loaded.
+there's no need to look back and read those events because they have been already loaded.
 
 Q&A
  - How do we represent the very first moment of the animation that corresponds to the first line of the initialization entries?

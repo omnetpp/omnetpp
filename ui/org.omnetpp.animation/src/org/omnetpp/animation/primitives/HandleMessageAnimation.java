@@ -56,20 +56,24 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	@Override
 	public void activate() {
 	    super.activate();
-		getDecorationLayer().add(imageFigure);
+	    if (moduleId != 1)
+	        getDecorationLayer().add(imageFigure);
 	}
 
 	@Override
 	public void deactivate() {
         super.deactivate();
-		getDecorationLayer().remove(imageFigure);
+        if (moduleId != 1)
+            getDecorationLayer().remove(imageFigure);
 	}
 
 	@Override
 	public void refreshAnimation(AnimationPosition animtionPosition) {
-        Point location = getSubmoduleFigure(moduleId).getBounds().getLocation();
-        Dimension size = imageFigure.getSize();
-        imageFigure.setLocation(location.translate(0, -size.height));
+	    if (moduleId != 1) {
+            Point location = getSubmoduleFigure(moduleId).getBounds().getLocation();
+            Dimension size = imageFigure.getSize();
+            imageFigure.setLocation(location.translate(0, -size.height));
+	    }
 	}
 
     protected Layer getDecorationLayer() {

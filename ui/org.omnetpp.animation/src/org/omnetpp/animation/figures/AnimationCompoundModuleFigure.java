@@ -84,7 +84,6 @@ public class AnimationCompoundModuleFigure extends Figure {
         long eventNumber = animationController.getCurrentEventNumber();
         animationController.getAnimationCanvas().removeShownCompoundModule(moduleId);
         getParent().remove(this);
-        animationController.reloadAnimationPrimitives();
         animationController.gotoEventNumber(eventNumber);
     }
 }
