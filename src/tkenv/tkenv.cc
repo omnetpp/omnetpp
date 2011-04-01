@@ -648,6 +648,9 @@ void Tkenv::finishSimulation()
     // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
 
+    if (simstate==SIM_NEW || simstate==SIM_READY)
+        stoppedWithTerminationException(cTerminationException("The user has finished the simulation"));
+
     logBuffer.addInfo("{** Calling finish() methods of modules\n}");
     printLastLogLine();
 
@@ -661,6 +664,7 @@ void Tkenv::finishSimulation()
     }
     catch (std::exception& e)
     {
+        stoppedWithException(e);
         displayException(e);
     }
 
