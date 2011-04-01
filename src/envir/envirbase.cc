@@ -822,8 +822,6 @@ void EnvirBase::endRun()
         parsimpartition->endRun();
 #endif
     }
-    if (record_eventlog)
-        eventlogmgr->endRun();
     eventlogmgr->close();
     snapshotmgr->endRun();
     outscalarmgr->endRun();
@@ -1727,6 +1725,8 @@ void EnvirBase::stoppedWithTerminationException(cTerminationException& e)
     if (opt_parsim && !dynamic_cast<cReceivedTerminationException *>(&e))
         parsimpartition->broadcastTerminationException(e);
 #endif
+    if (record_eventlog)
+        eventlogmgr->endRun(e.isError(), e.getErrorCode(), e.getFormattedMessage().c_str());
 }
 
 void EnvirBase::stoppedWithException(std::exception& e)
@@ -1737,6 +1737,9 @@ void EnvirBase::stoppedWithException(std::exception& e)
     if (opt_parsim && !dynamic_cast<cReceivedException *>(&e))
         parsimpartition->broadcastException(e);
 #endif
+    if (record_eventlog)
+        // TODO: get error code from the exception?
+        eventlogmgr->endRun(true, eCUSTOM, e.what());
 }
 
 void EnvirBase::checkFingerprint()
