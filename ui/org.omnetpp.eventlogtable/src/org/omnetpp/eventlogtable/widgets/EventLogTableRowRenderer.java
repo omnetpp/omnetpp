@@ -199,31 +199,37 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				switch (eventLogTable.getDisplayMode()) {
 					case DESCRIPTIVE:
 						if (eventLogEntry instanceof EventEntry) {
-							IMessageDependency cause = contextEvent.getCause();
+						    if (eventNumber == 0) {
+						        drawText("Setting up ", CONSTANT_TEXT_COLOR);
+						        drawModuleDescription(1);
+						    }
+						    else {
+    							IMessageDependency cause = contextEvent.getCause();
 
-							drawText("Event in ", CONSTANT_TEXT_COLOR);
-							drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
+    							drawText("Event in ", CONSTANT_TEXT_COLOR);
+    							drawModuleDescription(contextEvent.getModuleId(), EventLogTable.NameMode.FULL_PATH);
 
-							MessageEntry beginSendEntry = cause != null ? cause.getMessageEntry() : null;
-							if (beginSendEntry != null) {
-								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
+    							MessageEntry beginSendEntry = cause != null ? cause.getMessageEntry() : null;
+    							if (beginSendEntry != null) {
+    								drawText(" on arrival of ", CONSTANT_TEXT_COLOR);
 
-								if (contextEvent.isSelfMessageProcessingEvent())
-									drawText("self ", CONSTANT_TEXT_COLOR);
+    								if (contextEvent.isSelfMessageProcessingEvent())
+    									drawText("self ", CONSTANT_TEXT_COLOR);
 
-								drawMessageDescription(beginSendEntry);
+    								drawMessageDescription(beginSendEntry);
 
-								if (!contextEvent.isSelfMessageProcessingEvent()) {
-									drawText(" from ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(beginSendEntry.getContextModuleId());
-								}
+    								if (!contextEvent.isSelfMessageProcessingEvent()) {
+    									drawText(" from ", CONSTANT_TEXT_COLOR);
+    									drawModuleDescription(beginSendEntry.getContextModuleId());
+    								}
 
-								IEvent causeEvent = cause.getCauseEvent();
-								if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId()) {
-									drawText(" called from ", CONSTANT_TEXT_COLOR);
-									drawModuleDescription(causeEvent.getModuleId());
-								}
-							}
+    								IEvent causeEvent = cause.getCauseEvent();
+    								if (causeEvent != null && causeEvent.getModuleId() != beginSendEntry.getContextModuleId()) {
+    									drawText(" called from ", CONSTANT_TEXT_COLOR);
+    									drawModuleDescription(causeEvent.getModuleId());
+    								}
+    							}
+						    }
 						}
 						else {
 							if (eventLogEntry instanceof EventLogMessageEntry) {
@@ -266,8 +272,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
 								drawText("Creating ", CONSTANT_TEXT_COLOR);
 								drawModuleDescription(moduleCreatedEntry);
-								drawText(" under ", CONSTANT_TEXT_COLOR);
-								drawModuleDescription(moduleCreatedEntry.getParentModuleId());
+                                int parentModuleId = moduleCreatedEntry.getParentModuleId();
+                                if (parentModuleId != -1) {
+    								drawText(" under ", CONSTANT_TEXT_COLOR);
+                                    drawModuleDescription(parentModuleId);
+                                }
 							}
 							else if (eventLogEntry instanceof ModuleDeletedEntry) {
 								ModuleDeletedEntry moduleDeletedEntry = (ModuleDeletedEntry)eventLogEntry;
@@ -340,7 +349,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 								boolean isSelfMessage = contextEvent.isSelfMessage(beginSendEntry);
 
 								if (isSelfMessage)
-								    drawText("Scheduling ", CONSTANT_TEXT_COLOR);
+								    drawText("Scheduling self ", CONSTANT_TEXT_COLOR);
 								else
 								    drawText("Sending ", CONSTANT_TEXT_COLOR);
 
@@ -360,8 +369,10 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
                                 drawText(" kind = ", CONSTANT_TEXT_COLOR);
                                 drawText(String.valueOf(beginSendEntry.getMessageKind()), DATA_COLOR);
-                                drawText(" length = ", CONSTANT_TEXT_COLOR);
-                                drawText(String.valueOf(beginSendEntry.getMessageLength()), DATA_COLOR);
+                                if (!beginSendEntry.getMessageClassName().equals("cMessage")) {
+                                    drawText(" length = ", CONSTANT_TEXT_COLOR);
+                                    drawText(String.valueOf(beginSendEntry.getMessageLength()), DATA_COLOR);
+                                }
 							}
 							else if (eventLogEntry instanceof EndSendEntry) {
 								EndSendEntry endSendEntry = (EndSendEntry)eventLogEntry;
@@ -424,10 +435,21 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
                                 drawText(simulationBeginEntry.getRunId(), DATA_COLOR);
                             }
                             else if (eventLogEntry instanceof SimulationEndEntry) {
-                                drawText("Simulation finished", CONSTANT_TEXT_COLOR);
+                                SimulationEndEntry simulationEndEntry = (SimulationEndEntry)eventLogEntry;
+                                drawText(simulationEndEntry.getIsError() ? "Simulation aborted with error code " : "Simulation finished with result code ", CONSTANT_TEXT_COLOR);
+                                drawText(String.valueOf(simulationEndEntry.getResultCode()), DATA_COLOR);
+                                drawText(" : ", CONSTANT_TEXT_COLOR);
+                                drawText(simulationEndEntry.getMessage(), DATA_COLOR);
                             }
                             else if (eventLogEntry instanceof KeyframeEntry) {
-                                drawText("Keyframe", CONSTANT_TEXT_COLOR);
+                                KeyframeEntry keyframeEntry = (KeyframeEntry)eventLogEntry;
+                                drawText("Keyframe with ", CONSTANT_TEXT_COLOR);
+                                String simulationStateEntries = keyframeEntry.getSimulationStateEntries();
+                                if (!StringUtils.isEmpty(simulationStateEntries))
+                                    drawText(String.valueOf(simulationStateEntries.split(",").length), DATA_COLOR);
+                                else
+                                    drawText("0", DATA_COLOR);
+                                drawText("simulation state events", CONSTANT_TEXT_COLOR);
                             }
 							else
 								throw new RuntimeException("Unknown eventlog entry: " + eventLogEntry.getClassName());
@@ -603,7 +625,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		{
 			String name = stringVector.get(i);
 			drawText(name + " ", CONSTANT_TEXT_COLOR);
-			drawText(eventLogEntry.getAttribute(name) + " ", RAW_VALUE_COLOR);
+			String value = eventLogEntry.getAttribute(name);
+			if (StringUtils.isEmpty(value))
+	            drawText("\"\" ", RAW_VALUE_COLOR);
+			else
+			    drawText(value + " ", RAW_VALUE_COLOR);
 		}
 	}
 
