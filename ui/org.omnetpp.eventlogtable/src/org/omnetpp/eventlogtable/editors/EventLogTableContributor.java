@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -80,7 +81,7 @@ import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.widgets.EventLogTable;
 
 @SuppressWarnings("restriction")
-public class EventLogTableContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
+public class EventLogTableContributor extends EditorActionBarContributor implements IPartListener, ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_NAME_MODE = TOOL_IMAGE_DIR + "NameMode.gif";
     public final static String IMAGE_LINE_FILTER_MODE = TOOL_IMAGE_DIR + "LineFilterMode.png";
@@ -239,18 +240,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 				eventLogInput = eventLogTable.getEventLogInput();
 				if (eventLogInput != null)
 					eventLogInput.removeEventLogChangedListener(this);
-
+                getPage().removePartListener(this);
 				eventLogTable.removeSelectionChangedListener(this);
 			}
-
 			eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
-
 			eventLogInput = eventLogTable.getEventLogInput();
 			if (eventLogInput != null)
 				eventLogInput.addEventLogChangedListener(this);
-
+            getPage().addPartListener(this);
 			eventLogTable.addSelectionChangedListener(this);
-
 			update();
 		}
 	}
@@ -259,20 +257,14 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
-
-				if (fieldType == EventLogTableAction.class ||
-					fieldType == EventLogTableMenuAction.class)
-				{
+				if (fieldType == EventLogTableAction.class || fieldType == EventLogTableMenuAction.class) {
 					EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
-
 					fieldValue.setEnabled(true);
 					fieldValue.update();
-					if (eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
+					if ((getPage() != null && !(getPage().getActivePart() instanceof EventLogTableEditor)) || eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
 						fieldValue.setEnabled(false);
 				}
-
-				if (fieldType == StatusLineContributionItem.class)
-				{
+				else if (fieldType == StatusLineContributionItem.class) {
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
 					fieldValue.update();
 				}
@@ -336,6 +328,23 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	public void eventLogProgress() {
 		// void
 	}
+
+    public void partActivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partBroughtToTop(IWorkbenchPart part) {
+    }
+
+    public void partClosed(IWorkbenchPart part) {
+    }
+
+    public void partDeactivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partOpened(IWorkbenchPart part) {
+    }
 
 	/*************************************************************************************
 	 * ACTIONS

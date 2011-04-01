@@ -73,6 +73,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
@@ -124,7 +125,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 // TODO: proper "hand" cursor - current one is not very intuitive
 public class SequenceChart
 	extends CachingCanvas
-	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
+	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener, IEventLogProvider
 {
 	private static final boolean debug = false;
 

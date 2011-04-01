@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -66,7 +67,7 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
-public class AnimationContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
+public class AnimationContributor extends EditorActionBarContributor implements IPartListener, ISelectionChangedListener, IEventLogChangeListener, IAnimationListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_ANIMATION_MODE = TOOL_IMAGE_DIR + "animationmode.png";
     public final static String IMAGE_INCREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "increaseanimationspeed.gif";
@@ -257,28 +258,17 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 				eventLogInput = animationCanvas.getInput();
 				if (eventLogInput != null)
 					eventLogInput.removeEventLogChangedListener(this);
-
+				getPage().removePartListener(this);
 				animationCanvas.removeSelectionChangedListener(this);
-				// TODO: animationCanvas.getAnimationController().removeAnimationListener(listener);
+				animationCanvas.getAnimationController().removeAnimationListener(this);
 			}
-
 			animationCanvas = ((AnimationEditor)targetEditor).getAnimationCanvas();
-
 			eventLogInput = animationCanvas.getInput();
 			if (eventLogInput != null)
 				eventLogInput.addEventLogChangedListener(this);
-
+			getPage().addPartListener(this);
 			animationCanvas.addSelectionChangedListener(this);
-			animationCanvas.getAnimationController().addAnimationListener(new IAnimationListener() {
-	            public void runningStateChanged(boolean isRunning) {
-	                update();
-	            }
-
-	            public void animationPositionChanged(AnimationPosition animationPosition) {
-	                update();
-	            }
-	        });
-
+			animationCanvas.getAnimationController().addAnimationListener(this);
             animationPositionContribution.configureSlider();
 			update();
 		}
@@ -290,25 +280,21 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
-
-				if (fieldType == AnimationAction.class ||
-					fieldType == AnimationMenuAction.class)
-				{
+				if (fieldType == AnimationAction.class || fieldType == AnimationMenuAction.class) {
 					AnimationAction fieldValue = (AnimationAction)field.get(this);
-
 					if (fieldValue != null && animationCanvas != null) {
 						fieldValue.setEnabled(true);
 						fieldValue.update();
-						if (animationCanvas.getInput().isLongRunningOperationInProgress())
+						if ((getPage() != null && !(getPage().getActivePart() instanceof AnimationEditor)) || animationCanvas.getInput().isLongRunningOperationInProgress())
 							fieldValue.setEnabled(false);
 					}
 				}
-				if (fieldType == StatusLineContributionItem.class) {
+				else if (fieldType == StatusLineContributionItem.class) {
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
 					if (animationCanvas != null)
 						fieldValue.update();
 				}
-                if (fieldType == AnimationPositionContribution.class) {
+				else if (fieldType == AnimationPositionContribution.class) {
                     AnimationPositionContribution fieldValue = (AnimationPositionContribution)field.get(this);
                     if (animationCanvas != null)
                         fieldValue.update();
@@ -368,6 +354,31 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	public void eventLogProgress() {
 		// void
 	}
+
+    public void partActivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partBroughtToTop(IWorkbenchPart part) {
+    }
+
+    public void partClosed(IWorkbenchPart part) {
+    }
+
+    public void partDeactivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partOpened(IWorkbenchPart part) {
+    }
+
+    public void runningStateChanged(boolean isRunning) {
+        update();
+    }
+
+    public void animationPositionChanged(AnimationPosition animationPosition) {
+        update();
+    }
 
 	/*************************************************************************************
 	 * ACTIONS

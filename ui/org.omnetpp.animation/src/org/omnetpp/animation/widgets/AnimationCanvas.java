@@ -30,13 +30,14 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.figures.misc.ISelectableFigure;
 
 public class AnimationCanvas
     extends EditableFigureCanvas
-    implements ISelectionProvider, IEventLogChangeListener, IAnimationListener
+    implements ISelectionProvider, IEventLogChangeListener, IEventLogProvider, IAnimationListener
 {
     private IEventLog eventLog; // the C++ wrapper for the data to be displayed
 

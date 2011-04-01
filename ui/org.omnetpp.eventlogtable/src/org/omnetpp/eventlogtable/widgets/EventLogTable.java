@@ -33,6 +33,7 @@ import org.omnetpp.common.eventlog.EventLogFindTextDialog;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.virtualtable.VirtualTable;
@@ -47,7 +48,7 @@ import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
 public class EventLogTable
 	extends VirtualTable<EventLogEntryReference>
-	implements IEventLogChangeListener
+	implements IEventLogChangeListener, IEventLogProvider
 {
 	private static final boolean debug = false;
 
