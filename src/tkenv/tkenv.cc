@@ -713,7 +713,7 @@ void Tkenv::newNetwork(const char *networkname)
         readPerRunOptions();
         opt_network_name = network->getName();  // override config setting
         answers.clear();
-        simulation.setupNetwork(network);
+        setupNetwork(network);
         startRun();
 
         simstate = SIM_NEW;
@@ -761,7 +761,7 @@ void Tkenv::newRun(const char *configname, int runnumber)
         CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
         answers.clear();
-        simulation.setupNetwork(network);
+        setupNetwork(network);
         startRun();
 
         simstate = SIM_NEW;

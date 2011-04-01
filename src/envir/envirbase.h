@@ -228,6 +228,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void run() = 0;
     virtual void shutdown();
 
+    virtual void setupNetwork(cModuleType *network);
     virtual void startRun();
     virtual void endRun();
 

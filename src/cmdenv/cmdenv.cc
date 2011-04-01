@@ -255,7 +255,7 @@ void Cmdenv::run()
             ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
             ::fflush(fout);
 
-            simulation.setupNetwork(network);
+            setupNetwork(network);
             setupnetwork_done = true;
 
             // prepare for simulation run

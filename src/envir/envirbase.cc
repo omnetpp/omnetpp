@@ -787,16 +787,21 @@ void EnvirBase::shutdown()
     }
 }
 
+void EnvirBase::setupNetwork(cModuleType *network)
+{
+    if (record_eventlog)
+        eventlogmgr->startRun();
+    else
+        eventlogmgr->remove();
+    simulation.setupNetwork(network);
+}
+
 void EnvirBase::startRun()
 {
     resetClock();
     outvectormgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
-    if (record_eventlog)
-        eventlogmgr->startRun();
-    else
-        eventlogmgr->remove();
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
