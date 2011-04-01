@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution.ParamResolutionType;
 import org.omnetpp.ned.core.NedTreeTraversal;
@@ -32,7 +33,7 @@ public class ParamCollector {
         Assert.isNotNull(doc);
         Assert.isNotNull(activeSection);
         
-        ModuleTreeVisitor visitor = new ModuleTreeVisitor(doc, activeSection, true, true, monitor);
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(doc, activeSection, true, new String[] {"signal", "statistic"}, null, monitor);
         String networkName = InifileUtils.lookupNetwork(doc, activeSection);
         INedTypeInfo network = networkName != null ? resolveNetwork(doc, nedResolver, networkName) : null;
         if (network != null) {
@@ -48,11 +49,34 @@ public class ParamCollector {
         return result;
     }
 
+
+    /**
+     * Collect module names from the network configured in the given
+     * section of the ini file document and whose name matches with {@namePattern}.
+     */
+    public static Map<String,ISubmoduleOrConnection> collectModules(IReadonlyInifileDocument doc, String section,
+            PatternMatcher namePattern, INedTypeResolver nedResolver, IProgressMonitor monitor) {
+        
+        Assert.isNotNull(doc);
+        Assert.isNotNull(section);
+        
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(doc, section, true, null, namePattern, monitor);
+        String networkName = InifileUtils.lookupNetwork(doc, section);
+        INedTypeInfo network = networkName != null ? resolveNetwork(doc, nedResolver, networkName) : null;
+        if (network != null) {
+            IProject contextProject = doc.getDocumentFile().getProject();
+            NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, contextProject);
+            treeTraversal.traverse(network.getFullyQualifiedName());
+        }
+
+        return visitor.getModules();
+    }
+
     /**
      * Collects parameters of a module type (recursively), *without* an inifile present.
      */
     public static List<ParamResolution> collectParameters(INedTypeInfo moduleType, INedTypeResolver nedResolver) {
-        ModuleTreeVisitor visitor = new ModuleTreeVisitor(true, false);
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(true, null, null);
         // the contextProject parameter affects the resolution of parametric submodule types ("like").
         NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver, visitor, moduleType.getProject());
         treeTraversal.traverse(moduleType);
@@ -66,7 +90,7 @@ public class ParamCollector {
         // the contextProject parameter affects the resolution of parametric submodule types ("like").
         IProject contextProject = submodule.getEnclosingTypeElement().getNedTypeInfo().getProject();
         // TODO: this ignores deep parameter settings from the compound module above the submodule
-        ModuleTreeVisitor visitor = new ModuleTreeVisitor(true, false);
+        ModuleTreeVisitor visitor = new ModuleTreeVisitor(true, null, null);
         NedTreeTraversal treeTraversal = new NedTreeTraversal(nedResolver,  visitor, contextProject);
         treeTraversal.traverse(submodule);
         return visitor.getParamResolutions();

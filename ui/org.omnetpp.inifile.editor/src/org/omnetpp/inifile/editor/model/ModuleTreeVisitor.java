@@ -1,13 +1,16 @@
 package org.omnetpp.inifile.editor.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.IModuleTreeVisitor;
 import org.omnetpp.ned.core.ParamUtil;
@@ -23,43 +26,49 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     private final String[] sectionChain;
     private final IProgressMonitor monitor;
     private final boolean collectParameters;
-    private final boolean collectProperties;
+    private final String[] propertiesToCollect;     // names of properties to be collected, null if none
+    private final PatternMatcher moduleNamePattern;
     
     private final List<ParamResolution> paramResolutions;
-    private final ArrayList<PropertyResolution> propertyResolutions;
+    private final List<PropertyResolution> propertyResolutions;
+    private final Map<String,ISubmoduleOrConnection> modules;
 
     protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
     protected Stack<INedTypeInfo> typeInfoPath = new Stack<INedTypeInfo>();
     protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
-
+    
     /**
      * For traversing a given ned element or ned type.
      */
-    public ModuleTreeVisitor(boolean collectParameters, boolean collectProperties) {
+    public ModuleTreeVisitor(boolean collectParameters, String[] propertiesToCollect, PatternMatcher moduleNamePattern) {
         this.doc = null;
         this.sectionChain = null;
         this.monitor = null;
         this.collectParameters = collectParameters;
-        this.collectProperties = collectProperties;
+        this.propertiesToCollect = propertiesToCollect;
+        this.moduleNamePattern = moduleNamePattern;
         
         this.paramResolutions = collectParameters ? new ArrayList<ParamResolution>() : null;
-        this.propertyResolutions = collectProperties ? new ArrayList<PropertyResolution>() : null;
+        this.propertyResolutions = propertiesToCollect != null ? new ArrayList<PropertyResolution>() : null;
+        this.modules = moduleNamePattern != null ? new HashMap<String,ISubmoduleOrConnection>() : null;
     }
     
     /**
      * For traversing the configured network.
      */
     public ModuleTreeVisitor(IReadonlyInifileDocument doc, String activeSection,
-            boolean collectParameters, boolean collectProperties, IProgressMonitor monitor) {
-        Assert.isTrue(collectParameters || collectProperties);
+            boolean collectParameters, String[] propertiesToCollect, PatternMatcher moduleNamePattern, IProgressMonitor monitor) {
+        Assert.isTrue(collectParameters || propertiesToCollect != null || moduleNamePattern != null);
         this.doc = doc;
         this.sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
         this.collectParameters = collectParameters;
-        this.collectProperties = collectProperties;
+        this.propertiesToCollect = propertiesToCollect;
+        this.moduleNamePattern = moduleNamePattern;
         this.monitor = monitor;
 
         this.paramResolutions = collectParameters ? new ArrayList<ParamResolution>() : null;
-        this.propertyResolutions = collectProperties ? new ArrayList<PropertyResolution>() : null;
+        this.propertyResolutions = propertiesToCollect != null ? new ArrayList<PropertyResolution>() : null;
+        this.modules = moduleNamePattern != null ? new HashMap<String,ISubmoduleOrConnection>() : null;
     }
     
     public List<ParamResolution> getParamResolutions() {
@@ -69,6 +78,10 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     public List<PropertyResolution> getPropertyResolutions() {
         return propertyResolutions;
     }
+    
+    public Map<String,ISubmoduleOrConnection> getModules() {
+        return modules;
+    }
 
     public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
         if (monitor != null && monitor.isCanceled())
@@ -76,19 +89,25 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         
         elementPath.push(element);
         typeInfoPath.push(typeInfo);
+
         fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
         String fullPath = StringUtils.join(fullPathStack, ".");
         
-        // collect parameters
-        if (collectParameters) {
-            ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath, sectionChain, doc);
-        }
-        
-        // collect signals and statistics
-        if (collectProperties) {
-            String activeSection = sectionChain != null ? sectionChain[0] : null;
-            ParamCollector.resolveModuleProperties("signal", propertyResolutions, fullPath, typeInfoPath, elementPath, activeSection);
-            ParamCollector.resolveModuleProperties("statistic", propertyResolutions, fullPath, typeInfoPath, elementPath, activeSection);
+        if (moduleNamePattern == null || moduleNamePattern.matches(fullPath)) {
+            if (moduleNamePattern != null)
+                modules.put(fullPath,element);
+            
+            // collect parameters
+            if (collectParameters) {
+                ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath, sectionChain, doc);
+            }
+            
+            // collect properties
+            if (propertiesToCollect != null) {
+                String activeSection = sectionChain != null ? sectionChain[0] : null;
+                for (String propertyName : propertiesToCollect)
+                    ParamCollector.resolveModuleProperties(propertyName, propertyResolutions, fullPath, typeInfoPath, elementPath, activeSection);
+            }
         }
         
         return true;
@@ -109,6 +128,9 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     public String resolveLikeType(ISubmoduleOrConnection element) {
         // Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
         // resolveLikeParam() which relies on the data structure we are currently building
+        
+        if (!collectParameters)
+            return null;
 
         // get like parameter name
         String likeParamName = element.getLikeParam();
