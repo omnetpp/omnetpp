@@ -95,12 +95,21 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	@Override
 	public void deactivate() {
         super.deactivate();
-		EventLogModule parentModule = getSimulation().getModuleById(parentModuleId);
-        CompoundModuleFigure parentCompoundModuleFigure = getCompoundModuleFigure(parentModule);
-        if (parentCompoundModuleFigure != null) {
-		    SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
+        SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
+        if (submoduleFigure != null) {
+            if (submoduleFigure.getParent() != null)
+                submoduleFigure.getParent().remove(submoduleFigure);
             animationController.setFigure(module, SubmoduleFigure.class, null);
-		    parentCompoundModuleFigure.getSubmoduleLayer().remove(submoduleFigure);
 		}
+        CompoundModuleFigure compoundModuleFigure = (CompoundModuleFigure)animationController.getFigure(module, CompoundModuleFigure.class);
+        if (compoundModuleFigure != null) {
+            if (compoundModuleFigure.getParent() != null)
+                compoundModuleFigure.getParent().remove(compoundModuleFigure);
+            animationController.setFigure(module, CompoundModuleFigure.class, null);
+        }
+        AnimationCanvas animationCanvas = animationController.getAnimationCanvas();
+        AnimationCompoundModuleFigure animationCompoundModuleFigure = animationCanvas.findAnimationCompoundModuleFigure(module.getId());
+        if (animationCompoundModuleFigure != null)
+            animationCompoundModuleFigure.getParent().remove(animationCompoundModuleFigure);
 	}
 }

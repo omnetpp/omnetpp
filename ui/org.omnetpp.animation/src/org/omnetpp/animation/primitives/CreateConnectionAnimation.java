@@ -85,7 +85,7 @@ public class CreateConnectionAnimation extends AbstractInfiniteAnimation {
         super.deactivate();
 		ConnectionFigure connectionFigure = (ConnectionFigure)animationController.getFigure(connection.getSourceGate(), ConnectionFigure.class);
 		if (connectionFigure != null) {
-		    getEnclosingCompoundModuleFigure(connection.getSourceGate().getOwnerModuleId()).getConnectionLayer().remove(connectionFigure);
+		    connectionFigure.getParent().remove(connectionFigure);
 			animationController.setFigure(connection.getSourceGate(), ConnectionFigure.class, null);
 		}
 	}
