@@ -161,13 +161,6 @@ class EVENTLOG_API IEventLog
          */
         virtual IEvent *getApproximateEventAt(double percentage) = 0;
 
-        virtual int getNumInitializationLogEntries() = 0;
-        virtual EventLogEntry *getInitializationLogEntry(int index) = 0;
-        /**
-         * Prints initialization entries present before the first event.
-         */
-        virtual void printInitializationLogEntries(FILE *file = stdout) = 0;
-
     public:
         /**
          * Returns the event at the given distance. 0 means the parameter event will be returned.
@@ -186,15 +179,10 @@ class EVENTLOG_API IEventLog
         virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber);
 
         /**
-         * Prints all or only the events in the requested range from the log.
-         * The given event numbers may not be included in the log.
+         * Prints the contents into specified file.
+         * The given event numbers may not be present in the log.
          */
-        virtual void printEvents(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
-        /**
-         * Prints initialization entries and calls printEvents.
-         * The given event numbers may not be included in the log.
-         */
-        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputInitializationEntries = true, bool outputEventLogMessages = true);
+        virtual void print(FILE *file = stdout, eventnumber_t fromEventNumber = -1, eventnumber_t toEventNumber = -1, bool outputEventLogMessages = true);
 
     protected:
         void clearInternalState();

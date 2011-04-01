@@ -38,7 +38,7 @@ void IEventLog::synchronize(FileReader::FileChangedState change)
         clearInternalState();
 }
 
-void IEventLog::printEvents(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)
+void IEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputEventLogMessages)
 {
     IEvent *event = fromEventNumber == -1 ? getFirstEvent() : getFirstEventNotBeforeEventNumber(fromEventNumber);
 
@@ -47,14 +47,6 @@ void IEventLog::printEvents(FILE *file, eventnumber_t fromEventNumber, eventnumb
         event->print(file, outputEventLogMessages);
         event = event->getNextEvent();
     }
-}
-
-void IEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t toEventNumber, bool outputInitializationEntries, bool outputEventLogMessages)
-{
-    if (outputInitializationEntries)
-        printInitializationLogEntries(file);
-
-    printEvents(file, fromEventNumber, toEventNumber, outputEventLogMessages);
 }
 
 IEvent *IEventLog::getNeighbourEvent(IEvent *event, eventnumber_t distance)

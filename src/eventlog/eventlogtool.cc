@@ -41,7 +41,6 @@ class Options
         simtime_t fromSimulationTime;
         simtime_t toSimulationTime;
 
-        bool outputInitialization;
         bool outputLogLines;
         bool traceCauses;
         bool traceConsequences;
@@ -92,7 +91,6 @@ Options::Options()
     fromSimulationTime = simtime_nil;
     toSimulationTime = simtime_nil;
 
-    outputInitialization = true;
     outputLogLines = true;
     traceCauses = true;
     traceConsequences = true;
@@ -295,7 +293,7 @@ void echo(Options options)
     IEventLog *eventLog = options.createEventLog(fileReader);
 
     long begin = clock();
-    eventLog->print(options.outputFile, options.getFirstEventNumber(), options.getLastEventNumber(), options.outputInitialization, options.outputLogLines);
+    eventLog->print(options.outputFile, options.getFirstEventNumber(), options.getLastEventNumber(), options.outputLogLines);
     long end = clock();
 
     if (options.verbose)
@@ -333,7 +331,7 @@ void filter(Options options)
     IEventLog *eventLog = options.createEventLog(fileReader);
 
     long begin = clock();
-    eventLog->print(options.outputFile, -1, -1, options.outputInitialization, options.outputLogLines);
+    eventLog->print(options.outputFile, -1, -1, options.outputLogLines);
     long end = clock();
 
     if (options.verbose)
@@ -392,7 +390,6 @@ void usage(const char *message)
 "      -seti   --message-encapsulation-tree-ids   <integer>+\n"
 "      -ob     --omit-causes-trace\n"
 "      -of     --omit-consequences-trace\n"
-"      -oi     --omit-initialization\n"
 "      -ol     --omit-log-lines\n"
 "      -v      --verbose\n"
 "         prints performance information\n");
@@ -506,8 +503,6 @@ int main(int argc, char **argv)
                         options.traceCauses = false;
                     else if (!strcmp(argv[i], "-of") || !strcmp(argv[i], "--omit-consequences-trace"))
                         options.traceConsequences = false;
-                    else if (!strcmp(argv[i], "-oi") || !strcmp(argv[i], "--omit-initialization"))
-                        options.outputInitialization = false;
                     else if (!strcmp(argv[i], "-ol") || !strcmp(argv[i], "--omit-log-lines"))
                         options.outputLogLines = false;
                     else if (i == argc - 1)

@@ -28,7 +28,6 @@ EventLog::EventLog(FileReader *reader) : EventLogIndex(reader)
     reader->setIgnoreAppendChanges(false);
     clearInternalState();
     parseKeyframes();
-    parseInitializationLogEntries();
 }
 
 EventLog::~EventLog()
@@ -46,11 +45,11 @@ void EventLog::clearInternalState()
     lastEvent = NULL;
     messageNames.clear();
     messageClassNames.clear();
-    initializationLogEntries.clear();
     moduleIdToModuleCreatedEntryMap.clear();
     moduleIdAndGateIdToGateCreatedEntryMap.clear();
     previousEventNumberToMessageEntriesMap.clear();
     simulationBeginEntry = NULL;
+    simulationEndEntry = NULL;
     eventNumberToEventMap.clear();
     beginOffsetToEventMap.clear();
     endOffsetToEventMap.clear();
@@ -60,9 +59,6 @@ void EventLog::clearInternalState()
 
 void EventLog::deleteAllocatedObjects()
 {
-    for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
-        delete *it;
-
     for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
         delete it->second;
 }
@@ -77,7 +73,6 @@ void EventLog::synchronize(FileReader::FileChangedState change)
                 deleteAllocatedObjects();
                 clearInternalState();
                 parseKeyframes();
-                parseInitializationLogEntries();
                 break;
             case FileReader::APPENDED:
                 for (EventNumberToEventMap::iterator it = eventNumberToEventMap.begin(); it != eventNumberToEventMap.end(); it++)
@@ -191,68 +186,34 @@ void EventLog::parseKeyframes()
 {
     // NOTE: optimized for performance
     char *line;
-    keyframeBlockSize = getSimulationBeginEntry()->keyframeBlockSize;
-    consequenceLookaheadLimits.resize((getLastEventNumber() / keyframeBlockSize) + 1, 0);
-    reader->seekTo(reader->getFileSize());
-    while (line = reader->getPreviousLineBufferPointer()) {
-        int length = reader->getCurrentLineLength();
-        if (length > 3 && line[0] == 'K' && line[1] == 'F' && line[2] == ' ') {
-            progress();
-            KeyframeEntry *keyframeEntry = (KeyframeEntry *)EventLogEntry::parseEntry(NULL, 0, line, length);
-            // store consequenceLookaheadLimits
-            char *s = const_cast<char *>(keyframeEntry->consequenceLookaheadLimits);
-            while (*s != '\0') {
-                eventnumber_t eventNumber = strtol(s, &s, 10);
-                long keyframeIndex = eventNumber / keyframeBlockSize;
-                s++;
-                eventnumber_t consequenceLookaheadLimit = strtol(s, &s, 10);
-                s++;
-                consequenceLookaheadLimits[keyframeIndex] = std::max(consequenceLookaheadLimits[keyframeIndex], consequenceLookaheadLimit);
+    SimulationBeginEntry *simulationBeginEntry = getSimulationBeginEntry();
+    if (simulationBeginEntry) {
+        keyframeBlockSize = simulationBeginEntry->keyframeBlockSize;
+        consequenceLookaheadLimits.resize((getLastEventNumber() / keyframeBlockSize) + 1, 0);
+        reader->seekTo(reader->getFileSize());
+        while (line = reader->getPreviousLineBufferPointer()) {
+            int length = reader->getCurrentLineLength();
+            if (length > 3 && line[0] == 'K' && line[1] == 'F' && line[2] == ' ') {
+                progress();
+                KeyframeEntry *keyframeEntry = (KeyframeEntry *)EventLogEntry::parseEntry(NULL, 0, line, length);
+                // store consequenceLookaheadLimits
+                char *s = const_cast<char *>(keyframeEntry->consequenceLookaheadLimits);
+                while (*s != '\0') {
+                    eventnumber_t eventNumber = strtol(s, &s, 10);
+                    long keyframeIndex = eventNumber / keyframeBlockSize;
+                    s++;
+                    eventnumber_t consequenceLookaheadLimit = strtol(s, &s, 10);
+                    s++;
+                    consequenceLookaheadLimits[keyframeIndex] = std::max(consequenceLookaheadLimits[keyframeIndex], consequenceLookaheadLimit);
+                }
+                // TODO: store simulation state data
+                // jump to previous keyframe
+                reader->seekTo(keyframeEntry->previousKeyframeFileOffset + 1);
+                reader->getNextLineBufferPointer();
+                delete keyframeEntry;
             }
-            // TODO: store simulation state data
-            // jump to previous keyframe
-            reader->seekTo(keyframeEntry->previousKeyframeFileOffset + 1);
-            reader->getNextLineBufferPointer();
-            delete keyframeEntry;
         }
     }
-}
-
-void EventLog::parseInitializationLogEntries()
-{
-    int index = 0;
-    reader->seekTo(0);
-
-    if (PRINT_DEBUG_MESSAGES) printf("Parsing initialization log entries at: 0\n");
-
-    while (true)
-    {
-        char *line = reader->getNextLineBufferPointer();
-
-        if (!line)
-            break;
-
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(NULL, index, line, reader->getCurrentLineLength());
-
-        if (!eventLogEntry)
-            continue;
-        else
-            index++;
-
-        if (dynamic_cast<EventEntry *>(eventLogEntry)) {
-            delete eventLogEntry;
-            break;
-        }
-
-        initializationLogEntries.push_back(eventLogEntry);
-        cacheEventLogEntry(eventLogEntry);
-    }
-}
-
-void EventLog::printInitializationLogEntries(FILE *file)
-{
-    for (EventLogEntryList::iterator it = initializationLogEntries.begin(); it != initializationLogEntries.end(); it++)
-        (*it)->print(file);
 }
 
 std::vector<ModuleCreatedEntry *> EventLog::getModuleCreatedEntries()
@@ -465,6 +426,12 @@ void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
 
     if (simulationBeginEntry)
         this->simulationBeginEntry = simulationBeginEntry;
+
+    // simulation begin entry
+    SimulationEndEntry *simulationEndEntry = dynamic_cast<SimulationEndEntry *>(eventLogEntry);
+
+    if (simulationEndEntry)
+        this->simulationEndEntry = simulationEndEntry;
 
     // collect module created entries
     ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);

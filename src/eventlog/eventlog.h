@@ -52,10 +52,8 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         Event *firstEvent;
         Event *lastEvent;
 
-        typedef std::vector<EventLogEntry *> EventLogEntryList;
-        EventLogEntryList initializationLogEntries; // all entries from the beginning of the file to the first event
-
         SimulationBeginEntry *simulationBeginEntry;
+        SimulationEndEntry *simulationEndEntry;
 
         typedef std::map<int, ModuleCreatedEntry *> ModuleIdToModuleCreatedEntryMap;
         ModuleIdToModuleCreatedEntryMap moduleIdToModuleCreatedEntryMap;
@@ -109,6 +107,7 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual ModuleCreatedEntry *getModuleCreatedEntry(int moduleId);
         virtual GateCreatedEntry *getGateCreatedEntry(int moduleId, int gateId);
         virtual SimulationBeginEntry *getSimulationBeginEntry() { getFirstEvent(); return simulationBeginEntry; }
+        virtual SimulationEndEntry *getSimulationEndEntry() { getLastEvent(); return simulationEndEntry; }
 
         virtual Event *getFirstEvent();
         virtual Event *getLastEvent();
@@ -121,10 +120,6 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         virtual eventnumber_t getApproximateNumberOfEvents();
         virtual Event *getApproximateEventAt(double percentage);
 
-        virtual int getNumInitializationLogEntries() { return initializationLogEntries.size(); }
-        virtual EventLogEntry *getInitializationLogEntry(int index) { return initializationLogEntries[index]; }
-        virtual void printInitializationLogEntries(FILE *file = stdout);
-
     protected:
         void parseEvent(Event *event, file_offset_t beginOffset);
         void cacheEvent(Event *event);
@@ -135,7 +130,6 @@ class EVENTLOG_API EventLog : public IEventLog, public EventLogIndex
         void clearInternalState();
         void deleteAllocatedObjects();
         void parseKeyframes();
-        void parseInitializationLogEntries();
 };
 
 NAMESPACE_END

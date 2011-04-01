@@ -176,10 +176,6 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual double getApproximatePercentageForEventNumber(eventnumber_t eventNumber);
         virtual FilteredEvent *getApproximateEventAt(double percentage);
 
-        virtual int getNumInitializationLogEntries() { return eventLog->getNumInitializationLogEntries(); }
-        virtual EventLogEntry *getInitializationLogEntry(int index) { return eventLog->getInitializationLogEntry(index); }
-        virtual void printInitializationLogEntries(FILE *file = stdout) {  eventLog->printInitializationLogEntries(file); }
-
     protected:
         /**
          * Caches the given filtered event in the event cache if not present yet.
