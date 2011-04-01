@@ -284,6 +284,8 @@ void Tkenv::run()
     }
 
     // delete network if not yet done
+    if (simstate!=SIM_NONET && simstate!=SIM_FINISHCALLED)
+        endRun();
     simulation.deleteNetwork();
 
     // pull down inspector factories
