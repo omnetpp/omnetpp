@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
@@ -167,6 +168,8 @@ public class BuildSpecification implements Cloneable {
         }
         else {
             try {
+                if (!project.getWorkspace().isTreeLocked())
+                    buildSpecFile.refreshLocal(IResource.DEPTH_ZERO, null);
                 if (buildSpecFile.getContents().read()!='<')
                     return readBuildSpecFileOld(project, FileUtils.readTextFile(buildSpecFile.getContents(),null));
                 BuildSpecification buildSpec = new BuildSpecification(project);
