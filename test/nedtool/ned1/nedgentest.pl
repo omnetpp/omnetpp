@@ -18,7 +18,9 @@ $num_pass=0;
 $verbose=1;
 $debug=0;
 
-$isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
+# are we on Windows?
+$isMINGW = defined $ENV{MSYSTEM} && $ENV{MSYSTEM} =~ /mingw/i;
+$isWindows = ($ENV{'OS'} =~ /windows/i) ? 1 : 0;
 $shell='/bin/sh';  # only used on Unix
 
 if (@ARGV == ())
@@ -91,14 +93,18 @@ sub exec_program()
         # The following line mysteriously fails to redirect on some Windows configuration.
         # This can be observed together with cvs reporting "editor session fails" -- root cause is common?
         #$status = system ("$cmd >$outfile 2>$errfile");
-        $shell=$ENV{'COMSPEC'};
+        $shell = $ENV{'COMSPEC'};
         if ($shell eq "") {
             print STDERR "$arg0: WARNING: no %COMSPEC% environment variable, using cmd.exe\n";
-            $shell="cmd.exe";
+            $shell = "cmd.exe";
         }
         # On the next line, cmd.exe may fail to pass back program exit code.
         # When this happens, use the above (commented out) "system" line.
-        $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
+        if ($isMINGW) {
+            $status = system($shell, "/c","$cmd >$outfile 2>$errfile");
+        } else {
+            $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
+        }
         print "  returned status = $status\n" if ($debug);
         if ($status == 0)
         {
