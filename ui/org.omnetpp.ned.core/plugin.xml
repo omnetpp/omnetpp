@@ -74,7 +74,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="menu:project?after=build.ext">
+            locationURI="menu:project?after=additions">
             <command
                   commandId="org.omnetpp.ned.cleanupNedFiles"
                   id="cleanupNedFiles"

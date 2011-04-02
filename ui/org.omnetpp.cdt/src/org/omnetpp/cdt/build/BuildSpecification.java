@@ -278,7 +278,7 @@ public class BuildSpecification implements Cloneable {
                 buildSpecFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
         }
         catch (Exception e) {  // catches: ParserConfigurationException,ClassCastException,ClassNotFoundException,InstantiationException,IllegalAccessException
-            throw Activator.wrapIntoCoreException("Cannot save buildspec", e);
+            throw Activator.wrapIntoCoreException("Cannot save build specification: " + e.getMessage(), e);
         }
     }
 }
