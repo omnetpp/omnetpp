@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDGENERATOR.CC - part of
+//  NED2GENERATOR.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -544,7 +544,9 @@ void NED2Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
     {
         // "like" version
         OUT << "<";
+        if (node->getIsDefault()) OUT << "default(";
         printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        if (node->getIsDefault()) OUT << ")";
         OUT << ">";
         OUT << " like " << node->getLikeType();
     }
@@ -603,7 +605,9 @@ void NED2Generator::doConnection(ConnectionElement *node, const char *indent, bo
         {
             // "like" version
             OUT << " <";
+            if (node->getIsDefault()) OUT << "default(";
             printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+            if (node->getIsDefault()) OUT << ")";
             OUT << ">";
             OUT << " like " << node->getLikeType();
         }

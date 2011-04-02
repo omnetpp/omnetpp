@@ -132,6 +132,8 @@ static struct NED1ParserState
     bool inNetwork;
     bool inGroup;
 
+    YYLTYPE exprPos;
+
     /* tmp flags, used with msg fields */
     bool isAbstract;
     bool isReadonly;
@@ -594,7 +596,7 @@ submodule
                   ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setType(toString(@3));
-                  addVector(ps.submod, "vector-size",@4,$4);
+                  addExpression(ps.submod, "vector-size",ps.exprPos,$4);
                   storeBannerAndRightComments(ps.submod,@1,@5);
                 }
           submodule_body
@@ -606,7 +608,7 @@ submodule
                   ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@5));
-                  ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
+                  ps.submod->setLikeParam(toString(@3)); //TODO store as expression
                   storeBannerAndRightComments(ps.submod,@1,@6);
                 }
           submodule_body
@@ -618,8 +620,8 @@ submodule
                   ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@6));
-                  ps.submod->setLikeParam(toString(@3)); //FIXME store as expression!!!
-                  addVector(ps.submod, "vector-size",@4,$4);
+                  ps.submod->setLikeParam(toString(@3)); //TODO store as expression
+                  addExpression(ps.submod, "vector-size",ps.exprPos,$4);
                   storeBannerAndRightComments(ps.submod,@1,@7);
                 }
           submodule_body
@@ -762,7 +764,7 @@ gatesize
                 {
                   ps.gatesize = addGate(ps.gatesizes,@1);
                   ps.gatesize->setIsVector(true);
-                  addVector(ps.gatesize, "vector-size",@2,$2);
+                  addExpression(ps.gatesize, "vector-size",ps.exprPos,$2);
                   storeBannerAndRightComments(ps.gatesize,@1,@2);
                   storePos(ps.gatesize, @$);
                 }
@@ -959,7 +961,7 @@ leftmod
                   ps.params = (ParametersElement *)createElementWithTag(NED_PARAMETERS, ps.conn);
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule( toString(@1) );
-                  addVector(ps.conn, "src-module-index",@2,$2);
+                  addExpression(ps.conn, "src-module-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -974,7 +976,7 @@ leftgate
         : NAME vector
                 {
                   ps.conn->setSrcGate( toString( @1) );
-                  addVector(ps.conn, "src-gate-index",@2,$2);
+                  addExpression(ps.conn, "src-gate-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -995,7 +997,7 @@ parentleftgate
                   ps.params->setIsImplicit(true);
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
-                  addVector(ps.conn, "src-gate-index",@2,$2);
+                  addExpression(ps.conn, "src-gate-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -1025,7 +1027,7 @@ rightmod
         : NAME vector
                 {
                   ps.conn->setDestModule( toString(@1) );
-                  addVector(ps.conn, "dest-module-index",@2,$2);
+                  addExpression(ps.conn, "dest-module-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -1037,7 +1039,7 @@ rightgate
         : NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
-                  addVector(ps.conn, "dest-gate-index",@2,$2);
+                  addExpression(ps.conn, "dest-gate-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -1054,7 +1056,7 @@ parentrightgate
         : NAME vector
                 {
                   ps.conn->setDestGate( toString( @1) );
-                  addVector(ps.conn, "dest-gate-index",@2,$2);
+                  addExpression(ps.conn, "dest-gate-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -1133,7 +1135,7 @@ endnetwork
  */
 vector
         : '[' expression ']'
-                { $$ = $2; }
+                { $$ = $2; ps.exprPos = @2; }
         ;
 
 expression

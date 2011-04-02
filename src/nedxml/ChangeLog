@@ -1,9 +1,18 @@
+2011-03-03  Andras Varga
+
+	* implemented default value for parametric submodule and channel types.
+	NED now supports the following syntax:
+	  mobility: <default("NullMobility")> like IMobility;
+	The effect is that NullMobility will be used if the type name is not
+	specified in the configuration using a line similar to this:
+	  **.mobility.type-name="ConstSpeedMobility"
+
 2011-02-23  ------ omnetpp-4.2b1 released ------
 
 2011-01-18  Andras Varga
 
 	* NED refactoring: <channel-spec> element was merged into <connection>;
-	its arrow-direction attribute was split to 2 booleans. 
+	its arrow-direction attribute was split to 2 booleans.
 	Affects doc/ned/ned2.dtd, and generated classes ChannelSpecNode (which
 	was removed) and ConnectionNode.
 
@@ -18,7 +27,7 @@
 2010-05-09  Andras Varga
 
 	* opp_msgc feature: implemented @sizetype property for array fields.
-	It can be used to specify the C++ type of the array size and array 
+	It can be used to specify the C++ type of the array size and array
 	indices (by default it is unsigned int). Affects the size variable,
 	the getter, setter, array size getter and array size setter methods
 	as well.
@@ -27,7 +36,7 @@
 	property values. Useful for @sizetype (above). Without this change,
 	type would need to be enclosed in quotes: @sizetype("unsigned short").
 
-	* opp_msgc: fixed bug #136: a "using namespace" line inside a 
+	* opp_msgc: fixed bug #136: a "using namespace" line inside a
 	cplusplus {{...}} block messed up parsing
 
 2010-04-20  ------ omnetpp-4.1b4 released ------

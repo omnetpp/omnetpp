@@ -109,8 +109,6 @@ void cNEDNetworkBuilder::addParametersAndGatesTo(cComponent *component, cNEDDecl
 
 void cNEDNetworkBuilder::doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl)
 {
-    //TRACE("addParametersAndGatesTo(%s), decl=%s", component->getFullPath().c_str(), decl->getName()); //XXX
-
     //TODO for performance: component->reallocParamv(decl->getParameterDeclarations().size());
 
     // recursively add and assign super types' parameters
@@ -422,8 +420,6 @@ void cNEDNetworkBuilder::doGateSize(cModule *module, GateElement *gateNode, bool
 
 void cNEDNetworkBuilder::setupGateVectors(cModule *module, cNEDDeclaration *decl)
 {
-    //TRACE("setupGateVectors(%s), decl=%s", module->getFullPath().c_str(), decl->getName()); //XXX
-
     // recursively add super types' gates
     if (decl->numExtendsNames() > 0)
     {
@@ -443,8 +439,6 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *module, cNEDDeclaration *decl
 
 void cNEDNetworkBuilder::buildInside(cModule *modp, cNEDDeclaration *decl)
 {
-    //TRACE("buildinside(%s), decl=%s", modp->getFullPath().c_str(), decl->getName());  //XXX
-
     if (modp->getId() % 50 == 0)
     {
         // half-hearted attempt to catch "recursive compound module" bug (where
@@ -496,9 +490,6 @@ void cNEDNetworkBuilder::buildRecursively(cModule *modp, cNEDDeclaration *decl)
 
 void cNEDNetworkBuilder::addSubmodulesAndConnections(cModule *modp)
 {
-    //TRACE("addSubmodulesAndConnections(%s), decl=%s", modp->getFullPath().c_str(), currentDecl->getName()); //XXX
-    //dump(currentDecl->getTree()); XXX
-
     SubmodulesElement *submods = currentDecl->getSubmodulesElement();
     if (submods)
         for (SubmoduleElement *submod=submods->getFirstSubmoduleChild(); submod; submod=submod->getNextSubmoduleSibling())
@@ -618,33 +609,41 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
 
 std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index)
 {
+    // note: this code is nearly identical to getChannelTypeName(), with subtle differences
     const char *submodname = submod->getName();
-    std::string submodtypename;
-    if (opp_isempty(submod->getLikeType())) {
-        submodtypename = submod->getType();
+    if (opp_isempty(submod->getLikeType()))
+    {
+        return submod->getType();
     }
     else
     {
-        // type may be given either in ExpressionElement child or "like-param" attribute
-        if (!opp_isempty(submod->getLikeParam())) {
-            submodtypename = modp->par(submod->getLikeParam()).stringValue();
-        }
-        else {
+        // first, try to use expression betweeen angle braces from the NED file
+        if (!submod->getIsDefault()) {
+            if (!opp_isempty(submod->getLikeParam()))
+                return modp->par(submod->getLikeParam()).stringValue();
             ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
             if (likeParamExpr)
-                submodtypename = evaluateAsString(likeParamExpr, modp, false);
-            else {
-                std::string key = modp->getFullPath() + "." + submodname;
-                if (index != -1)
-                    key = opp_stringf("%s[%d]", key.c_str(), index);
-                submodtypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
-                if (submodtypename.empty())
-                    throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s", submodname, key.c_str(), CFGID_TYPE_NAME->getName());
-            }
+                return evaluateAsString(likeParamExpr, modp, false);
         }
-    }
 
-    return submodtypename;
+        // then, use **.type-name option in the configuration if exists
+        std::string key = modp->getFullPath() + "." + submodname;
+        if (index != -1)
+            key = opp_stringf("%s[%d]", key.c_str(), index);
+        std::string submodtypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+        if (!submodtypename.empty())
+            return submodtypename;
+
+        // last, use default(expression) betweeen angle braces from the NED file
+        if (submod->getIsDefault()) {
+            if (!opp_isempty(submod->getLikeParam()))
+                return modp->par(submod->getLikeParam()).stringValue();
+            ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
+            if (likeParamExpr)
+                return evaluateAsString(likeParamExpr, modp, false);
+        }
+        throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodname, key.c_str(), CFGID_TYPE_NAME->getName());
+    }
 }
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
@@ -883,8 +882,6 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
                                        const char *gatename, ExpressionElement *gateindexp,
                                        int subg, bool isplusplus)
 {
-    //TRACE("resolveGate(mod=%s, %s.%s, subg=%d, plusplus=%d)", parentmodp->getFullPath().c_str(), modname, gatename, subg, isplusplus);
-
     if (isplusplus && gateindexp)
         throw cRuntimeError(parentmodp, "Both `++' and gate index expression used in a connection");
 
@@ -998,13 +995,15 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
 
 std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ConnectionElement *conn, const char *channelname)
 {
-    std::string channeltypename;
+    // note: this code is nearly identical to getSubmoduleTypeName(), with subtle differences
     if (opp_isempty(conn->getLikeType()))
     {
-        if (!opp_isempty(conn->getType())) {
-            channeltypename = conn->getType();
+        if (!opp_isempty(conn->getType()))
+        {
+            return conn->getType();
         }
-        else {
+        else
+        {
             bool hasDelayChannelParams = false, hasOtherParams = false;
             ParametersElement *channelparams = conn->getFirstParametersChild();
             if (channelparams) {
@@ -1016,29 +1015,36 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
             }
 
             // choose one of the three built-in channel types, based on the channel's parameters
-            channeltypename = hasOtherParams ? "ned.DatarateChannel" : hasDelayChannelParams ? "ned.DelayChannel" : "ned.IdealChannel";
+            return hasOtherParams ? "ned.DatarateChannel" : hasDelayChannelParams ? "ned.DelayChannel" : "ned.IdealChannel";
         }
     }
     else
     {
-        // type may be given either in ExpressionElement child or "like-param" attribute
-        if (!opp_isempty(conn->getLikeParam())) {
-            channeltypename = parentmodp->par(conn->getLikeParam()).stringValue();
-        }
-        else {
+        // first, try to use expression betweeen angle braces from the NED file
+        if (!conn->getIsDefault()) {
+            if (!opp_isempty(conn->getLikeParam()))
+                return parentmodp->par(conn->getLikeParam()).stringValue();
             ExpressionElement *likeParamExpr = findExpression(conn, "like-param");
             if (likeParamExpr)
-                channeltypename = evaluateAsString(likeParamExpr, parentmodp, false);
-            else {
-                std::string key = srcgate->getFullPath() + "." + channelname;
-                channeltypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
-                if (channeltypename.empty())
-                    throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s", key.c_str(), CFGID_TYPE_NAME->getName());
-            }
+                return evaluateAsString(likeParamExpr, parentmodp, false);
         }
-    }
 
-    return channeltypename;
+        // then, use **.type-name option in the configuration if exists
+        std::string key = srcgate->getFullPath() + "." + channelname;
+        std::string channeltypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+        if (!channeltypename.empty())
+            return channeltypename;
+
+        // last, use default(expression) betweeen angle braces from the NED file
+        if (conn->getIsDefault()) {
+            if (!opp_isempty(conn->getLikeParam()))
+                return parentmodp->par(conn->getLikeParam()).stringValue();
+            ExpressionElement *likeParamExpr = findExpression(conn, "like-param");
+            if (likeParamExpr)
+                return evaluateAsString(likeParamExpr, parentmodp, false);
+        }
+        throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPE_NAME->getName());
+    }
 }
 
 cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate)

@@ -968,7 +968,7 @@ gate_typenamesize
                   ps.gate = addGate(ps.gates, @2);
                   ps.gate->setType(ps.gateType);
                   ps.gate->setIsVector(true);
-                  addVector(ps.gate, "vector-size",@3,$3);
+                  addExpression(ps.gate, "vector-size",ps.exprPos,$3);
                 }
         | NAME
                 {
@@ -983,7 +983,7 @@ gate_typenamesize
                 {
                   ps.gate = addGate(ps.gates, @1);
                   ps.gate->setIsVector(true);
-                  addVector(ps.gate, "vector-size",@2,$2);
+                  addExpression(ps.gate, "vector-size",ps.exprPos,$2);
                 }
         ;
 
@@ -1105,8 +1105,9 @@ submoduleheader
                 }
         | submodulename ':' likeparam LIKE dottedname
                 {
-                  addLikeParam(ps.submod, "like-param", @3, $3);
+                  addOptionalExpression(ps.submod, "like-param", ps.exprPos, $3);
                   ps.submod->setLikeType(removeSpaces(@5).c_str());
+                  ps.submod->setIsDefault(ps.isDefault);
                 }
         ;
 
@@ -1120,15 +1121,17 @@ submodulename
                 {
                   ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
-                  addVector(ps.submod, "vector-size",@2,$2);
+                  addExpression(ps.submod, "vector-size",ps.exprPos,$2);
                 }
         ;
 
 likeparam
         : '<' '>'
-                { $$ = NULL; }
+                { $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false; }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
-                { $$ = $2; }
+                { $$ = $2; ps.exprPos = @2; ps.isDefault = false; }
+        | '<' DEFAULT '(' expression ')' '>'
+                { $$ = $4; ps.exprPos = @4; ps.isDefault = true; }
         ;
 
 /*
@@ -1291,7 +1294,7 @@ leftmod
                 {
                   ps.conn = (ConnectionElement *)createElementWithTag(NED_CONNECTION, ps.inConnGroup ? (NEDElement*)ps.conngroup : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(@1) );
-                  addVector(ps.conn, "src-module-index",@2,$2);
+                  addExpression(ps.conn, "src-module-index",ps.exprPos,$2);
                 }
         | NAME
                 {
@@ -1310,7 +1313,7 @@ leftgate
                 {
                   ps.conn->setSrcGate( toString( @1) );
                   ps.conn->setSrcGateSubg(ps.subgate);
-                  addVector(ps.conn, "src-gate-index",@3,$3);
+                  addExpression(ps.conn, "src-gate-index",ps.exprPos,$3);
                 }
         | NAME opt_subgate PLUSPLUS
                 {
@@ -1334,7 +1337,7 @@ parentleftgate
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
                   ps.conn->setSrcGateSubg(ps.subgate);
-                  addVector(ps.conn, "src-gate-index",@3,$3);
+                  addExpression(ps.conn, "src-gate-index",ps.exprPos,$3);
                 }
         | NAME opt_subgate PLUSPLUS
                 {
@@ -1359,7 +1362,7 @@ rightmod
         | NAME vector
                 {
                   ps.conn->setDestModule( toString(@1) );
-                  addVector(ps.conn, "dest-module-index",@2,$2);
+                  addExpression(ps.conn, "dest-module-index",ps.exprPos,$2);
                 }
         ;
 
@@ -1373,7 +1376,7 @@ rightgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGateSubg(ps.subgate);
-                  addVector(ps.conn, "dest-gate-index",@3,$3);
+                  addExpression(ps.conn, "dest-gate-index",ps.exprPos,$3);
                 }
         | NAME opt_subgate PLUSPLUS
                 {
@@ -1393,7 +1396,7 @@ parentrightgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                   ps.conn->setDestGateSubg(ps.subgate);
-                  addVector(ps.conn, "dest-gate-index",@3,$3);
+                  addExpression(ps.conn, "dest-gate-index",ps.exprPos,$3);
                 }
         | NAME opt_subgate PLUSPLUS
                 {
@@ -1442,8 +1445,9 @@ channelspec_header
                 }
         | likeparam LIKE dottedname
                 {
-                  addLikeParam(ps.conn, "like-param", @1, $1);
+                  addOptionalExpression(ps.conn, "like-param", ps.exprPos, $1);
                   ps.conn->setLikeType(removeSpaces(@3).c_str());
+                  ps.conn->setIsDefault(ps.isDefault);
                 }
         ;
 
@@ -1465,7 +1469,7 @@ condition
  */
 vector
         : '[' expression ']'
-                { $$ = $2; }
+                { $$ = $2; ps.exprPos = @2; }
         ;
 
 expression

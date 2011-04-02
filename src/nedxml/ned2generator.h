@@ -1,5 +1,5 @@
 //==========================================================================
-//  NEDGENERATOR.H - part of
+//  NED2GENERATOR.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -14,8 +14,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __NEDGENERATOR_H
-#define __NEDGENERATOR_H
+#ifndef __NED2GENERATOR_H
+#define __NED2GENERATOR_H
 
 #include <iostream>
 #include "nedelements.h"

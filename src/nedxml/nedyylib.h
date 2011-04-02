@@ -59,8 +59,6 @@ ParamElement *addParameter(NEDElement *params, YYLTYPE namepos);
 ParamElement *addParameter(NEDElement *params, const char *name, YYLTYPE namepos);
 GateElement *addGate(NEDElement *gates, YYLTYPE namepos);
 
-YYLTYPE trimBrackets(YYLTYPE vectorpos);
-YYLTYPE trimAngleBrackets(YYLTYPE vectorpos);
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
 YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
@@ -83,8 +81,7 @@ LiteralElement *createStringLiteral(YYLTYPE textpos);
 LiteralElement *createQuantityLiteral(YYLTYPE textpos);
 NEDElement *unaryMinus(NEDElement *node);
 
-void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
-void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
+void addOptionalExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 
 std::string convertBackgroundDisplayString(const char *old);

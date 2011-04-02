@@ -259,22 +259,6 @@ GateElement *addGate(NEDElement *gates, YYLTYPE namepos)
     return gate;
 }
 
-YYLTYPE trimBrackets(YYLTYPE vectorpos)
-{
-    // should check it's really brackets that get chopped off
-    vectorpos.first_column++;
-    vectorpos.last_column--;
-    return vectorpos;
-}
-
-YYLTYPE trimAngleBrackets(YYLTYPE vectorpos)
-{
-    // should check it's really angle brackets that get chopped off
-    vectorpos.first_column++;
-    vectorpos.last_column--;
-    return vectorpos;
-}
-
 YYLTYPE trimQuotes(YYLTYPE vectorpos)
 {
     // should check it's really quotes that get chopped off
@@ -291,22 +275,18 @@ YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
     return vectorpos;
 }
 
-void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
+void addOptionalExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
-    addExpression(elem, attrname, trimBrackets(exprpos), expr);
-}
-
-void addLikeParam(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
-{
-    if (np->getParseExpressionsFlag() && !expr)
-        elem->setAttribute(attrname, toString(trimAngleBrackets(exprpos)));
+    if (!expr)
+        elem->setAttribute(attrname, toString(exprpos));
     else
-        addExpression(elem, attrname, trimAngleBrackets(exprpos), expr);
+        addExpression(elem, attrname, exprpos, expr);
 }
 
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr)
 {
     if (np->getParseExpressionsFlag()) {
+        assert(expr);
         ((ExpressionElement *)expr)->setTarget(attrname);
 
         // in the DTD, whilespaces and expressions are at front, insert there

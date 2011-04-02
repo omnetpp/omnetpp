@@ -40,7 +40,9 @@ void NEDErrorStore::doAdd(NEDElement *context, const char *loc, int severity, co
     if (doprint)
     {
         const char *severitytext = severityName(severity);
-        if (loc)
+        if (loc && !loc[0])
+            fprintf(stderr, "%s: %s\n", severitytext, message);
+        else if (loc)
             fprintf(stderr, "%s: %s: %s\n", loc, severitytext, message);
         else if (context)
             fprintf(stderr, "<%s>: %s: %s\n", context->getTagName(), severitytext, message);

@@ -112,6 +112,7 @@
      type               CDATA     #IMPLIED
      like-type          CDATA     #IMPLIED
      like-param         CDATA     #IMPLIED
+     is-default         (true|false) "false"
      vector-size        CDATA     #IMPLIED>
 
 <!ELEMENT connections (comment*, (connection|connection-group)*)>
@@ -135,6 +136,7 @@
      type                CDATA     #IMPLIED
      like-type           CDATA     #IMPLIED
      like-param          CDATA     #IMPLIED
+     is-default         (true|false) "false"
      is-bidirectional   (true|false) "false"
      is-forward-arrow   (true|false) "true">
 
