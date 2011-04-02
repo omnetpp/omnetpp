@@ -9,60 +9,25 @@ package org.omnetpp.common.ui;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.widgets.Table;
 
+/**
+ * Table control with Add, Edit and Remove buttons, for editing a list of strings. 
+ * The labels, Add/Edit dialog titles and messages, input validation etc are all 
+ * customizable.
+ * 
+ * @author Levy
+ */
 public class EditableList extends AbstractEditableList {
-    private List list;
-
+    /**
+     * Creates the compound control. Style refers to the composite that contains all controls of the widget. 
+     */
     public EditableList(Composite parent, int style) {
         super(parent, style);
     }
 
     @Override
-    protected Control createContent() {
-        list = new List(this, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        return list;
-    }
-
-    @Override
-    public void setEnabled(boolean enabled) {
-        list.setEnabled(enabled);
-        super.setEnabled(enabled);
-    }
-
-    @Override
-    public void add(String value) {
-        list.add(value);
-    }
-
-    @Override
-    public void set(int index, String value) {
-        list.setItem(index, value);
-    }
-
-    @Override
-    public String[] getItems() {
-        return list.getItems();
-    }
-
-    @Override
-    public void setItems(String[] values) {
-        list.setItems(values);
-    }
-
-    @Override
-    public int[] getSelectionIndices() {
-        return list.getSelectionIndices();
-    }
-
-    @Override
-    public void removeAll() {
-        list.removeAll();
-    }
-
-    @Override
-    public void remove(int[] selectionIndices) {
-        list.remove(selectionIndices);
+    protected Table createTable() {
+        return new Table(this, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
     }
 }

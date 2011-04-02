@@ -975,6 +975,7 @@ public class FilterEventLogDialog
         final EditableCheckboxList editableList = new EditableCheckboxList(panel, SWT.NONE);
         editableList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         editableList.setAddDialogMessage("Please enter the ID");
+        editableList.setEditDialogMessage("Please enter the ID");
         editableList.setInputValidator(new IInputValidator() {
             public String isValid(String newText) {
                 try {
