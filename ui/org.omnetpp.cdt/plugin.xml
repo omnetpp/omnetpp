@@ -355,6 +355,25 @@
             </adapt>
          </enabledWhen>
       </page>
+      <page
+            category="org.omnetpp.main.OmnetppCategory"
+            class="org.omnetpp.cdt.ui.ProjectFeaturesPropertyPage"
+            id="org.omnetpp.cdt.ProjectFeatures"
+            name="Project Features">
+         <filter
+               name="projectNature"
+               value="org.omnetpp.main.omnetppnature">
+         </filter>
+         <filter
+               name="projectNature"
+               value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
+         </filter>
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+            </adapt>
+         </enabledWhen>
+      </page>
    </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
@@ -492,5 +511,49 @@
       <contributor
             class="org.omnetpp.cdt.wizard.CDTContentTemplateContributor">
       </contributor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.project"
+            defaultHandler="org.omnetpp.cdt.handlers.ProjectFeaturesHandler"
+            id="org.omnetpp.cdt.projectFeaturesCommand"
+            name="Project &amp;Features...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:project?before=additions">
+         <command
+               commandId="org.omnetpp.cdt.projectFeaturesCommand"
+               id="projectfeatures">
+         </command>
+      </menuContribution>
+   </extension>
+   <extension point="org.eclipse.ui.popupMenus">
+     <objectContribution
+           adaptable="true"
+           id="org.omnetpp.cdt.buildConfigContribution"
+           objectClass="org.eclipse.core.resources.IResource">
+        <visibility>
+           <and>
+              <objectState
+                 name="projectNature"
+                 value="org.eclipse.cdt.core.cnature"/>
+              <objectState
+                 name="projectNature"
+                 value="org.omnetpp.main.omnetppnature"/>
+              <objectClass name="org.eclipse.core.resources.IProject"/>
+           </and>
+        </visibility>
+        <action
+              class="org.omnetpp.cdt.handlers.ProjectFeaturesAction"
+              enablesFor="+"
+              id="org.omnetpp.cdt.projectFeaturesAction"
+              label="Project &amp;Features..."
+              menubarPath="org.eclipse.cdt.ui.cfgmenu/manage"
+              />
+     </objectContribution>
    </extension>
 </plugin>

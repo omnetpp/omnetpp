@@ -57,6 +57,8 @@ public class MakemakeOptions implements Cloneable {
     public boolean metaAutoIncludePath = false;
     public boolean metaExportLibrary = false;
     public boolean metaUseExportedLibs = false;
+    public boolean metaFeatureCFlags = true;
+    public boolean metaFeatureLDFlags = true;
 
     private List<String> errors = null;
 
@@ -254,6 +256,12 @@ public class MakemakeOptions implements Cloneable {
             else if (arg.equals("--meta:use-exported-libs")) {
                 metaUseExportedLibs = true;
             }
+            else if (arg.equals("--meta:feature-cflags")) {
+                metaFeatureCFlags = true;
+            }
+            else if (arg.equals("--meta:feature-ldflags")) {
+                metaFeatureLDFlags = true;
+            }
             else if (arg.equals("--")) {
                 break;
             }
@@ -347,6 +355,10 @@ public class MakemakeOptions implements Cloneable {
             result.add("--meta:export-library");
         if (metaUseExportedLibs)
             result.add("--meta:use-exported-libs");
+        if (metaFeatureCFlags)
+            result.add("--meta:feature-cflags");
+        if (metaFeatureLDFlags)
+            result.add("--meta:feature-ldflags");
 
         if (!extraArgs.isEmpty())
             result.add("--");
@@ -469,6 +481,8 @@ public class MakemakeOptions implements Cloneable {
         result.metaAutoIncludePath = metaAutoIncludePath;
         result.metaExportLibrary = metaExportLibrary;
         result.metaUseExportedLibs = metaUseExportedLibs;
+        result.metaFeatureCFlags = metaFeatureCFlags;
+        result.metaFeatureLDFlags = metaFeatureLDFlags;
         return result;
     }
 }

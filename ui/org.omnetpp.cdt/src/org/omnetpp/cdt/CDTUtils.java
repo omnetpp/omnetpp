@@ -10,9 +10,17 @@ package org.omnetpp.cdt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.cdt.build.core.scannerconfig.CfgInfoContext;
 import org.eclipse.cdt.build.internal.core.scannerconfig.CfgDiscoveredPathManager;
+import org.eclipse.cdt.core.settings.model.CMacroEntry;
+import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICFolderDescription;
+import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
+import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
+import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
@@ -128,6 +136,68 @@ public class CDTUtils {
         return newEntries;
     }
 
+    /**
+     * Finds and returns the C++ compiler or linker language settings in the passed array.
+     */
+    public static ICLanguageSetting findCplusplusLanguageSetting(ICLanguageSetting[] languageSettings, boolean forLinker) {
+        for (ICLanguageSetting l : languageSettings)
+            if (l.getName().contains(forLinker ? "Object" : "C++"))  //FIXME ***must*** use languageId!!!! (usually "org.eclipse.cdt.core.g++" or something)
+                return l;
+        return null;
+    }
+
+    /** 
+     * Finds or creates and adds a folder description for the given folder in the configuration.
+     */
+    public static ICFolderDescription getOrCreateFolderDescription(ICConfigurationDescription configuration, IContainer folder) throws WriteAccessException, CoreException {
+        for (ICFolderDescription folderDesc : configuration.getFolderDescriptions())
+            if (folderDesc.getPath().equals(folder.getProjectRelativePath()))
+                return folderDesc;
+        ICFolderDescription newFolderDesc = (ICFolderDescription) configuration.getResourceDescription(folder.getProjectRelativePath(), false); //FIXME check last arg: maybe "false"?
+        return configuration.createFolderDescription(folder.getProjectRelativePath(), newFolderDesc);
+    }
+    
+    /**
+     * Adds, overwrites or removes a macro in the given languageSettings. For the latter case (remove),
+     * specify value==null. (Note: A languageSetting is part of folderDescriptions in ICConfiguration.)
+     */
+    public static void setMacro(ICLanguageSetting languageSetting, String name, String value) {
+        ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);
+        int k = findSettingByName(settingEntries, name);
+        if (value == null) {
+            // remove
+            if (k != -1) 
+                settingEntries = (ICLanguageSettingEntry[]) ArrayUtils.remove(settingEntries, k);
+        }
+        else {
+            // add or replace (unless it's already the same)
+            CMacroEntry entry = new CMacroEntry(name, value, ICSettingEntry.MACRO);
+            if (k==-1)
+                settingEntries = (ICLanguageSettingEntry[]) ArrayUtils.add(settingEntries, entry);
+            else if (!settingEntries[k].equalsByContents(entry))
+                settingEntries[k] = entry;
+        }
+        languageSetting.setSettingEntries(ICSettingEntry.MACRO, settingEntries);
+    }
+
+    /**
+     * Returns the setting entry for macro in the given languageSettings, or null if it does not exist.
+     * (Note: A languageSetting is part of folderDescriptions in ICConfiguration.)
+     */
+    public static ICLanguageSettingEntry getMacro(ICLanguageSetting languageSetting, String name) {
+        ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);
+        int k = findSettingByName(settingEntries, name);
+        return k==-1 ? null : settingEntries[k];
+    }
+
+    protected static int findSettingByName(ICLanguageSettingEntry[] settingEntries, String name) {
+        for (int i=0; i<settingEntries.length; i++)
+            if (name.equals(settingEntries[i].getName()))
+                return i;
+        return -1;
+    }
+    
+    
     /**
      * Causes CDT to forget discovered include paths, and invoke the toolchain's
      * ScannerInfoCollector class again. This is important because we use ScannerInfoCollector

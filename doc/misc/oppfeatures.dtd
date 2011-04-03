@@ -1,0 +1,23 @@
+<!--
+**
+** OMNeT++/OMNEST Feature Descriptions (.oppfeatures)
+**
+-->
+
+<!ELEMENT features (feature*)>
+<!ATTLIST features
+     cppSourceRoots   CDATA     #IMPLIED>
+
+<!ELEMENT feature EMPTY>
+<!ATTLIST feature
+     id                 NMTOKEN   #REQUIRED
+     name               CDATA     #REQUIRED
+     description        CDATA     #IMPLIED
+     initiallyEnabled   (true|false) "true"
+     labels             CDATA     #IMPLIED
+     requires           CDATA     #IMPLIED
+     nedPackages        CDATA     #IMPLIED
+     extraSourceFolders CDATA     #IMPLIED
+     compileFlags       CDATA     #IMPLIED
+     linkerFlags        CDATA     #IMPLIED>
+

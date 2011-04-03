@@ -7,6 +7,7 @@
 
 package org.omnetpp.cdt.build;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +38,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.ui.ProblemsMessageDialog;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.UIUtils;
 
 /**
  * Keeps makefiles up to date.
@@ -56,9 +60,10 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     /**
      * Method declared on IncrementalProjectBuilder. Main entry point.
      */
-    @Override @SuppressWarnings("unchecked")
+    @Override @SuppressWarnings({ "rawtypes" })
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) {
         try {
+            checkProjectFeatures();
             checkOrderOfProjectBuilders();
             checkActiveCDTConfiguration();
 
@@ -100,6 +105,57 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     }
 
     /**
+     * Checks whether the project's CDT configuration corresponds to the set of enabled project 
+     * features (see ProjectFeatureManager).
+     */
+    protected void checkProjectFeatures() {
+        try {
+            // load feature description from file
+            final ProjectFeaturesManager features = new ProjectFeaturesManager(getProject());
+            if (features.loadFeaturesFile()) {
+                // check that CDT and NED state corresponds to the feature selection
+                final List<Problem> problems = features.validateProjectState();
+                if (!problems.isEmpty()) {
+                    Display.getDefault().asyncExec(new Runnable() {
+                        public void run() {
+                            offerFixingProblems(features, problems);
+                        }
+                    });
+                }
+            }
+        }
+        catch (CoreException e) {
+            // log, but otherwise ignore it
+            Activator.logError("Error checking whether project configuration corresponds to project features enablement", e);
+        }
+    }
+
+    protected void offerFixingProblems(ProjectFeaturesManager features, List<Problem> problems) {
+        if (isOkToFixConfigProblems(features.getProject(), problems)) {
+            try {
+                features.fixupProjectState();
+            }
+            catch (CoreException e) {
+                Activator.logError(e);
+                Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+                ErrorDialog.openError(parentShell, "Error", "Error fixing project state", e.getStatus());
+            }
+        }
+    }
+    
+    protected boolean isOkToFixConfigProblems(IProject project, List<Problem> problems) {
+        List<String> problemTexts = new ArrayList<String>();
+        for (Problem p : problems)
+            problemTexts.add(p.toString());
+        Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
+        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency", 
+                "Some configuration settings in project \"" + project.getName() + "\" do not correspond " +
+                "to the enabled project features. This may cause build errors as well. " +
+                "Do you want to fix the project state?", 
+                problemTexts, UIUtils.ICON_ERROR);
+    }
+
+    /**
      * This builder should precede CDT's builder; check it and warn the user if it's not the case.
      */
     protected void checkOrderOfProjectBuilders() {
@@ -133,10 +189,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                             "in project \"" + project.getName() + "\", which is incorrect. You can fix " +
                             "this problem by removing and adding back the OMNeT++ Nature, using the " +
                             "project's context menu.";
-                        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                        Shell parent = activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
-                        // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
-                        MessageDialog.openWarning(parent, "Warning", message);
+                        MessageDialog.openWarning(getActiveShell(), "Warning", message);
                     }
                 });
             }
@@ -144,7 +197,6 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         catch (CoreException e) {
             Activator.logError(e);
         }
-
     }
 
     /**
@@ -169,13 +221,19 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                         "or installation. Please go to the Project menu, and activate a different " +
                         "build configuration. (You may need to switch to the C/C++ perspective first, " +
                         "so that the required menu items appear in the Project menu.)";
-                    IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-                    Shell parent = activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
-                    // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
-                    MessageDialog.openWarning(parent, "Project "+getProject().getName(), message);
+                    MessageDialog.openWarning(getActiveShell(), "Project "+getProject().getName(), message);
                 }
             });
         }
+    }
+
+    /**
+     * Returns a shell to be used as parent shell for message dialogs.
+     */
+    protected Shell getActiveShell() {
+        // note: Display.getCurrent().getActiveShell() is not good as parent (ProgressDialog would pull down our dialog too when it disappears)
+        IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        return activeWorkbenchWindow==null ? null : activeWorkbenchWindow.getShell();
     }
 
     /**

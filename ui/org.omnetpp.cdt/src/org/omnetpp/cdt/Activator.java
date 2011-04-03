@@ -27,6 +27,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
+import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
@@ -43,6 +44,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     // The shared instance
     private static Activator plugin;
 
+    private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
+
     /**
      * The constructor
      */
@@ -56,6 +59,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        projectFeaturesListener.hookListeners();
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
 
@@ -65,6 +69,7 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
      */
     public void stop(BundleContext context) throws Exception {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+        projectFeaturesListener.unhookListeners();
         plugin = null;
         super.stop(context);
     }

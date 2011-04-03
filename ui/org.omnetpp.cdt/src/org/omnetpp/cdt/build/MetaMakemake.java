@@ -132,6 +132,23 @@ public class MetaMakemake {
             translatedOptions.metaAutoIncludePath = false;
         }
 
+        ProjectFeaturesManager projectFeatures = new ProjectFeaturesManager(project);
+        projectFeatures.loadFeaturesFile();
+
+        // add CFLAGS contributed by enabled project features
+        if (options.metaFeatureCFlags) {
+            String cflags = projectFeatures.getEnabledFeatureCFlags();
+            for (String cflag : cflags.split("\\s+")) {
+                if (cflag.startsWith("-D"))
+                    translatedOptions.defines.add(cflag.substring(2)); //FIXME with space too!
+                else if (cflag.startsWith("-I"))
+                    translatedOptions.includeDirs.add(cflag.substring(2)); //FIXME with space too!
+                else
+                    ; //TODO report error -- how?
+            }
+            translatedOptions.metaFeatureCFlags = false;
+        }
+
         // add libraries from other projects, if requested
         if (options.metaUseExportedLibs) {
             for (IProject referencedProject : referencedProjects) {
@@ -168,6 +185,19 @@ public class MetaMakemake {
         	}
         }
 
+        // add LDFLAGS contributed by enabled project features
+        if (options.metaFeatureLDFlags) {
+            String ldflags = projectFeatures.getEnabledFeatureLDFlags();
+            for (String ldFlag : ldflags.split("\\s+")) {
+                if (ldFlag.startsWith("-l"))
+                    translatedOptions.libs.add(ldFlag.substring(2)); //FIXME with space too!
+                else if (ldFlag.startsWith("-L"))
+                    translatedOptions.libDirs.add(ldFlag.substring(2)); //FIXME with space too!
+                else
+                    ; //TODO report error -- how?
+            }
+            translatedOptions.metaFeatureLDFlags = false;
+        }
 
         if (translatedOptions.metaExportLibrary) {
             // no processing required
@@ -289,12 +319,7 @@ public class MetaMakemake {
 
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();
-
-        ICLanguageSetting languageSetting = null;
-        for (ICLanguageSetting l : languageSettings)
-            if (l.getName().contains(forLinker ? "Object" : "C++"))  //FIXME ***must*** use languageId!!!! (usually "org.eclipse.cdt.core.g++" or something)
-                languageSetting = l;
-        return languageSetting;
+        return CDTUtils.findCplusplusLanguageSetting(languageSettings, forLinker);
     }
 
     protected static void addLocationToDirList(IContainer input, List<String> dirList, IContainer reference) {
