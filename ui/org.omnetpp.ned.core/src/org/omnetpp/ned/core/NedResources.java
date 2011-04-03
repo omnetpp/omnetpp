@@ -325,6 +325,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         lastChangeSerial++;
         needsRehash = true;
         nedTypeLookupCache.clear();
+        nedLikeTypeLookupCache.clear();
 
         // invalidate all inherited members on all typeInfo objects
         for (NedFileElementEx file : nedElementFiles.keySet())

@@ -50,6 +50,7 @@ public class NedTypeResolver implements INedTypeResolver {
     protected final Map<IProject,ProjectData> projects = new HashMap<IProject, ProjectData>();
     protected long lastChangeSerial = 1;
     protected Map<INedTypeLookupContext, Map<String, INedTypeInfo>> nedTypeLookupCache = new HashMap<INedTypeLookupContext, Map<String,INedTypeInfo>>();
+    protected Map<IProject, Map<INedTypeInfo, Map<String, INedTypeInfo>>> nedLikeTypeLookupCache = new HashMap<IProject, Map<INedTypeInfo,Map<String,INedTypeInfo>>>();
 
     // file element to contain built-in declarations (does not correspond to any physical file)
     protected NedFileElementEx builtInDeclarationsFile;
@@ -560,14 +561,30 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public INedTypeInfo lookupLikeType(String name, INedTypeInfo interfaceType, IProject context) {
+        // return cached value if exists, otherwise call doLookupLikeType()
+        Map<INedTypeInfo, Map<String, INedTypeInfo>> map = nedLikeTypeLookupCache.get(context);
+        if (map == null)
+            nedLikeTypeLookupCache.put(context, map = new HashMap<INedTypeInfo, Map<String,INedTypeInfo>>());
+
+        Map<String, INedTypeInfo> map2 = map.get(interfaceType);
+        if (map2 == null)
+            map.put(interfaceType, map2 = new HashMap<String, INedTypeInfo>());
+
+        INedTypeInfo type = map2.get(name);
+        if (type == null && !map2.containsKey(name))
+            map2.put(name, type = doLookupLikeType(name, interfaceType, context));
+        return type;
+    }
+    
+    protected INedTypeInfo doLookupLikeType(String name, INedTypeInfo interfaceType, IProject context) {
         if (name.contains(".")) {
             // must be a fully qualified name (as we don't accept partially qualified names)
-            return getToplevelNedType(name, context);  //FIXME mi van ha nem implementalja az interface-t???? return null!!
+            return getToplevelNedType(name, context); // note: maybe it does not implement interfaceType, but that needs to be checked elsewhere (it may be quite misleading for the user if we say "no such type" here)
         }
         else {
             // there must be exactly one NED type with that name that implements the given interface
             INedTypeInfo result = null;
-            for (INedTypeInfo type : getNedTypes(context))  //XXX linear search
+            for (INedTypeInfo type : getNedTypes(context))  // linear search, but it's OK since lookups are cached
                 if (type.getName().equals(name))
                     if (type.getInterfaces().contains(interfaceType.getNedElement()))
                         if (result != null)

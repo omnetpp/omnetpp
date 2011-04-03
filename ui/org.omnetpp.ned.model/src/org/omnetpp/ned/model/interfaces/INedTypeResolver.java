@@ -316,9 +316,14 @@ public interface INedTypeResolver {
 	public INedTypeInfo lookupNedType(String name, INedTypeLookupContext context);
 
     /**
-     * Determines the actual type for a "like" submodule or channel. If name is
-     * a simple name (i.e. unqualified), there must be exactly one NED type
-     * with that name that implements the given interface.
+     * Determines the actual type for a "like" submodule or channel, or null if
+     * no such type was found. If name is a simple name (i.e. unqualified),
+     * there must be exactly one NED type with that name that implements the
+     * given interface. If the name is a fully qualified name, the corresponding
+     * type will be returned even if it does not implement interfaceType. (If we
+     * returned null, that would likely be interpreted by clients as
+     * "no such type", which would be very misleading.) The caller should check
+     * that the returned type actually implements interfaceType.
      */
 	public INedTypeInfo lookupLikeType(String name, INedTypeInfo interfaceType, IProject context);
 
