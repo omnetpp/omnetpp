@@ -165,43 +165,6 @@ public class ProjectFeaturesManager {
         project.setPersistentProperty(PROP_FEATUREENABLEMENT, value.trim());
     }
 
-
-    /**
-     * Returns the compile flags to be added to CFLAGS due to the enabled features.
-     */
-    public String getEnabledFeatureCFlags() throws CoreException {
-        return getEnabledFeatureCFlags(getEnabledFeatures());
-    }
-    
-    /**
-     * Returns the compile flags to be added to CFLAGS due to the enabled features, 
-     * assuming the ones passed are enabled.
-     */
-    public String getEnabledFeatureCFlags(List<ProjectFeature> enabledFeatures)  {
-        String result = "";
-        for (ProjectFeature f : enabledFeatures)
-            result += " " + f.getCompileFlags();
-        return result.trim().replaceAll("\\s+", " ");
-    }
-
-    /**
-     * Returns the linker flags to be added to LDFLAGS due to the enabled features.
-     */
-    public String getEnabledFeatureLDFlags() throws CoreException {
-        return getEnabledFeatureLDFlags(getEnabledFeatures());
-    }
-
-    /**
-     * Returns the linker flags to be added to LDLAGS due to the enabled features,
-     * assuming the ones passed are enabled.
-     */
-    public String getEnabledFeatureLDFlags(List<ProjectFeature> enabledFeatures) {
-        String result = "";
-        for (ProjectFeature f : enabledFeatures)
-            result += " " + f.getLinkerFlags();
-        return result.trim();
-    }
-
     /**
      * Populates the object with the contents of the project's feature 
      * description file, if one exists. Returns true on success. 
@@ -377,14 +340,21 @@ public class ProjectFeaturesManager {
         // check for circular dependencies
         checkForCircularDependencies(f, new Stack<ProjectFeature>(), errors);
         
-        // check compileFlags and linkerFlags
-        for (String cflag : f.getCompileFlags().split("\\s+")) 
+        // check compile flags. Note: keep this code in sync with addFeatureCFlagsTo()
+        for (String cflag : f.getCompileFlags().split("\\s+")) {
             if (cflag.length()>0 && !cflag.startsWith("-D") && !cflag.startsWith("-I"))
-                errors.add(prefix + "unknown compile flag \"" + cflag + "\": only -D and -I are supported here");
-        
-        for (String ldflag : f.getLinkerFlags().split("\\s+"))
+                errors.add(prefix + "unknown compiler option \"" + cflag + "\": only -D and -I are supported here");
+            if (cflag.equals("-D") || cflag.equals("-I"))
+                errors.add(prefix + "compiler options: arguments of -D and -I are expected to be written together with the option name (i.e. without space)");
+        }
+
+        // check linker flags. Note: keep this code in sync with addFeatureLDFlagsTo()
+        for (String ldflag : f.getLinkerFlags().split("\\s+")) {
             if (ldflag.length()>0 && !ldflag.startsWith("-l") && !ldflag.startsWith("-L"))
-                errors.add(prefix + "unknown linker flag \"" + ldflag + "\": only -l and -L are supported here");
+                errors.add(prefix + "unknown linker option \"" + ldflag + "\": only -l and -L are supported here");
+            if (ldflag.equals("-l") || ldflag.equals("-L"))
+                errors.add(prefix + "linker options: arguments of -l and -L are expected to be written together with the option name (i.e. without space)");
+        }
         
         // check for nonexistent NED packages
         INedResources nedResources = NedResourcesPlugin.getNedResources();
@@ -437,6 +407,46 @@ public class ProjectFeaturesManager {
             if (getFeature(id) != null)
                 checkForCircularDependencies(getFeature(id), stack, errors);
         stack.pop();
+    }
+
+    /**
+     * Adds compile options contributed by the enabled features to makemakeOptions. 
+     * Invoked by MetaMakemake to process "--meta:feature-cflags". 
+     */
+    public void addFeatureCFlagsTo(MakemakeOptions makemakeOptions) throws CoreException {
+        List<String> cflags = new ArrayList<String>();
+        for (ProjectFeature f : getEnabledFeatures())
+            cflags.addAll(Arrays.asList(f.getCompileFlags().split("\\s+")));
+
+        // process the compile options. NOTE: must be kept in sync with validation code in validateFeatures()!
+        for (String cflag : cflags) {
+            // we only need to handle -I here, and can simply ignore the rest: -D's are automatically 
+            // added to the normal CDT config, and validateFeatures() reports all other options as errors.
+            // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
+            if (cflag.startsWith("-I") && cflag.length()>2)
+                makemakeOptions.includeDirs.add(cflag.substring(2));
+        }
+    }
+
+    /**
+     * Adds linker options contributed by the enabled features to makemakeOptions. 
+     * Invoked by MetaMakemake to process "--meta:feature-ldflags". 
+     */
+    public void addFeatureLDFlagsTo(MakemakeOptions makemakeOptions) throws CoreException {
+        List<String> ldflags = new ArrayList<String>();
+        for (ProjectFeature f : getEnabledFeatures())
+            ldflags.addAll(Arrays.asList(f.getLinkerFlags().split("\\s+")));
+
+        // process the linker options. NOTE: must be kept in sync with validation code in validateFeatures()!
+        for (String ldflag : ldflags) {
+            // we only need to handle -l and -L here, and can simply ignore the rest:
+            // validateFeatures() already reports them as errors. We can also reject "-L <path>" 
+            // (i.e. with a space), because validateFeatures() also complains about it.
+            if (ldflag.startsWith("-l") && ldflag.length()>2)
+                makemakeOptions.libs.add(ldflag.substring(2));
+            else if (ldflag.startsWith("-L")  && ldflag.length()>2)
+                makemakeOptions.libDirs.add(ldflag.substring(2));
+        }
     }
 
     /**
@@ -556,7 +566,7 @@ public class ProjectFeaturesManager {
         // add/remove preprocessor symbols
         // Note: we set it on each source folder (only setting on the root does not seem to be enough)
         for (String cflag : feature.getCompileFlags().split("\\s+")) {
-            if (cflag.length()>0 && cflag.startsWith("-D")) {
+            if (cflag.startsWith("-D") && cflag.length()>2) {
                 String symbol = cflag.substring(2).replaceAll("=.*", "");
                 String value = cflag.replaceAll("[^=]*=?(.*)", "$1");  
                 setMacroInAllConfigurationsAndFoldersAndLanguages(project, configurations, symbol, enable ? value : null);
@@ -745,7 +755,7 @@ public class ProjectFeaturesManager {
             // check preprocessor symbols
             // Note: we set it on each source folder (only setting on the root does not seem to be enough)
             for (String cflag : feature.getCompileFlags().split("\\s+")) {
-                if (cflag.length()>0 && cflag.startsWith("-D")) {
+                if (cflag.startsWith("-D") && cflag.length()>2) {
                     String symbol = cflag.substring(2).replaceAll("=.*", "");
                     String value = cflag.replaceAll("[^=]*=?(.*)", "$1");  
                     Boolean isMacroSet = isMacroSet(project, configurations, symbol, enabled ? value : null);

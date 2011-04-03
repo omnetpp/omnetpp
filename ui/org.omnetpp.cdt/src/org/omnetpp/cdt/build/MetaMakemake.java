@@ -137,15 +137,7 @@ public class MetaMakemake {
 
         // add CFLAGS contributed by enabled project features
         if (options.metaFeatureCFlags) {
-            String cflags = projectFeatures.getEnabledFeatureCFlags();
-            for (String cflag : cflags.split("\\s+")) {
-                if (cflag.startsWith("-D"))
-                    translatedOptions.defines.add(cflag.substring(2)); //FIXME with space too!
-                else if (cflag.startsWith("-I"))
-                    translatedOptions.includeDirs.add(cflag.substring(2)); //FIXME with space too!
-                else
-                    ; //TODO report error -- how?
-            }
+            projectFeatures.addFeatureCFlagsTo(translatedOptions);
             translatedOptions.metaFeatureCFlags = false;
         }
 
@@ -187,15 +179,7 @@ public class MetaMakemake {
 
         // add LDFLAGS contributed by enabled project features
         if (options.metaFeatureLDFlags) {
-            String ldflags = projectFeatures.getEnabledFeatureLDFlags();
-            for (String ldFlag : ldflags.split("\\s+")) {
-                if (ldFlag.startsWith("-l"))
-                    translatedOptions.libs.add(ldFlag.substring(2)); //FIXME with space too!
-                else if (ldFlag.startsWith("-L"))
-                    translatedOptions.libDirs.add(ldFlag.substring(2)); //FIXME with space too!
-                else
-                    ; //TODO report error -- how?
-            }
+            projectFeatures.addFeatureLDFlagsTo(translatedOptions);
             translatedOptions.metaFeatureLDFlags = false;
         }
 
