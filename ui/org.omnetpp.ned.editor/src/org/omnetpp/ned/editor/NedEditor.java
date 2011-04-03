@@ -201,9 +201,9 @@ public class NedEditor
 
     @Override
     protected void setInput(IEditorInput newInput) {
-		//Debug.println("setInput()");
         Assert.isNotNull(newInput, "input should not be null");
-
+        
+        
     	//FIXME it should be checked that the file is a valid NED file (inside an
     	// OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it.
     	// Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
@@ -218,6 +218,8 @@ public class NedEditor
 
         // connect() must take place *before* setInput()
         IFile newFile = ((IFileEditorInput) newInput).getFile();
+        Assert.isTrue(NedResourcesPlugin.getNedResources().isNedFile(newFile), "Not an enabled NED file: must be inside a NED source folder, and must not be in an excluded package");
+
         // check if the given file is in sync with the filesystem. If not
         // synchronize it otherwise the text editor loads only an empty file
         if (!newFile.isSynchronized(IResource.DEPTH_ZERO))

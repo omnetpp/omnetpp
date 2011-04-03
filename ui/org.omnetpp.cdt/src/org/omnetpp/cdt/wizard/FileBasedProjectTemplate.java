@@ -22,6 +22,7 @@ import org.eclipse.jface.wizard.IWizard;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.cdt.build.MakemakeOptions;
+import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.FileBasedContentTemplate;
@@ -110,7 +111,8 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         IContainer[] folders = new IContainer[projectRelativePaths.length];
         for (int i=0; i<projectRelativePaths.length; i++)
             folders[i] = context.getFolder().getFolder(new Path(projectRelativePaths[i]));
-        ProjectUtils.saveNedFoldersFile((IProject)context.getFolder(), folders);
+        NedSourceFoldersConfiguration config = new NedSourceFoldersConfiguration(folders, new String[0]);
+        ProjectUtils.saveNedFoldersFile((IProject)context.getFolder(), config);
     }
 
     /**

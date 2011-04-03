@@ -16,7 +16,6 @@ import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
-import org.omnetpp.ned.model.interfaces.IHasResolver;
 import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
@@ -87,7 +86,7 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
 	public void fireModelEvent(NedModelEvent event) {
 	    // note: the following assert is technically correct; it is commented out because
 	    // hasSyntaxError() absolutely kills the performance while validating large models
-		//XXX Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NedModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
+		// Assert.isTrue((!readOnly && !hasSyntaxError()) || !(event instanceof NedModelChangeEvent), "Attempted to modify the NED element tree while it is in read only mode");
 		super.fireModelEvent(event);
 	}
 

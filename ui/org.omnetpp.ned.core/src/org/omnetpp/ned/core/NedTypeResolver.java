@@ -14,8 +14,10 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
@@ -55,6 +57,13 @@ public class NedTypeResolver implements INedTypeResolver {
     protected static class ProjectData {
         // NED Source Folders for the project (contents of the .nedfolders file)
         IContainer[] nedSourceFolders;
+        
+        // the start package for each NED Source Folder (as defined in root package.ned files)
+        // note: array must be the same size as nedSourceFolders
+        String[] nedSourceFolderPackages;
+
+        // list of disabled package subtree 
+        String[] excludedPackageRoots;
         
         // all projects we reference, directly or indirectly
         IProject[] referencedProjects;
@@ -96,6 +105,8 @@ public class NedTypeResolver implements INedTypeResolver {
             ProjectData projectData = other.projects.get(project);
             ProjectData newProjectData = new ProjectData();
             newProjectData.nedSourceFolders = projectData.nedSourceFolders.clone();
+            newProjectData.nedSourceFolderPackages = projectData.nedSourceFolderPackages.clone();
+            newProjectData.excludedPackageRoots = projectData.excludedPackageRoots.clone();
             newProjectData.referencedProjects = projectData.referencedProjects.clone();
             projects.put(project, newProjectData);
         }
@@ -551,7 +562,7 @@ public class NedTypeResolver implements INedTypeResolver {
     public INedTypeInfo lookupLikeType(String name, INedTypeInfo interfaceType, IProject context) {
         if (name.contains(".")) {
             // must be a fully qualified name (as we don't accept partially qualified names)
-            return getToplevelNedType(name, context);
+            return getToplevelNedType(name, context);  //FIXME mi van ha nem implementalja az interface-t???? return null!!
         }
         else {
             // there must be exactly one NED type with that name that implements the given interface
@@ -575,7 +586,7 @@ public class NedTypeResolver implements INedTypeResolver {
                 if (predicate.matches(element.getNedTypeInfo()))
                     result.add(element.getNedTypeInfo().getFullyQualifiedName());
             }
-        } else {  // CompounModule - return inner types
+        } else {  // CompoundModule - return inner types
             Map<String, INedTypeElement> innerTypes = ((CompoundModuleElementEx)lookupContext).getNedTypeInfo().getInnerTypes();
             for (INedTypeElement element : innerTypes.values()) {
                 if (predicate.matches(element.getNedTypeInfo()))
@@ -587,11 +598,22 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public boolean isNedFile(IResource resource) {
-        return (resource instanceof IFile &&
-                NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()) &&
-                getNedSourceFolderFor((IFile)resource) != null);
+        if (!(resource instanceof IFile) || !NED_EXTENSION.equalsIgnoreCase(((IFile)resource).getFileExtension()))
+            return false; // not a .ned file
+        IFile file = (IFile) resource;
+        String packageName = getPackageFor(file.getParent());
+        if (packageName == null)
+            return false; // outside all NED source folders
+        if (!isPackageEnabled(file.getProject(), packageName))
+            return false; // package is disabled
+        return true;
     }
 
+    protected boolean isSourceFolderPackageNedFile(IFile file) {
+        // assume file has passed the isNedFile() test
+        return file.getName().equals(PACKAGE_NED_FILENAME) && ArrayUtils.contains(getNedSourceFolders(file.getProject()), file.getParent());
+    }
+    
     public IContainer[] getNedSourceFolders(IProject project) {
         ProjectData projectData = projects.get(project);
         return projectData == null ? new IContainer[0] : projectData.nedSourceFolders;
@@ -617,32 +639,88 @@ public class NedTypeResolver implements INedTypeResolver {
         return null;
     }
 
+    public String[] getExcludedPackageRoots(IProject project) {
+        ProjectData projectData = projects.get(project);
+        return projectData == null ? new String[0] : projectData.excludedPackageRoots.clone();
+    }
+
+    public boolean isPackageEnabled(IProject project, String packageName) {
+        ProjectData projectData = projects.get(project);
+        if (projectData == null)
+            return true;
+        for (String exclusionRoot : projectData.excludedPackageRoots)
+            if (isSubpackageOf(exclusionRoot, packageName))
+                return false;
+        return true;
+    }
+
+    public String getPackageFor(IContainer folder) {
+        // find project data
+        IProject project = folder.getProject();
+        ProjectData projectData = projects.get(project);
+        if (projectData == null)
+            return null;
+        
+        // find which NED source folder covers this folder
+        int nedSourceFolderIndex = ArrayUtils.INDEX_NOT_FOUND;
+        int numLevels = 0;
+        for (IContainer container = folder; !(container instanceof IWorkspaceRoot); container = container.getParent(), numLevels++)
+            if ((nedSourceFolderIndex = ArrayUtils.indexOf(projectData.nedSourceFolders, container)) != ArrayUtils.INDEX_NOT_FOUND)
+                break;
+        if (nedSourceFolderIndex == ArrayUtils.INDEX_NOT_FOUND)
+            return null; // none
+
+        // assemble package name from NED source folder's package (define by package.ned) and the extra folder levels 
+        StringBuilder result = new StringBuilder(40);
+        result.append(projectData.nedSourceFolderPackages[nedSourceFolderIndex]);
+        IPath path = folder.getFullPath();
+        int pathLength = path.segmentCount();
+        for (int i = pathLength-numLevels; i < pathLength; i++) {  // append last numLevels path segments
+            if (result.length() != 0)
+                result.append('.');
+            result.append(path.segment(i));
+        }
+        return result.toString();
+    }
+
     public String getExpectedPackageFor(IFile file) {
-        IContainer sourceFolder = getNedSourceFolderFor(file);
-        if (sourceFolder == null)
-            return null; // bad NED file
-        if (sourceFolder.equals(file.getParent()) && file.getName().equals(PACKAGE_NED_FILENAME))
-            return null; // nothing is expected: this file defines the package
+        if (file.getName().equals(PACKAGE_NED_FILENAME)) {
+            IContainer sourceFolder = getNedSourceFolderFor(file);
+            if (sourceFolder == null)
+                return null; // bad NED file
+            if (sourceFolder.equals(file.getParent()))
+                return null; // nothing is expected: this file defines the package
+        }
+
+        return getPackageFor(file.getParent());
+    }
     
-        // first half is the package declared in the root "package.ned" file
-        String packagePrefix = "";
-        IFile packageNedFile = sourceFolder.getFile(new Path(PACKAGE_NED_FILENAME));
-        if (getNedFiles().contains(packageNedFile))
-            packagePrefix = StringUtils.nullToEmpty(getNedFileElement(packageNedFile).getPackage());
-    
-        // second half consists of the directories this file is down from the source folder
-        String fileFolderPath = StringUtils.join(file.getParent().getFullPath().segments(), ".");
-        String sourceFolderPath = StringUtils.join(sourceFolder.getFullPath().segments(), ".");
-        Assert.isTrue(fileFolderPath.startsWith(sourceFolderPath));
-        String packageSuffix = fileFolderPath.substring(sourceFolderPath.length());
-        if (packageSuffix.length() > 0 && packageSuffix.charAt(0) == '.')
-            packageSuffix = packageSuffix.substring(1);
-    
-        // concatenate
-        String packageName = packagePrefix.length()>0 && packageSuffix.length()>0 ?
-                packagePrefix + "." + packageSuffix :
-                    packagePrefix + packageSuffix;
-        return packageName;
+    public IContainer[] getFoldersForPackage(IProject project, String packageName) {
+        if (!packageName.matches("([A-Za-z0-9_]+\\.)*[A-Za-z0-9_]+"))
+            throw new IllegalArgumentException("Invalid package name: " + packageName);
+        
+        ProjectData projectData = projects.get(project);
+        if (projectData == null)
+            return new IContainer[0];
+
+        List<IContainer> result = new ArrayList<IContainer>();
+        for (int i=0; i<projectData.nedSourceFolders.length; i++) {
+            String sourceFolderPackage = projectData.nedSourceFolderPackages[i];
+            if (packageName.equals(sourceFolderPackage)) {
+                result.add(projectData.nedSourceFolders[i]);
+            }
+            else if (isSubpackageOf(sourceFolderPackage, packageName)) {
+                String packageSuffix = packageName.substring(sourceFolderPackage.length());
+                IContainer folder = projectData.nedSourceFolders[i].getFolder(new Path(packageSuffix.replace('.', '/')));
+                result.add(folder);
+            }
+        }
+        return result.toArray(new IContainer[]{});
+    }
+
+    protected static boolean isSubpackageOf(String pkg, String subpkg) {
+        // e.g. pkg="inet.examples", and subpkg="inet.examples.wireless.handover"
+        return pkg.equals("") ? true : subpkg.startsWith(pkg) && (pkg.length()==subpkg.length() || subpkg.charAt(pkg.length())=='.');
     }
 
     public void rehashIfNeeded() {

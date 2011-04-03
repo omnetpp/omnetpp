@@ -34,6 +34,8 @@ public class NedResourcesPlugin extends AbstractUIPlugin {
 	// The shared instance.
 	private static NedResourcesPlugin plugin;
 
+	private NedSourceFoldersEditingManager nedSourceFoldersEditingManager = new NedSourceFoldersEditingManager();
+	
 	/**
 	 * The constructor.
 	 */
@@ -81,6 +83,15 @@ public class NedResourcesPlugin extends AbstractUIPlugin {
      */
     public static MsgResources getMsgResources() {
         return MsgResources.getInstance();
+    }
+    
+    /**
+     * When more than one property pages edit the ".nedfolders" file, they can
+     * communicate via NedSourceFoldersEditingManager, i.e. can edit the same
+     * working copy. 
+     */
+    public static NedSourceFoldersEditingManager getNedSourceFoldersEditingManager() {
+        return getDefault().nedSourceFoldersEditingManager;
     }
 
 	/**

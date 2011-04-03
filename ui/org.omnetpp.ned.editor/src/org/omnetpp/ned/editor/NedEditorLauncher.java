@@ -31,7 +31,7 @@ public class NedEditorLauncher implements IEditorLauncher {
         IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
         IWorkbenchPage page = workbenchWindow.getActivePage();
         try {
-            IFile file = getNedFile(filePath);
+            IFile file = getFileFor(filePath);
             if (file == null) {
                 MessageDialog.openInformation(workbenchWindow.getShell(),
                         "NED File Not Found",
@@ -66,14 +66,14 @@ public class NedEditorLauncher implements IEditorLauncher {
                 }
                 return;
             }
-            if (res.getNedSourceFolderFor(file) == null) {
+            if (!res.isNedFile(file)) {
                 IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                 MessageDialog.openInformation(workbenchWindow.getShell(),
-                        "NED file is not in source folder",
-                        "This NED file is not under a NED Source Folder, and " +
-                        "will be opened in a standard text editor. If you want to edit it graphically, " +
-                        "please move it into a NED Source Folder. NED Source Folders " +
-                        "can be configured in the Project Properties dialog.");
+                        "Not a NED File",
+                        "This NED file is not under a NED source folder or is in an excluded NED package, " +
+                        "and will be opened in a standard text editor. If you want to edit it graphically, " +
+                        "please move it into a NED source folder or remove package exclusion. " +
+                        "NED Source Folders and package exclusions can be configured in the Project Properties dialog.");
                 return;
             }
             // open graphically
@@ -83,14 +83,10 @@ public class NedEditorLauncher implements IEditorLauncher {
         }
     }
 
-    private IFile getNedFile(IPath path) throws CoreException {
+    @SuppressWarnings("deprecation")
+    private IFile getFileFor(IPath path) throws CoreException {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        IFile[] resultFiles = root.findFilesForLocation(path);
-
-        if (resultFiles.length > 0)
-            return resultFiles[0];
-        else
-            return null;
-
+        IFile[] files = root.findFilesForLocation(path);
+        return files.length > 0 ? files[0] : null;
     }
 }

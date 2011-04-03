@@ -44,7 +44,7 @@ import org.omnetpp.common.util.StringUtils;
  * @author Andras
  */
 public class ProjectUtils {
-	public static final String NEDFOLDERS_FILENAME = ".nedfolders";
+    public static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
 	/**
 	 * Checks whether the provided project is open, has the OMNeT++ nature,
@@ -142,54 +142,6 @@ public class ProjectUtils {
 		}
 	}
 	
-	public static boolean isNedFoldersFile(IResource resource) {
-		return (resource instanceof IFile &&
-				resource.getParent() instanceof IProject &&
-				resource.getName().equals(NEDFOLDERS_FILENAME));
-	}
-
-	/**
-	 * Reads the ".nedfolders" file from the given OMNeT++ project.
-	 */
-	public static IContainer[] readNedFoldersFile(IProject project) throws IOException, CoreException {
-		List<IContainer> result = new ArrayList<IContainer>();
-		IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
-		if (nedFoldersFile.exists()) {
-			String contents = FileUtils.readTextFile(nedFoldersFile.getContents(), null);
-			for (String line : StringUtils.splitToLines(contents)) {
-				line = line.trim();
-				if (line.equals("."))
-					result.add(project);
-				else if (line.length()>0)
-					result.add(project.getFolder(line));
-			}
-		}
-		if (result.isEmpty())
-			result.add(project); // this is the default
-		return result.toArray(new IContainer[]{});
-	}
-
-	/**
-	 * Saves the ".nedfolders" file in the given OMNeT++ project.
-	 */
-    public static void saveNedFoldersFile(IProject project, IContainer[] folders) throws CoreException {
-    	// assemble file content to save
-    	String content = "";
-    	for (IContainer element : folders)
-    		content += getProjectRelativePathOf(project, element) + "\n";
-
-    	// save it
-    	IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
-    	if (!nedpathFile.exists())
-    		nedpathFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-    	else
-    		nedpathFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
-	}
-
-	private static String getProjectRelativePathOf(IProject project, IContainer container) {
-		return container.equals(project) ? "." : container.getProjectRelativePath().toString();
-	}
-
 	/**
 	 * In case of CoreException it simply return false.
 	 */
@@ -304,4 +256,65 @@ public class ProjectUtils {
         }
     }
 
+    public static boolean isNedFoldersFile(IResource resource) {
+        return (resource instanceof IFile &&
+                resource.getParent() instanceof IProject &&
+                resource.getName().equals(NEDFOLDERS_FILENAME));
+    }
+
+    /**
+     * Reads the ".nedfolders" file from the given OMNeT++ project.
+     */
+    public static NedSourceFoldersConfiguration readNedFoldersFile(IProject project) throws CoreException {
+        List<IContainer> folders = new ArrayList<IContainer>();
+        List<String> excludedPackages = new ArrayList<String>();
+        IFile nedFoldersFile = project.getFile(NEDFOLDERS_FILENAME);
+        if (!project.getWorkspace().isTreeLocked())
+            nedFoldersFile.refreshLocal(IResource.DEPTH_ZERO, null);
+        if (nedFoldersFile.exists()) {
+            String contents;
+            try {
+                contents = FileUtils.readTextFile(nedFoldersFile.getContents(), null);
+            }
+            catch (IOException e) {
+                throw CommonPlugin.wrapIntoCoreException("Cannot read " + nedFoldersFile.getFullPath(), e);
+            }
+            for (String line : StringUtils.splitToLines(contents)) {
+                line = line.trim();
+                if (line.startsWith("-"))
+                    excludedPackages.add(line.substring(1).trim());
+                else if (line.equals("."))
+                    folders.add(project);
+                else if (line.length()>0)
+                    folders.add(project.getFolder(line));
+            }
+        }
+        if (folders.isEmpty())
+            folders.add(project); // this is the default
+        return new NedSourceFoldersConfiguration(folders.toArray(new IContainer[]{}), excludedPackages.toArray(new String[]{}));
+    }
+
+    /**
+     * Saves the ".nedfolders" file in the given OMNeT++ project.
+     */
+    public static void saveNedFoldersFile(IProject project, NedSourceFoldersConfiguration config) throws CoreException {
+        // assemble file content to save
+        String content = "";
+        for (IContainer folder : config.getSourceFolders())
+            content += getProjectRelativePathOf(project, folder) + "\n";
+        for (String packageName : config.getExcludedPackages())
+            content += "-" + packageName + "\n";
+
+        // save it
+        IFile nedpathFile = project.getFile(NEDFOLDERS_FILENAME);
+        if (!nedpathFile.exists())
+            nedpathFile.create(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+        else
+            nedpathFile.setContents(new ByteArrayInputStream(content.getBytes()), IFile.FORCE, null);
+    }
+
+    private static String getProjectRelativePathOf(IProject project, IContainer container) {
+        return container.equals(project) ? "." : container.getProjectRelativePath().toString();
+    }
+    
 }

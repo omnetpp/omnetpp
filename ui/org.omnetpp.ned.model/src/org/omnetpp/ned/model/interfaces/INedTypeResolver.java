@@ -122,8 +122,8 @@ public interface INedTypeResolver {
 
     /**
      * Determines if a resource is a NED file. It checks the file extension 
-     * (".ned"), and whether the file is in one of the NED source folders 
-     * designated for the project.
+     * (".ned"), whether the file is in one of the NED source folders 
+     * designated for the project, and whether it is in an excluded folder.
      */
     public boolean isNedFile(IResource resource);
 	
@@ -154,16 +154,45 @@ public interface INedTypeResolver {
      */
     public IContainer getNedSourceFolderFor(IContainer folder);
 
+    /**
+     * Returns the package name for the given folder ("" for the default package), 
+     * or null if the folder is outside all NED source folders. Ignores package
+     * exclusions.
+     */
+    public String getPackageFor(IContainer folder);
+    
 	/**
 	 * Returns the expected package name for the given file. "" means the
 	 * default package. Returns null for the toplevel "package.ned" file
 	 * (which in fact is used to *define* the package, so it has no "expected"
 	 * package name), and for files outside the NED source folders defined
 	 * for the project (i.e. for which getNedSourceFolder() returns null.)
-	 * Works for ANY file (not just for NED files)
+	 * Works for any file, not just for NED files.
 	 */
     public String getExpectedPackageFor(IFile file);
 
+    /**
+     * Returns the names of the packages that are roots of disabled package trees.
+     * That is, the returned packages and all packages under them are disabled.
+     * NED files are not loaded from disabled packages. 
+     */
+    public String[] getExcludedPackageRoots(IProject project);
+
+    /**
+     * Returns whether the given package is disabled in the given project.
+     * A package is disabled when it is one of the disabled package roots
+     * (see getExcludedPackageRoots()) or it is under one of the them.
+     */
+    public boolean isPackageEnabled(IProject project, String packageName);
+    
+    /**
+     * Returns the folders that map to the given package in the given project.
+     * Folders that do not exist (yet) are also returned. The number of elements
+     * returned is less or equal to the number of NED source folders in the project
+     * (i.e. getNedSourceFolders(project).length).  
+     */
+    public IContainer[] getFoldersForPackage(IProject project, String packageName);
+    
 	/**
 	 * Returns the markers for the given element or and the given element and
 	 * its subtree, depending on the 'recursive' argument

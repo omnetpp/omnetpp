@@ -29,12 +29,15 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
+import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.DelayedJob;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedTreeDifferenceUtils;
@@ -61,8 +64,6 @@ import org.omnetpp.ned.model.notification.NedStructuralChangeEvent;
  *
  * @author andras
  */
-//XXX is "element" argument to NedBeginModelChangeEvent useful...? we don't use it in editors/views
-//XXX remove "source" from plain NedModelChangeEvent too (and turn "anything might have changed" event into a separate class)
 @SuppressWarnings("restriction")
 public class NedResources extends NedTypeResolver implements INedResources, IResourceChangeListener {
     // singleton instance
@@ -220,16 +221,19 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     }
 
     /**
-     * May only be called if the file is not already open in an editor.
+     * Reads the given NED file from the disk. May only be called if the file is not already open in an editor.
      */
     public synchronized void readNedFile(IFile file) {
         ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer();
-        readNedFile(file, markerSync);
+        doReadNedFile(file, markerSync);
         markerSync.runAsWorkspaceJob();
         rehash();
     }
 
-    private synchronized void readNedFile(IFile file, ProblemMarkerSynchronizer markerSync) {
+    /**
+     * Internal: reads the given NED file from the disk.
+     */
+    protected synchronized void doReadNedFile(IFile file, ProblemMarkerSynchronizer markerSync) {
         Assert.isTrue(!hasConnectedEditor(file));
         //Note: the following is a bad idea, because of undefined startup order: the editor calling us might run sooner than readAllNedFiles()
         //Assert.isTrue(isNEDFile(file), "file is outside the NED source folders, or not a NED file at all");
@@ -244,6 +248,11 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         Assert.isNotNull(tree);
 
         storeNedFileModel(file, tree);
+        
+        // if this is a package.ned, expected package names might have changed
+        if (isSourceFolderPackageNedFile(file))
+            rebuildProjectsTable();
+        
         invalidate();
     }
 
@@ -261,15 +270,24 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             nedElementFiles.remove(nedFileElement);
             invalidate();
 
+            // if this was a package.ned, expected package names might have changed
+            if (isSourceFolderPackageNedFile(file))
+                rebuildProjectsTable();
+            
+            // remove all NED markers (otherwise they'll stay forever)
+            ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
+            sync.register(file);
+            sync.runAsWorkspaceJob();
+            
             // fire notification.
             nedModelChanged(new NedFileRemovedEvent(file));
         }
     }
 
     // store NED file contents
-    private synchronized void storeNedFileModel(IFile file, NedFileElementEx tree) {
+    protected synchronized void storeNedFileModel(IFile file, NedFileElementEx tree) {
         Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
-
+        
         NedFileElementEx oldTree = nedFiles.get(file);
         // if the new tree has changed, we have to rehash everything
         if (oldTree == null || !NedTreeUtil.isNedTreeEqual(oldTree, tree)) {
@@ -367,7 +385,15 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             for (IProject project : omnetppProjects) {
                 ProjectData projectData = new ProjectData();
                 projectData.referencedProjects = ProjectUtils.getAllReferencedOmnetppProjects(project);
-                projectData.nedSourceFolders = ProjectUtils.readNedFoldersFile(project);
+                NedSourceFoldersConfiguration config = ProjectUtils.readNedFoldersFile(project);
+                projectData.nedSourceFolders = config.getSourceFolders();
+                projectData.excludedPackageRoots = config.getExcludedPackages();
+                projectData.nedSourceFolderPackages = new String[projectData.nedSourceFolders.length]; 
+                for (int i=0; i<projectData.nedSourceFolders.length; i++) {
+                    IFile packageNedFile = projectData.nedSourceFolders[i].getFile(new Path(PACKAGE_NED_FILENAME));
+                    projectData.nedSourceFolderPackages[i] = containsNedFileElement(packageNedFile) ? 
+                            StringUtils.nullToEmpty(getNedFileElement(packageNedFile).getPackage()) : "";
+                }
                 tmp.put(project, projectData);
             }
         } catch (Exception e) {
@@ -436,7 +462,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             workspaceRoot.accept(new IResourceVisitor() {
                 public boolean visit(IResource resource) {
                     if (!nedFiles.containsKey(resource) && isNedFile(resource))
-                        readNedFile((IFile)resource, sync);
+                        doReadNedFile((IFile)resource, sync);
                     return true;
                 }
             });
@@ -447,7 +473,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             NedResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
             nedModelChangeNotificationDisabled = false;
-            Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readAllNedFilesInWorkspace()");
+            Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readMissingNedFiles()");
             nedModelChanged(new NedModelChangeEvent(null));  // "everything changed"
         }
     }
@@ -520,15 +546,19 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                         IFile file = (IFile)resource;
                         switch (delta.getKind()) {
                         case IResourceDelta.REMOVED:
-                            forgetNedFile(file);
+                            forgetNedFile(file); // includes rebuildProjectsTable() if needed
                             break;
                         case IResourceDelta.ADDED:
-                            readNedFile(file, sync);
+                            doReadNedFile(file, sync); // includes rebuildProjectsTable() if needed
                             break;
                         case IResourceDelta.CHANGED:
                             // we are only interested in content changes; ignore marker and property changes
-                            if ((delta.getFlags() & IResourceDelta.CONTENT) != 0 && !hasConnectedEditor(file))
-                                readNedFile(file, sync);
+                            if ((delta.getFlags() & IResourceDelta.CONTENT) != 0) {
+                                if (!hasConnectedEditor(file))
+                                    doReadNedFile(file, sync); // includes rebuildProjectsTable() if needed
+                                else if (isSourceFolderPackageNedFile(file))
+                                    rebuildProjectsTable(); // handle the case when a package.ned is modified and saved from within a NED Editor
+                            }
                             break;
                         }
                     }
