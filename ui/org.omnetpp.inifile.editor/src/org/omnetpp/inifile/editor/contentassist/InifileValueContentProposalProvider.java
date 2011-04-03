@@ -149,7 +149,7 @@ s	 * before getting presented to the user.
 			INedResources nedResources = NedResourcesPlugin.getNedResources();
 			// first
 			List<IContentProposal> p1 = new ArrayList<IContentProposal>();
-			String iniFilePackage = NedResourcesPlugin.getNedResources().getExpectedPackageFor(doc.getDocumentFile());
+			String iniFilePackage = NedResourcesPlugin.getNedResources().getPackageFor(doc.getDocumentFile().getParent());
 			if (StringUtils.isNotEmpty(iniFilePackage)) {
 				for (String networkName : nedResources.getNetworkQNames(contextProject)) {
 					INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNedElement();

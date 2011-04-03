@@ -353,7 +353,7 @@ public class ParamCollector {
     public static INedTypeInfo resolveNetwork(IReadonlyInifileDocument doc, INedTypeResolver ned, String value) {
         INedTypeInfo network = null;
         IFile iniFile = doc.getDocumentFile();
-        String inifilePackage = ned.getExpectedPackageFor(iniFile);
+        String inifilePackage = ned.getPackageFor(iniFile.getParent());
         IProject contextProject = iniFile.getProject();
         if (inifilePackage != null && value != null) {
             String networkName = inifilePackage + (inifilePackage.length()!=0 && value.length()!=0 ? "." : "")+value;

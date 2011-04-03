@@ -1,9 +1,6 @@
 package org.omnetpp.inifile.editor.wizards;
 
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
@@ -40,10 +37,8 @@ public class NewInifileWizard extends TemplateBasedNewFileWizard {
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
-        IPath filePath = getFirstPage().getContainerFullPath().append(getFirstPage().getFileName());
-        IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(filePath);
-        String packageName = NedResourcesPlugin.getNedResources().getExpectedPackageFor(newFile);
-        context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
+        String packageName = NedResourcesPlugin.getNedResources().getPackageFor(folder);
+        context.getVariables().put("nedPackageName", StringUtils.nullToEmpty(packageName));
 
         return context;
     }

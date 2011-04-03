@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -92,13 +91,12 @@ public class NewSimulationWizard extends TemplateBasedWizard  implements INewWiz
         context.setVariableIfMissing("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages 
 
         // NED-related stuff
-        IFile someNedFile = folder.getFile(new Path("whatever.ned"));
-        String packageName = NedResourcesPlugin.getNedResources().getExpectedPackageFor(someNedFile);
-        context.getVariables().put("nedPackageName", StringUtils.defaultString(packageName,""));
+        String packageName = NedResourcesPlugin.getNedResources().getPackageFor(folder);
+        context.getVariables().put("nedPackageName", StringUtils.nullToEmpty(packageName));
 
         // namespace
         String namespaceName = NedResourcesPlugin.getNedResources().getSimplePropertyFor(folder, INedTypeResolver.NAMESPACE_PROPERTY);
-        context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
+        context.getVariables().put("namespaceName", StringUtils.nullToEmpty(namespaceName));
 
         return context;
     }

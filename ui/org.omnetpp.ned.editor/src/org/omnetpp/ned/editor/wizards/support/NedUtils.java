@@ -54,7 +54,7 @@ public class NedUtils {
         INedResources resources = NedResourcesPlugin.getNedResources();
         if (!typeName.contains(".")) {
             // try look up unqualified name if the package of the folder
-            String packageName = resources.getExpectedPackageFor(folder.getFile(new Path("dummy.ned")));
+            String packageName = resources.getPackageFor(folder);
             if (!StringUtils.isEmpty(packageName)) {
                 INedTypeInfo result = resources.getToplevelNedType(packageName+ "." + typeName, folder.getProject());
                 if (result != null)
