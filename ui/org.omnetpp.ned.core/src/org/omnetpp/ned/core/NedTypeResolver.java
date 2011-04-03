@@ -40,7 +40,6 @@ import org.omnetpp.ned.model.pojo.NedFileElement;
  * 
  * @author Andras
  */
-//TODO build in sanity check: resolver of all contained elements should always be this object!!!
 public class NedTypeResolver implements INedTypeResolver {
     protected boolean debug = true;
 
@@ -134,6 +133,7 @@ public class NedTypeResolver implements INedTypeResolver {
                     for (INedElement child : nedFiles.get(file)) {
                         if (child instanceof INedTypeElement) {
                             INedTypeElement typeElement = (INedTypeElement) child;
+                            Assert.isTrue(typeElement.getResolver() == this);
                             INedTypeInfo typeInfo = typeElement.getNedTypeInfo();
                             String qualifiedName = typeInfo.getFullyQualifiedName();
 

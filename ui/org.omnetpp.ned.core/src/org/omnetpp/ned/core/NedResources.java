@@ -482,7 +482,6 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         if (event instanceof NedModelChangeEvent)
             immutableCopy = null; // invalidate
         
-        //Debug.println("**** nedModelChanged - notify");
         if (nedModelChangeNotificationDisabled)
             return;
 
