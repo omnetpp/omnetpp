@@ -649,7 +649,10 @@ void Tkenv::finishSimulation()
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
 
     if (simstate==SIM_NEW || simstate==SIM_READY)
-        stoppedWithTerminationException(cTerminationException("The user has finished the simulation"));
+    {
+        cTerminationException e("The user has finished the simulation");
+        stoppedWithTerminationException(e);
+    }
 
     logBuffer.addInfo("{** Calling finish() methods of modules\n}");
     printLastLogLine();
