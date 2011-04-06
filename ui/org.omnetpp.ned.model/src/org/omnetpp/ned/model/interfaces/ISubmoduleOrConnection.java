@@ -8,7 +8,6 @@
 package org.omnetpp.ned.model.interfaces;
 
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 
 /**
@@ -37,34 +36,49 @@ public interface ISubmoduleOrConnection extends IHasResolver, IHasDisplayString,
     public DisplayString getDisplayString(INedTypeElement actualType);
 
     /**
-     * Returns the type of the object
+     * Returns the type of the submodule or connection, as it occurs in the NED source.
+     * Not used for parametric submodules or connections (returns null or the empty string.)
      */
     public String getType();
 
     /**
-     * Sets the type attribute
+     * Sets the type of the submodule or connection, as it occurs in the NED source.
      */
     public void setType(String type);
 
     /**
-     * Returns the type info after the "like" keyword
+     * For a parametric submodule or connection, it returns the interface name as it occurs 
+     * after the "like" keyword in the NED source; otherwise it returns null or the empty string.
      */
     public String getLikeType();
 
     /**
-     * Sets the like-type
+     * Sets the interface name for a parametric submodule or connection.
      */
     public void setLikeType(String type);
 
     /**
-     * Returns the like parameter
+     * For a parametric submodule or connection, it returns the type name expression as it occurs 
+     * between the angle brackets in the NED source; otherwise it returns null or the empty string.
      */
     public String getLikeParam();
 
     /**
-     * Sets the like parameter
+     * Sets the type name expression for for a parametric submodule or connection.
      */
     public void setLikeParam(String type);
+
+    /**
+     * Returns true if the parametric type name expression (the "like-param") is just a default value,
+     * that is, it occurs in the NED text as <code>&lt;default(expression)&gt;</code>.
+     */
+    public boolean getIsDefault();
+
+    /**
+     * Sets whether the parametric type name expression (the "like-param") is to be surrounded with
+     * <code>default(...)</code> in the NED source.
+     */
+    public void setIsDefault(boolean isDefault);
 
     /**
      * Returns the type, or the likeType if type was not specified. For connections with
