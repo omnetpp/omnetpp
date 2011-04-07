@@ -420,12 +420,15 @@ public class NedTypeResolver implements INedTypeResolver {
     
         // try as toplevel type
         INedTypeInfo typeInfo = projectData.components.get(qualifiedName);
+        if (typeInfo != null)
+            return typeInfo;
     
         // if not found, try as inner type
-        if (typeInfo == null && qualifiedName.contains(".")) {
-            INedTypeInfo enclosingType = projectData.components.get(StringUtils.substringBeforeLast(qualifiedName, "."));
+        int lastDot = qualifiedName.lastIndexOf('.');
+        if (lastDot != -1) {
+            INedTypeInfo enclosingType = projectData.components.get(qualifiedName.substring(0,lastDot));
             if (enclosingType != null) {
-                INedTypeElement innerType = enclosingType.getInnerTypes().get(StringUtils.substringAfterLast(qualifiedName, "."));
+                INedTypeElement innerType = enclosingType.getInnerTypes().get(qualifiedName.substring(lastDot+1));
                 if (innerType != null)
                     typeInfo = innerType.getNedTypeInfo();
             }

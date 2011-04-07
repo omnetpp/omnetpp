@@ -239,7 +239,8 @@ public interface INedTypeResolver {
 	public Set<String> getNedTypeQNamesFromAllProjects();
 
     /**
-     * Returns the NED types from all projects that have the given fully qualified name.
+     * Returns all NED types (both toplevel and inner) that have the given fully qualified name,
+     * from all projects.
      */
     public Set<INedTypeInfo> getNedTypesFromAllProjects(String qualifiedName);
 
@@ -277,7 +278,7 @@ public interface INedTypeResolver {
     public Set<String> getNedTypeQNames(IPredicate predicate, IProject context);
 
     /**
-     * Returns ALL toplevel (non-inner) type names in the NED files, including
+     * Returns all toplevel (non-inner) type names in the NED files, including
      * duplicate names, from the given project and its dependent projects.
      * This method can be used for generating unique type names. Returned names
      * are fully qualified.
@@ -285,7 +286,7 @@ public interface INedTypeResolver {
     public Set<String> getReservedQNames(IProject context);
 
     /**
-     * Returns ALL toplevel (non-inner) type names in the given package, including
+     * Returns all toplevel (non-inner) type names in the given package, including
      * duplicate names, from the given project and its dependent projects.
      * This method can be used for generating unique type names. Returned names
      * are simple names (i.e. package name has been removed).
@@ -302,7 +303,9 @@ public interface INedTypeResolver {
 	/**
      * Return a NED type from its fully qualified name, whether toplevel
      * or inner type, from the given project and its dependent projects.
-     * Returns null if not found.
+     * Returns null if not found. 
+     * 
+     * If you are not interested in inner types, use getToplevelNedType().
 	 */
     public INedTypeInfo getToplevelOrInnerNedType(String qualifiedName, IProject context);
 
