@@ -324,7 +324,7 @@ public class NedTypeResolver implements INedTypeResolver {
     public synchronized Set<INedTypeInfo> getNedTypesFromAllProjects(String qualifiedName) {
         Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
         for (IProject project : projects.keySet()) {
-            INedTypeInfo type = getToplevelOrInnerNedType(qualifiedName, project);
+            INedTypeInfo type = getToplevelNedType(qualifiedName, project);
             if (type != null)
                 result.add(type);
         }

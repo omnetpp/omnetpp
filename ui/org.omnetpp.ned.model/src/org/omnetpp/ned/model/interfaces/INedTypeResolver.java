@@ -239,7 +239,7 @@ public interface INedTypeResolver {
 	public Set<String> getNedTypeQNamesFromAllProjects();
 
     /**
-     * Returns all NED types (both toplevel and inner) that have the given fully qualified name,
+     * Returns all toplevel (non-inner) NED types that have the given fully qualified name,
      * from all projects.
      */
     public Set<INedTypeInfo> getNedTypesFromAllProjects(String qualifiedName);
