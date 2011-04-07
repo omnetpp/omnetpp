@@ -294,11 +294,11 @@ public class NedTypeResolver implements INedTypeResolver {
         return parent.getSourceRegion() != null && parent.getSourceRegion().contains(line, column) ? parent : null;
     }
 
-    public synchronized Collection<INedTypeInfo> getNedTypesFromAllProjects() {
-        return getNedTypesFromAllProjects(ALL_FILTER);
+    public synchronized Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects() {
+        return getToplevelNedTypesFromAllProjects(ALL_FILTER);
     }
 
-    public synchronized Collection<INedTypeInfo> getNedTypesFromAllProjects(IPredicate predicate) {
+    public synchronized Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects(IPredicate predicate) {
         // return everything from everywhere, including duplicates
         List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
         for (IFile file : nedFiles.keySet())
@@ -311,7 +311,7 @@ public class NedTypeResolver implements INedTypeResolver {
         return result;
     }
 
-    public synchronized Set<String> getNedTypeQNamesFromAllProjects() {
+    public synchronized Set<String> getToplevelNedTypeQNamesFromAllProjects() {
         // return everything from everywhere
         Set<String> result = new HashSet<String>();
         for (IFile file : nedFiles.keySet())
@@ -321,7 +321,7 @@ public class NedTypeResolver implements INedTypeResolver {
         return result;
     }
 
-    public synchronized Set<INedTypeInfo> getNedTypesFromAllProjects(String qualifiedName) {
+    public synchronized Set<INedTypeInfo> getToplevelNedTypesFromAllProjects(String qualifiedName) {
         Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
         for (IProject project : projects.keySet()) {
             INedTypeInfo type = getToplevelNedType(qualifiedName, project);
@@ -331,45 +331,45 @@ public class NedTypeResolver implements INedTypeResolver {
         return result;
     }
 
-    public synchronized Collection<INedTypeInfo> getNedTypes(IProject context) {
+    public synchronized Collection<INedTypeInfo> getToplevelNedTypes(IProject context) {
         rehashIfNeeded();
         ProjectData projectData = projects.get(context);
         return projectData==null ? new ArrayList<INedTypeInfo>() : projectData.components.values();
     }
 
-    public synchronized Collection<INedTypeInfo> getNedTypes(IPredicate predicate, IProject context) {
+    public synchronized Collection<INedTypeInfo> getToplevelNedTypes(IPredicate predicate, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        for (INedTypeInfo type : getNedTypes(context))
+        for (INedTypeInfo type : getToplevelNedTypes(context))
             if (predicate.matches(type))
                 result.add(type);
         return result;
     }
 
-    public synchronized Collection<INedTypeInfo> getNedTypesThatImplement(INedTypeInfo interfaceType, IProject context) {
+    public synchronized Collection<INedTypeInfo> getToplevelNedTypesThatImplement(INedTypeInfo interfaceType, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        for (INedTypeInfo type : getNedTypes(context))
+        for (INedTypeInfo type : getToplevelNedTypes(context))
             if (type.getInterfaces().contains(interfaceType.getNedElement()))
                 result.add(type);
         return result;
     }
 
-    public Collection<INedTypeInfo> getNedTypesBySimpleName(String simpleName, IProject context) {
+    public Collection<INedTypeInfo> getToplevelNedTypesBySimpleName(String simpleName, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        for (INedTypeInfo type : getNedTypes(context))
+        for (INedTypeInfo type : getToplevelNedTypes(context))
             if (type.getName().equals(simpleName))
                 result.add(type);
         return result;
     }
 
-    public synchronized Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
+    public synchronized Set<String> getToplevelNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
-        for (INedTypeInfo typeInfo : getNedTypes(context))
+        for (INedTypeInfo typeInfo : getToplevelNedTypes(context))
             if (predicate.matches(typeInfo))
                 result.add(typeInfo.getFullyQualifiedName());
         return result;
     }
 
-    public synchronized Set<String> getNedTypeQNames(IProject context) {
+    public synchronized Set<String> getToplevelNedTypeQNames(IProject context) {
         rehashIfNeeded();
         ProjectData projectData = projects.get(context);
         return projectData==null ? new HashSet<String>() : projectData.components.keySet();
@@ -395,23 +395,23 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized Set<String> getModuleQNames(IProject context) {
-        return getNedTypeQNames(MODULE_FILTER, context);
+        return getToplevelNedTypeQNames(MODULE_FILTER, context);
     }
 
     public synchronized Set<String> getNetworkQNames(IProject context) {
-        return getNedTypeQNames(NETWORK_FILTER, context);
+        return getToplevelNedTypeQNames(NETWORK_FILTER, context);
     }
 
     public synchronized Set<String> getChannelQNames(IProject context) {
-        return getNedTypeQNames(CHANNEL_FILTER, context);
+        return getToplevelNedTypeQNames(CHANNEL_FILTER, context);
     }
 
     public synchronized Set<String> getModuleInterfaceQNames(IProject context) {
-        return getNedTypeQNames(MODULEINTERFACE_FILTER, context);
+        return getToplevelNedTypeQNames(MODULEINTERFACE_FILTER, context);
     }
 
     public synchronized Set<String> getChannelInterfaceQNames(IProject context) {
-        return getNedTypeQNames(CHANNELINTERFACE_FILTER, context);
+        return getToplevelNedTypeQNames(CHANNELINTERFACE_FILTER, context);
     }
 
     public synchronized INedTypeInfo getToplevelNedType(String qualifiedName, IProject context) {
@@ -595,7 +595,7 @@ public class NedTypeResolver implements INedTypeResolver {
         else {
             // there must be exactly one NED type with that name that implements the given interface
             INedTypeInfo result = null;
-            for (INedTypeInfo type : getNedTypes(context))  // linear search, but it's OK since lookups are cached
+            for (INedTypeInfo type : getToplevelNedTypes(context))  // linear search, but it's OK since lookups are cached
                 if (type.getName().equals(name))
                     if (type.getInterfaces().contains(interfaceType.getNedElement()))
                         if (result != null)

@@ -318,7 +318,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
         List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
         INedResources res = NedResourcesPlugin.getNedResources();
 
-        for (INedTypeInfo type : res.getNedTypes(folder.getProject())) {
+        for (INedTypeInfo type : res.getToplevelNedTypes(folder.getProject())) {
             INedTypeElement element = type.getNedElement();
             if (element instanceof IModuleTypeElement && ((IModuleTypeElement)element).isNetwork()) {
                 IFile nedFile = res.getNedFile(element.getContainingNedFileElement());

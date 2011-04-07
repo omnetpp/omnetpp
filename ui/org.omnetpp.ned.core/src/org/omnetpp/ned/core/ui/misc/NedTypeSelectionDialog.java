@@ -187,9 +187,9 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
         
         if (willShowTypesFromAllProjects()) {
             if (typeFilter == null)
-                result = nedResources.getNedTypesFromAllProjects();
+                result = nedResources.getToplevelNedTypesFromAllProjects();
             else 
-                result = nedResources.getNedTypesFromAllProjects(typeFilter);
+                result = nedResources.getToplevelNedTypesFromAllProjects(typeFilter);
         }
         else {
             result = new ArrayList<INedTypeInfo>();
@@ -200,9 +200,9 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
             
             if (getContextProject() != null) {
                 if (typeFilter == null)
-                    result.addAll(nedResources.getNedTypes(getContextProject()));
+                    result.addAll(nedResources.getToplevelNedTypes(getContextProject()));
                 else 
-                    result.addAll(nedResources.getNedTypes(typeFilter, getContextProject()));
+                    result.addAll(nedResources.getToplevelNedTypes(typeFilter, getContextProject()));
             }
 
             if (getEnclosingNedType() != null)

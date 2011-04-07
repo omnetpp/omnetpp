@@ -394,7 +394,7 @@ public class PaletteManager {
                             positiveScoreMatchingTypes.add(typeElement);
                     }
                         
-        for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getNedTypes(contextProject)) {
+        for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getToplevelNedTypes(contextProject)) {
             INedTypeElement typeElement = typeInfo.getNedElement();
             if (typeElement instanceof IModuleKindTypeElement) {
                 matchingTypes.add(typeElement);

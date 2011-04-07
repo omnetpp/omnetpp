@@ -1,5 +1,5 @@
 <#-- look up NED type -->
-<#assign nedTypeInfoSet = nedResources.getNedTypesFromAllProjects(nedType)>
+<#assign nedTypeInfoSet = nedResources.getToplevelNedTypesFromAllProjects(nedType)>
 <#if nedTypeInfoSet?size==0>
   <#stop "No such NED type: ${nedType}">
 </#if>  

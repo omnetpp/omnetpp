@@ -182,7 +182,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
                 return nedType;
         }
         else {
-            Set<INedTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
+            Set<INedTypeInfo> nedTypes = nedResources.getToplevelNedTypesFromAllProjects(name);
             for (INedTypeInfo nedType : nedTypes)
                 if (nedType.getNedElement() instanceof IModuleKindTypeElement)
                     return nedType;

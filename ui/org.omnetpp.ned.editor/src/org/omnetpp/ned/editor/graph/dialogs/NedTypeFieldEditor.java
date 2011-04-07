@@ -61,7 +61,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
             Assert.isNotNull(typeFilter, "setTypeFilter() must have been called with non-null arg");
             
             // add suggestions both in "package.name.SimpleName" and "SimpleName (package.name)" syntax 
-            Set<String> qnames = nedResources.getNedTypeQNames(typeFilter, contextProject);
+            Set<String> qnames = nedResources.getToplevelNedTypeQNames(typeFilter, contextProject);
             if (enclosingNedType != null)
                 for (INedTypeElement innerType : enclosingNedType.getInnerTypes().values())
                     if (typeFilter.matches(innerType.getNedTypeInfo()))

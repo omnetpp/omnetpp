@@ -87,7 +87,7 @@ abstract public class NedBasePropertySource implements IPropertySource2 {
     public List<String> getPossibleTypeDisplayNames(INedElement element, IPredicate predicate) {
         INedResources res = NedResourcesPlugin.getNedResources();
         IProject project = res.getNedFile(element.getContainingNedFileElement()).getProject();
-        List<String> typeNames = new ArrayList<String>(res.getNedTypeQNames(predicate, project));
+        List<String> typeNames = new ArrayList<String>(res.getToplevelNedTypeQNames(predicate, project));
         // if the context is a module (type list was requested for inner type, submodule or connection)
         INedTypeLookupContext context = element.getEnclosingLookupContext();
         if (context instanceof CompoundModuleElementEx) {

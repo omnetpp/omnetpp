@@ -123,7 +123,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 
         // add top level types
         // XXX offer "like" template too
-        Set<String> qnames = res.getNedTypeQNames(predicate, project);
+        Set<String> qnames = res.getToplevelNedTypeQNames(predicate, project);
         String names[] = new String[qnames.size()];
         String descriptions[] = new String[qnames.size()];
         int i = 0;

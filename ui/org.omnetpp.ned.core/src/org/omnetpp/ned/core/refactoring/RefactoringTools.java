@@ -136,7 +136,7 @@ public class RefactoringTools {
 
 		// find all potential types
         List<String> potentialMatches = new ArrayList<String>();
-		for (String qualifiedName : resolver.getNedTypeQNames(contextProject))
+		for (String qualifiedName : resolver.getToplevelNedTypeQNames(contextProject))
 			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
 				potentialMatches.add(qualifiedName);
 
@@ -221,7 +221,7 @@ public class RefactoringTools {
     public static void inferGateLabels(GateElementEx gate, boolean forward, Collection<AddGateLabels> result) {
         INedTypeElement typeElement = gate.getEnclosingTypeElement();
 
-        for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getNedTypesFromAllProjects()) {
+        for (INedTypeInfo typeInfo : NedResourcesPlugin.getNedResources().getToplevelNedTypesFromAllProjects()) {
             INedTypeElement element = typeInfo.getNedElement();
 
             if (element instanceof CompoundModuleElementEx) {

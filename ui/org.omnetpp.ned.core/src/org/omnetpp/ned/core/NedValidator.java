@@ -188,7 +188,7 @@ public class NedValidator extends AbstractNedValidatorEx {
 			// wildcard import: check if it matches anything
 			String regex = NedElementUtilEx.importToRegex(name);
 			boolean found = false;
-			for (String qualifiedName : resolver.getNedTypeQNames(contextProject))
+			for (String qualifiedName : resolver.getToplevelNedTypeQNames(contextProject))
 				if (qualifiedName.matches(regex))
 					{found = true; break;}
 			if (!found)

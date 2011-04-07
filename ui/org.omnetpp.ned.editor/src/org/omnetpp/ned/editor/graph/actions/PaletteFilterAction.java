@@ -70,7 +70,7 @@ public class PaletteFilterAction extends WorkbenchPartAction {
         IProject project = ((FileEditorInput)editor.getEditorInput()).getFile().getProject();
         INedResources res = NedResourcesPlugin.getNedResources();
         final Map<String,Integer> packages = new LinkedHashMap<String,Integer>();  // (package,count)
-        List<String> orderedQNames = new ArrayList<String>(res.getNedTypeQNames(project));
+        List<String> orderedQNames = new ArrayList<String>(res.getToplevelNedTypeQNames(project));
         Collections.sort(orderedQNames);
         for (String qname : orderedQNames) {
             INedTypeInfo nedType = res.getToplevelNedType(qname, project);

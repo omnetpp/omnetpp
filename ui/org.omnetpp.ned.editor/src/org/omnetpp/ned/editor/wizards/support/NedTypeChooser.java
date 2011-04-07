@@ -93,7 +93,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
  */
         // need to filter its contents according to the filter flags
         INedResources nedResources = NedResourcesPlugin.getNedResources();
-        Collection<INedTypeInfo> allTypes = project==null ? nedResources.getNedTypesFromAllProjects() : nedResources.getNedTypes(project);
+        Collection<INedTypeInfo> allTypes = project==null ? nedResources.getToplevelNedTypesFromAllProjects() : nedResources.getToplevelNedTypes(project);
         List<INedTypeInfo> offeredTypes = new ArrayList<INedTypeInfo>();
         for (INedTypeInfo nedType : allTypes)
             if (isAcceptedType(nedType))
@@ -150,7 +150,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
                 return nedType;
         }
         else {
-            Set<INedTypeInfo> nedTypes = nedResources.getNedTypesFromAllProjects(name);
+            Set<INedTypeInfo> nedTypes = nedResources.getToplevelNedTypesFromAllProjects(name);
             for (INedTypeInfo nedType : nedTypes)
                 if (isAcceptedType(nedType))
                     return nedType;

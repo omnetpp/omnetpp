@@ -224,64 +224,64 @@ public interface INedTypeResolver {
 	 * including duplicate types. This method is useful for implementing an
 	 * Open NED Type dialog, and for not much else.
 	 */
-	public Collection<INedTypeInfo> getNedTypesFromAllProjects();
+	public Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects();
 
     /**
-     * Like getNedTypesFromAllProjects(), but the result if filtered with the given predicate.
+     * Like getToplevelNedTypesFromAllProjects(), but the result is filtered with the given predicate.
      */
-    public Collection<INedTypeInfo> getNedTypesFromAllProjects(IPredicate predicate);
+    public Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects(IPredicate predicate);
 
     /**
      * Returns the fully qualified names of all toplevel (non-inner) types 
      * from NED files in all projects, including duplicate types. This method 
      * is useful for implementing an Open NED Type dialog, and for not much else.
      */
-	public Set<String> getNedTypeQNamesFromAllProjects();
+	public Set<String> getToplevelNedTypeQNamesFromAllProjects();
 
     /**
      * Returns all toplevel (non-inner) NED types that have the given fully qualified name,
      * from all projects.
      */
-    public Set<INedTypeInfo> getNedTypesFromAllProjects(String qualifiedName);
+    public Set<INedTypeInfo> getToplevelNedTypesFromAllProjects(String qualifiedName);
 
     /**
 	 * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,
 	 * from the given project and its dependent projects.
 	 */
-	public Collection<INedTypeInfo> getNedTypes(IProject context);
+	public Collection<INedTypeInfo> getToplevelNedTypes(IProject context);
 
     /**
      * Returns a filtered list of all toplevel (non-inner) types in the NED files, excluding 
      * duplicate names, from the given project and its dependent projects. 
      */
-	public Collection<INedTypeInfo> getNedTypes(IPredicate predicate, IProject context);
+	public Collection<INedTypeInfo> getToplevelNedTypes(IPredicate predicate, IProject context);
 	
     /**
      * Returns all toplevel (non-inner) types in the NED files that implement
      * the given interface, excluding duplicate names, from the given project
      * and its dependent projects.
      */
-    public Collection<INedTypeInfo> getNedTypesThatImplement(INedTypeInfo interfaceType, IProject context);
+    public Collection<INedTypeInfo> getToplevelNedTypesThatImplement(INedTypeInfo interfaceType, IProject context);
 
     /**
      * Returns all toplevel (non-inner) types with the given simple name (unqualified name)
      * from the given project and its dependent projects.
      */
-    public Collection<INedTypeInfo> getNedTypesBySimpleName(String simpleName, IProject context);
+    public Collection<INedTypeInfo> getToplevelNedTypesBySimpleName(String simpleName, IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files, excluding
      * duplicate names, from the given project and its dependent projects.
      * Returned names are fully qualified.
      */
-    public Set<String> getNedTypeQNames(IProject context);
+    public Set<String> getToplevelNedTypeQNames(IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files where
      * the predicate matches, excluding duplicate names, from the given project
      * and its dependent projects. Returned names are fully qualified.
      */
-    public Set<String> getNedTypeQNames(IPredicate predicate, IProject context);
+    public Set<String> getToplevelNedTypeQNames(IPredicate predicate, IProject context);
 
     /**
      * Returns all toplevel (non-inner) type names in the NED files, including

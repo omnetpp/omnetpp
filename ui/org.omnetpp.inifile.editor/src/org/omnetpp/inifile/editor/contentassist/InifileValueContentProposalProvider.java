@@ -340,7 +340,7 @@ s	 * before getting presented to the user.
         Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
         boolean firstIter = true;
 	    for (INedTypeInfo likeInterface : likeInterfaces) {
-	        Collection<INedTypeInfo> types = res.getNedTypesThatImplement(likeInterface, context);
+	        Collection<INedTypeInfo> types = res.getToplevelNedTypesThatImplement(likeInterface, context);
 	        if (firstIter) {
 	            result.addAll(types);
 	            firstIter = false;
