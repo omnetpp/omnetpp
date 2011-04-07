@@ -35,6 +35,7 @@ import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasProperties;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.ConnectionElement;
 import org.omnetpp.ned.model.pojo.GateElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
@@ -371,7 +372,8 @@ public class ConnectionChooser {
 	private ConnectionElementEx createTemplateConnection(IConnectableElement srcMod, GateElement srcGate,
 						                                 IConnectableElement destMod, GateElement destGate)
 	{
-		ConnectionElementEx conn = (ConnectionElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_CONNECTION);
+        INedTypeResolver resolver = NedResourcesPlugin.getNedResources();
+        ConnectionElementEx conn = (ConnectionElementEx)NedElementFactoryEx.getInstance().createElement(resolver, NedElementTags.NED_CONNECTION);
 		// set the source and dest module names.
 		// if compound module, name must be empty
 		// for Submodules name must be the submodule name
