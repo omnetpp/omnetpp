@@ -353,6 +353,14 @@ public class NedTypeResolver implements INedTypeResolver {
         return result;
     }
 
+    public Collection<INedTypeInfo> getNedTypesBySimpleName(String simpleName, IProject context) {
+        Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        for (INedTypeInfo type : getNedTypes(context))
+            if (type.getName().equals(simpleName))
+                result.add(type);
+        return result;
+    }
+
     public synchronized Set<String> getNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
         for (INedTypeInfo typeInfo : getNedTypes(context))

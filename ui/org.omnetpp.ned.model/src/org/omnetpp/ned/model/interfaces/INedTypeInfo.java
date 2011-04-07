@@ -33,7 +33,7 @@ import org.omnetpp.ned.model.pojo.PropertyElement;
  */
 public interface INedTypeInfo extends INedChangeListener {
 	/**
-	 * Convenience method: returns the short name of the module/interface/channel/etc.
+	 * Returns the simple name (i.e. unqualified name) of the module/interface/channel/etc.
 	 */
 	public String getName();
 

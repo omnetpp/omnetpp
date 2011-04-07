@@ -264,6 +264,12 @@ public interface INedTypeResolver {
     public Collection<INedTypeInfo> getNedTypesThatImplement(INedTypeInfo interfaceType, IProject context);
 
     /**
+     * Returns all toplevel (non-inner) types with the given simple name (unqualified name)
+     * from the given project and its dependent projects.
+     */
+    public Collection<INedTypeInfo> getNedTypesBySimpleName(String simpleName, IProject context);
+
+    /**
      * Returns all toplevel (non-inner) type names in the NED files, excluding
      * duplicate names, from the given project and its dependent projects.
      * Returned names are fully qualified.
