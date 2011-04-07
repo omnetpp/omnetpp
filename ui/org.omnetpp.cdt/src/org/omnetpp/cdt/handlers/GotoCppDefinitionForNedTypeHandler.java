@@ -175,9 +175,11 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                                 IIndexFile indexFile = name.getFile();
                                 IFile file = project.getWorkspace().getRoot().getFile(new Path(indexFile.getLocation().getFullPath()));
                                 CEditor editor = (CEditor)IDE.openEditor(page, file, true);
-                                IASTFileLocation location = name.getFileLocation();
-                                ISourceRange range = new SourceRange(location.getNodeOffset(), location.getNodeLength());
-                                editor.setSelection(range, true);
+                                if (editor != null) {
+                                    IASTFileLocation location = name.getFileLocation();
+                                    ISourceRange range = new SourceRange(location.getNodeOffset(), location.getNodeLength());
+                                    editor.setSelection(range, true);
+                                }
                                 return true;
                             }
                         }
