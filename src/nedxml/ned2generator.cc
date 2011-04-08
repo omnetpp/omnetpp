@@ -556,7 +556,14 @@ void NED2Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
         OUT << node->getType();
     }
 
-    if (!node->getFirstChildWithTag(NED_PARAMETERS) && !node->getFirstChildWithTag(NED_GATES))
+    ConditionElement *condition = node->getFirstConditionChild();
+    if (condition)
+    {
+        OUT << " ";
+        doCondition(condition, NULL, true, NULL);
+    }
+
+    if (!node->getFirstParametersChild() && !node->getFirstGatesChild())
     {
         OUT << ";" << getTrailingComment(node);
     }

@@ -1,0 +1,120 @@
+%description:
+Test conditional submodules
+
+%file: test.ned
+
+import testlib.Dump;
+
+moduleinterface INode {}
+module Node like INode {}
+
+module Container
+{
+    parameters:
+        bool needed;
+        int x;
+    submodules:
+        x1: Node if needed;
+        x2: Node if needed || x==1 {@display("p=10,10");}
+        x3[2]: Node if needed || x==2;
+        x4: <default("Node")> like INode if needed;
+        x5: <default("Node")> like INode if needed || x==1 {@display("p=10,10");}
+        x6[2]: <default("Node")> like INode if needed || x==2;
+        dump: Dump;
+}
+
+network Test
+{
+    submodules:
+        all : Container { needed = true; x=0; }
+        none : Container { needed = false; x=0; }
+        misc1 : Container { needed = false; x=1; }
+        misc2 : Container { needed = false; x=2; }
+        dump: Dump;
+}
+
+%exitcode: 0
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.all: Container {
+            parameters:
+                needed = true
+                x = 0
+            submodules:
+                module Test.all.x1: Node {
+                }
+                module Test.all.x2: Node {
+                    parameters:
+                        @display(p=10,10)
+                }
+                module Test.all.x3[0]: Node {
+                }
+                module Test.all.x3[1]: Node {
+                }
+                module Test.all.x4: Node {
+                }
+                module Test.all.x5: Node {
+                    parameters:
+                        @display(p=10,10)
+                }
+                module Test.all.x6[0]: Node {
+                }
+                module Test.all.x6[1]: Node {
+                }
+        }
+        module Test.none: Container {
+            parameters:
+                needed = false
+                x = 0
+            submodules:
+                module Test.none.dump: testlib.Dump {
+                    parameters:
+                        printClassNames = false
+                }
+        }
+        module Test.misc1: Container {
+            parameters:
+                needed = false
+                x = 1
+            submodules:
+                module Test.misc1.x2: Node {
+                    parameters:
+                        @display(p=10,10)
+                }
+                module Test.misc1.x5: Node {
+                    parameters:
+                        @display(p=10,10)
+                }
+                module Test.misc1.dump: testlib.Dump {
+                    parameters:
+                        printClassNames = false
+                }
+        }
+        module Test.misc2: Container {
+            parameters:
+                needed = false
+                x = 2
+            submodules:
+                module Test.misc2.x3[0]: Node {
+                }
+                module Test.misc2.x3[1]: Node {
+                }
+                module Test.misc2.x6[0]: Node {
+                }
+                module Test.misc2.x6[1]: Node {
+                }
+                module Test.misc2.dump: testlib.Dump {
+                    parameters:
+                        printClassNames = false
+                }
+        }
+        module Test.dump: testlib.Dump {
+            parameters:
+                printClassNames = false
+        }
+}
+

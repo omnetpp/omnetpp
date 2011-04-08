@@ -655,6 +655,15 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
             if (opp_strcmp(prop->getName(), "dynamic")==0 && NEDElementUtil::propertyAsBool(prop)==true)
                 return;
 
+    // handle conditional submodule
+    ConditionElement *condition = submod->getFirstConditionChild();
+    if (condition)
+    {
+        ExpressionElement *condexpr = findExpression(condition, "condition");
+        if (condexpr && evaluateAsBool(condexpr, modp, false)==false)
+            return;
+    }
+
     // create submodule
     const char *submodname = submod->getName();
     bool usesLike = !opp_isempty(submod->getLikeType());

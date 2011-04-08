@@ -1,3 +1,10 @@
+2011-04-08  Andras Varga
+
+	* implemented conditional submodules (change affects doc/ned/ned2.dtd).
+        Syntax:
+          udp: UDP if needsUDP {...}
+          tcp: <tcpType> like ITCP if needsTCP {...}
+
 2011-03-03  Andras Varga
 
 	* implemented default value for parametric submodule and channel types.

@@ -1099,15 +1099,17 @@ submodule
         ; /* no error recovery rule -- see discussion at top */
 
 submoduleheader
-        : submodulename ':' dottedname
+        : submodulename ':' dottedname opt_condition
                 {
                   ps.submod->setType(removeSpaces(@3).c_str());
+                  if ($4) ps.submod->appendChild($4);
                 }
-        | submodulename ':' likeparam LIKE dottedname
+        | submodulename ':' likeparam LIKE dottedname opt_condition
                 {
                   addOptionalExpression(ps.submod, "like-param", ps.exprPos, $3);
                   ps.submod->setLikeType(removeSpaces(@5).c_str());
                   ps.submod->setIsDefault(ps.isDefault);
+                  if ($6) ps.submod->appendChild($6);
                 }
         ;
 
@@ -1132,6 +1134,13 @@ likeparam
                 { $$ = $2; ps.exprPos = @2; ps.isDefault = false; }
         | '<' DEFAULT '(' expression ')' '>'
                 { $$ = $4; ps.exprPos = @4; ps.isDefault = true; }
+        ;
+
+opt_condition
+        : condition
+                { $$ = $1; }
+        |
+                { $$ = NULL; }
         ;
 
 /*

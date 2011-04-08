@@ -239,8 +239,8 @@ void NEDDTDValidator::validateElement(SubmodulesElement *node)
 
 void NEDDTDValidator::validateElement(SubmoduleElement *node)
 {
-    int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_PARAMETERS,NED_GATES, NED_NULL};
-    char mult[] = {'*','*','?','?', 0};
+    int tags[] = {NED_COMMENT,NED_EXPRESSION,NED_CONDITION,NED_PARAMETERS,NED_GATES, NED_NULL};
+    char mult[] = {'*','*','?','?','?', 0};
     checkSequence(node, tags, mult);
 
     checkRequiredAttribute(node, "name");
