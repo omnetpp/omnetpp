@@ -267,6 +267,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 			    else  // top level type
 			        addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULE_FILTER);
 			}
+            else if (line.matches(".*: *[_A-Za-z0-9]+")) {  // offer condition after type name
+                addProposals(viewer, documentOffset, result, new String[]{"if "}, "keyword");
+            }
 			else if (line.matches(".*: *<")) {  // "like" syntax
 				if (nedTypeInfo!=null)
 					addProposals(viewer, documentOffset, result, nedTypeInfo.getParamDeclarations().keySet(), "parameter");
@@ -280,6 +283,9 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                 else  // top level type
                     addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.MODULEINTERFACE_FILTER);
 			}
+            else if (line.matches(".*\\blike *[_A-Za-z0-9]+")) {  // offer condition after complete "like" phrase
+                addProposals(viewer, documentOffset, result, new String[]{"if "}, "keyword");
+            }
 		}
 
 		if (info.sectionType == SECT_CONNECTIONS) {
