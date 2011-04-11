@@ -53,17 +53,25 @@
       </participant>
    </extension>
 
-  <extension id="inifileproblem" point="org.eclipse.core.resources.markers" name="Inifile Parse Problem">
+  <extension id="baseinifileproblem" point="org.eclipse.core.resources.markers" name="Inifile Problem">
     <!-- Note: the "problemmarker" super class makes it appear in the Navigator and in the Problems view -->
 	<super type="org.eclipse.core.resources.problemmarker"/>
 	<super type="org.eclipse.core.resources.textmarker"/>
 	<persistent value="false"/>
   </extension>
 
-  <extension id="inifileanalyzerproblem" point="org.eclipse.core.resources.markers" name="Inifile Problem">
-    <!-- Note: the "problemmarker" super class makes it appear in the Navigator and in the Problems view -->
-	<super type="org.eclipse.core.resources.problemmarker"/>
-	<super type="org.eclipse.core.resources.textmarker"/>
+  <extension id="inifileproblem" point="org.eclipse.core.resources.markers" name="Inifile Parse Problem">
+	<super type="org.omnetpp.inifile.editor.baseinifileproblem"/>
+	<persistent value="false"/>
+  </extension>
+
+  <extension id="inifileanalyzerproblem" point="org.eclipse.core.resources.markers" name="Inifile Validation Problem">
+	<super type="org.omnetpp.inifile.editor.baseinifileproblem"/>
+	<persistent value="false"/>
+  </extension>
+
+  <extension id="inifileanalyzer2problem" point="org.eclipse.core.resources.markers" name="Inifile Analysis Problem">
+	<super type="org.omnetpp.inifile.editor.baseinifileproblem"/>
 	<persistent value="false"/>
   </extension>
 

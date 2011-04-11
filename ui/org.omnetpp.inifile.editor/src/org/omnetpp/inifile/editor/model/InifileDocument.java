@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -35,7 +33,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
-import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.ned.core.NedResourcesPlugin;
@@ -52,6 +49,7 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
  * @author Andras
  */
 public class InifileDocument implements IInifileDocument {
+    public static final String BASE_INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".baseinifileproblem";
     public static final String INIFILEPROBLEM_MARKER_ID = InifileEditorPlugin.PLUGIN_ID + ".inifileproblem";
 
     private IDocument document; // the document we are manipulating
@@ -128,9 +126,6 @@ public class InifileDocument implements IInifileDocument {
     private IResourceChangeListener resourceChangeListener; // we listen on the workspace
     private INedChangeListener nedChangeListener; // we listen on NED changes
     private InifileChangeListenerList listeners = new InifileChangeListenerList(); // clients that listen on us
-
-    private ProblemMarkerSynchronizer markerSynchronizer; // only used during parse()
-
 
     public InifileDocument(IDocument document, IFile documentFile) {
         this.document = document;
@@ -222,6 +217,7 @@ public class InifileDocument implements IInifileDocument {
      */
     public void dispose() {
         unhookListeners();
+        new InifileProblemMarkerSynchronizer(this, BASE_INIFILEPROBLEM_MARKER_ID).synchronize();
     }
 
     protected void unhookListeners() {
@@ -244,13 +240,7 @@ public class InifileDocument implements IInifileDocument {
             Reader streamReader = new StringReader(document.get());
 
             // collect errors/warnings in a ProblemMarkerSynchronizer
-            markerSynchronizer = new ProblemMarkerSynchronizer(INIFILEPROBLEM_MARKER_ID);
-            markerSynchronizer.register(documentFile);
-
-            // remove markers from include files: needed because an "include" directive
-            // might have gotten deleted from the file since last parsed
-            for (IFile file : includedFiles)
-                markerSynchronizer.register(file);
+            final InifileProblemMarkerSynchronizer markers = new InifileProblemMarkerSynchronizer(this, INIFILEPROBLEM_MARKER_ID);
 
             sections.clear();
             mainFileKeyValueLines.clear();
@@ -298,7 +288,7 @@ public class InifileDocument implements IInifileDocument {
 
                 public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String rawComment) {
                     if (currentSection == null) {
-                        addError(currentFile, lineNumber, "Missing section heading");
+                        markers.addError(currentFile, lineNumber, "Missing section heading");
                         sectionHeadingLine(0, 1, "", ConfigRegistry.GENERAL, ""); // implicit general section, might happen in the main file only
                     }
                     if (currentSectionHeading == null) {
@@ -308,7 +298,7 @@ public class InifileDocument implements IInifileDocument {
                     if (currentSection.entries.containsKey(key)) {
                         KeyValueLine line = currentSection.entries.get(key);
                         String location = (line.file==currentFile ? "" : line.file.getName()+" ") + "line " + line.lineNumber;
-                        addWarning(currentFile, lineNumber, "Duplicate key, ignored (see "+location+")");
+                        markers.addWarning(currentFile, lineNumber, "Duplicate key, ignored (see "+location+")");
                     }
                     else {
                         KeyValueLine line = new KeyValueLine();
@@ -327,7 +317,7 @@ public class InifileDocument implements IInifileDocument {
 
                 public void directiveLine(int lineNumber, int numLines, String rawLine, String directive, String args, String rawComment) {
                     if (!directive.equals("include"))
-                        addError(currentFile, lineNumber, "Unknown directive");
+                        markers.addError(currentFile, lineNumber, "Unknown directive");
                     else {
                         IncludeLine line = new IncludeLine();
                         line.file = currentFile;
@@ -340,21 +330,21 @@ public class InifileDocument implements IInifileDocument {
                         try {
                             IFile file = currentFile.getParent().getFile(new Path(line.includedFile));
                             includedFiles.add(file);
-                            markerSynchronizer.register(file);
+                            markers.register(file);
                             new InifileParser().parse(file, new Callback(file, currentSection));
                         }
                         catch (ParseException e) {
-                            addError(currentFile, e.getLineNumber(), e.getMessage());
+                            markers.addError(currentFile, e.getLineNumber(), e.getMessage());
                         } catch (IOException e) {
-                            addError(currentFile, lineNumber, e.getMessage());
+                            markers.addError(currentFile, lineNumber, e.getMessage());
                         } catch (CoreException e) {
-                            addError(currentFile, lineNumber, e.getMessage());
+                            markers.addError(currentFile, lineNumber, e.getMessage());
                         }
                     }
                 }
 
                 public void parseError(int lineNumber, int numLines, String message) {
-                    addError(currentFile, lineNumber, message);
+                    markers.addError(currentFile, lineNumber, message);
                 }
             }
 
@@ -365,7 +355,7 @@ public class InifileDocument implements IInifileDocument {
                 // cannot happen with string input
             }
             catch (ParseException e) {
-                addError(documentFile, e.getLineNumber(), e.getMessage());
+                markers.addError(documentFile, e.getLineNumber(), e.getMessage());
             }
             Debug.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
 
@@ -377,29 +367,12 @@ public class InifileDocument implements IInifileDocument {
             docCopy = null;
 
             // synchronize detected problems with the file's existing markers
-            markerSynchronizer.runAsWorkspaceJob();
-            markerSynchronizer = null;
+            markers.synchronize();
 
             // NOTE: notify listeners (fireModelChanged()) is NOT done here! It is done
             // when the underlying text document (IDocument) changes, just after we set
             // changed=true.
         }
-    }
-
-    protected void addError(IFile file, int line, String message) {
-        addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_ERROR, message, line);
-    }
-
-    protected void addWarning(IFile file, int line, String message) {
-        addMarker(file, INIFILEPROBLEM_MARKER_ID, IMarker.SEVERITY_WARNING, message, line);
-    }
-
-    private void addMarker(final IFile file, final String type, int severity, String message, int line) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put(IMarker.SEVERITY, severity);
-        map.put(IMarker.LINE_NUMBER, line);
-        map.put(IMarker.MESSAGE, message);
-        markerSynchronizer.addMarker(file, type, map);
     }
 
     public void dump() {
