@@ -9,13 +9,16 @@ package org.omnetpp.common.markers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -48,8 +51,41 @@ public class ProblemMarkerSynchronizer {
     private static boolean debug = true;
 
     protected static class MarkerData {
-		String type;
-		Map<String, Object> attrs;
+        final String type;
+        final HashMap<String, Object> attrs;  // all instances must use the same Map implementation (e.g. HashMap), otherwise hash codes will be incompatible
+
+        public MarkerData(String type, HashMap<String, Object> attrs) {
+            super();
+            Assert.isNotNull(type);
+            Assert.isNotNull(attrs);
+            this.type = type;
+            this.attrs = attrs;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + attrs.hashCode();
+            result = prime * result + type.hashCode();
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            MarkerData other = (MarkerData) obj;
+            if (!attrs.equals(other.attrs))
+                return false;
+            if (!type.equals(other.type))
+                return false;
+            return true;
+        }
 	}
 
 	// data for markers to synchronize
@@ -98,12 +134,12 @@ public class ProblemMarkerSynchronizer {
 	 * Stores data for a marker to be added to the given file (or other resource).
 	 * Implies registerFile().
 	 */
-	public void addMarker(IResource file, String markerType, Map<String, Object> markerAttrs) {
+    public void addMarker(IResource file, String markerType, Map<String, Object> markerAttrs) {
 		register(file);
 
-		MarkerData markerData = new MarkerData();
-		markerData.type = markerType;
-		markerData.attrs = markerAttrs;
+		HashMap<String, Object> markerAttrsHashMap = markerAttrs.getClass().equals(HashMap.class) ? 
+		        (HashMap<String, Object>)markerAttrs : new HashMap<String, Object>(markerAttrs);
+		MarkerData markerData = new MarkerData(markerType, markerAttrsHashMap);
 		markerTable.get(file).add(markerData);
 	}
 
@@ -154,7 +190,6 @@ public class ProblemMarkerSynchronizer {
         }
     }
 
-	@SuppressWarnings("unchecked")
     protected void addRemoveMarkers() throws CoreException {
 
 	    long startTime = System.currentTimeMillis();
@@ -169,40 +204,32 @@ public class ProblemMarkerSynchronizer {
 			    // hence the two maps of maps below.
 
 			    // query existing markers
-			    Map<Map,IMarker> existingMarkerAttrs = new HashMap<Map, IMarker>();
+			    Map<MarkerData,IMarker> existingMarkers = new HashMap<MarkerData, IMarker>();
 			    IMarker[] tmp = file.findMarkers(markerBaseType, true, 0);
-			    for (IMarker marker : tmp) {
-			        // must convert to HashMap, because MarkerAttributesMap calculates hashCode differently
-			        Map attrs = new HashMap();
-			        attrs.putAll(marker.getAttributes());
-			        existingMarkerAttrs.put(attrs, marker);
-			    }
+			    for (IMarker marker : tmp)
+			        if (isManagedByThisSynchronizer(marker))
+			            existingMarkers.put(makeMarkerData(marker), marker);
 
 			    // new markers
 			    List<MarkerData> list = markerTable.get(file);
-			    Map<Map, MarkerData> newMarkerAttrs = new HashMap<Map, MarkerData>();
+			    Set<MarkerData> newMarkers = new HashSet<MarkerData>();
 			    for (MarkerData markerData : list)
-			        newMarkerAttrs.put(markerData.attrs, markerData);
+			        newMarkers.add(markerData);
 
 			    // if changed, synchronize (this "if" is not strictly needed, but improves
 			    // performance of the most common case ("no change")).
-			    // Small issue: attrMaps don't contain the marker type, so we fail to notice
-			    // if a marker has been replaced with one with identical attributes but
-			    // different type -- a very-very unlikely case.
 			    //
-			    if (!newMarkerAttrs.keySet().equals(existingMarkerAttrs.keySet())) {
+			    if (!newMarkers.equals(existingMarkers.keySet())) {
 
 			        // add markers that aren't on IResource yet.
-			        // note: the "..or types not equal" condition adds about 30% to the runtime cost;
-			        // this can be reduced by eliminating double lookups (results in slightly uglier code)
-			        for (Map attrs : newMarkerAttrs.keySet())
-			            if (!existingMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
-			                createMarker(file, newMarkerAttrs.get(attrs));
+			        for (MarkerData newMarker : newMarkers)
+			            if (!existingMarkers.keySet().contains(newMarker))
+			                createMarker(file, newMarker);
 
 			        // remove IResource markers which aren't in our table
-			        for (Map attrs : existingMarkerAttrs.keySet())
-			            if (!newMarkerAttrs.keySet().contains(attrs) || !existingMarkerAttrs.get(attrs).getType().equals(newMarkerAttrs.get(attrs).type))
-			                {existingMarkerAttrs.get(attrs).delete(); markersRemoved++;}
+			        for (MarkerData oldMarker : existingMarkers.keySet())
+			            if (!newMarkers.contains(oldMarker))
+			                {existingMarkers.get(oldMarker).delete(); markersRemoved++;}
 			    }
 			}
 		}
@@ -217,9 +244,27 @@ public class ProblemMarkerSynchronizer {
 		}
 	}
 
+    /**
+     * Decides whether the given marker falls under the authority of this marker synchronizer.
+     * If this method returns false for a marker, the synchronizer will completely ignore that marker.
+     * By default this method returns true, which means that the only filter will be the baseMarkerType 
+     * passed to the constructor. Override e.g. if you have markers coming from different sources 
+     * (and hence managed by different synchronizers) on the same file.
+     */
+    protected boolean isManagedByThisSynchronizer(IMarker marker) throws CoreException {
+        return true;  // by default, this is decided solely by marker type, which is already observed by the IResource.findMarkers() method
+    }
+    
+	@SuppressWarnings("unchecked")
+    protected MarkerData makeMarkerData(IMarker marker) throws CoreException {
+	    MarkerData markerData = new MarkerData(marker.getType(), new HashMap<String, Object>(marker.getAttributes()));
+        return markerData;
+	}
+
 	protected void createMarker(IResource file, MarkerData markerData) throws CoreException {
 		IMarker marker = file.createMarker(markerData.type);
 		marker.setAttributes(markerData.attrs);
+		Assert.isTrue(isManagedByThisSynchronizer(marker)); // we must only create markers that are compatible with this synchronizer
 		markersAdded++;
 	}
 }
