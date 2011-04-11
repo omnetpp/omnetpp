@@ -46,7 +46,7 @@ public class InifileTextUtil {
         int end = offset;
         while (end < keyRegion.getOffset() + keyRegion.getLength() && isPatternChar(textDoc.getChar(end)))
             ++end;
-        return new Region(start+1, end-start-1);
+        return end > start ? new Region(start+1, end-start-1) : null;
     }
     
     /**
