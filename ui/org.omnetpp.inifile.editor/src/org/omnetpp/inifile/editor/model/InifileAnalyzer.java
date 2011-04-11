@@ -38,7 +38,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.Dialog;
@@ -139,7 +138,7 @@ public final class InifileAnalyzer {
 	public static class IterationVariable {
         public String varname; // printable variable name ("x"); null for an unnamed variable
         public String value;   // "1,2,5..10"; never empty
-        public String parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation
+        public String parvar;  // "in parallel to" variable", as in the ${1,2,5..10 ! var} notation, or null
         public String section; // section where it was defined
         public String key;     // key where it was defined
     };
@@ -513,7 +512,19 @@ public final class InifileAnalyzer {
                         if (((SectionData) doc.getSectionData(ancestorSection)).namedIterations.containsKey(var))
                             markers.addError(section, namedIterations.get(var).key, "Redeclaration of iteration variable $"+var+", originally defined in section ["+ancestorSection+"]");
         }
-	    
+
+        // the "${var = ... ! parvar}" syntax (variable plus parallel iteration) is not supported yet
+        for (String section : doc.getSectionNames()) {
+            List<IterationVariable> iterations = ((SectionData) doc.getSectionData(section)).iterations;
+            for (IterationVariable var : iterations) {
+                if (var.parvar != null && !isValidIterationVariable(section, var.parvar))  //XXX this again calculates sectionChain! (sectionChain should be cached in sectionData)
+                    markers.addError(section, var.key, "Unknown iteration variable " + var.parvar);
+                if (var.varname != null && var.parvar != null)
+                    markers.addError(section, var.key, "The ${var=...} and ${...!var} syntaxes cannot be used together");
+                //TODO check whether a ${...!var} line has enough values (at least as many as the variable definition, ${var=...} 
+            }
+        }
+
 	}
 
 	/**
@@ -630,13 +641,14 @@ public final class InifileAnalyzer {
 	    return ParamCollector.resolveNetwork(doc, ned, value);
 	}
 
+	public static final String IDENTIFIER = "[a-zA-Z_][a-zA-Z0-9@_-]*";
 	public final static Pattern
-		DOLLAR_BRACES_PATTERN = Pattern.compile("\\$\\{\\s*(.*?)\\s*\\}"),      // ${...}
-		VARIABLE_DEFINITION_PATTERN = Pattern.compile("[a-zA-Z_][a-zA-Z0-9@_-]*?\\s*=\\s*(.*)\\s*(!\\s*([a-zA-Z0-9@_-]+))?"), // name = values
-		VARIABLE_REFERENCE_PATTERN = Pattern.compile("([a-zA-Z_][a-zA-Z0-9@_-]*)"),             // name only
-		VALUES_PATTERN = Pattern.compile("\\s*(.*?)\\s*(!\\s*[a-zA-Z0-9@_-]+)?"),          // optionally ends with ! var
-		START_END_STEP_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)"),
-		START_END_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)"),
+		DOLLAR_BRACES_PATTERN = Pattern.compile("\\$\\{\\s*(.*?)\\s*\\}"),      // "${...}"
+		VARIABLE_DEFINITION_PATTERN = Pattern.compile(IDENTIFIER + "\\s*=\\s*(.*?)\\s*(!\\s*(" + IDENTIFIER + "))?"), // "<name> = <something> [ ! <var> ]"
+		VARIABLE_REFERENCE_PATTERN = Pattern.compile("(" + IDENTIFIER + ")"),     // name only
+		VALUES_PATTERN = Pattern.compile("\\s*(.*?)\\s*(!\\s*" + IDENTIFIER + "+)?"),    // something that optionally ends with "! <var>"
+		START_END_STEP_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)"),  // "<from> .. <to> step <incr>"  
+		START_END_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)"),  // "<from> .. <to>"
 		ANY_VALUE_PATTERN = Pattern.compile("(.*)");
 	
 	protected boolean validateValueWithIterationVars(String section, String key, String value) {
@@ -660,7 +672,7 @@ public final class InifileAnalyzer {
 		// validate the first 100 values that come from iterating the constants in the variable definitions
 		if (foundAny && validateValues) {
 		    try {
-		        IterationVariablesIterator values = new IterationVariablesIterator(value);
+		        IterationVariablesIterator values = new IterationVariablesIterator(value);  // iterates over all ${} occurrences
 		        int count = 0;
 		        while (values.hasNext() && count < 100) {
 		            String v = values.next();
@@ -906,19 +918,18 @@ public final class InifileAnalyzer {
 
 		public IterationVariableIterator(String iteration) {
 			Matcher m = DOLLAR_BRACES_PATTERN.matcher(iteration);
-			if (!m.matches())
-				throw new IllegalArgumentException("Illegal iteration");
+			Assert.isTrue(m.matches()); // must be called with strings that start with "${" and end with "}"
 
 			String content = m.group(1);
-			if ((m = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches())
+			if ((m = VARIABLE_DEFINITION_PATTERN.matcher(content)).matches())  // ${a=...}
 				values = m.group(1);
-			else if ((m=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches())
+			else if ((m=VARIABLE_REFERENCE_PATTERN.matcher(content)).matches()) // ${a}
 				// TODO follow the reference?
 				values = "";
-			else if ((m = VALUES_PATTERN.matcher(content)).matches())
+			else if ((m = VALUES_PATTERN.matcher(content)).matches()) // ${...}
 			    values = m.group(1);
-			else // anonymous iteration
-				values = content;
+			else
+				Assert.isTrue(false); // cannot happen (VALUES_PATTERN eats anything)
 			reset();
 		}
 
