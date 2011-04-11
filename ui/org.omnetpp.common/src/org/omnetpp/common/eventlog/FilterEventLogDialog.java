@@ -859,8 +859,7 @@ public class FilterEventLogDialog
 			@Override
             public String getText(Object element) {
 				ModuleTreeItem moduleTreeItem = eventLogInput.getModuleTreeRoot().findDescendantModule((Integer)element);
-
-				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath();
+				return "(id = " + moduleTreeItem.getModuleId() + ") " + moduleTreeItem.getModuleFullPath() + " (" + moduleTreeItem.getNedTypeName() + ")";
 			}
 		});
         moduleIds.addSelectionChangedListener(new ISelectionChangedListener() {

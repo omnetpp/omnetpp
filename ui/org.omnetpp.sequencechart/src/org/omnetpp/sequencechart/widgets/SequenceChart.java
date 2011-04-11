@@ -4192,7 +4192,7 @@ public class SequenceChart
         String moduleName = (formatted ? axisModule.getModuleFullPath() : axisModule.getModuleName());
         String moduleId = " (id = " + axisModule.getModuleId() + ")";
 
-        return "Axis (" + axisModule.getModuleClassName() + ") " + boldStart + moduleName + boldEnd + moduleId;
+        return "Axis (" + axisModule.getNedTypeName() + ") " + boldStart + moduleName + boldEnd + moduleId;
 	}
 
 	/**
