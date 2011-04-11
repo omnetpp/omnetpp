@@ -630,6 +630,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                 AnimationConfigurationDialog configurationDialog = new AnimationConfigurationDialog(Display.getCurrent().getActiveShell(), animationController.getAnimationParameters());
                 long eventNumber = animationController.getCurrentEventNumber();
                 if (configurationDialog.open() == Window.OK) {
+                    animationController.clearInternalState();
                     animationController.gotoEventNumber(eventNumber);
                     animationPositionContribution.configureSlider();
                     AnimationContributor.this.update();

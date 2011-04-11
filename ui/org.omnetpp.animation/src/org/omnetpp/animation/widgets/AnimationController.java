@@ -1398,7 +1398,6 @@ public class AnimationController {
             if (eventEntry.getModuleId() == 1 || isSubmoduleVisible(eventEntry.getModuleId())) {
                 if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                     if (animationParameters.enableHandleMessageAnimations) {
-                        double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                         HandleMessageAnimation animationPrimitive = new HandleMessageAnimation(this, event.getEventNumber(), event.getModuleId());
                         animationPrimitive.setBeginEventNumber(eventNumber);
                         animationPrimitive.setEndEventNumber(eventNumber);
@@ -1408,7 +1407,7 @@ public class AnimationController {
                         animationPrimitive.setSourceEventNumber(eventNumber);
                         animationPrimitives.add(animationPrimitive);
                         animationPrimitiveContext.handleMessageAnimation = animationPrimitive;
-                        animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                        animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.handleMessageAnimationShift;
                     }
                 }
                 else {
@@ -1417,8 +1416,7 @@ public class AnimationController {
                         double relativeBeginAnimationTime = animationPrimitiveContext.handleMessageAnimation.getFrameRelativeBeginAnimationTime();
                         animationPrimitiveContext.handleMessageAnimation.setAnimationTimeDuration(animationPrimitiveContext.frameRelativeAnimationTime - relativeBeginAnimationTime);
                     }
-                    double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.handleMessageAnimationShift;
                 }
             }
         }
@@ -1445,6 +1443,7 @@ public class AnimationController {
                 animationPrimitive.setBeginEventNumber(eventNumber);
                 animationPrimitive.setBeginSimulationTime(simulationTime);
                 animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createModuleAnimationShift;
                 animationPrimitive.setSourceEventNumber(eventNumber);
                 animationPrimitives.add(animationPrimitive);
             }
@@ -1458,6 +1457,7 @@ public class AnimationController {
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setModuleDisplayStringAnimationShift;
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
@@ -1490,6 +1490,7 @@ public class AnimationController {
                 animationPrimitive.setBeginEventNumber(eventNumber);
                 animationPrimitive.setBeginSimulationTime(simulationTime);
                 animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createConnectionAnimationShift;
                 animationPrimitive.setSourceEventNumber(eventNumber);
                 animationPrimitives.add(animationPrimitive);
             }
@@ -1510,6 +1511,7 @@ public class AnimationController {
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setConnectionDisplayStringAnimationShift;
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
@@ -1526,6 +1528,7 @@ public class AnimationController {
                     animationPrimitive.setAnimationTimeDuration(0.0);
                     animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.bubbleAnimationShift;
                     animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
@@ -1544,7 +1547,7 @@ public class AnimationController {
                     animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                     animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.moduleMethodCallAnimationShift;
                     animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
@@ -1573,7 +1576,7 @@ public class AnimationController {
                             animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                             animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                            animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleSelfMessageAnimationShift;
                             animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(animationPrimitive);
@@ -1591,7 +1594,6 @@ public class AnimationController {
                             if (simulationTimeDuration.equals(BigDecimal.getZero())) {
                                 double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                                 animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
-                                animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
                                 animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             }
                             else
@@ -1623,7 +1625,7 @@ public class AnimationController {
                             animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                             animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                            animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleDirectAnimationShift;
                             animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(animationPrimitive);
@@ -1677,7 +1679,7 @@ public class AnimationController {
                         animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                         animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                         animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                        animationPrimitiveContext.frameRelativeAnimationTime += animationTimeDuration;
+                        animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleMessageAnimationShift;
                         animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitive.setSourceEventNumber(eventNumber);
                         animationPrimitives.add(animationPrimitive);
