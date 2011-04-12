@@ -10,10 +10,14 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 /**
+ * This class provides a mapping between animation times and event numbers. The
+ * animation time between two subsequent events is determined by a linear
+ * interpolation of their simulation times. If the simulation times are equal
+ * for the two events, then the mapping is not bijective.
  *
  * @author levy
  */
-// TODO: binary search
+// TODO: binary search all over the place
 public class AnimationCoordinateSystem {
     private EventLogInput eventLogInput;
 
