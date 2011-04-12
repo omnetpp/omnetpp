@@ -19,7 +19,6 @@ import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -46,7 +45,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
@@ -104,10 +102,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     private AnimationAction stopAction;
     private AnimationAction copyToClipboardAction;
     private AnimationAction refreshAction;
-    private AnimationAction layoutAction;
     private AnimationAction configureAction;
     private AnimationAction pinAction;
-    private StatusLineContributionItem animationStatus;
     private AnimationPositionContribution animationPositionContribution;
 
 	/*************************************************************************************
@@ -129,10 +125,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         this.stopAction = createStopAction();
         this.copyToClipboardAction = createCopyToClipboardAction();
         this.refreshAction = createRefreshAction();
-        this.layoutAction = createLayoutAction();
         this.configureAction = createConfigureAction();
         this.pinAction = createPinAction();
-		this.animationStatus = createAnimationStatus();
 		this.animationPositionContribution = createAnimationPositionContribution();
 
 		if (singleton == null)
@@ -209,7 +203,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                 menuManager.add(pinAction);
                 menuManager.add(copyToClipboardAction);
                 menuManager.add(refreshAction);
-                //menuManager.add(layoutAction);
                 menuManager.add(separatorAction);
 
                 menuManager.add(showInSubmenu);
@@ -243,12 +236,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             toolBarManager.add(pinAction);
         toolBarManager.add(animationPositionContribution);
 	}
-
-    @Override
-    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
-        // TODO: remove? AnimationTimeline shows the same information already...
-    	// statusLineManager.add(animationStatus);
-    }
 
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
@@ -560,7 +547,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private CommandContributionItem createGotoEventCommandContributionItem() {
-        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.animation.gotoEvent", SWT.PUSH));
+        return new CommandContributionItem(new CommandContributionItemParameter(PlatformUI.getWorkbench(), null, "org.omnetpp.animation.gotoEvent", SWT.PUSH));
     }
 
     public static class GotoEventHandler extends AbstractHandler {
@@ -578,7 +565,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private CommandContributionItem createGotoSimulationTimeCommandContributionItem() {
-        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.animation.gotoSimulationTime", SWT.PUSH));
+        return new CommandContributionItem(new CommandContributionItemParameter(PlatformUI.getWorkbench(), null, "org.omnetpp.animation.gotoSimulationTime", SWT.PUSH));
     }
 
     public static class GotoSimulationTimeHandler extends AbstractHandler {
@@ -609,15 +596,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             @Override
             protected void doRun() {
                 animationCanvas.getAnimationController().refreshAnimation();
-            }
-        };
-    }
-
-    private AnimationAction createLayoutAction() {
-        return new AnimationAction("Layout", Action.AS_PUSH_BUTTON) {
-            @Override
-            protected void doRun() {
-                // TODO:
             }
         };
     }
@@ -658,19 +636,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             }
         };
     }
-
-    private StatusLineContributionItem createAnimationStatus() {
-        return new StatusLineContributionItem("Animation", true, 64) {
-			@Override
-		    public void update() {
-			    AnimationController animationController = animationCanvas.getAnimationController();
-			    if (animationController.getCurrentAnimationPosition().isCompletelySpecified())
-			        setText("#" + animationController.getCurrentEventNumber() + " " + animationController.getCurrentSimulationTime() + "s " + animationController.getCurrentAnimationTime());
-			    else
-			        setText("");
-		    }
-		};
-	}
 
     private AnimationPositionContribution createAnimationPositionContribution() {
         return new AnimationPositionContribution("AnimationPositionContribution");
