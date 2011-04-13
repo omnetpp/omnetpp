@@ -41,6 +41,7 @@ public class AnimationCompoundModuleFigure extends Figure {
         closer.addMouseListener(new MouseListener() {
             public void mousePressed(MouseEvent me) {
                 removeFigure();
+                AnimationCompoundModuleFigure.this.animationController.clearInternalState();
             }
 
             public void mouseReleased(MouseEvent me) {

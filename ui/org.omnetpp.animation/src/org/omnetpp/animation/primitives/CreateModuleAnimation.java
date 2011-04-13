@@ -73,6 +73,12 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
                             animationController.stopAnimation();
 				            long eventNumber = animationController.getCurrentEventNumber();
                             animationCanvas.addShownCompoundModule(module.getId());
+                            AnimationCompoundModuleFigure animationCompoundModuleFigure = animationCanvas.findAnimationCompoundModuleFigure(module.getId());
+                            if (animationCompoundModuleFigure != null)
+                                animationCompoundModuleFigure.setCompoundModuleFigure(compoundModuleFigure);
+                            else
+                                animationCanvas.addFigure(new AnimationCompoundModuleFigure(animationController, compoundModuleFigure, module.getId(), module.getFullPath()));
+                            animationController.clearInternalState();
                             animationController.gotoEventNumber(eventNumber);
 				        }
 				        else
