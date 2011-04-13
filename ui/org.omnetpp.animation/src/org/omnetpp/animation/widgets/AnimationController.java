@@ -177,8 +177,19 @@ public class AnimationController {
      */
     private AnimationPosition stopAnimationPosition;
 
+    /**
+     * The animation position for the very beginning of the whole animation.
+     */
     private AnimationPosition beginAnimationPosition;
+
+    /**
+     * The animation position for the first event in the animation.
+     */
     private AnimationPosition firstEventAnimationPosition;
+
+    /**
+     * The animation position for the very end of the whole animation.
+     */
     private AnimationPosition endAnimationPosition;
 
     /**
@@ -469,7 +480,7 @@ public class AnimationController {
         currentAnimationPosition = animationPosition;
         loadAnimationPrimitivesForAnimationPosition(animationPosition);
         if (currentAnimationPosition.getFrameRelativeAnimationTime() == null) {
-            // TODO: KLUDGE: FIMXE: really here? really this simple?
+            // TODO: KLUDGE: FIXME: really here? really this simple?
             long eventNumber = currentAnimationPosition.getEventNumber();
             IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
             double animationTime = coordinateSystem.getAnimationTime(event);
@@ -481,7 +492,7 @@ public class AnimationController {
     }
 
     /**
-     * Returns the animation position for the very beginning.
+     * Returns the animation position for the very beginning of the whole animation.
      */
     public AnimationPosition getBeginAnimationPosition() {
         if (!beginAnimationPosition.isCompletelySpecified())
@@ -490,7 +501,7 @@ public class AnimationController {
     }
 
     /**
-     * Returns the animation position for the first event.
+     * Returns the animation position for the first event in the animation.
      */
     public AnimationPosition getFirstEventAnimationPosition() {
         if (!firstEventAnimationPosition.isCompletelySpecified())
@@ -499,17 +510,20 @@ public class AnimationController {
     }
 
     /**
-     * Returns the animation position for the very end.
+     * Returns the animation position for the very end of the whole animation.
+     * If the simulation is continued and the eventlog file is appended, it is
+     * guaranteed that the animation will not change up to this position.
+     * Therefore this animation position cannot be beyond the last event's
+     * simulation time, because that part is not yet final.
      */
     public AnimationPosition getEndAnimationPosition() {
         if (!endAnimationPosition.isCompletelySpecified()) {
             IEvent lastEvent = eventLogInput.getEventLog().getLastEvent();
             BigDecimal simulationTime = lastEvent.getSimulationTime();
-            loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), lastEvent.getSimulationTime(), null, null));
+            loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), simulationTime, null, null));
             for (int i = endAnimationTimeOrderedPrimitives.size() - 1; i >= 0; i--) {
                 IAnimationPrimitive animationPrimitive = endAnimationTimeOrderedPrimitives.get(i);
                 AnimationPosition endAnimationPosition = animationPrimitive.getEndAnimationPosition();
-                // TODO: can we return a position beyond the last event's animation time? that might violate causality, because those things are not final yet
                 if (endAnimationPosition.getSimulationTime().lessOrEqual(simulationTime) && !endAnimationPosition.getFrameRelativeAnimationTime().isInfinite()) {
                     this.endAnimationPosition = endAnimationPosition;
                     break;
@@ -886,7 +900,7 @@ public class AnimationController {
 			    double animationTime = getAnimationTimeForRealTime(getCurrentRealTime());
 			    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(null, null, null, animationTime));
 		        if (isPlayingForward && getEndAnimationPosition().getOriginRelativeAnimationTime() <= animationTime)
-                  gotoEndAnimationPosition();
+		            gotoEndAnimationPosition();
 		        else if (!isPlayingForward && animationTime <= getBeginAnimationPosition().getOriginRelativeAnimationTime())
 			        gotoBeginAnimationPosition();
 		        else if (stopAnimationPosition.isCompletelySpecified() && (isPlayingForward ? stopAnimationPosition.getOriginRelativeAnimationTime() <= animationTime : stopAnimationPosition.getOriginRelativeAnimationTime() >= animationTime))
@@ -1146,30 +1160,38 @@ public class AnimationController {
         long begin = System.currentTimeMillis();
         IEventLog eventLog = animationCanvas.getEventLog();
         if (eventLog != null && !eventLog.isEmpty()) {
-            if (animationPosition.getEventNumber() != null) {
-                int keyframeBlockSize = eventLog.getKeyframeBlockSize();
-                int keyframeBlockIndex = (int)(animationPosition.getEventNumber() / keyframeBlockSize);
-                long firstEventNumber = keyframeBlockIndex * keyframeBlockSize;
-                long lastEventNumber = firstEventNumber + keyframeBlockSize - 1;
-                IEvent firstEvent = eventLog.getEventForEventNumber(firstEventNumber);
-                IEvent lastEvent = eventLog.getEventForEventNumber(lastEventNumber);
-                if (lastEvent == null)
-                    lastEvent = eventLog.getLastEvent();
-                ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
-                animationPrimitives.addAll(collectAnimationPrimitivesForKeyframeSimulationState(firstEvent));
-                animationPrimitives.addAll(collectAnimationPrimitivesForEvents(firstEvent, lastEvent));
-                if (!animationPrimitives.isEmpty()) {
-                    animationPrimitives.addAll(beginAnimationTimeOrderedPrimitives);
-                    calculateAnimationTimes(animationPrimitives);
-                    calculateBeginAnimationTimeOrderedPrimitives(animationPrimitives);
-                    calculateEndAnimationTimeOrderedPrimitives(animationPrimitives);
+            Long eventNumber = animationPosition.getEventNumber();
+            if (eventNumber != null) {
+                if (eventNumberToFrameRelativeAnimationTime.get(eventNumber) == null) {
+                    int keyframeBlockSize = eventLog.getKeyframeBlockSize();
+                    int keyframeBlockIndex = (int)(eventNumber / keyframeBlockSize);
+                    long firstEventNumber = keyframeBlockIndex * keyframeBlockSize;
+                    long lastEventNumber = firstEventNumber + keyframeBlockSize - 1;
+                    IEvent firstEvent = eventLog.getEventForEventNumber(firstEventNumber);
+                    IEvent lastEvent = eventLog.getEventForEventNumber(lastEventNumber);
+                    if (lastEvent == null)
+                        lastEvent = eventLog.getLastEvent();
+                    ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
+                    animationPrimitives.addAll(collectAnimationPrimitivesForKeyframeSimulationState(firstEvent));
+                    animationPrimitives.addAll(collectAnimationPrimitivesForEvents(firstEvent, lastEvent));
+                    if (!animationPrimitives.isEmpty()) {
+                        animationPrimitives.addAll(beginAnimationTimeOrderedPrimitives);
+                        calculateAnimationTimes(animationPrimitives);
+                        calculateBeginAnimationTimeOrderedPrimitives(animationPrimitives);
+                        calculateEndAnimationTimeOrderedPrimitives(animationPrimitives);
+                    }
                 }
             }
-            else {
-                // TODO: we don't seem to get here, because even during playing
+            else if (animationPosition.getOriginRelativeAnimationTime() != null) {
+                // TODO: KLUDGE: FIXME: we don't seem to get here, because even during playing
                 // the animation event numbers are always present in the
                 // animation position
+                // if (getCurrentEventNumber() == 999)
+                //    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(1000L, null, null, null));
+                // Assert.isTrue(false);
             }
+            else
+                throw new RuntimeException("Animation posisiton is unspecified");
         }
         if (debug)
             System.out.println("loadAnimationPrimitivesForAnimationPosition:" + (System.currentTimeMillis() - begin) + "ms");
@@ -1423,33 +1445,36 @@ public class AnimationController {
         else if (eventLogEntry instanceof ModuleCreatedEntry) {
             if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 ModuleCreatedEntry moduleCreatedEntry = (ModuleCreatedEntry)eventLogEntry;
+                int moduleId = moduleCreatedEntry.getModuleId();
                 int parentModuleId = moduleCreatedEntry.getParentModuleId();
                 EventLogModule parentModule = parentModuleId == -1 ? null : simulation.getModuleById(parentModuleId);
-                EventLogModule module = simulation == null ? null : simulation.getModuleById(moduleCreatedEntry.getModuleId());
+                EventLogModule module = simulation == null ? null : simulation.getModuleById(moduleId);
                 if (module == null) {
                     module = new EventLogModule(parentModule);
-                    module.setId(moduleCreatedEntry.getModuleId());
+                    module.setId(moduleId);
                     module.setName(moduleCreatedEntry.getFullName());
                     module.setTypeName(moduleCreatedEntry.getNedTypeName());
                     module.setClassName(moduleCreatedEntry.getModuleClassName());
                     if (simulation == null) {
                         simulation = new AnimationSimulation(module);
-                        animationCanvas.addShownCompoundModule(moduleCreatedEntry.getModuleId());
+                        animationCanvas.addShownCompoundModule(moduleId);
                     }
                     else
                         simulation.addModule(module);
                 }
-                CreateModuleAnimation animationPrimitive = new CreateModuleAnimation(this, module, parentModuleId);
-                animationPrimitive.setBeginEventNumber(eventNumber);
-                animationPrimitive.setBeginSimulationTime(simulationTime);
-                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createModuleAnimationShift;
-                animationPrimitive.setSourceEventNumber(eventNumber);
-                animationPrimitives.add(animationPrimitive);
+                if (isSubmoduleVisible(moduleId) || isCompoundModuleVisible(moduleId)) {
+                    CreateModuleAnimation animationPrimitive = new CreateModuleAnimation(this, module, parentModuleId);
+                    animationPrimitive.setBeginEventNumber(eventNumber);
+                    animationPrimitive.setBeginSimulationTime(simulationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createModuleAnimationShift;
+                    animationPrimitive.setSourceEventNumber(eventNumber);
+                    animationPrimitives.add(animationPrimitive);
+                }
             }
         }
         else if (eventLogEntry instanceof ModuleDisplayStringChangedEntry) {
-            if (animationParameters.enableSetModuleDisplayStringAnimations && !animationPrimitiveContext.isCollectingHandleMessageAnimations) {
+            if (animationParameters.enableSetModuleDisplayStringAnimations && animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 ModuleDisplayStringChangedEntry moduleDisplayStringChangedEntry = (ModuleDisplayStringChangedEntry)eventLogEntry;
                 if (isSubmoduleVisible(moduleDisplayStringChangedEntry.getModuleId())) {
                     DisplayString displayString = new DisplayString(moduleDisplayStringChangedEntry.getDisplayString());
@@ -1466,42 +1491,50 @@ public class AnimationController {
         else if (eventLogEntry instanceof GateCreatedEntry) {
             if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 GateCreatedEntry gateCreatedEntry = (GateCreatedEntry)eventLogEntry;
-                EventLogModule module = simulation.getModuleById(gateCreatedEntry.getModuleId());
-                EventLogGate gate = new EventLogGate(module, gateCreatedEntry.getGateId());
-                gate.setName(gateCreatedEntry.getName());
-                gate.setIndex(gateCreatedEntry.getIndex());
-                module.addGate(gate);
-                CreateGateAnimation animationPrimitive = new CreateGateAnimation(this, gate);
-                animationPrimitive.setBeginEventNumber(eventNumber);
-                animationPrimitive.setBeginSimulationTime(simulationTime);
-                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                animationPrimitive.setSourceEventNumber(eventNumber);
-                animationPrimitives.add(animationPrimitive);
+                int moduleId = gateCreatedEntry.getModuleId();
+                if (isSubmoduleVisible(moduleId) || isCompoundModuleVisible(moduleId)) {
+                    EventLogModule module = simulation.getModuleById(moduleId);
+                    EventLogGate gate = new EventLogGate(module, gateCreatedEntry.getGateId());
+                    gate.setName(gateCreatedEntry.getName());
+                    gate.setIndex(gateCreatedEntry.getIndex());
+                    module.addGate(gate);
+                    CreateGateAnimation animationPrimitive = new CreateGateAnimation(this, gate);
+                    animationPrimitive.setBeginEventNumber(eventNumber);
+                    animationPrimitive.setBeginSimulationTime(simulationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitive.setSourceEventNumber(eventNumber);
+                    animationPrimitives.add(animationPrimitive);
+                }
             }
         }
         else if (eventLogEntry instanceof ConnectionCreatedEntry) {
             if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 ConnectionCreatedEntry connectionCreatedEntry = (ConnectionCreatedEntry)eventLogEntry;
-                EventLogModule sourceModule = simulation.getModuleById(connectionCreatedEntry.getSourceModuleId());
-                EventLogGate sourceGate = sourceModule.getGateById(connectionCreatedEntry.getSourceGateId());
-                EventLogModule destinationModule = simulation.getModuleById(connectionCreatedEntry.getDestModuleId());
-                EventLogGate destinationGate = destinationModule.getGateById(connectionCreatedEntry.getDestGateId());
-                CreateConnectionAnimation animationPrimitive = new CreateConnectionAnimation(this, new EventLogConnection(sourceModule, sourceGate, destinationModule, destinationGate));
-                animationPrimitive.setBeginEventNumber(eventNumber);
-                animationPrimitive.setBeginSimulationTime(simulationTime);
-                animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createConnectionAnimationShift;
-                animationPrimitive.setSourceEventNumber(eventNumber);
-                animationPrimitives.add(animationPrimitive);
+                int sourceModuleId = connectionCreatedEntry.getSourceModuleId();
+                int destinationModuleId = connectionCreatedEntry.getDestModuleId();
+                if ((isSubmoduleVisible(sourceModuleId) || isCompoundModuleVisible(sourceModuleId)) && (isSubmoduleVisible(destinationModuleId) || isCompoundModuleVisible(destinationModuleId))) {
+                    EventLogModule sourceModule = simulation.getModuleById(sourceModuleId);
+                    EventLogGate sourceGate = sourceModule.getGateById(connectionCreatedEntry.getSourceGateId());
+                    EventLogModule destinationModule = simulation.getModuleById(destinationModuleId);
+                    EventLogGate destinationGate = destinationModule.getGateById(connectionCreatedEntry.getDestGateId());
+                    CreateConnectionAnimation animationPrimitive = new CreateConnectionAnimation(this, new EventLogConnection(sourceModule, sourceGate, destinationModule, destinationGate));
+                    animationPrimitive.setBeginEventNumber(eventNumber);
+                    animationPrimitive.setBeginSimulationTime(simulationTime);
+                    animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createConnectionAnimationShift;
+                    animationPrimitive.setSourceEventNumber(eventNumber);
+                    animationPrimitives.add(animationPrimitive);
+                }
             }
         }
         else if (eventLogEntry instanceof ConnectionDisplayStringChangedEntry) {
-            if (animationParameters.enableSetConnectionDisplayStringAnimations && !animationPrimitiveContext.isCollectingHandleMessageAnimations) {
+            if (animationParameters.enableSetConnectionDisplayStringAnimations && animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 ConnectionDisplayStringChangedEntry connectionDisplayStringChangedEntry = (ConnectionDisplayStringChangedEntry)eventLogEntry;
-                if (isSubmoduleVisible(connectionDisplayStringChangedEntry.getSourceModuleId())) {
+                int sourceModuleId = connectionDisplayStringChangedEntry.getSourceModuleId();
+                if (isSubmoduleVisible(sourceModuleId) || isCompoundModuleVisible(sourceModuleId)) {
                     DisplayString displayString = new DisplayString(connectionDisplayStringChangedEntry.getDisplayString());
                     int sourceGateId = connectionDisplayStringChangedEntry.getSourceGateId();
-                    EventLogModule ownerModule = simulation.getModuleById(connectionDisplayStringChangedEntry.getSourceModuleId());
+                    EventLogModule ownerModule = simulation.getModuleById(sourceModuleId);
                     EventLogGate sourceGate = ownerModule.getGateById(sourceGateId);
                     if (sourceGate == null) {
                         sourceGate = new EventLogGate(ownerModule, sourceGateId);
@@ -1518,14 +1551,13 @@ public class AnimationController {
             }
         }
         else if (eventLogEntry instanceof BubbleEntry) {
-            if (animationParameters.enableBubbleAnimations && !animationPrimitiveContext.isCollectingHandleMessageAnimations) {
+            if (animationParameters.enableBubbleAnimations && animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                 BubbleEntry bubbleEntry = (BubbleEntry)eventLogEntry;
                 if (isSubmoduleVisible(bubbleEntry.getModuleId())) {
                     BubbleAnimation animationPrimitive = new BubbleAnimation(this, bubbleEntry.getText(), bubbleEntry.getModuleId());
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setEndEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
-                    animationPrimitive.setAnimationTimeDuration(0.0);
                     animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.bubbleAnimationShift;
