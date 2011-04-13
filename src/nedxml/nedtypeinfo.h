@@ -160,8 +160,9 @@ class NEDXML_API NEDTypeInfo
     virtual bool isNetwork() const;
 
     /**
-     * For simple modules and channels, it returns the name of the C++ class that
-     * has to be instantiated; otherwise it returns NULL.
+     * For modules and channels, it returns the name of the C++ class that
+     * has to be instantiated (for compound modules this defaults to
+     * "cCompoundModule"); for interface types it returns NULL.
      */
     virtual const char *implementationClassName() const;
 

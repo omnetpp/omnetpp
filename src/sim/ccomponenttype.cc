@@ -41,6 +41,7 @@ cComponentType::cComponentType(const char *qname) : cNoncopyableOwnedObject(qnam
     qualifiedName = qname;
     const char *lastDot = strrchr(qname, '.');
     setName(!lastDot ? qname : lastDot + 1);
+    availabilityTested = available = false;
 }
 
 cComponentType::~cComponentType()
@@ -96,6 +97,17 @@ void cComponentType::putSharedParImpl(cParImpl *value)
     ASSERT(sharedParSet.find(value)==sharedParSet.end()); // not yet in there
     value->setIsShared(true);
     sharedParSet.insert(value);
+}
+
+bool cComponentType::isAvailable()
+{
+    if (!availabilityTested)
+    {
+        const char *className = getImplementationClassName();
+        available = classes.getInstance()->lookup(className) != NULL;
+        availabilityTested = true;
+    }
+    return available;
 }
 
 //----

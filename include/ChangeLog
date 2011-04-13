@@ -1,6 +1,6 @@
 2011-04-04  Andras Varga
 
-	* cRegistrationList::get() renamed to find(), for consistency with 
+	* cRegistrationList::get() renamed to find(), for consistency with
 	other, similarly named methods
 
 2011-04-04  Andras Varga

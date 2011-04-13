@@ -95,6 +95,12 @@ std::string cDynamicChannelType::getPackageProperty(const char *name) const
     return decl->getPackageProperty(name);
 }
 
+const char *cDynamicChannelType::getImplementationClassName() const
+{
+    cNEDDeclaration *decl = getDecl();
+    return decl->implementationClassName();
+}
+
 bool cDynamicChannelType::isInnerType() const
 {
     cNEDDeclaration *decl = getDecl();

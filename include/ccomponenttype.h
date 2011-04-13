@@ -47,6 +47,8 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
 {
   protected:
     std::string qualifiedName;
+    bool availabilityTested;
+    bool available;
 
     typedef std::map<std::string, cParImpl *> StringToParMap;
     StringToParMap sharedParMap;
@@ -81,6 +83,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
     // we need the runtime type not the NED type of the submodule.)
     virtual cProperties *getConnectionProperties(int connectionId, const char *channelType) const = 0;
 
+    // internal: returns the name of the C++ class that implements this NED type
+    virtual const char *getImplementationClassName() const = 0;
+
     // internal: sharedParMap access
     cParImpl *getSharedParImpl(const char *key) const;
     void putSharedParImpl(const char *key, cParImpl *value);
@@ -92,6 +97,9 @@ class SIM_API cComponentType : public cNoncopyableOwnedObject
   public:
     // internal: delegates to the similar NedTypeInfo method
     virtual std::string getPackageProperty(const char *name) const {return "";}
+
+    // internal: checks whether this type is available; currently tests the existence of the implementation class
+    virtual bool isAvailable();
 
     // internal: delegates to the similar NedTypeInfo method
     virtual bool isInnerType() const {return false;}

@@ -1,5 +1,13 @@
 2011-04-13  Andras Varga
 
+	* nedfunctions.cc: added firstAvailable() NED function. It accepts
+	a number of strings (varargs), interprets them as NED type names
+	(either short names or fully qualified names), and returns the first
+	one that exists and is also "available" (i.e. the C++ implementation
+	class exists, see cComponentType::isAvailable())
+
+2011-04-05  Andras Varga
+
 	* NED functions (cNEDFunction class, Define_NED_Function() and
 	Define_NED_Function2() macros): implemented varargs support. 
 	If the signature ends in ", ..." then the function will accept

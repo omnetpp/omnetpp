@@ -720,7 +720,7 @@ DEF(nedf_firstAvailable,
         c = dynamic_cast<cComponentType *>(types->lookup(name)); // by qualified name
         if (c && c->isAvailable())
             return argv[i];
-        c = dynamic_cast<cComponentType *>(types->get(name)); // by simple name
+        c = dynamic_cast<cComponentType *>(types->find(name)); // by simple name
         if (c && c->isAvailable())
             return argv[i];
     }

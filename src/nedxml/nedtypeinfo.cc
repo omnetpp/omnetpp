@@ -107,7 +107,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
         enclosingTypeName = std::string(qname, lastDot-qname);
     }
 
-    // resolve C++ class name
+    // resolve C++ class name for modules/channels; for interfaces it remains empty
     if (getType()==SIMPLE_MODULE || getType()==COMPOUND_MODULE || getType()==CHANNEL)
     {
         // Note: @class() be used to override inherited implementation class.
@@ -123,7 +123,7 @@ NEDTypeInfo::NEDTypeInfo(NEDResourceCache *resolver, const char *qname, bool isI
             implClassName = opp_join("::", getCxxNamespace().c_str(), getName());
     }
 
-    // TODO that parameter, gate, submodule and inner type declarations don't conflict with those in super types
+    // TODO check that parameter, gate, submodule and inner type declarations don't conflict with those in super types
 }
 
 NEDTypeInfo::~NEDTypeInfo()
