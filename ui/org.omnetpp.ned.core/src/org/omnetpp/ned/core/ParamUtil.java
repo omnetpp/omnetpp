@@ -11,6 +11,7 @@ import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -224,7 +225,7 @@ public class ParamUtil {
             else if (connection.getSrcGatePlusplus())
                 gateIndex = "*";
 
-            String gateName = connection.getGateNameWithIndex(connection.getSrcGate(), connection.getSrcGateSubg(), gateIndex, false);
+            String gateName = ConnectionElementEx.getGateNameWithIndex(connection.getSrcGate(), connection.getSrcGateSubg(), gateIndex, false);
             String moduleName = connection.getSrcModule();
             String moduleIndex = "";
 
@@ -287,7 +288,12 @@ public class ParamUtil {
         }
 
         public String resolveLikeType(ISubmoduleOrConnection element) {
-            // TODO: at least look at the NED param assignments
+            // note: we can only make a local decision here; we also ignore getIsDefault()
+            String expr = element.getLikeParam();  
+            if (expr.charAt(0)=='"')
+                return expr.substring(1, expr.length()-1); //FIXME proper unquoting!!!
+            else if (expr.startsWith("firstAvailable("))
+                return "FIXME TODO";
             return null;
         }
 

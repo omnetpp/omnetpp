@@ -235,7 +235,7 @@ public class NedTreeUtil {
 		INedElement pojoTree = doSwig2pojo(swigNode, parent, swigErrors, errors, resolver);
 
 		// piggyback errors which came without context node onto the tree root
-		if (swigErrors.findFirstErrorFor(null, 0) != -1) {
+		if (swigErrors != null && swigErrors.findFirstErrorFor(null, 0) != -1) {
 			int i = -1;
 			while ((i = swigErrors.findFirstErrorFor(null, i+1)) != -1) {
 				int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
@@ -263,7 +263,7 @@ public class NedTreeUtil {
 					swigRegion.getEndLine(), swigRegion.getEndColumn()));
 
 		// take over error messages related to this node
-		if (swigErrors.findFirstErrorFor(swigNode, 0) != -1) {
+		if (swigErrors != null && swigErrors.findFirstErrorFor(swigNode, 0) != -1) {
 			int i = -1;
 			while ((i = swigErrors.findFirstErrorFor(swigNode, i+1)) != -1) {
 				int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
@@ -325,6 +325,43 @@ public class NedTreeUtil {
 		return swigNode;
 	}
 
+	/**
+	 * Parses a NED expression passed as strings. Returns the parse tree, or null if there was a syntax error.
+	 */
+    public static synchronized INedElement parseNedExpression(String source) {
+        NEDElement swigTree = null;
+        try {
+            // parse
+            NEDErrorStore swigErrors = new NEDErrorStore();
+            NEDParser np = new NEDParser(swigErrors);
+            np.setParseExpressions(true);
+            swigTree = np.parseNEDExpression(source);
+            if (swigTree == null || !swigErrors.empty())
+                return null;
+
+            // run DTD validation
+            NEDDTDValidator dtdvalidator = new NEDDTDValidator(swigErrors);
+            dtdvalidator.validate(swigTree);
+            if (!swigErrors.empty())
+                return null;
+
+            // additional syntax-related validation
+            NEDSyntaxValidator syntaxValidator = new NEDSyntaxValidator(false, swigErrors);
+            syntaxValidator.validate(swigTree);
+            if (!swigErrors.empty())
+                return null;
+
+            // convert tree to pure Java objects
+            INedElement pojoTree = swig2pojo(swigTree, null, null, null, NedElement.getDefaultNedTypeResolver());
+
+            return pojoTree;
+        }
+        finally {
+            if (swigTree != null)
+                swigTree.delete();
+        }
+    }
+	
 	/**
 	 * Returns true if the given string can be parsed as a NED expression, and false otherwise.
 	 */

@@ -43,6 +43,7 @@ import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.NedTreeDifferenceUtils;
 import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NedElementFactoryEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
@@ -89,6 +90,10 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     // can be used for computations in a background thread without locking NedResources
     private ImmutableNedTypeResolver immutableCopy = null;
 
+    // caches the result of expression parsing
+    private Map<String,INedElement> expressionCache = new HashMap<String, INedElement>();
+    private static final INedElement BOGUS_EXPRESSION = NedElementFactoryEx.getInstance().createElement(INedElement.NED_UNKNOWN); // special value to signal syntax error
+    
     // job that performs NED validation in the background
     private Job nedValidationJob;
 
@@ -487,6 +492,18 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
 
     public synchronized boolean isImmutableCopyUpToDate(INedTypeResolver copy) {
         return immutableCopy == copy;
+    }
+
+    public synchronized INedElement getParsedNedExpression(String expression) {
+        INedElement tree = expressionCache.get(expression);
+        if (tree != null)
+            return tree==BOGUS_EXPRESSION ? null : tree;
+
+        // parse, and cache the result (BOGUS_EXPRESSION is uses so we can distinguish "not cached" 
+        // from "syntax error" without an extra expressionCache.contains() call)
+        tree = NedTreeUtil.parseNedExpression(expression);
+        expressionCache.put(expression, tree==null ? BOGUS_EXPRESSION : tree);
+        return tree;
     }
 
     // ******************* notification helpers ************************************

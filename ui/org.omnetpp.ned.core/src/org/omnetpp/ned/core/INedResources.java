@@ -8,6 +8,7 @@
 package org.omnetpp.ned.core;
 
 import org.eclipse.core.resources.IFile;
+import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 
@@ -116,5 +117,12 @@ public interface INedResources extends INedTypeResolver {
      * is still up to date.
      */
     public boolean isImmutableCopyUpToDate(INedTypeResolver copy);
+
+    /** 
+     * Parses the given NED expression, and returns the parse tree. Returns null if the expression
+     * contains a syntax error. The default implementation (NedResources) caches the result,
+     * so it is typically very fast.
+     */
+    public INedElement getParsedNedExpression(String expression);
     
 }
