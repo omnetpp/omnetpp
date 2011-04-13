@@ -26,6 +26,7 @@
 #include "stringpool.h"
 #include "opp_ctype.h"
 #include "cconfiguration.h"
+#include "ccomponenttype.h"
 
 USING_NAMESPACE
 
@@ -700,3 +701,33 @@ DEF(nedf_simTime,
 {
     return Value(SIMTIME_DBL(simTime()), "s");
 })
+
+DEF(nedf_firstAvailable,
+    "string firstAvailable(...)",
+    "misc",
+    "Accepts any number of strings, interprets them as NED type names "
+    "(qualified or unqualified), and returns the first one that exists and "
+    "its C++ implementation class is also available. Throws an error if "
+    "none of the types are available.",
+{
+    cRegistrationList *types = componentTypes.getInstance();
+    for (int i=0; i<argc; i++)
+    {
+        if (argv[i].type != Value::STR)
+            throw cRuntimeError("firstAvailable(): string arguments expected");
+        const char *name = argv[i].s.c_str();
+        cComponentType *c;
+        c = dynamic_cast<cComponentType *>(types->lookup(name)); // by qualified name
+        if (c && c->isAvailable())
+            return argv[i];
+        c = dynamic_cast<cComponentType *>(types->get(name)); // by simple name
+        if (c && c->isAvailable())
+            return argv[i];
+    }
+
+    std::string typelist;
+    for (int i=0; i<argc; i++)
+        typelist += std::string(i==0?"":", ") + argv[i].s;
+    throw cRuntimeError("None of the following NED types are available: %s", typelist.c_str());
+})
+

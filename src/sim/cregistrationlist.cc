@@ -62,7 +62,7 @@ cOwnedObject *cRegistrationList::get(int i) const
     return vec[i];
 }
 
-cOwnedObject *cRegistrationList::get(const char *name) const
+cOwnedObject *cRegistrationList::find(const char *name) const
 {
     StringObjectMap::const_iterator it = nameMap.find(name);
     return it==nameMap.end() ? NULL : it->second;

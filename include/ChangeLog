@@ -1,4 +1,9 @@
-2011-04-13  Andras Varga
+2011-04-04  Andras Varga
+
+	* cRegistrationList::get() renamed to find(), for consistency with 
+	other, similarly named methods
+
+2011-04-04  Andras Varga
 
 	* introduced "object kind" for per-object config options; for the time
 	being this is useful for better content assist in the inifile editor

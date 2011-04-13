@@ -192,7 +192,7 @@ std::string cNEDFunction::info() const
 
 cNEDFunction *cNEDFunction::find(const char *name)
 {
-    return dynamic_cast<cNEDFunction *>(nedFunctions.getInstance()->get(name));
+    return dynamic_cast<cNEDFunction *>(nedFunctions.getInstance()->find(name));
 }
 
 cNEDFunction *cNEDFunction::get(const char *name)

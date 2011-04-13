@@ -70,7 +70,7 @@ class SIM_API cRegistrationList : public cNamedObject, noncopyable
      * Returns (one of) the object(s) with the given name (not fullName!).
      * Returns NULL if not found.
      */
-    virtual cOwnedObject *get(const char *name) const;
+    virtual cOwnedObject *find(const char *name) const;
 
     /**
      * Returns the object with exactly the given qualified name (getFullName()).
