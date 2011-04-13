@@ -657,7 +657,15 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                     int selection = slider.getSelection();
                     AnimationController animationController = animationCanvas.getAnimationController();
                     animationController.stopAnimation();
-                    animationController.gotoEventNumber(selection);
+                    IEventLog eventLog = animationController.getEventLogInput().getEventLog();
+                    long firstEventNumber = eventLog.getFirstEvent().getEventNumber();
+                    long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                    if (selection == firstEventNumber)
+                        animationController.gotoBeginAnimationPosition();
+                    else if (selection == lastEventNumber)
+                        animationController.gotoEndAnimationPosition();
+                    else
+                        animationController.gotoEventNumber(selection);
                     AnimationContributor.this.update();
                 }
 
