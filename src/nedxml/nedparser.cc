@@ -129,7 +129,8 @@ NEDElement *NEDParser::parseNEDExpression(const char *nedexpression)
 {
     parseexpr = true;
     std::string source = std::string(MAGIC_PREFIX) + "\n" + nedexpression;
-    return parseNEDText(source.c_str(), "buffer");
+    NEDElement *tree = parseNEDText(source.c_str(), "buffer");
+    return tree ? tree->getFirstChild() : NULL; // unwrap from NedFileElement
 }
 
 NEDElement *NEDParser::parseMSGFile(const char *osfname, const char *fname)
@@ -205,6 +206,10 @@ NEDElement *NEDParser::parseMSG()
 
 bool NEDParser::guessIsNEDInNewSyntax(const char *txt)
 {
+    // we regard expressions to be always in the new syntax
+    if (strncmp(txt, MAGIC_PREFIX, strlen(MAGIC_PREFIX))==0)
+        return true;
+
     // first, remove all comments and string literals
     char *buf = new char [strlen(txt)+1];
     const char *s;
