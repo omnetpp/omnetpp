@@ -177,6 +177,10 @@ public class AnimationController {
      */
     private AnimationPosition stopAnimationPosition;
 
+    private AnimationPosition beginAnimationPosition;
+    private AnimationPosition firstEventAnimationPosition;
+    private AnimationPosition endAnimationPosition;
+
     /**
      * The real time when the animation was last started or continued.
      */
@@ -320,6 +324,9 @@ public class AnimationController {
         modelAnimationPosition = new AnimationPosition();
         stopAnimationPosition = new AnimationPosition();
         lastStartAnimationPosition = new AnimationPosition();
+        beginAnimationPosition = new AnimationPosition();
+        firstEventAnimationPosition = new AnimationPosition();
+        endAnimationPosition = new AnimationPosition();
         beginAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
         endAnimationTimeOrderedPrimitives = new ArrayList<IAnimationPrimitive>();
         activeAnimationPrimitives = new ArrayList<IAnimationPrimitive>();
@@ -462,37 +469,80 @@ public class AnimationController {
         currentAnimationPosition = animationPosition;
         loadAnimationPrimitivesForAnimationPosition(animationPosition);
         if (currentAnimationPosition.getFrameRelativeAnimationTime() == null) {
-            // TODO: plus some extra defined by origin relative?
-            currentAnimationPosition.setFrameRelativeAnimationTime(eventNumberToFrameRelativeAnimationTime.get(currentAnimationPosition.getEventNumber()));
+            // TODO: KLUDGE: FIMXE: really here? really this simple?
+            long eventNumber = currentAnimationPosition.getEventNumber();
+            IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
+            double animationTime = coordinateSystem.getAnimationTime(event);
+            double frameRelativeAnimationTime = eventNumberToFrameRelativeAnimationTime.get(eventNumber);
+            currentAnimationPosition.setFrameRelativeAnimationTime(frameRelativeAnimationTime + currentAnimationPosition.getOriginRelativeAnimationTime() - animationTime);
         }
         refreshAnimation();
         animationPositionChanged();
+    }
+
+    /**
+     * Returns the animation position for the very beginning.
+     */
+    public AnimationPosition getBeginAnimationPosition() {
+        if (!beginAnimationPosition.isCompletelySpecified())
+            beginAnimationPosition = getAnimationPositionForEventNumber(0);
+        return beginAnimationPosition;
+    }
+
+    /**
+     * Returns the animation position for the first event.
+     */
+    public AnimationPosition getFirstEventAnimationPosition() {
+        if (!firstEventAnimationPosition.isCompletelySpecified())
+            firstEventAnimationPosition = getAnimationPositionForEventNumber(1);
+        return firstEventAnimationPosition;
+    }
+
+    /**
+     * Returns the animation position for the very end.
+     */
+    public AnimationPosition getEndAnimationPosition() {
+        if (!endAnimationPosition.isCompletelySpecified()) {
+            IEvent lastEvent = eventLogInput.getEventLog().getLastEvent();
+            BigDecimal simulationTime = lastEvent.getSimulationTime();
+            loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), lastEvent.getSimulationTime(), null, null));
+            for (int i = endAnimationTimeOrderedPrimitives.size() - 1; i >= 0; i--) {
+                IAnimationPrimitive animationPrimitive = endAnimationTimeOrderedPrimitives.get(i);
+                AnimationPosition endAnimationPosition = animationPrimitive.getEndAnimationPosition();
+                // TODO: can we return a position beyond the last event's animation time? that might violate causality, because those things are not final yet
+                if (endAnimationPosition.getSimulationTime().lessOrEqual(simulationTime) && !endAnimationPosition.getFrameRelativeAnimationTime().isInfinite()) {
+                    this.endAnimationPosition = endAnimationPosition;
+                    break;
+                }
+            }
+        }
+        return endAnimationPosition;
+    }
+
+    public boolean isAtAnimationPosition(AnimationPosition animationPosition) {
+        loadAnimationPrimitivesForAnimationPosition(animationPosition);
+        return beginAnimationTimeOrderedPrimitives.size() == 0 || currentAnimationPosition.equals(animationPosition);
     }
 
 	/**
 	 * Checks if the current animation position is at the very beginning.
 	 */
 	public boolean isAtBeginAnimationPosition() {
-		return animationTimeOriginEventNumber == 0 && currentAnimationPosition.getOriginRelativeAnimationTime() == 0;
+	    return isAtAnimationPosition(getBeginAnimationPosition());
 	}
 
     /**
      * Checks if the current animation position is at the very beginning.
      */
     public boolean isAtFirstEventAnimationPosition() {
-        return animationTimeOriginEventNumber == 1 && currentAnimationPosition.getOriginRelativeAnimationTime() == 0;
+        return isAtAnimationPosition(getFirstEventAnimationPosition());
     }
 
 	/**
 	 * Checks if the current animation position is at the very end.
 	 */
 	public boolean isAtEndAnimationPosition() {
-	    // TODO: something like this
-//      IEvent lastEvent = eventLogInput.getEventLog().getLastEvent();
-//      loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), lastEvent.getSimulationTime(), null, null));
-//      IAnimationPrimitive lastAnimationPrimitive = endAnimationTimeOrderedPrimitives.get(endAnimationTimeOrderedPrimitives.size() - 1);
-//      return currentAnimationPosition.equals(lastAnimationPrimitive.getEndAnimationPosition());
-	    return false;
+	    return isAtAnimationPosition(getEndAnimationPosition());
 	}
 
 	/**
@@ -773,10 +823,7 @@ public class AnimationController {
      * Stops animation and jumps to the very end.
 	 */
 	public void gotoEndAnimationPosition() {
-	    IEvent lastEvent = eventLogInput.getEventLog().getLastEvent();
-	    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(lastEvent.getEventNumber(), lastEvent.getSimulationTime(), null, null));
-	    IAnimationPrimitive lastAnimationPrimitive = endAnimationTimeOrderedPrimitives.get(endAnimationTimeOrderedPrimitives.size() - 1);
-		gotoAnimationPosition(lastAnimationPrimitive.getEndAnimationPosition());
+		gotoAnimationPosition(getEndAnimationPosition());
 	}
 
     /**
