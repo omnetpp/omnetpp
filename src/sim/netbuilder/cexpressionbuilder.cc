@@ -209,13 +209,16 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
 
         // normal function: find it and add to reverse Polish expression
         cMathFunction *functype = cMathFunction::find(funcname,argcount);
-        cNEDFunction *nedfunctype = cNEDFunction::find(funcname,argcount);
+        cNEDFunction *nedfunctype = cNEDFunction::find(funcname);
         if (functype)
             elems[pos++] = functype;
-        else if (nedfunctype)
+        else if (nedfunctype) {
+            if (argcount < nedfunctype->getMinArgs() || (argcount > nedfunctype->getMaxArgs() && !nedfunctype->hasVarArgs()))
+                throw cRuntimeError("Function `%s' does not accept %d arguments", nedfunctype->getSignature(), argcount);
             elems[pos++].set(nedfunctype, argcount);
+        }
         else
-            throw cRuntimeError("Function %s with %d args not found (Define_NED_Function() missing from C++ code?)", funcname, argcount);
+            throw cRuntimeError("Function `%s()' (with %d args) not found (Define_NED_Function() or Define_Function() missing from C++ code?)", funcname, argcount);
     }
 }
 

@@ -116,16 +116,24 @@ void cNEDFunction::parseSignature(const char *signature)
         throw cRuntimeError(syntaxErrorMessage, signature);
 
     minargc = -1;
+    hasvarargs = false;
     std::vector<std::string> args = StringTokenizer(argList.c_str(), ",").asVector();
     for (int i=0; i < (int)args.size(); i++)
     {
-        char argType;
-        std::string argName;
-        if (!splitTypeAndName(args[i], argType, argName))
-            throw cRuntimeError(syntaxErrorMessage, signature);
-        argtypes += argType;
-        if (contains(argName,"?") && minargc==-1)
-            minargc = i;
+        if (args[i] == "...") {
+            if (i != (int)args.size()-1)
+                throw cRuntimeError(syntaxErrorMessage, signature); // "..." must be the last one
+            hasvarargs = true;
+        }
+        else {
+            char argType;
+            std::string argName;
+            if (!splitTypeAndName(args[i], argType, argName))
+                throw cRuntimeError(syntaxErrorMessage, signature);
+            argtypes += argType;
+            if (contains(argName,"?") && minargc==-1)
+                minargc = i;
+        }
     }
     maxargc = argtypes.size();
     if (minargc==-1)
@@ -134,10 +142,11 @@ void cNEDFunction::parseSignature(const char *signature)
 
 void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
 {
-    if (argc<minargc || argc>maxargc)
+    if (argc < minargc || (argc > maxargc && !hasvarargs))
         throw cRuntimeError("%s: called with wrong number of arguments", getName());
 
-    for (int i=0; i<argc; i++) {
+    int n = std::min(argc, maxargc);
+    for (int i=0; i<n; i++) {
         char declType = argtypes[i];
         if (declType=='D' || declType=='L') {
             if (argv[i].type != 'D')
@@ -181,24 +190,18 @@ std::string cNEDFunction::info() const
     return getSignature();
 }
 
-cNEDFunction *cNEDFunction::find(const char *name, int argcount)
+cNEDFunction *cNEDFunction::find(const char *name)
 {
-    cRegistrationList *a = nedFunctions.getInstance();
-    for (int i=0; i<a->size(); i++) {
-        cNEDFunction *f = dynamic_cast<cNEDFunction *>(a->get(i));
-        if (f && f->isName(name) && f->getMinArgs()<=argcount && f->getMaxArgs()>=argcount)
-            return f;
-    }
-    return NULL;
+    return dynamic_cast<cNEDFunction *>(nedFunctions.getInstance()->get(name));
 }
 
-cNEDFunction *cNEDFunction::get(const char *name, int argcount)
+cNEDFunction *cNEDFunction::get(const char *name)
 {
-    cNEDFunction *p = find(name, argcount);
+    cNEDFunction *p = find(name);
     if (!p)
-        throw cRuntimeError("NED function \"%s\" with %d args not found -- perhaps it wasn't registered "
+        throw cRuntimeError("NED function \"%s\" not found -- perhaps it wasn't registered "
                             "with the Define_NED_Function() macro, or its code is not linked in",
-                            name, argcount);
+                            name);
     return p;
 }
 

@@ -48,6 +48,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
   private:
     std::string sign;      // function signature, as passed to the ctor
     std::string argtypes;  // sequence of B,L,D,Q,S,X,*
+    bool hasvarargs;       // if true, signature contains "..." after the last typed arg
     char rettype;          // one of B,L,D,Q,S,X,*
     int minargc, maxargc;  // minimum and maximum argument count
     NEDFunction f;         // function ptr
@@ -65,10 +66,17 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
      * Constructor. Signature is expected in the following syntax:
      *     returntype name(argtype argname,...),
      * where types can be bool, long, double, quantity, string, xml, any;
-     * names of optional args end in '?'. The object name will be
-     * the function name, as extracted from the signature string.
+     * names of optional arguments end in '?'. The object name will be the
+     * function name, as extracted from the signature string. The signature
+     * may end in an ellipsis, i.e. "...", to mean that any number of
+     * extra args of unspecified types should be accepted. (When there are
+     * both optional args and an ellipsis, then extra arguments can only be
+     * passed when all optional arguments are all supplied.)
      *
-     * Example: "quantity uniform(quantity a, quantity b, long rng?)"
+     * Examples:
+     *    "quantity uniform(quantity a, quantity b, long rng?)"
+     *    "string sprintf(format, ...)"
+     *    "any max(...)"
      */
     cNEDFunction(NEDFunction f, const char *signature, const char *category=NULL, const char *description=NULL);
 
@@ -105,13 +113,15 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     const char *getSignature() const {return sign.c_str();}
 
     /**
-     * Returns the function return type, one of: B,L,D,Q,S,X,*
+     * Returns the function return type, one of the characters B,L,D,Q,S,X,*
+     * for bool, long, double, quantity, string, xml and any, respectively.
      */
     char getReturnType() const  {return rettype;}
 
     /**
-     * Returns the type of the kth argument; result is
-     * one of: B,L,D,Q,S,X,*
+     * Returns the type of the kth argument; result is one of the characters
+     * B,L,D,Q,S,X,* for bool, long, double, quantity, string, xml and any,
+     * respectively.
      */
     char getArgType(int k) const  {return argtypes[k];}
 
@@ -122,10 +132,17 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     int getMinArgs() const  {return minargc;}
 
     /**
-     * Returns the maximum number of arguments (i.e. the last max-min
-     * args are optional).
+     * Returns the maximum number of typed arguments (i.e. the last max-min
+     * args are optional). If hasVarArgs() is true, the function actually
+     * accepts more than getMaxArgs() arguments.
      */
     int getMaxArgs() const  {return maxargc;}
+
+    /**
+     * Returns true if the function signature ends in an ellipsis ("..."),
+     * that is, the function supports varargs.
+     */
+    bool hasVarArgs() const  {return hasvarargs;}
 
     /**
      * Returns a string that can be useful in classifying NED functions,
@@ -142,12 +159,12 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Finds a registered function by name. Returns NULL if not found.
      */
-    static cNEDFunction *find(const char *name, int numArgs);
+    static cNEDFunction *find(const char *name);
 
     /**
      * Finds a registered function by name. Throws an error if not found.
      */
-    static cNEDFunction *get(const char *name, int numArgs);
+    static cNEDFunction *get(const char *name);
 
     /**
      * Finds a registered function by function pointer.
