@@ -237,13 +237,11 @@ void EventlogFileManager::recordMessages()
 void EventlogFileManager::recordModules(cModule *module)
 {
     moduleCreated(module);
-    // FIXME: records display string twice if it is lazily created right now
-    if (strcmp(module->getDisplayString().str(), ""))
-        displayStringChanged(module);
     for (cModule::GateIterator it(module); !it.end(); it++) {
         cGate *gate = it();
         gateCreated(gate);
     }
+    displayStringChanged(module);
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
         recordModules(it());
 }
@@ -255,7 +253,7 @@ void EventlogFileManager::recordConnections(cModule *module)
         if (gate->getNextGate())
             connectionCreated(gate);
         cChannel *channel = gate->getChannel();
-        if (channel && strcmp(channel->getDisplayString(), ""))
+        if (channel)
             displayStringChanged(channel);
     }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
@@ -332,7 +330,7 @@ void EventlogFileManager::bubble(cComponent *component, const char *text)
             entryIndex++;
         }
         else if (dynamic_cast<cChannel *>(component)) {
-            //TODO
+            // TODO:
         }
     }
 }
@@ -340,7 +338,7 @@ void EventlogFileManager::bubble(cComponent *component, const char *text)
 void EventlogFileManager::beginSend(cMessage *msg)
 {
     if (isEventLogRecordingEnabled) {
-        //TODO record message display string as well?
+        // TODO: record message display string as well?
         if (msg->isPacket()) {
             cPacket *pkt = (cPacket *)msg;
             EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
@@ -534,15 +532,14 @@ void EventlogFileManager::componentMethodEnd()
     }
 }
 
-void EventlogFileManager::moduleCreated(cModule *newmodule)
+void EventlogFileManager::moduleCreated(cModule *module)
 {
     if (isEventLogRecordingEnabled) {
-        cModule *m = newmodule;
-        bool recordModuleEvents = ev.getConfig()->getAsBool(m->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
-        m->setRecordEvents(recordModuleEvents);
-        bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
+        bool recordModuleEvents = ev.getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
+        module->setRecordEvents(recordModuleEvents);
+        bool isCompoundModule = dynamic_cast<cCompoundModule *>(module);
         // FIXME: size() is missing
-        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, m->getId(), m->getClassName(), m->getNedTypeName(), m->getParentModule() ? m->getParentModule()->getId() : -1, m->getFullName(), isCompoundModule);
+        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, module->getId(), module->getClassName(), module->getNedTypeName(), module->getParentModule() ? module->getParentModule()->getId() : -1, module->getFullName(), isCompoundModule);
         entryIndex++;
         addSimulationStateEventLogEntry(eventNumber, entryIndex);
     }
