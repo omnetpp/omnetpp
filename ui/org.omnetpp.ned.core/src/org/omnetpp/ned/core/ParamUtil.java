@@ -288,12 +288,12 @@ public class ParamUtil {
         }
 
         public String resolveLikeType(ISubmoduleOrConnection element) {
-            // note: we can only make a local decision here; we also ignore getIsDefault()
-            String expr = element.getLikeParam();  
-            if (expr.charAt(0)=='"')
-                return expr.substring(1, expr.length()-1); //FIXME proper unquoting!!!
-            else if (expr.startsWith("firstAvailable("))
-                return "FIXME TODO";
+//            // note: we can only make a local decision here; we also ignore getIsDefault()
+//            String expr = element.getLikeParam();  
+//            if (expr.length() > 0 && expr.charAt(0)=='"')
+//                return expr.substring(1, expr.length()-1); //FIXME proper unquoting!!!
+//            else if (expr.startsWith("firstAvailable("))
+//                return "FIXME TODO";
             return null;
         }
 

@@ -670,8 +670,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
         public String resolveLikeType(ISubmoduleOrConnection element) {
             try {
-                if (inifileAnalyzer == null)
-                    return null;
+                if (inifileAnalyzer == null)  
+                    return null;  //FIXME now we have default typename, so we can do more...
                 
                 String moduleFullPath = current instanceof SubmoduleOrConnectionNode ? ((SubmoduleOrConnectionNode)current).getFullPath() : "";
                 Timeout timeout = new Timeout(100); //XXX
