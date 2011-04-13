@@ -51,32 +51,34 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 	@Override
 	public void activate() {
         super.activate();
-		EventLogModule module = getModule();
-		EventLogModule parentModule = module.getParentModule();
-
-		if (parentModule == animationController.getAnimationSimulation().getRootModule()) {
-			addFigure(background);
-			addFigure(label);
-
-			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
-			Dimension size = new Dimension(10 * text.length(), 20);
-            Rectangle r = new Rectangle(moduleFigure.getLocation().translate(0, -20), size);
-            LayoutManager layoutManager = getLayoutManager();
-            layoutManager.setConstraint(background, r);
-            layoutManager.setConstraint(label, r);
-		}
+        // NOTE: do not show the message if we are jumping around
+        if (animationController.isRunning()) {
+    		EventLogModule module = getModule();
+    		EventLogModule parentModule = module.getParentModule();
+    		if (parentModule == animationController.getAnimationSimulation().getRootModule()) {
+    			addFigure(background);
+    			addFigure(label);
+    			SubmoduleFigure moduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
+    			Dimension size = new Dimension(10 * text.length(), 20);
+                Rectangle r = new Rectangle(moduleFigure.getLocation().translate(0, -20), size);
+                LayoutManager layoutManager = getLayoutManager();
+                layoutManager.setConstraint(background, r);
+                layoutManager.setConstraint(label, r);
+    		}
+        }
 	}
 
 	@Override
 	public void deactivate() {
         super.deactivate();
-		EventLogModule module = getModule();
-		EventLogModule parentModule = module.getParentModule();
-
-		if (parentModule == animationController.getAnimationSimulation().getRootModule()) {
-			bubbleTimer.reset();
-			getTimerQueue().addTimer(bubbleTimer);
-		}
+        if (background.getParent() != null) {
+    		EventLogModule module = getModule();
+    		EventLogModule parentModule = module.getParentModule();
+    		if (parentModule == animationController.getAnimationSimulation().getRootModule()) {
+    			bubbleTimer.reset();
+    			getTimerQueue().addTimer(bubbleTimer);
+    		}
+        }
 	}
 
 	protected EventLogModule getModule() {
