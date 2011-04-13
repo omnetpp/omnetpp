@@ -1,3 +1,11 @@
+2011-04-13  Andras Varga
+
+	* introduced "object kind" for per-object config options; for the time
+	being this is useful for better content assist in the inifile editor
+	in the IDE. Incompatible change: the Register_PerObjectConfigOption()
+	and Register_PerObjectConfigOptionU() macros now take one more
+	argument, the object kind. [Implemented by Tamas Borbely]
+
 2011-02-23  ------ omnetpp-4.2b1 released ------
 
 2011-02-17  Andras Varga
@@ -11,9 +19,9 @@
 	is that it conflicted with lwIP code recently integrated into INET.
 	(<winsock.h> defines a lot of constants, functions etc that lwIP also
 	wants to define, making lwIP impossible to compile with <omnetpp.h>
-	pulled in.) <platdep/sockets.h> still includes <winsock.h>, but now 
+	pulled in.) <platdep/sockets.h> still includes <winsock.h>, but now
 	<platdep/sockets.h> MUST precede <omnetpp.h> in all sources!
-  
+
 2010-07-17  Andras Varga
 
 	* platdep/sockets.h: closesocket() was incorrectly defined as no-op
@@ -30,7 +38,7 @@
 
 	* cSimulation: added getSimulationStage()
 
-	* cException: exception object now stores simulation stage, event 
+	* cException: exception object now stores simulation stage, event
 	number and simulation time as well; also added getFormattedMessage()
 	method that puts together the complete error message from its pieces.
 
@@ -43,7 +51,7 @@
 
 2010-05-29  Andras Varga
 
-	* cChannel: added forceTransmissionFinishTime(simtime t), so that 
+	* cChannel: added forceTransmissionFinishTime(simtime t), so that
 	channels can support aborted transmissions (needed e.g. for Ethernet).
 
 2010-05-28  Andras Varga

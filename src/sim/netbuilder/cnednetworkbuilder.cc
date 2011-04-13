@@ -56,7 +56,7 @@
 USING_NAMESPACE
 
 Register_PerRunConfigOption(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
-Register_PerObjectConfigOption(CFGID_TYPE_NAME, "type-name", CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
+Register_PerObjectConfigOption(CFGID_TYPE_NAME, "type-name", KIND_UNSPECIFIED_TYPE, CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
 
 
 #if 0

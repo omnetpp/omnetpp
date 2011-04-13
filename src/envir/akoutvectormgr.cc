@@ -37,7 +37,7 @@ USING_NAMESPACE
 Register_Class(cAkOutputVectorManager);
 
 
-Register_PerObjectConfigOption(CFGID_WITH_AKAROA, "with-akaroa", CFG_BOOL, "false", "Whether to the output vector should be under Akaroa control.");
+Register_PerObjectConfigOption(CFGID_WITH_AKAROA, "with-akaroa", KIND_VECTOR, CFG_BOOL, "false", "Whether to the output vector should be under Akaroa control.");
 
 
 cAkOutputVectorManager::cAkOutputVectorManager()

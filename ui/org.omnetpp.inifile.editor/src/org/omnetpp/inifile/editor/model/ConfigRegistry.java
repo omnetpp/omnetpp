@@ -15,12 +15,14 @@ import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_FILENAM
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_INT;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_PATH;
 import static org.omnetpp.inifile.editor.model.ConfigOption.DataType.CFG_STRING;
+import static org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind.*;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
+import org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind;
 
 /**
  * Contains the list of supported configuration options.
@@ -57,38 +59,38 @@ public class ConfigRegistry {
     private static Map<String, String> configVars = new LinkedHashMap<String, String>(); // preserve order
 
     private static ConfigOption addGlobalOption(String name, DataType type, String defaultValue, String description) {
-        ConfigOption e = new ConfigOption(name, false, true, type, null, defaultValue, description);
+        ConfigOption e = new ConfigOption(name, true, type, null, defaultValue, description);
         options.put(name, e);
         return e;
     }
 
     private static ConfigOption addGlobalOptionU(String name, String unit, String defaultValue, String description) {
-        ConfigOption e = new ConfigOption(name, false, true, CFG_DOUBLE, unit, defaultValue, description);
+        ConfigOption e = new ConfigOption(name, true, CFG_DOUBLE, unit, defaultValue, description);
         options.put(name, e);
         return e;
     }
 
     private static ConfigOption addPerRunOption(String name, DataType type, String defaultValue, String description) {
-        ConfigOption e = new ConfigOption(name, false, false, type, null, defaultValue, description);
+        ConfigOption e = new ConfigOption(name, false, type, null, defaultValue, description);
         options.put(name, e);
         return e;
     }
 
     private static ConfigOption addPerRunOptionU(String name, String unit, String defaultValue, String description) {
-        ConfigOption e = new ConfigOption(name, false, false, CFG_DOUBLE, unit, defaultValue, description);
+        ConfigOption e = new ConfigOption(name, false, CFG_DOUBLE, unit, defaultValue, description);
         options.put(name, e);
         return e;
     }
 
-    private static ConfigOption addPerObjectOption(String name, DataType type, String defaultValue, String description) {
-        ConfigOption e = new ConfigOption(name, true, false, type, null, defaultValue, description);
+    private static ConfigOption addPerObjectOption(String name, ObjectKind objectKind, DataType type, String defaultValue, String description) {
+        ConfigOption e = new ConfigOption(name, objectKind, type, null, defaultValue, description);
         perObjectOptions.put(name, e);
         return e;
     }
 
     @SuppressWarnings("unused")
-    private static ConfigOption addPerObjectOptionU(String name, String unit, String defaultValue, String description) {
-        ConfigOption e = new ConfigOption(name, true, false, CFG_DOUBLE, unit, defaultValue, description);
+    private static ConfigOption addPerObjectOptionU(String name, ObjectKind objectKind, String unit, String defaultValue, String description) {
+        ConfigOption e = new ConfigOption(name, objectKind, CFG_DOUBLE, unit, defaultValue, description);
         perObjectOptions.put(name, e);
         return e;
     }
@@ -164,7 +166,7 @@ public class ConfigRegistry {
         "section [Config Foo] will be used from the ini file). See also " +
         "cmdenv-runs-to-execute=. The -c command line option overrides this setting.");
     public static final ConfigOption CFGID_CMDENV_EV_OUTPUT = addPerObjectOption(
-        "cmdenv-ev-output", CFG_BOOL, "true",
+        "cmdenv-ev-output", KIND_MODULE, CFG_BOOL, "true",
         "When cmdenv-express-mode=false: whether Cmdenv should print debug messages " +
         "(ev<<) from the selected modules.");
     public static final ConfigOption CFGID_CMDENV_EVENT_BANNER_DETAILS = addPerRunOption(
@@ -246,11 +248,11 @@ public class ConfigRegistry {
         "displayed in the run selection dialog.");
     public static final ConfigOption CFGID_EVENTLOG_FILE = addPerRunOption(
         "eventlog-file", CFG_FILENAME, "${resultdir}/${configname}-${runnumber}.elog",
-        "Name of the event log file to generate.");
+        "Name of the eventlog file to generate.");
     public static final ConfigOption CFGID_EVENTLOG_MESSAGE_DETAIL_PATTERN = addPerRunOption(
         "eventlog-message-detail-pattern", CFG_CUSTOM, null,
         "A list of patterns separated by '|' character which will be used to write " +
-        "message detail information into the event log for each message sent during " +
+        "message detail information into the eventlog for each message sent during " +
         "the simulation. The message detail will be presented in the sequence chart " +
         "tool. Each pattern starts with an object pattern optionally followed by ':' " +
         "character and a comma separated list of field patterns. In both patterns " +
@@ -317,7 +319,7 @@ public class ConfigRegistry {
         "Identifies the measurement within the experiment. This string gets recorded " +
         "into result files, and may be referred to during result analysis.");
     public static final ConfigOption CFGID_MODULE_EVENTLOG_RECORDING = addPerObjectOption(
-        "module-eventlog-recording", CFG_BOOL, "true",
+        "module-eventlog-recording", KIND_SIMPLE_MODULE, CFG_BOOL, "true",
         "Enables recording events on a per module basis. This is meaningful for " +
         "simple modules only. \n" +
         "Example:\n" +
@@ -378,7 +380,7 @@ public class ConfigRegistry {
         "parallel-simulation", CFG_BOOL, "false",
         "Enables parallel distributed simulation.");
     public static final ConfigOption CFGID_PARAM_RECORD_AS_SCALAR = addPerObjectOption(
-        "param-record-as-scalar", CFG_BOOL, "false",
+        "param-record-as-scalar", KIND_PARAMETER, CFG_BOOL, "false",
         "Applicable to module parameters: specifies whether the module parameter " +
         "should be recorded into the output scalar file. Set it for parameters whose " +
         "value you'll need for result analysis.");
@@ -410,10 +412,16 @@ public class ConfigRegistry {
         "parsim-idealsimulationprotocol-tablesize", CFG_INT, "100000",
         "When cIdealSimulationProtocol is selected as parsim synchronization class: " +
         "specifies the memory buffer size for reading the ISP event trace file.");
+    public static final ConfigOption CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalOption(
+        "parsim-mpicommunications-mpibuffer", CFG_INT, null,
+        "When cMPICommunications is selected as parsim communications class: " +
+        "specifies the size of the MPI communications buffer. The default is to " +
+        "calculate a buffer size based on the number of partitions.");
     public static final ConfigOption CFGID_PARSIM_NAMEDPIPECOMMUNICATIONS_PREFIX = addGlobalOption(
-        "parsim-namedpipecommunications-prefix", CFG_STRING, "omnetpp",
+        "parsim-namedpipecommunications-prefix", CFG_STRING, "comm/",
         "When cNamedPipeCommunications is selected as parsim communications class: " +
-        "selects the name prefix for Windows named pipes created.");
+        "selects the prefix (directory+potential filename prefix) where name pipes " +
+        "are created in the file system.");
     public static final ConfigOption CFGID_PARSIM_NULLMESSAGEPROTOCOL_LAZINESS = addGlobalOption(
         "parsim-nullmessageprotocol-laziness", CFG_DOUBLE, "0.5",
         "When cNullMessageProtocol is selected as parsim synchronization class: " +
@@ -430,7 +438,7 @@ public class ConfigRegistry {
         "If parallel-simulation=true, it selects the parallel simulation algorithm. " +
         "The class must implement the cParsimSynchronizer interface.");
     public static final ConfigOption CFGID_PARTITION_ID = addPerObjectOption(
-        "partition-id", CFG_STRING, null,
+        "partition-id", KIND_MODULE, CFG_STRING, null,
         "With parallel simulation: in which partition the module should be " +
         "instantiated. Specify numeric partition ID, or a comma-separated list of " +
         "partition IDs for compound modules that span across multiple partitions. " +
@@ -465,7 +473,7 @@ public class ConfigRegistry {
         "for result files (output vector file, output scalar file, eventlog file, " +
         "etc.)");
     public static final ConfigOption CFGID_RESULT_RECORDING_MODES = addPerObjectOption(
-        "result-recording-modes", CFG_STRING, "default",
+        "result-recording-modes", KIND_STATISTIC, CFG_STRING, "default",
         "Defines how to calculate results from the @statistic property matched by " +
         "the wildcard. Special values: default, all: they select the modes listed in " +
         "the record= key of @statistic; all selects all of them, default selects the " +
@@ -475,7 +483,7 @@ public class ConfigRegistry {
         "Expressions are allowed. Items prefixed with '-' get removed from the list. " +
         "Example: **.queueLength.result-recording-modes=default,-vector,+timeavg");
     public static final ConfigOption CFGID_RNG_n = addPerObjectOption(
-        "rng-%", CFG_INT, null,
+        "rng-%", KIND_MODULE, CFG_INT, null,
         "Maps a module-local RNG to one of the global RNGs. Example: **.gen.rng-1=3 " +
         "maps the local RNG 1 of modules matching `**.gen' to the global RNG 3. The " +
         "default is one-to-one mapping.");
@@ -489,7 +497,7 @@ public class ConfigRegistry {
         "Setting a nonzero value will cause the $runnumber variable to get padded " +
         "with leading zeroes to the given length.");
     public static final ConfigOption CFGID_SCALAR_RECORDING = addPerObjectOption(
-        "scalar-recording", CFG_BOOL, "true",
+        "scalar-recording", KIND_SCALAR, CFG_BOOL, "true",
         "Whether the matching output scalars should be recorded. Syntax: " +
         "<module-full-path>.<scalar-name>.scalar-recording=true/false. Example: " +
         "**.queue.packetsDropped.scalar-recording=true");
@@ -565,7 +573,7 @@ public class ConfigRegistry {
         "to increase this value if you get a ``Cannot allocate coroutine stack'' " +
         "error.");
     public static final ConfigOption CFGID_TYPE_NAME = addPerObjectOption(
-        "type-name", CFG_STRING, null,
+        "type-name", KIND_UNSPECIFIED_TYPE, CFG_STRING, null,
         "Specifies type for submodules and channels declared with 'like <>'.");
     public static final ConfigOption CFGID_USER_INTERFACE = addGlobalOption(
         "user-interface", CFG_STRING, null,
@@ -575,20 +583,20 @@ public class ConfigRegistry {
         "Debug dialogs. New user interfaces can be defined by subclassing " +
         "cRunnableEnvir.");
     public static final ConfigOption CFGID_VECTOR_MAX_BUFFERED_VALUES = addPerObjectOption(
-        "vector-max-buffered-values", CFG_INT, null,
+        "vector-max-buffered-values", KIND_VECTOR, CFG_INT, null,
         "For output vectors: the maximum number of values to buffer per vector, " +
         "before writing out a block into the output vector file. The default is no " +
         "per-vector limit (i.e. only the total memory limit is in effect)");
     public static final ConfigOption CFGID_VECTOR_RECORD_EVENTNUMBERS = addPerObjectOption(
-        "vector-record-eventnumbers", CFG_BOOL, "true",
+        "vector-record-eventnumbers", KIND_VECTOR, CFG_BOOL, "true",
         "Whether to record event numbers for an output vector. Simulation time and " +
         "value are always recorded. Event numbers are needed by the Sequence Chart " +
         "Tool, for example.");
     public static final ConfigOption CFGID_VECTOR_RECORDING = addPerObjectOption(
-        "vector-recording", CFG_BOOL, "true",
+        "vector-recording", KIND_VECTOR, CFG_BOOL, "true",
         "Whether data written into an output vector should be recorded.");
     public static final ConfigOption CFGID_VECTOR_RECORDING_INTERVALS = addPerObjectOption(
-        "vector-recording-intervals", CFG_CUSTOM, null,
+        "vector-recording-intervals", KIND_VECTOR, CFG_CUSTOM, null,
         "Recording interval(s) for an output vector. Syntax: [<from>]..[<to>],... " +
         "That is, both start and end of an interval are optional, and intervals are " +
         "separated by comma. Example: ..100, 200..400, 900..");
@@ -604,11 +612,6 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_WARNINGS = addPerRunOption(
         "warnings", CFG_BOOL, "true",
         "Enables warnings.");
-    public static final ConfigOption CFGID_PARSIM_MPICOMMUNICATIONS_MPIBUFFER = addGlobalOption(
-        "parsim-mpicommunications-mpibuffer", CFG_INT, null,
-        "When cMPICommunications is selected as parsim communications class: " +
-        "specifies the size of the MPI communications buffer. The default is to " +
-        "calculate a buffer size based on the number of partitions.");
 
     public static final String CFGVAR_RUNID = addConfigVariable("runid", "A reasonably globally unique identifier for the run, produced by concatenating the configuration name, run number, date/time, etc.");
     public static final String CFGVAR_INIFILE = addConfigVariable("inifile", "Name of the (primary) inifile");

@@ -42,9 +42,21 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
       CFG_CUSTOM
     };
 
+    enum ObjectKind {
+        KIND_NONE,
+        KIND_MODULE,
+        KIND_SIMPLE_MODULE,
+        KIND_UNSPECIFIED_TYPE, // for 'type-name' option (object is submodule/channel declared with 'like')
+        KIND_PARAMETER,
+        KIND_STATISTIC,
+        KIND_SCALAR,
+        KIND_VECTOR
+    };
+
     // note: option name (e.g. "sim-time-limit") is stored in object's name field
     bool isPerObject_;         // if true, entries must be in <object-full-path>.config-name format
     bool isGlobal_;            // if true, entries may only occur in the [General] section
+    ObjectKind objectKind_;    // kind of the object if isPerObject is true, KIND_NONE otherwise
     Type type_;                // option data type
     std::string unit_;         // if numeric, its unit ("s") or empty string
     std::string defaultValue_; // the default value in string form
@@ -54,9 +66,15 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
     /** @name Constructors, destructor */
     //@{
     /**
-     * Constructor.
+     * Constructor for non per-object options.
      */
-    cConfigOption(const char *name, bool isPerObject, bool isGlobal, Type type, const char *unit,
+    cConfigOption(const char *name, bool isGlobal, Type type, const char *unit,
+               const char *defaultValue, const char *description);
+
+    /**
+     * Constructor for per-object options.
+     */
+    cConfigOption(const char *name, ObjectKind kind, Type type, const char *unit,
                const char *defaultValue, const char *description);
     //@}
 
@@ -80,6 +98,17 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
      * occur in the [General] section.
      */
     bool isGlobal() const  {return isGlobal_;}
+
+    /**
+     * Returns the object kind for per-object configuration options,
+     * KIND_NONE otherwise.
+     */
+    ObjectKind getObjectKind() const {return objectKind_;}
+
+    /**
+     * Returns the human-readable name of a per-object option object kind.
+     */
+    static const char *getObjectKindName(ObjectKind kind);
 
     /**
      * Data type of the option.
