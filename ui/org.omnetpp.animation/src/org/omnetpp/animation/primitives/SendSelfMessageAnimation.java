@@ -24,7 +24,7 @@ import org.omnetpp.animation.widgets.AnimationPosition;
 import org.omnetpp.common.eventlog.EventLogMessage;
 
 public class SendSelfMessageAnimation extends AbstractAnimationPrimitive {
-    protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_SEND_SELF_MESSAGE). getImageData());
+    protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_SEND_SELF_MESSAGE).getImageData());
 
     protected int moduleId;
 

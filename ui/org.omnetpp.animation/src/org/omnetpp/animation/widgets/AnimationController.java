@@ -29,7 +29,6 @@ import org.omnetpp.animation.primitives.ScheduleMessageAnimation;
 import org.omnetpp.animation.primitives.ScheduleSelfMessageAnimation;
 import org.omnetpp.animation.primitives.SendBroadcastAnimation;
 import org.omnetpp.animation.primitives.SendDirectAnimation;
-import org.omnetpp.animation.primitives.SendMessageAnimation;
 import org.omnetpp.animation.primitives.SendSelfMessageAnimation;
 import org.omnetpp.animation.primitives.SetConnectionDisplayStringAnimation;
 import org.omnetpp.animation.primitives.SetModuleDisplayStringAnimation;
@@ -419,8 +418,10 @@ public class AnimationController {
 	 * Changes the state of the animation.
 	 */
 	private void setRunning(boolean isRunning) {
-		this.isRunning = isRunning;
-		runningStateChanged();
+	    if (this.isRunning != isRunning) {
+    		this.isRunning = isRunning;
+    		runningStateChanged();
+	    }
 	}
 
 	/**
@@ -480,7 +481,7 @@ public class AnimationController {
         currentAnimationPosition = animationPosition;
         loadAnimationPrimitivesForAnimationPosition(animationPosition);
         if (currentAnimationPosition.getFrameRelativeAnimationTime() == null) {
-            // TODO: KLUDGE: FIXME: really here? really this simple?
+            // TODO: KLUDGE: really here? really this simple?
             long eventNumber = currentAnimationPosition.getEventNumber();
             IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
             double animationTime = coordinateSystem.getAnimationTime(event);
@@ -618,9 +619,10 @@ public class AnimationController {
      */
     private AnimationPosition getAnimationPositionForSimulationTime(BigDecimal simulationTime) {
         double animationTime = coordinateSystem.getAnimationTimeForSimulationTime(simulationTime);
-        long eventNumber = coordinateSystem.getLastEventNotAfterAnimationTime(animationTime).getEventNumber();
-        // TODO: relative animation time
-        AnimationPosition animationPosition = new AnimationPosition(eventNumber, simulationTime, 0.0, animationTime);
+        IEvent event = coordinateSystem.getLastEventNotAfterAnimationTime(animationTime);
+        long eventNumber = event.getEventNumber();
+        double relativeAnimationTime = eventNumberToFrameRelativeAnimationTime.get(eventNumber) + animationTime - coordinateSystem.getAnimationTime(event);
+        AnimationPosition animationPosition = new AnimationPosition(eventNumber, simulationTime, relativeAnimationTime, animationTime);
         return animationPosition;
     }
 
@@ -643,7 +645,7 @@ public class AnimationController {
 	/**
 	 * Returns the current real time in seconds.
 	 */
-	private double getCurrentRealTime() {
+	public double getCurrentRealTime() {
 		return System.currentTimeMillis() / 1000.0;
 	}
 
@@ -845,7 +847,6 @@ public class AnimationController {
      */
     public void gotoEventNumber(long eventNumber) {
         stopAnimationInternal();
-        // TODO: do not relocate if already loaded!!!!
         if (eventNumberToFrameRelativeAnimationTime.get(eventNumber) == null)
             relocateAnimationTimeOrigin(eventNumber);
         setCurrentAnimationPosition(getAnimationPositionForEventNumber(eventNumber));
@@ -887,11 +888,11 @@ public class AnimationController {
 	 */
 	private class AnimationTimer extends Timer {
 		public AnimationTimer() {
-			super(20, true, true);
+			super(100, true, true);
 		}
 
 		/**
-		 * This method is called every 20 milliseconds when the animation is running.
+		 * This method is called every 100 milliseconds when the animation is running.
 		 * It refreshes animation model and graphics state according to the new position.
 		 */
 		@Override
@@ -951,27 +952,22 @@ public class AnimationController {
 		double oldAnimationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getOriginRelativeAnimationTime() : Double.NEGATIVE_INFINITY;
 		double newAnimationTime = currentAnimationPosition.getOriginRelativeAnimationTime();
 		boolean forward = newAnimationTime >= oldAnimationTime;
-
 		int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 		        public double getValue(int index) {
 		            return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
 		        }
 		    }, beginAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward);
-
 		int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
 			    public double getValue(int index) {
 			        return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
 		        }
 		    }, endAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward);
-
 		if (!forward) {
 			beginOrderedIndex--;
 			endOrderedIndex--;
 		}
-
 		double previousBeginAnimationTime = forward ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
 		double previousEndAnimationTime = previousBeginAnimationTime;
-
 		while (true) {
 			boolean beginOrderedIndexValid = beginOrderedIndex >= 0 && beginOrderedIndex < beginAnimationTimeOrderedPrimitives.size();
 			boolean endOrderedIndexValid = endOrderedIndex >= 0 && endOrderedIndex < endAnimationTimeOrderedPrimitives.size();
@@ -981,7 +977,6 @@ public class AnimationController {
 			IAnimationPrimitive endOrderedAnimationPrimitive = endOrderedIndexValid ? endAnimationTimeOrderedPrimitives.get(endOrderedIndex) : null;
 			double beginAnimationTime = beginOrderedIndexValid ? beginOrderedAnimationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() : -1;
 			double endAnimationTime = endOrderedIndexValid ? endOrderedAnimationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime() : -1;
-
 			// check correct ordering
 			if (debug) {
 				if (beginOrderedIndexValid && (forward ? beginAnimationTime < previousBeginAnimationTime : beginAnimationTime > previousBeginAnimationTime))
@@ -990,7 +985,6 @@ public class AnimationController {
 				if (endOrderedIndexValid && (forward ? endAnimationTime < previousEndAnimationTime : endAnimationTime > previousEndAnimationTime))
 					throw new RuntimeException("End ordered animation primitives are not correctly ordered");
 			}
-
 			// NOTE: begin animation position is inclusive with respect to being activated
 			if (forward ? beginAnimationTime > newAnimationTime : beginAnimationTime <= newAnimationTime) {
 				beginOrderedIndex = -1;
@@ -1003,7 +997,6 @@ public class AnimationController {
 				endOrderedIndexValid = false;
 				endOrderedAnimationPrimitive = null;
 			}
-
 			if (forward) {
 				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime <= endAnimationTime)) {
 					if (!activeAnimationPrimitives.contains(beginOrderedAnimationPrimitive)) {
@@ -1014,7 +1007,6 @@ public class AnimationController {
 					}
 					beginOrderedIndex++;
 				}
-
 				// compare using > to allow activations to happen before deactivations having the same time
 				if (endOrderedIndexValid  && (!beginOrderedIndexValid || endAnimationTime < beginAnimationTime)) {
 					if (activeAnimationPrimitives.contains(endOrderedAnimationPrimitive)) {
@@ -1036,7 +1028,6 @@ public class AnimationController {
 					}
 					endOrderedIndex--;
 				}
-
 				// compare using > to allow activations to happen before deactivations having the same time
 				if (beginOrderedIndexValid && (!endOrderedIndexValid || beginAnimationTime > endAnimationTime)) {
 					if (activeAnimationPrimitives.contains(beginOrderedAnimationPrimitive)) {
@@ -1048,20 +1039,20 @@ public class AnimationController {
 					beginOrderedIndex--;
 				}
 			}
-
 			previousBeginAnimationTime = beginAnimationTime;
 			previousEndAnimationTime = endAnimationTime;
 		}
-
 		// check active animation primitives
-// TODO: revive
-//		if (debug)
-//			for (IAnimationPrimitive animationPrimitive : beginOrderedAnimationPrimitives)
-//				if ((animationPrimitive.getBeginAnimationPosition().getAnimationTime() <= getAnimationTime() &&
-//					 getAnimationTime() <= animationPrimitive.getEndAnimationPosition().getAnimationTime()) !=
-//					 activeAnimationPrimitives.contains(animationPrimitive))
-//						throw new RuntimeException("Animation primitive should be active iff its animation time range includes the current animation position");
-
+		if (debug) {
+			for (IAnimationPrimitive animationPrimitive : beginAnimationTimeOrderedPrimitives) {
+				if ((animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() <= getCurrentAnimationTime() &&
+					 getCurrentAnimationTime() <= animationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime()) !=
+					 activeAnimationPrimitives.contains(animationPrimitive))
+				{
+						throw new RuntimeException("Animation primitive should be active iff its animation time range includes the current animation position");
+				}
+			}
+		}
 		modelAnimationPosition = currentAnimationPosition;
 	}
 
@@ -1183,12 +1174,18 @@ public class AnimationController {
                 }
             }
             else if (animationPosition.getOriginRelativeAnimationTime() != null) {
-                // TODO: KLUDGE: FIXME: we don't seem to get here, because even during playing
-                // the animation event numbers are always present in the
-                // animation position
-                // if (getCurrentEventNumber() == 999)
-                //    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(1000L, null, null, null));
-                // Assert.isTrue(false);
+                double currentAnimationTime = getCurrentAnimationTime();
+                double newAnimationTime = animationPosition.getOriginRelativeAnimationTime();
+                boolean forward = currentAnimationTime < newAnimationTime;
+                eventNumber = getCurrentEventNumber();
+                long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                while (eventNumber >= 0 && eventNumber <= lastEventNumber) {
+                    double eventAnimationTime = coordinateSystem.getAnimationTime(eventLog.getEventForEventNumber(eventNumber));
+                    if (forward ? eventAnimationTime >= newAnimationTime : eventAnimationTime <= newAnimationTime)
+                        break;
+                    loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(eventNumber, null, null, null));
+                    eventNumber += forward ? 1 : -1;
+                }
             }
             else
                 throw new RuntimeException("Animation posisiton is unspecified");
@@ -1242,7 +1239,8 @@ public class AnimationController {
             Assert.isTrue(animationPrimitive.getBeginAnimationPosition().getOriginRelativeAnimationTime() != null);
             Assert.isTrue(animationPrimitive.getEndAnimationPosition().getSimulationTime() != null);
             Assert.isTrue(animationPrimitive.getEndAnimationPosition().getOriginRelativeAnimationTime() != null);
-            // TODO: should not need to set the animation time duration
+            // TODO: should not need to set the animation time duration?!
+            // sometimes it is calculated this late? (e.g. duration is specified in terms of event numbers and simulation times)
             if (animationPrimitive.getAnimationTimeDuration() == -1) {
                 AbstractAnimationPrimitive abstractAnimationPrimitive = (AbstractAnimationPrimitive)animationPrimitive;
                 abstractAnimationPrimitive.setAnimationTimeDuration(abstractAnimationPrimitive.getOriginRelativeEndAnimationTime() - abstractAnimationPrimitive.getOriginRelativeBeginAnimationTime());
@@ -1422,12 +1420,12 @@ public class AnimationController {
                 if (animationPrimitiveContext.isCollectingHandleMessageAnimations) {
                     if (animationParameters.enableHandleMessageAnimations) {
                         HandleMessageAnimation animationPrimitive = new HandleMessageAnimation(this, event.getEventNumber(), event.getModuleId());
+                        animationPrimitive.setSourceEventNumber(eventNumber);
                         animationPrimitive.setBeginEventNumber(eventNumber);
                         animationPrimitive.setEndEventNumber(eventNumber);
                         animationPrimitive.setBeginSimulationTime(simulationTime);
-                        animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
-                        animationPrimitive.setSourceEventNumber(eventNumber);
+                        animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitives.add(animationPrimitive);
                         animationPrimitiveContext.handleMessageAnimation = animationPrimitive;
                         animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.handleMessageAnimationShift;
@@ -1464,11 +1462,11 @@ public class AnimationController {
                 }
                 if (isSubmoduleVisible(moduleId) || isCompoundModuleVisible(moduleId)) {
                     CreateModuleAnimation animationPrimitive = new CreateModuleAnimation(this, module, parentModuleId);
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createModuleAnimationShift;
-                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1479,11 +1477,11 @@ public class AnimationController {
                 if (isSubmoduleVisible(moduleDisplayStringChangedEntry.getModuleId())) {
                     DisplayString displayString = new DisplayString(moduleDisplayStringChangedEntry.getDisplayString());
                     SetModuleDisplayStringAnimation animationPrimitive = new SetModuleDisplayStringAnimation(this, moduleDisplayStringChangedEntry.getModuleId(), displayString);
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setModuleDisplayStringAnimationShift;
-                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1499,10 +1497,10 @@ public class AnimationController {
                     gate.setIndex(gateCreatedEntry.getIndex());
                     module.addGate(gate);
                     CreateGateAnimation animationPrimitive = new CreateGateAnimation(this, gate);
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1518,11 +1516,11 @@ public class AnimationController {
                     EventLogModule destinationModule = simulation.getModuleById(destinationModuleId);
                     EventLogGate destinationGate = destinationModule.getGateById(connectionCreatedEntry.getDestGateId());
                     CreateConnectionAnimation animationPrimitive = new CreateConnectionAnimation(this, new EventLogConnection(sourceModule, sourceGate, destinationModule, destinationGate));
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createConnectionAnimationShift;
-                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1541,11 +1539,11 @@ public class AnimationController {
                         ownerModule.addGate(sourceGate);
                     }
                     SetConnectionDisplayStringAnimation animationPrimitive = new SetConnectionDisplayStringAnimation(this, sourceGate, displayString);
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setConnectionDisplayStringAnimationShift;
-                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1555,6 +1553,7 @@ public class AnimationController {
                 BubbleEntry bubbleEntry = (BubbleEntry)eventLogEntry;
                 if (isSubmoduleVisible(bubbleEntry.getModuleId())) {
                     BubbleAnimation animationPrimitive = new BubbleAnimation(this, bubbleEntry.getText(), bubbleEntry.getModuleId());
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setEndEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
@@ -1562,7 +1561,6 @@ public class AnimationController {
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.bubbleAnimationShift;
                     animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1573,15 +1571,15 @@ public class AnimationController {
                 if (isSubmoduleVisible(moduleMethodBeginEntry.getFromModuleId()) && isSubmoduleVisible(moduleMethodBeginEntry.getToModuleId())) {
                     double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                     ModuleMethodCallAnimation animationPrimitive = new ModuleMethodCallAnimation(this, moduleMethodBeginEntry.getMethod(), moduleMethodBeginEntry.getFromModuleId(), moduleMethodBeginEntry.getToModuleId());
+                    animationPrimitive.setSourceEventNumber(eventNumber);
                     animationPrimitive.setBeginEventNumber(eventNumber);
                     animationPrimitive.setEndEventNumber(eventNumber);
                     animationPrimitive.setBeginSimulationTime(simulationTime);
-                    animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                     animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                     animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.moduleMethodCallAnimationShift;
                     animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitive.setSourceEventNumber(eventNumber);
+                    animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                     animationPrimitives.add(animationPrimitive);
                 }
             }
@@ -1602,36 +1600,37 @@ public class AnimationController {
                         if (animationParameters.enableScheduleSelfMessageAnimations) {
                             double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                             ScheduleSelfMessageAnimation animationPrimitive = new ScheduleSelfMessageAnimation(this, beginSendEntry.getContextModuleId(), message);
+                            animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitive.setBeginEventNumber(eventNumber);
                             animationPrimitive.setEndEventNumber(eventNumber);
                             animationPrimitive.setBeginSimulationTime(simulationTime);
-                            animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                             animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleSelfMessageAnimationShift;
                             animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            animationPrimitive.setSourceEventNumber(eventNumber);
+                            animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitives.add(animationPrimitive);
                         }
                     }
                     else {
                         if (animationParameters.enableSendSelfMessageAnimations) {
+                            BigDecimal arrivalTime = endSendEntry.getArrivalTime();
+                            BigDecimal simulationTimeDuration = arrivalTime.subtract(simulationTime);
                             SendSelfMessageAnimation animationPrimitive = new SendSelfMessageAnimation(this, beginSendEntry.getContextModuleId(), message);
+                            animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitive.setBeginEventNumber(eventNumber);
+                            animationPrimitive.setEndEventNumber(coordinateSystem.getLastEventNotAfterSimulationTime(arrivalTime).getEventNumber());
                             animationPrimitive.setBeginSimulationTime(simulationTime);
-                            BigDecimal simulationTimeDuration = endSendEntry.getArrivalTime().subtract(simulationTime);
                             animationPrimitive.setSimulationTimeDuration(simulationTimeDuration);
-                            animationPrimitive.setEndEventNumber(coordinateSystem.getLastEventNotAfterSimulationTime(animationPrimitive.getEndSimulationTime()).getEventNumber());
                             animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             if (simulationTimeDuration.equals(BigDecimal.getZero())) {
                                 double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
-                                animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                                 animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                                animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             }
                             else
                                 // KLUDGE: ?
                                 animationPrimitive.setFrameRelativeEndAnimationTime(0.0);
-                            animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(animationPrimitive);
                         }
                     }
@@ -1652,15 +1651,15 @@ public class AnimationController {
                         if (animationParameters.enableScheduleDirectAnimations) {
                             double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                             ScheduleMessageAnimation animationPrimitive = new ScheduleMessageAnimation(this, beginSendEntry.getContextModuleId(), message);
+                            animationPrimitive.setSourceEventNumber(eventNumber);
                             animationPrimitive.setBeginEventNumber(eventNumber);
                             animationPrimitive.setEndEventNumber(eventNumber);
                             animationPrimitive.setBeginSimulationTime(simulationTime);
-                            animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                             animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleDirectAnimationShift;
                             animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            animationPrimitive.setSourceEventNumber(eventNumber);
+                            animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                             animationPrimitives.add(animationPrimitive);
                         }
                     }
@@ -1670,29 +1669,29 @@ public class AnimationController {
                             BigDecimal propagationDelay = sendDirectEntry.getPropagationDelay();
                             BigDecimal simulationTimeDuration = transmissionDelay.add(propagationDelay);
                             SendDirectAnimation sendDirectAnimation = new SendDirectAnimation(this, propagationDelay, transmissionDelay, senderModuleId, destModuleId, message);
+                            sendDirectAnimation.setSourceEventNumber(eventNumber);
                             sendDirectAnimation.setBeginEventNumber(eventNumber);
-                            sendDirectAnimation.setBeginSimulationTime(simulationTime);
-                            sendDirectAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            // KLUDGE: ?
-                            sendDirectAnimation.setFrameRelativeEndAnimationTime(0.0);
-                            sendDirectAnimation.setSimulationTimeDuration(simulationTimeDuration);
                             sendDirectAnimation.setEndEventNumber(coordinateSystem.getLastEventNotAfterSimulationTime(sendDirectAnimation.getEndSimulationTime()).getEventNumber());
+                            sendDirectAnimation.setBeginSimulationTime(simulationTime);
+                            sendDirectAnimation.setSimulationTimeDuration(simulationTimeDuration);
+                            sendDirectAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                            // KLUDGE: simply 0 just because it might be in a separate event?
+                            sendDirectAnimation.setFrameRelativeEndAnimationTime(0.0);
                             if (simulationTimeDuration.equals(BigDecimal.getZero()))
                                 sendDirectAnimation.setAnimationTimeDuration(coordinateSystem.getAnimationTimeDelta(0));
-                            sendDirectAnimation.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(sendDirectAnimation);
-                            // TODO: this should not be the default here
+                            // TODO: SendBroadcastAnimation should not be used by default
                             SendBroadcastAnimation sendBroadcastAnimation = new SendBroadcastAnimation(this, propagationDelay, transmissionDelay, senderModuleId, destModuleId, message);
+                            sendBroadcastAnimation.setSourceEventNumber(eventNumber);
                             sendBroadcastAnimation.setBeginEventNumber(eventNumber);
-                            sendBroadcastAnimation.setBeginSimulationTime(simulationTime);
-                            sendBroadcastAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            // KLUDGE: ?
-                            sendBroadcastAnimation.setFrameRelativeEndAnimationTime(0.0);
-                            sendBroadcastAnimation.setSimulationTimeDuration(simulationTimeDuration);
                             sendBroadcastAnimation.setEndEventNumber(coordinateSystem.getLastEventNotAfterSimulationTime(sendBroadcastAnimation.getEndSimulationTime()).getEventNumber());
+                            sendBroadcastAnimation.setBeginSimulationTime(simulationTime);
+                            sendBroadcastAnimation.setSimulationTimeDuration(simulationTimeDuration);
+                            sendBroadcastAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                            // KLUDGE: simply 0 just because it might be in a separate event?
+                            sendBroadcastAnimation.setFrameRelativeEndAnimationTime(0.0);
                             if (simulationTimeDuration.equals(BigDecimal.getZero()))
                                 sendBroadcastAnimation.setAnimationTimeDuration(coordinateSystem.getAnimationTimeDelta(0));
-                            sendBroadcastAnimation.setSourceEventNumber(eventNumber);
                             animationPrimitives.add(sendBroadcastAnimation);
                         }
                     }
@@ -1708,55 +1707,58 @@ public class AnimationController {
                     if (animationParameters.enableScheduleMessageAnimations && isSubmoduleVisible(beginSendEntry.getContextModuleId())) {
                         double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
                         ScheduleMessageAnimation animationPrimitive = new ScheduleMessageAnimation(this, beginSendEntry.getContextModuleId(), message);
+                        animationPrimitive.setSourceEventNumber(eventNumber);
                         animationPrimitive.setBeginEventNumber(eventNumber);
                         animationPrimitive.setEndEventNumber(eventNumber);
                         animationPrimitive.setBeginSimulationTime(simulationTime);
-                        animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                         animationPrimitive.setSimulationTimeDuration(BigDecimal.getZero());
                         animationPrimitive.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleMessageAnimationShift;
                         animationPrimitive.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                        animationPrimitive.setSourceEventNumber(eventNumber);
+                        animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
                         animationPrimitives.add(animationPrimitive);
                     }
                 }
                 else {
                     // KLUDGE: ?
-                    if (animationParameters.enableSendMessageAnimations && false) {
-                        BigDecimal simulationTimeDelta = BigDecimal.getZero();
-                        double localFrameRelativeAnimationTime = animationPrimitiveContext.frameRelativeAnimationTime;
-                        for (int i = beginSendEntryIndex + 1; i < endSendEntryIndex; i++) {
-                            SendHopEntry sendHopEntry = (SendHopEntry)event.getEventLogEntry(i);
-                            BigDecimal transmissionDelay = sendHopEntry.getTransmissionDelay();
-                            BigDecimal propagationDelay = sendHopEntry.getPropagationDelay();
-                            BigDecimal simulationTimeDuration = transmissionDelay.add(propagationDelay);
-                            // TODO: also check for arrival module
-                            if (isSubmoduleVisible(sendHopEntry.getSenderModuleId())) {
-                                EventLogGate gate = new EventLogGate(simulation.getModuleById(sendHopEntry.getSenderModuleId()), sendHopEntry.getSenderGateId());
-                                SendMessageAnimation animationPrimitive = new SendMessageAnimation(this, propagationDelay, transmissionDelay, gate, message);
-                                animationPrimitive.setBeginSimulationTime(simulationTime.add(simulationTimeDelta));
-                                animationPrimitive.setFrameRelativeBeginAnimationTime(localFrameRelativeAnimationTime);
-                                animationPrimitive.setSourceEventNumber(eventNumber);
-                                animationPrimitives.add(animationPrimitive);
-                                animationPrimitive.setSimulationTimeDuration(simulationTimeDuration);
-                                // KLUDGE: this lookup must be based on animation time, ne?
-                                animationPrimitive.setBeginEventNumber(coordinateSystem.getLastEventNotAfterSimulationTime(animationPrimitive.getBeginSimulationTime()).getEventNumber());
-                                animationPrimitive.setEndEventNumber(coordinateSystem.getLastEventNotAfterSimulationTime(animationPrimitive.getEndSimulationTime()).getEventNumber());
-                                if (simulationTimeDuration.equals(BigDecimal.getZero())) {
-                                    double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
-                                    animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
-                                    localFrameRelativeAnimationTime += animationTimeDuration;
-                                    animationPrimitive.setFrameRelativeEndAnimationTime(localFrameRelativeAnimationTime);
-                                }
-                                else {
-                                    // KLUDGE: ?
-                                    localFrameRelativeAnimationTime = 0;
-                                    animationPrimitive.setFrameRelativeEndAnimationTime(0.0);
-                                }
-                            }
-                            simulationTimeDelta = simulationTimeDelta.add(simulationTimeDuration);
-                        }
-                    }
+//                    if (animationParameters.enableSendMessageAnimations) {
+//                        BigDecimal simulationTimeDelta = BigDecimal.getZero();
+//                        double localFrameRelativeAnimationTime = animationPrimitiveContext.frameRelativeAnimationTime;
+//                        for (int i = beginSendEntryIndex + 1; i < endSendEntryIndex; i++) {
+//                            SendHopEntry sendHopEntry = (SendHopEntry)event.getEventLogEntry(i);
+//                            BigDecimal propagationDelay = sendHopEntry.getPropagationDelay();
+//                            BigDecimal transmissionDelay = sendHopEntry.getTransmissionDelay();
+//                            BigDecimal simulationTimeDuration = transmissionDelay.add(propagationDelay);
+//                            // TODO: also check for arrival module
+//                            if (isSubmoduleVisible(sendHopEntry.getSenderModuleId())) {
+//                                BigDecimal beginSimulationTime = simulationTime.add(simulationTimeDelta);
+//                                EventLogGate gate = new EventLogGate(simulation.getModuleById(sendHopEntry.getSenderModuleId()), sendHopEntry.getSenderGateId());
+//                                SendMessageAnimation animationPrimitive = new SendMessageAnimation(this, propagationDelay, transmissionDelay, gate, message);
+//                                animationPrimitive.setSourceEventNumber(eventNumber);
+//                                long beginEventNumber = coordinateSystem.getLastEventNotAfterSimulationTime(beginSimulationTime).getEventNumber();
+//                                long endEventNumber = coordinateSystem.getLastEventNotAfterSimulationTime(animationPrimitive.getEndSimulationTime()).getEventNumber();
+//                                animationPrimitive.setBeginEventNumber(Math.max(eventNumber, beginEventNumber));
+//                                animationPrimitive.setEndEventNumber(Math.max(eventNumber, endEventNumber));
+//                                animationPrimitive.setBeginSimulationTime(beginSimulationTime);
+//                                animationPrimitive.setSimulationTimeDuration(simulationTimeDuration);
+//                                animationPrimitive.setFrameRelativeBeginAnimationTime(localFrameRelativeAnimationTime);
+//                                // KLUDGE: this lookup must be based on animation time, ne?
+//                                animationPrimitives.add(animationPrimitive);
+//                            }
+//                            if (simulationTimeDuration.equals(BigDecimal.getZero())) {
+//                                double animationTimeDuration = coordinateSystem.getAnimationTimeDelta(0);
+//                                localFrameRelativeAnimationTime += animationTimeDuration;
+//                                animationPrimitive.setFrameRelativeEndAnimationTime(localFrameRelativeAnimationTime);
+//                                animationPrimitive.setAnimationTimeDuration(animationTimeDuration);
+//                            }
+//                            else {
+//                                // KLUDGE: is this really 0 just because it is probably another event's animation time frame
+//                                localFrameRelativeAnimationTime = 0;
+//                                animationPrimitive.setFrameRelativeEndAnimationTime(0.0);
+//                            }
+//                            simulationTimeDelta = simulationTimeDelta.add(simulationTimeDuration);
+//                        }
+//                    }
                 }
             }
         }

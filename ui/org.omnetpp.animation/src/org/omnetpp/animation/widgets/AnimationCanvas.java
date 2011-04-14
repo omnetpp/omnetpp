@@ -53,8 +53,6 @@ public class AnimationCanvas
 
     private ISelectableFigure selectedFigure;
 
-    private Object selectedElement;
-
     private boolean isSelectionChangeInProgress;
 
 	public AnimationCanvas(Composite parent, int style) {

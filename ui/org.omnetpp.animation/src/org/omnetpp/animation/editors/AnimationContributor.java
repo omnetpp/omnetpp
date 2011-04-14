@@ -608,6 +608,11 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                 AnimationConfigurationDialog configurationDialog = new AnimationConfigurationDialog(Display.getCurrent().getActiveShell(), animationController.getAnimationParameters());
                 long eventNumber = animationController.getCurrentEventNumber();
                 if (configurationDialog.open() == Window.OK) {
+                    // TODO: KLUDGE: the model has to be cleared and rebuilt,
+                    // but this clearInternalState sux here, because
+                    // gotoEventNumber has a stopAnimationInternal in it and it
+                    // tries to notify the listeners without a valid internal
+                    // state
                     animationController.clearInternalState();
                     animationController.gotoEventNumber(eventNumber);
                     animationPositionContribution.configureSlider();
