@@ -205,36 +205,6 @@ std::string Sizeof::str(std::string args[], int numargs)
     return std::string("sizeof(") + prefix + ident + ")";
 }
 
-//---
-
-Value XMLDoc::evaluate(cComponent *context, Value args[], int numargs)
-{
-    ASSERT((numargs==1 || numargs==2) && args[0].type==Value::STR && (numargs==1 || args[1].type==Value::STR));
-    cXMLElement *node;
-    if (numargs==1)
-    {
-        node = ev.getXMLDocument(args[0].s.c_str(), NULL);
-        if (!node)
-            throw cRuntimeError("xmldoc(\"%s\"): element not found", args[0].s.c_str());
-    }
-    else
-    {
-        node = ev.getXMLDocument(args[0].s.c_str(), args[1].s.c_str());
-        if (!node)
-            throw cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", args[0].s.c_str(), args[1].s.c_str());
-    }
-    return node;
-}
-
-std::string XMLDoc::str(std::string args[], int numargs)
-{
-    ASSERT(numargs==1 || numargs==2);
-    if (numargs==1)
-        return std::string("xmldoc(")+args[0]+")";
-    else
-        return std::string("xmldoc(")+args[0]+", "+args[1]+")";
-}
-
 };
 
 NAMESPACE_END

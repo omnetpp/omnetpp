@@ -1488,23 +1488,11 @@ expression
                 {
                   if (np->getParseExpressionsFlag()) $$ = createExpression($1);
                 }
-        | xmldocvalue
-                {
-                  if (np->getParseExpressionsFlag()) $$ = createExpression($1);
-                }
         ;
 
 /*
  * Expressions
  */
-/* FIXME TBD: storePos() stuff for expressions */
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3, $5); }
-        | XMLDOC '(' stringliteral ')'
-                { if (np->getParseExpressionsFlag()) $$ = createFunction("xmldoc", $3); }
-        ;
-
 expr
         : simple_expr
         | '(' expr ')'
@@ -1577,27 +1565,27 @@ expr
         | STRINGTYPE '(' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
 
-        | NAME '(' ')'
+        | funcname '(' ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1)); }
-        | NAME '(' expr ')'
+        | funcname '(' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3); }
-        | NAME '(' expr ',' expr ')'
+        | funcname '(' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5); }
-        | NAME '(' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15, $17); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15, $17, $19); }
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
                 { if (np->getParseExpressionsFlag()) $$ = createFunction(toString(@1), $3, $5, $7, $9, $11, $13, $15, $17, $19, $21); }
 
         ;
@@ -1606,6 +1594,12 @@ simple_expr
         : identifier
         | special_expr
         | literal
+        ;
+
+funcname
+        : NAME
+        | XMLDOC
+        | XMLTYPE
         ;
 
 identifier

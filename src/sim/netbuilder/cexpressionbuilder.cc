@@ -191,16 +191,6 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
         else
             throw cRuntimeError("dynamic module builder: sizeof(module.ident): not yet supported"); //TBD
     }
-    else if (!strcmp(funcname, "xmldoc"))
-    {
-        // push args first
-        for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-            doNode(child);
-
-        // syntax is xmldoc(file) or xmldoc(file, xpath); both args are string expressions
-        ASSERT(argcount==1 || argcount==2);
-        elems[pos++] = new NEDSupport::XMLDoc(argcount==2);
-    }
     else // normal function
     {
         // push args first

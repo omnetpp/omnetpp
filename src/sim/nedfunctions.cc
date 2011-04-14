@@ -689,6 +689,33 @@ DEF(nedf_poisson,
     return argv[0];
 })
 
+//
+// XML functions
+//
+
+DEF(nedf_xmldoc,
+    "xml xmldoc(string filename, string xpath?)",
+    "xml",
+    "Parses the given XML file into a cXMLElement tree, and returns the root element. "
+    "When called with two arguments, it returns the first element from the tree that "
+    "matches the expression given in simplified XPath syntax.",
+{
+    cXMLElement *node;
+    if (argc==1)
+    {
+        node = ev.getXMLDocument(argv[0].s.c_str(), NULL);
+        if (!node)
+            throw cRuntimeError("xmldoc(\"%s\"): element not found", argv[0].s.c_str());
+    }
+    else
+    {
+        node = ev.getXMLDocument(argv[0].s.c_str(), argv[1].s.c_str());
+        if (!node)
+            throw cRuntimeError("xmldoc(\"%s\", \"%s\"): element not found", argv[0].s.c_str(), argv[1].s.c_str());
+    }
+    return node;
+})
+
 
 //
 // misc utility functions

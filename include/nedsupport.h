@@ -126,23 +126,6 @@ class Sizeof : public cDynamicExpression::Functor
     virtual std::string str(std::string args[], int numargs);
 };
 
-/**
- * xmldoc operator: xmldoc(file) or xmldoc(file,xpath)
- */
-class XMLDoc : public cDynamicExpression::Functor
-{
-  protected:
-    bool withXPath;  // whether 1 or 2 args
-  public:
-    XMLDoc(bool withXPath) {this->withXPath = withXPath;}
-    XMLDoc *dup() const {return new XMLDoc(withXPath);}
-    virtual const char *getFullName() const {return "xmldoc";}
-    virtual const char *getArgTypes() const {return withXPath ? "SS" : "S";}
-    virtual char getReturnType() const {return 'X';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
-    virtual std::string str(std::string args[], int numargs);
-};
-
 /*XXX TODO
 static Value getSizeofIdent(cComponent *context, Value args[], int numargs);
 static Value getSizeofGate(cComponent *context, Value args[], int numargs);

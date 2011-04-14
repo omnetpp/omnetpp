@@ -133,20 +133,12 @@ static double parseQuantity(const char *text, std::string& unit)
 
 expression
         : expr
-        | xmldocvalue
         | ASK_
                 { yyerror("\"ask\" is not supported here"); }
         | DEFAULT_
                 { yyerror("\"default\" is not supported here"); }
         | DEFAULT_ '(' expr ')'
                 { yyerror("\"default()\" is not supported here"); }
-        ;
-
-xmldocvalue
-        : XMLDOC_ '(' expr ')'
-                { *e++ = new NEDSupport::XMLDoc(false); }
-        | XMLDOC_ '(' expr ',' expr ')'
-                { *e++ = new NEDSupport::XMLDoc(true); }
         ;
 
 expr
@@ -220,15 +212,15 @@ expr
         | STRINGTYPE '(' expr ')'
                 { addFunction("string",1); }
 
-        | NAME '(' ')'
+        | funcname '(' ')'
                 { addFunction($1,0); delete [] $1; }
-        | NAME '(' expr ')'
+        | funcname '(' expr ')'
                 { addFunction($1,1); delete [] $1; }
-        | NAME '(' expr ',' expr ')'
+        | funcname '(' expr ',' expr ')'
                 { addFunction($1,2); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ')'
                 { addFunction($1,3); delete [] $1; }
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ')'
                 { addFunction($1,4); delete [] $1; }
          ;
 
@@ -236,6 +228,14 @@ simple_expr
         : identifier
         | special_expr
         | literal
+        ;
+
+funcname
+        : NAME
+        | XMLDOC_
+                { $$ = opp_strdup("xmldoc"); }
+        | XMLTYPE
+                { $$ = opp_strdup("xml"); }
         ;
 
 identifier
