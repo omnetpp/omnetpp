@@ -57,7 +57,7 @@ public class BuildSpecification implements Cloneable {
 
     private static class FolderSpec {
         int makefileType; // CUSTOM or MAKEMAKE (NONE's are not stored)
-        MakemakeOptions makemakeOptions; // if type==MAKEMAKE
+        MakemakeOptions makemakeOptions; // if type==MAKEMAKE, otherwise null
     }
 
     private IProject project;
@@ -257,7 +257,8 @@ public class BuildSpecification implements Cloneable {
                 String projectRelativePath = folder.equals(project) ? "." : folder.getProjectRelativePath().toString();
                 dirElement.setAttribute(PATH_ATTR, projectRelativePath);
                 dirElement.setAttribute(TYPE_ATTR, folderSpec.makefileType == MAKEMAKE ? "makemake" : "custom");
-                dirElement.setAttribute(MAKEMAKEOPTIONS_ATTR, folderSpec.makemakeOptions.toString());
+                if (folderSpec.makemakeOptions != null)
+                    dirElement.setAttribute(MAKEMAKEOPTIONS_ATTR, folderSpec.makemakeOptions.toString());
                 root.appendChild(dirElement);
             }
 
