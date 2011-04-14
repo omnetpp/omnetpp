@@ -35,7 +35,17 @@ void SAXParser::setHandler(SAXHandler *sh)
 
 bool SAXParser::parse(const char *filename)
 {
-    strcpy(errortext, "XML input is not supported: this copy of NEDXML was "
+    return doParse(filename, NULL);
+}
+
+bool SAXParser::parseContent(const char *content)
+{
+    return doParse(NULL, content);
+}
+
+bool SAXParser::doParse(const char *filename, const char *content)
+{
+    strcpy(errortext, "XML input is not supported: this copy of OMNeT++ was "
                       "compiled without an XML parser (libXML or Expat)");
     return false;
 }

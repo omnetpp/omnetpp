@@ -108,6 +108,10 @@ class NEDXML_API SAXParser
     SAXHandler *saxhandler;
     void *currentparser;
 
+  protected:
+    // allows for a common implementation of parse() and parseContent()
+    bool doParse(const char *filename, const char *content);
+
   public:
     /**
      * Constructor
@@ -126,6 +130,14 @@ class NEDXML_API SAXParser
      * cause of the error.
      */
     bool parse(const char *filename);
+
+    /**
+     * Parse the given string as XML content. Methods of the SAX handler
+     * will be called as the parser processes the file. Returns false if
+     * there was an error; in that case use getErrorMessage() to learn the
+     * cause of the error.
+     */
+    bool parseContent(const char *content);
 
     /**
      * Returns the current line number in the input. Can be called from SAX handler code.

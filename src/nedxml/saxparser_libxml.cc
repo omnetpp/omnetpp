@@ -130,9 +130,20 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
     }
 }
 
-
 bool SAXParser::parse(const char *filename)
 {
+    return doParse(filename, NULL);
+}
+
+bool SAXParser::parseContent(const char *content)
+{
+    return doParse(NULL, content);
+}
+
+bool SAXParser::doParse(const char *filename, const char *content)
+{
+    assert((filename==NULL) != (content==NULL));  // exactly one of them is non-NULL
+
     //
     // When there's a DTD given, we *must* use it, and complete default attrs from it.
     //
@@ -159,7 +170,11 @@ bool SAXParser::parse(const char *filename)
     //ctxt->vctxt.warning = NULL;
     //ctxt->vctxt.error = NULL;
     xmlStructuredError = dontPrintError; // hack to prevent errors being written to stdout
-    xmlDocPtr doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
+    xmlDocPtr doc;
+    if (filename)
+        doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
+    else
+        doc = xmlCtxtReadMemory(ctxt, content, strlen(content), "string-literal", NULL, options);
 
     // check if parsing succeeded
     if (!doc)
@@ -369,6 +384,13 @@ bool SAXParser::parse(const char *filename)
     fclose(f);
 
     return ok;
+}
+
+bool SAXParser::parseContent(const char *xml)
+{
+    sprintf(errortext, "XML parsing of string literals is not supported with "
+                       "this libXML2 version, at least version 2.6.0 is required");
+    return false;
 }
 
 int SAXParser::getCurrentLineNumber()

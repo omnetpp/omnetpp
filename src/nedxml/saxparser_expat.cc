@@ -80,6 +80,22 @@ static void expatStartDoctypeDeclHandler(void *userData,
     hasDTD = true;
 }
 
+static XML_Parser expatCreateParser(void *userData)
+{
+    // note: XML_Parser is actually a pointer to a dynamically allocated struct
+    XML_Parser parser = XML_ParserCreate(NULL);
+    XML_SetUserData(parser, userData);
+    XML_SetStartElementHandler(parser, expatStartElementHandler);
+    XML_SetEndElementHandler(parser, expatEndElementHandler);
+    XML_SetCharacterDataHandler(parser, expatCharacterDataHandler);
+    XML_SetProcessingInstructionHandler(parser, expatProcessingInstructionHandler);
+    XML_SetCommentHandler(parser, expatCommentHandler);
+    XML_SetStartCdataSectionHandler(parser, expatStartCdataSectionHandler);
+    XML_SetEndCdataSectionHandler(parser, expatEndCdataSectionHandler);
+    XML_SetStartDoctypeDeclHandler(parser, expatStartDoctypeDeclHandler);
+    return parser;
+}
+
 SAXParser::SAXParser()
 {
     saxhandler = NULL;
@@ -102,16 +118,7 @@ bool SAXParser::parse(const char *filename)
     }
 
     // prepare parser
-    XML_Parser parser = XML_ParserCreate(NULL);
-    XML_SetUserData(parser, saxhandler);
-    XML_SetStartElementHandler(parser, expatStartElementHandler);
-    XML_SetEndElementHandler(parser, expatEndElementHandler);
-    XML_SetCharacterDataHandler(parser, expatCharacterDataHandler);
-    XML_SetProcessingInstructionHandler(parser, expatProcessingInstructionHandler);
-    XML_SetCommentHandler(parser, expatCommentHandler);
-    XML_SetStartCdataSectionHandler(parser, expatStartCdataSectionHandler);
-    XML_SetEndCdataSectionHandler(parser, expatEndCdataSectionHandler);
-    XML_SetStartDoctypeDeclHandler(parser, expatStartDoctypeDeclHandler);
+    XML_Parser parser = expatCreateParser(saxhandler);
     currentparser = &parser;
 
     // read file chunk-by-chunk and parse it
@@ -127,8 +134,8 @@ bool SAXParser::parse(const char *filename)
             sprintf(errortext, "Parse error: %s at line %d",
                     XML_ErrorString(XML_GetErrorCode(parser)),
                     XML_GetCurrentLineNumber(parser));
-            err=true;
-            done=true;
+            err = true;
+            done = true;
         }
         if (hasDTD)
         {
@@ -137,7 +144,7 @@ bool SAXParser::parse(const char *filename)
                     "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
                     " %s",
                     filename);
-            err=true;
+            err = true;
             done = true;
         }
     } while (!done);
@@ -146,6 +153,42 @@ bool SAXParser::parse(const char *filename)
     XML_ParserFree(parser);
     fclose(f);
     return !err;
+}
+
+bool SAXParser::parseContent(const char *content)
+{
+    // prepare parser
+    XML_Parser parser = expatCreateParser(saxhandler);
+    currentparser = &parser;
+
+    bool err = false;
+    hasDTD = false;
+
+    if (!XML_Parse(parser, content, strlen(content), true))
+    {
+        sprintf(errortext, "Parse error: %s at line %d",
+                XML_ErrorString(XML_GetErrorCode(parser)),
+                XML_GetCurrentLineNumber(parser));
+        err = true;
+    }
+    if (hasDTD)
+    {
+        sprintf(errortext, "Cannot validate document and complete default attributes "
+                "from DTD, because underlying parser (Expat) does not support it. "
+                "Recompile OMNeT++ with another parser (LibXML), or remove DOCTYPE from "
+                "all XML content");
+        err = true;
+    }
+
+    // cleanup and return
+    XML_ParserFree(parser);
+    return !err;
+}
+
+bool SAXParser::doParse(const char *filename, const char *content)
+{
+    // function not used with Expat
+    return false;
 }
 
 int SAXParser::getCurrentLineNumber()
