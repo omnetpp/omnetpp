@@ -447,7 +447,7 @@ sub read_file {
            return "-";
        }
    }
-   read(INFILE, $txt, 100000) || die "cannot read $filename";
+   defined read(INFILE, $txt, 100000) || die "cannot read $filename";
    close INFILE;
    return $txt;
 }
