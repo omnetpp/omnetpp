@@ -1,0 +1,53 @@
+%description:
+Check xml(): no such element in XML document
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+
+%file: test.ned
+
+simple Simple
+{
+    parameters:
+        xml xmlconfig;
+}
+
+simple Test extends Simple
+{
+    parameters:
+        @isNetwork(true);
+        string doc = "<foo id='1'> <foo id='2' color='red'>one</foo> <foo id='3'> <bar id='3' color='yellow'> <baz id='5' color='green' weight='heavy'>six</baz> </bar> </foo> </foo>";  // same as in the corresponding xmldoc test
+        xmlconfig = xml(doc, "foo/nothing");
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Simple : public cSimpleModule
+{
+  public:
+    Simple() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Simple);
+
+void Simple::activity()
+{
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains: stdout
+element not found.
+

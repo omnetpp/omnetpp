@@ -364,14 +364,38 @@ class SIM_API cEnvir
      * at the beginning of the path expression, even if it is not explicitly
      * there.
      *
-     * The method throws an exception if the document cannot be found or the
-     * given path expression is invalid. Returns NULL if the element denoted
-     * by the path expression does not exist in the document.
+     * The method throws an exception if the document cannot be found, there
+     * was a parse error, or the given path expression is invalid. It returns
+     * NULL if the element denoted by the path expression does not exist in the
+     * document.
      *
      * The returned object tree should not be modified because cEnvir may
      * cache the file and return the same pointer to several callers.
      */
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL) = 0;
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL) = 0;
+
+    /**
+     * Returns the parsed form of an XML content string. The first argument
+     * is the XML content string. The optional second argument
+     * may contain an XPath-like expression to denote an element within
+     * the XML document. If path is not present, the root element is returned.
+     *
+     * See documentation of cXMLElement::getElementByPath() for path syntax.
+     * There is a difference however: paths starting with "." are not
+     * accepted, and the first path component must name the root element
+     * of the document (with getElementByPath() it would match a child element
+     * of the current element). That is, a leading "/" is always assumed
+     * at the beginning of the path expression, even if it is not explicitly
+     * there.
+     *
+     * The method throws an exception if there was a parse error or if the given
+     * path expression is invalid. It returns NULL if the element denoted
+     * by the path expression does not exist in the document.
+     *
+     * The returned object tree should not be modified because cEnvir may
+     * cache the tree and return the same pointer to several callers.
+     */
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL) = 0;
 
     /**
      * Removes the given document from the XML document cache (if cached), and
@@ -381,14 +405,30 @@ class SIM_API cEnvir
      * no longer be referenced. The call has no effect if the given file
      * does not exist or has not yet been loaded.
      *
-     * CAUTION: As of version 4.1, this is not a safe operation, as module
+     * CAUTION: As of version 4.1, this is not a safe operation! Module
      * parameters (cPar) of type "xml" hold pointers to the element trees
-     * returned by getXMLDocument().
+     * returned by getXMLDocument(), and this method makes those pointers
+     * invalid.
      */
     virtual void forgetXMLDocument(const char *filename) = 0;
 
     /**
-     * Clears the XML document cache, and deletes the cached cXMLElement trees.
+     * Removes the given document from the XML document cache (if cached), and
+     * deletes the object tree from memory. After forgetXMLDocument(),
+     * cXMLElement objects returned for the same content string by
+     * getParsedXMLString() should no longer be referenced. The call has no
+     * effect if the given string has not yet been parsed.
+     *
+     * CAUTION: As of version 4.1, this is not a safe operation! Module
+     * parameters (cPar) of type "xml" hold pointers to the element trees
+     * returned by getXMLDocument(), and this method makes those pointers
+     * invalid.
+     */
+    virtual void forgetParsedXMLString(const char *content) = 0;
+
+    /**
+     * Clears the cache of loaded XML documents, and deletes the corresponding
+     * cXMLElement trees.
      *
      * CAUTION: As of version 4.1, this is not a safe operation, as module
      * parameters (cPar) of type "xml" hold pointers to the element trees
@@ -396,6 +436,17 @@ class SIM_API cEnvir
      * invalid.
      */
     virtual void flushXMLDocumentCache() = 0;
+
+    /**
+     * Clears the cache of parsed XML content strings, and deletes the
+     * corresponding cXMLElement trees.
+     *
+     * CAUTION: As of version 4.1, this is not a safe operation, as module
+     * parameters (cPar) of type "xml" hold pointers to the element trees
+     * returned by getXMLDocument(), and this method makes those pointers
+     * invalid.
+     */
+    virtual void flushXMLParsedContentCache() = 0;
 
     /**
      * Called from cSimpleModule, it returns how much extra stack space

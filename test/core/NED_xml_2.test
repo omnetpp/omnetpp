@@ -1,0 +1,45 @@
+%description:
+Check xml(): parse error
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        xml xmlconfig = xml("<foo>...</bar>");
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+}
+
+}; //namespace
+
+%exitcode: 1
+
+%contains: stdout
+Error parsing XML string:
+

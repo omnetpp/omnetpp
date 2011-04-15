@@ -1,3 +1,13 @@
+2011-04-15  Andras Varga
+
+	* cEnvir: new methods:
+	- cXMLElement *getParsedXMLString(const char *content, const char *xpath);
+	- void forgetParsedXMLString(const char *content);
+	- void flushXMLParsedContentCache();
+	The first one is needed for the new xml() NED function; the other two
+	are added for symmetry with the forgetXMLDocument() and
+	flushXMLDocumentCache() methods.
+
 2011-04-04  Andras Varga
 
 	* cRegistrationList::get() renamed to find(), for consistency with

@@ -141,7 +141,7 @@ cXMLDocCache::cXMLDocCache()
 
 cXMLDocCache::~cXMLDocCache()
 {
-    for (XMLDocMap::iterator i=cache.begin(); i!=cache.end(); ++i)
+    for (XMLDocMap::iterator i=documentCache.begin(); i!=documentCache.end(); ++i)
         delete i->second;
 }
 
@@ -164,40 +164,86 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
 #endif
 }
 
+cXMLElement *cXMLDocCache::parseContent(const char *content)
+{
+#ifndef WITH_NETBUILDER
+    throw cRuntimeError("Cannot load parse XML string': XML support currently requires "
+                        "WITH_NETBUILDER option (check configure.user or configuser.vc, then "
+                        "rebuild OMNeT++)");
+#else
+    cXMLSAXHandler sh("content");
+    SAXParser parser;
+
+    parser.setHandler(&sh);
+    bool ok = parser.parseContent(content);
+    if (!ok)
+        throw cRuntimeError("Error parsing XML string: %s", parser.getErrorMessage());
+
+    return sh.getTree();
+#endif
+}
+
 cXMLElement *cXMLDocCache::getDocument(const char *filename)
 {
     // if found, return it from cache
-    XMLDocMap::iterator it = cache.find(std::string(filename));
-    if (it != cache.end())
+    std::string key = tidyFilename(toAbsolutePath(filename).c_str());
+    XMLDocMap::iterator it = documentCache.find(key);
+    if (it != documentCache.end())
         return it->second;
 
     // load and store in cache
-    // TODO resolve <xi:include>
     cXMLElement *documentnode = parseDocument(filename);
+    documentCache[key] = documentnode;
+    return documentnode;
+}
 
-    std::string key = tidyFilename(toAbsolutePath(filename).c_str());
-    cache[key] = documentnode;
+cXMLElement *cXMLDocCache::getParsed(const char *content)
+{
+    // if found, return it from cache
+    XMLDocMap::iterator it = contentCache.find(content);
+    if (it != contentCache.end())
+        return it->second;
 
+    // parse and store in cache
+    cXMLElement *documentnode = parseContent(content);
+    contentCache[content] = documentnode;
     return documentnode;
 }
 
 void cXMLDocCache::forgetDocument(const char *filename)
 {
     std::string key = tidyFilename(toAbsolutePath(filename).c_str());
-
-    XMLDocMap::iterator it = cache.find(key);
-    if (it != cache.end())
+    XMLDocMap::iterator it = documentCache.find(key);
+    if (it != documentCache.end())
     {
         cXMLElement *node = it->second;
-        cache.erase(it);
+        documentCache.erase(it);
         delete node;
     }
 }
 
-void cXMLDocCache::flushCache()
+void cXMLDocCache::forgetParsed(const char *content)
 {
-    for (XMLDocMap::iterator i=cache.begin(); i!=cache.end(); ++i)
+    XMLDocMap::iterator it = contentCache.find(content);
+    if (it != contentCache.end())
+    {
+        cXMLElement *node = it->second;
+        contentCache.erase(it);
+        delete node;
+    }
+}
+
+void cXMLDocCache::flushDocumentCache()
+{
+    for (XMLDocMap::iterator i=documentCache.begin(); i!=documentCache.end(); ++i)
         delete i->second;
-    cache.clear();
+    documentCache.clear();
+}
+
+void cXMLDocCache::flushParsedContentCache()
+{
+    for (XMLDocMap::iterator i=contentCache.begin(); i!=contentCache.end(); ++i)
+        delete i->second;
+    contentCache.clear();
 }
 

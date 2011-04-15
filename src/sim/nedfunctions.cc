@@ -716,6 +716,29 @@ DEF(nedf_xmldoc,
     return node;
 })
 
+DEF(nedf_xml,
+    "xml xml(string xmlstring, string xpath?)",
+    "xml",
+    "Parses the given XML string into a cXMLElement tree, and returns the root element. "
+    "When called with two arguments, it returns the first element from the tree that "
+    "matches the expression given in simplified XPath syntax.",
+{
+    cXMLElement *node;
+    if (argc==1)
+    {
+        node = ev.getParsedXMLString(argv[0].s.c_str(), NULL);
+        if (!node)
+            throw cRuntimeError("xml(\"%s\"): element not found", argv[0].s.c_str());
+    }
+    else
+    {
+        node = ev.getParsedXMLString(argv[0].s.c_str(), argv[1].s.c_str());
+        if (!node)
+            throw cRuntimeError("xml(\"%s\", \"%s\"): element not found", argv[0].s.c_str(), argv[1].s.c_str());
+    }
+    return node;
+})
+
 
 //
 // misc utility functions

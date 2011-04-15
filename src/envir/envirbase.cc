@@ -1199,6 +1199,17 @@ bool EnvirBase::isModuleLocal(cModule *parentmod, const char *modname, int index
 cXMLElement *EnvirBase::getXMLDocument(const char *filename, const char *path)
 {
     cXMLElement *documentnode = xmlcache->getDocument(filename);
+    return resolveXMLPath(documentnode, path);
+}
+
+cXMLElement *EnvirBase::getParsedXMLString(const char *content, const char *path)
+{
+    cXMLElement *documentnode = xmlcache->getParsed(content);
+    return resolveXMLPath(documentnode, path);
+}
+
+cXMLElement *EnvirBase::resolveXMLPath(cXMLElement *documentnode, const char *path)
+{
     assert(documentnode);
     if (path)
     {
@@ -1217,9 +1228,19 @@ void EnvirBase::forgetXMLDocument(const char *filename)
     xmlcache->forgetDocument(filename);
 }
 
+void EnvirBase::forgetParsedXMLString(const char *content)
+{
+    xmlcache->forgetParsed(content);
+}
+
 void EnvirBase::flushXMLDocumentCache()
 {
-    xmlcache->flushCache();
+    xmlcache->flushDocumentCache();
+}
+
+void EnvirBase::flushXMLParsedContentCache()
+{
+    xmlcache->flushParsedContentCache();
 }
 
 cConfiguration *EnvirBase::getConfig()

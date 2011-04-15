@@ -181,9 +181,12 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual void configure(cComponent *component);
     virtual void readParameter(cPar *parameter);
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL);
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL);
     virtual void forgetXMLDocument(const char *filename);
+    virtual void forgetParsedXMLString(const char *content);
     virtual void flushXMLDocumentCache();
+    virtual void flushXMLParsedContentCache();
     // leave to subclasses: virtual unsigned getExtraStackForEnvir();
     virtual cConfiguration *getConfig();
     virtual cConfigurationEx *getConfigEx();
@@ -285,6 +288,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     // Utility function for addResultRecorders()
     void dumpResultRecorders(cComponent *component);
     void dumpResultRecorderChain(ResultListener *listener, int depth);
+    // Utility function for getXMLDocument() and getParsedXMLString()
+    cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 
     /**
      * Original command-line args.

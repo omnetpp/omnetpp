@@ -36,8 +36,12 @@ class ENVIR_API cXMLDocCache : public cObject
 {
   protected:
     typedef std::map<std::string,cXMLElement*> XMLDocMap;
-    XMLDocMap cache;
+    XMLDocMap documentCache; // key is the filename
+    XMLDocMap contentCache; // key is the content (XML text)
+
+  protected:
     cXMLElement *parseDocument(const char *filename);
+    cXMLElement *parseContent(const char *content);
 
   public:
     /**
@@ -51,11 +55,22 @@ class ENVIR_API cXMLDocCache : public cObject
     virtual ~cXMLDocCache();
 
     /**
-     * Returns the given document. NOTE: The returned node is the equivalent
-     * of the DOM "Document node", which is the <i>parent</i> of the
-     * root element, not the root element itself.
+     * Returns the DOM tree of the given document.
+     *
+     * NOTE: The returned node is the equivalent of the DOM "Document node",
+     * which is the <i>parent</i> of the root element, not the root element
+     * itself.
      */
     virtual cXMLElement *getDocument(const char *filename);
+
+    /**
+     * Returns the DOM tree of the given content (XML string).
+     *
+     * NOTE: The returned node is the equivalent of the DOM "Document node",
+     * which is the <i>parent</i> of the root element, not the root element
+     * itself.
+     */
+    virtual cXMLElement *getParsed(const char *content);
 
     /**
      * Removes the given document from the cache, and deletes its cXMLElement
@@ -64,9 +79,21 @@ class ENVIR_API cXMLDocCache : public cObject
     virtual void forgetDocument(const char *filename);
 
     /**
+     * Removes the given parsed content from the cache, and deletes its
+     * cXMLElement tree. Nothing happens if the content string has not been
+     * parsed yet.
+     */
+    virtual void forgetParsed(const char *content);
+
+    /**
      * Empties the document cache.
      */
-    virtual void flushCache();
+    virtual void flushDocumentCache();
+
+    /**
+     * Empties the parsed content cache.
+     */
+    virtual void flushParsedContentCache();
 };
 
 NAMESPACE_END

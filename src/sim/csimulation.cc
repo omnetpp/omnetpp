@@ -798,9 +798,12 @@ class StaticEnv : public cEnvir
     virtual void configure(cComponent *component) {}
     virtual void readParameter(cPar *parameter)  {unsupported();}
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index)  {return true;}
-    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL)  {unsupported(); return NULL;}
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *xpath=NULL)  {unsupported(); return NULL;}
+    virtual cXMLElement *getParsedXMLString(const char *content, const char *xpath=NULL)  {unsupported(); return NULL;}
     virtual void forgetXMLDocument(const char *filename) {}
+    virtual void forgetParsedXMLString(const char *content) {}
     virtual void flushXMLDocumentCache() {}
+    virtual void flushXMLParsedContentCache() {}
     virtual unsigned getExtraStackForEnvir() const  {return 0;}
     virtual cConfiguration *getConfig()  {unsupported(); return NULL;}
     virtual bool isGUI() const  {return false;}

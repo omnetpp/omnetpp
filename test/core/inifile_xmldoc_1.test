@@ -1,7 +1,16 @@
 %description:
-Check xml("<some-xml/>") and xmldoc("<some-xml/>", "pathexpr") functionality
+Check xmldoc("filename.xml") and xmldoc("filename.xml", "pathexpr") functionality
 
-Test is a modified version of inifile_xmldoc_1.test (which does the same with xmldoc())
+%file: test.xml
+
+<foo id="1">
+    <foo id="2" color="red">one</foo>
+    <foo id="3">
+        <bar id="3" color="yellow">
+            <baz id="5" color="green" weight="heavy">six</baz>
+        </bar>
+    </foo>
+</foo>
 
 %global:
 
@@ -54,14 +63,9 @@ void Simple::activity()
 network = Simple
 cmdenv-express-mode = false
 
-# note: same XML doc as in inifile_xmldoc_1.test
-*.xmlconfig1 = xml("<foo id='1'><foo id='2' color='red'>one</foo><foo id='3'><bar id='3' color='yellow'><baz id='5' color='green' weight='heavy'>six</baz></bar></foo></foo>")
-*.xmlconfig2 = xml("<foo id='1'><foo id='2' color='red'>one</foo><foo id='3'><bar id='3' color='yellow'><baz id='5' color='green' weight='heavy'>six</baz></bar></foo></foo>", "foo/foo[1]//*[@color='green']")
+*.xmlconfig1 = xmldoc("test.xml")
+*.xmlconfig2 = xmldoc("test.xml","foo/foo[1]//*[@color='green']")
 
 %contains-regex: stdout
 <foo id='1'>
 <baz id='5'>
-
-
-
-

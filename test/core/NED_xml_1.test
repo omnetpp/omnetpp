@@ -1,0 +1,53 @@
+%description:
+Check xml("...") and xml("...", "pathexpr") functionality in NED assignments
+
+%global:
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+
+%file: test.ned
+
+simple Test
+{
+    parameters:
+        @isNetwork(true);
+        string doc = "<foo id='1'> <foo id='2' color='red'>one</foo> <foo id='3'> <bar id='3' color='yellow'> <baz id='5' color='green' weight='heavy'>six</baz> </bar> </foo> </foo>";  // same as in the corresponding xmldoc test
+        xml xmlconfig1 = xml(doc);
+        xml xmlconfig2 = xml(doc, "foo/foo[1]//*[@color='green']");
+}
+
+%file: test.cc
+
+#include <string.h>
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  public:
+    Test() : cSimpleModule(16384) { }
+    virtual void activity();
+};
+
+Define_Module(Test);
+
+void Test::activity()
+{
+    cXMLElement *node1 = par("xmlconfig1");
+    ASSERT(node1);
+    ev << node1->getTagName() << " at " << node1->getSourceLocation() << endl;
+
+    cXMLElement *node2 = par("xmlconfig2");
+    ASSERT(node2);
+    ev << node2->getTagName() << " at " << node2->getSourceLocation() << endl;
+}
+
+}; //namespace
+
+%contains: stdout
+foo at content:1
+baz at content:1

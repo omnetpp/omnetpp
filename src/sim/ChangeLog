@@ -1,3 +1,8 @@
+2011-04-15  Andras Varga
+
+	* nedfunctions.cc: implemented the xml() NED function. It accepts a
+	string argument, and parses it as XML.
+
 2011-04-13  Andras Varga
 
 	* nedfunctions.cc: added firstAvailable() NED function. It accepts
@@ -9,21 +14,21 @@
 2011-04-05  Andras Varga
 
 	* NED functions (cNEDFunction class, Define_NED_Function() and
-	Define_NED_Function2() macros): implemented varargs support. 
+	Define_NED_Function2() macros): implemented varargs support.
 	If the signature ends in ", ..." then the function will accept
-	any number of additional arguments of any types. (At runtime, the 
+	any number of additional arguments of any types. (At runtime, the
 	implementation has access to both the actual number and types of args).
-	When passing extra args, optional arguments (those marked with '?' in 
-	the signature) must all be specified, i.e. varargs can only come 
+	When passing extra args, optional arguments (those marked with '?' in
+	the signature) must all be specified, i.e. varargs can only come
 	when all declared args are present.
 
 2011-02-23  ------ omnetpp-4.2b1 released ------
 
 2010-10-20  Andras Varga
 
-	* cQueue fix: op= could result in a different order of objects than 
+	* cQueue fix: op= could result in a different order of objects than
 	the original (if objects were not originally ordered according to
-	the compareFunc)	
+	the compareFunc)
 
 2010-07-29  Andras Varga
 
