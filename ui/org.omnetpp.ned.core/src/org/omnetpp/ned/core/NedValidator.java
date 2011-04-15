@@ -435,7 +435,7 @@ public class NedValidator extends AbstractNedValidatorEx {
             assignmentType = NED_PARTYPE_BOOL;
         else if (assignmentValue.startsWith("\""))
             assignmentType = NED_PARTYPE_STRING;
-        else if (assignmentValue.startsWith("xmldoc"))
+        else if (assignmentValue.startsWith("xmldoc(") || assignmentValue.startsWith("xml("))
             assignmentType = NED_PARTYPE_XML;
         else {
             try {

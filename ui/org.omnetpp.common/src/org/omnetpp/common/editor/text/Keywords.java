@@ -59,7 +59,7 @@ public class Keywords {
 			"genk_intuniform", "genk_normal", "genk_truncnormal", "genk_uniform", "geometric",
 			"hypergeometric", "hypot", "intuniform", "log", "log10", "lognormal", "max", "min",
 			"negbinomial", "normal", "pareto_shifted", "poisson", "pow", "simTime", "sin", "sqrt",
-			"student_t", "tan", "triang", "truncnormal", "uniform", "weibull" };
+			"student_t", "tan", "triang", "truncnormal", "uniform", "weibull", "xml", "xmldoc" };
 
 	public final static String[] NED_RESERVED_WORDS = concat(NED_TYPE_KEYWORDS, NED_SPECIAL_KEYWORDS, NED_NONEXPR_KEYWORDS, NED_EXPR_KEYWORDS, BOOL_CONSTANTS);
 

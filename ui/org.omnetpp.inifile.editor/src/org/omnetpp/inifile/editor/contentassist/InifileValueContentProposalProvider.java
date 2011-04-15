@@ -303,6 +303,7 @@ s	 * before getting presented to the user.
 		    }
 			break;
 		case NedElementConstants.NED_PARTYPE_XML:
+			p.addAll(toProposals(new String[] {"xml(\"string\")", "xml(\"string\", \"xpath\")"}));
 			p.addAll(toProposals(new String[] {"xmldoc(\"filename\")", "xmldoc(\"filename\", \"xpath\")"}));
 			break;
 		}

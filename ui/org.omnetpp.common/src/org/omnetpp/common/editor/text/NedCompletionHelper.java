@@ -207,7 +207,6 @@ public final class NedCompletionHelper {
     	makeShortTemplate("const(${x})", "operator"),
     	makeShortTemplate("default(${x})", "operator"),
     	makeShortTemplate("sizeof(${gateOrSubmod})", "operator"),
-    	makeShortTemplate("xmldoc(${filename}, ${opt_xpath})", "operator"),
     };
 
     public final static Template[] proposedNedFunctionsTempl = new Template[] {
@@ -270,6 +269,10 @@ public final class NedCompletionHelper {
     	makeShortTemplate("fullName()", "function"),
     	makeShortTemplate("parentIndex()", "function"),
     	makeShortTemplate("ancestorIndex(${int})", "function"),
+
+    	// xml
+    	makeShortTemplate("xml(${string}, ${opt_xpath})", "function"),
+        makeShortTemplate("xmldoc(${filename}, ${opt_xpath})", "function"),
 
         // misc
     	makeShortTemplate("simTime()", "function"),

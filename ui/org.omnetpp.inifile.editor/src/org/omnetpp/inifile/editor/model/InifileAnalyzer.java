@@ -769,7 +769,7 @@ public final class InifileAnalyzer {
                 valueType = NED_PARTYPE_BOOL;
             else if (value.startsWith("\""))
                 valueType = NED_PARTYPE_STRING;
-            else if (value.startsWith("xmldoc"))
+            else if (value.startsWith("xmldoc(") || value.startsWith("xml("))
                 valueType = NED_PARTYPE_XML;
             else {
                 try {
