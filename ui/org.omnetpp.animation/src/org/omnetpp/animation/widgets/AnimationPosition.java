@@ -28,15 +28,21 @@ import org.omnetpp.common.util.StringUtils;
  * handling huge animations effectively.
  * </p>
  * <p>
- * A relative animation time helps to achieve the above goals by specifying
- * animation positions relative to another moment (called the origin) within the
- * same animation. One such moment is the very first moment of the animation of
- * a single simulation event.
+ * The concept of relative animation time helps to achieve the above goals by
+ * specifying animation positions relative to another moment (called the origin)
+ * within the same animation. One such moment is the very first moment of the
+ * animation of a single simulation event.
  * </p>
  * <p>
- * Another important concept is the animation frame. It is a continuous part of
- * the whole animation that belongs to the very same simulation time. It might
- * span across multiple subsequent events.
+ * Another important concept is the animation frames. The whole animation is
+ * basically a list of interleaved constant and interpolation frames. A constant
+ * frame belongs to the very same simulation time and event number and it is
+ * identified by them. An animation frame cannot span across multiple events,
+ * but there may be multiple animation frames between two subsequent events.
+ * Within constant frames the event number and the simulation time are constant.
+ * Within interpolation frames the event number is constant, but the simulation
+ * time is proportional to the animation time. A constant frame may also be
+ * assigned to a simulation time where in fact no event occurred.
  * </p>
  * <p>
  * An animation position consist of the following values:
@@ -59,7 +65,8 @@ import org.omnetpp.common.util.StringUtils;
  * An animation position is not allowed change its designated moment in the
  * animation while the program is running. This means that it always designates
  * the very same moment even if some parts have not yet been set. It is almost
- * like an immutable data structure.
+ * like an immutable data structure, but unfortunately it is difficult to
+ * enforce this constraint.
  * </p>
  * <p>
  * Note that there are strict relationships between the parts of an animation
@@ -87,10 +94,8 @@ import org.omnetpp.common.util.StringUtils;
  * <ul>
  * <li>Event number is the event number of the first event.</li>
  * <li>Simulation time is the simulation time of the first event.</li>
- * <li>frame-relative animation time is either <code>0</code> (the first moment
- * in the animation frame starting with the first event) or some non-zero value
- * (the animation frame starts with initialize and expands into the first event
- * because they have equal simulation times).</li>
+ * <li>frame-relative animation time is <code>0</code> (the first moment in the
+ * animation frame starting with the first event).</li>
  * <li>Origin-relative animation time is <code>0</code>.</li>
  * </ul>
  * <p>
@@ -101,9 +106,7 @@ import org.omnetpp.common.util.StringUtils;
  * <li>Event number is the event number of the last event.</li>
  * <li>Simulation time is the simulation time of the last event.</li>
  * <li>frame-relative animation time is the animation frame's size.</li>
- * <li>Origin-relative animation time is either the animation frame's size or a
- * smaller positive value because the animation frame starts in a previous event
- * and expands into the last event.</li>
+ * <li>Origin-relative animation time is the animation frame's size.</li>
  * </ul>
  *
  * @author levy
@@ -122,7 +125,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     /**
      * The simulation time that corresponds to this animation position. There is
      * a range of animation times that correspond to the very same simulation
-     * time. This range is called the animation frame. The value
+     * time. This range is called the constant animation frame. The value
      * <code>null</code> means that it is not yet set. The simulation times
      * monotonically increase along the animation. This means that if an
      * animation position designates a moment later in the animation then it
@@ -226,6 +229,8 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
             return (int)Math.signum(eventNumber - other.eventNumber);
         else if (simulationTime != null && other.simulationTime != null && !simulationTime.equals(other.simulationTime))
             return simulationTime.less(other.simulationTime) ? -1 : 1;
+        else if (frameRelativeAnimationTime != null && other.frameRelativeAnimationTime != null && eventNumber.equals(other.eventNumber) && simulationTime.equals(other.simulationTime) && frameRelativeAnimationTime < other.frameRelativeAnimationTime)
+            return (int)Math.signum(frameRelativeAnimationTime - other.frameRelativeAnimationTime);
         else if (originRelativeAnimationTime != null && other.originRelativeAnimationTime != null)
             return (int)Math.signum(originRelativeAnimationTime - other.originRelativeAnimationTime);
         else

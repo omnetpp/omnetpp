@@ -27,10 +27,15 @@ import org.omnetpp.common.eventlog.EventLogMessage;
 import org.omnetpp.figures.ConnectionFigure;
 
 /**
- * Draws an filled circle if the message transmission time is 0. Otherwise it draws a
+ * Draws a filled circle if the message transmission time is 0. Otherwise it draws a
  * growing thick line along the connection as time goes on. The line length represents
  * the transmission time and its traveling speed corresponds to the propagation time.
  */
+// TODO: four different message send types
+// TODO: - no delay, no datarate -> filled thick line showing the send direction
+// TODO: - delay, no datarate -> filled circle moving along the connection
+// TODO: - no delay, datarate -> filled thick line showing the send direction, completion mark at the center
+// TODO: - delay, datarate -> possibly finite filled thick line moving along the connection, completion marks at the beginning and the end
 public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	protected EventLogGate gate;
 
