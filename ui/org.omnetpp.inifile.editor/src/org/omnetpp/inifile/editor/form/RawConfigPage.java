@@ -33,7 +33,7 @@ public class RawConfigPage extends FormPage {
 
 		// populate with field editors
 		IInifileDocument doc = getInifileDocument();
-		for (ConfigOption e : ConfigRegistry.getEntries()) {
+		for (ConfigOption e : ConfigRegistry.getOptions()) {
 			String label = "The \""+e.getName()+"\" setting";
 			if (e.getDataType()==ConfigOption.DataType.CFG_BOOL) {
 				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label, null);

@@ -124,18 +124,18 @@ public class ConfigRegistry {
      * and returns wildcard options that match the given name, for example it will return
      * "rng-%" for "rng-1".
      */
-    public static ConfigOption getPerObjectEntry(String name) {
+    public static ConfigOption getPerObjectOption(String name) {
         ConfigOption e = perObjectOptions.get(name);
         if (e == null)
             e = lookupWildcardConfigOption(perObjectOptions, name);
         return e;
     }
 
-    public static ConfigOption[] getEntries() {
+    public static ConfigOption[] getOptions() {
         return options.values().toArray(new ConfigOption[options.size()]);
     }
 
-    public static ConfigOption[] getPerObjectEntries() {
+    public static ConfigOption[] getPerObjectOptions() {
         return perObjectOptions.values().toArray(new ConfigOption[perObjectOptions.size()]);
     }
 

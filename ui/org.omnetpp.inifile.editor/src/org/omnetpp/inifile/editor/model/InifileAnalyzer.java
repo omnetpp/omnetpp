@@ -1066,7 +1066,7 @@ public final class InifileAnalyzer {
 	protected void validatePerObjectConfig(String section, String key, INedTypeResolver ned) {
 		Assert.isTrue(key.lastIndexOf('.') > 0);
 		String configName = key.substring(key.lastIndexOf('.')+1);
-		ConfigOption e = ConfigRegistry.getPerObjectEntry(configName);
+		ConfigOption e = ConfigRegistry.getPerObjectOption(configName);
 		if (e == null) {
             if (!configName.matches("[a-zA-Z0-9-_]+"))
                 markers.addError(section, key, "Syntax error in per-object configuration key: "+configName);

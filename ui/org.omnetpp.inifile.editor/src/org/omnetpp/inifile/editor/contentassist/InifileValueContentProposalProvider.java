@@ -210,7 +210,7 @@ s	 * before getting presented to the user.
      */
     protected List<IContentProposal> getCandidatesForPerObjectConfig(String prefix) {
         String keySuffix = key.replaceFirst(".*\\.", ""); // only keep substring after last dot
-        ConfigOption entry = ConfigRegistry.getPerObjectEntry(keySuffix);
+        ConfigOption entry = ConfigRegistry.getPerObjectOption(keySuffix);
         if (entry == null)
             return new ArrayList<IContentProposal>();  // nothing
 

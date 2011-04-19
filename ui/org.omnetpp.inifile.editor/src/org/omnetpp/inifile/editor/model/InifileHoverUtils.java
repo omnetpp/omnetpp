@@ -195,7 +195,7 @@ public class InifileHoverUtils {
         IMarker[] markers = InifileUtils.getProblemMarkersFor(section, key, doc);
         String text = getProblemsHoverText(markers, false);
 
-        ConfigOption entry = ConfigRegistry.getPerObjectEntry(key.replaceFirst("^.*\\.", ""));
+        ConfigOption entry = ConfigRegistry.getPerObjectOption(key.replaceFirst("^.*\\.", ""));
         if (entry != null)
             text += getConfigOptionHoverText(entry);
 

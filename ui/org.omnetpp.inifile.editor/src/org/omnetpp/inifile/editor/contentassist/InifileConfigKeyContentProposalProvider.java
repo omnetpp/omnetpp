@@ -59,7 +59,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
 		// idea considered and discarded: don't propose those already there (would confuse user)
 		if (section != null) {
-			for (ConfigOption e : ConfigRegistry.getEntries()) {
+			for (ConfigOption e : ConfigRegistry.getOptions()) {
 				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
 					String content = e.getName()+(addEqualSign ? " = " : "");
 					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));

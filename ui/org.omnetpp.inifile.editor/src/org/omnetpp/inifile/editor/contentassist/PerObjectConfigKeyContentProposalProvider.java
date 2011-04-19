@@ -67,7 +67,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 		if (section != null && prefix.contains(".")) {
 			String prefixBase = prefix.substring(0, prefix.lastIndexOf('.'));
 			Set<ObjectKind> possibleObjectKinds = getPossibleObjectKinds(prefixBase);
-			for (ConfigOption e : ConfigRegistry.getPerObjectEntries()) {
+			for (ConfigOption e : ConfigRegistry.getPerObjectOptions()) {
 			    if (possibleObjectKinds.contains(e.getObjectKind())) {
     			    String content = prefixBase + "." + e.getName() + (addEqualSign ? " = " : "");
     			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));

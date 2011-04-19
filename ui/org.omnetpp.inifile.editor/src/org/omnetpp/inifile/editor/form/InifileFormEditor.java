@@ -250,10 +250,10 @@ public class InifileFormEditor extends Composite {
 		}
 
 		// see which keys are not supported anywhere
-		for (ConfigOption key : ConfigRegistry.getEntries())
+		for (ConfigOption key : ConfigRegistry.getOptions())
 			if (!supportedKeys.contains(key))
 				Debug.println(" - forgotten key: "+key.getName());
-        for (ConfigOption key : ConfigRegistry.getPerObjectEntries())
+        for (ConfigOption key : ConfigRegistry.getPerObjectOptions())
             if (!supportedKeys.contains(key))
                 Debug.println(" - forgotten key: **."+key.getName());
 

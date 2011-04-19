@@ -42,9 +42,9 @@ public class InifileCodeColorizerScanner extends RuleBasedScanner {
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
 		for (String text : SyntaxHighlightHelper.highlightConstants)
 			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
-		for (ConfigOption entry : ConfigRegistry.getEntries())
+		for (ConfigOption entry : ConfigRegistry.getOptions())
 			wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
-        for (ConfigOption entry : ConfigRegistry.getPerObjectEntries())
+        for (ConfigOption entry : ConfigRegistry.getPerObjectOptions())
             wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
 
 		rules.add(wordRule);
