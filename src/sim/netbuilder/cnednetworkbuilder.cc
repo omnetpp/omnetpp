@@ -626,10 +626,14 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
                 return evaluateAsString(likeParamExpr, modp, false);
         }
 
+        std::string submodFullName = submodName;
+        if (index != -1)
+            submodFullName += opp_stringf("[%d]", index);
+
         // then, use **.typename from NED deep param assignments
         std::string defaultDeepSubmodTypeName;
         bool deepSubmodTypeNameIsDefault;
-        std::string submodTypeName = getSubmoduleTypeNameFromDeepAssignments(modp, submodName, index, deepSubmodTypeNameIsDefault);
+        std::string submodTypeName = getSubmoduleOrChannelTypeNameFromDeepAssignments(modp, submodFullName, deepSubmodTypeNameIsDefault);
         if (!submodTypeName.empty()) {
             if (!deepSubmodTypeNameIsDefault)
                 return submodTypeName;
@@ -661,7 +665,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
     }
 }
 
-std::string cNEDNetworkBuilder::getSubmoduleTypeNameFromDeepAssignments(cModule *modp, const char *submodName, int index, bool& outIsDefault)
+std::string cNEDNetworkBuilder::getSubmoduleOrChannelTypeNameFromDeepAssignments(cModule *modp, const std::string& submodOrChannelKey, bool& outIsDefault)
 {
     // strategy: go up the parent chain, and find patterns that match "<submodfullname>.typename".
     // we return the first (innermost) non-"default()" value, or the last (outermost) "default()" value
@@ -675,7 +679,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeNameFromDeepAssignments(cModule 
 
     // note: this function is based on assignParametersFromPatterns()
 
-    std::string key = index==-1 ? opp_stringf("%s.typename", submodName) : opp_stringf("%s[%d].typename", submodName, index);
+    std::string key = submodOrChannelKey + ".typename";
 
     // find NED declaration of parent module, if exists (there is no NED decl for dynamically created modules)
     const char *nedTypeName = modp->getNedTypeName();
@@ -1141,11 +1145,32 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
                 return evaluateAsString(likeParamExpr, parentmodp, false);
         }
 
-        // then, use **.type-name option in the configuration if exists
+        // produce key to identify channel within the parent module, e.g. "in[3].channel" or "queue.out.channel"
+        std::string channelKey;
+        if (srcgate->getOwnerModule() != parentmodp)
+            channelKey = std::string(srcgate->getOwnerModule()->getFullName()) + ".";  // src submodule name
+        channelKey += std::string(srcgate->getFullName()) + "." + channelName;
+
+        // then, use **.typename from NED deep param assignments (using channelKey above)
+        std::string defaultDeepConnTypeName;
+        bool deepConnTypeNameIsDefault;
+        std::string connTypeName = getSubmoduleOrChannelTypeNameFromDeepAssignments(parentmodp, channelKey, deepConnTypeNameIsDefault);
+        if (!connTypeName.empty()) {
+            if (!deepConnTypeNameIsDefault)
+                return connTypeName;
+            else
+                defaultDeepConnTypeName = connTypeName;
+        }
+
+        // then, use **.typename option in the configuration if exists
         std::string key = srcgate->getFullPath() + "." + channelName;
         std::string channelTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
         if (!channelTypeName.empty())
             return channelTypeName;
+
+        // then, use default() expression from NED deep param assignments
+        if (!defaultDeepConnTypeName.empty())
+            return defaultDeepConnTypeName;
 
         // last, use default(expression) betweeen angle braces from the NED file
         if (conn->getIsDefault()) {
