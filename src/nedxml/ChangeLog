@@ -1,6 +1,18 @@
+2011-04-19  Andras Varga
+
+	* minor grammar change (ned2.y, ned2.lex): made "typename" a keyword,
+	and allow it as the last component in pattern assignments. 
+	Example:
+	  *.host[*].tcp.typename = "TCP_lwIP";
+	Note that a 'typename=...' assignment cannot occur in the body of the
+	parametric submodule itself; this is because the value expression
+	would have to be evaluated in the context of a submodule that does not
+	exist yet.
+
 2011-04-14  Andras Varga
 
-	* SAXParser: implemented parsing of string literals
+	* SAXParser: implemented parsing of string literals (needed for the
+	xml() NED function in the sim. kernel)
 
 2011-04-14  Andras Varga
 

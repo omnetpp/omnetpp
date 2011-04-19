@@ -1,0 +1,33 @@
+%description:
+Test "*.typename" patterns with default value (...typename = default(...))
+
+Case: submodule type given right in the same compound module.
+Also check that param is evaluated in the right context.
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp { }
+module App1 like IApp { }
+
+network Test
+{
+    parameters:
+        string stem = "App";
+        app.typename = default(stem + "1");
+    submodules:
+        app: <default("!@#$%")> like IApp;  // value is a decoy
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        stem = "App"
+    submodules:
+        module Test.app: App1 {
+        }
+}
+

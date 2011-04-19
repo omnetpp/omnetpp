@@ -1,0 +1,65 @@
+%description:
+Check that the innermost typename assignment takes effect;
+test is a variant of NED_typename_2.test
+
+Also check expression is evaluated in the right context
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp { }
+module App like IApp { }
+
+module Host
+{
+    parameters:
+        app.typename = default("!@#$%"); // decoy
+    submodules:
+        app: <default("!@#$%")> like IApp; // default(): decoy
+}
+
+module Subnet
+{
+    parameters:
+        string letterA = "A";
+        host.app.typename = letterA + "pp";
+    submodules:
+        host: Host {
+            app.typename = default("!@#$%");  // decoy
+        }
+}
+
+network Test
+{
+    parameters:
+        subnet.host.app.typename = "!@#$%"; // decoy
+    submodules:
+        subnet: Subnet {
+            host.app.typename = "!@#$%"; // decoy
+        }
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.typename = "!@#$%"
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.subnet: Subnet {
+            parameters:
+                letterA = "A"
+            submodules:
+                module Test.subnet.host: Host {
+                    submodules:
+                        module Test.subnet.host.app: App {
+                        }
+                }
+        }
+}

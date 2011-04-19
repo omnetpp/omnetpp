@@ -23,7 +23,7 @@
 %token INPUT_ OUTPUT_ INOUT_
 %token IF FOR
 %token RIGHTARROW LEFTARROW DBLARROW TO
-%token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ XMLDOC
+%token TRUE_ FALSE_ THIS_ DEFAULT ASK CONST_ SIZEOF INDEX_ TYPENAME XMLDOC
 
 /* Other tokens: identifiers, numeric literals, operators etc */
 %token NAME INTCONSTANT REALCONSTANT STRINGCONSTANT CHARCONSTANT
@@ -774,6 +774,7 @@ inline_properties
 
 pattern
         : pattern2 '.' pattern_elem  /* to ensure that pattern contains at least one '.' */
+        | pattern2 '.' TYPENAME
         ;
 
 pattern2

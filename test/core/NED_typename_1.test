@@ -1,0 +1,33 @@
+%description:
+Test "*.typename" patterns
+
+Case: submodule type given right in the same compound module.
+Also check that param is evaluated in the right context.
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp { }
+module App1 like IApp { }
+
+network Test
+{
+    parameters:
+        string stem = "App";
+        app.typename = stem + "1";
+    submodules:
+        app: <> like IApp;
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        stem = "App"
+    submodules:
+        module Test.app: App1 {
+        }
+}
+

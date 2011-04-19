@@ -1,0 +1,43 @@
+%description:
+Check that the outermost default typename assignment takes effect
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp { }
+module App like IApp { }
+
+module Host
+{
+    parameters:
+        app.typename = default("!@#$%"); // decoy
+    submodules:
+        app: <default("!@#$%")> like IApp; // default(): decoy
+}
+
+network Test
+{
+    parameters:
+        string letterA = "A";
+        host.app.typename = default(letterA + "pp"); // that is, "App"
+    submodules:
+        host: Host {
+            app.typename = default("!@#$%"); // decoy
+        }
+        dump: Dump;
+}
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        letterA = "A"
+    submodules:
+        module Test.host: Host {
+            submodules:
+                module Test.host.app: App {
+                }
+        }
+}
+

@@ -626,6 +626,17 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
                 return evaluateAsString(likeParamExpr, modp, false);
         }
 
+        // then, use **.typename from NED deep param assignments
+        std::string defaultDeepSubmodTypeName;
+        bool deepSubmodTypeNameIsDefault;
+        std::string submodTypeName = getSubmoduleTypeNameFromDeepAssignments(modp, submodName, index, deepSubmodTypeNameIsDefault);
+        if (!submodTypeName.empty()) {
+            if (!deepSubmodTypeNameIsDefault)
+                return submodTypeName;
+            else
+                defaultDeepSubmodTypeName = submodTypeName;
+        }
+
         // then, use **.type-name option in the configuration if exists
         std::string key = modp->getFullPath() + "." + submodName;
         if (index != -1)
@@ -634,7 +645,11 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         if (!submodTypeName.empty())
             return submodTypeName;
 
-        // last, use default(expression) betweeen angle braces from the NED file
+        // then, use default() expression from NED deep param assignments
+        if (!defaultDeepSubmodTypeName.empty())
+            return defaultDeepSubmodTypeName;
+
+        // last, use default(expression) between angle braces from the NED file
         if (submod->getIsDefault()) {
             if (!opp_isempty(submod->getLikeParam()))
                 return modp->par(submod->getLikeParam()).stringValue();
@@ -644,6 +659,94 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         }
         throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPE_NAME->getName());
     }
+}
+
+std::string cNEDNetworkBuilder::getSubmoduleTypeNameFromDeepAssignments(cModule *modp, const char *submodName, int index, bool& outIsDefault)
+{
+    // strategy: go up the parent chain, and find patterns that match "<submodfullname>.typename".
+    // we return the first (innermost) non-"default()" value, or the last (outermost) "default()" value
+    // (and set outIsDefault accordingly.)
+
+    // note: we start at the compound module's parameters section: the submodule's
+    // own body is ignored, i.e. we don't accept something like
+    //   foo: <> like IFoo {typename = "Foo";}
+    // because we'd have to evaluate the expression in the context of a module
+    // that doesn't exist yet, and we're not prepared for that.
+
+    // note: this function is based on assignParametersFromPatterns()
+
+    std::string key = index==-1 ? opp_stringf("%s.typename", submodName) : opp_stringf("%s[%d].typename", submodName, index);
+
+    // find NED declaration of parent module, if exists (there is no NED decl for dynamically created modules)
+    const char *nedTypeName = modp->getNedTypeName();
+    cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
+
+    std::string defaultTypeName;
+    outIsDefault = false;
+
+    for (cComponent *mod = modp; true; /**/)
+    {
+        // check patterns on the 'mod' compound module
+        if (decl)
+        {
+            const std::vector<PatternData>& patterns = decl->getParamPatterns();
+            if (!patterns.empty())
+            {
+                int numPatterns = patterns.size();
+                for (int j=0; j<numPatterns; j++) {
+                    if (patterns[j].matcher->matches(key.c_str())) {
+                        // return the value if it's not enclosed in 'default()', otherwise remember it
+                        ExpressionElement *typeNameExpr = findExpression(patterns[j].patternNode, "value");
+                        if (typeNameExpr) {
+                            std::string typeName = evaluateAsString(typeNameExpr, mod, false);
+                            if (patterns[j].patternNode->getIsDefault())
+                                defaultTypeName = typeName;
+                            else
+                                return typeName;
+                        }
+                    }
+                }
+            }
+        }
+
+        // go one level up, and check patterns on 'mod' as a submodule
+        cModule *parent = mod->getParentModule();
+        if (!parent)
+            break;
+
+        // it is stored in the parent type
+        const char *nedTypeName = parent->getNedTypeName();
+        cNEDDeclaration *parentDecl = cNEDLoader::getInstance()->getDecl(nedTypeName);
+        if (parentDecl)
+        {
+            const std::vector<PatternData>& submodPatterns = parentDecl->getSubmoduleParamPatterns(mod->getName());
+            if (!submodPatterns.empty())
+            {
+                int numPatterns = submodPatterns.size();
+                for (int j=0; j<numPatterns; j++) {
+                    if (submodPatterns[j].matcher->matches(key.c_str())) {
+                        // return the value if it's not enclosed in 'default()', otherwise remember it
+                        ExpressionElement *typeNameExpr = findExpression(submodPatterns[j].patternNode, "value");
+                        if (typeNameExpr) {
+                            std::string typeName = evaluateAsString(typeNameExpr, mod, true);
+                            if (submodPatterns[j].patternNode->getIsDefault())
+                                defaultTypeName = typeName;
+                            else
+                                return typeName;
+                        }
+                    }
+                }
+            }
+        }
+
+        // go one level up
+        key = std::string(mod->getFullName()) + "." + key;
+        mod = mod->getParentModule();
+        decl = parentDecl;
+    }
+
+    outIsDefault = true;
+    return defaultTypeName;
 }
 
 void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)

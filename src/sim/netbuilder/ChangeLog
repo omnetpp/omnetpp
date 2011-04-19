@@ -1,3 +1,28 @@
+2011-04-19  Andras Varga
+
+	* implemented "typename" patterns, a way of assigning type to
+	parametric submodule types without using parameters. The syntax
+	is like deep parameter assignments, where the last component of
+	the pattern is ".typename". Rules are the same as with deep param
+	assignments: the innermost matching pattern with a non-default
+	value will be effective; and default value can be overridden,
+	i.e. the outermost pattern with a default(...) value will be the
+	actual default (that becomes effective when the inifile does not
+	specify a value via **.type-name). "typename" is not accepted in the
+	body of the parametric submodule itself, because the value expression
+	would have to be evaluated in the context of a submodule that
+	does not exist yet.
+
+	Example:
+	  network Net {
+	      parameters: 
+	          server.tcp.typename = "TCP_NSC";
+	          host*.tcp.typename = default("TCP_lwIP");
+	      submodule:
+	          server: StandardHost {...}
+	          ...
+	  }
+
 2011-04-08  Andras Varga
 
 	* implemented conditional submodules, see nedxml/ChangeLog for details
@@ -25,7 +50,7 @@
 	by other modules. However, they can still be graphically edited in the
 	IDE, and the ini file editor can provide content assist for setting
 	their parameters.
-	
+
 2010-03-14  ------ omnetpp-4.1b3 released ------
 
 2009-01-27 Andras Varga
@@ -44,6 +69,8 @@
 2009-02-27  ------ omnetpp-4.0rc2 released ------
 
 2008-12-12  ------ omnetpp-4.0rc1 released ------
+
+	* Netbuilder was basically reimplemented for OMNeT++ 4.0.
 
 2006-10-21  ------ omnetpp-3.3 released ------
 

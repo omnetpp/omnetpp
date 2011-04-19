@@ -1,0 +1,65 @@
+%description:
+Check that the innermost typename assignment takes effect
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp { }
+module App like IApp { }
+
+module Host
+{
+    parameters:
+        string letterP = "p";
+        app.typename = default("!@#$%"); // decoy
+    submodules:
+        app: <default("!@#$%")> like IApp; // default(): decoy
+}
+
+module Subnet
+{
+    parameters:
+        host.app.typename = "!@#$%"; // decoy
+        string letterA = "A";
+    submodules:
+        host: Host {
+            app.typename = letterA + this.letterP + this.letterP; // that is, "App"
+        }
+}
+
+network Test
+{
+    parameters:
+        subnet.host.app.typename = "!@#$%"; // decoy
+    submodules:
+        subnet: Subnet {
+            host.app.typename = "!@#$%"; // decoy
+        }
+        dump: Dump;
+}
+
+%inifile: test.ini
+[General]
+network = Test
+cmdenv-express-mode = false
+**.typename = "!@#$%"
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+    submodules:
+        module Test.subnet: Subnet {
+            parameters:
+                letterA = "A"
+            submodules:
+                module Test.subnet.host: Host {
+                    parameters:
+                        letterP = "p"
+                    submodules:
+                        module Test.subnet.host.app: App {
+                        }
+                }
+        }
+}

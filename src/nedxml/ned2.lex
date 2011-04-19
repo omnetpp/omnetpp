@@ -119,6 +119,7 @@ USING_NAMESPACE
 "const"                  { countChars(); return CONST_; }
 "sizeof"                 { countChars(); return SIZEOF; }
 "index"                  { countChars(); return INDEX_; }
+"typename"               { countChars(); return TYPENAME; }
 "xmldoc"                 { countChars(); return XMLDOC; }
 
 {L}({L}|{D})*            { countChars(); return NAME; }

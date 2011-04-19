@@ -1,0 +1,23 @@
+%description:
+Test "no such module type" error with "*.typename" patterns
+
+%file: test.ned
+
+import testlib.*;
+
+moduleinterface IApp { }
+module App1 like IApp { }
+
+network Test
+{
+    parameters:
+        app.typename = default("Blah");
+    submodules:
+        app: <> like IApp;
+        dump: Dump;
+}
+
+%exitcode: 1
+
+%contains: stdout
+Submodule app: no module type named `Blah' found that implements module interface IApp
