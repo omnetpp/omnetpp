@@ -69,7 +69,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 			Set<ObjectKind> possibleObjectKinds = getPossibleObjectKinds(prefixBase);
 			for (ConfigOption e : ConfigRegistry.getPerObjectEntries()) {
 			    if (possibleObjectKinds.contains(e.getObjectKind())) {
-    			    String content = prefixBase + "." + e.getName()+(addEqualSign ? " = " : "");
+    			    String content = prefixBase + "." + e.getName() + (addEqualSign ? " = " : "");
     			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
 			    }
 			}
@@ -131,7 +131,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
         for (Map.Entry<String, ISubmoduleOrConnection> entry : modules.entrySet()) {
             objectKinds.add(ObjectKind.KIND_MODULE);
             ISubmoduleOrConnection module = entry.getValue();
-            if (module != null && module.getEffectiveTypeRef() instanceof SimpleModuleElement)
+            if (module != null && module.getEffectiveTypeRef() instanceof SimpleModuleElement) //FIXME getEffectiveTypeRef(): not good here: does not obey inifile content (it always returns an IModuleInterfaceElement for "like" submodules)
                 objectKinds.add(ObjectKind.KIND_SIMPLE_MODULE);
             if (module != null && !StringUtils.isEmpty(module.getLikeType()))
                 objectKinds.add(ObjectKind.KIND_UNSPECIFIED_TYPE);

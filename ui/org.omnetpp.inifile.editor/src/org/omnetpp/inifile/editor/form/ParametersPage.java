@@ -390,9 +390,8 @@ public class ParametersPage extends FormPage {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	protected static SectionKey[] getEntriesFromTreeSelection(ISelection selection) {
-		ArrayList list = new ArrayList();
+		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
 		if (selection instanceof IStructuredSelection) {
 			for (Object item : ((IStructuredSelection)selection).toArray()) {
 				SectionKey payload = getEntryFromTreeNode(item);
@@ -400,7 +399,7 @@ public class ParametersPage extends FormPage {
 					list.add(payload);
 			}
 		}
-		return (SectionKey[]) list.toArray(new SectionKey[]{});
+		return list.toArray(new SectionKey[]{});
 	}
 
 	protected static SectionKey getEntryFromTreeNode(Object data) {
