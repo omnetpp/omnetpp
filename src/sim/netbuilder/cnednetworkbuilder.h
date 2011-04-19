@@ -69,21 +69,21 @@ class SIM_API cNEDNetworkBuilder
     SubmodMap submodMap;
 
   protected:
-    cModule *_submodule(cModule *parentmodp, const char *submodname, int idx=-1);
+    cModule *_submodule(cModule *parentmodp, const char *submodName, int idx=-1);
     void addSubmodulesAndConnections(cModule *modp);
     bool superTypeAllowsUnconnected(cNEDDeclaration *decl) const;
     void buildRecursively(cModule *modp, cNEDDeclaration *decl);
-    std::string resolveComponentType(const NEDLookupContext& context, const char *nedtypename);
-    cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodname);
-    cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname);
-    std::vector<std::string> findTypeWithInterface(const char *nedtypename, const char *interfaceqname);
+    std::string resolveComponentType(const NEDLookupContext& context, const char *nedTypeName);
+    cModuleType *findAndCheckModuleType(const char *modtypename, cModule *modp, const char *submodName);
+    cModuleType *findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodName);
+    std::vector<std::string> findTypeWithInterface(const char *nedTypeName, const char *interfaceQName);
 
     std::string getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index = -1);
     void addSubmodule(cModule *modp, SubmoduleElement *submod);
     void doAddParametersAndGatesTo(cComponent *component, cNEDDeclaration *decl);
     void assignParametersFromPatterns(cComponent *component);
-    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalcontext);
-    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalcontext);
+    void doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalContext);
+    void doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext);
     static cPar::Type translateParamType(int t);
     static cGate::Type translateGateType(int t);
     void doParams(cComponent *component, ParametersElement *paramsNode, bool isSubcomponent);
@@ -107,11 +107,11 @@ class SIM_API cNEDNetworkBuilder
                        const char *gatename, ExpressionElement *gateindexp, bool isplusplus,
                        cGate *&gate1, cGate *&gate2);
     cModule *resolveModuleForConnection(cModule *parentmodp, const char *modname, ExpressionElement *modindexp);
-    std::string getChannelTypeName(cModule *modp, cGate *srcgate, ConnectionElement *conn, const char *channelname);
+    std::string getChannelTypeName(cModule *modp, cGate *srcgate, ConnectionElement *conn, const char *channelName);
     cChannel *createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate);
 
-    cChannelType *findAndCheckChannelType(const char *channeltypename, cModule *modp);
-    cChannelType *findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp);
+    cChannelType *findAndCheckChannelType(const char *channelTypeName, cModule *modp);
+    cChannelType *findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp);
     ExpressionElement *findExpression(NEDElement *node, const char *exprname);
     cParImpl *getOrCreateExpression(ExpressionElement *exprNode, cPar::Type type, const char *unit, bool inSubcomponentScope);
     long evaluateAsLong(ExpressionElement *exprNode, cComponent *context, bool inSubcomponentScope);

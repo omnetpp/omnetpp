@@ -313,7 +313,7 @@ void cNEDNetworkBuilder::assignParametersFromPatterns(cComponent *component)
     }
 }
 
-void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalcontext)
+void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, const std::string& prefix, const std::vector<PatternData>& patterns, bool isInSubcomponent, cComponent *evalContext)
 {
     int numPatterns = patterns.size();
     int numParams = component->getNumParams();
@@ -325,7 +325,7 @@ void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
             for (int j=0; j<numPatterns; j++) {
                 if (patterns[j].matcher->matches(paramPath.c_str())) {
                     // pattern matches the parameter's path, assign the value
-                    doAssignParameterFromPattern(par, patterns[j].patternNode, isInSubcomponent, evalcontext);
+                    doAssignParameterFromPattern(par, patterns[j].patternNode, isInSubcomponent, evalContext);
                     if (par.isSet())
                         break;
                 }
@@ -334,7 +334,7 @@ void cNEDNetworkBuilder::doAssignParametersFromPatterns(cComponent *component, c
     }
 }
 
-void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalcontext)
+void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *patternNode, bool isInSubcomponent, cComponent *evalContext)
 {
     // note: this code should look similar to relevant part of doParam()
     try {
@@ -347,7 +347,7 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
             ASSERT(impl==par.impl() && !impl->isShared());
             cDynamicExpression *dynamicExpr = cExpressionBuilder().process(exprNode, isInSubcomponent);
             cExpressionBuilder::setExpression(impl, dynamicExpr);
-            par.setEvaluationContext(evalcontext);
+            par.setEvaluationContext(evalContext);
             impl->setIsSet(!patternNode->getIsDefault());
         }
         else if (patternNode->getIsDefault())
@@ -366,9 +366,9 @@ void cNEDNetworkBuilder::doAssignParameterFromPattern(cPar& par, ParamElement *p
     }
 }
 
-cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodname, int idx)
+cModule *cNEDNetworkBuilder::_submodule(cModule *, const char *submodName, int idx)
 {
-    SubmodMap::iterator i = submodMap.find(std::string(submodname));
+    SubmodMap::iterator i = submodMap.find(std::string(submodName));
     if (i==submodMap.end())
         return NULL;
 
@@ -518,88 +518,88 @@ bool cNEDNetworkBuilder::superTypeAllowsUnconnected(cNEDDeclaration *decl) const
     return false;
 }
 
-std::string cNEDNetworkBuilder::resolveComponentType(const NEDLookupContext& context, const char *nedtypename)
+std::string cNEDNetworkBuilder::resolveComponentType(const NEDLookupContext& context, const char *nedTypeName)
 {
     // Resolve a NED module/channel type name, for a submodule or channel
     // instance. Lookup is based on component names registered in the simkernel,
     // NOT on the NED files loaded. This allows the user to instantiate
     // cModuleTypes/cChannelTypes which are not declared in NED.
     ComponentTypeNames qnames;
-    return cNEDLoader::getInstance()->resolveNedType(context, nedtypename, &qnames);
+    return cNEDLoader::getInstance()->resolveNedType(context, nedTypeName, &qnames);
 }
 
-cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodname)
+cModuleType *cNEDNetworkBuilder::findAndCheckModuleType(const char *modTypeName, cModule *modp, const char *submodName)
 {
-    //FIXME cache the result to speed up further lookups
+    //TODO cache the result to speed up further lookups
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
     std::string qname = resolveComponentType(context, modTypeName);
     if (qname.empty())
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module type `%s' (not in the loaded NED files?)",
-                            submodname, modTypeName);
+                            submodName, modTypeName);
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
         throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
-                            submodname, qname.c_str());
+                            submodName, qname.c_str());
     return (cModuleType *)componenttype;
 }
 
-cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodname)
+cModuleType *cNEDNetworkBuilder::findAndCheckModuleTypeLike(const char *modTypeName, const char *likeType, cModule *modp, const char *submodName)
 {
-    //FIXME cache the result to speed up further lookups
+    //TODO cache the result to speed up further lookups
 
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string interfaceqname = cNEDLoader::getInstance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceqname.c_str());
+    std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
+    cNEDDeclaration *interfacedecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfacedecl)
         throw cRuntimeError(modp, "Submodule %s: cannot resolve module interface `%s'",
-                            submodname, likeType);
+                            submodName, likeType);
     if (interfacedecl->getTree()->getTagCode()!=NED_MODULE_INTERFACE)
         throw cRuntimeError(modp, "Submodule %s: `%s' is not a module interface",
-                            submodname, interfaceqname.c_str());
+                            submodName, interfaceQName.c_str());
 
     // search for module type that implements the interface
-    std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceqname.c_str());
+    std::vector<std::string> candidates = findTypeWithInterface(modTypeName, interfaceQName.c_str());
     if (candidates.empty())
         throw cRuntimeError(modp, "Submodule %s: no module type named `%s' found that implements module interface %s (not in the loaded NED files?)",
-                            submodname, modTypeName, interfaceqname.c_str());
+                            submodName, modTypeName, interfaceQName.c_str());
     if (candidates.size() > 1)
         throw cRuntimeError(modp, "Submodule %s: more than one module types named `%s' found that implement module interface %s (use fully qualified name to disambiguate)",
-                            submodname, modTypeName, interfaceqname.c_str());
+                            submodName, modTypeName, interfaceQName.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cModuleType *>(componenttype))
         throw cRuntimeError(modp, "Submodule %s: `%s' is not a module type",
-                            submodname, candidates[0].c_str());
+                            submodName, candidates[0].c_str());
     return (cModuleType *)componenttype;
 }
 
-std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *nedtypename, const char *interfaceqname)
+std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *nedTypeName, const char *interfaceQName)
 {
     std::vector<std::string> candidates;
 
     // try to interpret it as a fully qualified name
     ComponentTypeNames qnames;
-    if (qnames.contains(nedtypename)) {
-        cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedtypename);
+    if (qnames.contains(nedTypeName)) {
+        cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(nedTypeName);
         ASSERT(decl);
-        if (decl->supportsInterface(interfaceqname)) {
-            candidates.push_back(nedtypename);
+        if (decl->supportsInterface(interfaceQName)) {
+            candidates.push_back(nedTypeName);
             return candidates;
         }
     }
 
-    if (!strchr(nedtypename, '.'))
+    if (!strchr(nedTypeName, '.'))
     {
         // no dot: name is an unqualified name (simple name). See how many NED types
         // implement the given interface; there should be exactly one
-        std::string dot_nedtypename = std::string(".")+nedtypename;
+        std::string dot_nedtypename = std::string(".")+nedTypeName;
         for (int i=0; i<qnames.size(); i++) {
             const char *qname = qnames.get(i);
-            if (opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedtypename)==0) {
+            if (opp_stringendswith(qname, dot_nedtypename.c_str()) || strcmp(qname, nedTypeName)==0) {
                 cNEDDeclaration *decl = cNEDLoader::getInstance()->getDecl(qname);
                 ASSERT(decl);
-                if (decl->supportsInterface(interfaceqname))
+                if (decl->supportsInterface(interfaceQName))
                     candidates.push_back(qname);
             }
         }
@@ -610,14 +610,14 @@ std::vector<std::string> cNEDNetworkBuilder::findTypeWithInterface(const char *n
 std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleElement *submod, int index)
 {
     // note: this code is nearly identical to getChannelTypeName(), with subtle differences
-    const char *submodname = submod->getName();
+    const char *submodName = submod->getName();
     if (opp_isempty(submod->getLikeType()))
     {
         return submod->getType();
     }
     else
     {
-        // first, try to use expression betweeen angle braces from the NED file
+        // first, try to use expression between angle braces from the NED file
         if (!submod->getIsDefault()) {
             if (!opp_isempty(submod->getLikeParam()))
                 return modp->par(submod->getLikeParam()).stringValue();
@@ -627,12 +627,12 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         }
 
         // then, use **.type-name option in the configuration if exists
-        std::string key = modp->getFullPath() + "." + submodname;
+        std::string key = modp->getFullPath() + "." + submodName;
         if (index != -1)
             key = opp_stringf("%s[%d]", key.c_str(), index);
-        std::string submodtypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
-        if (!submodtypename.empty())
-            return submodtypename;
+        submodTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+        if (!submodTypeName.empty())
+            return submodTypeName;
 
         // last, use default(expression) betweeen angle braces from the NED file
         if (submod->getIsDefault()) {
@@ -642,7 +642,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
             if (likeParamExpr)
                 return evaluateAsString(likeParamExpr, modp, false);
         }
-        throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodname, key.c_str(), CFGID_TYPE_NAME->getName());
+        throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPE_NAME->getName());
     }
 }
 
@@ -665,25 +665,25 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
     }
 
     // create submodule
-    const char *submodname = submod->getName();
+    const char *submodName = submod->getName();
     bool usesLike = !opp_isempty(submod->getLikeType());
     ExpressionElement *vectorsizeexpr = findExpression(submod, "vector-size");
 
     if (!vectorsizeexpr)
     {
-        cModuleType *submodtype;
+        cModuleType *submodType;
         try {
-            std::string submodtypename = getSubmoduleTypeName(modp, submod);
-            submodtype = usesLike ?
-                findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname) :
-                findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
+            std::string submodTypeName = getSubmoduleTypeName(modp, submod);
+            submodType = usesLike ?
+                findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), modp, submodName) :
+                findAndCheckModuleType(submodTypeName.c_str(), modp, submodName);
         }
         catch (std::exception& e) {
             updateOrRethrowException(e, submod); throw;
         }
 
-        cModule *submodp = submodtype->create(submodname, modp);
-        ModulePtrVector& v = submodMap[submodname];
+        cModule *submodp = submodType->create(submodName, modp);
+        ModulePtrVector& v = submodMap[submodName];
         v.push_back(submodp);
 
         cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
@@ -694,21 +694,21 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleElement *submod)
     {
         // note: we don't try to resolve moduleType if vector size is zero
         int vectorsize = (int) evaluateAsLong(vectorsizeexpr, modp, false);
-        ModulePtrVector& v = submodMap[submodname];
-        cModuleType *submodtype = NULL;
+        ModulePtrVector& v = submodMap[submodName];
+        cModuleType *submodType = NULL;
         for (int i=0; i<vectorsize; i++) {
-            if (!submodtype || usesLike) {
+            if (!submodType || usesLike) {
                 try {
-                    std::string submodtypename = getSubmoduleTypeName(modp, submod, i);
-                    submodtype = usesLike ?
-                        findAndCheckModuleTypeLike(submodtypename.c_str(), submod->getLikeType(), modp, submodname) :
-                        findAndCheckModuleType(submodtypename.c_str(), modp, submodname);
+                    std::string submodTypeName = getSubmoduleTypeName(modp, submod, i);
+                    submodType = usesLike ?
+                        findAndCheckModuleTypeLike(submodTypeName.c_str(), submod->getLikeType(), modp, submodName) :
+                        findAndCheckModuleType(submodTypeName.c_str(), modp, submodName);
                 }
                 catch (std::exception& e) {
                     updateOrRethrowException(e, submod); throw;
                 }
             }
-            cModule *submodp = submodtype->create(submodname, modp, vectorsize, i);
+            cModule *submodp = submodType->create(submodName, modp, vectorsize, i);
             v.push_back(submodp);
 
             cContextSwitcher __ctx(submodp); // params need to be evaluated in the module's context
@@ -1002,7 +1002,7 @@ cModule *cNEDNetworkBuilder::resolveModuleForConnection(cModule *parentmodp, con
     }
 }
 
-std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ConnectionElement *conn, const char *channelname)
+std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *srcgate, ConnectionElement *conn, const char *channelName)
 {
     // note: this code is nearly identical to getSubmoduleTypeName(), with subtle differences
     if (opp_isempty(conn->getLikeType()))
@@ -1039,10 +1039,10 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
         }
 
         // then, use **.type-name option in the configuration if exists
-        std::string key = srcgate->getFullPath() + "." + channelname;
-        std::string channeltypename = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
-        if (!channeltypename.empty())
-            return channeltypename;
+        std::string key = srcgate->getFullPath() + "." + channelName;
+        std::string channelTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+        if (!channelTypeName.empty())
+            return channelTypeName;
 
         // last, use default(expression) betweeen angle braces from the NED file
         if (conn->getIsDefault()) {
@@ -1059,31 +1059,31 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate)
 {
     // resolve channel type
-    const char *channelname = "channel";
+    const char *channelName = "channel";
     cChannelType *channeltype;
     try {
-        std::string channeltypename = getChannelTypeName(parentmodp, srcgate, conn, channelname);
+        std::string channelTypeName = getChannelTypeName(parentmodp, srcgate, conn, channelName);
         bool usesLike = !opp_isempty(conn->getLikeType());
         channeltype = usesLike ?
-            findAndCheckChannelTypeLike(channeltypename.c_str(), conn->getLikeType(), parentmodp) :
-            findAndCheckChannelType(channeltypename.c_str(), parentmodp);
+            findAndCheckChannelTypeLike(channelTypeName.c_str(), conn->getLikeType(), parentmodp) :
+            findAndCheckChannelType(channelTypeName.c_str(), parentmodp);
     }
     catch (std::exception& e) {
         updateOrRethrowException(e, conn); throw;
     }
 
     // create channel object
-    cChannel *channelp = channeltype->create(channelname);
+    cChannel *channelp = channeltype->create(channelName);
     return channelp;
 }
 
-cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltypename, cModule *modp)
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channelTypeName, cModule *modp)
 {
-    //FIXME cache the result to speed up further lookups
+    //TODO cache the result to speed up further lookups
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string qname = resolveComponentType(context, channeltypename);
+    std::string qname = resolveComponentType(context, channelTypeName);
     if (qname.empty())
-        throw cRuntimeError(modp, "Cannot resolve channel type `%s' (not in the loaded NED files?)", channeltypename);
+        throw cRuntimeError(modp, "Cannot resolve channel type `%s' (not in the loaded NED files?)", channelTypeName);
 
     cComponentType *componenttype = cComponentType::find(qname.c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
@@ -1091,27 +1091,27 @@ cChannelType *cNEDNetworkBuilder::findAndCheckChannelType(const char *channeltyp
     return (cChannelType *)componenttype;
 }
 
-cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channeltypename, const char *likeType, cModule *modp)
+cChannelType *cNEDNetworkBuilder::findAndCheckChannelTypeLike(const char *channelTypeName, const char *likeType, cModule *modp)
 {
-    //FIXME cache the result to speed up further lookups
+    //TODO cache the result to speed up further lookups
 
     // resolve the interface
     NEDLookupContext context(currentDecl->getTree(), currentDecl->getFullName());
-    std::string interfaceqname = cNEDLoader::getInstance()->resolveNedType(context, likeType);
-    cNEDDeclaration *interfacedecl = interfaceqname.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceqname.c_str());
+    std::string interfaceQName = cNEDLoader::getInstance()->resolveNedType(context, likeType);
+    cNEDDeclaration *interfacedecl = interfaceQName.empty() ? NULL : (cNEDDeclaration *)cNEDLoader::getInstance()->lookup(interfaceQName.c_str());
     if (!interfacedecl)
         throw cRuntimeError(modp, "Cannot resolve channel interface `%s'", likeType);
     if (interfacedecl->getTree()->getTagCode()!=NED_CHANNEL_INTERFACE)
-        throw cRuntimeError(modp, "`%s' is not a channel interface", interfaceqname.c_str());
+        throw cRuntimeError(modp, "`%s' is not a channel interface", interfaceQName.c_str());
 
     // search for channel type that implements the interface
-    std::vector<std::string> candidates = findTypeWithInterface(channeltypename, interfaceqname.c_str());
+    std::vector<std::string> candidates = findTypeWithInterface(channelTypeName, interfaceQName.c_str());
     if (candidates.empty())
         throw cRuntimeError(modp, "No channel type named `%s' found that implements channel interface %s (not in the loaded NED files?)",
-                            channeltypename, interfaceqname.c_str());
+                            channelTypeName, interfaceQName.c_str());
     if (candidates.size() > 1)
         throw cRuntimeError(modp, "More than one channel types named `%s' found that implement channel interface %s (use fully qualified name to disambiguate)",
-                            channeltypename, interfaceqname.c_str());
+                            channelTypeName, interfaceQName.c_str());
 
     cComponentType *componenttype = cComponentType::find(candidates[0].c_str());
     if (!dynamic_cast<cChannelType *>(componenttype))
