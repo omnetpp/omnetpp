@@ -1,5 +1,6 @@
 package org.omnetpp.inifile.editor.model;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -153,4 +154,36 @@ public interface IReadonlyInifileDocument {
      */
     IFile[] getIncludedFiles();
     
+    /**
+     * Returns true if there is any cycle in the section inheritance chains.
+     */
+    boolean containsSectionCycles();
+
+    /**
+     * Returns true if the given section is part of a cycle in the inheritance chain.
+     */
+    boolean isCausingCycle(String section);
+    
+    /**
+     * Returns the collection of cycles found in the section inheritance chains.
+     */
+    Collection<Set<String>> getSectionChainCycles();
+    
+    /**
+     * Follows the section "extends" chain back to the [General] section, and
+     * returns the array of section names (including the given section and
+     * [General] as well).
+     *
+     * The returned chain might by partial, if the section is part of a cycle
+     * or the extended sections cannot be linearized due to a conflict.
+     * 
+     * @return a non-empty array starting with {@code section}
+     */
+    String[] getSectionChain(String section);
+    
+    /**
+     * Returns the names of conflicting sections found while computing the
+     * section chain of the given section.
+     */
+    String[] getConflictingSections(String section);
 }

@@ -94,7 +94,7 @@ public class InifileHoverUtils {
 		text += "<br>\n";
 
 		// section chain
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+		String[] sectionChain = doc.getSectionChain(section);
 		if (sectionChain.length >= 2)
 			text += "Fallback order: " + StringUtils.join(sectionChain, " &gt; ") + " <br>\n"; //XXX decide terminology: "Lookup order" or "Section fallback chain" ? also: "," or ">" ?
 

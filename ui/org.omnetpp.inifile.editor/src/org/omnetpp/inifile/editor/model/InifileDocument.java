@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +94,8 @@ public class InifileDocument implements IInifileDocument {
     static class Section implements Cloneable {
         ArrayList<SectionHeadingLine> headingLines = new ArrayList<SectionHeadingLine>();
         LinkedHashMap<String,KeyValueLine> entries = new LinkedHashMap<String, KeyValueLine>();
+        String[] sectionChain;
+        Set<String> sectionChainConflict; // conflicting sections in the section chain or null
         Object data;
         
         @Override
@@ -103,12 +107,15 @@ public class InifileDocument implements IInifileDocument {
             section.entries = new LinkedHashMap<String,KeyValueLine>(this.entries.size());
             for (Map.Entry<String, KeyValueLine> entry : this.entries.entrySet())
                 section.entries.put(entry.getKey(), entry.getValue().clone());
+            section.sectionChain = sectionChain;
+            section.sectionChainConflict = sectionChainConflict;
             return section;
         }
     }
 
     // primary data structure: sections, keys
     LinkedHashMap<String,Section> sections = new LinkedHashMap<String,Section>();
+    Collection<Set<String>> sectionsCausingCycles = Collections.emptyList();
 
     // reverse (linenumber-to-section/key) mapping
     ArrayList<SectionHeadingLine> mainFileSectionHeadingLines = new ArrayList<SectionHeadingLine>();
@@ -358,11 +365,27 @@ public class InifileDocument implements IInifileDocument {
                 markers.addError(documentFile, e.getLineNumber(), e.getMessage());
             }
             Debug.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
-
+            
             // mark data structure as up to date (even if there was an error, because
             // we don't want to keep re-parsing again and again)
             changed = false;
-            
+
+            // compute and validate section chains
+            SectionChainResolver resolver = new SectionChainResolver(this);
+            for (String sectionName : sections.keySet()) {
+                Section section = sections.get(sectionName);
+                section.sectionChain = resolver.resolveSectionChain(sectionName);
+                section.sectionChainConflict = resolver.getConflict(sectionName);
+                if (section.sectionChainConflict != null)
+                    markers.addError(sectionName, String.format("Conflict in the fallback chain of %s: %s",
+                                                                section, StringUtils.formatList(section.sectionChainConflict, "%s", ",")));
+            }
+            sectionsCausingCycles = resolver.getCycles();
+            for (Set<String> cycle : sectionsCausingCycles)
+                for (String section : cycle)
+                    markers.addError(section, "Cycle in the fallback chain at section ["+section+"]");
+
+
             // old docCopy is obsolete, trigger new analysis
             docCopy = null;
 
@@ -374,7 +397,7 @@ public class InifileDocument implements IInifileDocument {
             // changed=true.
         }
     }
-
+    
     public void dump() {
         for (String sectionName : sections.keySet()) {
             Debug.println("Section "+sectionName);
@@ -922,5 +945,39 @@ public class InifileDocument implements IInifileDocument {
 
     public IFile[] getIncludedFiles() {
         return includedFiles.toArray(new IFile[]{});
+    }
+    
+    public boolean containsSectionCycles() {
+        parseIfChanged();
+        return !sectionsCausingCycles.isEmpty();
+    }
+
+    public boolean isCausingCycle(String section) {
+        parseIfChanged();
+        for (Set<String> cycle : sectionsCausingCycles)
+            if (cycle.contains(section))
+                return true;
+        return false;
+    }
+    
+    public Collection<Set<String>> getSectionChainCycles() {
+        parseIfChanged();
+        return sectionsCausingCycles;
+    }
+    
+    public String[] getSectionChain(String sectionName) {
+        parseIfChanged();
+        Section section = sections.get(sectionName);
+        if (section == null)
+            throw new IllegalArgumentException("No such section: ["+sectionName+"]");
+        return section.sectionChain;
+    }
+    
+    public String[] getConflictingSections(String sectionName) {
+        parseIfChanged();
+        Section section = sections.get(sectionName);
+        if (section == null)
+            throw new IllegalArgumentException("No such section: ["+sectionName+"]");
+        return section.sectionChainConflict != null ? section.sectionChainConflict.toArray(new String[0]) : null;
     }
 }

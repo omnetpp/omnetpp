@@ -285,7 +285,7 @@ public class AddInifileKeysDialog extends TitleAreaDialog {
 		selectedSection = sectionsCombo.getText();
 
 		// compute fallback chain for selected section, and fill table with their contents
-		String[] sectionChain = InifileUtils.resolveSectionChain(doc, selectedSection);
+		String[] sectionChain = doc.getSectionChain(selectedSection);
 		String networkName = InifileUtils.lookupConfig(sectionChain, CFGID_NETWORK.getName(), doc);
 
 		// update labels: "Network" and "Section fallback chain"

@@ -462,7 +462,7 @@ public class SectionsPage extends FormPage {
 		for (String sectionName : doc.getSectionNames()) {
 			if (!sectionName.equals(GENERAL)) {
 				List<String> baseSectionNames = InifileUtils.resolveBaseSectionsPretendingGeneralExists(doc, sectionName);
-				if (analyzer.isCausingCycle(sectionName) || baseSectionNames.isEmpty()) {
+				if (doc.isCausingCycle(sectionName) || baseSectionNames.isEmpty()) {
 					// bogus section, put it under the root
 	                GenericTreeNode childNode = getOrCreateNode(nodes, sectionName);
 	                Assert.isTrue(childNode != null && childNode.getParent() == null);

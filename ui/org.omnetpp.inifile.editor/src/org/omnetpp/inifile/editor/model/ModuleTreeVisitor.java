@@ -60,7 +60,7 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
             boolean collectParameters, String[] propertiesToCollect, PatternMatcher moduleNamePattern, IProgressMonitor monitor) {
         Assert.isTrue(collectParameters || propertiesToCollect != null || moduleNamePattern != null);
         this.doc = doc;
-        this.sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
+        this.sectionChain = doc.getSectionChain(activeSection);
         this.collectParameters = collectParameters;
         this.propertiesToCollect = propertiesToCollect;
         this.moduleNamePattern = moduleNamePattern;

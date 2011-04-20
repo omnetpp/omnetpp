@@ -1,6 +1,7 @@
 package org.omnetpp.inifile.editor.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -26,7 +27,8 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
 
     // primary data structure: sections, keys
     private LinkedHashMap<String,Section> sections;
-    
+    private Collection<Set<String>> sectionsCausingCycles;
+
     // reverse (linenumber-to-section/key) mapping
     private ArrayList<SectionHeadingLine> mainFileSectionHeadingLines;
     private ArrayList<KeyValueLine> mainFileKeyValueLines;
@@ -45,6 +47,7 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
             this.sections = (LinkedHashMap<String,Section>) doc.sections.clone();
             for (Map.Entry<String, Section> entry : this.sections.entrySet())
                 entry.setValue(entry.getValue().clone());
+            this.sectionsCausingCycles = new ArrayList<Set<String>>(doc.sectionsCausingCycles);
             this.mainFileSectionHeadingLines = (ArrayList<SectionHeadingLine>) doc.mainFileSectionHeadingLines.clone();
             for (ListIterator<SectionHeadingLine> line = this.mainFileSectionHeadingLines.listIterator(); line.hasNext(); )
                 line.set(line.next().clone());
@@ -199,5 +202,34 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
             if (line.lineNumber <= lineNumber && lineNumber < line.lineNumber+line.numLines)
                 return line.key;
         return null;
+    }
+    
+    public boolean containsSectionCycles() {
+        return !sectionsCausingCycles.isEmpty();
+    }
+
+    public boolean isCausingCycle(String section) {
+        for (Set<String> cycle : sectionsCausingCycles)
+            if (cycle.contains(section))
+                return true;
+        return false;
+    }
+    
+    public Collection<Set<String>> getSectionChainCycles() {
+        return sectionsCausingCycles;
+    }
+    
+    public String[] getSectionChain(String sectionName) {
+        Section section = sections.get(sectionName);
+        if (section == null)
+            throw new IllegalArgumentException("No such section: ["+sectionName+"]");
+        return section.sectionChain;
+    }
+    
+    public String[] getConflictingSections(String sectionName) {
+        Section section = sections.get(sectionName);
+        if (section == null)
+            throw new IllegalArgumentException("No such section: ["+sectionName+"]");
+        return section.sectionChainConflict != null ? section.sectionChainConflict.toArray(new String[0]) : null;
     }
 }

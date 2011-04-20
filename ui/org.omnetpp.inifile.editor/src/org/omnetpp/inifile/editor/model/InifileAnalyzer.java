@@ -21,12 +21,10 @@ import static org.omnetpp.ned.model.NedElementConstants.NED_PARTYPE_XML;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -120,9 +118,6 @@ public final class InifileAnalyzer {
     private ParamResolutionJob paramResolutionJob;
     private Object paramResolutionLock; // for threads that are waiting for the param resolution job
     
-    // result of the analysis (that part not stored in the doc)
-    private Collection<Set<String>> sectionsCausingCycles;
-
     // infrastructure
     private InifileProblemMarkerSynchronizer markers; // only used during analyze()
 	private ListenerList propertyChangeListeners = new ListenerList();
@@ -209,7 +204,7 @@ public final class InifileAnalyzer {
 	public IInifileDocument getDocument() {
 		return doc;
 	}
-
+	
     public synchronized boolean isParamResolutionEnabled() {
         return paramResolutionEnabled;
     }
@@ -319,7 +314,7 @@ public final class InifileAnalyzer {
     
     			// collect iteration variables, needed for doValidate()
     			collectIterationVariables();
-    
+    			
     			// data structure is done
     			changed = false;
 
@@ -505,8 +500,9 @@ public final class InifileAnalyzer {
 
         // make sure that an iteration variable isn't redefined in other sections
         for (String section : doc.getSectionNames()) {
-            String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
-            Map<String, IterationVariable> namedIterations = ((SectionData) doc.getSectionData(section)).namedIterations;
+            SectionData sectionData = (SectionData)doc.getSectionData(section);
+            String[] sectionChain = doc.getSectionChain(section);
+            Map<String, IterationVariable> namedIterations = sectionData.namedIterations;
             for (String var : namedIterations.keySet())
                 for (String ancestorSection : sectionChain)
                     if (!section.equals(ancestorSection))
@@ -554,22 +550,6 @@ public final class InifileAnalyzer {
 				}
 			}
 		}
-
-        // check fallback chain for every section
-		SectionChainResolver resolver = new SectionChainResolver(doc);
-		resolver.resolveAll();
-		sectionsCausingCycles = resolver.getCycles();
-
-		// add error markers
-		for (Set<String> cycle : sectionsCausingCycles)
-		    for (String section : cycle)
-		        markers.addError(section, "Cycle in the fallback chain at section ["+section+"]");
-		for (String section : doc.getSectionNames()) {
-		    Set<String> conflict = resolver.getConflict(section);
-		    if (conflict != null)
-		        markers.addError(section, String.format("Conflict in the fallback chain of %s: %s",
-		                                                    section, StringUtils.formatList(conflict, "%s", ",")));
-		}
 	}
 
 	/**
@@ -590,7 +570,7 @@ public final class InifileAnalyzer {
 		}
 		else if (key.equals(CFGID_NETWORK.getName()) && !section.equals(GENERAL)) {
 			// it does not make sense to override "network=" in another section, warn for it
-			String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+		    String[] sectionChain = doc.getSectionChain(section);
 			for (String sec : sectionChain)
 				if (!sec.equals(section) && doc.containsKey(sec, key))
 				    markers.addWarning(section, key, "Network is already specified in section ["+sec+"], as \""+doc.getValue(sec, key)+"\"");
@@ -696,7 +676,7 @@ public final class InifileAnalyzer {
 	        return true;
 
 	    // is it defined in this section or any fallback section?
-        String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+        String[] sectionChain = doc.getSectionChain(section);
         for (String sec : sectionChain) {
             SectionData sectionData = (SectionData) doc.getSectionData(sec);
             if (sectionData.namedIterations.containsKey(varName))
@@ -1191,7 +1171,7 @@ public final class InifileAnalyzer {
 		    markers.addError(section, key, "Syntax error: " + e.getMessage());
 		}
 	}
-
+	
 /*
     // TODO: move?
     // testParamAssignments("C:\\Workspace\\Repository\\omnetpp\\test\\param\\param.out", list);
@@ -1268,19 +1248,6 @@ public final class InifileAnalyzer {
     }
 */
     
-    public boolean containsSectionCycles() {
-        validateIfChanged();
-        return !sectionsCausingCycles.isEmpty();
-	}
-
-	public boolean isCausingCycle(String section) {
-        validateIfChanged();
-        for (Set<String> cycle : sectionsCausingCycles)
-            if (cycle.contains(section))
-                return true;
-        return false;
-	}
-
 	public interface Runnable<T> {
 	    T run() throws ParamResolutionDisabledException;
 	}
@@ -1487,8 +1454,7 @@ public final class InifileAnalyzer {
 	    return withValidatedDocument(new Runnable2<String[]>() {
             public String[] run() {
                 List<String> result = new ArrayList<String>();
-                String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-                for (String section : sectionChain) {
+                for (String section : doc.getSectionChain(activeSection)) {
                     SectionData sectionData = (SectionData) doc.getSectionData(section);
                     result.addAll(sectionData.namedIterations.keySet());
                 }
@@ -1506,8 +1472,7 @@ public final class InifileAnalyzer {
 	public boolean containsIteration(final String activeSection) {
 	    return (Boolean)withValidatedDocument(new Runnable2<Boolean>() {
             public Boolean run() {
-                String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-                for (String section : sectionChain) {
+                for (String section : doc.getSectionChain(activeSection)) {
                     SectionData sectionData = (SectionData) doc.getSectionData(section);
                     if (sectionData == null)
                         // XXX Note: sectionData is NOT supposed to be null here. However, it sometimes is;
@@ -1530,8 +1495,7 @@ public final class InifileAnalyzer {
 	public String getIterationVariableValueString(final String activeSection, final String variable) {
 	    return withValidatedDocument(new Runnable2<String>() {
             public String run() {
-                String[] sectionChain = InifileUtils.resolveSectionChain(doc, activeSection);
-                for (String section : sectionChain) {
+                for (String section : doc.getSectionChain(activeSection)) {
                     SectionData sectionData = (SectionData) doc.getSectionData(section);
                     if (sectionData.namedIterations.containsKey(variable))
                         return sectionData.namedIterations.get(variable).value;

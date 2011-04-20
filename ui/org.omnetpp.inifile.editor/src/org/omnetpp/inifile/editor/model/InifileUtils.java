@@ -95,7 +95,7 @@ public class InifileUtils {
      * Returns {@code defaultValue} if not found.
      */
     public static String lookupConfig(String section, String key, IReadonlyInifileDocument doc, String defaultValue) {
-        String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+        String[] sectionChain = doc.getSectionChain(section);
         return lookupConfig(sectionChain, key, doc);
     }
 
@@ -215,26 +215,11 @@ public class InifileUtils {
 	}
 
 	/**
-	 * Follows the section "extends" chain back to the [General] section, and
-	 * returns the list of section names (including the given section and
-	 * [General] as well).
-	 *
-	 * Errors (such as nonexistent section, cycle in the fallback chain, etc)
-	 * are handled in a forgiving way, and a reasonably complete section chain
-	 * is returned without throwing an exception -- so this method may be safely
-	 * called during any calculation.
-	 */
-	public static String[] resolveSectionChain(IReadonlyInifileDocument doc, String section) {
-	    SectionChainResolver resolver = new SectionChainResolver(doc);
-	    return resolver.resolveSectionChain(section);
-	}
-
-	/**
 	 * Whether the section chain contains the given section. Useful for detecting
 	 * cycles in the "extends" hierarchy.
 	 */
 	public static boolean sectionChainContains(IReadonlyInifileDocument doc, String chainStartSection, String section) {
-		String[] sectionChain = resolveSectionChain(doc, chainStartSection);
+		String[] sectionChain = doc.getSectionChain(chainStartSection);
 		return ArrayUtils.indexOf(sectionChain, section) >= 0;
 	}
 

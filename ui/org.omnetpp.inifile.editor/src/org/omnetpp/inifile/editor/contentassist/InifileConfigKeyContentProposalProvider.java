@@ -82,7 +82,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 			return text;
 		}
 		if (doc != null && entry!=CFGID_DESCRIPTION && entry!=CFGID_EXTENDS) {
-			String[] sectionChain = InifileUtils.resolveSectionChain(doc, section);
+			String[] sectionChain = doc.getSectionChain(section);
 			for (String sec : sectionChain)
 				if (doc.containsKey(sec, key))
 					text += "<!> Set in ["+sec+"] to "+doc.getValue(sec, key)+"; set here to override it.\n\n";

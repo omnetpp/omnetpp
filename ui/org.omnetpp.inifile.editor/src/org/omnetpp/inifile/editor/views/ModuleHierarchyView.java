@@ -685,7 +685,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
 
         private String resolveParamValue(String fullPath, Vector<INedTypeInfo> typeInfoPath, Vector<ISubmoduleOrConnection> elementPath, ParamElementEx paramDeclaration) {
             ArrayList<ParamResolution> paramResolutions = new ArrayList<ParamResolution>();
-            String[] sectionChain = InifileUtils.resolveSectionChain(inifileDocument, section);
+            String[] sectionChain = inifileDocument.getSectionChain(section);
             ParamCollector.resolveParameter(paramResolutions, fullPath, typeInfoPath, elementPath, sectionChain, inifileDocument, paramDeclaration);
 
             if (paramResolutions.size() == 1) {

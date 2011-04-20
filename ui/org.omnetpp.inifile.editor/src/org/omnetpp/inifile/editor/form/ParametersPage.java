@@ -644,7 +644,7 @@ public class ParametersPage extends FormPage {
 
  	    // compute fallback chain for selected section, and fill table with their contents
 		GenericTreeNode rootNode = new GenericTreeNode("root");
-		String[] sectionChain = "".equals(selectedSection) ? new String[0] : InifileUtils.resolveSectionChain(doc, selectedSection);
+		String[] sectionChain = "".equals(selectedSection) ? new String[0] : doc.getSectionChain(selectedSection);
 		for (String section : sectionChain) {
 			GenericTreeNode sectionNode = new GenericTreeNode(section);
 			rootNode.addChild(sectionNode);
