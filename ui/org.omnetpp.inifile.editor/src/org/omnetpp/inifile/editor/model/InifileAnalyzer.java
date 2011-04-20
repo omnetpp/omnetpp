@@ -1479,6 +1479,8 @@ public final class InifileAnalyzer {
                         // this occurs with large models and ini files (e.g.INETMANET), and seems to be timing dependent;
                         // and also with greater probability when typing introduces a syntax error in the file.
                         // Workaround: check for null manually here.
+                        // Cause: InifileReconcileStrategy calls doc.parse(), which clears the section data,
+                        //        but does notify IInifileChangeListers, so `this.changed` remains false (so the validation  up to date)
                         Debug.println("WARNING: no sectionData for section " + section + " in InifileAnalyzer.containsIteration()!");
                     if (sectionData != null && !sectionData.iterations.isEmpty())
                         return true;
