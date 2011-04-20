@@ -60,20 +60,7 @@ public class InifileTextHover implements ITextHover, ITextHoverExtension, IInfor
 		if (key == null)
 			return InifileHoverUtils.getSectionHoverText(section, doc, analyzer, false);
 		else {
-		    IRegion partRegion = null;
-		    try {
-		        IRegion keyRegion = InifileTextUtil.getKeyRegion(textViewer.getDocument(), lineNumber);
-		        if (keyRegion != null) {
-		            partRegion = InifileTextUtil.getKeyPartRegion(textViewer.getDocument(), keyRegion, hoverRegion.getOffset());
-		            if (partRegion != null) {
-		                partRegion = new Region(partRegion.getOffset() - keyRegion.getOffset(), partRegion.getLength());
-		            }
-		        }
-		        
-		    }
-		    catch (BadLocationException e) {
-		    }
-		    return InifileHoverUtils.getEntryHoverText(section, key, partRegion, doc, analyzer);
+		    return InifileHoverUtils.getEntryHoverText(section, key, hoverRegion, doc, analyzer, textViewer.getDocument());
 		}
 	}
 

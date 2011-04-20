@@ -45,6 +45,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
+import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.engine.StringTokenizer2;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.engineext.StringTokenizerException;
@@ -1401,7 +1402,7 @@ public final class InifileAnalyzer {
             }
         });
     }
-
+    
     public PropertyResolution[] getPropertyResolutions(final String section, ITimeout timeout)
             throws ParamResolutionDisabledException, ParamResolutionTimeoutException {
         return withAnalyzedDocument(timeout, new Runnable<PropertyResolution[]>() {
@@ -1431,6 +1432,28 @@ public final class InifileAnalyzer {
             }
         });
     }
+    
+    public PropertyResolution[] getPropertyResolutions(final String propertyName, final String fullPathPattern, final String section, ITimeout timeout)
+            throws ParamResolutionDisabledException, ParamResolutionTimeoutException {
+        return withAnalyzedDocument(timeout, new Runnable<PropertyResolution[]>() {
+            public PropertyResolution[] run() {
+                SectionData data = (SectionData)doc.getSectionData(section);
+                List<PropertyResolution> propertyResolutions = data == null ? null : data.propertyResolutions;
+                if (propertyResolutions == null || propertyResolutions.isEmpty())
+                    return new PropertyResolution[0];
+                
+                PatternMatcher matcher = new PatternMatcher(fullPathPattern, true, true, true);
+
+                // Note: linear search -- can be made more efficient with some lookup table if needed
+                ArrayList<PropertyResolution> result = new ArrayList<PropertyResolution>();
+                for (PropertyResolution propertyResolution : propertyResolutions)
+                    if (propertyName.equals(propertyResolution.propertyDeclaration.getName()) && matcher.matches(propertyResolution.fullPath))
+                        result.add(propertyResolution);
+                return result.toArray(new PropertyResolution[]{});
+            }
+        });
+    }
+
     
     private static boolean elementPathEquals(Vector<ISubmoduleOrConnection> original, ISubmoduleOrConnection[] copy) {
         if (original.size() != copy.length)

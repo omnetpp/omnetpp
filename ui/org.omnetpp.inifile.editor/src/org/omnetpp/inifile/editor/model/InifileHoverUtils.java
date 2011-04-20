@@ -21,13 +21,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
-import org.omnetpp.inifile.editor.text.util.InifileTextUtil;
+import org.omnetpp.inifile.editor.text.util.NedElementDetector;
+import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -126,7 +128,7 @@ public class InifileHoverUtils {
 	}
 
     public static String getEntryHoverText(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
-        return getEntryHoverText(section, key, null, doc, analyzer);
+        return getEntryHoverText(section, key, null, doc, analyzer, null);
     }
 	
 	/**
@@ -134,46 +136,24 @@ public class InifileHoverUtils {
 	 * @param section  null is accepted
 	 * @param key      null is accepted
 	 */
-	public static String getEntryHoverText(String section, String key, IRegion regionInKey, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
-		if (section == null || key == null)
+	public static String getEntryHoverText(String section, String key, IRegion hoverRegion, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, IDocument textDoc) {
+		if (section == null || key == null || analyzer == null)
 			return null;
-
-		KeyType keyType = (key == null) ? KeyType.CONFIG : KeyType.getKeyType(key);
-		if (keyType==KeyType.CONFIG) {
-			// config key: display description
-			return getConfigHoverText(section, key, doc);
-		}
-		else if (keyType == KeyType.PARAM) {
-		    if (analyzer == null)
-		        return null;
-		    else {
-		        if (regionInKey != null) {
-    		        try {
-    		            ParamResolution[] resList = analyzer.getParamResolutionsForKey(section, key, new Timeout(InifileEditor.HOVER_TIMEOUT));
-    		            String pattern = key.substring(regionInKey.getOffset(), regionInKey.getOffset() + regionInKey.getLength());
-    		            List<INedElement> elements = InifileTextUtil.findNamedElements(pattern, resList);
-    		            if (!elements.isEmpty()) {
-    		                if (elements.size() == 1 && elements.get(0) instanceof ParamElement)
-    		                    return getParamKeyHoverText(section, key, analyzer);
-    		                else
-    		                    return getNedElementsHoverText(elements);
-    		            }
-    		        }
-    		        catch (ParamResolutionDisabledException e) {}
-    		        catch (ParamResolutionTimeoutException e) {}
-		        }
-
-    			// parameter assignment: display which parameters it matches
-    			return getParamKeyHoverText(section, key, analyzer);
+		
+		if (hoverRegion != null && textDoc != null) {
+		    NedElementDetector detector = new NedElementDetector(doc, analyzer, textDoc, NedResources.getInstance());
+		    Pair<IRegion,Set<INedElement>> regionAndElements = detector.detectNedElementsAtOffset(hoverRegion.getOffset()); // XXX detect elements in the whole region
+		    if (regionAndElements != null) {
+		        return getNedElementsHoverText(new ArrayList<INedElement>(regionAndElements.second));
 		    }
 		}
-		else if (keyType == KeyType.PER_OBJECT_CONFIG) {
-		    // display option description etc
-            return getPerObjectConfigHoverText(section, key, doc);
+
+		switch (KeyType.getKeyType(key)) {
+    		case CONFIG: return getConfigHoverText(section, key, doc);
+            case PER_OBJECT_CONFIG: return getPerObjectConfigHoverText(section, key, doc);
+    		case PARAM: return getParamKeyHoverText(section, key, analyzer);
 		}
-		else {
-			return null; // should not happen (invalid key type)
-		}
+		return null;
 	}
 
     /**
@@ -291,7 +271,7 @@ public class InifileHoverUtils {
             String body = entry.getKey().second;
             INedElement element = entry.getValue();
             if (generateContents) {
-                String linkText = InifileTextUtil.getLinkText(element);
+                String linkText = NedElementDetector.getLinkText(element);
                 contents += "<li><a href=\"#"+(i++)+"\">" + linkText + "</a></li>\n";
                 title += " (" + linkText + ")";
             }
