@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.common.util.GraphUtils;
 import org.omnetpp.common.util.GraphUtils.GraphModel;
 
@@ -80,6 +81,7 @@ class SectionChainResolver {
      */
     public String[] resolveSectionChain(String section) {
         List<String> chain = computeSectionChain(section);
+        Assert.isTrue(chain != null && chain.size() > 0 && section.equals(chain.get(chain.size()-1)));
         return toReversedArray(chain);
     }
     
@@ -117,7 +119,7 @@ class SectionChainResolver {
         List<List<String>> chainsToMerge = new ArrayList<List<String>>();
         for (String baseSection : baseSections)
             if (!isCausingCycles(baseSection))
-                chainsToMerge.add(computeSectionChain(baseSection));
+                chainsToMerge.add(new ArrayList<String>(computeSectionChain(baseSection)));
         Collections.reverse(baseSections);
         chainsToMerge.add(baseSections);
         
@@ -143,7 +145,7 @@ class SectionChainResolver {
         List<List<String>> chainsToMerge = new ArrayList<List<String>>();
         for (String baseSection : baseSections)
             if (!isCausingCycles(baseSection))
-                chainsToMerge.add(computeSectionChain(baseSection));
+                chainsToMerge.add(new ArrayList<String>(computeSectionChain(baseSection)));
         Collections.reverse(baseSections);
         chainsToMerge.add(baseSections);
         
@@ -158,7 +160,7 @@ class SectionChainResolver {
      * a partial result.
      * 
      * Note: For performance reasons, it expects the chains to be reversed
-     *       (the last element is the head).
+     *       (the last element is the head). This method modifies the passed {@code chains}!
      */
     protected boolean mergeSectionChains(List<List<String>> chains, List<String> result) {
         boolean allChainsAreEmpty = true;
