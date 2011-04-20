@@ -377,8 +377,8 @@ public class InifileDocument implements IInifileDocument {
                 section.sectionChain = resolver.resolveSectionChain(sectionName);
                 section.sectionChainConflict = resolver.getConflict(sectionName);
                 if (section.sectionChainConflict != null)
-                    markers.addError(sectionName, String.format("Conflict in the fallback chain of %s: %s",
-                                                                section, StringUtils.formatList(section.sectionChainConflict, "%s", ",")));
+                    markers.addError(sectionName, String.format("Conflict in the fallback chain of [%s]: %s",
+                                                                sectionName, StringUtils.formatList(section.sectionChainConflict, "[%s]", ",")));
             }
             sectionsCausingCycles = resolver.getCycles();
             for (Set<String> cycle : sectionsCausingCycles)
