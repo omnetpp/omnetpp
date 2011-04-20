@@ -580,13 +580,13 @@ public final class InifileAnalyzer {
 		ConfigOption e = ConfigRegistry.getOption(key);
 		if (e == null) {
 		    if (!key.matches("[a-zA-Z0-9-_]+"))
-		        markers.addError(section, key, "Syntax error in configuration key: "+key);
+		        markers.addError(section, key, "Syntax error in configuration option: "+key);
 		    else
-		        markers.addError(section, key, "Unknown configuration key: "+key);
+		        markers.addError(section, key, "Unknown configuration option: "+key);
 			return;
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
-		    markers.addError(section, key, "Key \""+key+"\" can only be specified globally, in the [General] section");
+		    markers.addError(section, key, "Option \""+key+"\" can only be specified globally, in the [General] section");
 		}
 		else if (key.equals(CFGID_NETWORK.getName()) && !section.equals(GENERAL)) {
 			// it does not make sense to override "network=" in another section, warn for it
@@ -1068,14 +1068,16 @@ public final class InifileAnalyzer {
 		String configName = key.substring(key.lastIndexOf('.')+1);
 		ConfigOption e = ConfigRegistry.getPerObjectOption(configName);
 		if (e == null) {
-            if (!configName.matches("[a-zA-Z0-9-_]+"))
-                markers.addError(section, key, "Syntax error in per-object configuration key: "+configName);
+		    if (configName.equals("type-name"))
+		        markers.addError(section, key, "Configuration option \"type-name\" has been renamed to \"typename\", please update the ini file");
+		    else if (!configName.matches("[a-zA-Z0-9-_]+"))
+                markers.addError(section, key, "Syntax error in per-object configuration option: "+configName);
             else
-                markers.addError(section, key, "Unknown per-object configuration key: "+configName);
+                markers.addError(section, key, "Unknown per-object configuration option: "+configName);
 			return;
 		}
 		else if (e.isGlobal() && !section.equals(GENERAL)) {
-		    markers.addError(section, key, "Per-object configuration \""+configName+"\" can only be specified globally, in the [General] section");
+		    markers.addError(section, key, "Per-object configuration option \""+configName+"\" can only be specified globally, in the [General] section");
 		}
 
 		// check value

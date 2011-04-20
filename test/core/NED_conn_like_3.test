@@ -1,6 +1,6 @@
 %description:
 Test "like" channels with typename given in the ini file,
-using the "type-name" config key.
+using the "typename" config key.
 
 %file: test.ned
 
@@ -31,8 +31,8 @@ network Test
 #debug-on-errors = true
 network = Test
 cmdenv-express-mode = false
-Test.a.out[0].channel.type-name = Channel1
-Test.a.out[*].channel.type-name = Channel2
+Test.a.out[0].channel.typename = Channel1
+Test.a.out[*].channel.typename = Channel2
 
 %contains: stdout
 module Test: Test {

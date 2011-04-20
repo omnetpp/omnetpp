@@ -8,7 +8,6 @@
 package org.omnetpp.inifile.editor.form;
 
 import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_NETWORK;
-import static org.omnetpp.inifile.editor.model.ConfigRegistry.CFGID_TYPE_NAME;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +73,7 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 import org.omnetpp.inifile.editor.model.Timeout;
 
 /**
- * For editing module parameters,  and type-name lines.
+ * For editing module parameters and **.typename lines.
  *
  * @author Andras
  */
@@ -259,8 +258,8 @@ public class ParametersPage extends FormPage {
 							if (!newKey.contains("."))
 								throw new RuntimeException("Parameter key must contain at least one dot");
                             String suffix = StringUtils.substringAfterLast(newKey, ".");
-                            if (suffix.contains("-") && !suffix.equals(CFGID_TYPE_NAME.getName()))
-                                throw new RuntimeException("Key should match a parameter, or end in \".type-name\"");
+                            if (suffix.contains("-"))
+                                throw new RuntimeException("Key should match a parameter, or end in \".typename\"");
 							// Note: all other validation is done within InifileDocument.changeKey()
 							doc.renameKey(item.section, item.key, (String)value);
 							reread(); // treeViewer.refresh() not enough, because input consists of keys
@@ -652,7 +651,7 @@ public class ParametersPage extends FormPage {
 			for (String key : doc.getKeys(section)) {
 				if (key.contains(".")) {
 				    String suffix = StringUtils.substringAfterLast(key, ".");
-				    if (!suffix.contains("-") || suffix.equals(CFGID_TYPE_NAME.getName()))
+				    if (!suffix.contains("-"))
 				        sectionNode.addChild(new GenericTreeNode(new SectionKey(section, key)));
 				}
 			}

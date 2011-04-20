@@ -1,3 +1,9 @@
+2011-04-20  Andras Varga
+
+	* "type-name" per-object config option has been renamed to "typename",
+	for consistency with NED. (It is now an exception to the rule that 
+	all per-object options have a hyphen in their names.)
+
 2011-04-19  Andras Varga
 
 	* implemented "typename" patterns, a way of assigning type to

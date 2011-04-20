@@ -1,3 +1,14 @@
+2011-04-20  Andras Varga
+
+	* note: "type-name" per-object config option has been renamed in
+	sim/netbuilder to "typename" for consistency with NED, thus creating
+	an exception to the rule that all per-object options have a hyphen
+	in their names. Code that checks for hyphen to identify per-object
+	config options have to be updated to recognize "typename" as well.
+
+	* sectionbasedconfig: issue a helpful error message when we encounter
+	"type-name" in an ini file.
+
 2011-04-15  Andras Varga
 
 	* implemented the new cEnvir methods getParsedXMLString(),

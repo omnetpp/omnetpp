@@ -56,7 +56,7 @@
 USING_NAMESPACE
 
 Register_PerRunConfigOption(CFGID_MAX_MODULE_NESTING, "max-module-nesting", CFG_INT, "50", "The maximum allowed depth of submodule nesting. This is used to catch accidental infinite recursions in NED.");
-Register_PerObjectConfigOption(CFGID_TYPE_NAME, "type-name", KIND_UNSPECIFIED_TYPE, CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
+Register_PerObjectConfigOption(CFGID_TYPENAME, "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, NULL, "Specifies type for submodules and channels declared with 'like <>'.");
 
 
 #if 0
@@ -645,7 +645,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         std::string key = modp->getFullPath() + "." + submodName;
         if (index != -1)
             key = opp_stringf("%s[%d]", key.c_str(), index);
-        submodTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+        submodTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
         if (!submodTypeName.empty())
             return submodTypeName;
 
@@ -661,7 +661,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
             if (likeParamExpr)
                 return evaluateAsString(likeParamExpr, modp, false);
         }
-        throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPE_NAME->getName());
+        throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPENAME->getName());
     }
 }
 
@@ -1164,7 +1164,7 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 
         // then, use **.typename option in the configuration if exists
         std::string key = srcgate->getFullPath() + "." + channelName;
-        std::string channelTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPE_NAME);
+        std::string channelTypeName = ev.getConfig()->getAsString(key.c_str(), CFGID_TYPENAME);
         if (!channelTypeName.empty())
             return channelTypeName;
 
@@ -1180,7 +1180,7 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
             if (likeParamExpr)
                 return evaluateAsString(likeParamExpr, parentmodp, false);
         }
-        throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPE_NAME->getName());
+        throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPENAME->getName());
     }
 }
 

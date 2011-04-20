@@ -1186,8 +1186,11 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                     cConfigOption *e = lookupConfigOption(suffix.c_str());
                     if (!e && isIgnorableConfigKey(ignorableConfigKeys, suffix.c_str()))
                         continue;
-                    if (!e || !e->isPerObject())
-                        throw cRuntimeError("Unknown per-object configuration key `%s' in %s", suffix.c_str(), key);
+                    if (!e || !e->isPerObject()) {
+                        if (suffix == "type-name")
+                            throw cRuntimeError("Configuration option `type-name' has been renamed to `typename', please update key `%s' in the ini file", key);
+                        throw cRuntimeError("Unknown per-object configuration option `%s' in %s", suffix.c_str(), key);
+                    }
                 }
             }
         }

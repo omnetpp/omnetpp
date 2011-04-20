@@ -42,11 +42,14 @@ public class ConfigRegistry {
     /** Name of the [General] section */
     public static final String GENERAL = "General";
 
-    /** Name prefix for the [Section <name>] sections; includes a trailing space. */
+    /** Name prefix for the [Section &lt;name&gt;] sections; includes a trailing space. */
     public static final String CONFIG_ = "Config ";
 
-    /** Name of the "extends=" config key */
+    /** Name of the "extends=" config option */
     public static final String EXTENDS; // initialized at the bottom of this file
+
+    /** Name of the "**.typename=" config option */
+    public static final String TYPENAME; // initialized at the bottom of this file
 
     /** Inifile value keyword*/
     public static final String DEFAULT = "default";
@@ -572,8 +575,8 @@ public class ConfigRegistry {
         "Specifies the maximum memory for activity() simple module stacks. You need " +
         "to increase this value if you get a ``Cannot allocate coroutine stack'' " +
         "error.");
-    public static final ConfigOption CFGID_TYPE_NAME = addPerObjectOption(
-        "type-name", KIND_UNSPECIFIED_TYPE, CFG_STRING, null,
+    public static final ConfigOption CFGID_TYPENAME = addPerObjectOption(
+        "typename", KIND_UNSPECIFIED_TYPE, CFG_STRING, null,
         "Specifies type for submodules and channels declared with 'like <>'.");
     public static final ConfigOption CFGID_USER_INTERFACE = addGlobalOption(
         "user-interface", CFG_STRING, null,
@@ -631,5 +634,6 @@ public class ConfigRegistry {
 
     static {
         EXTENDS = CFGID_EXTENDS.getName();
+        TYPENAME = CFGID_TYPENAME.getName();
     }
 }
