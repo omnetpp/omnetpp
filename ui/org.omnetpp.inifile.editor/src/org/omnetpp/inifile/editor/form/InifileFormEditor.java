@@ -38,7 +38,6 @@ import org.omnetpp.inifile.editor.TestSupport;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
-import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.KeyType;
 
 
@@ -107,15 +106,13 @@ public class InifileFormEditor extends Composite {
 	protected void buildTree() {
 		GenericTreeNode root = new GenericTreeNode("root");
 
-		root.addChild(new GenericTreeNode(SECTIONS_PAGE));
-
-		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
-
 		GenericTreeNode configNode = new GenericTreeNode(CONFIGURATION_PAGE);
 		root.addChild(configNode);
 		String[] categories = GenericConfigPage.getCategoryNames();
 		for (String c : categories)
 			configNode.addChild(new GenericTreeNode(c));
+		root.addChild(new GenericTreeNode(SECTIONS_PAGE));
+		root.addChild(new GenericTreeNode(PARAMETERS_PAGE));
 
 		treeViewer.setInput(root);
 		treeViewer.expandAll();
@@ -127,8 +124,9 @@ public class InifileFormEditor extends Composite {
 			        return;
 				if (DUMP_FORGOTTEN_CONFIG_KEYS)
 					dumpForgottenConfigKeys(); // maintenance code
-				IReadonlyInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
-				String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE;
+				//IReadonlyInifileDocument doc = inifileEditor.getEditorData().getInifileDocument();
+				//String initialPage = doc.getSectionNames().length >= 2 ? SECTIONS_PAGE : PARAMETERS_PAGE;
+				String initialPage = CONFIGURATION_PAGE;
 				showCategoryPage(initialPage);
 			}
 		});
