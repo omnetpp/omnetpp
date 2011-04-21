@@ -178,6 +178,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     }
 
     public void setEventNumber(Long eventNumber) {
+        Assert.isTrue(eventNumber == null || eventNumber >= 0);
         Assert.isTrue(this.eventNumber == null || this.eventNumber.equals(eventNumber));
         this.eventNumber = eventNumber;
     }

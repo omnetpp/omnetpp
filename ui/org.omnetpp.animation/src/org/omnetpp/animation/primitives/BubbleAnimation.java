@@ -15,11 +15,12 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogModule;
 import org.omnetpp.common.util.Timer;
 import org.omnetpp.figures.SubmoduleFigure;
 
-public class BubbleAnimation extends AbstractAnimationPrimitive {
+public class BubbleAnimation extends AbstractInstantaneousAnimation {
 	protected int moduleId;
 
 	protected RoundedRectangle background;
@@ -30,8 +31,8 @@ public class BubbleAnimation extends AbstractAnimationPrimitive {
 
 	protected String text;
 
-	public BubbleAnimation(AnimationController animationController, String text, int moduleId) {
-		super(animationController);
+	public BubbleAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, String text, int moduleId) {
+		super(animationController, eventNumber, simulationTime);
 		this.background = new RoundedRectangle();
 		this.text = text;
 		this.label = new Label(text);

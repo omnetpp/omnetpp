@@ -12,6 +12,7 @@ import org.eclipse.draw2d.MouseListener;
 import org.omnetpp.animation.figures.AnimationCompoundModuleFigure;
 import org.omnetpp.animation.widgets.AnimationCanvas;
 import org.omnetpp.animation.widgets.AnimationController;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogModule;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleLineBorder;
@@ -23,8 +24,8 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 
 	protected int parentModuleId;
 
-	public CreateModuleAnimation(AnimationController animationController, EventLogModule module, int parentModuleId) {
-		super(animationController);
+	public CreateModuleAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, EventLogModule module, int parentModuleId) {
+		super(animationController, eventNumber, simulationTime);
 		this.module = module;
 		this.parentModuleId = parentModuleId;
 	}

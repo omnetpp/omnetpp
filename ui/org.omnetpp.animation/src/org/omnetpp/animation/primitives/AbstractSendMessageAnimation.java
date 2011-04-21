@@ -38,16 +38,16 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 	}
 
 	protected Point[] getMessageSendPoints(AnimationPosition animationPosition, int orthogonalTranslation) {
-		Point p1 = getBeginPoint().getCopy();
-		Point p2 = getEndPoint().getCopy();
+		Point connectionBegin = getBeginPoint().getCopy();
+		Point connectionEnd = getEndPoint().getCopy();
 		double simulationTimeDelta = getEndSimulationTime().subtract(getBeginSimulationTime()).subtract(transmissionDelay).doubleValue();
 
 		// translate connection line coordinates orthogonal to the line
 		if (orthogonalTranslation != 0) {
-			PrecisionPoint n = new PrecisionPoint(p1.y - p2.y, p2.x - p1.x);
+			PrecisionPoint n = new PrecisionPoint(connectionBegin.y - connectionEnd.y, connectionEnd.x - connectionBegin.x);
 			n.performScale(orthogonalTranslation / Math.sqrt(n.x * n.x + n.y * n.y));
-			p1.translate(n);
-			p2.translate(n);
+			connectionBegin.translate(n);
+			connectionEnd.translate(n);
 		}
 
 		double alpha;
@@ -57,11 +57,17 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 			alpha = (animationPosition.getOriginRelativeAnimationTime() - getOriginRelativeBeginAnimationTime()) / (getOriginRelativeEndAnimationTime() - getOriginRelativeBeginAnimationTime());
 		alpha = Math.max(0, Math.min(alpha, 1));
 
-		Point pAlpha;
-		Point pBeta;
+		Point messageBegin;
+		Point messageEnd;
 
-		if (transmissionDelay.equals(BigDecimal.getZero()))
-			pAlpha = pBeta = getConvexCombination(p1, p2, alpha);
+		if (transmissionDelay.equals(BigDecimal.getZero())) {
+	        if (propagationDelay.equals(BigDecimal.getZero())) {
+	            messageBegin = connectionBegin;
+	            messageEnd = connectionEnd;
+	        }
+	        else
+	            messageBegin = messageEnd = getConvexCombination(connectionBegin, connectionEnd, alpha);
+		}
 		else {
 			double beta;
 			if (simulationTimeDelta != 0) {
@@ -73,11 +79,11 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 				beta = 1;
 			}
 
-			pAlpha = getConvexCombination(p1, p2, alpha);
-			pBeta = getConvexCombination(p1, p2, beta);
+			messageBegin = getConvexCombination(connectionBegin, connectionEnd, alpha);
+			messageEnd = getConvexCombination(connectionBegin, connectionEnd, beta);
 			// System.out.println("*** Alpha: " + alpha + ", beta: " + beta);
 		}
 
-		return new Point[] {pAlpha, pBeta};
+		return new Point[] {messageBegin, messageEnd};
 	}
 }

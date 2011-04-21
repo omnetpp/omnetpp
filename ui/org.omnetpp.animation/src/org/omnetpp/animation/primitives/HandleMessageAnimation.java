@@ -19,8 +19,9 @@ import org.omnetpp.animation.editors.AnimationContributor;
 import org.omnetpp.animation.figures.SelectableImageFigure;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
+import org.omnetpp.common.engine.BigDecimal;
 
-public class HandleMessageAnimation extends AbstractAnimationPrimitive {
+public class HandleMessageAnimation extends AbstractInstantaneousAnimation {
     protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_HANDLE_MESSAGE).getImageData());
 
     protected long eventNumber;
@@ -29,8 +30,8 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 
     protected SelectableImageFigure imageFigure;
 
-	public HandleMessageAnimation(AnimationController animationController, long eventNumber, int moduleId) {
-		super(animationController);
+	public HandleMessageAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, int moduleId) {
+		super(animationController, eventNumber, simulationTime);
 		this.eventNumber = eventNumber;
 		this.moduleId = moduleId;
         createFigures();

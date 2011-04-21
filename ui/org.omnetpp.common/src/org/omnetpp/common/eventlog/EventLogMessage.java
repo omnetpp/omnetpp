@@ -16,7 +16,7 @@ public class EventLogMessage {
 
 	private short kind;
 	private short priority;
-	private int bitLength;
+	private long bitLength;
 	private boolean bitError;
 
 	private int id;
@@ -46,11 +46,11 @@ public class EventLogMessage {
 		this.bitError = error;
 	}
 
-	public int getBitLength() {
+	public long getBitLength() {
 		return bitLength;
 	}
 
-	public void setBitLength(int length) {
+	public void setBitLength(long length) {
 		this.bitLength = length;
 	}
 

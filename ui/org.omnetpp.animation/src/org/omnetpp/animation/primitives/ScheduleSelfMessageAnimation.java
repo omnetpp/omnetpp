@@ -17,9 +17,10 @@ import org.omnetpp.animation.AnimationPlugin;
 import org.omnetpp.animation.editors.AnimationContributor;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogMessage;
 
-public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
+public class ScheduleSelfMessageAnimation extends AbstractInstantaneousAnimation {
     protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_SCHEDULE_SELF_MESSAGE).getImageData());
 
     protected int moduleId;
@@ -28,8 +29,8 @@ public class ScheduleSelfMessageAnimation extends AbstractAnimationPrimitive {
 
     protected ImageFigure imageFigure;
 
-    public ScheduleSelfMessageAnimation(AnimationController animationEnvironment, int moduleId, EventLogMessage message) {
-		super(animationEnvironment);
+    public ScheduleSelfMessageAnimation(AnimationController animationEnvironment, long eventNumber, BigDecimal simulationTime, int moduleId, EventLogMessage message) {
+		super(animationEnvironment, eventNumber, simulationTime);
         this.message = message;
 		this.moduleId = moduleId;
         Rectangle bounds = image.getBounds();

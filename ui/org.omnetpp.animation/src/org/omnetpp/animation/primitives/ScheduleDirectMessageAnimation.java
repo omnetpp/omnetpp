@@ -20,7 +20,7 @@ import org.omnetpp.animation.widgets.AnimationPosition;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogMessage;
 
-public class ScheduleMessageAnimation extends AbstractInstantaneousAnimation {
+public class ScheduleDirectMessageAnimation extends AbstractInstantaneousAnimation {
     protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_SCHEDULE_MESSAGE).getImageData());
 
     protected int moduleId;
@@ -29,7 +29,7 @@ public class ScheduleMessageAnimation extends AbstractInstantaneousAnimation {
 
     protected ImageFigure imageFigure;
 
-    public ScheduleMessageAnimation(AnimationController animationEnvironment, long eventNumber, BigDecimal simulationTime, int moduleId, EventLogMessage message) {
+    public ScheduleDirectMessageAnimation(AnimationController animationEnvironment, long eventNumber, BigDecimal simulationTime, int moduleId, EventLogMessage message) {
 		super(animationEnvironment, eventNumber, simulationTime);
         this.message = message;
 		this.moduleId = moduleId;

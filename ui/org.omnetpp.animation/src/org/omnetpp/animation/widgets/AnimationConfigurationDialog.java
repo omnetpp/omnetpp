@@ -33,16 +33,16 @@ public class AnimationConfigurationDialog extends TitleAreaDialog {
     public Text setConnectionDisplayStringAnimationShift;
 
     public Button enableBubbleAnimations;
-    public Text bubbleAnimationShift;
+    public Text bubbleAnimationDuration;
     public Button enableModuleMethodCallAnimations;
-    public Text moduleMethodCallAnimationShift;
+    public Text moduleMethodCallAnimationDuration;
 
     public Button enableScheduleSelfMessageAnimations;
-    public Text scheduleSelfMessageAnimationShift;
+    public Text scheduleSelfMessageAnimationDuration;
     public Button enableScheduleDirectAnimations;
-    public Text scheduleDirectAnimationShift;
+    public Text scheduleDirectAnimationDuration;
     public Button enableScheduleMessageAnimations;
-    public Text scheduleMessageAnimationShift;
+    public Text scheduleMessageAnimationDuration;
 
     public Button enableSendSelfMessageAnimations;
     public Button enableSendMessageAnimations;
@@ -86,15 +86,15 @@ public class AnimationConfigurationDialog extends TitleAreaDialog {
         enableSetConnectionDisplayStringAnimations = createCheckbox(container, "Enable set connection display string animations", null, 1);
         setConnectionDisplayStringAnimationShift = createText(container, null, null, 1);
         enableBubbleAnimations = createCheckbox(container, "Enable bubble animations", null, 1);
-        bubbleAnimationShift = createText(container, null, null, 1);
+        bubbleAnimationDuration = createText(container, null, null, 1);
         enableModuleMethodCallAnimations = createCheckbox(container, "Enable module method call animations", null, 1);
-        moduleMethodCallAnimationShift = createText(container, null, null, 1);
+        moduleMethodCallAnimationDuration = createText(container, null, null, 1);
         enableScheduleSelfMessageAnimations = createCheckbox(container, "Enable schedule self message animations", null, 1);
-        scheduleSelfMessageAnimationShift = createText(container, null, null, 1);
+        scheduleSelfMessageAnimationDuration = createText(container, null, null, 1);
         enableScheduleDirectAnimations = createCheckbox(container, "Enable schedule direct message animations", null, 1);
-        scheduleDirectAnimationShift = createText(container, null, null, 1);
+        scheduleDirectAnimationDuration = createText(container, null, null, 1);
         enableScheduleMessageAnimations = createCheckbox(container, "Enable schedule message animations", null, 1);
-        scheduleMessageAnimationShift = createText(container, null, null, 1);
+        scheduleMessageAnimationDuration = createText(container, null, null, 1);
         enableSendSelfMessageAnimations = createCheckbox(container, "Enable send self message animations", null, 2);
         enableSendMessageAnimations = createCheckbox(container, "Enable send message animations", null, 2);
         enableSendDirectAnimations = createCheckbox(container, "Enable send direct animations", null, 2);

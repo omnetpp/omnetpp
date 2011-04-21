@@ -19,12 +19,15 @@ import org.omnetpp.eventlog.engine.IEvent;
  * @author levy
  */
 public class AbstractInfiniteAnimation extends AbstractAnimationPrimitive {
-	public AbstractInfiniteAnimation(AnimationController animationController) {
+	public AbstractInfiniteAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime) {
 		super(animationController);
 		IEvent lastEvent = animationController.getEventLogInput().getEventLog().getLastEvent();
 		// NOTE: there are no events after the last one, but we can pretend that simulation time goes on
 		// this is necessary, because some animation might go beyond that (e.g. a message send)
+        setSourceEventNumber(eventNumber);
+        setBeginEventNumber(eventNumber);
 		setEndEventNumber(lastEvent.getEventNumber());
+        setBeginSimulationTime(simulationTime);
 	    setEndSimulationTime(BigDecimal.getPositiveInfinity());
 	    setFrameRelativeEndAnimationTime(Double.POSITIVE_INFINITY);
 	}

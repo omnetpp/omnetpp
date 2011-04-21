@@ -10,6 +10,7 @@ package org.omnetpp.animation.primitives;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.omnetpp.animation.widgets.AnimationController;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogConnection;
 import org.omnetpp.common.eventlog.EventLogModule;
 import org.omnetpp.figures.CompoundModuleFigure;
@@ -19,8 +20,8 @@ import org.omnetpp.figures.SubmoduleFigure;
 public class CreateConnectionAnimation extends AbstractInfiniteAnimation {
     protected EventLogConnection connection;
 
-	public CreateConnectionAnimation(AnimationController animationController, EventLogConnection connection) {
-		super(animationController);
+	public CreateConnectionAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, EventLogConnection connection) {
+		super(animationController, eventNumber, simulationTime);
 		this.connection = connection;
 	}
 
