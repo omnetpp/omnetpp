@@ -146,9 +146,13 @@ abstract public class NedEditPart extends AbstractGraphicalEditPart implements I
 		super.performRequest(req);
 		if (RequestConstants.REQ_DIRECT_EDIT.equals(req.getType()) && isEditable())
 			performDirectEdit();
+
 		// let's open or activate a new editor if someone has double clicked the component
-		if (RequestConstants.REQ_OPEN.equals(req.getType()) && isEditable())
-            NedResourcesPlugin.openNedElementInEditor(getNedTypeElementToOpen());
+        if (RequestConstants.REQ_OPEN.equals(req.getType())) {
+            INedElement elementToOpen = getNedTypeElementToOpen();
+            if (elementToOpen != null)
+                NedResourcesPlugin.openNedElementInEditor(elementToOpen);
+        }
 	}
 
 	/**
