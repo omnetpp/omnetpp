@@ -20,7 +20,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IPageChangedListener;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.PageChangedEvent;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ISelection;
@@ -72,6 +75,8 @@ import org.omnetpp.inifile.editor.views.InifileContentOutlinePage;
 //TODO for units, tooltip should display "seconds" not only "s"
 public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, IGotoInifile, IShowInSource, IShowInTargetList {
     public static final String ID = "org.omnetpp.inifile.editor";
+    
+    private static final String PREF_ACTIVE_PAGE = "ActivePage";
 
     // various paramresolution timeouts, all in milliseconds
     public static final int CONTENTASSIST_TIMEOUT = 1000;
@@ -139,9 +144,13 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 
 		// create text editor
 		createTextEditorPage();
-
+		
 		// assert page constants are OK
 		Assert.isTrue(getControl(FORMEDITOR_PAGEINDEX)==formEditor && getEditor(TEXTEDITOR_PAGEINDEX)==textEditor);
+
+        int pageIndex = readActivePageFromPreferences();
+        if (0 <= pageIndex && pageIndex < getPageCount())
+            setActivePage(pageIndex);
 
 		// set up editorData (the InifileDocument)
 		IFile file = ((IFileEditorInput)getEditorInput()).getFile();
@@ -229,6 +238,23 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 			}
 
 		});
+	}
+	
+	private int readActivePageFromPreferences() {
+	    IPreferenceStore store = InifileEditorPlugin.getDefault().getPreferenceStore();
+	    String pageName = store.getString(PREF_ACTIVE_PAGE);
+	    return "Form".equals(pageName) ? FORMEDITOR_PAGEINDEX :
+	            "Source".equals(pageName) ? TEXTEDITOR_PAGEINDEX : -1;
+	}
+	
+	private void storeActivePageInPreferences(int pageIndex) {
+        IPreferenceStore store = InifileEditorPlugin.getDefault().getPreferenceStore();
+        String pageName = null;
+        switch (pageIndex) {
+        case FORMEDITOR_PAGEINDEX: pageName = "Form"; break;
+        case TEXTEDITOR_PAGEINDEX: pageName = "Source"; break;
+        }
+        store.setValue(PREF_ACTIVE_PAGE, pageName);
 	}
 
 	protected void updateSelection() {
@@ -325,6 +351,7 @@ public class InifileEditor extends MultiPageEditorPart implements IGotoMarker, I
 		else {
 			formEditor.pageDeselected();
 		}
+		storeActivePageInPreferences(newPageIndex);
 	}
 
 	/**
