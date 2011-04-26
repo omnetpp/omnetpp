@@ -49,12 +49,12 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  */
 public class InifileUtils {
 	// for getSectionImage():
-	public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.gif");
-	public static final Image ICON_SECTION_NONEXISTENT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_nonexistent.gif");
-	public static final Image ICON_SECTION_SINGLE = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_single.gif");
-	public static final Image ICON_SECTION_REPEAT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_repeat.gif");
-	public static final Image ICON_SECTION_ITER = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iter.gif");
-	public static final Image ICON_SECTION_ITERREP = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iterrep.gif");
+	public static final Image ICON_SECTION = InifileEditorPlugin.getCachedImage("icons/full/obj16/section.png");
+	public static final Image ICON_SECTION_NONEXISTENT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_nonexistent.png");
+	public static final Image ICON_SECTION_SINGLE = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_single.png");
+	public static final Image ICON_SECTION_REPEAT = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_repeat.png");
+	public static final Image ICON_SECTION_ITER = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iter.png");
+	public static final Image ICON_SECTION_ITERREP = InifileEditorPlugin.getCachedImage("icons/full/obj16/section_iterrep.png");
 
 	public static final Image ICON_OVR_ERROR = UIUtils.ICON_ERROR_SMALL;
 	public static final Image ICON_OVR_WARNING = UIUtils.ICON_WARNING_SMALL;
