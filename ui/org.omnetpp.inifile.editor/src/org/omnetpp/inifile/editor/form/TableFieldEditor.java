@@ -126,7 +126,14 @@ public abstract class TableFieldEditor extends FieldEditor {
 			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
 				Item item = tableViewer.getTable().getItem(new Point(x,y));
 				SectionKey sectionKey = (SectionKey) (item==null ? null : item.getData());
-				return sectionKey==null ? null : InifileHoverUtils.getEntryHoverText(sectionKey.section, sectionKey.key, inifile, null);
+				if (sectionKey != null) {
+    				if (entry.isPerObject())
+    				    return InifileHoverUtils.getPerObjectConfigHoverText(sectionKey.section, sectionKey.key, inifile);
+    				else
+    				    return InifileHoverUtils.getConfigHoverText(sectionKey.section, sectionKey.key, inifile);
+				}
+				else
+				    return null;
 			}
 		});
 

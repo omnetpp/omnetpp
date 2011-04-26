@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
@@ -130,15 +131,17 @@ public class InifileHoverUtils {
     public static String getEntryHoverText(String section, String key, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
         return getEntryHoverText(section, key, null, doc, analyzer, null);
     }
-	
+    
 	/**
 	 * Generate tooltip for an inifile entry.
 	 * @param section  null is accepted
 	 * @param key      null is accepted
 	 */
 	public static String getEntryHoverText(String section, String key, IRegion hoverRegion, IReadonlyInifileDocument doc, InifileAnalyzer analyzer, IDocument textDoc) {
-		if (section == null || key == null || analyzer == null)
-			return null;
+	    Assert.isNotNull(section);
+	    Assert.isNotNull(key);
+	    Assert.isNotNull(doc);
+	    Assert.isNotNull(analyzer);
 		
 		if (hoverRegion != null && textDoc != null) {
 		    NedElementDetector detector = new NedElementDetector(doc, analyzer, textDoc, NedResources.getInstance());
@@ -153,6 +156,7 @@ public class InifileHoverUtils {
             case PER_OBJECT_CONFIG: return getPerObjectConfigHoverText(section, key, doc);
     		case PARAM: return getParamKeyHoverText(section, key, analyzer);
 		}
+		Assert.isTrue(false);
 		return null;
 	}
 

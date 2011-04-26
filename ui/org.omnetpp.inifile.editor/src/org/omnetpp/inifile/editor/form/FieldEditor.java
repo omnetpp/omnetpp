@@ -153,7 +153,10 @@ public abstract class FieldEditor extends Composite {
 	protected String getTooltipText() {
 	    String name = entry.getName();
 	    String key = entry.isPerObject() && !name.contains(".") ? "**." + name : name;
-		return InifileHoverUtils.getEntryHoverText(GENERAL, key, inifile, null);
+	    if (entry.isPerObject())
+	        return InifileHoverUtils.getPerObjectConfigHoverText(GENERAL, key, inifile);
+	    else
+	        return InifileHoverUtils.getConfigHoverText(GENERAL, key, inifile);
 	}
 
 	protected Button createResetButton() {
