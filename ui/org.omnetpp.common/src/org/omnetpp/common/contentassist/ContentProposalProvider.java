@@ -16,6 +16,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -81,14 +82,15 @@ public abstract class ContentProposalProvider implements IContentProposalProvide
 				String modifiedContent = dropPrefix ? content.substring(prefixToMatch.length(), content.length()) : content;
 				int modifiedCursorPosition = candidate.getCursorPosition() + modifiedContent.length() - content.length();
 				String description = (StringUtils.isEmpty(candidate.getDescription()) && descriptionSeen) ? "(no description)" : candidate.getDescription();
-				result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition));
+				Image image = candidate instanceof ContentProposal ? ((ContentProposal)candidate).getImage() : null;
+				result.add(new ContentProposal(modifiedContent, candidate.getLabel(), description, modifiedCursorPosition, image));
 			}
 		}
 
 		if (result.isEmpty()) {
 			// WORKAROUND: returning an empty array or null apparently causes NPE in the framework, so return a blank proposal instead
 			//XXX may cause multiple "(no proposal)" strings to appear in the text editor completion
-			result.add(new ContentProposal("", "(no proposal)", null, 0));
+			result.add(new ContentProposal("", "(no proposal)", null, 0, null));
 		}
 		return result.toArray(new IContentProposal[] {});
 	}

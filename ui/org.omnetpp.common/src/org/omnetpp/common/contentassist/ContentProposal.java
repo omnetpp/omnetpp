@@ -8,6 +8,7 @@
 package org.omnetpp.common.contentassist;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.util.StringUtils;
 
@@ -42,9 +43,11 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
 	private int startIndex; // start of the replaced range
 
 	private int endIndex; // end of the replaced range
+	
+	private Image image;
 
 	public ContentProposal(String content) {
-		this(content, content, content, content.length());
+		this(content, content, content, content.length(), null);
 	}
 
     public ContentProposal(String content, String label) {
@@ -53,14 +56,19 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
     }
 
 	public ContentProposal(String content, String label, String description) {
-		this(content, label, description, content.length());
+		this(content, label, description, content.length(), null);
 	}
 
-	public ContentProposal(String content, String label, String description, int cursorPosition) {
+    public ContentProposal(String content, String label, String description, Image image) {
+        this(content, label, description, content.length(), image);
+    }
+
+	public ContentProposal(String content, String label, String description, int cursorPosition, Image image) {
 		this.content = content;
 		this.label = label;
 		this.description = description;
 		this.cursorPosition = cursorPosition;
+		this.image = image;
 	}
 
     public String getContent() {
@@ -96,6 +104,10 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
 
 	public String getLabel() {
 		return label;
+	}
+	
+	public Image getImage() {
+	    return image;
 	}
 
     public void setStartIndex(int index) {
