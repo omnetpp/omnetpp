@@ -62,7 +62,7 @@ public class InifileConfigKeyContentProposalProvider extends ContentProposalProv
 			for (ConfigOption e : ConfigRegistry.getOptions()) {
 				if (!section.equals(GENERAL) || e!=CFGID_EXTENDS) { // don't propose "extends" in [General]
 					String content = e.getName()+(addEqualSign ? " = " : "");
-					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
+					result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc), InifileUtils.ICON_PROPOSAL_GLOBALCONFIG));
 				}
 			}
 		}

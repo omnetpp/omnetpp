@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
 import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
@@ -37,14 +39,14 @@ import org.omnetpp.inifile.editor.model.Timeout;
 public class InifileParamKeyContentProposalProvider extends ContentProposalProvider {
 	private String section;
 	private boolean addEqualSign = false;
-	private IReadonlyInifileDocument doc;
+	//private IReadonlyInifileDocument doc;
 	private InifileAnalyzer analyzer;
 
 	public InifileParamKeyContentProposalProvider(String section, boolean addEqualSign, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
 		super(true);
 		this.section = section;
 		this.addEqualSign = addEqualSign;
-		this.doc = doc;
+		//this.doc = doc;
 		this.analyzer = analyzer;
 	}
 
@@ -134,10 +136,10 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 
 			// convert strings to actual proposals, and return them. Each group will be sorted separately
 			List<IContentProposal> proposals = new ArrayList<IContentProposal>();
-			addProposals(proposals, otherProposals, "");
-			addProposals(proposals, moduleProposals, "");
-			addProposals(proposals, paramProposals, "");
-			addProposals(proposals, applyDefaultProposals, "");
+			addProposals(proposals, otherProposals, "", null);
+			addProposals(proposals, moduleProposals, "", InifileUtils.ICON_PROPOSAL_MODULE);
+			addProposals(proposals, paramProposals, "", InifileUtils.ICON_PROPOSAL_PARAMETER);
+			addProposals(proposals, applyDefaultProposals, "", null);
 
 			return proposals;
 		}
@@ -145,7 +147,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 		return null;
 	}
 
-	private void addProposals(List<IContentProposal> proposals, Set<String> texts, String label) {
+	private void addProposals(List<IContentProposal> proposals, Set<String> texts, String label, Image image) {
 		if (!label.equals(""))
 			label = " -- " + label;
 		String[] array = texts.toArray(new String[]{});
@@ -153,7 +155,7 @@ public class InifileParamKeyContentProposalProvider extends ContentProposalProvi
 		for (String text : array) {
 			if (!text.endsWith(".") && addEqualSign)
 				text += " = ";
-			proposals.add(new ContentProposal(text, text+label, null));
+			proposals.add(new ContentProposal(text, text+label, null, image));
 		}
 	}
 }

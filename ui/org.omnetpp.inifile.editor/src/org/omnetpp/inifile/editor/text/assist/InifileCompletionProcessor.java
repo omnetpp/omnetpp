@@ -35,6 +35,8 @@ import org.eclipse.jface.text.contentassist.IContextInformationPresenter;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.jface.text.templates.TemplateContextType;
+import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.editor.text.IncrementalCompletionProcessor;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.contentassist.InifileConfigKeyContentProposalProvider;
@@ -223,7 +225,8 @@ public class InifileCompletionProcessor extends IncrementalCompletionProcessor {
 	}
 
 	protected static ICompletionProposal convertToCompletionProposal(IContentProposal p, int documentOffset) {
-		return new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), null, p.getLabel(), null, p.getDescription());
+	    Image image = p instanceof ContentProposal ? ((ContentProposal)p).getImage() : null;
+		return new CompletionProposal(p.getContent(), documentOffset, 0, p.getCursorPosition(), image, p.getLabel(), null, p.getDescription());
 	}
 
 	protected void addProposals(ITextViewer viewer, int documentOffset, List<ICompletionProposal> result, Set<String> proposals, String description) {

@@ -77,6 +77,15 @@ public class InifileUtils {
     public static final Image ICON_SIGNAL = InifileEditorPlugin.getCachedImage("icons/full/obj16/signal.png");
     public static final Image ICON_STATISTIC = InifileEditorPlugin.getCachedImage("icons/full/obj16/statistic.png");
 
+    public static final Image ICON_PROPOSAL_MODULE = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_module.png");
+    public static final Image ICON_PROPOSAL_PARAMETER = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_parameter.png");
+    public static final Image ICON_PROPOSAL_GLOBALCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_globalconfig.png");
+    public static final Image ICON_PROPOSAL_MODULECONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_moduleconfig.png");
+    public static final Image ICON_PROPOSAL_PARAMETERCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_parameterconfig.png");
+    public static final Image ICON_PROPOSAL_STATISTICCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_statisticconfig.png");
+    public static final Image ICON_PROPOSAL_SCALARCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_scalarconfig.png");
+    public static final Image ICON_PROPOSAL_VECTORCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_vectorconfig.png");
+
     public static final Image ICON_KEY_EQUALS_DEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_default.png");
     public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_ask.png");
 

@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.contentassist.ContentProposal;
 import org.omnetpp.common.contentassist.ContentProposalProvider;
 import org.omnetpp.common.engine.PatternMatcher;
@@ -24,6 +25,7 @@ import org.omnetpp.inifile.editor.model.ConfigOption.ObjectKind;
 import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.ParamCollector;
 import org.omnetpp.inifile.editor.model.ParamResolution;
 import org.omnetpp.inifile.editor.model.ParamResolutionDisabledException;
@@ -70,7 +72,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 			for (ConfigOption e : ConfigRegistry.getPerObjectOptions()) {
 			    if (possibleObjectKinds.contains(e.getObjectKind())) {
     			    String content = prefixBase + "." + e.getName() + (addEqualSign ? " = " : "");
-    			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc)));
+    			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc), getImage(e.getObjectKind())));
 			    }
 			}
 		}
@@ -94,6 +96,19 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 		text += StringUtils.breakLines(entry.getDescription(), 50) + "\n";  // default tooltip is ~55 chars wide (text is not wrapped: longer lines simply not fully visible!)
 
 		return text;
+	}
+	
+	protected static Image getImage(ObjectKind kind) {
+	    switch (kind) {
+	    case KIND_PARAMETER: return InifileUtils.ICON_PROPOSAL_PARAMETERCONFIG;
+	    case KIND_STATISTIC: return InifileUtils.ICON_PROPOSAL_STATISTICCONFIG;
+	    case KIND_MODULE:
+	    case KIND_SIMPLE_MODULE:
+	    case KIND_UNSPECIFIED_TYPE: return InifileUtils.ICON_PROPOSAL_MODULECONFIG;
+	    case KIND_SCALAR: return InifileUtils.ICON_PROPOSAL_SCALARCONFIG;
+	    case KIND_VECTOR: return InifileUtils.ICON_PROPOSAL_VECTORCONFIG;
+	    }
+	    return null;
 	}
 	
 	protected Set<ObjectKind> getPossibleObjectKinds(String objectNamePattern) {
