@@ -20,7 +20,6 @@ import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.NoncentralChopboxAnchor;
 
-// TODO: dashed
 public class ModuleMethodCallAnimation extends AbstractInstantaneousAnimation {
     protected Label methodName;
 
@@ -34,12 +33,13 @@ public class ModuleMethodCallAnimation extends AbstractInstantaneousAnimation {
 		super(animationController, eventNumber, simulationTime);
 		this.fromModuleId = fromModuleId;
         this.toModuleId = toModuleId;
-		this.methodName = new Label(methodNameString);
+		methodName = new Label(methodNameString);
         methodName.setFont(JFaceResources.getDialogFont());
         methodName.setForegroundColor(ColorFactory.RED);
-        this.methodCallArrow = new ConnectionFigure();
+        methodCallArrow = new ConnectionFigure();
         methodCallArrow.setArrowHeadEnabled(true);
         methodCallArrow.setForegroundColor(ColorFactory.RED);
+        methodCallArrow.setLineDash(new float[] {4, 4});
 	}
 
 	@Override

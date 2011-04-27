@@ -332,7 +332,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	}
 
 	protected Point getSubmoduleFigureCenter(int moduleId) {
-		return getSubmoduleFigure(moduleId).getBounds().getCenter();
+		return getSubmoduleFigure(moduleId).getCenterLocation();
 	}
 
     protected GateAnchor getGateAnchor(EventLogGate gate, Class<?> clazz) {

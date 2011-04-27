@@ -208,6 +208,7 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
     public void setOriginRelativeAnimationTime(Double originRelativeAnimationTime) {
         // we must allow this change because the animation time coordinate system origin might change
         // Assert.isTrue(this.originRelativeAnimationTime == null || this.originRelativeAnimationTime.equals(originRelativeAnimationTime));
+        Assert.isTrue(originRelativeAnimationTime == null || !Double.isNaN(originRelativeAnimationTime));
         this.originRelativeAnimationTime = originRelativeAnimationTime;
     }
 

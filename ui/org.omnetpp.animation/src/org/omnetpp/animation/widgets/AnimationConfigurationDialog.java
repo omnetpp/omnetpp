@@ -3,6 +3,7 @@ package org.omnetpp.animation.widgets;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
@@ -17,6 +18,10 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.util.UIUtils;
 
 public class AnimationConfigurationDialog extends TitleAreaDialog {
+    private static final int MESSAGES_BUTTON_ID             = IDialogConstants.CLIENT_ID + 1;
+    private static final int MESSAGES_AND_EVENTS_BUTTON_ID  = IDialogConstants.CLIENT_ID + 2;
+    private static final int DETAIL_BUTTON_ID               = IDialogConstants.CLIENT_ID + 3;
+
     private AnimationParameters animationParameters;
 
     public Button enableHandleMessageAnimations;
@@ -100,6 +105,32 @@ public class AnimationConfigurationDialog extends TitleAreaDialog {
         enableSendDirectAnimations = createCheckbox(container, "Enable send direct animations", null, 2);
         unparseAnimationParameters(animationParameters);
         return container;
+    }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, MESSAGES_BUTTON_ID, "Messages", false);
+        createButton(parent, MESSAGES_AND_EVENTS_BUTTON_ID, "Messages and Events", false);
+        createButton(parent, DETAIL_BUTTON_ID, "Full Detail", false);
+        super.createButtonsForButtonBar(parent);
+    }
+
+    @Override
+    protected void buttonPressed(int buttonId) {
+        if (MESSAGES_BUTTON_ID == buttonId) {
+            animationParameters.enableMessages();
+            unparseAnimationParameters(animationParameters);
+        }
+        else if (MESSAGES_AND_EVENTS_BUTTON_ID == buttonId) {
+            animationParameters.enableMessagesAndEvents();
+            unparseAnimationParameters(animationParameters);
+        }
+        else if (DETAIL_BUTTON_ID == buttonId) {
+            animationParameters.enableDetail();
+            unparseAnimationParameters(animationParameters);
+        }
+        else
+            super.buttonPressed(buttonId);
     }
 
     @Override

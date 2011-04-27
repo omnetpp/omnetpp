@@ -21,11 +21,14 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 
 	protected BigDecimal transmissionDelay;
 
-	public AbstractSendMessageAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, EventLogMessage message) {
+	protected double messageHighlightAnimationDuration;
+
+	public AbstractSendMessageAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, EventLogMessage message, double messageHighlightAnimationDuration) {
 		super(animationController);
 		this.propagationDelay = propagationDelay;
 		this.transmissionDelay = transmissionDelay;
 		this.message = message;
+		this.messageHighlightAnimationDuration = messageHighlightAnimationDuration;
 	}
 
 	protected abstract Point getBeginPoint();
@@ -54,7 +57,7 @@ public abstract class AbstractSendMessageAnimation extends AbstractAnimationPrim
 		if (simulationTimeDelta != 0)
 			alpha = animationPosition.getSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / simulationTimeDelta;
 		else
-			alpha = (animationPosition.getOriginRelativeAnimationTime() - getOriginRelativeBeginAnimationTime()) / (getOriginRelativeEndAnimationTime() - getOriginRelativeBeginAnimationTime());
+			alpha = (animationPosition.getOriginRelativeAnimationTime() - getOriginRelativeBeginAnimationTime()) / (getOriginRelativeEndAnimationTime() - messageHighlightAnimationDuration - getOriginRelativeBeginAnimationTime());
 		alpha = Math.max(0, Math.min(alpha, 1));
 
 		Point messageBegin;

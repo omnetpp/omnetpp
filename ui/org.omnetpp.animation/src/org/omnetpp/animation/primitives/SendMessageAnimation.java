@@ -66,8 +66,8 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 
     protected boolean isTransmissionDelayZero;
 
-	public SendMessageAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, EventLogGate gate, EventLogMessage message) {
-		super(animationController, propagationDelay, transmissionDelay, message);
+	public SendMessageAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, EventLogGate gate, EventLogMessage message, double messageHighlightAnimationTime) {
+		super(animationController, propagationDelay, transmissionDelay, message, messageHighlightAnimationTime);
 		this.gate = gate;
         this.isPropagationDelayZero = propagationDelay.equals(BigDecimal.getZero());
         this.isTransmissionDelayZero = transmissionDelay.equals(BigDecimal.getZero());
@@ -101,7 +101,6 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
         else {
             if (isPropagationDelayZero && isTransmissionDelayZero) {
                 ConnectionFigure connectionFigure = new ConnectionFigure();
-                connectionFigure.setArrowHeadEnabled(true);
                 connectionFigure.setStyle(color, 1, null);
                 messageLine = connectionFigure;
             }
@@ -117,7 +116,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
                             Dimension difference = end.getDifference(begin);
                             double length = Math.sqrt(difference.width * difference.width + difference.height * difference.height);
                             double datarate = message.getBitLength() / transmissionDelay.doubleValue();
-                            Dimension patternDimension = difference.scale((12 - Math.min(Math.log10(datarate), 12)) * 4 / end.getDistance(begin));
+                            Dimension patternDimension = difference.scale((15 - Math.min(Math.log10(datarate), 15)) * 4 / end.getDistance(begin));
                             double patternLength = Math.sqrt(patternDimension.width * patternDimension.width + patternDimension.height * patternDimension.height);
                             double alpha;
                             if (isPropagationDelayZero)
@@ -157,12 +156,9 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
                     animationController.getAnimationCanvas().setSelectedElement(messageLine, message);
                 }
             });
-            messageCompletion = new Completion();
-            messageCompletion.setBackgroundColor(color);
-            messageBeginCompletion = new Completion();
-            messageBeginCompletion.setBackgroundColor(color);
-            messageEndCompletion = new Completion();
-            messageEndCompletion.setBackgroundColor(color);
+            messageCompletion = new Completion(true, true, false, 0, color);
+            messageBeginCompletion = new Completion(true, true, false, 0, color);
+            messageEndCompletion = new Completion(true, true, false, 0, color);
         }
     }
 
@@ -201,53 +197,73 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	@Override
 	public void refreshAnimation(AnimationPosition animationPosition) {
 	    if (gate == null || getConnectionFigure() != null) {
-            if (isPropagationDelayZero && isTransmissionDelayZero) {
-                Point[] ps = getMessageSendPoints(animationPosition, 8);
-                Point center = ps[0].getTranslated(ps[1]).scale(0.5);
-                Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
-                messageLine.setEndpoints(ps[0], ps[1]);
-                messageLabel.setBounds(new Rectangle(center.getTranslated(0, 5), labelSize));
-            }
-            else if (isPropagationDelayZero && !isTransmissionDelayZero) {
-                Point[] ps = getMessageSendPoints(animationPosition, 4);
-                Point center = ps[0].getTranslated(ps[1]).scale(0.5);
-                Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
-                messageLine.setEndpoints(ps[0], ps[1]);
-                double completion = animationPosition.getSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / getSimulationTimeDuration().doubleValue();
-                messageCompletion.setCompletion(completion);
-                messageCompletion.setToolTip(new Label("Completed: " + (int)(completion * 100) + "%"));
-                messageCompletion.setBounds(new Rectangle(center.getTranslated(0, 4), new Dimension(7, 7)));
-                messageLabel.setBounds(new Rectangle(center.getTranslated(0, 8), labelSize));
-            }
-            else if (!isPropagationDelayZero && isTransmissionDelayZero) {
-                Point[] ps = getMessageSendPoints(animationPosition, 4);
-                Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
-                messageEllipse.setBounds(new Rectangle(ps[0].x - 3, ps[0].y - 2, 7, 7));
-                messageLabel.setBounds(new Rectangle(ps[0].getTranslated(0, 5), labelSize));
-            }
-            else if (!isPropagationDelayZero && !isTransmissionDelayZero) {
-                Point[] ps = getMessageSendPoints(animationPosition, 4);
-                Point center = ps[0].getTranslated(ps[1]).scale(0.5);
-                Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
-                messageLine.setEndpoints(ps[0], ps[1]);
-                double beginCompletion = animationPosition.getSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / transmissionDelay.doubleValue();
-                messageBeginCompletion.setVisible(beginCompletion <= 1.0);
-                messageBeginCompletion.setCompletion(beginCompletion);
-                messageBeginCompletion.setToolTip(new Label("Completed: " + (int)(beginCompletion * 100) + "%"));
-                messageBeginCompletion.setBounds(new Rectangle(getBeginPoint().getTranslated(0, 8), new Dimension(7, 7)));
-                double endCompletion = animationPosition.getSimulationTime().subtract(getBeginSimulationTime().add(propagationDelay)).doubleValue() / transmissionDelay.doubleValue();
-                messageEndCompletion.setVisible(endCompletion >= 0.0);
-                messageEndCompletion.setCompletion(endCompletion);
-                messageEndCompletion.setToolTip(new Label("Completed: " + (int)(endCompletion * 100) + "%"));
-                messageEndCompletion.setBounds(new Rectangle(getEndPoint().getTranslated(-8, 8), new Dimension(7, 7)));
-                messageLabel.setBounds(new Rectangle(center.getTranslated(0, 8), labelSize));
+	        boolean visible = animationController.getCurrentAnimationTime() < getOriginRelativeEndAnimationTime() - messageHighlightAnimationDuration ||
+                              2 * animationController.getCurrentRealTime() - Math.floor(2 * animationController.getCurrentRealTime()) < 0.5;
+            if (messageLine != null)
+                messageLine.setVisible(visible);
+            if (messageEllipse != null)
+                messageEllipse.setVisible(visible);
+            if (messageLabel != null)
+                messageLabel.setVisible(visible);
+            if (messageCompletion != null)
+                messageCompletion.setVisible(visible);
+            if (messageBeginCompletion != null)
+                messageBeginCompletion.setVisible(visible);
+            if (messageEndCompletion != null)
+                messageEndCompletion.setVisible(visible);
+            if (visible) {
+                if (isPropagationDelayZero && isTransmissionDelayZero) {
+                    Point[] ps = getMessageSendPoints(animationPosition, 8);
+                    Point center = ps[0].getTranslated(ps[1]).scale(0.5);
+                    Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
+                    messageLine.setEndpoints(ps[0], ps[1]);
+                    ((ConnectionFigure)messageLine).setArrowHeadEnabled(true);
+                    messageLabel.setBounds(new Rectangle(center.getTranslated(0, 5), labelSize));
+                }
+                else if (isPropagationDelayZero && !isTransmissionDelayZero) {
+                    Point[] ps = getMessageSendPoints(animationPosition, 4);
+                    Point center = ps[0].getTranslated(ps[1]).scale(0.5);
+                    Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
+                    messageLine.setEndpoints(ps[0], ps[1]);
+                    double completion = animationPosition.getSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / getSimulationTimeDuration().doubleValue();
+                    messageCompletion.setCompletion(completion);
+                    messageCompletion.setToolTip(new Label("Completed: " + (int)(completion * 100) + "%"));
+                    messageCompletion.setBounds(new Rectangle(center.getTranslated(0, 4), new Dimension(7, 7)));
+                    messageLabel.setBounds(new Rectangle(center.getTranslated(0, 8), labelSize));
+                }
+                else if (!isPropagationDelayZero && isTransmissionDelayZero) {
+                    Point[] ps = getMessageSendPoints(animationPosition, 4);
+                    Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
+                    messageEllipse.setBounds(new Rectangle(ps[0].x - 3, ps[0].y - 2, 7, 7));
+                    messageLabel.setBounds(new Rectangle(ps[0].getTranslated(0, 5), labelSize));
+                }
+                else if (!isPropagationDelayZero && !isTransmissionDelayZero) {
+                    Point[] ps = getMessageSendPoints(animationPosition, 4);
+                    Point center = ps[0].getTranslated(ps[1]).scale(0.5);
+                    Dimension labelSize = messageLabel.getPreferredSize().getCopy().expand(10, 0);
+                    messageLine.setEndpoints(ps[0], ps[1]);
+                    double beginCompletion = animationPosition.getSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / transmissionDelay.doubleValue();
+                    messageBeginCompletion.setVisible(beginCompletion <= 1.0);
+                    messageBeginCompletion.setCompletion(beginCompletion);
+                    messageBeginCompletion.setToolTip(new Label("Completed: " + (int)(beginCompletion * 100) + "%"));
+                    messageBeginCompletion.setBounds(new Rectangle(getBeginPoint().getTranslated(0, 8), new Dimension(7, 7)));
+                    double endCompletion = animationPosition.getSimulationTime().subtract(getBeginSimulationTime().add(propagationDelay)).doubleValue() / transmissionDelay.doubleValue();
+                    messageEndCompletion.setVisible(endCompletion >= 0.0);
+                    messageEndCompletion.setCompletion(endCompletion);
+                    messageEndCompletion.setToolTip(new Label("Completed: " + (int)(endCompletion * 100) + "%"));
+                    messageEndCompletion.setBounds(new Rectangle(getEndPoint().getTranslated(-8, 8), new Dimension(7, 7)));
+                    messageLabel.setBounds(new Rectangle(center.getTranslated(0, 8), labelSize));
+                }
             }
 	    }
 	}
 
     @Override
     public String toString() {
-        return super.toString() + " sending from " + gate.toString();
+        if (gate == null)
+            return super.toString();
+        else
+            return super.toString() + " sending from " + gate.toString();
     }
 
 	@Override
