@@ -16,6 +16,7 @@ import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -113,7 +114,11 @@ public class ProjectConfigurationUtils {
         if (buildFolder == null)
             return "Wrong build location: filesystem location \""+ buildLocation + "\" does not exist, or does not map to any folder in the workspace. Check the C/C++ Build page."; //FIXME also print what macro gets resolved to
         if (!buildSpec.getMakeFolders().contains(buildFolder))
-            return "Root build folder " + buildFolder.getFullPath().toString() + " contains no makefile";
+            return "Root build folder " + buildFolder.getFullPath().toString() + " is set to \"No Make\"";
+        for (IContainer folder : buildSpec.getMakeFolders())
+            if (buildSpec.getFolderMakeType(folder) == BuildSpecification.CUSTOM)
+                if (!folder.getFile(new Path("Makefile")).exists())  //XXX or Makefile.vc 
+                    return "Custom Make folder " + buildFolder.getFullPath().toString() + " contains no Makefile";
     
         return null;
     }

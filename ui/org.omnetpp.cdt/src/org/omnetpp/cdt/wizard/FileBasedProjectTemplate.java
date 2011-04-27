@@ -156,8 +156,9 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     }
 
     /**
-     * Sets the makemake options on the given project. Array must contain folderPaths
-     * as keys, and options as values.
+     * Sets the makemake options on the given project. Array must contain folderPath1, options1,
+     * folderPath2, options2, etc. If an options string is null or "CUSTOM", the make type
+     * for the corresponding folder will be set to CUSTOM, otherwise to MAKEMAKE.
      */
     public void createBuildSpec(String[] pathsAndMakemakeOptions, CreationContext context) throws CoreException {
         Assert.isTrue(pathsAndMakemakeOptions.length%2 == 0);
@@ -168,8 +169,9 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     }
 
     /**
-     * Sets the makemake options on the given project. Array must contain folderPath1, options1,
-     * folderPath2, options2, etc.
+     * Sets the makemake options on the given project. Array must contain folderPaths
+     * as keys, and options as values. If an options string is null or "CUSTOM",
+     * the make type for the corresponding folder will be set to CUSTOM, otherwise to MAKEMAKE.
      */
     public void createBuildSpec(Map<String,String> pathsAndMakemakeOptions, CreationContext context) throws CoreException {
         Assert.isTrue(context.getFolder() instanceof IProject);
@@ -178,9 +180,13 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         for (String folderPath: pathsAndMakemakeOptions.keySet()) {
             String args = pathsAndMakemakeOptions.get(folderPath);
             IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
-            buildSpec.setFolderMakeType(folder, BuildSpecification.MAKEMAKE);
-            MakemakeOptions options = new MakemakeOptions(args);
-            buildSpec.setMakemakeOptions(folder, options);
+            if (args==null || args.equals("CUSTOM"))
+                buildSpec.setFolderMakeType(folder, BuildSpecification.CUSTOM);
+            else {
+                buildSpec.setFolderMakeType(folder, BuildSpecification.MAKEMAKE);
+                MakemakeOptions options = new MakemakeOptions(args);
+                buildSpec.setMakemakeOptions(folder, options);
+            }
         }
         buildSpec.save();
     }

@@ -282,4 +282,17 @@ public class BuildSpecification implements Cloneable {
             throw Activator.wrapIntoCoreException("Cannot save build specification: " + e.getMessage(), e);
         }
     }
+    
+    @Override
+    public String toString() {
+        String result = project.getName() + " { ";
+        for (IContainer folder: folderSpecs.keySet()) {
+            FolderSpec folderSpec = folderSpecs.get(folder);
+            int type = folderSpec.makefileType;
+            result += folder.getFullPath().toString() + ":" + (type==NONE ? "NONE" : type==MAKEMAKE ? "MAKEMAKE" : "CUSTOM");
+            result += " ";
+        }
+        result += "}";
+        return result;
+    }
 }

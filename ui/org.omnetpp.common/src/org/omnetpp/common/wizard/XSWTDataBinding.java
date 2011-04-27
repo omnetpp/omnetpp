@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Tree;
 
 /**
  * Rudimentary data binding: get/set data from/to SWT controls. Support for
- * the basic widgets are built in. Other widget classes can be supported via
+ * the basic widgets is built in. Other widget classes can be supported via
  * IWidgetAdapter, which must be implemented either by the control class or
  * by a class with the similar name with the suffix "Adapter" (i.e. for
  * org.foo.FancyTable, the adapter would be looked for as org.foo.FancyTableAdapter.)
@@ -205,7 +205,7 @@ public class XSWTDataBinding {
     /**
      * Note: this method CANNOT HANDLE QUOTES. Use JSON parsing for anything serious.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public static String[] toStringArray(Object value, String splitRegex) {
         if (value instanceof String[])
             return (String[])value;
@@ -230,17 +230,17 @@ public class XSWTDataBinding {
     /**
      * Note: this method CANNOT HANDLE QUOTES. Use JSON parsing for anything serious.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public static Map<String,String> toStringMap(Object value) {
         if (value instanceof Map) {
-            Map<String,String> result = new HashMap<String, String>();
+            Map<String,String> result = new LinkedHashMap<String, String>();
             for (Object key : ((Map) value).keySet())
                 result.put(key.toString(), value.toString());
             return result;
         }
         else {
             String[] items = toStringArray(value, " *, *");
-            Map<String,String> result = new HashMap<String, String>();
+            Map<String,String> result = new LinkedHashMap<String, String>(); // use LinkedHashMap to preserve order (important in some cases)
             for (int i=0; i<items.length; i++) {
                 String key = StringUtils.substringBefore(items[i], ":").trim();
                 String val = StringUtils.substringAfter(items[i], ":").trim();
