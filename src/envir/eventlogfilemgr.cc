@@ -705,25 +705,34 @@ void EventlogFileManager::recordKeyframe()
         fprintf(feventlog, " p %"INT64_PRINTF_FORMAT"d", previousKeyframeFileOffset);
         previousKeyframeFileOffset = newPreviousKeyframeFileOffset;
         // consequenceLookahead
-        fprintf(feventlog, " c \"");
+        fprintf(feventlog, " c ");
         int i = 0;
+        bool empty = true;
         for (std::vector<eventnumber_t>::iterator it = consequenceLookaheadLimits.begin(); it != consequenceLookaheadLimits.end(); it++) {
             eventnumber_t consequenceLookaheadLimit = *it;
-            if (consequenceLookaheadLimit)
+            if (consequenceLookaheadLimit) {
                 fprintf(feventlog, "%"INT64_PRINTF_FORMAT"d:%"INT64_PRINTF_FORMAT"d,", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
+                empty = false;
+            }
             *it = 0;
             i++;
         }
+        if (empty)
+            fprintf(feventlog, "\"\"");
         // simulationStateEntries
-        fprintf(feventlog, "\" s \"");
+        empty = true;
+        fprintf(feventlog, " s ");
         for (std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.begin(); it != eventNumberToSimulationStateEventLogEntryRanges.end(); it++) {
             std::vector<EventLogEntryRange> &ranges = it->second;
             for (std::vector<EventLogEntryRange>::iterator jt = ranges.begin(); jt != ranges.end(); jt++) {
                 (*jt).print(feventlog);
                 fprintf(feventlog, ",");
+                empty = false;
             }
         }
-        fprintf(feventlog, "\"\n");
+        if (empty)
+            fprintf(feventlog, "\"\"");
+        fprintf(feventlog, "\n");
         entryIndex++;
     }
 }
