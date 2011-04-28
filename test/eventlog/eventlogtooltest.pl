@@ -1,10 +1,10 @@
 $eventLogTool = "../../bin/eventlogtool";
 
-sub testEcho1
+sub testEchoWhole
 {
    my($fileName) = @_;
 
-   print("Testing echo on $fileName\n");
+   print("\nTesting echo on $fileName\n");
 
    print("  Echoing the whole input file\n");
    system("$eventLogTool echo -o result/tmp.elog $fileName") == 0
@@ -16,21 +16,21 @@ sub testEcho1
 
    if ((stat("result/tmp.diff"))[7] != 0)
    {
-      print("*** FAIL: Echo returned different content for $fileName\n\n");
+      print("*** FAIL: Echo returned different content for $fileName\n");
    }
    else
    {
-      print("PASS\n\n");
+      print("PASS\n");
    }
 
    unlink("result/tmp.diff");
 }
 
-sub testEcho2
+sub testEchoInTwoParts
 {
    my($fileName) = @_;
 
-   print("Testing echo on $fileName\n");
+   print("\nTesting echo on $fileName\n");
 
    print("  Echoing the input file in two parts\n");
    system("$eventLogTool echo -o result/tmp1.elog -te 100 $fileName") == 0
@@ -53,7 +53,7 @@ sub testEcho2
    }
    else
    {
-      print("PASS\n\n");
+      print("PASS\n");
    }
 
    unlink("result/tmp.diff");
@@ -63,7 +63,7 @@ sub testOffsets
 {
    my($fileName) = @_;
 
-   print("Testing offsets on $fileName\n");
+   print("\nTesting offsets on $fileName\n");
 
    system("$eventLogTool offsets -e \"0 1 2 3\" -o result/tmp.elog $fileName") == 0
       or print("*** FAIL: Testing offsets on $fileName failed\n");
@@ -84,14 +84,14 @@ sub testOffsets
    `$eventLogTool offsets -e 1000000000 $fileName` == -1
       or print("*** FAIL: Such a big event number found in $fileName?\n");
 
-   print("PASS\n\n");
+   print("PASS\n");
 }
 
 sub testEvents
 {
    my($fileName, $lastEventNumber) = @_;
 
-   print("Testing consistency of offsets and events on $fileName\n");
+   print("\nTesting consistency of offsets and events on $fileName\n");
 
    for ($i = 0; $i <= $lastEventNumber; $i++)
    {
@@ -106,14 +106,14 @@ sub testEvents
       }
    }
 
-   print("PASS\n\n");
+   print("PASS\n");
 }
 
 sub testFilter
 {
    my($fileName, $lastEventNumber) = @_;
 
-   print("Testing filter on $fileName\n");
+   print("\nTesting filter on $fileName\n");
 
    for ($i = 0; $i <= $lastEventNumber; $i++)
    {
@@ -130,7 +130,7 @@ sub testFilter
          or print("*** FAIL: Traced event not found in filter result for $fileName\n");
    }
 
-   print("PASS\n\n");
+   print("PASS\n");
    unlink("result/tmp.elog");
 }
 
@@ -144,8 +144,8 @@ sub testEventLogTool
       $lastEventNumber = -1;
    }
 
-   testEcho1($fileName);
-   testEcho2($fileName);
+   testEchoWhole($fileName);
+   testEchoInTwoParts($fileName);
    testOffsets($fileName);
    testEvents($fileName, $lastEventNumber);
    testFilter($fileName, $lastEventNumber);

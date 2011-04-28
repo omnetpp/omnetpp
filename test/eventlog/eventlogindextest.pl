@@ -17,9 +17,7 @@ sub testEventLogIndex
 
 mkdir("result");
 
-testEventLogIndex("elog/simple/empty.elog", 1);
-testEventLogIndex("elog/simple/one-event.elog", 5);
-testEventLogIndex("elog/simple/two-events.elog", 10);
+testEventLogIndex("elog/predefined/simple/empty.elog", 1);
+testEventLogIndex("elog/predefined/simple/one-event.elog", 5);
+testEventLogIndex("elog/predefined/simple/two-events.elog", 10);
 testEventLogIndex("elog/generated/stress.elog", 1000);
-testEventLogIndex("elog/filtered/stress-lines.elog", 1000);
-testEventLogIndex("elog/filtered/stress-events.elog", 1000);

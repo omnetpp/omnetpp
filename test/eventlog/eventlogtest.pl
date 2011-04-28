@@ -39,4 +39,3 @@ testEventLog("elog/predefined/simple/empty.elog", 5, 2);
 testEventLog("elog/predefined/simple/one-event.elog", 5, 2);
 testEventLog("elog/predefined/simple/two-events.elog", 10, 2);
 testEventLog("elog/generated/stress.elog", 1000, 20);
-testEventLog("elog/filtered/stress-events.elog", 1000, 20);
