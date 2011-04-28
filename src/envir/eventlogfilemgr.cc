@@ -699,7 +699,7 @@ void EventlogFileManager::recordKeyframe()
 {
     if (eventNumber % keyframeBlockSize == 0) {
         consequenceLookaheadLimits.push_back(0);
-        int newPreviousKeyframeFileOffset = opp_ftell(feventlog);
+        file_offset_t newPreviousKeyframeFileOffset = opp_ftell(feventlog);
         fprintf(feventlog, "KF");
         // previousKeyframeFileOffset
         fprintf(feventlog, " p %"INT64_PRINTF_FORMAT"d", previousKeyframeFileOffset);
@@ -731,8 +731,9 @@ void EventlogFileManager::recordKeyframe()
 void EventlogFileManager::addPreviousEventNumber(eventnumber_t previousEventNumber)
 {
     if (previousEventNumber != -1) {
-        int blockIndex = previousEventNumber / keyframeBlockSize;
-        consequenceLookaheadLimits.resize(blockIndex + 1);
+        eventnumber_t blockIndex = previousEventNumber / keyframeBlockSize;
+        if (blockIndex + 1 > consequenceLookaheadLimits.size())
+            consequenceLookaheadLimits.resize(blockIndex + 1);
         consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], eventNumber - previousEventNumber);
     }
 }
