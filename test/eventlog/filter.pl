@@ -46,7 +46,7 @@ sub filterLogFileWithTool
    # TODO: this would call the eventlogtool to filter the file
 }
 
-mkdir("filtered");
+mkdir("elog/filtered");
 
-filterLinesFromLogFile("generated/stress.elog", "filtered/stress-lines.elog");
-filterEventsFromLogFile("generated/stress.elog", "filtered/stress-events.elog");
+filterLinesFromLogFile("elog/generated/stress.elog", "elog/filtered/stress-lines.elog");
+filterEventsFromLogFile("elog/generated/stress.elog", "elog/filtered/stress-events.elog");

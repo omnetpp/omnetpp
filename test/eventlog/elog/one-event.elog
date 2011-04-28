@@ -1,5 +1,0 @@
-MC id 1 c cModule t Test n module
-BS id 1 tid 1 c cMessage n start
-ES t 0
-
-E # 0 t 0 m 1 msg 1
