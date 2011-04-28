@@ -1,4 +1,3 @@
-<#include "main.fti">
 <@setoutput path=simulationsFolder+"/Tictoc.ned"/>
 ${bannerComment}
 

@@ -44,6 +44,7 @@ import org.omnetpp.common.wizard.support.LangUtils;
 import org.omnetpp.common.wizard.support.ProcessUtils;
 
 import freemarker.cache.StringTemplateLoader;
+import freemarker.core.Environment;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -354,10 +355,12 @@ public abstract class ContentTemplate implements IContentTemplate {
 
     /**
      * Evaluates the given template, but does not create any file in the workspace;
-     * in fact, non-blank output is reported via the unhandledOutput() method. 
-     * Used by export wizards. (They can create files via FileUtils.)
+     * in fact, non-blank output is reported via the unhandledOutput() method.
+     * (The template code can still create files via FileUtils.) The method returns
+     * the template processing environment, which allows the caller to access the 
+     * variables set by the template code. 
      */
-    protected void processTemplateForSideEffects(Configuration freemarkerConfiguration, String fileName, CreationContext context) throws CoreException {
+    protected Environment processTemplateForSideEffects(Configuration freemarkerConfiguration, String fileName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
@@ -367,17 +370,20 @@ public abstract class ContentTemplate implements IContentTemplate {
             // perform template substitution
             Template template = freemarkerConfiguration.getTemplate(fileName, "utf8");
             StringWriter writer = new StringWriter();
-            template.process(context.getVariables(), writer);
+            // next two lines are the expansion of: template.process(context.getVariables(), writer);
+            Environment env = template.createProcessingEnvironment(context.getVariables(), writer, null);
+            env.process();
             String content = writer.toString();
             if (!StringUtils.isBlank(content))
                 unhandledOutput(fileName, content);
-        } catch (Exception e) {
+            return env;
+        } 
+        catch (Exception e) {
             throw CommonPlugin.wrapIntoCoreException(e);
         }
         finally {
             Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
-        
     }
 
     /**

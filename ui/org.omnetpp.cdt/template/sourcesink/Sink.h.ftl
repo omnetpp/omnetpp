@@ -1,4 +1,3 @@
-<#include "main.fti">
 <@setoutput path=srcFolder+"/Sink.h"/>
 ${bannerComment}
 

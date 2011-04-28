@@ -2,7 +2,9 @@ package org.omnetpp.cdt.wizard;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CSourceEntry;
@@ -40,6 +42,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public static final String PROP_NEDSOURCEFOLDERS = "nedSourceFolders"; // NED source folders to be created and configured
     public static final String PROP_MAKEMAKEOPTIONS = "makemakeOptions"; // makemake options, as "folder1:options1,folder2:options2,..."
     public static final String PROP_REQUIRESCPLUSPLUS = "requiresCPlusPlus"; // affects template filtering in the wizard
+    public static final String PROP_WITHCPLUSPLUSSUPPORT = "withCplusplusSupport"; // affects template filtering in the wizard
 
     public FileBasedProjectTemplate(IFolder folder) throws CoreException {
         super(folder);
@@ -81,7 +84,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         if (nedSrcFolders.length > 0)
             createAndSetNedSourceFolders(nedSrcFolders, context);
 
-        boolean supportCPlusPlus = XSWTDataBinding.toBoolean(context.getVariables().get("withCplusplusSupport"));
+        boolean supportCPlusPlus = XSWTDataBinding.toBoolean(context.getVariables().get(PROP_WITHCPLUSPLUSSUPPORT));
         if (supportCPlusPlus) {
             String[] srcFolders = XSWTDataBinding.toStringArray(context.getVariables().get(PROP_SOURCEFOLDERS), " *, *");
             if (srcFolders.length > 0)
@@ -107,10 +110,9 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public void createAndSetNedSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
         Assert.isTrue(context.getFolder() instanceof IProject);
         for (String path : projectRelativePaths)
-            createFolder(path, context);
-        IContainer[] folders = new IContainer[projectRelativePaths.length];
-        for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = context.getFolder().getFolder(new Path(projectRelativePaths[i]));
+            if (!path.equals("."))
+                createFolder(path, context);
+        IContainer[] folders = toUniqueFolders(context.getFolder(), projectRelativePaths);
         NedSourceFoldersConfiguration config = new NedSourceFoldersConfiguration(folders, new String[0]);
         ProjectUtils.saveNedFoldersFile((IProject)context.getFolder(), config);
     }
@@ -121,13 +123,19 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
     public void createAndSetSourceFolders(String[] projectRelativePaths, CreationContext context) throws CoreException {
         Assert.isTrue(context.getFolder() instanceof IProject);
         for (String path : projectRelativePaths)
-            createFolder(path, context);
-        IContainer[] folders = new IContainer[projectRelativePaths.length];
-        for (int i=0; i<projectRelativePaths.length; i++)
-            folders[i] = context.getFolder().getFolder(new Path(projectRelativePaths[i]));
+            if (!path.equals("."))
+                createFolder(path, context);
+        IContainer[] folders = toUniqueFolders(context.getFolder(), projectRelativePaths);
         setSourceLocations(folders, context);
     }
 
+    protected static IContainer[] toUniqueFolders(IContainer folder, String[] folderRelativePaths) {
+        Set<IContainer> folders = new HashSet<IContainer>();
+        for (String path : folderRelativePaths)
+            folders.add(getFolder(folder, path));
+        return folders.toArray(new IContainer[]{});
+    }
+    
     /**
      * Sets the project's source locations list to the given list of folders, in all configurations.
      * (Previous source entries get overwritten.)
@@ -179,7 +187,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         BuildSpecification buildSpec = BuildSpecification.createBlank(project);
         for (String folderPath: pathsAndMakemakeOptions.keySet()) {
             String args = pathsAndMakemakeOptions.get(folderPath);
-            IContainer folder = folderPath.equals(".") ? project : project.getFolder(new Path(folderPath));
+            IContainer folder = getFolder(project, folderPath);
             if (args==null || args.equals("CUSTOM"))
                 buildSpec.setFolderMakeType(folder, BuildSpecification.CUSTOM);
             else {
@@ -191,4 +199,10 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
         buildSpec.save();
     }
 
+    /**
+     * An IContainer.getFolder(IPath) that understands "." (or "") as path as well.
+     */
+    protected static IContainer getFolder(IContainer folder, String path) {
+        return (path.equals("") || path.equals(".")) ? folder : folder.getFolder(new Path(path));
+    }
 }

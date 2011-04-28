@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -40,7 +41,10 @@ import org.osgi.framework.Bundle;
 import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.cache.URLTemplateLoader;
+import freemarker.core.Environment;
+import freemarker.core.Environment.Namespace;
 import freemarker.template.Configuration;
+import freemarker.template.TemplateModelException;
 
 /**
  * Project template loaded from a workspace project or a resource bundle.
@@ -60,6 +64,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
     public static final String PROP_TEMPLATEISDEFAULT = "templateIsDefault"; // template is the default one or not
     public static final String PROP_IGNORERESOURCES = "ignoreResources"; // list of files NOT top copy into dest folder; basic glob patterns accepted
     public static final String PROP_VERBATIMFILES = "verbatimFiles"; // list of files to copy verbatim, even if they would be ignored otherwise; basic glob patterns accepted
+    public static final String PROP_PRERUNTEMPLATE = "preRunTemplate"; // string: name of the FreeMarker template to run before other templates; this template WILL HAVE SIDE EFFECTS (can set variables, etc)
 
     // template is either given with an IFolder or with an URL
     protected IFolder templateFolder;
@@ -430,10 +435,39 @@ public class FileBasedContentTemplate extends ContentTemplate {
     }
 
     public void performFinish(CreationContext context) throws CoreException {
+        // execute a template that can modify the variables in the context. We do this before 
+        // substituteNestedVariables(), so that the template has a chance to modify
+        // variables before they are substituted into template.properties
+        executePreRunTemplate(context);
+        
+        // substitute variables 
         substituteNestedVariables(context);
 
         // copy over files and folders, with template substitution
         copyFiles(context);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void executePreRunTemplate(CreationContext context) throws CoreException {
+        if (context.getVariable(PROP_PRERUNTEMPLATE) != null) {
+            String preRunTemplateName = XSWTDataBinding.toString(context.getVariable(PROP_PRERUNTEMPLATE));
+            if (StringUtils.isNotEmpty(preRunTemplateName)) {
+                Environment env = processTemplateForSideEffects(getFreemarkerConfiguration(), preRunTemplateName, context);
+                try {
+                    // The Environment's main namespace contains the variables, macros, functions etc 
+                    // set by the template. We'd like the assignments in this template to take effect,
+                    // so we take over the contents of the main namespace into the context. 
+                    // Note that the context also includes macros like "iif", but this likely presents 
+                    // no problem.
+                    Namespace mainNamespace = env.getMainNamespace();
+                    Map map = mainNamespace.toMap();  
+                    context.getVariables().putAll(map);
+                }
+                catch (TemplateModelException e) {
+                    CommonPlugin.logError("Error extracting variables set by the pre-run template " + preRunTemplateName, e);
+                }
+            }
+        }
     }
 
     /**
@@ -502,7 +536,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
      * Exists to abstract out the difference between workspace loading (IFile)
      * and URL (or resource bundle) based loading.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     protected String[] getFileList() throws CoreException {
         if (fileList == null) {
             if (bundleOfTemplate != null) {

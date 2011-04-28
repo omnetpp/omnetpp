@@ -1,4 +1,3 @@
-<#include "main.fti">
 <#if srcFolder!=".">
 all: checkmakefiles
 	cd ${srcFolder} && $(MAKE)
