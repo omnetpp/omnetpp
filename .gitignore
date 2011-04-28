@@ -77,6 +77,7 @@ Thumbs.db
 /test/eventlog/result/
 /test/eventlog/elog/generated/
 /test/eventlog/elog/filtered/
+/test/stress/results/
 /msys/
 /mingw/
 /samples/*/doc/
