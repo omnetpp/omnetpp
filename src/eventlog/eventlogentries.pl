@@ -346,10 +346,6 @@ foreach $class (@classes)
    # print
    print ENTRIES_CC_FILE "void $className\::print(FILE *fout)\n";
    print ENTRIES_CC_FILE "{\n";
-   if ($class->{NAME} eq "EventEntry")
-   {
-      print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
-   }
    if ($class->{CODE} ne "abstract")
    {
       print ENTRIES_CC_FILE "    fprintf(fout, \"$class->{CODE}\");\n";
@@ -385,8 +381,10 @@ foreach $class (@classes)
          print ENTRIES_CC_FILE "    fprintf(fout, \" $field->{CODE} $field->{PRINTFTYPE}\", $field->{NAME});\n";
       }
    }
-
-   print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
+   if ($class->{CODE} ne "abstract")
+   {
+      print ENTRIES_CC_FILE "    fprintf(fout, \"\\n\");\n";
+   }
    print ENTRIES_CC_FILE "    fflush(fout);\n";
    print ENTRIES_CC_FILE "}\n\n";
 

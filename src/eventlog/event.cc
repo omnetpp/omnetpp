@@ -187,7 +187,6 @@ void Event::print(FILE *file, bool outputEventLogMessages)
 {
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
         EventLogEntry *eventLogEntry = *it;
-
         if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             eventLogEntry->print(file);
     }

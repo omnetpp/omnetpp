@@ -46,6 +46,8 @@ void IEventLog::print(FILE *file, eventnumber_t fromEventNumber, eventnumber_t t
     {
         event->print(file, outputEventLogMessages);
         event = event->getNextEvent();
+        if (event)
+            fprintf(file, "\n");
     }
 }
 
