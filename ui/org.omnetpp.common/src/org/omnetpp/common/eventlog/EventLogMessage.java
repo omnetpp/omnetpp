@@ -24,6 +24,9 @@ public class EventLogMessage {
 	private int encapsulationId;
 	private int encapsulationTreeId;
 
+	private long senderEventNumber;
+	private long arrivalEventNumber;
+
 	private EventLogModule senderModule;
 	private EventLogGate senderGate;
 	private EventLogModule arrivalModule;
@@ -73,6 +76,22 @@ public class EventLogMessage {
 	public boolean isSelfMessage() {
 		return arrivalGate == null;
 	}
+
+	public void setSenderEventNumber(long senderEventNumber) {
+        this.senderEventNumber = senderEventNumber;
+    }
+
+	public long getSenderEventNumber() {
+        return senderEventNumber;
+    }
+
+	public void setArrivalEventNumber(long arrivalEventNumber) {
+        this.arrivalEventNumber = arrivalEventNumber;
+    }
+
+	public long getArrivalEventNumber() {
+        return arrivalEventNumber;
+    }
 
 	public EventLogModule getSenderModule() {
 		return senderModule;

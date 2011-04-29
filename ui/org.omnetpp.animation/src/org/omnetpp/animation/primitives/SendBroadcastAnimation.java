@@ -25,8 +25,8 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 
 	protected double fadeOutTime;
 
-	public SendBroadcastAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, int sourceModuleId, int destinationModuleId, EventLogMessage message, double messageHighlightAnimationTime) {
-		super(animationController, propagationDelay, transmissionDelay, message, messageHighlightAnimationTime);
+	public SendBroadcastAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, int sourceModuleId, int destinationModuleId, EventLogMessage message, double messageHighlightAnimationDuration) {
+		super(animationController, propagationDelay, transmissionDelay, message, messageHighlightAnimationDuration);
 		this.sourceModuleId = sourceModuleId;
 		this.destinationModuleId = destinationModuleId;
 		this.fadeOutTime = propagationDelay.doubleValue() * 0.2;
@@ -53,7 +53,7 @@ public class SendBroadcastAnimation extends AbstractSendMessageAnimation {
 
 	@Override
 	public void refreshAnimation(AnimationPosition animationPosition) {
-        boolean visible = animationController.getCurrentAnimationTime() < getOriginRelativeEndAnimationTime() - messageHighlightAnimationDuration ||
+        boolean visible = animationPosition.getEventNumber() != message.getArrivalEventNumber() || animationPosition.getFrameRelativeAnimationTime() >= messageHighlightAnimationDuration ||
                           2 * animationController.getCurrentRealTime() - Math.floor(2 * animationController.getCurrentRealTime()) < 0.5;
         ellipse.setVisible(visible);
         if (visible) {

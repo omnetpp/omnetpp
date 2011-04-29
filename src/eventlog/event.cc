@@ -239,12 +239,11 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
 
         // message deleted on the channel (skip all deletes until the matching one is found)
         DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
-        if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId) {
+        if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId)
             return NULL;
-        }
     }
 
-    throw opp_runtime_error("Missing end message send or delete message entry");
+    throw opp_runtime_error("neither EndSendEntry nor DeleteMessageEntry found");
 }
 
 simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)

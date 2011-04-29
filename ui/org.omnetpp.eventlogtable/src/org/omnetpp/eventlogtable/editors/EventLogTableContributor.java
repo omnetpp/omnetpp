@@ -251,24 +251,28 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 			eventLogTable.addSelectionChangedListener(this);
 			update();
 		}
+		else
+		    eventLogTable = null;
 	}
 
 	public void update() {
 		try {
-			for (Field field : getClass().getDeclaredFields()) {
-				Class<?> fieldType = field.getType();
-				if (fieldType == EventLogTableAction.class || fieldType == EventLogTableMenuAction.class) {
-					EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
-					fieldValue.setEnabled(true);
-					fieldValue.update();
-					if ((getPage() != null && !(getPage().getActivePart() instanceof EventLogTableEditor)) || eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
-						fieldValue.setEnabled(false);
-				}
-				else if (fieldType == StatusLineContributionItem.class) {
-					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
-					fieldValue.update();
-				}
-			}
+	        if (eventLogTable != null) {
+    			for (Field field : getClass().getDeclaredFields()) {
+    				Class<?> fieldType = field.getType();
+    				if (fieldType == EventLogTableAction.class || fieldType == EventLogTableMenuAction.class) {
+    					EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
+    					fieldValue.setEnabled(true);
+    					fieldValue.update();
+    					if ((getPage() != null && !(getPage().getActivePart() instanceof EventLogTableEditor)) || eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
+    						fieldValue.setEnabled(false);
+    				}
+    				else if (fieldType == StatusLineContributionItem.class) {
+    					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
+    					fieldValue.update();
+    				}
+    			}
+	        }
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);

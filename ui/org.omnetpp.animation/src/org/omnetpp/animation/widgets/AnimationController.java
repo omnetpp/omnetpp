@@ -90,7 +90,7 @@ import org.omnetpp.ned.model.DisplayString;
  * @author levy
  */
 public class AnimationController {
-	private final static boolean debug = false;
+	private final static boolean debug = true;
 
     /**
      * A list of timers used during the animation. The queue contains the
@@ -1329,7 +1329,7 @@ public class AnimationController {
             // NOTE: between these two events there's zero simulation time, but that is a non-zero animation time
             return frameRelativeAnimationTime + coordinateSystem.getAnimationTimeDelta(0);
         else
-            return coordinateSystem.getAnimationTimeDelta(simulationTime.subtract(previousSimulationTime).doubleValue());
+            return frameRelativeAnimationTime + coordinateSystem.getAnimationTimeDelta(simulationTime.subtract(previousSimulationTime).doubleValue());
     }
 
     private void calculateBeginAnimationTimeOrderedPrimitives(ArrayList<IAnimationPrimitive> animationPrimitives) {
@@ -1431,7 +1431,7 @@ public class AnimationController {
                         handleMessageAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitives.add(handleMessageAnimation);
                         animationPrimitiveContext.handleMessageAnimation = handleMessageAnimation;
-                        animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.handleMessageAnimationShift;
+                        animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.handleMessageAnimationTimeShift;
                     }
                 }
                 else {
@@ -1463,7 +1463,7 @@ public class AnimationController {
                 if (isSubmoduleVisible(moduleId) || isCompoundModuleVisible(moduleId)) {
                     CreateModuleAnimation createModuleAnimation = new CreateModuleAnimation(this, eventNumber, simulationTime, module, parentModuleId);
                     createModuleAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createModuleAnimationShift;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createModuleAnimationTimeShift;
                     animationPrimitives.add(createModuleAnimation);
                 }
             }
@@ -1475,7 +1475,7 @@ public class AnimationController {
                     DisplayString displayString = new DisplayString(moduleDisplayStringChangedEntry.getDisplayString());
                     SetModuleDisplayStringAnimation setModuleDisplayStringAnimation = new SetModuleDisplayStringAnimation(this, eventNumber, simulationTime, moduleDisplayStringChangedEntry.getModuleId(), displayString);
                     setModuleDisplayStringAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setModuleDisplayStringAnimationShift;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setModuleDisplayStringAnimationTimeShift;
                     animationPrimitives.add(setModuleDisplayStringAnimation);
                 }
             }
@@ -1508,7 +1508,7 @@ public class AnimationController {
                     EventLogGate destinationGate = destinationModule.getGateById(connectionCreatedEntry.getDestGateId());
                     CreateConnectionAnimation createConnectionAnimation = new CreateConnectionAnimation(this, eventNumber, simulationTime, new EventLogConnection(sourceModule, sourceGate, destinationModule, destinationGate));
                     createConnectionAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createConnectionAnimationShift;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.createConnectionAnimationTimeShift;
                     animationPrimitives.add(createConnectionAnimation);
                 }
             }
@@ -1528,7 +1528,7 @@ public class AnimationController {
                     }
                     SetConnectionDisplayStringAnimation setConnectionDisplayStringAnimation = new SetConnectionDisplayStringAnimation(this, eventNumber, simulationTime, sourceGate, displayString);
                     setConnectionDisplayStringAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setConnectionDisplayStringAnimationShift;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.setConnectionDisplayStringAnimationTimeShift;
                     animationPrimitives.add(setConnectionDisplayStringAnimation);
                 }
             }
@@ -1539,7 +1539,7 @@ public class AnimationController {
                 if (isSubmoduleVisible(bubbleEntry.getModuleId())) {
                     BubbleAnimation bubbleAnimation = new BubbleAnimation(this, eventNumber, simulationTime, bubbleEntry.getText(), bubbleEntry.getModuleId());
                     bubbleAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.bubbleAnimationDuration;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.bubbleAnimationTimeDuration;
                     bubbleAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitives.add(bubbleAnimation);
                 }
@@ -1551,7 +1551,7 @@ public class AnimationController {
                 if (isSubmoduleVisible(moduleMethodBeginEntry.getFromModuleId()) && isSubmoduleVisible(moduleMethodBeginEntry.getToModuleId())) {
                     ModuleMethodCallAnimation moduleMethodCallAnimation = new ModuleMethodCallAnimation(this, eventNumber, simulationTime, moduleMethodBeginEntry.getMethod(), moduleMethodBeginEntry.getFromModuleId(), moduleMethodBeginEntry.getToModuleId());
                     moduleMethodCallAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.moduleMethodCallAnimationDuration;
+                    animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.moduleMethodCallAnimationTimeDuration;
                     moduleMethodCallAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                     animationPrimitives.add(moduleMethodCallAnimation);
                 }
@@ -1568,6 +1568,8 @@ public class AnimationController {
             int endSendEntryIndex = endSendEntry.getEntryIndex();
             BigDecimal arrivalTime = endSendEntry.getArrivalTime();
             long arrivalEventNumber = new MessageSendDependency(eventLog, eventNumber, beginSendEntryIndex).getConsequenceEventNumber();
+            message.setArrivalEventNumber(arrivalEventNumber);
+            message.setSenderEventNumber(eventNumber);
             if (beginSendEntryIndex == endSendEntryIndex - 1) {
                 // self message send
                 EventLogModule module = simulation.getModuleById(event.getModuleId());
@@ -1578,26 +1580,28 @@ public class AnimationController {
                         if (animationParameters.enableScheduleSelfMessageAnimations) {
                             ScheduleSelfMessageAnimation scheduleSelfMessageAnimation = new ScheduleSelfMessageAnimation(this, eventNumber, simulationTime, beginSendEntry.getContextModuleId(), message);
                             scheduleSelfMessageAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleSelfMessageAnimationDuration;
+                            animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleSelfMessageAnimationTimeDuration;
                             scheduleSelfMessageAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitives.add(scheduleSelfMessageAnimation);
                         }
                     }
                     else {
                         if (animationParameters.enableSendSelfMessageAnimations && arrivalEventNumber != EventNumberKind.NO_SUCH_EVENT) {
-                            SendSelfMessageAnimation sendSelfMessageAnimation = new SendSelfMessageAnimation(this, beginSendEntry.getContextModuleId(), message, animationParameters.handleMessageAnimationShift);
+                            SendSelfMessageAnimation sendSelfMessageAnimation = new SendSelfMessageAnimation(this, beginSendEntry.getContextModuleId(), message, animationParameters.handleMessageAnimationTimeShift);
                             sendSelfMessageAnimation.setSourceEventNumber(eventNumber);
                             sendSelfMessageAnimation.setBeginEventNumber(eventNumber);
                             sendSelfMessageAnimation.setBeginSimulationTime(simulationTime);
                             sendSelfMessageAnimation.setEndSimulationTime(arrivalTime);
                             sendSelfMessageAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
+                            // TODO: handle CancelEventEntry and stop animation if present!
+                            // TODO: sum up the handle message animation time durations for entries before the cancel entry?
                             if (arrivalEventNumber < 0 || lastEvent.getSimulationTime().less(arrivalTime)) {
                                 sendSelfMessageAnimation.setEndEventNumber(lastEvent.getEventNumber());
                                 sendSelfMessageAnimation.setFrameRelativeEndAnimationTime(Double.POSITIVE_INFINITY);
                             }
                             else {
                                 sendSelfMessageAnimation.setEndEventNumber(arrivalEventNumber);
-                                sendSelfMessageAnimation.setFrameRelativeEndAnimationTime(animationParameters.handleMessageAnimationShift);
+                                sendSelfMessageAnimation.setFrameRelativeEndAnimationTime(animationParameters.handleMessageAnimationTimeShift);
                             }
                             animationPrimitives.add(sendSelfMessageAnimation);
                         }
@@ -1619,7 +1623,7 @@ public class AnimationController {
                         if (animationParameters.enableScheduleDirectAnimations) {
                             ScheduleDirectMessageAnimation scheduleDirectMessageAnimation = new ScheduleDirectMessageAnimation(this, eventNumber, simulationTime, beginSendEntry.getContextModuleId(), message);
                             scheduleDirectMessageAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                            animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleDirectAnimationDuration;
+                            animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleDirectAnimationTimeDuration;
                             scheduleDirectMessageAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                             animationPrimitives.add(scheduleDirectMessageAnimation);
                         }
@@ -1631,12 +1635,12 @@ public class AnimationController {
                             BigDecimal simulationTimeDuration = transmissionDelay.add(propagationDelay);
                             BigDecimal endSimulationTime = simulationTime.add(simulationTimeDuration);
                             long endEventNumber = arrivalEventNumber;
-                            double frameRelativeEndAnimationTime = animationParameters.handleMessageAnimationShift;
+                            double frameRelativeEndAnimationTime = endSendEntry.getIsReceptionStart() && !transmissionDelay.equals(BigDecimal.getZero()) ? 0 : animationParameters.handleMessageAnimationTimeShift;
                             if (endEventNumber < 0 || lastEvent.getSimulationTime().less(endSimulationTime)) {
                                 endEventNumber = lastEvent.getEventNumber();
                                 frameRelativeEndAnimationTime = Double.POSITIVE_INFINITY;
                             }
-                            SendDirectAnimation sendDirectAnimation = new SendDirectAnimation(this, propagationDelay, transmissionDelay, senderModuleId, destinationModuleId, message, animationParameters.handleMessageAnimationShift);
+                            SendDirectAnimation sendDirectAnimation = new SendDirectAnimation(this, propagationDelay, transmissionDelay, senderModuleId, destinationModuleId, message, animationParameters.handleMessageAnimationTimeShift);
                             sendDirectAnimation.setSourceEventNumber(eventNumber);
                             sendDirectAnimation.setBeginEventNumber(eventNumber);
                             sendDirectAnimation.setEndEventNumber(endEventNumber);
@@ -1646,7 +1650,7 @@ public class AnimationController {
                             sendDirectAnimation.setFrameRelativeEndAnimationTime(frameRelativeEndAnimationTime);
                             animationPrimitives.add(sendDirectAnimation);
                             // TODO: SendBroadcastAnimation should not be used by default
-                            SendBroadcastAnimation sendBroadcastAnimation = new SendBroadcastAnimation(this, propagationDelay, transmissionDelay, senderModuleId, destinationModuleId, message, animationParameters.handleMessageAnimationShift);
+                            SendBroadcastAnimation sendBroadcastAnimation = new SendBroadcastAnimation(this, propagationDelay, transmissionDelay, senderModuleId, destinationModuleId, message, animationParameters.handleMessageAnimationTimeShift);
                             sendBroadcastAnimation.setSourceEventNumber(eventNumber);
                             sendBroadcastAnimation.setBeginEventNumber(eventNumber);
                             sendBroadcastAnimation.setEndEventNumber(endEventNumber);
@@ -1671,7 +1675,7 @@ public class AnimationController {
                     if (animationParameters.enableScheduleMessageAnimations && isSubmoduleVisible(beginSendEntry.getContextModuleId())) {
                         ScheduleMessageAnimation scheduleMessageAnimation = new ScheduleMessageAnimation(this, eventNumber, simulationTime, beginSendEntry.getContextModuleId(), message);
                         scheduleMessageAnimation.setFrameRelativeBeginAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
-                        animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleMessageAnimationDuration;
+                        animationPrimitiveContext.frameRelativeAnimationTime += animationParameters.scheduleMessageAnimationTimeDuration;
                         scheduleMessageAnimation.setFrameRelativeEndAnimationTime(animationPrimitiveContext.frameRelativeAnimationTime);
                         animationPrimitives.add(scheduleMessageAnimation);
                     }
@@ -1714,13 +1718,13 @@ public class AnimationController {
                                 endEventNumber = lastEvent.getEventNumber();
                                 frameRelativeEndAnimationTime = Double.POSITIVE_INFINITY;
                             }
-                            frameRelativeEndAnimationTime += animationParameters.handleMessageAnimationShift;
+                            frameRelativeEndAnimationTime += animationParameters.handleMessageAnimationTimeShift;
                             EventLogModule sendHopSenderModule = simulation.getModuleById(sendHopEntry.getSenderModuleId());
                             EventLogModule sendHopDestinationModule = isLastHop ? destinationModule : simulation.getModuleById(((SendHopEntry)event.getEventLogEntry(i + 1)).getSenderModuleId());
                             boolean visible = sendHopSenderModule != null && sendHopDestinationModule != null && isCompoundModuleVisible(sendHopSenderModule.getCommonAncestorModule(sendHopDestinationModule).getId());
                             if (visible) {
                                 EventLogGate gate = new EventLogGate(sendHopSenderModule, sendHopEntry.getSenderGateId());
-                                SendMessageAnimation sendMessageAnimation = new SendMessageAnimation(this, propagationDelay, transmissionDelay, gate, message, animationParameters.handleMessageAnimationShift);
+                                SendMessageAnimation sendMessageAnimation = new SendMessageAnimation(this, propagationDelay, transmissionDelay, gate, message, animationParameters.handleMessageAnimationTimeShift);
                                 sendMessageAnimation.setSourceEventNumber(eventNumber);
                                 sendMessageAnimation.setBeginEventNumber(beginEventNumber);
                                 sendMessageAnimation.setEndEventNumber(endEventNumber);

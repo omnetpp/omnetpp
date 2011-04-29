@@ -227,7 +227,7 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
     }
 
     public void setAnimationTimeDuration(Double animationTimeDuration) {
-        // TODO: Assert.isTrue(this.animationTimeDuration == -1 && animationTimeDuration >= 0);
+        Assert.isTrue(animationTimeDuration >= 0);
         this.animationTimeDuration = animationTimeDuration;
         if (beginAnimationPosition.getOriginRelativeAnimationTime() != null)
             endAnimationPosition.setOriginRelativeAnimationTime(beginAnimationPosition.getOriginRelativeAnimationTime() + animationTimeDuration);

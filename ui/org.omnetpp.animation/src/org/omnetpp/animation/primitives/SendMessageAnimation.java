@@ -66,8 +66,8 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 
     protected boolean isTransmissionDelayZero;
 
-	public SendMessageAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, EventLogGate gate, EventLogMessage message, double messageHighlightAnimationTime) {
-		super(animationController, propagationDelay, transmissionDelay, message, messageHighlightAnimationTime);
+	public SendMessageAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, EventLogGate gate, EventLogMessage message, double messageHighlightAnimationDuration) {
+		super(animationController, propagationDelay, transmissionDelay, message, messageHighlightAnimationDuration);
 		this.gate = gate;
         this.isPropagationDelayZero = propagationDelay.equals(BigDecimal.getZero());
         this.isTransmissionDelayZero = transmissionDelay.equals(BigDecimal.getZero());
@@ -197,7 +197,7 @@ public class SendMessageAnimation extends AbstractSendMessageAnimation {
 	@Override
 	public void refreshAnimation(AnimationPosition animationPosition) {
 	    if (gate == null || getConnectionFigure() != null) {
-	        boolean visible = animationController.getCurrentAnimationTime() < getOriginRelativeEndAnimationTime() - messageHighlightAnimationDuration ||
+	        boolean visible = animationPosition.getEventNumber() != message.getArrivalEventNumber() || animationPosition.getFrameRelativeAnimationTime() >= messageHighlightAnimationDuration ||
                               2 * animationController.getCurrentRealTime() - Math.floor(2 * animationController.getCurrentRealTime()) < 0.5;
             if (messageLine != null)
                 messageLine.setVisible(visible);

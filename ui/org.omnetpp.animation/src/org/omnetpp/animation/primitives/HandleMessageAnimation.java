@@ -21,6 +21,7 @@ import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
 import org.omnetpp.common.engine.BigDecimal;
 
+// TODO: use a glow effect on the module instead of this green circle
 public class HandleMessageAnimation extends AbstractInstantaneousAnimation {
     protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_HANDLE_MESSAGE).getImageData());
 
