@@ -167,11 +167,18 @@ bool EventLogFacade::BeginSendEntry_isSelfMessage(ptr_t ptr)
     return beginSendEntry->getEvent()->isSelfMessage(beginSendEntry);
 }
 
-int EventLogFacade::BeginSendEntry_getMessageId(ptr_t ptr)
+
+bool EventLogFacade::MessageEntry_isBeginSendEntry(ptr_t ptr)
 {
-    BEGIN_SEND_ENTRY_PTR(ptr);
-    BeginSendEntry *beginSendEntry = (BeginSendEntry *)ptr;
-    return beginSendEntry->messageId;
+    MESSAGE_ENTRY_PTR(ptr);
+    return dynamic_cast<BeginSendEntry *>((MessageEntry *)ptr);
+}
+
+int EventLogFacade::MessageEntry_getMessageId(ptr_t ptr)
+{
+    MESSAGE_ENTRY_PTR(ptr);
+    MessageEntry *messageEntry = (MessageEntry *)ptr;
+    return messageEntry->messageId;
 }
 
 ptr_t EventLogFacade::BeginSendEntry_getEndSendEntry(ptr_t ptr)

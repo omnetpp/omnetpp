@@ -25,6 +25,7 @@ NAMESPACE_BEGIN
 #define PTR(ptr) if (ptr == 0) throw opp_runtime_error("NULL ptr exception");
 #define IEVENT_PTR(ptr) PTR(ptr) Assert(dynamic_cast<IEvent *>((IEvent *)ptr));
 #define EVENT_LOG_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EventLogEntry *>((EventLogEntry *)ptr));
+#define MESSAGE_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<BeginSendEntry *>((BeginSendEntry *)ptr));
 #define BEGIN_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<BeginSendEntry *>((BeginSendEntry *)ptr));
 #define END_SEND_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<EndSendEntry *>((EndSendEntry *)ptr));
 #define MODULE_CREATED_ENTRY_PTR(ptr) PTR(ptr) Assert(dynamic_cast<ModuleCreatedEntry *>((ModuleCreatedEntry *)ptr));
@@ -74,8 +75,10 @@ class EVENTLOG_API EventLogFacade
         int EventLogEntry_getContextModuleId(ptr_t ptr);
         int EventLogEntry_getEntryIndex(ptr_t ptr);
 
+        bool MessageEntry_isBeginSendEntry(ptr_t ptr);
+        int MessageEntry_getMessageId(ptr_t ptr);
+
         bool BeginSendEntry_isSelfMessage(ptr_t ptr);
-        int BeginSendEntry_getMessageId(ptr_t ptr);
         ptr_t BeginSendEntry_getEndSendEntry(ptr_t ptr);
         simtime_t BeginSendEntry_getTransmissionDelay(ptr_t ptr);
         bool EndSendEntry_isReceptionStart(ptr_t ptr);
