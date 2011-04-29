@@ -90,7 +90,7 @@ import org.omnetpp.ned.model.DisplayString;
  * @author levy
  */
 public class AnimationController {
-	private final static boolean debug = true;
+	private final static boolean debug = false;
 
     /**
      * A list of timers used during the animation. The queue contains the
@@ -1694,7 +1694,7 @@ public class AnimationController {
                             BigDecimal beginSimulationTime = beginAnimationPosition.getSimulationTime();
                             double frameRelativeBeginAnimationTime = beginAnimationPosition.getFrameRelativeAnimationTime();
                             // TODO: arrival of what? first or last bit or what?
-                            BigDecimal endSimulationTime = isLastHop ? arrivalTime : beginSimulationTime.add(simulationTimeDuration);
+                            BigDecimal endSimulationTime = beginSimulationTime.add(simulationTimeDuration);
                             long endEventNumber = isLastHop ? arrivalEventNumber : Math.max(beginEventNumber, coordinateSystem.getLastEventNotAfterSimulationTime(endSimulationTime).getEventNumber());
                             double frameRelativeEndAnimationTime;
                             if (simulationTimeDuration.equals(BigDecimal.getZero())) {
