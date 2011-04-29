@@ -1288,8 +1288,11 @@ public class AnimationController {
         double animationTime = 0;
         AnimationPosition previousAnimationPosition = null;
         for (AnimationPosition animationPosition : animationPositions) {
-            if (previousAnimationPosition != null)
-                animationTime += getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+            if (previousAnimationPosition != null) {
+                double animationTimeDelta = getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+                Assert.isTrue(animationTimeDelta >= 0);
+                animationTime += animationTimeDelta;
+            }
             previousAnimationPosition = animationPosition;
             if (animationPosition.getEventNumber() >= animationTimeOriginEventNumber)
                 break;
@@ -1301,12 +1304,19 @@ public class AnimationController {
         for (AnimationPosition animationPosition : animationPositions) {
             if (previousAnimationPosition != null) {
                 Assert.isTrue(previousAnimationPosition.getEventNumber() < animationPosition.getEventNumber() || previousAnimationPosition.getSimulationTime().less(animationPosition.getSimulationTime()) || previousAnimationPosition.getFrameRelativeAnimationTime() <= animationPosition.getFrameRelativeAnimationTime() || previousAnimationPosition.equals(animationPosition));
-                animationTime += getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+                double animationTimeDelta = getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+                Assert.isTrue(animationTimeDelta >= 0);
+                animationTime += animationTimeDelta;
             }
             Assert.isTrue(!Double.isNaN(animationTime));
             animationPosition.setOriginRelativeAnimationTime(animationTime);
             Assert.isTrue(animationPosition.isCompletelySpecified());
             previousAnimationPosition = animationPosition;
+        }
+        if (debug) {
+            System.out.println("*** ANIMATION POSITIONS AFTER ASSIGNING ANIMATION TIMES ***");
+            for (AnimationPosition animationPosition : animationPositions)
+                System.out.println(animationPosition);
         }
     }
 
