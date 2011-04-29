@@ -1,0 +1,17 @@
+E # 0 t 0 m 1 ce -1 msg -1
+SB v 1026 rid Test-0-20110331-14:47:49-4992 b 1000
+KF p -1 c "" s ""
+MC id 1 c cCompoundModule t TestNet n TestNet cm 1
+MC id 2 c TestNet::Source t test pid 1 n test
+
+E # 1 t 0 m 2 ce -1 msg -1
+BU id 2 txt "Schedules a timer for the very same simulation time (t = 0s) but it is cancelled before it could be processed."
+CM id 0 tid 0 eid 0 etid 0 c cMessage n test pe -1
+BS id 0 tid 0 eid 0 etid 0 c cMessage n test pe 1
+ES t 0
+
+E # 2 t 0 m 2 ce -1 msg -1
+CE id 0 tid 0 eid 0 etid 0 c cMessage n test pe 1
+
+E # 3 t 0 m 2 ce -1 msg -1
+SE e 0 c 9 m "The user has finished the simulation."
