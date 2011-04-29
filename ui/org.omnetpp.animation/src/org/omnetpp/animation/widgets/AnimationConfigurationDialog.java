@@ -25,29 +25,29 @@ public class AnimationConfigurationDialog extends TitleAreaDialog {
     private AnimationParameters animationParameters;
 
     public Button enableHandleMessageAnimations;
-    public Text handleMessageAnimationShift;
+    public Text handleMessageAnimationTimeShift;
 
     public Button enableCreateModuleAnimations;
-    public Text createModuleAnimationShift;
+    public Text createModuleAnimationTimeShift;
     public Button enableCreateConnectionAnimations;
-    public Text createConnectionAnimationShift;
+    public Text createConnectionAnimationTimeShift;
 
     public Button enableSetModuleDisplayStringAnimations;
-    public Text setModuleDisplayStringAnimationShift;
+    public Text setModuleDisplayStringAnimationTimeShift;
     public Button enableSetConnectionDisplayStringAnimations;
-    public Text setConnectionDisplayStringAnimationShift;
+    public Text setConnectionDisplayStringAnimationTimeShift;
 
     public Button enableBubbleAnimations;
-    public Text bubbleAnimationDuration;
+    public Text bubbleAnimationTimeDuration;
     public Button enableModuleMethodCallAnimations;
-    public Text moduleMethodCallAnimationDuration;
+    public Text moduleMethodCallAnimationTimeDuration;
 
     public Button enableScheduleSelfMessageAnimations;
-    public Text scheduleSelfMessageAnimationDuration;
+    public Text scheduleSelfMessageAnimationTimeDuration;
     public Button enableScheduleDirectAnimations;
-    public Text scheduleDirectAnimationDuration;
+    public Text scheduleDirectAnimationTimeDuration;
     public Button enableScheduleMessageAnimations;
-    public Text scheduleMessageAnimationDuration;
+    public Text scheduleMessageAnimationTimeDuration;
 
     public Button enableSendSelfMessageAnimations;
     public Button enableSendMessageAnimations;
@@ -81,25 +81,25 @@ public class AnimationConfigurationDialog extends TitleAreaDialog {
         setTitle("Configure animation settings");
         setMessage("The animation will change according to the provided settings");
         enableHandleMessageAnimations = createCheckbox(container, "Enable handle message animations", null, 1);
-        handleMessageAnimationShift = createText(container, null, null, 1);
+        handleMessageAnimationTimeShift = createText(container, null, null, 1);
         enableCreateModuleAnimations = createCheckbox(container, "Enable create module animations", null, 1);
-        createModuleAnimationShift = createText(container, null, null, 1);
+        createModuleAnimationTimeShift = createText(container, null, null, 1);
         enableCreateConnectionAnimations = createCheckbox(container, "Enable create connection animations", null, 1);
-        createConnectionAnimationShift = createText(container, null, null, 1);
+        createConnectionAnimationTimeShift = createText(container, null, null, 1);
         enableSetModuleDisplayStringAnimations = createCheckbox(container, "Enable set module display string animations", null, 1);
-        setModuleDisplayStringAnimationShift = createText(container, null, null, 1);
+        setModuleDisplayStringAnimationTimeShift = createText(container, null, null, 1);
         enableSetConnectionDisplayStringAnimations = createCheckbox(container, "Enable set connection display string animations", null, 1);
-        setConnectionDisplayStringAnimationShift = createText(container, null, null, 1);
+        setConnectionDisplayStringAnimationTimeShift = createText(container, null, null, 1);
         enableBubbleAnimations = createCheckbox(container, "Enable bubble animations", null, 1);
-        bubbleAnimationDuration = createText(container, null, null, 1);
+        bubbleAnimationTimeDuration = createText(container, null, null, 1);
         enableModuleMethodCallAnimations = createCheckbox(container, "Enable module method call animations", null, 1);
-        moduleMethodCallAnimationDuration = createText(container, null, null, 1);
+        moduleMethodCallAnimationTimeDuration = createText(container, null, null, 1);
         enableScheduleSelfMessageAnimations = createCheckbox(container, "Enable schedule self message animations", null, 1);
-        scheduleSelfMessageAnimationDuration = createText(container, null, null, 1);
+        scheduleSelfMessageAnimationTimeDuration = createText(container, null, null, 1);
         enableScheduleDirectAnimations = createCheckbox(container, "Enable schedule direct message animations", null, 1);
-        scheduleDirectAnimationDuration = createText(container, null, null, 1);
+        scheduleDirectAnimationTimeDuration = createText(container, null, null, 1);
         enableScheduleMessageAnimations = createCheckbox(container, "Enable schedule message animations", null, 1);
-        scheduleMessageAnimationDuration = createText(container, null, null, 1);
+        scheduleMessageAnimationTimeDuration = createText(container, null, null, 1);
         enableSendSelfMessageAnimations = createCheckbox(container, "Enable send self message animations", null, 2);
         enableSendMessageAnimations = createCheckbox(container, "Enable send message animations", null, 2);
         enableSendDirectAnimations = createCheckbox(container, "Enable send direct animations", null, 2);

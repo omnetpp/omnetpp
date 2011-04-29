@@ -2,29 +2,29 @@ package org.omnetpp.animation.widgets;
 
 public class AnimationParameters {
     public boolean enableHandleMessageAnimations;
-    public double handleMessageAnimationShift;
+    public double handleMessageAnimationTimeShift;
 
     public boolean enableCreateModuleAnimations;
-    public double createModuleAnimationShift;
+    public double createModuleAnimationTimeShift;
     public boolean enableCreateConnectionAnimations;
-    public double createConnectionAnimationShift;
+    public double createConnectionAnimationTimeShift;
 
     public boolean enableSetModuleDisplayStringAnimations;
-    public double setModuleDisplayStringAnimationShift;
+    public double setModuleDisplayStringAnimationTimeShift;
     public boolean enableSetConnectionDisplayStringAnimations;
-    public double setConnectionDisplayStringAnimationShift;
+    public double setConnectionDisplayStringAnimationTimeShift;
 
     public boolean enableBubbleAnimations;
-    public double bubbleAnimationDuration;
+    public double bubbleAnimationTimeDuration;
     public boolean enableModuleMethodCallAnimations;
-    public double moduleMethodCallAnimationDuration;
+    public double moduleMethodCallAnimationTimeDuration;
 
     public boolean enableScheduleSelfMessageAnimations;
-    public double scheduleSelfMessageAnimationDuration;
+    public double scheduleSelfMessageAnimationTimeDuration;
     public boolean enableScheduleMessageAnimations;
-    public double scheduleMessageAnimationDuration;
+    public double scheduleMessageAnimationTimeDuration;
     public boolean enableScheduleDirectAnimations;
-    public double scheduleDirectAnimationDuration;
+    public double scheduleDirectAnimationTimeDuration;
 
     public boolean enableSendSelfMessageAnimations;
     public boolean enableSendMessageAnimations;
@@ -40,17 +40,17 @@ public class AnimationParameters {
 
     public void enableMessages() {
         enableHandleMessageAnimations = false;
-        handleMessageAnimationShift = 0;
+        handleMessageAnimationTimeShift = 0;
 
         enableCreateModuleAnimations = true;
-        createModuleAnimationShift = 0.25;
+        createModuleAnimationTimeShift = 0.25;
         enableCreateConnectionAnimations = true;
-        createConnectionAnimationShift = 0.25;
+        createConnectionAnimationTimeShift = 0.25;
 
         enableSetModuleDisplayStringAnimations = true;
-        setModuleDisplayStringAnimationShift = 0.25;
+        setModuleDisplayStringAnimationTimeShift = 0.25;
         enableSetConnectionDisplayStringAnimations = true;
-        setConnectionDisplayStringAnimationShift = 0.25;
+        setConnectionDisplayStringAnimationTimeShift = 0.25;
 
         enableBubbleAnimations = false;
         enableModuleMethodCallAnimations = false;
@@ -67,34 +67,34 @@ public class AnimationParameters {
     public void enableMessagesAndEvents() {
         enableMessages();
         enableHandleMessageAnimations = true;
-        handleMessageAnimationShift = 1;
+        handleMessageAnimationTimeShift = 1;
     }
 
     public void enableDetail() {
         enableHandleMessageAnimations = true;
-        handleMessageAnimationShift = 1;
+        handleMessageAnimationTimeShift = 1;
 
         enableCreateModuleAnimations = true;
-        createModuleAnimationShift = 1;
+        createModuleAnimationTimeShift = 1;
         enableCreateConnectionAnimations = true;
-        createConnectionAnimationShift = 1;
+        createConnectionAnimationTimeShift = 1;
 
         enableSetModuleDisplayStringAnimations = true;
-        setModuleDisplayStringAnimationShift = 1;
+        setModuleDisplayStringAnimationTimeShift = 1;
         enableSetConnectionDisplayStringAnimations = true;
-        setConnectionDisplayStringAnimationShift = 1;
+        setConnectionDisplayStringAnimationTimeShift = 1;
 
         enableBubbleAnimations = true;
-        bubbleAnimationDuration = 1;
+        bubbleAnimationTimeDuration = 1;
         enableModuleMethodCallAnimations = true;
-        moduleMethodCallAnimationDuration = 1;
+        moduleMethodCallAnimationTimeDuration = 1;
 
         enableScheduleSelfMessageAnimations = true;
-        scheduleSelfMessageAnimationDuration = 1;
+        scheduleSelfMessageAnimationTimeDuration = 1;
         enableScheduleMessageAnimations = true;
-        scheduleMessageAnimationDuration = 1;
+        scheduleMessageAnimationTimeDuration = 1;
         enableScheduleDirectAnimations = true;
-        scheduleDirectAnimationDuration = 1;
+        scheduleDirectAnimationTimeDuration = 1;
 
         enableSendSelfMessageAnimations = true;
         enableSendMessageAnimations = true;
