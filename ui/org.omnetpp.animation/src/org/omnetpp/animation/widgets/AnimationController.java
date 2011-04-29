@@ -1327,19 +1327,19 @@ public class AnimationController {
         Double previousFrameRelativeAnimationTime = previousAnimationPosition.getFrameRelativeAnimationTime();
         Long eventNumber = animationPosition.getEventNumber();
         Long previousEventNumber = previousAnimationPosition.getEventNumber();
-        boolean sameSimulationTimes = previousSimulationTime.equals(simulationTime);
-        boolean sameEventNumbers = previousEventNumber.equals(eventNumber);
-        if (sameEventNumbers && sameSimulationTimes) {
+        if (previousEventNumber.equals(eventNumber) && previousSimulationTime.equals(simulationTime)) {
             if (Double.isInfinite(frameRelativeAnimationTime) && Double.isInfinite(previousFrameRelativeAnimationTime))
                 return 0;
             else
                 return frameRelativeAnimationTime - previousFrameRelativeAnimationTime;
         }
-        else if (!sameEventNumbers && sameSimulationTimes)
-            // NOTE: between these two events there's zero simulation time, but that is a non-zero animation time
-            return frameRelativeAnimationTime + coordinateSystem.getAnimationTimeDelta(0);
-        else
-            return frameRelativeAnimationTime + coordinateSystem.getAnimationTimeDelta(simulationTime.subtract(previousSimulationTime).doubleValue());
+        else {
+            double animationTimeDelta = coordinateSystem.getAnimationTimeDelta(simulationTime.subtract(previousSimulationTime).doubleValue());
+            if (frameRelativeAnimationTime < 0)
+                return animationTimeDelta;
+            else
+                return frameRelativeAnimationTime + animationTimeDelta;
+        }
     }
 
     private void calculateBeginAnimationTimeOrderedPrimitives(ArrayList<IAnimationPrimitive> animationPrimitives) {
