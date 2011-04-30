@@ -12,12 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICFolderDescription;
 import org.eclipse.cdt.core.settings.model.ICLanguageSetting;
 import org.eclipse.cdt.core.settings.model.ICLanguageSettingEntry;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IContainer;
@@ -80,15 +78,15 @@ public class MetaMakemake {
 
         // add -f, and potentially --nmake
         translatedOptions.force = true;
-        translatedOptions.isNMake = CDTUtils.isMsvcToolchainActive(project);
+        translatedOptions.isNMake = CDTUtils.isMsvcConfiguration(configuration);
 
         // add -X option for each excluded folder in CDT, and for each sub-makefile
         translatedOptions.exceptSubdirs.addAll(getExcludedSubpathsWithinFolder(makefileFolder, configuration));
 
         // add -I, -L and -D options configured in CDT
-        translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder));
-        translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder));
-        translatedOptions.defines.addAll(getMacrosFor(makefileFolder));
+        translatedOptions.includeDirs.addAll(getIncludePathsFor(makefileFolder, configuration));
+        translatedOptions.libDirs.addAll(getLibraryPathsFor(makefileFolder, configuration));
+        translatedOptions.defines.addAll(getMacrosFor(makefileFolder, configuration));
 
         // add symbols for locations of referenced projects (they will be used by Makemake.abs2rel())
         IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(project);
@@ -227,8 +225,8 @@ public class MetaMakemake {
      * and for the C++ language. Built-in paths are skipped. The returned strings
      * are filesystem paths.
      */
-    protected static List<String> getIncludePathsFor(IContainer folder) {
-        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, false);
+    protected static List<String> getIncludePathsFor(IContainer folder, ICConfigurationDescription configuration) {
+        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, configuration, false);
         if (languageSetting == null)
             return new ArrayList<String>();
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.INCLUDE_PATH));
@@ -239,8 +237,8 @@ public class MetaMakemake {
      * and for the C++ language. Built-in paths are skipped. The returned strings
      * are filesystem paths.
      */
-    protected static List<String> getLibraryPathsFor(IContainer folder) {
-        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, true);
+    protected static List<String> getLibraryPathsFor(IContainer folder, ICConfigurationDescription configuration) {
+        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, configuration, true);
         if (languageSetting == null)
             return new ArrayList<String>();
         return getPaths(languageSetting.getSettingEntries(ICSettingEntry.LIBRARY_PATH));
@@ -250,8 +248,8 @@ public class MetaMakemake {
      * Returns the defined macros (in NAME or NAME=VALUE form) for the given folder,
      * in the active configuration and for the C++ language. Built-in ones are skipped.
      */
-    protected static List<String> getMacrosFor(IContainer folder) {
-        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, false);
+    protected static List<String> getMacrosFor(IContainer folder, ICConfigurationDescription configuration) {
+        ICLanguageSetting languageSetting = findCCLanguageSettingFor(folder, configuration, false);
         if (languageSetting == null)
             return new ArrayList<String>();
         ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);
@@ -294,12 +292,9 @@ public class MetaMakemake {
     /**
      * Returns the language settings for the given folder in the active configuration, or null if not found.
      */
-    protected static ICLanguageSetting findCCLanguageSettingFor(IContainer folder, boolean forLinker) {
+    protected static ICLanguageSetting findCCLanguageSettingFor(IContainer folder, ICConfigurationDescription configuration, boolean forLinker) {
         // find folder description
-        IProject project = folder.getProject();
-        ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription activeConfiguration = projectDescription.getActiveConfiguration();
-        ICFolderDescription folderDescription = (ICFolderDescription)activeConfiguration.getResourceDescription(folder.getProjectRelativePath(), false);
+        ICFolderDescription folderDescription = (ICFolderDescription)configuration.getResourceDescription(folder.getProjectRelativePath(), false);
 
         // find C++ language settings for this folder
         ICLanguageSetting[] languageSettings = folderDescription.getLanguageSettings();

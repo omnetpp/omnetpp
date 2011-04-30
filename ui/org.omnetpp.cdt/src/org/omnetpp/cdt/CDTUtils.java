@@ -24,7 +24,6 @@ import org.eclipse.cdt.core.settings.model.WriteAccessException;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.managedbuilder.core.IConfiguration;
 import org.eclipse.cdt.managedbuilder.core.IManagedBuildInfo;
-import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
@@ -42,16 +41,12 @@ import org.eclipse.core.runtime.Path;
 @SuppressWarnings("restriction")
 public class CDTUtils {
     /**
-     * Checks if the currently active tool-chain is MSVC or not.
-     * NOTE: Do NOT use from property pages, as it returns the saved state not the edited one.
+     * Returns true if the given configuration is for MS Visual C++.
      */
-    public static boolean isMsvcToolchainActive(IProject project) {
-        // we identify the tool-chain by assuming that its id contains the string below.
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        IToolChain toolchain = buildInfo.getDefaultConfiguration().getToolChain();
-        return toolchain.getId().contains(".msvc.");
+    public static boolean isMsvcConfiguration(ICConfigurationDescription configuration) {
+        return configuration.getId().contains(".msvc."); // for lack of a better way...
     }
-
+    
     /**
      * Returns the source entries (source folders with exclusion patterns) for
      * the given project and the active configuration. Returns empty array
