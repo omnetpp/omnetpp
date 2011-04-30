@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.cdt.build;
 
 import java.util.ArrayList;
@@ -54,7 +61,7 @@ import org.w3c.dom.NodeList;
  * Stores the contents of an ".oppfeatures" as ProjectFeature objects, and provides
  * functionality to enable/disable features, to read and validate ".oppfeatures",
  * to check the project state, and other related functions.
- * 
+ *
  * @author Andras
  */
 public class ProjectFeaturesManager {
@@ -74,10 +81,10 @@ public class ProjectFeaturesManager {
     private static final String ATT_COMPILEFLAGS = "compileFlags";
     private static final String ATT_LINKERFLAGS = "linkerFlags";
     private static final String ATT_CPPSOURCEROOTS = "cppSourceRoots"; // attribute of root element
-    
-    private static final String[] ALL_FEATURE_ATTRS = new String[] { 
-        ATT_ID, ATT_NAME, ATT_DESCRIPTION, ATT_INITIALLYENABLED, ATT_LABELS, ATT_REQUIRES, 
-        ATT_NEDPACKAGES, ATT_EXTRASOURCEFOLDERS, ATT_COMPILEFLAGS,  ATT_LINKERFLAGS 
+
+    private static final String[] ALL_FEATURE_ATTRS = new String[] {
+        ATT_ID, ATT_NAME, ATT_DESCRIPTION, ATT_INITIALLYENABLED, ATT_LABELS, ATT_REQUIRES,
+        ATT_NEDPACKAGES, ATT_EXTRASOURCEFOLDERS, ATT_COMPILEFLAGS,  ATT_LINKERFLAGS
     };
 
     // state
@@ -87,7 +94,7 @@ public class ProjectFeaturesManager {
     private Set<String> cppSourceRoots = null; // project relative paths of C++ source locations, e.g. "src" in INET; cppSourceRoots==null means the whole project is a C++ source location
 
     /**
-     * Creates an empty object. Use loadFeaturesFile() to populate it with the 
+     * Creates an empty object. Use loadFeaturesFile() to populate it with the
      * contents of the project's feature description file.
      */
     public ProjectFeaturesManager(IProject project) {
@@ -156,7 +163,7 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Stores the enablement state of project features for this project. 
+     * Stores the enablement state of project features for this project.
      */
     public void saveFeatureEnablement(List<ProjectFeature> enabledFeatures) throws CoreException {
         String value = "";
@@ -166,11 +173,11 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Populates the object with the contents of the project's feature 
-     * description file, if one exists. Returns true on success. 
-     * If the file doesn't exist, it returns false. If the file exists 
+     * Populates the object with the contents of the project's feature
+     * description file, if one exists. Returns true on success.
+     * If the file doesn't exist, it returns false. If the file exists
      * but could not be read or parsed, it throws an exception.
-     */    
+     */
     public boolean loadFeaturesFile() throws CoreException {
         doc = readFeaturesFile();
         if (doc == null)
@@ -188,8 +195,8 @@ public class ProjectFeaturesManager {
 
     /**
      * Reads the feature description file from the project into an XML document,
-     * without interpreting it. Returns null if the file does not exist. 
-     * Throws CoreException on parse error, file read error, etc. 
+     * without interpreting it. Returns null if the file does not exist.
+     * Throws CoreException on parse error, file read error, etc.
      */
     protected Document readFeaturesFile() throws CoreException {
         IFile featuresFile = getFeatureDescriptionFile();
@@ -210,14 +217,14 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Extracts the features from the given document. Makes an attempt NOT to throw an exception on any input. 
+     * Extracts the features from the given document. Makes an attempt NOT to throw an exception on any input.
      */
     protected Map<String, ProjectFeature> extractFeatures(Document doc) {
         Map<String, ProjectFeature> result = new LinkedHashMap<String, ProjectFeature>();
         Element root = doc.getDocumentElement();
         cppSourceRoots = root.getAttributeNode(ATT_CPPSOURCEROOTS)==null ? null : getListAttribute(root, ATT_CPPSOURCEROOTS);
         NodeList featureElements = root.getElementsByTagName(ELMNT_FEATURE);
-        int unnamedCount = 0; 
+        int unnamedCount = 0;
         for (int i=0; i<featureElements.getLength(); i++) {
             Element e = (Element)featureElements.item(i);
             String id = getAttribute(e, ATT_ID);
@@ -254,7 +261,7 @@ public class ProjectFeaturesManager {
             return defaultValue;
         return value.equals("true");
     }
-    
+
     private String getAttribute(Element parent, String name) {
         String value = parent.getAttribute(name);
         value = value.trim().replaceAll("\\s+", " ");
@@ -269,10 +276,10 @@ public class ProjectFeaturesManager {
 
         if (doc != null)
             validateDomTree(errors);
-        
+
         for (ProjectFeature f : getFeatures())
             validateFeatures(f, errors);
-       
+
         return errors;
     }
 
@@ -291,7 +298,7 @@ public class ProjectFeaturesManager {
             Element feature = (Element) elem;
             String id = feature.getAttribute(ATT_ID);
             String prefix = "<" + feature.getNodeName() + " " + ATT_ID + "=\"" + id + "\">: ";
-            
+
             // check attributes
             if (StringUtils.isEmpty(id))
                 errors.add(prefix + ATT_ID + " attribute cannot be empty");
@@ -326,7 +333,7 @@ public class ProjectFeaturesManager {
             result[i] = nodes.item(i);
         return result;
     }
-    
+
     protected void validateFeatures(ProjectFeature f, List<String> errors) {
         // check that features mentioned as dependencies really exist
         String prefix = f.getId() + ": ";
@@ -339,7 +346,7 @@ public class ProjectFeaturesManager {
 
         // check for circular dependencies
         checkForCircularDependencies(f, new Stack<ProjectFeature>(), errors);
-        
+
         // check compile flags. Note: keep this code in sync with addFeatureCFlagsTo()
         for (String cflag : f.getCompileFlags().split("\\s+")) {
             if (cflag.length()>0 && !cflag.startsWith("-D") && !cflag.startsWith("-I"))
@@ -355,7 +362,7 @@ public class ProjectFeaturesManager {
             if (ldflag.equals("-l") || ldflag.equals("-L"))
                 errors.add(prefix + "linker options: arguments of -l and -L are expected to be written together with the option name (i.e. without space)");
         }
-        
+
         // check for nonexistent NED packages
         INedResources nedResources = NedResourcesPlugin.getNedResources();
         for (String pkg : f.getNedPackages()) {
@@ -370,7 +377,7 @@ public class ProjectFeaturesManager {
             if (!found)
                 errors.add(prefix + "no folder corresponds to NED package " + pkg);
         }
-        
+
         // check for C++ source folders
         for (String extraSrcFolder : f.getExtraSourceFolders())
             if (!project.getFolder(new Path(extraSrcFolder)).exists())
@@ -410,8 +417,8 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Adds compile options contributed by the enabled features to makemakeOptions. 
-     * Invoked by MetaMakemake to process "--meta:feature-cflags". 
+     * Adds compile options contributed by the enabled features to makemakeOptions.
+     * Invoked by MetaMakemake to process "--meta:feature-cflags".
      */
     public void addFeatureCFlagsTo(MakemakeOptions makemakeOptions) throws CoreException {
         List<String> cflags = new ArrayList<String>();
@@ -420,7 +427,7 @@ public class ProjectFeaturesManager {
 
         // process the compile options. NOTE: must be kept in sync with validation code in validateFeatures()!
         for (String cflag : cflags) {
-            // we only need to handle -I here, and can simply ignore the rest: -D's are automatically 
+            // we only need to handle -I here, and can simply ignore the rest: -D's are automatically
             // added to the normal CDT config, and validateFeatures() reports all other options as errors.
             // We can also reject "-I <path>" (i.e. with a space), because validateFeatures() also complains about it.
             if (cflag.startsWith("-I") && cflag.length()>2)
@@ -429,8 +436,8 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Adds linker options contributed by the enabled features to makemakeOptions. 
-     * Invoked by MetaMakemake to process "--meta:feature-ldflags". 
+     * Adds linker options contributed by the enabled features to makemakeOptions.
+     * Invoked by MetaMakemake to process "--meta:feature-ldflags".
      */
     public void addFeatureLDFlagsTo(MakemakeOptions makemakeOptions) throws CoreException {
         List<String> ldflags = new ArrayList<String>();
@@ -440,7 +447,7 @@ public class ProjectFeaturesManager {
         // process the linker options. NOTE: must be kept in sync with validation code in validateFeatures()!
         for (String ldflag : ldflags) {
             // we only need to handle -l and -L here, and can simply ignore the rest:
-            // validateFeatures() already reports them as errors. We can also reject "-L <path>" 
+            // validateFeatures() already reports them as errors. We can also reject "-L <path>"
             // (i.e. with a space), because validateFeatures() also complains about it.
             if (ldflag.startsWith("-l") && ldflag.length()>2)
                 makemakeOptions.libs.add(ldflag.substring(2));
@@ -455,7 +462,7 @@ public class ProjectFeaturesManager {
     public void initializeProjectState() throws CoreException {
         fixupProjectState();
     }
-    
+
     /**
      * Updates project configuration (CDT and NED) so that it reflects the currently enabled features.
      */
@@ -464,10 +471,10 @@ public class ProjectFeaturesManager {
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription[] configurations = projectDescription.getConfigurations();
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
-        
+
         // fix them up
         fixupProjectState(configurations, nedSourceFoldersConfig, getEnabledFeatures());
-        
+
         // save them
         ProjectUtils.saveNedFoldersFile(project, nedSourceFoldersConfig);
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
@@ -478,10 +485,10 @@ public class ProjectFeaturesManager {
         for (ProjectFeature f : getFeatures())
             setFeatureEnabled(configurations, nedSourceFoldersConfig, f, enabledFeatures.contains(f));
     }
-    
+
     /**
-     * Computes and returns the set of features that the given feature directly or indirectly 
-     * depends on (requires). 
+     * Computes and returns the set of features that the given feature directly or indirectly
+     * depends on (requires).
      */
     public Set<ProjectFeature> collectDependencies(ProjectFeature feature) {
         Assert.isTrue(getFeature(feature.getId()) == feature, "Alien feature!");
@@ -503,12 +510,12 @@ public class ProjectFeaturesManager {
         } while (changed);
 
         dependencies.remove(feature);
-        
+
         return dependencies;
     }
 
     /**
-     * Computes and returns the set of features that directly or indirectly depend on (require) 
+     * Computes and returns the set of features that directly or indirectly depend on (require)
      * the given feature.
      */
     public Set<ProjectFeature> collectDependentFeatures(ProjectFeature feature) {
@@ -530,7 +537,7 @@ public class ProjectFeaturesManager {
         } while (changed);
 
         dependentFeatures.remove(feature);
-        
+
         return dependentFeatures;
     }
 
@@ -540,15 +547,27 @@ public class ProjectFeaturesManager {
     public Set<ProjectFeature> getDependentFeatures(ProjectFeature feature) {
         Set<ProjectFeature> result = new LinkedHashSet<ProjectFeature>();
         for (ProjectFeature f : getFeatures())
-            if (f.getDependencies().contains(feature.getId())) 
+            if (f.getDependencies().contains(feature.getId()))
                 result.add(f);
         return result;
     }
 
+    public void setFeatureEnabledRec(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, ProjectFeature feature, boolean enable) throws CoreException {
+        setFeatureEnabled(configurations, nedSourceFoldersConfig, feature, enable);
+        Set<ProjectFeature> affectedFeatures = enable ? collectDependencies(feature) : collectDependentFeatures(feature);
+        for (ProjectFeature f : affectedFeatures)
+            setFeatureEnabled(configurations, nedSourceFoldersConfig, f, enable);
+    }
+
+    /**
+     * Enables or disables the given feature in the given NED and CDT configurations.
+     * This method ignores dependencies, i.e. it is possible to create an inconsistent
+     * state with it.
+     */
     public void setFeatureEnabled(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, ProjectFeature feature, boolean enable) throws CoreException {
         Assert.isTrue(getFeature(feature.getId()) == feature, "Alien feature!");
         Debug.println((enable ? "enabling" : "disabling") + " feature " + feature.getId());
-        
+
         // modify list of excluded NED packages
         Set<String> excludedPackages = new HashSet<String>();
         excludedPackages.addAll(Arrays.asList(nedSourceFoldersConfig.getExcludedPackages()));
@@ -562,13 +581,13 @@ public class ProjectFeaturesManager {
         List<IContainer> folders = getAllCxxSourceFolders(feature);
         for (IContainer folder : folders)
             setFolderExcluded(configurations, folder, !enable);
-        
+
         // add/remove preprocessor symbols
         // Note: we set it on each source folder (only setting on the root does not seem to be enough)
         for (String cflag : feature.getCompileFlags().split("\\s+")) {
             if (cflag.startsWith("-D") && cflag.length()>2) {
                 String symbol = cflag.substring(2).replaceAll("=.*", "");
-                String value = cflag.replaceAll("[^=]*=?(.*)", "$1");  
+                String value = cflag.replaceAll("[^=]*=?(.*)", "$1");
                 setMacroInAllConfigurationsAndFoldersAndLanguages(project, configurations, symbol, enable ? value : null);
             }
         }
@@ -611,7 +630,7 @@ public class ProjectFeaturesManager {
                 return true;
         return false;
     }
-    
+
     protected static void setMacroInAllConfigurationsAndFoldersAndLanguages(IProject project, ICConfigurationDescription[] configurations, String name, String value) throws WriteAccessException, CoreException {
         for (ICConfigurationDescription configuration : configurations) {
             // set it on all source folders
@@ -677,9 +696,9 @@ public class ProjectFeaturesManager {
         Assert.isTrue(folder.exists());
         int excludeCount = 0, includeCount = 0;
         for (ICConfigurationDescription configuration : configurations) {
-            if (CDTUtils.isExcluded(folder, configuration.getSourceEntries())) 
-                excludeCount++; 
-            else 
+            if (CDTUtils.isExcluded(folder, configuration.getSourceEntries()))
+                excludeCount++;
+            else
                 includeCount++;
         }
         return (excludeCount>0 && includeCount>0) ? null /*misc*/ : excludeCount>0;
@@ -703,7 +722,7 @@ public class ProjectFeaturesManager {
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
         ICConfigurationDescription[] configurations = projectDescription.getConfigurations();
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
-        
+
         // fix them up
         return validateProjectState(configurations, nedSourceFoldersConfig, getEnabledFeatures());
     }
@@ -717,10 +736,10 @@ public class ProjectFeaturesManager {
     public List<Problem> validateProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
         List<Problem> problems = new ArrayList<Problem>();
         List<String> excludedPackages = Arrays.asList(nedSourceFoldersConfig.getExcludedPackages());
-        
+
         for (ProjectFeature feature : getFeatures()) {
             boolean enabled = enabledFeatures.contains(feature);
-            
+
             // check NED excluded folders
             if (enabled) {
                 // feature is enabled: make sure its NED packages are NOT excluded
@@ -737,7 +756,7 @@ public class ProjectFeaturesManager {
                     addProblem(problems, feature, "Feature is disabled but some of its NED packages are not excluded: " + StringUtils.join(wronglyIncludedPackages, ", "));
             }
 
-            
+
             // check exclusion state of C++ source folders that correspond to the feature's NED packages
             List<IContainer> folders = getAllCxxSourceFolders(feature);
             for (IContainer folder : folders) {
@@ -757,7 +776,7 @@ public class ProjectFeaturesManager {
             for (String cflag : feature.getCompileFlags().split("\\s+")) {
                 if (cflag.startsWith("-D") && cflag.length()>2) {
                     String symbol = cflag.substring(2).replaceAll("=.*", "");
-                    String value = cflag.replaceAll("[^=]*=?(.*)", "$1");  
+                    String value = cflag.replaceAll("[^=]*=?(.*)", "$1");
                     Boolean isMacroSet = isMacroSet(project, configurations, symbol, enabled ? value : null);
                     if (enabled) {
                         if (isMacroSet==null || !isMacroSet)
@@ -779,7 +798,7 @@ public class ProjectFeaturesManager {
         problem.message = message;
         problems.add(problem);
     }
-    
+
     @Override
     public String toString() {
         return StringUtils.join(getFeatureIds(), ",");

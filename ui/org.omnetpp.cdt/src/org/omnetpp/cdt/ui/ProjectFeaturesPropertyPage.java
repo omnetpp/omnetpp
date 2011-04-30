@@ -7,6 +7,7 @@
 
 package org.omnetpp.cdt.ui;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,13 +16,17 @@ import java.util.Set;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -52,7 +57,10 @@ import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
+import org.omnetpp.cdt.build.BuildSpecification;
+import org.omnetpp.cdt.build.MakefileTools;
 import org.omnetpp.cdt.build.ProjectFeature;
+import org.omnetpp.cdt.build.ProjectFeatureTester;
 import org.omnetpp.cdt.build.ProjectFeaturesManager;
 import org.omnetpp.cdt.build.ProjectFeaturesManager.Problem;
 import org.omnetpp.common.color.ColorFactory;
@@ -76,13 +84,14 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
 public class ProjectFeaturesPropertyPage extends PropertyPage {
     // features of the edited project
     protected ProjectFeaturesManager features;
-    
+
     // controls
     protected Link errorMessageLabel;
     protected FilteredCheckboxTree filteredTree;
     protected CheckboxTreeViewer treeViewer;
+    protected Link exportLink;
 
-    private NedSourceFoldersConfiguration nedSourceFoldersConfig;
+    protected NedSourceFoldersConfiguration nedSourceFoldersConfig;
 
 
     /**
@@ -104,7 +113,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         ((GridLayout)composite.getLayout()).marginHeight = 0;
 
         // info text
-        String text = 
+        String text =
             "This page allows you to disable parts (\"features\") of the selected OMNeT++ project, " +
             "for example to shorten build time. Feature definitions come from the project's " +
             "\"" + ProjectFeaturesManager.PROJECTFEATURES_FILENAME + "\" file.";
@@ -124,8 +133,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                 if (element instanceof ProjectFeature) {
                     // match in description and various other fields as well, no only in name
                     ProjectFeature f = (ProjectFeature) element;
-                    String text = 
-                        f.getName() + " " + f.getId() + " " + StringUtils.join(f.getLabels(), " ") + " " + 
+                    String text =
+                        f.getName() + " " + f.getId() + " " + StringUtils.join(f.getLabels(), " ") + " " +
                         f.getDescription() + " " + StringUtils.join(f.getNedPackages(), " ");
                     return wordMatches(text);
                 }
@@ -143,7 +152,10 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         buttonsArea.setLayout(new GridLayout(1,false));
         Button selectAllButton = createButton(buttonsArea, SWT.PUSH, "&Select All", null);
         Button deselectAllButton = createButton(buttonsArea, SWT.PUSH, "&Deselect All", null);
-        
+
+        // link at bottom
+        exportLink = createLink(composite, "<a>Export build tester makefile</a>");
+
         // register this page in the CDT property manager (note: if we skip this,
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
@@ -159,7 +171,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                 composite.layout(true);
             }
         });
-        
+
         // configure "Fix it" actions on the error label
         errorMessageLabel.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -171,7 +183,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
         // configure the table
         treeViewer.setContentProvider(new ITreeContentProvider() {
-            public void dispose() { 
+            public void dispose() {
             }
 
             public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -195,7 +207,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             public boolean hasChildren(Object element) {
                 return (element instanceof ProjectFeaturesManager);
             }
-            
+
         });
         treeViewer.setLabelProvider(new LabelProvider() {
             public String getText(Object element) {
@@ -222,7 +234,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                 setFeatureEnabled(feature, event.getChecked());
             }
         });
-        
+
         // configure the buttons
         selectAllButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -236,7 +248,15 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                 setAllFeaturesEnabled(false);
             }
         });
-        
+
+        // configure "Export" label
+        exportLink.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                exportTestMakemakefile();
+            }
+        });
+
         // load feature descriptions from file
         try {
             features = new ProjectFeaturesManager(getProject());
@@ -271,7 +291,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         }
 
         updateDiagnosticMessage();
-        
+
         return composite;
     }
 
@@ -330,7 +350,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         String desc = StringUtils.nullToEmpty(f.getDescription()).trim();
         if (desc.contains("</p>") || desc.contains("</P>"))
             result += desc + "\n\n";
-        else 
+        else
             result += "<p>" + desc + "</p>\n\n";
         result += "<b>Details:</b><br>\n\n";
         result += makeLine("Id", f.getId(), false);
@@ -347,16 +367,16 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     protected static String makeLine(String name, Set<String> c, boolean skipIfEmpty) {
         return makeLine(name, StringUtils.join(c, ", "), skipIfEmpty);
     }
-    
+
     protected static String makeLine(String name, String value, boolean skipIfEmpty) {
         if (StringUtils.isEmpty(value)) {
-            if (skipIfEmpty) 
-                return ""; 
+            if (skipIfEmpty)
+                return "";
             value = "-";
         }
         return "<u>" + name + "</u>: " + value + "<br>\n";
     }
-    
+
     protected void setAllFeaturesEnabled(boolean enable) {
         for (ProjectFeature f : features.getFeatures())
             if (treeViewer.getChecked(f) != enable)
@@ -368,10 +388,10 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         if (enable) {
             // collect missing dependencies
             List<ProjectFeature> missingDependencies = collectMissingDependencies(feature);
-            
+
             // ask for confirmation
             if (!missingDependencies.isEmpty()) {
-                String question = "The following feature(s) are required by " + quotedName(feature) + ", and will also be enabled:\n\n" + itemizeNamesOf(missingDependencies); 
+                String question = "The following feature(s) are required by " + quotedName(feature) + ", and will also be enabled:\n\n" + itemizeNamesOf(missingDependencies);
                 if (!MessageDialog.openConfirm(getShell(), "Confirm Enabling Features", question)) {
                     treeViewer.setChecked(feature, !enable);  // restore original state
                     return;
@@ -386,7 +406,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         else {
             // collect features that depend on the one we are turning off
             List<ProjectFeature> dependentFeatures = collectFeaturesThatDependOn(feature);
-            
+
             // ask for confirmation
             if (!dependentFeatures.isEmpty()) {
                 String question = "The following feature(s) require " + quotedName(feature) + ", and will also be disabled:\n\n" + itemizeNamesOf(dependentFeatures);
@@ -395,13 +415,13 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                     return;
                 }
             }
-            
+
             // do it
             doSetFeatureEnabled(feature, false);
             for (ProjectFeature f : dependentFeatures)
                 doSetFeatureEnabled(f, false);
         }
-        
+
         updateDiagnosticMessage();
     }
 
@@ -462,12 +482,12 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
     protected String getDiagnosticMessage() {
         String result = "";
-        
+
         // problems in .oppfeatures
         List<String> errors = features.validateFeatureDescriptions();
         if (!errors.isEmpty())
-            result += "Problems were found in the feature description file. <a href=\"oppfeatures\">Details</a>\n"; 
-        
+            result += "Problems were found in the feature description file. <a href=\"oppfeatures\">Details</a>\n";
+
         // check that all enabled features have their dependencies enabled
         List<ProjectFeature> bogusFeatures = new ArrayList<ProjectFeature>();
         for (ProjectFeature f : features.getFeatures()) {
@@ -503,7 +523,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                 result.add(f);
         return result;
     }
-    
+
     protected void setDiagnosticMessage(String message) {
         // Note: page already has error message functionality
         errorMessageLabel.setText(message==null ? "" : message);
@@ -515,12 +535,12 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
     protected void fixProblem(String problemId) {
         if (problemId.equals("oppfeatures")) {
             List<String> problems = features.validateFeatureDescriptions();
-            ProblemsMessageDialog.openInformation(getShell(), 
-                    "Project Setup Inconsistency", 
+            ProblemsMessageDialog.openInformation(getShell(),
+                    "Project Setup Inconsistency",
                     "The following problems were found in " + features.getFeatureDescriptionFile().getFullPath() + ":\n",
                     problems, UIUtils.ICON_ERROR);
         }
-        
+
         // "An enabled feature does not have all of its required features enabled. [Details]"
         if (problemId.equals("dependency")) {
             List<String> problems = new ArrayList<String>();
@@ -531,8 +551,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                         problems.add(f.getName() + ": missing " + (missing.size()==1?"dependency":"dependencies") + " " + joinNamesOf(missing));
                 }
             }
-            ProblemsMessageDialog.openInformation(getShell(), 
-                    "Missing Dependencies", 
+            ProblemsMessageDialog.openInformation(getShell(),
+                    "Missing Dependencies",
                     "The following problems were found in the features selection (please fix them manually):\n",
                     problems, UIUtils.ICON_ERROR);
         }
@@ -550,7 +570,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
                 Activator.logError(e1);
             }
         }
-        
+
     }
 
     protected boolean isOkToFixConfigProblems(List<Problem> problems) {
@@ -558,9 +578,9 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         for (Problem p : problems)
             problemTexts.add(p.toString());
         Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency", 
+        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency",
                 "Some project configuration settings do not correspond to the enabled project features. " +
-                "Do you want to fix the project state?", 
+                "Do you want to fix the project state?",
                 problemTexts, UIUtils.ICON_ERROR);
     }
 
@@ -584,7 +604,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         updateDiagnosticMessage();
         super.performDefaults();
     }
-    
+
     @Override
     public boolean performOk() {
         // save .nedfolders
@@ -609,10 +629,64 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         }
 
         CDTPropertyManager.performOkForced(this); // performOk() doesn't always save it...
-        CDTUtils.invalidateDiscoveredPathInfo(getProject());	
+        CDTUtils.invalidateDiscoveredPathInfo(getProject());
 
         return true;
     }
+
+    protected void exportTestMakemakefile() {
+        try {
+
+            // create tester
+            BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(getProject()); //XXX should actually be the copy edited by ProjectMakemakePropertyPage
+            ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
+            ICConfigurationDescription activeConfiguration = CDTPropertyManager.getProjectDescription(getProject()).getActiveConfiguration();
+            boolean isNmake = CDTUtils.isMsvcConfiguration(activeConfiguration);
+            final String filename = isNmake ? "FeatureBuildTest.vc" : "FeatureBuildTest";
+            final ProjectFeatureTester tester = new ProjectFeatureTester(getProject(), features, buildSpec, nedSourceFoldersConfig, configurations, activeConfiguration);
+
+            // let it generate the file
+            final String[] text = new String[1];
+            ProgressMonitorDialog dialog = new ProgressMonitorDialog(getShell());
+            dialog.run(true, true, new IRunnableWithProgress() {
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    try {
+                        text[0] = tester.makeMakefile(filename, monitor);
+                    }
+                    catch (CoreException e) {
+                        throw new InvocationTargetException(e);
+                    }
+                    finally {
+                        monitor.done();
+                    }
+                }
+            });
+
+            // save
+            IFile file = getProject().getFile(filename);
+            boolean existed = file.exists();
+            if (!file.exists() || MessageDialog.openConfirm(getShell(), "Export", "Overwrite existing " + file.getFullPath().toString() + "?")) {
+                byte[] bytes = text[0].getBytes();
+                MakefileTools.ensureFileContent(file, bytes, null);
+                file.refreshLocal(0, null);
+                if (!existed)
+                    MessageDialog.openInformation(getShell(),
+                            "Export", file.getFullPath().toString() + " created.\n\n" +
+                            "This is a makefile that compiles the project with all features being enabled, with all features being disabled, " +
+                            "and with various other feature combinations. It is useful for developers of the " +
+                            "\"" + getProject().getName() + "\" project for finding compile errors caused by unwanted " +
+                            "feature interdependencies."
+                    );
+            }
+        }
+        catch (InterruptedException e) {
+        }
+        catch (Exception e) {
+            Activator.logError(e);
+            errorDialog(e.getMessage(), e);
+        }
+    }
+
 
     protected void errorDialog(String message, Throwable e) {
         Activator.logError(message, e);
