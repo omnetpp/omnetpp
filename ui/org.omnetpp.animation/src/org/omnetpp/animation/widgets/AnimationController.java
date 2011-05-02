@@ -1214,8 +1214,8 @@ public class AnimationController {
         ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
         AnimationPrimitiveContext eventAnimationContext = new AnimationPrimitiveContext();
         eventAnimationContext.isCollectingHandleMessageAnimations = false;
-        for (int i = 0; i < eventLog.getNumInitializationLogEntries(); i++)
-            collectAnimationPrimitivesForEntry(eventAnimationContext, eventLog.getInitializationLogEntry(i), animationPrimitives);
+//        for (int i = 0; i < eventLog.getNumInitializationLogEntries(); i++)
+//            collectAnimationPrimitivesForEntry(eventAnimationContext, eventLog.getInitializationLogEntry(i), animationPrimitives);
         IEvent event = eventLog.getFirstEvent();
         while (event != null) {
             // TODO: keep the same relativeAnimationTime as long as the events have the same simulation times
