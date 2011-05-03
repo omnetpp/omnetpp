@@ -21,8 +21,8 @@ public class SendDirectAnimation extends SendMessageAnimation {
 
 	protected int destinationModuleId;
 
-	public SendDirectAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, int sourceModuleId, int destinationModuleId, EventLogMessage message) {
-		super(animationController, propagationDelay, transmissionDelay, null, message);
+	public SendDirectAnimation(AnimationController animationController, BigDecimal propagationDelay, BigDecimal transmissionDelay, int sourceModuleId, int destinationModuleId, EventLogMessage message, double messageHighlightAnimationTime) {
+		super(animationController, propagationDelay, transmissionDelay, null, message, messageHighlightAnimationTime);
 		this.sourceModuleId = sourceModuleId;
 		this.destinationModuleId = destinationModuleId;
 	}

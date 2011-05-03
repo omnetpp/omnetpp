@@ -54,7 +54,7 @@ public class EventLogMessagePropertySource extends PropertySource {
     public short getPriority() { return eventLogMessage.getSchedulingPriority(); }
 
     @org.omnetpp.common.properties.Property(id = PROPERTY_BIT_LENGTH)
-    public int getBitLength() { return eventLogMessage.getBitLength(); }
+    public long getBitLength() { return eventLogMessage.getBitLength(); }
 
     @org.omnetpp.common.properties.Property(id = PROPERTY_BIT_ERROR)
     public boolean getBitError() { return eventLogMessage.hasBitError(); }

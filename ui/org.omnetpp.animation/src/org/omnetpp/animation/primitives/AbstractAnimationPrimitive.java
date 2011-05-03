@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LayoutManager;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
 import org.omnetpp.animation.widgets.AnimationSimulation;
@@ -28,23 +27,73 @@ import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.anchors.NoncentralChopboxAnchor;
 
 /**
- * Base class for animation primitives. The default behavior is that the animation primitive does not draw anything.
+ * <p>
+ * Abstract base class for animation primitives. The default behavior is that
+ * the animation primitive does not change the model state and does not draw
+ * anything.
+ * </p>
+ * <p>
+ * This class automatically keeps the invariant between the begin and end
+ * animation positions and the corresponding durations (both in terms of
+ * simulation and animation times).
+ * </p>
+ *
+ * @author levy
  */
 public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive {
-    protected boolean isActive;
+    /**
+     * The owner animation controller that is responsible to manage this
+     * animation primitive.
+     */
+    protected final AnimationController animationController;
 
-	protected AnimationController animationController;
+    /**
+     * Specifies that whether this animation primitive is active or not.
+     */
+    private boolean isActive;
 
-	protected long sourceEventNumber;
+    /**
+     * The event number of the event that provided this animation primitive.
+     * Note that this might be different from the event numbers present in the
+     * begin and end animation positions.
+     */
+	private long sourceEventNumber;
 
-	// NOTE: there is a strict relationship between the begin and the end animation positions and the durations (both in terms of simulation and animation time)
-	protected AnimationPosition beginAnimationPosition;
+    /**
+     * The animation position when this animation primitive begins. Note that
+     * there is a strict relationship between the begin and end animation
+     * positions and the durations (both in terms of simulation and animation
+     * time). This invariant is automatically kept by this class.
+     */
+	private AnimationPosition beginAnimationPosition;
 
-    protected AnimationPosition endAnimationPosition;
+    /**
+     * The animation position when this animation primitive end. Note that
+     * there is a strict relationship between the begin and end animation
+     * positions and the durations (both in terms of simulation and animation
+     * time). This invariant is automatically kept by this class.
+     */
+	private AnimationPosition endAnimationPosition;
 
-    protected BigDecimal simulationTimeDuration;
+	/**
+     * Returns the total duration of this animation primitive in terms of
+     * simulation time. The value <code>null</code> means that it is not yet
+     * set. Note that the time duration is automatically updated when both the
+     * begin and end simulation times are set.
+	 */
+	private BigDecimal simulationTimeDuration;
 
-    protected double animationTimeDuration;
+    /**
+     * Returns the total duration of this animation primitive in terms of
+     * animation time. The value <code>-1</code> means that it is not yet set.
+     * Note that the time duration is automatically updated when both the begin
+     * and end animation times are set.
+     */
+	private double animationTimeDuration;
+
+    /*************************************************************************************
+     * CONSTRUCTOR
+     */
 
     public AbstractAnimationPrimitive(AnimationController animationController) {
         this.animationController = animationController;
@@ -118,46 +167,46 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
             simulationTimeDuration = endSimulationTime.subtract(beginAnimationPosition.getSimulationTime());
     }
 
-	public double getBeginAnimationTime() {
-		return beginAnimationPosition.getAnimationTime();
+	public double getOriginRelativeBeginAnimationTime() {
+		return beginAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
-    public void setBeginAnimationTime(double beginAnimationTime) {
-        Assert.isTrue(beginAnimationPosition.getAnimationTime() == -1);
-        beginAnimationPosition.setAnimationTime(beginAnimationTime);
+    public void setOriginRelativeBeginAnimationTime(double beginAnimationTime) {
+        // Assert.isTrue(beginAnimationPosition.getOriginRelativeAnimationTime() == null);
+        beginAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime);
         if (animationTimeDuration != -1)
-            endAnimationPosition.setAnimationTime(beginAnimationTime + animationTimeDuration);
-        else if (endAnimationPosition.getAnimationTime() != -1)
-            animationTimeDuration = endAnimationPosition.getAnimationTime() - beginAnimationTime;
+            endAnimationPosition.setOriginRelativeAnimationTime(beginAnimationTime + animationTimeDuration);
+        else if (endAnimationPosition.getOriginRelativeAnimationTime() != null)
+            animationTimeDuration = endAnimationPosition.getOriginRelativeAnimationTime() - beginAnimationTime;
     }
 
-	public double getEndAnimationTime() {
-		return endAnimationPosition.getAnimationTime();
+	public double getOriginRelativeEndAnimationTime() {
+		return endAnimationPosition.getOriginRelativeAnimationTime();
 	}
 
-    public void setEndAnimationTime(double endAnimationTime) {
-        Assert.isTrue(endAnimationPosition.getAnimationTime() == -1);
-        endAnimationPosition.setAnimationTime(endAnimationTime);
+    public void setOriginRelativeEndAnimationTime(double endAnimationTime) {
+        // Assert.isTrue(endAnimationPosition.getOriginRelativeAnimationTime() == null);
+        endAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime);
         if (animationTimeDuration != -1)
-            beginAnimationPosition.setAnimationTime(endAnimationTime - animationTimeDuration);
-        else if (beginAnimationPosition.getAnimationTime() != -1)
-            animationTimeDuration = endAnimationTime - beginAnimationPosition.getAnimationTime();
+            beginAnimationPosition.setOriginRelativeAnimationTime(endAnimationTime - animationTimeDuration);
+        else if (beginAnimationPosition.getOriginRelativeAnimationTime() != null)
+            animationTimeDuration = endAnimationTime - beginAnimationPosition.getOriginRelativeAnimationTime();
     }
 
-    public double getRelativeBeginAnimationTime() {
-	    return beginAnimationPosition.getRelativeAnimationTime();
+    public double getFrameRelativeBeginAnimationTime() {
+	    return beginAnimationPosition.getFrameRelativeAnimationTime();
 	}
 
-    public void setRelativeBeginAnimationTime(double relativeBeginAnimationTime) {
-        beginAnimationPosition.setRelativeAnimationTime(relativeBeginAnimationTime);
+    public void setFrameRelativeBeginAnimationTime(double frameRelativeBeginAnimationTime) {
+        beginAnimationPosition.setFrameRelativeAnimationTime(frameRelativeBeginAnimationTime);
     }
 
-    public double getRelativeEndAnimationTime() {
-        return endAnimationPosition.getRelativeAnimationTime();
+    public double getFrameRelativeEndAnimationTime() {
+        return endAnimationPosition.getFrameRelativeAnimationTime();
     }
 
-    public void setRelativeEndAnimationTime(double relativeEndAnimationTime) {
-        endAnimationPosition.setRelativeAnimationTime(relativeEndAnimationTime);
+    public void setFrameRelativeEndAnimationTime(double frameRelativeEndAnimationTime) {
+        endAnimationPosition.setFrameRelativeAnimationTime(frameRelativeEndAnimationTime);
     }
 
     public BigDecimal getSimulationTimeDuration() {
@@ -178,12 +227,12 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
     }
 
     public void setAnimationTimeDuration(Double animationTimeDuration) {
-        // TODO: Assert.isTrue(this.animationTimeDuration == -1 && animationTimeDuration >= 0);
+        Assert.isTrue(animationTimeDuration >= 0);
         this.animationTimeDuration = animationTimeDuration;
-        if (beginAnimationPosition.getAnimationTime() != -1)
-            endAnimationPosition.setAnimationTime(beginAnimationPosition.getAnimationTime() + animationTimeDuration);
-        else if (endAnimationPosition.getAnimationTime() != -1)
-            beginAnimationPosition.setAnimationTime(endAnimationPosition.getAnimationTime() - animationTimeDuration);
+        if (beginAnimationPosition.getOriginRelativeAnimationTime() != null)
+            endAnimationPosition.setOriginRelativeAnimationTime(beginAnimationPosition.getOriginRelativeAnimationTime() + animationTimeDuration);
+        else if (endAnimationPosition.getOriginRelativeAnimationTime() != null)
+            beginAnimationPosition.setOriginRelativeAnimationTime(endAnimationPosition.getOriginRelativeAnimationTime() - animationTimeDuration);
     }
 
 	public void activate() {
@@ -244,14 +293,9 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 		return (CompoundModuleFigure)animationController.getFigure(module, CompoundModuleFigure.class);
 	}
 
-	protected void setConstraint(IFigure figure, Rectangle constraint) {
-		getLayoutManager().setConstraint(figure, constraint);
-	}
-
 	protected CompoundModuleFigure getEnclosingCompoundModuleFigure(int submoduleId) {
 		EventLogModule enclosingModule = getSimulation().getModuleById(submoduleId).getParentModule();
-		CompoundModuleFigure enclosingModuleFigure = getCompoundModuleFigure(enclosingModule);
-		return enclosingModuleFigure;
+		return getCompoundModuleFigure(enclosingModule);
 	}
 
     protected CompoundModuleFigure getEnclosingCompoundModuleFigure(EventLogGate sourceGate) {
@@ -288,9 +332,8 @@ public abstract class AbstractAnimationPrimitive implements IAnimationPrimitive 
 	}
 
 	protected Point getSubmoduleFigureCenter(int moduleId) {
-		return getSubmoduleFigure(moduleId).getBounds().getCenter();
+		return getSubmoduleFigure(moduleId).getCenterLocation();
 	}
-
 
     protected GateAnchor getGateAnchor(EventLogGate gate, Class<?> clazz) {
         IFigure figure = animationController.getFigure(animationController.getAnimationSimulation().getModuleById(gate.getOwnerModuleId()), clazz);

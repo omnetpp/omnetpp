@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -67,10 +66,6 @@ public class AnimationEditor
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
         IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.AnimationCanvas");
-        if (eventLogInput.getEventLog().getFileReader().getFileSize() > 1E+7) {
-            if (!MessageDialog.openQuestion(null, "Performance Warning", "The size of the eventlog file is bigger than 10 Mbyte, and that is over the suggested upper bound. At the moment the animation view is an experimental feature, and you may experience severe performance problems. Do you wish to continue?"))
-                throw new RuntimeException("Opening the eventlog file is cancelled by the user");
-        }
         // try to open the log view
         try {
             // Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
@@ -215,7 +210,7 @@ public class AnimationEditor
         if (!canCreateNavigationLocation())
             return null;
         else
-            return new AnimationLocation(animationCanvas.getAnimationController().getAnimationPosition());
+            return new AnimationLocation(animationCanvas.getAnimationController().getCurrentAnimationPosition());
     }
 
     private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
@@ -262,7 +257,6 @@ public class AnimationEditor
     public String[] getShowInTargetIds() {
         // contents of the "Show In..." context menu
         return new String[] {
-                IConstants.ANIMATION_VIEW_ID,
                 IConstants.SEQUENCECHART_VIEW_ID,
                 IConstants.EVENTLOG_VIEW_ID
                 };

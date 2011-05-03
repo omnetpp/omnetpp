@@ -41,6 +41,7 @@ public class AnimationCompoundModuleFigure extends Figure {
         closer.addMouseListener(new MouseListener() {
             public void mousePressed(MouseEvent me) {
                 removeFigure();
+                AnimationCompoundModuleFigure.this.animationController.clearInternalState();
             }
 
             public void mouseReleased(MouseEvent me) {
@@ -81,10 +82,9 @@ public class AnimationCompoundModuleFigure extends Figure {
 
     private void removeFigure() {
         animationController.stopAnimation();
-        long eventNumber = animationController.getEventNumber();
+        long eventNumber = animationController.getCurrentEventNumber();
         animationController.getAnimationCanvas().removeShownCompoundModule(moduleId);
         getParent().remove(this);
-        animationController.reloadAnimationPrimitives();
         animationController.gotoEventNumber(eventNumber);
     }
 }

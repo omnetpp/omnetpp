@@ -86,6 +86,7 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
@@ -137,7 +138,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
 @SuppressWarnings("restriction")
-public class SequenceChartContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
+public class SequenceChartContributor extends EditorActionBarContributor implements IPartListener, ISelectionChangedListener, IEventLogChangeListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_TIMELINE_MODE = TOOL_IMAGE_DIR + "timelinemode.png";
     public final static String IMAGE_AXIS_ORDERING_MODE = TOOL_IMAGE_DIR + "axisordering.gif";
@@ -454,18 +455,15 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 				eventLogInput = sequenceChart.getInput();
 				if (eventLogInput != null)
 					eventLogInput.removeEventLogChangedListener(this);
-
+                getPage().removePartListener(this);
                 sequenceChart.removeSelectionChangedListener(this);
 			}
-
 			sequenceChart = ((SequenceChartEditor)targetEditor).getSequenceChart();
-
 			eventLogInput = sequenceChart.getInput();
 			if (eventLogInput != null)
 				eventLogInput.addEventLogChangedListener(this);
-
+            getPage().addPartListener(this);
 			sequenceChart.addSelectionChangedListener(this);
-
 			update();
 		}
 		else
@@ -476,22 +474,16 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
-
-				if (fieldType == SequenceChartAction.class ||
-					fieldType == SequenceChartMenuAction.class)
-				{
+				if (fieldType == SequenceChartAction.class || fieldType == SequenceChartMenuAction.class) {
 					SequenceChartAction fieldValue = (SequenceChartAction)field.get(this);
-
 					if (fieldValue != null && sequenceChart != null) {
 						fieldValue.setEnabled(true);
 						fieldValue.update();
-						if (sequenceChart.getInput().isLongRunningOperationInProgress())
+						if ((getPage() != null && !(getPage().getActivePart() instanceof SequenceChartEditor)) || sequenceChart.getInput().isLongRunningOperationInProgress())
 							fieldValue.setEnabled(false);
 					}
 				}
-
-				if (fieldType == StatusLineContributionItem.class)
-				{
+				else if (fieldType == StatusLineContributionItem.class) {
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
 					if (sequenceChart != null)
 						fieldValue.update();
@@ -551,6 +543,23 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 	public void eventLogProgress() {
 		// void
 	}
+
+    public void partActivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partBroughtToTop(IWorkbenchPart part) {
+    }
+
+    public void partClosed(IWorkbenchPart part) {
+    }
+
+    public void partDeactivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partOpened(IWorkbenchPart part) {
+    }
 
 	/*************************************************************************************
 	 * ACTIONS

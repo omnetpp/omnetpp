@@ -1,0 +1,13 @@
+E # 0 t 0 m 1 ce -1 msg -1
+SB v 1026 rid Test-0-20110331-14:47:49-4992 b 1000
+KF p -1 c "" s ""
+MC id 1 c cCompoundModule t TestNet n TestNet cm 1
+MC id 2 c Test t Test pid 1 n test
+MB sm 1 tm 2 m initialize(0)
+CM id 0 tid 0 eid 0 etid 0 c cMessage n timer pe -1
+BS id 0 tid 0 eid 0 etid 0 c cMessage n timer pe 0
+ES t 1
+ME
+
+E # 1 t 1 m 2 ce 0 msg 0
+SE e 0 c 9 m "The user has finished the simulation at event #1, t=0."

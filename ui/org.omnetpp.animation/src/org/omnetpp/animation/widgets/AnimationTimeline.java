@@ -60,14 +60,16 @@ public class AnimationTimeline
 
     private void paint(GC gc) {
         Graphics graphics = new SWTGraphics(gc);
-        drawEventNumber(graphics);
-        drawSimulationTime(graphics);
-        drawAnimationTime(graphics);
+        if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+            drawEventNumber(graphics);
+            drawSimulationTime(graphics);
+            drawAnimationTime(graphics);
+        }
         drawEventLine(graphics);
     }
 
     private void drawEventNumber(Graphics graphics) {
-        graphics.drawText("Event #" + animationController.getEventNumber(), 0, 0);
+        graphics.drawText("Event #" + animationController.getCurrentEventNumber(), 0, 0);
     }
 
     private void drawSimulationTime(Graphics graphics) {
@@ -76,7 +78,7 @@ public class AnimationTimeline
         String header = "T=";
         graphics.drawText(header, width, 0);
         width += GraphicsUtils.getTextExtent(graphics, header).x;
-        String newSimulationTime = animationController.getSimulationTime().toString();
+        String newSimulationTime = animationController.getCurrentSimulationTime().toString();
         int i;
         for (i = 0; i < oldSimulationTime.length() && i < newSimulationTime.length() && oldSimulationTime.charAt(i) == newSimulationTime.charAt(i); i++);
         graphics.setForegroundColor(ColorFactory.BLACK);
@@ -92,22 +94,24 @@ public class AnimationTimeline
     private void drawAnimationTime(Graphics graphics) {
         Rectangle clientArea = getClientArea();
         int width = Math.max(300, clientArea.width / 3 * 2);
-        graphics.drawText("A=" + animationController.getAnimationTime(), width, 0);
+        graphics.drawText("A=" + animationController.getCurrentAnimationTime(), width, 0);
     }
 
     private void drawEventLine(Graphics graphics) {
         Rectangle clientArea = getClientArea();
         int y = clientArea.y + clientArea.height / 2;
         graphics.drawLine(clientArea.x, y, clientArea.x + clientArea.width, y);
-        IEventLog eventLog = animationController.getEventLogInput().getEventLog();
-        IEvent event = eventLog.getEventForEventNumber(animationController.getEventNumber());
-        IEvent firstEvent = event;
-        IEvent lastEvent = event;
-        for (int i = 0; i < 10; i++) {
-            if (firstEvent.getPreviousEvent() != null)
-                firstEvent = firstEvent.getPreviousEvent();
-            if (lastEvent.getNextEvent() != null)
-                lastEvent = lastEvent.getNextEvent();
+        if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+            IEventLog eventLog = animationController.getEventLogInput().getEventLog();
+            IEvent event = eventLog.getEventForEventNumber(animationController.getCurrentEventNumber());
+            IEvent firstEvent = event;
+            IEvent lastEvent = event;
+            for (int i = 0; i < 10; i++) {
+                if (firstEvent.getPreviousEvent() != null)
+                    firstEvent = firstEvent.getPreviousEvent();
+                if (lastEvent.getNextEvent() != null)
+                    lastEvent = lastEvent.getNextEvent();
+            }
         }
     }
 }

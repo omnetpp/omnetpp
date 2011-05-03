@@ -8,13 +8,14 @@
 package org.omnetpp.animation.primitives;
 
 import org.omnetpp.animation.widgets.AnimationController;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogGate;
 
 public class CreateGateAnimation extends AbstractInfiniteAnimation {
 	protected EventLogGate gate;
 
-	public CreateGateAnimation(AnimationController animationController, EventLogGate gate) {
-		super(animationController);
+	public CreateGateAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, EventLogGate gate) {
+		super(animationController, eventNumber, simulationTime);
 		this.gate = gate;
 	}
 

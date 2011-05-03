@@ -237,13 +237,11 @@ void EventlogFileManager::recordMessages()
 void EventlogFileManager::recordModules(cModule *module)
 {
     moduleCreated(module);
-    // FIXME: records display string twice if it is lazily created right now
-    if (strcmp(module->getDisplayString().str(), ""))
-        displayStringChanged(module);
     for (cModule::GateIterator it(module); !it.end(); it++) {
         cGate *gate = it();
         gateCreated(gate);
     }
+    displayStringChanged(module);
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
         recordModules(it());
 }
@@ -255,7 +253,7 @@ void EventlogFileManager::recordConnections(cModule *module)
         if (gate->getNextGate())
             connectionCreated(gate);
         cChannel *channel = gate->getChannel();
-        if (channel && strcmp(channel->getDisplayString(), ""))
+        if (channel)
             displayStringChanged(channel);
     }
     for (cModule::SubmoduleIterator it(module); !it.end(); it++)
@@ -332,7 +330,7 @@ void EventlogFileManager::bubble(cComponent *component, const char *text)
             entryIndex++;
         }
         else if (dynamic_cast<cChannel *>(component)) {
-            //TODO
+            // TODO:
         }
     }
 }
@@ -340,7 +338,7 @@ void EventlogFileManager::bubble(cComponent *component, const char *text)
 void EventlogFileManager::beginSend(cMessage *msg)
 {
     if (isEventLogRecordingEnabled) {
-        //TODO record message display string as well?
+        // TODO: record message display string as well?
         if (msg->isPacket()) {
             cPacket *pkt = (cPacket *)msg;
             EventLogWriter::recordBeginSendEntry_id_tid_eid_etid_c_n_k_p_l_er_d_pe(feventlog,
@@ -534,15 +532,14 @@ void EventlogFileManager::componentMethodEnd()
     }
 }
 
-void EventlogFileManager::moduleCreated(cModule *newmodule)
+void EventlogFileManager::moduleCreated(cModule *module)
 {
     if (isEventLogRecordingEnabled) {
-        cModule *m = newmodule;
-        bool recordModuleEvents = ev.getConfig()->getAsBool(m->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
-        m->setRecordEvents(recordModuleEvents);
-        bool isCompoundModule = dynamic_cast<cCompoundModule *>(m);
+        bool recordModuleEvents = ev.getConfig()->getAsBool(module->getFullPath().c_str(), CFGID_MODULE_EVENTLOG_RECORDING);
+        module->setRecordEvents(recordModuleEvents);
+        bool isCompoundModule = dynamic_cast<cCompoundModule *>(module);
         // FIXME: size() is missing
-        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, m->getId(), m->getClassName(), m->getNedTypeName(), m->getParentModule() ? m->getParentModule()->getId() : -1, m->getFullName(), isCompoundModule);
+        EventLogWriter::recordModuleCreatedEntry_id_c_t_pid_n_cm(feventlog, module->getId(), module->getClassName(), module->getNedTypeName(), module->getParentModule() ? module->getParentModule()->getId() : -1, module->getFullName(), isCompoundModule);
         entryIndex++;
         addSimulationStateEventLogEntry(eventNumber, entryIndex);
     }
@@ -702,31 +699,40 @@ void EventlogFileManager::recordKeyframe()
 {
     if (eventNumber % keyframeBlockSize == 0) {
         consequenceLookaheadLimits.push_back(0);
-        int newPreviousKeyframeFileOffset = opp_ftell(feventlog);
+        file_offset_t newPreviousKeyframeFileOffset = opp_ftell(feventlog);
         fprintf(feventlog, "KF");
         // previousKeyframeFileOffset
         fprintf(feventlog, " p %"INT64_PRINTF_FORMAT"d", previousKeyframeFileOffset);
         previousKeyframeFileOffset = newPreviousKeyframeFileOffset;
         // consequenceLookahead
-        fprintf(feventlog, " c \"");
+        fprintf(feventlog, " c ");
         int i = 0;
+        bool empty = true;
         for (std::vector<eventnumber_t>::iterator it = consequenceLookaheadLimits.begin(); it != consequenceLookaheadLimits.end(); it++) {
             eventnumber_t consequenceLookaheadLimit = *it;
-            if (consequenceLookaheadLimit)
+            if (consequenceLookaheadLimit) {
                 fprintf(feventlog, "%"INT64_PRINTF_FORMAT"d:%"INT64_PRINTF_FORMAT"d,", (eventnumber_t)keyframeBlockSize * i, consequenceLookaheadLimit);
+                empty = false;
+            }
             *it = 0;
             i++;
         }
+        if (empty)
+            fprintf(feventlog, "\"\"");
         // simulationStateEntries
-        fprintf(feventlog, "\" s \"");
+        empty = true;
+        fprintf(feventlog, " s ");
         for (std::map<eventnumber_t, std::vector<EventLogEntryRange> >::iterator it = eventNumberToSimulationStateEventLogEntryRanges.begin(); it != eventNumberToSimulationStateEventLogEntryRanges.end(); it++) {
             std::vector<EventLogEntryRange> &ranges = it->second;
             for (std::vector<EventLogEntryRange>::iterator jt = ranges.begin(); jt != ranges.end(); jt++) {
                 (*jt).print(feventlog);
                 fprintf(feventlog, ",");
+                empty = false;
             }
         }
-        fprintf(feventlog, "\"\n");
+        if (empty)
+            fprintf(feventlog, "\"\"");
+        fprintf(feventlog, "\n");
         entryIndex++;
     }
 }
@@ -734,8 +740,9 @@ void EventlogFileManager::recordKeyframe()
 void EventlogFileManager::addPreviousEventNumber(eventnumber_t previousEventNumber)
 {
     if (previousEventNumber != -1) {
-        int blockIndex = previousEventNumber / keyframeBlockSize;
-        consequenceLookaheadLimits.resize(blockIndex + 1);
+        eventnumber_t blockIndex = previousEventNumber / keyframeBlockSize;
+        if (blockIndex + 1 > consequenceLookaheadLimits.size())
+            consequenceLookaheadLimits.resize(blockIndex + 1);
         consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], eventNumber - previousEventNumber);
     }
 }

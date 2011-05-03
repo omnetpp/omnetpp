@@ -73,6 +73,7 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.ui.HoverSupport;
@@ -124,7 +125,7 @@ import org.omnetpp.sequencechart.widgets.axisrenderer.IAxisRenderer;
 // TODO: proper "hand" cursor - current one is not very intuitive
 public class SequenceChart
 	extends CachingCanvas
-	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener
+	implements IVirtualContentWidget<IEvent>, ISelectionProvider, IEventLogChangeListener, IEventLogProvider
 {
 	private static final boolean debug = false;
 
@@ -3038,9 +3039,9 @@ public class SequenceChart
 		// cache message dependency state
         boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
         // TODO: not always BeginSendEntry?!
-		long beginSendEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
-        long endSendEntryPtr = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(beginSendEntryPtr);
-		int messageId = beginSendEntryPtr == 0 ? 0 : sequenceChartFacade.BeginSendEntry_getMessageId(beginSendEntryPtr);
+		long messageEntry = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
+        long endSendEntryPtr = messageEntry == 0 || !sequenceChartFacade.MessageEntry_isBeginSendEntry(messageEntry) ? 0 : sequenceChartFacade.BeginSendEntry_getEndSendEntry(messageEntry);
+		int messageId = messageEntry == 0 ? 0 : sequenceChartFacade.MessageEntry_getMessageId(messageEntry);
 		long startEventNumber = sequenceChartFacade.IEvent_getEventNumber(startEventPtr);
 		long endEventNumber = sequenceChartFacade.IEvent_getEventNumber(endEventPtr);
 		long causeEventNumber = sequenceChartFacade.IEvent_getEventNumber(causeEventPtr);
@@ -3050,8 +3051,8 @@ public class SequenceChart
         boolean isReceptionStart = endSendEntryPtr == 0 ? false : sequenceChartFacade.EndSendEntry_isReceptionStart(endSendEntryPtr);
 
         org.omnetpp.common.engine.BigDecimal transmissionDelay = null;
-        if (showTransmissionDurations && !isFilteredMessageDependency && beginSendEntryPtr != 0) {
-            transmissionDelay = sequenceChartFacade.BeginSendEntry_getTransmissionDelay(beginSendEntryPtr);
+        if (showTransmissionDurations && !isFilteredMessageDependency && endSendEntryPtr != 0) {
+            transmissionDelay = sequenceChartFacade.BeginSendEntry_getTransmissionDelay(messageEntry);
             if (transmissionDelay.equals(org.omnetpp.common.engine.BigDecimal.getZero()))
                 transmissionDelay = null;
         }
@@ -3063,15 +3064,15 @@ public class SequenceChart
         int fontHeight = getFontHeight(graphics);
         if (isInitializationEvent(causeEventPtr))
             y1 = getInitializationEventYViewportCoordinate(messageDependencyPtr);
-        else if (!isReuse && beginSendEntryPtr != 0) {
-            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr));
+        else if (!isReuse && messageEntry != 0) {
+            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntry));
             if (moduleIndex != -1)
                 y1 = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
         }
         else
             y1 = getEventYViewportCoordinate(causeEventPtr);
-        if (isReuse && beginSendEntryPtr != 0) {
-            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(beginSendEntryPtr));
+        if (isReuse && messageEntry != 0) {
+            int moduleIndex = getAxisModuleIndexByModuleId(sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntry));
             if (moduleIndex != -1)
                 y2 = getModuleYViewportCoordinateByModuleIndex(moduleIndex);
         }
@@ -4191,7 +4192,7 @@ public class SequenceChart
         String moduleName = (formatted ? axisModule.getModuleFullPath() : axisModule.getModuleName());
         String moduleId = " (id = " + axisModule.getModuleId() + ")";
 
-        return "Axis (" + axisModule.getModuleClassName() + ") " + boldStart + moduleName + boldEnd + moduleId;
+        return "Axis (" + axisModule.getNedTypeName() + ") " + boldStart + moduleName + boldEnd + moduleId;
 	}
 
 	/**

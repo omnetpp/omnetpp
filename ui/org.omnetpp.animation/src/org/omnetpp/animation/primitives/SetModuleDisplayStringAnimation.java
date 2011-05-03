@@ -10,6 +10,7 @@ package org.omnetpp.animation.primitives;
 import org.eclipse.core.runtime.Assert;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogModule;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.ned.model.DisplayString;
@@ -21,8 +22,8 @@ public class SetModuleDisplayStringAnimation extends AbstractInfiniteAnimation {
 
 	protected IDisplayString oldDisplayString;
 
-	public SetModuleDisplayStringAnimation(AnimationController animationController, int moduleId, IDisplayString displayString) {
-		super(animationController);
+	public SetModuleDisplayStringAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, int moduleId, IDisplayString displayString) {
+		super(animationController, eventNumber, simulationTime);
 		this.moduleId = moduleId;
 		this.displayString = displayString;
 	}

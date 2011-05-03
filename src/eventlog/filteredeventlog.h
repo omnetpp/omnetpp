@@ -153,6 +153,7 @@ class EVENTLOG_API FilteredEventLog : public IEventLog
         virtual void setProgressCallInterval(double seconds) { eventLog->setProgressCallInterval(seconds); }
         virtual void progress() { eventLog->progress(); }
         virtual void synchronize(FileReader::FileChangedState change);
+        virtual int getKeyframeBlockSize() { return eventLog->getKeyframeBlockSize(); }
         virtual FileReader *getFileReader() { return eventLog->getFileReader(); }
         virtual eventnumber_t getNumParsedEvents() { return eventLog->getNumParsedEvents(); }
         virtual std::set<const char *>& getMessageNames() { return eventLog->getMessageNames(); }

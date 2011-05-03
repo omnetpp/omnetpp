@@ -1,0 +1,19 @@
+E # 0 t 0 m 1 ce -1 msg -1
+SB v 1026 rid Test-0-20110331-14:47:49-4992 b 1000
+KF p -1 c "" s ""
+MC id 1 c cCompoundModule t TestNet n TestNet cm 1
+MC id 2 c TestNet::Source t Source pid 1 n source
+GC m 2 g 0 n out o 1
+MC id 3 c TestNet::Destination t Destination pid 1 n destination
+GC m 3 g 1 n in o 0
+CC sm 2 sg 0 dm 3 dg 1
+
+E # 1 t 0 m 2 ce -1 msg -1
+BU id 2 txt "Sends a message to t = 1s and the message is processed immediately in the next event."
+CM id 0 tid 0 eid 0 etid 0 c cMessage n test pe -1 l 1000
+BS id 0 tid 0 eid 0 etid 0 c cMessage n test pe 1 l 1000
+SH sm 2 sg 0 pd 0 td 0
+ES t 0
+
+E # 2 t 0 m 3 ce 1 msg 0
+SE e 0 c 9 m "The user has finished the simulation."

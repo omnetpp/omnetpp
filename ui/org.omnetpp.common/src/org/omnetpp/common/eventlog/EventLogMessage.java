@@ -16,13 +16,16 @@ public class EventLogMessage {
 
 	private short kind;
 	private short priority;
-	private int bitLength;
+	private long bitLength;
 	private boolean bitError;
 
 	private int id;
 	private int treeId;
 	private int encapsulationId;
 	private int encapsulationTreeId;
+
+	private long senderEventNumber;
+	private long arrivalEventNumber;
 
 	private EventLogModule senderModule;
 	private EventLogGate senderGate;
@@ -46,11 +49,11 @@ public class EventLogMessage {
 		this.bitError = error;
 	}
 
-	public int getBitLength() {
+	public long getBitLength() {
 		return bitLength;
 	}
 
-	public void setBitLength(int length) {
+	public void setBitLength(long length) {
 		this.bitLength = length;
 	}
 
@@ -73,6 +76,22 @@ public class EventLogMessage {
 	public boolean isSelfMessage() {
 		return arrivalGate == null;
 	}
+
+	public void setSenderEventNumber(long senderEventNumber) {
+        this.senderEventNumber = senderEventNumber;
+    }
+
+	public long getSenderEventNumber() {
+        return senderEventNumber;
+    }
+
+	public void setArrivalEventNumber(long arrivalEventNumber) {
+        this.arrivalEventNumber = arrivalEventNumber;
+    }
+
+	public long getArrivalEventNumber() {
+        return arrivalEventNumber;
+    }
 
 	public EventLogModule getSenderModule() {
 		return senderModule;

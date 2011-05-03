@@ -19,7 +19,6 @@ import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -40,12 +39,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.handlers.HandlerUtil;
-import org.eclipse.ui.internal.Workbench;
 import org.eclipse.ui.keys.IBindingService;
 import org.eclipse.ui.menus.CommandContributionItem;
 import org.eclipse.ui.menus.CommandContributionItemParameter;
@@ -63,13 +62,16 @@ import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IFollowSelectionSupport;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.eventlog.engine.IEventLog;
 
-public class AnimationContributor extends EditorActionBarContributor implements ISelectionChangedListener, IEventLogChangeListener {
+public class AnimationContributor extends EditorActionBarContributor implements IPartListener, ISelectionChangedListener, IEventLogChangeListener, IAnimationListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_ANIMATION_MODE = TOOL_IMAGE_DIR + "animationmode.png";
-    public final static String IMAGE_SPEED_UP = TOOL_IMAGE_DIR + "speedup.gif";
-    public final static String IMAGE_SPEED_DOWN = TOOL_IMAGE_DIR + "speeddown.gif";
+    public final static String IMAGE_INCREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "increaseanimationspeed.gif";
+    public final static String IMAGE_DECREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "decreaseanimationspeed.gif";
     public final static String IMAGE_GOTO_BEGIN = TOOL_IMAGE_DIR + "gotobegin.gif";
+    public final static String IMAGE_GOTO_FIRST_EVENT = TOOL_IMAGE_DIR + "gotofirstevent.gif";
     public final static String IMAGE_GOTO_END = TOOL_IMAGE_DIR + "gotoend.gif";
     public final static String IMAGE_PLAY_FORWARD = TOOL_IMAGE_DIR + "playforward.gif";
     public final static String IMAGE_STEP_FORWARD = TOOL_IMAGE_DIR + "stepforward.gif";
@@ -88,9 +90,10 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
 	private Separator separatorAction;
     private AnimationAction animationModeAction;
-    private AnimationAction speedUpAction;
-    private AnimationAction speedDownAction;
+    private AnimationAction increaseAnimationSpeedAction;
+    private AnimationAction decreaseAnimationSpeedAction;
     private AnimationAction gotoBeginAction;
+    private AnimationAction gotoFirstEventAction;
     private AnimationAction gotoEndAction;
     private AnimationAction playForwardAction;
     private AnimationAction stepForwardAction;
@@ -99,10 +102,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     private AnimationAction stopAction;
     private AnimationAction copyToClipboardAction;
     private AnimationAction refreshAction;
-    private AnimationAction layoutAction;
     private AnimationAction configureAction;
     private AnimationAction pinAction;
-    private StatusLineContributionItem animationStatus;
     private AnimationPositionContribution animationPositionContribution;
 
 	/*************************************************************************************
@@ -112,9 +113,10 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	public AnimationContributor() {
 		this.separatorAction = new Separator();
 		this.animationModeAction = createAnimationModeAction();
-		this.speedUpAction = createSpeedUpActionAction();
-        this.speedDownAction = createSpeedDownActionAction();
+		this.increaseAnimationSpeedAction = createIncreaseAnimationSpeedActionAction();
+        this.decreaseAnimationSpeedAction = createDecreaseAnimationSpeedActionAction();
 		this.gotoBeginAction = createGotoBeginAction();
+        this.gotoFirstEventAction = createGotoFirstEventAction();
         this.gotoEndAction = createGotoEndAction();
         this.playForwardAction = createPlayForwardAction();
         this.stepForwardAction = createStepForwardAction();
@@ -123,10 +125,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         this.stopAction = createStopAction();
         this.copyToClipboardAction = createCopyToClipboardAction();
         this.refreshAction = createRefreshAction();
-        this.layoutAction = createLayoutAction();
         this.configureAction = createConfigureAction();
         this.pinAction = createPinAction();
-		this.animationStatus = createAnimationStatus();
 		this.animationPositionContribution = createAnimationPositionContribution();
 
 		if (singleton == null)
@@ -176,13 +176,14 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
                 IMenuManager subMenuManager = new MenuManager("Speed");
                 menuManager.add(subMenuManager);
-                subMenuManager.add(speedUpAction);
-                subMenuManager.add(speedDownAction);
+                subMenuManager.add(increaseAnimationSpeedAction);
+                subMenuManager.add(decreaseAnimationSpeedAction);
 
                 subMenuManager = new MenuManager("Play");
                 menuManager.add(subMenuManager);
 
                 subMenuManager.add(gotoBeginAction);
+                subMenuManager.add(gotoFirstEventAction);
                 subMenuManager.add(playBackwardAction);
                 subMenuManager.add(stepBackwardAction);
                 subMenuManager.add(stopAction);
@@ -202,7 +203,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                 menuManager.add(pinAction);
                 menuManager.add(copyToClipboardAction);
                 menuManager.add(refreshAction);
-                //menuManager.add(layoutAction);
                 menuManager.add(separatorAction);
 
                 menuManager.add(showInSubmenu);
@@ -219,10 +219,11 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         // TODO: doesn't work at the moment
 	    // toolBarManager.add(animationModeAction);
         toolBarManager.add(separatorAction);
-        toolBarManager.add(speedUpAction);
-        toolBarManager.add(speedDownAction);
+        toolBarManager.add(increaseAnimationSpeedAction);
+        toolBarManager.add(decreaseAnimationSpeedAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(gotoBeginAction);
+        toolBarManager.add(gotoFirstEventAction);
         toolBarManager.add(playBackwardAction);
         toolBarManager.add(stepBackwardAction);
         toolBarManager.add(stopAction);
@@ -236,12 +237,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         toolBarManager.add(animationPositionContribution);
 	}
 
-    @Override
-    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
-        // TODO: remove? AnimationTimeline shows the same information already...
-    	// statusLineManager.add(animationStatus);
-    }
-
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		if (targetEditor instanceof AnimationEditor) {
@@ -250,30 +245,19 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 				eventLogInput = animationCanvas.getInput();
 				if (eventLogInput != null)
 					eventLogInput.removeEventLogChangedListener(this);
-
+				getPage().removePartListener(this);
 				animationCanvas.removeSelectionChangedListener(this);
-				// TODO: animationCanvas.getAnimationController().removeAnimationListener(listener);
+				animationCanvas.getAnimationController().removeAnimationListener(this);
 			}
-
 			animationCanvas = ((AnimationEditor)targetEditor).getAnimationCanvas();
-
 			eventLogInput = animationCanvas.getInput();
 			if (eventLogInput != null)
 				eventLogInput.addEventLogChangedListener(this);
-
+			getPage().addPartListener(this);
 			animationCanvas.addSelectionChangedListener(this);
-			animationCanvas.getAnimationController().addAnimationListener(new IAnimationListener() {
-	            public void runningStateChanged(boolean isRunning) {
-	                update();
-	            }
-
-	            public void animationPositionChanged(AnimationPosition animationPosition) {
-	                update();
-	            }
-	        });
-
-			update();
+			animationCanvas.getAnimationController().addAnimationListener(this);
             animationPositionContribution.configureSlider();
+			update();
 		}
 		else
 		    animationCanvas = null;
@@ -283,25 +267,21 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 		try {
 			for (Field field : getClass().getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
-
-				if (fieldType == AnimationAction.class ||
-					fieldType == AnimationMenuAction.class)
-				{
+				if (fieldType == AnimationAction.class || fieldType == AnimationMenuAction.class) {
 					AnimationAction fieldValue = (AnimationAction)field.get(this);
-
 					if (fieldValue != null && animationCanvas != null) {
 						fieldValue.setEnabled(true);
 						fieldValue.update();
-						if (animationCanvas.getInput().isLongRunningOperationInProgress())
+						if ((getPage() != null && !(getPage().getActivePart() instanceof AnimationEditor)) || animationCanvas.getInput().isLongRunningOperationInProgress())
 							fieldValue.setEnabled(false);
 					}
 				}
-				if (fieldType == StatusLineContributionItem.class) {
+				else if (fieldType == StatusLineContributionItem.class) {
 					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
 					if (animationCanvas != null)
 						fieldValue.update();
 				}
-                if (fieldType == AnimationPositionContribution.class) {
+				else if (fieldType == AnimationPositionContribution.class) {
                     AnimationPositionContribution fieldValue = (AnimationPositionContribution)field.get(this);
                     if (animationCanvas != null)
                         fieldValue.update();
@@ -362,52 +342,92 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 		// void
 	}
 
+    public void partActivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partBroughtToTop(IWorkbenchPart part) {
+    }
+
+    public void partClosed(IWorkbenchPart part) {
+    }
+
+    public void partDeactivated(IWorkbenchPart part) {
+        update();
+    }
+
+    public void partOpened(IWorkbenchPart part) {
+    }
+
+    public void runningStateChanged(boolean isRunning) {
+        update();
+    }
+
+    public void animationPositionChanged(AnimationPosition animationPosition) {
+        update();
+    }
+
 	/*************************************************************************************
 	 * ACTIONS
 	 */
 
-    private AnimationAction createSpeedUpActionAction() {
-        return new AnimationAction("Speed Up", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_SPEED_UP)) {
+    private AnimationAction createIncreaseAnimationSpeedActionAction() {
+        return new AnimationAction("Increase Animation Speed", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_INCREASE_ANIMATION_SPEED)) {
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().speedUp();
+                animationCanvas.getAnimationController().increaseAnimationSpeed();
             }
         };
     }
 
-    private AnimationAction createSpeedDownActionAction() {
-        return new AnimationAction("Speed Down", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_SPEED_DOWN)) {
+    private AnimationAction createDecreaseAnimationSpeedActionAction() {
+        return new AnimationAction("Decrease Animation Speed", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_DECREASE_ANIMATION_SPEED)) {
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().speedDown();
+                animationCanvas.getAnimationController().decreaseAnimationSpeed();
             }
         };
     }
 
     private AnimationAction createGotoBeginAction() {
-        return new AnimationAction("Goto Begin", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_BEGIN)) {
+        return new AnimationAction("Go To Begin", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_BEGIN)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationBegin());
+                setEnabled(!animationCanvas.getEventLog().isEmpty() && !animationCanvas.getAnimationController().isAtBeginAnimationPosition());
             }
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().gotoAnimationBegin();
+                animationCanvas.getAnimationController().gotoBeginAnimationPosition();
+            }
+        };
+    }
+
+    private AnimationAction createGotoFirstEventAction() {
+        return new AnimationAction("Go To First Event", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_FIRST_EVENT)) {
+            @Override
+            public void update() {
+                IEvent firstEvent = animationCanvas.getEventLog().getFirstEvent();
+                setEnabled(firstEvent != null && firstEvent.getNextEvent() != null && !animationCanvas.getAnimationController().isAtFirstEventAnimationPosition());
+            }
+
+            @Override
+            protected void doRun() {
+                animationCanvas.getAnimationController().gotoFirstEventAnimationPosition();
             }
         };
     }
 
     private AnimationAction createGotoEndAction() {
-        return new AnimationAction("Goto End", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_END)) {
+        return new AnimationAction("Go To End", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_GOTO_END)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationEnd());
+                setEnabled(!animationCanvas.getEventLog().isEmpty() && !animationCanvas.getAnimationController().isAtEndAnimationPosition());
             }
 
             @Override
             protected void doRun() {
-                animationCanvas.getAnimationController().gotoAnimationEnd();
+                animationCanvas.getAnimationController().gotoEndAnimationPosition();
             }
         };
     }
@@ -416,7 +436,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Play Forward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_PLAY_FORWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationEnd());
+                setEnabled(!animationCanvas.getEventLog().isEmpty() && !animationCanvas.getAnimationController().isAtEndAnimationPosition());
             }
 
             @Override
@@ -430,7 +450,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Step Forward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_STEP_FORWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationEnd());
+                setEnabled(!animationCanvas.getEventLog().isEmpty() && !animationCanvas.getAnimationController().isAtEndAnimationPosition());
             }
 
             @Override
@@ -444,7 +464,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Play Backward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_PLAY_BAKWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationBegin());
+                setEnabled(!animationCanvas.getEventLog().isEmpty() && !animationCanvas.getAnimationController().isAtBeginAnimationPosition());
             }
 
             @Override
@@ -458,7 +478,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         return new AnimationAction("Step Backward", Action.AS_PUSH_BUTTON, AnimationPlugin.getImageDescriptor(IMAGE_STEP_BACKWARD)) {
             @Override
             public void update() {
-                setEnabled(!animationCanvas.getAnimationController().isAtAnimationBegin());
+                setEnabled(!animationCanvas.getEventLog().isEmpty() && !animationCanvas.getAnimationController().isAtBeginAnimationPosition());
             }
 
             @Override
@@ -527,7 +547,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private CommandContributionItem createGotoEventCommandContributionItem() {
-        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.animation.gotoEvent", SWT.PUSH));
+        return new CommandContributionItem(new CommandContributionItemParameter(PlatformUI.getWorkbench(), null, "org.omnetpp.animation.gotoEvent", SWT.PUSH));
     }
 
     public static class GotoEventHandler extends AbstractHandler {
@@ -545,7 +565,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     }
 
     private CommandContributionItem createGotoSimulationTimeCommandContributionItem() {
-        return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.animation.gotoSimulationTime", SWT.PUSH));
+        return new CommandContributionItem(new CommandContributionItemParameter(PlatformUI.getWorkbench(), null, "org.omnetpp.animation.gotoSimulationTime", SWT.PUSH));
     }
 
     public static class GotoSimulationTimeHandler extends AbstractHandler {
@@ -554,7 +574,7 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
             if (part instanceof IAnimationCanvasProvider) {
                 AnimationCanvas animationCanvas = ((IAnimationCanvasProvider)part).getAnimationCanvas();
-                GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(animationCanvas.getEventLog(), animationCanvas.getAnimationController().getSimulationTime());
+                GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(animationCanvas.getEventLog(), animationCanvas.getAnimationController().getCurrentSimulationTime());
                 if (dialog.open() == Window.OK)
                     animationCanvas.getAnimationController().gotoSimulationTime(dialog.getSimulationTime());
             }
@@ -580,26 +600,23 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         };
     }
 
-    private AnimationAction createLayoutAction() {
-        return new AnimationAction("Layout", Action.AS_PUSH_BUTTON) {
-            @Override
-            protected void doRun() {
-                // TODO:
-            }
-        };
-    }
-
     private AnimationAction createConfigureAction() {
         return new AnimationAction("Configure...", Action.AS_PUSH_BUTTON) {
             @Override
             protected void doRun() {
                 AnimationController animationController = animationCanvas.getAnimationController();
                 AnimationConfigurationDialog configurationDialog = new AnimationConfigurationDialog(Display.getCurrent().getActiveShell(), animationController.getAnimationParameters());
-                org.omnetpp.common.engine.BigDecimal simulationTime = animationController.getSimulationTime();
+                long eventNumber = animationController.getCurrentEventNumber();
                 if (configurationDialog.open() == Window.OK) {
-                    animationController.reloadAnimationPrimitives();
-                    animationController.gotoSimulationTime(simulationTime);
+                    // TODO: KLUDGE: the model has to be cleared and rebuilt,
+                    // but this clearInternalState sux here, because
+                    // gotoEventNumber has a stopAnimationInternal in it and it
+                    // tries to notify the listeners without a valid internal
+                    // state
+                    animationController.clearInternalState();
+                    animationController.gotoEventNumber(eventNumber);
                     animationPositionContribution.configureSlider();
+                    AnimationContributor.this.update();
                 }
             }
         };
@@ -625,16 +642,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         };
     }
 
-    private StatusLineContributionItem createAnimationStatus() {
-        return new StatusLineContributionItem("Animation", true, 64) {
-			@Override
-		    public void update() {
-			    AnimationController animationController = animationCanvas.getAnimationController();
-				setText("#" + animationController.getEventNumber() + " " + animationController.getSimulationTime() + "s " + animationController.getAnimationTime());
-		    }
-		};
-	}
-
     private AnimationPositionContribution createAnimationPositionContribution() {
         return new AnimationPositionContribution("AnimationPositionContribution");
     }
@@ -655,7 +662,15 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                     int selection = slider.getSelection();
                     AnimationController animationController = animationCanvas.getAnimationController();
                     animationController.stopAnimation();
-                    animationController.gotoAnimationTime(Math.min(selection, animationController.getAnimationEnd().getAnimationTime()));
+                    IEventLog eventLog = animationController.getEventLogInput().getEventLog();
+                    long firstEventNumber = eventLog.getFirstEvent().getEventNumber();
+                    long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                    if (selection == firstEventNumber)
+                        animationController.gotoBeginAnimationPosition();
+                    else if (selection == lastEventNumber)
+                        animationController.gotoEndAnimationPosition();
+                    else
+                        animationController.gotoEventNumber(selection);
                     AnimationContributor.this.update();
                 }
 
@@ -669,15 +684,23 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         @Override
         public void update() {
             super.update();
-            if (slider != null && !slider.isDisposed())
-                slider.setSelection((int)animationCanvas.getAnimationController().getAnimationTime());
+            AnimationController animationController = animationCanvas.getAnimationController();
+            if (slider != null && !slider.isDisposed() && animationController.getCurrentAnimationPosition().isCompletelySpecified())
+                slider.setSelection((int)animationController.getCurrentEventNumber());
         }
 
         public void configureSlider() {
             if (slider != null && animationCanvas != null) {
                 AnimationController animationController = animationCanvas.getAnimationController();
-                if (animationController != null)
-                    slider.setValues((int)animationController.getAnimationTime(), 0, (int)Math.ceil(animationController.getAnimationEnd().getAnimationTime()) + 1, 1, 1, 10);
+                if (animationController != null && animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+                    IEventLog eventLog = animationController.getEventLogInput().getEventLog();
+                    long firstEventNumber = eventLog.getFirstEvent().getEventNumber();
+                    long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                    // TODO: handle overflow
+                    slider.setValues((int)animationController.getCurrentEventNumber(), (int)firstEventNumber, (int)(lastEventNumber - firstEventNumber + 1), 1, 1, 10);
+                }
+                else
+                    slider.setValues(0, 0, 1, 1, 1, 1);
             }
         }
     }

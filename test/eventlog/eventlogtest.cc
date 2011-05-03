@@ -88,8 +88,6 @@ void testRandomEventLogAccess(const char *fileName, int numberOfRandomReads, int
     LCGRandom random;
     EventLog *eventLog = new EventLog(new FileReader(fileName));
 
-    eventLog->parseInitializationLogEntries();
-
     IEvent *firstEvent = eventLog->getFirstEvent();
     IEvent *lastEvent = eventLog->getLastEvent();
 
@@ -107,13 +105,13 @@ void testRandomEventLogAccess(const char *fileName, int numberOfRandomReads, int
             Event *event;
 
             if (random.next01() < 0.5) {
-                eventnumber_t eventNumber = random.next01() * lastEvent->getEventNumber();
+                eventnumber_t eventNumber = random.next01() * (lastEvent->getEventNumber() + 1);
                 printf("Seeking for event number: %"LL"d\n", eventNumber);
                 event = eventLog->getEventForEventNumber(eventNumber, (MatchKind)(int)(random.next01() * 5));
             }
             else {
                 simtime_t simulationTime = random.next01() * lastEvent->getSimulationTime();
-                printf("Seeking for simulation time: %g\n", simulationTime);
+                printf("Seeking for simulation time: %g\n", simulationTime.dbl());
                 event = eventLog->getEventForSimulationTime(simulationTime, (MatchKind)(int)(random.next01() * 5));
             }
 

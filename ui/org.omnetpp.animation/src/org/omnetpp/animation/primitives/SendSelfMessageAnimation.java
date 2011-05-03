@@ -7,7 +7,6 @@
 
 package org.omnetpp.animation.primitives;
 
-import org.eclipse.draw2d.ImageFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.MouseEvent;
@@ -18,32 +17,38 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.omnetpp.animation.AnimationPlugin;
 import org.omnetpp.animation.editors.AnimationContributor;
+import org.omnetpp.animation.figures.Completion;
 import org.omnetpp.animation.figures.SelectableImageFigure;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogMessage;
 
 public class SendSelfMessageAnimation extends AbstractAnimationPrimitive {
-    protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_SEND_SELF_MESSAGE). getImageData());
+    protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_SEND_SELF_MESSAGE).getImageData());
 
     protected int moduleId;
 
     protected EventLogMessage message;
 
-    protected ImageFigure imageFigure;
+    protected SelectableImageFigure imageFigure;
 
-    public SendSelfMessageAnimation(AnimationController animationEnvironment, int moduleId, EventLogMessage message) {
-		super(animationEnvironment);
+    protected Completion messageSendCompletion;
+
+    protected double messageHighlightAnimationDuration;
+
+    public SendSelfMessageAnimation(AnimationController animationController, int moduleId, EventLogMessage message, double messageHighlightAnimationDuration) {
+		super(animationController);
         this.message = message;
 		this.moduleId = moduleId;
+		this.messageHighlightAnimationDuration = messageHighlightAnimationDuration;
         createFigures();
 	}
 
     private void createFigures() {
         Rectangle bounds = image.getBounds();
-        imageFigure = new SelectableImageFigure(image);
-        imageFigure.setSize(bounds.width, bounds.height);
-        imageFigure.addMouseListener(new MouseListener() {
+        MouseListener mouseListener = new MouseListener() {
             public void mouseDoubleClicked(MouseEvent me) {
             }
 
@@ -53,29 +58,50 @@ public class SendSelfMessageAnimation extends AbstractAnimationPrimitive {
             public void mouseReleased(MouseEvent me) {
                 animationController.getAnimationCanvas().setSelectedElement(imageFigure, message);
             }
-        });
+        };
+        imageFigure = new SelectableImageFigure(image);
+        imageFigure.setSize(bounds.width, bounds.height);
+        imageFigure.addMouseListener(mouseListener);
+        messageSendCompletion = new Completion(true, true, true, 0, ColorFactory.BLACK);
+        messageSendCompletion.setSize(bounds.width - 7, bounds.height - 7);
+        messageSendCompletion.addMouseListener(mouseListener);
     }
 
 	@Override
 	public void activate() {
         super.activate();
-	    getDecorationLayer().add(imageFigure);
+	    Layer decorationLayer = getDecorationLayer();
+        decorationLayer.add(imageFigure);
+        decorationLayer.add(messageSendCompletion);
 	}
 
 	@Override
 	public void deactivate() {
         super.deactivate();
-        getDecorationLayer().remove(imageFigure);
+        Layer decorationLayer = getDecorationLayer();
+        decorationLayer.remove(imageFigure);
+        decorationLayer.remove(messageSendCompletion);
 	}
 
 	@Override
 	public void refreshAnimation(AnimationPosition animtionPosition) {
-        Point location = getSubmoduleFigure(moduleId).getBounds().getLocation();
-        Dimension size = imageFigure.getSize();
-        imageFigure.setLocation(location.translate(-size.width, -size.height));
-        imageFigure.setToolTip(new Label("Timer expires at " + message.getArrivalTime() + "s, after " + message.getArrivalTime().subtract(animationController.getSimulationTime()) + "s"));
-        double alpha = (animationController.getAnimationTime() - getBeginAnimationTime()) / getAnimationTimeDuration();
-        // TODO: add a small line segment that shrinks as time goes by
+        boolean visible = animationController.getCurrentAnimationTime() < getOriginRelativeEndAnimationTime() - messageHighlightAnimationDuration ||
+                          2 * animationController.getCurrentRealTime() - Math.floor(2 * animationController.getCurrentRealTime()) < 0.5;
+        imageFigure.setVisible(visible);
+        messageSendCompletion.setVisible(visible);
+        if (visible) {
+            Dimension size = imageFigure.getSize();
+            Point location = getSubmoduleFigure(moduleId).getBounds().getLocation().translate(-size.width, -size.height);
+            Label tooltip = new Label("Timer " + message.getName() + " expires at " + message.getArrivalTime() + "s, after " + message.getArrivalTime().subtract(animationController.getCurrentSimulationTime()) + "s");
+            imageFigure.setLocation(location);
+            imageFigure.setToolTip(tooltip);
+            BigDecimal simulationTimeDuration = getSimulationTimeDuration();
+            double completion = simulationTimeDuration.equals(BigDecimal.getZero()) ? 0 : 1 - animationController.getCurrentSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / simulationTimeDuration.doubleValue();
+            messageSendCompletion.setLocation(location.translate(3, 4));
+            messageSendCompletion.setAlpha(64);
+            messageSendCompletion.setCompletion(completion);
+            messageSendCompletion.setToolTip(tooltip);
+        }
 	}
 
     protected Layer getDecorationLayer() {

@@ -175,6 +175,9 @@ void cComponent::finalizeParameters()
         par(i).read();
 
     setFlag(FL_PARAMSFINALIZED, true);
+
+    // always store the display string
+    EVCB.displayStringChanged(this);
 }
 
 bool cComponent::hasDisplayString()
@@ -199,9 +202,6 @@ cDisplayString& cComponent::getDisplayString()
 {
     if (!dispstr)
     {
-        dispstr = new cDisplayString();
-        dispstr->setHostObject(this);
-
         // set display string (it may depend on parameter values via "$param" references)
         if (!parametersFinalized())
             throw cRuntimeError(this, "Cannot access display string yet: parameters not yet set up");
@@ -209,7 +209,10 @@ cDisplayString& cComponent::getDisplayString()
         cProperty *prop = props->get("display");
         const char *propValue = prop ? prop->getValue(cProperty::DEFAULTKEY) : NULL;
         if (propValue)
-            dispstr->parse(propValue);
+            dispstr = new cDisplayString(propValue);
+        else
+            dispstr = new cDisplayString();
+        dispstr->setHostObject(this);
     }
     return *dispstr;
 }

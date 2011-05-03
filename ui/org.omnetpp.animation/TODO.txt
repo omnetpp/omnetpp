@@ -1,3 +1,83 @@
+Making animation lazy:
+======================
+
+First of all, we have to give up on absolute animation times starting from the very beginning with 0... and this is going to be hard... :(
+We will have to use a fixpoint (probably referring to an event number) along with relative animation times. The animation time 0 is for the
+fixpoint and it is the origin of the coordinate system. The zero animation time designates the beginning of the handle message animation
+for the fixpoint event.
+
+AnimationPrimitives are always completely loaded between the events of two or more subsequent keyframes. This range can be extended
+in both directions with new keyframes. Alternatively we can relocate to another keyframe in the eventlog and clear all loaded primitives.
+We have to make sure that events are loaded only once to avoid duplicated AnimationPrimitives. Events, that are mentioned in the
+keyframe's state property in the eventlog file, are loaded individually.
+
+Relocation is done by setting the coordinate system origin event number to a new one, and setting the corresponding animation time to 0.
+An important result of these changes is that the animation times might be negative, because now it specifies a position relative to the
+fixpoint. Extending the range of loaded animation primitives is done by reading another block of events until the next or previous keyframe
+event. To properly have all AnimationPrimitives. we also have to load the events listed in the keyframe state. When we are reading forward
+there's no need to look back and read those events because they have been already loaded.
+
+Q&A
+ - How do we represent the very first moment of the animation that corresponds to the first line of the initialization entries?
+   That line is not part of any event, so it will be AnimationPosition(-1, -1, 0)
+   
+ - How do we represent the very last moment of the animation that corresponds to the last line of the last event?
+   It should be AnimationPosition(lastEventNumber, lastSimulationTime, lastRelativeAnimationTime)
+
+ - How do we scroll forward or backward with a certain amount of animation time?
+   It is easy if it falls into the range of already loaded AnimationPrimitives, otherwise we need to load new primitives until we get
+   to the given animation time. This might require to load several events possibly belonging to multiple keyframes.
+
+ - How do we provide the default stop condition for moving forward or backward without reading the whole eventlog file?
+   Certainly not by providing the precise begin or end animation position, because that might just be too expensive to compute. Maybe we
+   can specify these using only event numbers, simulation times and we might still be able to check if we have reached one of the ends.
+
+ - How do we manage positioning with the scroll bar?
+   That should use event numbers instead of animation times. The scroll bar will no longer be linear in terms of pixels vs animation times.
+   
+ - What does the animation time in an animation position mean? It certainly does not mean an absolute animation time measured from the very
+   beginning of the animation, because that would completely kill laziness. So it must mean a relative animation time. Ok, but then relative to
+   what? Perhaps it should be relative to the fixpoint (summing up all the animation durations), or to the handle message animation of the animation
+   position's event number? If it were relative to the fixpoint then we when we replace the fixpoint in the controller (e.g. relocating) we would
+   would have to invalidate all existing animation positions. If the fixpoint is also included in every animation position that almost solves this
+   problem. Unfortunately there might still be a problem when using to completely unrelated fixpoints. We just don't know the animation time 
+   difference between them.
+   
+ - How do we avoid using multiple equivalent AnimationPositions referring to the same position within the animation? Is there a canonical position
+   representation, or we must be able to compare unrelated event numbers and signed relative animation times? Maybe an event number and an event
+   relative animation time must uniquely identify an animation position. And it would be forbidden to provide an event relative animation time that
+   flows into a following or preceding event. This would clearly mean that animation times cannot be compared with a simple double precision 
+   comparison... 
+
+getAnimationBegin() relocate ha nincs fixpoint, extend ha van
+getAnimationEnd() relocate ha nincs fixpoint, extend ha van
+getAnimationPosition() easy
+getAnimationTime() it is not absolute, but then what is it relative to?
+getEventNumber() easy
+getSimulationTime() easy
+
+gotoAnimationBegin() relocate
+gotoAnimationEnd() relocate
+gotoAnimationPosition(AnimationPosition) relocate
+gotoAnimationTime(double) ??? this is the really hard part, or it might even be impossible
+gotoEventNumber(long) relocate to the event number
+gotoSimulationTime(BigDecimal) relocate to the first event with the given simulation time
+
+isAtAnimationBegin() ez nem kerdezheti le a begin animation positiont
+isAtAnimationEnd() ez nem kerdezheti le az end animation positiont
+
+playAnimationBackward() easy
+playAnimationForward() easy
+
+stepAnimationBackwardToPreviousAnimationChange()
+stepAnimationBackwardToPreviousEvent()
+stepAnimationForwardToNextAnimationChange()
+stepAnimationForwardToNextEvent()
+
+startAnimation() easy
+stopAnimation() easy
+
+
 BUG: close all elog files, open the Animation View and click Play --> NPE
 TODO: throws NPE on older eventlog files; it should check the version number in the file and tell the user if the file is not supported
 

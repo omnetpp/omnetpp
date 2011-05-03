@@ -9,6 +9,7 @@ package org.omnetpp.animation.primitives;
 
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogGate;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.ned.model.DisplayString;
@@ -20,8 +21,8 @@ public class SetConnectionDisplayStringAnimation extends AbstractInfiniteAnimati
 
 	protected IDisplayString oldDisplayString;
 
-	public SetConnectionDisplayStringAnimation(AnimationController animationController, EventLogGate sourceGate, IDisplayString displayString) {
-		super(animationController);
+	public SetConnectionDisplayStringAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, EventLogGate sourceGate, IDisplayString displayString) {
+		super(animationController, eventNumber, simulationTime);
 		this.sourceGate = sourceGate;
 		this.displayString = displayString;
 	}

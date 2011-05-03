@@ -189,29 +189,35 @@ void EventLog::parseKeyframes()
     SimulationBeginEntry *simulationBeginEntry = getSimulationBeginEntry();
     if (simulationBeginEntry) {
         keyframeBlockSize = simulationBeginEntry->keyframeBlockSize;
-        consequenceLookaheadLimits.resize((getLastEventNumber() / keyframeBlockSize) + 1, 0);
+        consequenceLookaheadLimits.resize(getLastEventNumber() / keyframeBlockSize + 1, 0);
         reader->seekTo(reader->getFileSize());
         while (line = reader->getPreviousLineBufferPointer()) {
-            int length = reader->getCurrentLineLength();
-            if (length > 3 && line[0] == 'K' && line[1] == 'F' && line[2] == ' ') {
-                progress();
-                KeyframeEntry *keyframeEntry = (KeyframeEntry *)EventLogEntry::parseEntry(NULL, 0, line, length);
-                // store consequenceLookaheadLimits
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(NULL, 0, line, reader->getCurrentLineLength());
+            if (dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
+                KeyframeEntry *keyframeEntry = (KeyframeEntry *)eventLogEntry;
+                // store consequenceLookaheadLimits from the keyframe
                 char *s = const_cast<char *>(keyframeEntry->consequenceLookaheadLimits);
                 while (*s != '\0') {
                     eventnumber_t eventNumber = strtol(s, &s, 10);
-                    long keyframeIndex = eventNumber / keyframeBlockSize;
+                    eventnumber_t keyframeIndex = eventNumber / keyframeBlockSize;
                     s++;
                     eventnumber_t consequenceLookaheadLimit = strtol(s, &s, 10);
                     s++;
                     consequenceLookaheadLimits[keyframeIndex] = std::max(consequenceLookaheadLimits[keyframeIndex], consequenceLookaheadLimit);
                 }
-                // TODO: store simulation state data
+                // TODO: store simulation state data from the keyframe
                 // jump to previous keyframe
                 reader->seekTo(keyframeEntry->previousKeyframeFileOffset + 1);
                 reader->getNextLineBufferPointer();
-                delete keyframeEntry;
             }
+            else if (dynamic_cast<MessageEntry *>(eventLogEntry)) {
+                MessageEntry *messageEntry = (MessageEntry *)eventLogEntry;
+                int blockIndex = messageEntry->previousEventNumber / keyframeBlockSize;
+                // NOTE: the last event number is a reasonable approximation here
+                consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], getLastEventNumber() - messageEntry->previousEventNumber);
+            }
+            delete eventLogEntry;
+            progress();
         }
     }
 }
@@ -490,7 +496,7 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
     if (it != previousEventNumberToMessageEntriesMap.end())
         return it->second;
     else {
-        long keyframeBlockIndex = previousEventNumber / keyframeBlockSize;
+        eventnumber_t keyframeBlockIndex = previousEventNumber / keyframeBlockSize;
         eventnumber_t beginEventNumber = (eventnumber_t)keyframeBlockIndex * keyframeBlockSize;
         eventnumber_t endEventNumber = beginEventNumber + keyframeBlockSize;
         eventnumber_t consequenceLookahead = getConsequenceLookahead(previousEventNumber);

@@ -196,9 +196,9 @@ public class ConnectionFigure extends PolylineConnection
 
         graphics.setLineCap(SWT.CAP_FLAT);
         if (isSelected)
-            setForegroundColor(ColorFactory.RED);
+            graphics.setForegroundColor(ColorFactory.RED);
         else
-            setForegroundColor(localLineColor);
+            graphics.setForegroundColor(getForegroundColor());
 	    super.paint(graphics);
 	    graphics.popState();
 	}

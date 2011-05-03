@@ -9,8 +9,15 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
-// TODO: binary search
-// TODO: shall we reuse the C++ timeline coordinate system used by the sequence chart?
+/**
+ * This class provides a mapping between animation times and event numbers. The
+ * animation time between two subsequent events is determined by a linear
+ * interpolation of their simulation times. If the simulation times are equal
+ * for the two events, then the mapping is not bijective.
+ *
+ * @author levy
+ */
+// TODO: binary search all over the place
 public class AnimationCoordinateSystem {
     private EventLogInput eventLogInput;
 
@@ -37,14 +44,14 @@ public class AnimationCoordinateSystem {
             for (int i = 0; i < animationPositions.size(); i++) {
                 AnimationPosition animationPosition = animationPositions.get(i);
                 if (animationPosition.getEventNumber() == eventNumber) {
-                    animationTime = animationPosition.getAnimationTime();
+                    animationTime = animationPosition.getOriginRelativeAnimationTime();
                     break;
                 }
                 else if (animationPosition.getEventNumber() > eventNumber) {
                     if (i == 0)
                         animationTime = 0.0;
                     else
-                        animationTime = animationPositions.get(i - 1).getAnimationTime();
+                        animationTime = animationPositions.get(i - 1).getOriginRelativeAnimationTime();
                     break;
                 }
             }
@@ -62,8 +69,8 @@ public class AnimationCoordinateSystem {
                 double ratio = simulationTime.subtract(beginAnimationPosition.getSimulationTime()).doubleValue() / endAnimationPosition.getSimulationTime().subtract(beginAnimationPosition.getSimulationTime()).doubleValue();
                 if (Double.isNaN(ratio)) // all times are equal
                     ratio = 0;
-                double beginAnimationTime = beginAnimationPosition.getAnimationTime();
-                double endAnimationTime = endAnimationPosition.getAnimationTime();
+                double beginAnimationTime = beginAnimationPosition.getOriginRelativeAnimationTime();
+                double endAnimationTime = endAnimationPosition.getOriginRelativeAnimationTime();
                 // make sure we are precise at the boundaries and never return invalid values due to double arithmetic
                 if (ratio == 0.0)
                     return beginAnimationTime;
@@ -92,8 +99,8 @@ public class AnimationCoordinateSystem {
         for (int i = 0; i < animationPositions.size() - 1; i++) {
             AnimationPosition beginAnimationPosition = animationPositions.get(i);
             AnimationPosition endAnimationPosition = animationPositions.get(i + 1);
-            if (beginAnimationPosition.getAnimationTime() <= animationTime && animationTime <= endAnimationPosition.getAnimationTime()) {
-                double ratio = (animationTime - beginAnimationPosition.getAnimationTime()) / (endAnimationPosition.getAnimationTime() - beginAnimationPosition.getAnimationTime());
+            if (beginAnimationPosition.getOriginRelativeAnimationTime() <= animationTime && animationTime <= endAnimationPosition.getOriginRelativeAnimationTime()) {
+                double ratio = (animationTime - beginAnimationPosition.getOriginRelativeAnimationTime()) / (endAnimationPosition.getOriginRelativeAnimationTime() - beginAnimationPosition.getOriginRelativeAnimationTime());
                 if (Double.isNaN(ratio)) // all times are equal
                     ratio = 0;
                 BigDecimal beginSimulationTime = beginAnimationPosition.getSimulationTime();

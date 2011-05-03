@@ -12,6 +12,7 @@ import org.eclipse.draw2d.MouseListener;
 import org.omnetpp.animation.figures.AnimationCompoundModuleFigure;
 import org.omnetpp.animation.widgets.AnimationCanvas;
 import org.omnetpp.animation.widgets.AnimationController;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogModule;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.CompoundModuleLineBorder;
@@ -23,8 +24,8 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 
 	protected int parentModuleId;
 
-	public CreateModuleAnimation(AnimationController animationController, EventLogModule module, int parentModuleId) {
-		super(animationController);
+	public CreateModuleAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, EventLogModule module, int parentModuleId) {
+		super(animationController, eventNumber, simulationTime);
 		this.module = module;
 		this.parentModuleId = parentModuleId;
 	}
@@ -71,9 +72,14 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 				        AnimationCanvas animationCanvas = animationController.getAnimationCanvas();
                         if (!animationCanvas.showsCompoundModule(module.getId())) {
                             animationController.stopAnimation();
-				            long eventNumber = animationController.getEventNumber();
+				            long eventNumber = animationController.getCurrentEventNumber();
                             animationCanvas.addShownCompoundModule(module.getId());
-				            animationController.reloadAnimationPrimitives();
+                            AnimationCompoundModuleFigure animationCompoundModuleFigure = animationCanvas.findAnimationCompoundModuleFigure(module.getId());
+                            if (animationCompoundModuleFigure != null)
+                                animationCompoundModuleFigure.setCompoundModuleFigure(compoundModuleFigure);
+                            else
+                                animationCanvas.addFigure(new AnimationCompoundModuleFigure(animationController, compoundModuleFigure, module.getId(), module.getFullPath()));
+                            animationController.clearInternalState();
                             animationController.gotoEventNumber(eventNumber);
 				        }
 				        else
@@ -96,12 +102,21 @@ public class CreateModuleAnimation extends AbstractInfiniteAnimation {
 	@Override
 	public void deactivate() {
         super.deactivate();
-		EventLogModule parentModule = getSimulation().getModuleById(parentModuleId);
-        CompoundModuleFigure parentCompoundModuleFigure = getCompoundModuleFigure(parentModule);
-        if (parentCompoundModuleFigure != null) {
-		    SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
+        SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationController.getFigure(module, SubmoduleFigure.class);
+        if (submoduleFigure != null) {
+            if (submoduleFigure.getParent() != null)
+                submoduleFigure.getParent().remove(submoduleFigure);
             animationController.setFigure(module, SubmoduleFigure.class, null);
-		    parentCompoundModuleFigure.getSubmoduleLayer().remove(submoduleFigure);
 		}
+        CompoundModuleFigure compoundModuleFigure = (CompoundModuleFigure)animationController.getFigure(module, CompoundModuleFigure.class);
+        if (compoundModuleFigure != null) {
+            if (compoundModuleFigure.getParent() != null)
+                compoundModuleFigure.getParent().remove(compoundModuleFigure);
+            animationController.setFigure(module, CompoundModuleFigure.class, null);
+        }
+        AnimationCanvas animationCanvas = animationController.getAnimationCanvas();
+        AnimationCompoundModuleFigure animationCompoundModuleFigure = animationCanvas.findAnimationCompoundModuleFigure(module.getId());
+        if (animationCompoundModuleFigure != null)
+            animationCompoundModuleFigure.getParent().remove(animationCompoundModuleFigure);
 	}
 }

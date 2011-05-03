@@ -187,7 +187,6 @@ void Event::print(FILE *file, bool outputEventLogMessages)
 {
     for (EventLogEntryList::iterator it = eventLogEntries.begin(); it != eventLogEntries.end(); it++) {
         EventLogEntry *eventLogEntry = *it;
-
         if (outputEventLogMessages || !dynamic_cast<EventLogMessageEntry *>(eventLogEntry))
             eventLogEntry->print(file);
     }
@@ -240,12 +239,11 @@ EndSendEntry *Event::getEndSendEntry(BeginSendEntry *beginSendEntry)
 
         // message deleted on the channel (skip all deletes until the matching one is found)
         DeleteMessageEntry *deleteMessageEntry = dynamic_cast<DeleteMessageEntry *>(eventLogEntry);
-        if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId) {
+        if (deleteMessageEntry && deleteMessageEntry->messageId == beginSendEntry->messageId)
             return NULL;
-        }
     }
 
-    throw opp_runtime_error("Missing end message send or delete message entry");
+    throw opp_runtime_error("neither EndSendEntry nor DeleteMessageEntry found");
 }
 
 simtime_t Event::getTransmissionDelay(BeginSendEntry *beginSendEntry)

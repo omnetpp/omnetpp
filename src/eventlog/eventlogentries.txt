@@ -106,9 +106,9 @@ E EventEntry // an event that is processing a message
 
 KF KeyframeEntry
 {
+   p int64 previousKeyframeFileOffset  // file offset of the previous keyframe entry
    c string consequenceLookaheadLimits // consequence lookahead data
    s string simulationStateEntries     // simulation state data
-   p int64 previousKeyframeFileOffset  // file offset of the previous keyframe entry
 }
 
 abstract MessageEntry // base class for entries referring to a message

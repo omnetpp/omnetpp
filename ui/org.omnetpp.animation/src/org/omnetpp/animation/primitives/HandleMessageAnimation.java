@@ -19,8 +19,10 @@ import org.omnetpp.animation.editors.AnimationContributor;
 import org.omnetpp.animation.figures.SelectableImageFigure;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
+import org.omnetpp.common.engine.BigDecimal;
 
-public class HandleMessageAnimation extends AbstractAnimationPrimitive {
+// TODO: use a glow effect on the module instead of this green circle
+public class HandleMessageAnimation extends AbstractInstantaneousAnimation {
     protected static Image image = new Image(null, AnimationPlugin.getImageDescriptor(AnimationContributor.IMAGE_HANDLE_MESSAGE).getImageData());
 
     protected long eventNumber;
@@ -29,8 +31,8 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 
     protected SelectableImageFigure imageFigure;
 
-	public HandleMessageAnimation(AnimationController animationController, long eventNumber, int moduleId) {
-		super(animationController);
+	public HandleMessageAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, int moduleId) {
+		super(animationController, eventNumber, simulationTime);
 		this.eventNumber = eventNumber;
 		this.moduleId = moduleId;
         createFigures();
@@ -56,20 +58,24 @@ public class HandleMessageAnimation extends AbstractAnimationPrimitive {
 	@Override
 	public void activate() {
 	    super.activate();
-		getDecorationLayer().add(imageFigure);
+	    if (moduleId != 1)
+	        getDecorationLayer().add(imageFigure);
 	}
 
 	@Override
 	public void deactivate() {
         super.deactivate();
-		getDecorationLayer().remove(imageFigure);
+        if (moduleId != 1)
+            getDecorationLayer().remove(imageFigure);
 	}
 
 	@Override
 	public void refreshAnimation(AnimationPosition animtionPosition) {
-        Point location = getSubmoduleFigure(moduleId).getBounds().getLocation();
-        Dimension size = imageFigure.getSize();
-        imageFigure.setLocation(location.translate(0, -size.height));
+	    if (moduleId != 1) {
+            Point location = getSubmoduleFigure(moduleId).getBounds().getLocation();
+            Dimension size = imageFigure.getSize();
+            imageFigure.setLocation(location.translate(0, -size.height));
+	    }
 	}
 
     protected Layer getDecorationLayer() {

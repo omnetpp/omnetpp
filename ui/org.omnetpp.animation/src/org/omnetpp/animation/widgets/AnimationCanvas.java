@@ -30,13 +30,14 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogSelection;
 import org.omnetpp.common.eventlog.IEventLogChangeListener;
+import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.figures.misc.ISelectableFigure;
 
 public class AnimationCanvas
     extends EditableFigureCanvas
-    implements ISelectionProvider, IEventLogChangeListener, IAnimationListener
+    implements ISelectionProvider, IEventLogChangeListener, IEventLogProvider, IAnimationListener
 {
     private IEventLog eventLog; // the C++ wrapper for the data to be displayed
 
@@ -51,8 +52,6 @@ public class AnimationCanvas
     private ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener).
 
     private ISelectableFigure selectedFigure;
-
-    private Object selectedElement;
 
     private boolean isSelectionChangeInProgress;
 
@@ -119,7 +118,7 @@ public class AnimationCanvas
 
     public void removeDecorationFigures() {
         for (IFigure figure : getEditableFigures().toArray(new IFigure[0]))
-            if (!(figure instanceof AnimationCompoundModuleFigure))
+//            if (!(figure instanceof AnimationCompoundModuleFigure))
                 getRootFigure().remove(figure);
     }
 
@@ -179,8 +178,10 @@ public class AnimationCanvas
         else {
             ArrayList<Long> eventNumbers = new ArrayList<Long>();
             ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
-            eventNumbers.add(animationController.getEventNumber());
-            simulationTimes.add(animationController.getSimulationTime());
+            if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
+                eventNumbers.add(animationController.getCurrentEventNumber());
+                simulationTimes.add(animationController.getCurrentSimulationTime());
+            }
             return new EventLogSelection(eventLogInput, eventNumbers, simulationTimes);
         }
     }
@@ -194,8 +195,8 @@ public class AnimationCanvas
             BigDecimal firstSimulationTime = eventLogSelection.getFirstSimulationTime();
             Long firstEventNumber = eventLogSelection.getFirstEventNumber();
             boolean isSelectionReallyChanged =
-                ((firstSimulationTime != null && !firstSimulationTime.equals(animationController.getSimulationTime())) ||
-                 (firstEventNumber != null) && !firstEventNumber.equals(animationController.getEventNumber()));
+                ((firstSimulationTime != null && !firstSimulationTime.equals(animationController.getCurrentSimulationTime())) ||
+                 (firstEventNumber != null) && !firstEventNumber.equals(animationController.getCurrentEventNumber()));
             if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
                 try {
                     isSelectionChangeInProgress = true;

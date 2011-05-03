@@ -15,11 +15,12 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.omnetpp.animation.widgets.AnimationController;
 import org.omnetpp.animation.widgets.AnimationPosition;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.NoncentralChopboxAnchor;
 
-public class ModuleMethodCallAnimation extends AbstractAnimationPrimitive {
+public class ModuleMethodCallAnimation extends AbstractInstantaneousAnimation {
     protected Label methodName;
 
     protected int fromModuleId;
@@ -28,16 +29,17 @@ public class ModuleMethodCallAnimation extends AbstractAnimationPrimitive {
 
     protected ConnectionFigure methodCallArrow;
 
-	public ModuleMethodCallAnimation(AnimationController animationController, String methodNameString, int fromModuleId, int toModuleId) {
-		super(animationController);
+	public ModuleMethodCallAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, String methodNameString, int fromModuleId, int toModuleId) {
+		super(animationController, eventNumber, simulationTime);
 		this.fromModuleId = fromModuleId;
         this.toModuleId = toModuleId;
-		this.methodName = new Label(methodNameString);
+		methodName = new Label(methodNameString);
         methodName.setFont(JFaceResources.getDialogFont());
         methodName.setForegroundColor(ColorFactory.RED);
-        this.methodCallArrow = new ConnectionFigure();
+        methodCallArrow = new ConnectionFigure();
         methodCallArrow.setArrowHeadEnabled(true);
         methodCallArrow.setForegroundColor(ColorFactory.RED);
+        methodCallArrow.setLineDash(new float[] {4, 4});
 	}
 
 	@Override
