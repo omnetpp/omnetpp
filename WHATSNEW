@@ -5,6 +5,166 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibity, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 4.2b2 (May 2011)
+------------------------
+
+Most important feature: "Project Features" (see below).
+
+NED:
+ - Added support for conditional submodules. Syntax:
+     udp: UDP if needsUDP {...}
+     tcp: <tcpType> like ITCP if needsTCP {...}
+
+ - Added the xml() NED function, which accepts a string argument and parses
+   it as XML. Its most notable use is eliminating "empty.xml" files from INET:
+   one can use xml("<root/>") in NED files instead.
+
+ - Implemented default value for parametric submodule and channel types.
+   NED now supports the following syntax:
+     mobility: <default("NullMobility")> like IMobility;
+   The effect is that the NullMobility NED type will be used for the mobility
+   submodule if the type name is not specified otherwise, e.g. in the config-
+   uration with something like
+     **.mobility.type-name = "ConstSpeedMobility"
+
+ - Added the firstAvailable() NED function, which is helpful with the Project
+   Features feature (see below). It accepts any number of strings (see new
+   varargs support for NED functions), interprets them as NED type names
+   (either short names or fully qualified names), and returns the first one
+   that exists and is also "available" (its C++ implementation class exists).
+   Example usage:
+     tcp: <default(firstAvailable("TCP_lwIP", "TCP_NSC", "TCP"))> {..}
+   It chooses the TCP_lwIP, TCP_NSC or TCP module type for the tcp submodule,
+   in this order, unless the type is explicitly defined to be something else
+   in the configuration.
+
+ - Parametric submodule type can now also be specified in NED files, using
+   patterns that end in the new "typename" keyword. An example:
+     network Net {
+         parameters:
+             host[*].tcp.typename = "TCP_lwIP";
+         ...
+     }
+
+Ini files:
+ - The "type-name" per-object configuration option (**.typename=) has been
+   renamed in to "typename", for consistency with the similar new NED feature.
+
+Sim:
+ - Implemented varargs support for NED functions. If the signature (see
+   Define_NED_Function() and Define_NED_Function2() macros) ends in ", ...",
+   then the function will accept any number of additional arguments of any type.
+   At runtime, the implementation has access to both the actual number and
+   types of args. When passing extra args, optional arguments (those marked
+   with '?' in the signature) must all be present, i.e. varargs can only come
+   when all typed args are there.
+
+IDE:
+ - Upgraded to Eclipse 3.6.2
+
+ - Implemented the "Project Features" feature, which makes it possible to
+   disable unused parts ("features") of a project to reduce compilation time
+   and complexity. It has been invented to help INET Framework users and
+   developers deal with the growing size of the framework. Features are
+   described in the project's .oppfeatures file, authored by INET developers.
+   Users can activate/deactivate features in the Project Features page of
+   the Project Properties dialog (this page is directly accessible from the
+   Project menu and from the Build Configurations submenu of the project's
+   context menu in Project Explorer). Features map to NED packages and C++
+   source folders; disabling a feature maps to NED package exclusion, and
+   folder exclusion in CDT (C++ Development) configuration. Features can also
+   define C/C++ symbols (for #ifdefs), and extra libraries to link with.
+   At build time, the IDE checks the project's configuration (NED, CDT) and
+   if it is inconsistent with the selected features, it offers fixing it.
+   Features can also be used from the command line by exporting Makefiles
+   (or opp_makemake commands) that reflect a particular enablement of features.
+
+ - Support for excluding (disabling) NED packages. This feature is needed for
+   the Project Features feature. Exclusions can be edited on the NED Source
+   Folders project property page, and are saved into the project's .nedfolders
+   file.
+
+IDE/Animation Player:
+ - Implemented lazy loading of the eventlog file: the tool can now animate
+   large eventlog files with acceptable performance.
+
+ - Animation effects refined, e.g. packet transmission on a datarate channel.
+
+ - Heavy bugfixing. Note that the tool is still being actively developed, and
+   it is generally not yet ready for everyday use.
+
+IDE/Inifile Editor:
+ - Usability: the editor now comes up with the page (text or form) that was
+   used last time, and not always with the form editor. (When you flip the
+   editor to the other page, the page type is stored in the preferences.
+   When an editor is opened, the setting is read from the preferences and
+   the corresponding page is activated.)
+
+ - Improved text hover (F2) and hyperlink (Ctrl+click) support: the editor
+   can now show information and go to the definition of modules that occur
+   in the inifile key. For example, for a **.host[*].tcp.sackSupport = true
+   line, the user can hover over (or Ctrl+click) the host[*] part, and the
+   editor will show relevant information and go to the definition of the
+   host[] submodule vector in the NED network description.
+
+ - Improved content assist: per-object configuration options are now filtered
+   by the type of object that the key refers to; for example, if you type
+   **.ppp[*].txPkBytes.<Ctrl+Space>, the editor will know from the NED files
+   that txPkBytes is a statistic, and offer completions accordingly.
+
+ - Content assist: different types of completions (modules, parameters,
+   statistics, configuration options, etc) are now marked with icons.
+
+ - Markers on included inifiles are now removed when the main inifile is
+   closed. (Fix for #176)
+
+ - Added the Copy action to the Module Parameters view context menu: you can
+   now select the key for an unassigned parameter in the view, and copy/paste
+   it into the editor area.
+
+IDE/Wizards:
+ - New Tictoc Example and New Source-Sink Example wizards: fix: the root
+   Makefile executed opp_makemake in the src/ folder at each build,
+   overwriting the IDE-generated Makefile.
+
+ - New OMNeT++ Project wizard template: now it is possible to set "custom make"
+   for a folder: specify <foldername>:CUSTOM in the makemakeOptions= template
+   variable in template.properties. Use "." to name the project root folder.
+   Example: makemakeOptions = .: CUSTOM, src: --deep -meta:recurse...
+
+ - New option for template.properties: preRunTemplate=<fti-file-name>. Example:
+   preRunTemplate = main.fti. The option causes the given template file to be
+   evaluated for its side effects, just after the user hits Finish but before
+   any file is copied or template is evaluated. It is not allowed to produce
+   text output, but the variables it sets will be substituted into other
+   template.properties variables, and will also be available in other template
+   files. (Note: all other templates are run in isolation, and cannot change
+   variables for other templates!) The preRunTemplate option is the only way
+   to programmatically set the value of makemakeOptions and similar
+   template.properties options.
+
+IDE/Graphical Editor:
+ - Switched back double-click behaviour to Open NED Type action. The Properties
+   dialog can now opened with Ctrl+Enter (Alt+Enter was unavailable.)
+
+IDE/Sequence Chart and Event Log:
+ - Added show/hide options for arrows that represent mixed dependencies.
+   (Such arrows are drawn when the sequence chart is filtered, and represent
+   e.g. a sequence of message sendings and self-messages)
+
+ - Eventlog: enhanced performance of event tracing filter
+
+ - Simulations now record the termination message and result code into the
+   eventlog file
+
+ - Note: eventlog file format has changed (in order to better serve the
+   Animation Tool) -- .elog files recorded with any prior version of OMNeT++
+   have to be re-recorded.
+
+Many bug fixes, mostly in the IDE; you can see the detailed list at:
+http://tinyurl.com/omnetpp42b2-fixes
+
+
 OMNeT++ 4.2b1 (Feb 2011)
 ------------------------
 
@@ -243,7 +403,7 @@ Simulation kernel:
 
 Envir:
 
- - Ini file inclusion now behaves as textual substition: if an included
+ - Ini file inclusion now behaves as textual substitution: if an included
    ini file does not contain [General] or [Config XXX] lines, the file's
    content will be treated as if copy/pasted into the section containing
    the include. Ini files that do not start with a section heading will
@@ -710,7 +870,7 @@ IDE features:
 
  - Parameter grouping in the Module Hierarchy view
 
- - The simulation launcher now check for errors (and warns if any) before
+ - The simulation launcher now checks for errors (and warns if any) before
    launching simulations
 
  - Sequence Chart: attaching vectors to axes made more intuitive

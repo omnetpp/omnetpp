@@ -24,6 +24,13 @@ Legend:
 OMNeT++ 4.2
 ~~~~~~~~~~~
 
+(!)	The Register_PerObjectConfigOption() and Register_PerObjectConfigOptionU()
+	macros now take one more argument (inserted into the 3rd place), the
+	object kind.
+
+(!)	cRegistrationList::get() was renamed to find(), for consistency with
+	similarly named methods in other classes
+
 (!)	Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
 	is that it conflicted with lwIP code recently integrated into INET.
 	<platdep/sockets.h> still includes <winsock.h>, but now
@@ -31,6 +38,9 @@ OMNeT++ 4.2
 
 (i)	cChannel::MessageSentSignalValue: getMessage() return type fixed
 	(changed from cObject to cMessage)
+
+(+)	New cEnvir methods: getParsedXMLString(), forgetParsedXMLString(),
+	flushXMLParsedContentCache().
 
 
 OMNeT++ 4.1
