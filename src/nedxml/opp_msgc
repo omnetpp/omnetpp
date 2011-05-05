@@ -18,7 +18,7 @@ sub lookupExistingEnumName($$);
 #
 # If no args, print usage
 #
-$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2009 Andras Varga
+$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2011 Andras Varga
 Translates .msg files into C++
 
 Usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>]
