@@ -1,181 +1,181 @@
+E # 0 t 0 m 1 ce -1 msg -1
+SB v 1026 rid PureAloha2-0-20110505-14:08:55-8083 b 1000
+KF p -1 c "" s ""
 MC id 1 c cCompoundModule t Aloha n Aloha cm 1
+MS id 1 d bgi=background/terrain,s
 MC id 2 c aloha::Server t Server pid 1 n server
 GC m 2 g 0 n in o 0
-MC id 3 c aloha::Host t Host pid 1 n host[0]
-MC id 4 c aloha::Host t Host pid 1 n host[1]
-MC id 5 c aloha::Host t Host pid 1 n host[2]
-MC id 6 c aloha::Host t Host pid 1 n host[3]
-MC id 7 c aloha::Host t Host pid 1 n host[4]
-MC id 8 c aloha::Host t Host pid 1 n host[5]
-MC id 9 c aloha::Host t Host pid 1 n host[6]
-MC id 10 c aloha::Host t Host pid 1 n host[7]
-MC id 11 c aloha::Host t Host pid 1 n host[8]
-MC id 12 c aloha::Host t Host pid 1 n host[9]
-MC id 13 c aloha::Host t Host pid 1 n host[10]
-MC id 14 c aloha::Host t Host pid 1 n host[11]
-MC id 15 c aloha::Host t Host pid 1 n host[12]
-MC id 16 c aloha::Host t Host pid 1 n host[13]
-MC id 17 c aloha::Host t Host pid 1 n host[14]
-MC id 18 c aloha::Host t Host pid 1 n host[15]
-MC id 19 c aloha::Host t Host pid 1 n host[16]
-MC id 20 c aloha::Host t Host pid 1 n host[17]
-MC id 21 c aloha::Host t Host pid 1 n host[18]
-MC id 22 c aloha::Host t Host pid 1 n host[19]
-
-E # 0 t 0 m 1 msg -1
-SB v 1026 rid PureAloha2-0-20110223-16:48:29-17831
-MB sm 1 tm 2 m initialize(0)
-CM id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe -2320310056425226240
 MS id 2 d i=device/antennatower_l
+MC id 3 c aloha::Host t Host pid 1 n host[0]
+MS id 3 d i=device/pc_s
+MC id 4 c aloha::Host t Host pid 1 n host[1]
+MS id 4 d i=device/pc_s
+MC id 5 c aloha::Host t Host pid 1 n host[2]
+MS id 5 d i=device/pc_s
+MC id 6 c aloha::Host t Host pid 1 n host[3]
+MS id 6 d i=device/pc_s
+MC id 7 c aloha::Host t Host pid 1 n host[4]
+MS id 7 d i=device/pc_s
+MC id 8 c aloha::Host t Host pid 1 n host[5]
+MS id 8 d i=device/pc_s
+MC id 9 c aloha::Host t Host pid 1 n host[6]
+MS id 9 d i=device/pc_s
+MC id 10 c aloha::Host t Host pid 1 n host[7]
+MS id 10 d i=device/pc_s
+MC id 11 c aloha::Host t Host pid 1 n host[8]
+MS id 11 d i=device/pc_s
+MC id 12 c aloha::Host t Host pid 1 n host[9]
+MS id 12 d i=device/pc_s
+MC id 13 c aloha::Host t Host pid 1 n host[10]
+MS id 13 d i=device/pc_s
+MC id 14 c aloha::Host t Host pid 1 n host[11]
+MS id 14 d i=device/pc_s
+MC id 15 c aloha::Host t Host pid 1 n host[12]
+MS id 15 d i=device/pc_s
+MC id 16 c aloha::Host t Host pid 1 n host[13]
+MS id 16 d i=device/pc_s
+MC id 17 c aloha::Host t Host pid 1 n host[14]
+MS id 17 d i=device/pc_s
+MC id 18 c aloha::Host t Host pid 1 n host[15]
+MS id 18 d i=device/pc_s
+MC id 19 c aloha::Host t Host pid 1 n host[16]
+MS id 19 d i=device/pc_s
+MC id 20 c aloha::Host t Host pid 1 n host[17]
+MS id 20 d i=device/pc_s
+MC id 21 c aloha::Host t Host pid 1 n host[18]
+MS id 21 d i=device/pc_s
+MC id 22 c aloha::Host t Host pid 1 n host[19]
+MS id 22 d i=device/pc_s
+MB sm 1 tm 2 m initialize(0)
+CM id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe -1
 MS id 2 d i2=x_off;i=device/antennatower_l
 ME
 MB sm 1 tm 3 m initialize(0)
-CM id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 144115188075855872
-MS id 3 d i=device/pc_s
+CM id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe -1
 MS id 3 d t=,,#808000;i=device/pc_s
 BS id 1 tid 1 eid 1 etid 1 c cMessage n send/endTx pe 0
 ES t 4.775247027394
 ME
 MB sm 1 tm 4 m initialize(0)
-CM id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe -4296125073154113536
-MS id 4 d i=device/pc_s
+CM id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe -1
 MS id 4 d t=,,#808000;i=device/pc_s
 BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 0
 ES t 5.391362330903
 ME
 MB sm 1 tm 5 m initialize(0)
-CM id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe 0
-MS id 5 d i=device/pc_s
+CM id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe -1
 MS id 5 d t=,,#808000;i=device/pc_s
 BS id 3 tid 3 eid 3 etid 3 c cMessage n send/endTx pe 0
 ES t 7.535584548284
 ME
 MB sm 1 tm 6 m initialize(0)
-CM id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 0
-MS id 6 d i=device/pc_s
+CM id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe -1
 MS id 6 d t=,,#808000;i=device/pc_s
 BS id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 0
 ES t 11.157625272448
 ME
 MB sm 1 tm 7 m initialize(0)
-CM id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 0
-MS id 7 d i=device/pc_s
+CM id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe -1
 MS id 7 d t=,,#808000;i=device/pc_s
 BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 0
 ES t 5.539338788824
 ME
 MB sm 1 tm 8 m initialize(0)
-CM id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 0
-MS id 8 d i=device/pc_s
+CM id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe -1
 MS id 8 d t=,,#808000;i=device/pc_s
 BS id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 0
 ES t 11.709272015306
 ME
 MB sm 1 tm 9 m initialize(0)
-CM id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 792633534417207296
-MS id 9 d i=device/pc_s
+CM id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe -1
 MS id 9 d t=,,#808000;i=device/pc_s
 BS id 7 tid 7 eid 7 etid 7 c cMessage n send/endTx pe 0
 ES t 4.723206839891
 ME
 MB sm 1 tm 10 m initialize(0)
-CM id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 0
-MS id 10 d i=device/pc_s
+CM id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe -1
 MS id 10 d t=,,#808000;i=device/pc_s
 BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 0
 ES t 11.273784325216
 ME
 MB sm 1 tm 11 m initialize(0)
-CM id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 0
-MS id 11 d i=device/pc_s
+CM id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe -1
 MS id 11 d t=,,#808000;i=device/pc_s
 BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 0
 ES t 3.306290920021
 ME
 MB sm 1 tm 12 m initialize(0)
-CM id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe 0
-MS id 12 d i=device/pc_s
+CM id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe -1
 MS id 12 d t=,,#808000;i=device/pc_s
 BS id 10 tid 10 eid 10 etid 10 c cMessage n send/endTx pe 0
 ES t 5.86203855836
 ME
 MB sm 1 tm 13 m initialize(0)
-CM id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe 0
-MS id 13 d i=device/pc_s
+CM id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe -1
 MS id 13 d t=,,#808000;i=device/pc_s
 BS id 11 tid 11 eid 11 etid 11 c cMessage n send/endTx pe 0
 ES t 6.228955803983
 ME
 MB sm 1 tm 14 m initialize(0)
-CM id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 0
-MS id 14 d i=device/pc_s
+CM id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe -1
 MS id 14 d t=,,#808000;i=device/pc_s
 BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 0
 ES t 2.910768982329
 ME
 MB sm 1 tm 15 m initialize(0)
-CM id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe 0
-MS id 15 d i=device/pc_s
+CM id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe -1
 MS id 15 d t=,,#808000;i=device/pc_s
 BS id 13 tid 13 eid 13 etid 13 c cMessage n send/endTx pe 0
 ES t 3.453115181297
 ME
 MB sm 1 tm 16 m initialize(0)
-CM id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 0
-MS id 16 d i=device/pc_s
+CM id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe -1
 MS id 16 d t=,,#808000;i=device/pc_s
 BS id 14 tid 14 eid 14 etid 14 c cMessage n send/endTx pe 0
 ES t 2.118954834825
 ME
 MB sm 1 tm 17 m initialize(0)
-CM id 15 tid 15 eid 15 etid 15 c cMessage n send/endTx pe 0
-MS id 17 d i=device/pc_s
+CM id 15 tid 15 eid 15 etid 15 c cMessage n send/endTx pe -1
 MS id 17 d t=,,#808000;i=device/pc_s
 BS id 15 tid 15 eid 15 etid 15 c cMessage n send/endTx pe 0
 ES t 13.341146532217
 ME
 MB sm 1 tm 18 m initialize(0)
-CM id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 0
-MS id 18 d i=device/pc_s
+CM id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe -1
 MS id 18 d t=,,#808000;i=device/pc_s
 BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 0
 ES t 0.350308014558
 ME
 MB sm 1 tm 19 m initialize(0)
-CM id 17 tid 17 eid 17 etid 17 c cMessage n send/endTx pe 0
-MS id 19 d i=device/pc_s
+CM id 17 tid 17 eid 17 etid 17 c cMessage n send/endTx pe -1
 MS id 19 d t=,,#808000;i=device/pc_s
 BS id 17 tid 17 eid 17 etid 17 c cMessage n send/endTx pe 0
 ES t 19.889473679569
 ME
 MB sm 1 tm 20 m initialize(0)
-CM id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 0
-MS id 20 d i=device/pc_s
+CM id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe -1
 MS id 20 d t=,,#808000;i=device/pc_s
 BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 0
 ES t 1.91013684505
 ME
 MB sm 1 tm 21 m initialize(0)
-CM id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 0
-MS id 21 d i=device/pc_s
+CM id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe -1
 MS id 21 d t=,,#808000;i=device/pc_s
 BS id 19 tid 19 eid 19 etid 19 c cMessage n send/endTx pe 0
 ES t 2.90161262969
 ME
 MB sm 1 tm 22 m initialize(0)
-CM id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe 0
-MS id 22 d i=device/pc_s
+CM id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe -1
 MS id 22 d t=,,#808000;i=device/pc_s
 BS id 20 tid 20 eid 20 etid 20 c cMessage n send/endTx pe 0
 ES t 3.896678089505
 ME
-MS id 1 d bgi=background/terrain,s
 
 E # 1 t 0.350308014558 m 18 ce 0 msg 16
 - generating packet pk-18-#0
 MS id 18 d t=,,#808000;i=device/pc_s,yellow
 MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 21 tid 21 eid 21 etid 21 c cMessage n pk-18-#0 pe 0
+CM id 21 tid 21 eid 21 etid 21 c cMessage n pk-18-#0 pe -1
 BS id 21 tid 21 eid 21 etid 21 c cPacket n pk-18-#0 l 952 pe 1
 SD sm 18 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 0.360308014558 is 1
@@ -206,7 +206,7 @@ E # 5 t 1.91013684505 m 20 ce 0 msg 18
 - generating packet pk-20-#0
 MS id 20 d t=,,#808000;i=device/pc_s,yellow
 MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 22 tid 22 eid 22 etid 22 c cMessage n pk-20-#0 pe 281500746842118
+CM id 22 tid 22 eid 22 etid 22 c cMessage n pk-20-#0 pe -1
 BS id 22 tid 22 eid 22 etid 22 c cPacket n pk-20-#0 l 952 pe 5
 SD sm 20 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 1.92013684505 is 1
@@ -237,7 +237,7 @@ E # 9 t 2.118954834825 m 16 ce 0 msg 14
 - generating packet pk-16-#0
 MS id 16 d t=,,#808000;i=device/pc_s,yellow
 MS id 16 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 23 tid 23 eid 23 etid 23 c cMessage n pk-16-#0 pe 0
+CM id 23 tid 23 eid 23 etid 23 c cMessage n pk-16-#0 pe -1
 BS id 23 tid 23 eid 23 etid 23 c cPacket n pk-16-#0 l 952 pe 9
 SD sm 16 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 2.128954834825 is 1
@@ -268,7 +268,7 @@ E # 13 t 2.90161262969 m 21 ce 0 msg 19
 - generating packet pk-21-#0
 MS id 21 d t=,,#808000;i=device/pc_s,yellow
 MS id 21 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 24 tid 24 eid 24 etid 24 c cMessage n pk-21-#0 pe 281479272464398
+CM id 24 tid 24 eid 24 etid 24 c cMessage n pk-21-#0 pe -1
 BS id 24 tid 24 eid 24 etid 24 c cPacket n pk-21-#0 l 952 pe 13
 SD sm 21 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 2.91161262969 is 1
@@ -279,7 +279,7 @@ E # 14 t 2.910768982329 m 14 ce 0 msg 12
 - generating packet pk-14-#0
 MS id 14 d t=,,#808000;i=device/pc_s,yellow
 MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 25 tid 25 eid 25 etid 25 c cMessage n pk-14-#0 pe 281496452136982
+CM id 25 tid 25 eid 25 etid 25 c cMessage n pk-14-#0 pe -1
 BS id 25 tid 25 eid 25 etid 25 c cPacket n pk-14-#0 l 952 pe 14
 SD sm 14 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 2.920768982329 is 1
@@ -297,7 +297,7 @@ DM id 24 tid 24 eid 24 etid 24 c cMessage n pk-21-#0 pe 15
 
 E # 16 t 2.920768982329 m 2 ce 14 msg 25
 - another frame arrived while receiving -- collision!
-CE id 0 pe 15
+CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 15
 BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 16
 ES t 3.019935648995
 MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
@@ -327,7 +327,7 @@ E # 20 t 3.306290920021 m 11 ce 0 msg 9
 - generating packet pk-11-#0
 MS id 11 d t=,,#808000;i=device/pc_s,yellow
 MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 26 tid 26 eid 26 etid 26 c cMessage n pk-11-#0 pe 0
+CM id 26 tid 26 eid 26 etid 26 c cMessage n pk-11-#0 pe -1
 BS id 26 tid 26 eid 26 etid 26 c cPacket n pk-11-#0 l 952 pe 20
 SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 3.316290920021 is 1
@@ -358,7 +358,7 @@ E # 24 t 3.453115181297 m 15 ce 0 msg 13
 - generating packet pk-15-#0
 MS id 15 d t=,,#808000;i=device/pc_s,yellow
 MS id 15 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 27 tid 27 eid 27 etid 27 c cMessage n pk-15-#0 pe 342274473623289856
+CM id 27 tid 27 eid 27 etid 27 c cMessage n pk-15-#0 pe -1
 BS id 27 tid 27 eid 27 etid 27 c cPacket n pk-15-#0 l 952 pe 24
 SD sm 15 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 3.463115181297 is 1
@@ -389,7 +389,7 @@ E # 28 t 3.896678089505 m 22 ce 0 msg 20
 - generating packet pk-22-#0
 MS id 22 d t=,,#808000;i=device/pc_s,yellow
 MS id 22 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 28 tid 28 eid 28 etid 28 c cMessage n pk-22-#0 pe 281496451809286
+CM id 28 tid 28 eid 28 etid 28 c cMessage n pk-22-#0 pe -1
 BS id 28 tid 28 eid 28 etid 28 c cPacket n pk-22-#0 l 952 pe 28
 SD sm 22 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 3.906678089505 is 1
@@ -420,7 +420,7 @@ E # 32 t 4.723206839891 m 9 ce 0 msg 7
 - generating packet pk-9-#0
 MS id 9 d t=,,#808000;i=device/pc_s,yellow
 MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 29 tid 29 eid 29 etid 29 c cMessage n pk-9-#0 pe 58216576608817834
+CM id 29 tid 29 eid 29 etid 29 c cMessage n pk-9-#0 pe -1
 BS id 29 tid 29 eid 29 etid 29 c cPacket n pk-9-#0 l 952 pe 32
 SD sm 9 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 4.733206839891 is 1
@@ -440,7 +440,7 @@ E # 34 t 4.775247027394 m 3 ce 0 msg 1
 - generating packet pk-3-#0
 MS id 3 d t=,,#808000;i=device/pc_s,yellow
 MS id 3 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 30 tid 30 eid 30 etid 30 c cMessage n pk-3-#0 pe 731908847415309776
+CM id 30 tid 30 eid 30 etid 30 c cMessage n pk-3-#0 pe -1
 BS id 30 tid 30 eid 30 etid 30 c cPacket n pk-3-#0 l 952 pe 34
 SD sm 3 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 4.785247027394 is 1
@@ -449,7 +449,7 @@ ES t 4.87441369406
 
 E # 35 t 4.785247027394 m 2 ce 34 msg 30
 - another frame arrived while receiving -- collision!
-CE id 0 pe 33
+CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 33
 BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 35
 ES t 4.88441369406
 MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
@@ -479,7 +479,7 @@ E # 39 t 5.264485639347 m 9 ce 36 msg 7
 - generating packet pk-9-#1
 MS id 9 d t=,,#808000;i=device/pc_s,yellow
 MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 31 tid 31 eid 31 etid 31 c cMessage n pk-9-#1 pe 0
+CM id 31 tid 31 eid 31 etid 31 c cMessage n pk-9-#1 pe -1
 BS id 31 tid 31 eid 31 etid 31 c cPacket n pk-9-#1 l 952 pe 39
 SD sm 9 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 5.274485639347 is 1
@@ -510,7 +510,7 @@ E # 43 t 5.391362330903 m 4 ce 0 msg 2
 - generating packet pk-4-#0
 MS id 4 d t=,,#808000;i=device/pc_s,yellow
 MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 32 tid 32 eid 32 etid 32 c cMessage n pk-4-#0 pe 59629470525280938
+CM id 32 tid 32 eid 32 etid 32 c cMessage n pk-4-#0 pe -1
 BS id 32 tid 32 eid 32 etid 32 c cPacket n pk-4-#0 l 952 pe 43
 SD sm 4 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 5.401362330903 is 1
@@ -541,7 +541,7 @@ E # 47 t 5.539338788824 m 7 ce 0 msg 5
 - generating packet pk-7-#0
 MS id 7 d t=,,#808000;i=device/pc_s,yellow
 MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 33 tid 33 eid 33 etid 33 c cMessage n pk-7-#0 pe -5241970355991478272
+CM id 33 tid 33 eid 33 etid 33 c cMessage n pk-7-#0 pe -1
 BS id 33 tid 33 eid 33 etid 33 c cPacket n pk-7-#0 l 952 pe 47
 SD sm 7 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 5.549338788824 is 1
@@ -572,7 +572,7 @@ E # 51 t 5.761058985884 m 7 ce 49 msg 5
 - generating packet pk-7-#1
 MS id 7 d t=,,#808000;i=device/pc_s,yellow
 MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 34 tid 34 eid 34 etid 34 c cMessage n pk-7-#1 pe 281500747038726
+CM id 34 tid 34 eid 34 etid 34 c cMessage n pk-7-#1 pe -1
 BS id 34 tid 34 eid 34 etid 34 c cPacket n pk-7-#1 l 952 pe 51
 SD sm 7 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 5.771058985884 is 1
@@ -598,7 +598,7 @@ E # 54 t 5.86203855836 m 12 ce 0 msg 10
 - generating packet pk-12-#0
 MS id 12 d t=,,#808000;i=device/pc_s,yellow
 MS id 12 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 35 tid 35 eid 35 etid 35 c cMessage n pk-12-#0 pe 8319352635398
+CM id 35 tid 35 eid 35 etid 35 c cMessage n pk-12-#0 pe -1
 BS id 35 tid 35 eid 35 etid 35 c cPacket n pk-12-#0 l 952 pe 54
 SD sm 12 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 5.87203855836 is 1
@@ -623,7 +623,7 @@ E # 57 t 5.910618462758 m 9 ce 41 msg 7
 - generating packet pk-9-#2
 MS id 9 d t=,,#808000;i=device/pc_s,yellow
 MS id 9 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 36 tid 36 eid 36 etid 36 c cMessage n pk-9-#2 pe 65839752718969064
+CM id 36 tid 36 eid 36 etid 36 c cMessage n pk-9-#2 pe -1
 BS id 36 tid 36 eid 36 etid 36 c cPacket n pk-9-#2 l 952 pe 57
 SD sm 9 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 5.920618462758 is 1
@@ -632,7 +632,7 @@ ES t 6.009785129424
 
 E # 58 t 5.920618462758 m 2 ce 57 msg 36
 - another frame arrived while receiving -- collision!
-CE id 0 pe 56
+CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 56
 BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 58
 ES t 6.019785129424
 MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
@@ -662,7 +662,7 @@ E # 62 t 6.228955803983 m 13 ce 0 msg 11
 - generating packet pk-13-#0
 MS id 13 d t=,,#808000;i=device/pc_s,yellow
 MS id 13 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 37 tid 37 eid 37 etid 37 c cMessage n pk-13-#0 pe 281479272464407
+CM id 37 tid 37 eid 37 etid 37 c cMessage n pk-13-#0 pe -1
 BS id 37 tid 37 eid 37 etid 37 c cPacket n pk-13-#0 l 952 pe 62
 SD sm 13 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 6.238955803983 is 1
@@ -693,7 +693,7 @@ E # 66 t 6.398689640782 m 11 ce 22 msg 9
 - generating packet pk-11-#1
 MS id 11 d t=,,#808000;i=device/pc_s,yellow
 MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 38 tid 38 eid 38 etid 38 c cMessage n pk-11-#1 pe 210453398048
+CM id 38 tid 38 eid 38 etid 38 c cMessage n pk-11-#1 pe -1
 BS id 38 tid 38 eid 38 etid 38 c cPacket n pk-11-#1 l 952 pe 66
 SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 6.408689640782 is 1
@@ -724,7 +724,7 @@ E # 70 t 6.734166181367 m 16 ce 11 msg 14
 - generating packet pk-16-#1
 MS id 16 d t=,,#808000;i=device/pc_s,yellow
 MS id 16 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 39 tid 39 eid 39 etid 39 c cMessage n pk-16-#1 pe 281479272464392
+CM id 39 tid 39 eid 39 etid 39 c cMessage n pk-16-#1 pe -1
 BS id 39 tid 39 eid 39 etid 39 c cPacket n pk-16-#1 l 952 pe 70
 SD sm 16 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 6.744166181367 is 1
@@ -755,7 +755,7 @@ E # 74 t 6.924074699682 m 21 ce 17 msg 19
 - generating packet pk-21-#1
 MS id 21 d t=,,#808000;i=device/pc_s,yellow
 MS id 21 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 40 tid 40 eid 40 etid 40 c cMessage n pk-21-#1 pe 59346926101844918
+CM id 40 tid 40 eid 40 etid 40 c cMessage n pk-21-#1 pe -1
 BS id 40 tid 40 eid 40 etid 40 c cPacket n pk-21-#1 l 952 pe 74
 SD sm 21 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 6.934074699682 is 1
@@ -786,7 +786,7 @@ E # 78 t 7.343881671515 m 3 ce 37 msg 1
 - generating packet pk-3-#1
 MS id 3 d t=,,#808000;i=device/pc_s,yellow
 MS id 3 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 41 tid 41 eid 41 etid 41 c cMessage n pk-3-#1 pe 281479272398854
+CM id 41 tid 41 eid 41 etid 41 c cMessage n pk-3-#1 pe -1
 BS id 41 tid 41 eid 41 etid 41 c cPacket n pk-3-#1 l 952 pe 78
 SD sm 3 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 7.353881671515 is 1
@@ -806,7 +806,7 @@ E # 80 t 7.405241429437 m 11 ce 68 msg 9
 - generating packet pk-11-#2
 MS id 11 d t=,,#808000;i=device/pc_s,yellow
 MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 42 tid 42 eid 42 etid 42 c cMessage n pk-11-#2 pe 65839752718969064
+CM id 42 tid 42 eid 42 etid 42 c cMessage n pk-11-#2 pe -1
 BS id 42 tid 42 eid 42 etid 42 c cPacket n pk-11-#2 l 952 pe 80
 SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 7.415241429437 is 1
@@ -815,7 +815,7 @@ ES t 7.504408096103
 
 E # 81 t 7.415241429437 m 2 ce 80 msg 42
 - another frame arrived while receiving -- collision!
-CE id 0 pe 79
+CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 79
 BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 81
 ES t 7.514408096103
 MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
@@ -845,7 +845,7 @@ E # 85 t 7.535584548284 m 5 ce 0 msg 3
 - generating packet pk-5-#0
 MS id 5 d t=,,#808000;i=device/pc_s,yellow
 MS id 5 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 43 tid 43 eid 43 etid 43 c cMessage n pk-5-#0 pe 281487862333448
+CM id 43 tid 43 eid 43 etid 43 c cMessage n pk-5-#0 pe -1
 BS id 43 tid 43 eid 43 etid 43 c cPacket n pk-5-#0 l 952 pe 85
 SD sm 5 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 7.545584548284 is 1
@@ -876,11 +876,135 @@ E # 89 t 8.046532766396 m 14 ce 18 msg 12
 - generating packet pk-14-#1
 MS id 14 d t=,,#808000;i=device/pc_s,yellow
 MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
-CM id 44 tid 44 eid 44 etid 44 c cMessage n pk-14-#1 pe 59064325843834544
+CM id 44 tid 44 eid 44 etid 44 c cMessage n pk-14-#1 pe -1
 BS id 44 tid 44 eid 44 etid 44 c cPacket n pk-14-#1 l 952 pe 89
 SD sm 14 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 8.056532766396 is 1
 BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 89
 ES t 8.145699433062
-- duration: 8.046532766396
-SE
+
+E # 90 t 8.056532766396 m 2 ce 89 msg 44
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 88
+ES t 8.155699433062
+MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 44 tid 44 eid 44 etid 44 c cMessage n pk-14-#1 pe 90
+
+E # 91 t 8.145699433062 m 14 ce 89 msg 12
+BS id 12 tid 12 eid 12 etid 12 c cMessage n send/endTx pe 91
+ES t 17.829711882417
+MS id 14 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 14 d t=,,#808000;i=device/pc_s
+
+E # 92 t 8.155699433062 m 2 ce 90 msg 0
+- reception finished
+MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
+
+E # 93 t 8.615714476081 m 7 ce 53 msg 5
+- generating packet pk-7-#2
+MS id 7 d t=,,#808000;i=device/pc_s,yellow
+MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 45 tid 45 eid 45 etid 45 c cMessage n pk-7-#2 pe -1
+BS id 45 tid 45 eid 45 etid 45 c cPacket n pk-7-#2 l 952 pe 93
+SD sm 7 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 8.625714476081 is 1
+BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 93
+ES t 8.714881142747
+
+E # 94 t 8.625714476081 m 2 ce 93 msg 45
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 92
+ES t 8.724881142747
+MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 45 tid 45 eid 45 etid 45 c cMessage n pk-7-#2 pe 94
+
+E # 95 t 8.714881142747 m 7 ce 93 msg 5
+BS id 5 tid 5 eid 5 etid 5 c cMessage n send/endTx pe 95
+ES t 12.428457900507
+MS id 7 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 7 d t=,,#808000;i=device/pc_s
+
+E # 96 t 8.724881142747 m 2 ce 94 msg 0
+- reception finished
+MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
+
+E # 97 t 9.862851386962 m 18 ce 3 msg 16
+- generating packet pk-18-#1
+MS id 18 d t=,,#808000;i=device/pc_s,yellow
+MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 46 tid 46 eid 46 etid 46 c cMessage n pk-18-#1 pe -1
+BS id 46 tid 46 eid 46 etid 46 c cPacket n pk-18-#1 l 952 pe 97
+SD sm 18 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 9.872851386962 is 1
+BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 97
+ES t 9.962018053628
+
+E # 98 t 9.872851386962 m 2 ce 97 msg 46
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 96
+ES t 9.972018053628
+MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 46 tid 46 eid 46 etid 46 c cMessage n pk-18-#1 pe 98
+
+E # 99 t 9.962018053628 m 18 ce 97 msg 16
+BS id 16 tid 16 eid 16 etid 16 c cMessage n send/endTx pe 99
+ES t 14.371804580766
+MS id 18 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 18 d t=,,#808000;i=device/pc_s
+
+E # 100 t 9.972018053628 m 2 ce 98 msg 0
+- reception finished
+MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
+
+E # 101 t 11.157625272448 m 6 ce 0 msg 4
+- generating packet pk-6-#0
+MS id 6 d t=,,#808000;i=device/pc_s,yellow
+MS id 6 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 47 tid 47 eid 47 etid 47 c cMessage n pk-6-#0 pe -1
+BS id 47 tid 47 eid 47 etid 47 c cPacket n pk-6-#0 l 952 pe 101
+SD sm 6 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 11.167625272448 is 1
+BS id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 101
+ES t 11.256791939114
+
+E # 102 t 11.167625272448 m 2 ce 101 msg 47
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 100
+ES t 11.266791939114
+MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 47 tid 47 eid 47 etid 47 c cMessage n pk-6-#0 pe 102
+
+E # 103 t 11.256791939114 m 6 ce 101 msg 4
+BS id 4 tid 4 eid 4 etid 4 c cMessage n send/endTx pe 103
+ES t 20.356007783055
+MS id 6 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 6 d t=,,#808000;i=device/pc_s
+
+E # 104 t 11.266791939114 m 2 ce 102 msg 0
+- reception finished
+MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
+
+E # 105 t 11.273784325216 m 10 ce 0 msg 8
+- generating packet pk-10-#0
+MS id 10 d t=,,#808000;i=device/pc_s,yellow
+MS id 10 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 48 tid 48 eid 48 etid 48 c cMessage n pk-10-#0 pe -1
+BS id 48 tid 48 eid 48 etid 48 c cPacket n pk-10-#0 l 952 pe 105
+SD sm 10 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 11.283784325216 is 1
+BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 105
+ES t 11.372950991882
+SE e 0 c 9 m "The user has finished the simulation at event #106, t=11.273784325216."
+- duration: 11.273784325216
