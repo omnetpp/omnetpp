@@ -1,3 +1,5 @@
+2011-05-05  ------ omnetpp-4.2b2 released ------
+
 2011-03-16  Andras Varga
 
 	* cmpicomm.cc: fix: use status.MPI_SOURCE in MPI_Recv() call after

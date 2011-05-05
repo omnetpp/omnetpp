@@ -1,3 +1,5 @@
+2011-05-05  ------ omnetpp-4.2b2 released ------
+
 2011-04-19  Andras Varga
 
 	* minor grammar change (ned2.y, ned2.lex): made "typename" a keyword,
