@@ -388,7 +388,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
 {
     int sectionId = resolveConfigName(configName);
     if (sectionId == -1)
-        return 0;  // no such config
+        throw cRuntimeError("No such config: %s", configName);
 
     // extract all iteration vars from values within this section
     std::vector<int> sectionChain = resolveSectionChain(sectionId);
@@ -402,7 +402,7 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
         return Scenario(v, constraint).getNumRuns();
     }
     catch (std::exception& e) {
-        throw cRuntimeError("Scenario generator: %s", e.what());
+        throw cRuntimeError("Error while computing the number of runs in config %s: %s", configName, e.what());
     }
 }
 

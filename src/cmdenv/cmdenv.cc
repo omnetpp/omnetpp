@@ -205,7 +205,7 @@ void Cmdenv::run()
     {
         int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
         if (n==0) {
-            ev.printfmsg("Error: No such configuration `%s', or it generates 0 runs", opt_configname.c_str());
+            ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt_configname.c_str());
             exitcode = 1;
             return;
         }

@@ -317,7 +317,7 @@ class SIM_API cConfigurationEx : public cConfiguration
 
     /**
      * Activates the [Config \<name\>] section. If it does not exist, an error
-     * gets thrown. [General] is treated as short for [Config General].
+     * is thrown. [General] is treated as short for [Config General].
      * The runNumber must be between 0 and getNumRunsInConfig(name)-1.
      */
     virtual void activateConfig(const char *configName, int runNumber=0) = 0;
@@ -344,7 +344,9 @@ class SIM_API cConfigurationEx : public cConfiguration
     virtual std::vector<std::string> getConfigChain(const char * configName) const = 0;
 
     /**
-     * Generates Cartesian product of all iterations within the config, and counts them.
+     * Generates Cartesian product of all iterations within the given config,
+     * and counts them. If the config does not exist, an error is thrown.
+     * [General] is treated as short for [Config General].
      */
     virtual int getNumRunsInConfig(const char *configName) const = 0;
 
