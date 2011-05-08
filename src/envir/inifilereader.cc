@@ -239,7 +239,8 @@ bool InifileReader::readLineInto(std::string& line, FILE *file)
         const char *endBuffer = buffer + strlen(buffer);
         if (buffer==endBuffer) break; // should not happen
         bool eolReached = *(endBuffer-1)=='\n' || *(endBuffer-1)=='\r';
-        while (endBuffer>buffer && opp_isspace(*(endBuffer-1))) endBuffer--;
+        if (eolReached)
+            while (endBuffer>buffer && opp_isspace(*(endBuffer-1))) endBuffer--;
         line.append(buffer, endBuffer - buffer);
         if (eolReached)
             break;

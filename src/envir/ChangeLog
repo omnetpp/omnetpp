@@ -1,3 +1,8 @@
+2011-05-05  Andras Varga
+
+	* fix #290: InifileReader::readLineInto() can remove whitespace from
+	the middle of lines that are longer than 512 characters
+
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
 2011-04-20  Andras Varga
