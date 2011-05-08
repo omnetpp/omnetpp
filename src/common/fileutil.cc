@@ -223,9 +223,8 @@ bool fileExists(const char *pathname)
 bool isDirectory(const char *pathname)
 {
     struct stat statbuf;
-    if (stat(pathname, &statbuf) != 0)
-        throw opp_runtime_error("cannot stat file '%s': %s", pathname, strerror(errno));
-    return statbuf.st_mode & S_IFDIR;
+    int err = stat(pathname, &statbuf); // note: do not throw if file/directory does not exist or there's some other error, see bug #284
+    return err==0 && (statbuf.st_mode & S_IFDIR)!=0;
 }
 
 void removeFile(const char *fname, const char *descr)

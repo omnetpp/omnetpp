@@ -1,3 +1,8 @@
+2011-05-06  Andras Varga
+
+	* fileutil.cc: fix bug #284: isDirectory() should not throw exception
+	if file or directory does not exist
+
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
 2011-02-23  ------ omnetpp-4.2b1 released ------

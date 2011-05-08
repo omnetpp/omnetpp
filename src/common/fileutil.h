@@ -55,12 +55,24 @@ COMMON_API std::string tidyFilename(const char *pathname, bool slashes=false);
 COMMON_API std::string toAbsolutePath(const char *pathname);
 COMMON_API std::string concatDirAndFile(const char *basedir, const char *pathname);
 
-/** Returns true if given file or directory exists */
+/**
+ * Returns true if given file or directory exists
+ */
 COMMON_API bool fileExists(const char *pathname);
+
+/**
+ * Returns true if the given pathname exists in the file system and is a directory,
+ * and false otherwise.
+ */
 COMMON_API bool isDirectory(const char *pathname);
+
+/**
+ * Removes the given file, or does nothing if such file does not exist.
+ * Throws an error if the file exists but could not be removed.
+ */
 COMMON_API void removeFile(const char *fname, const char *descr);
 
-/** Recursively create all directories in the specified path */
+/** Recursively creates all directories in the specified path */
 COMMON_API void mkPath(const char *pathname);
 
 /**
