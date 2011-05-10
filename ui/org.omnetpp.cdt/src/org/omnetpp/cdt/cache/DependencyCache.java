@@ -17,6 +17,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -165,6 +168,13 @@ public class DependencyCache {
                 }
             }
         });
+        
+        // also invalidate dependency cache on CDT configuration changes
+        CoreModel.getDefault().addCProjectDescriptionListener(new ICProjectDescriptionListener() {
+            public void handleEvent(CProjectDescriptionEvent e) {
+                projectChanged(e.getProject());
+            }
+        }, CProjectDescriptionEvent.APPLIED | CProjectDescriptionEvent.DATA_APPLIED);
     }
 
     /**
