@@ -74,13 +74,14 @@ public class DependencyCache {
     static class Include {
         public String filename; // the included file name
         public boolean isSysInclude; // true: <foo.h>, false: "foo.h"
-        //public IFile file; // the file in which the #include occurs -- not needed
+        public IFile file; // the file in which the #include occurs (needed to make Include unique so we can use it as Map<> key)
         public int line = -1; // line number of the #include line
 
-        public Include(int line, String filename, boolean isSysInclude) {
+        public Include(IFile file, int line, String filename, boolean isSysInclude) {
             Assert.isTrue(filename != null);
             this.isSysInclude = isSysInclude;
             this.filename = filename;
+            this.file = file;
             this.line = line;
         }
 
@@ -91,7 +92,13 @@ public class DependencyCache {
 
         @Override
         public int hashCode() {
-            return line*1231 + filename.hashCode()*31 + (isSysInclude ? 1231 : 1237);
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + file.hashCode();
+            result = prime * result + filename.hashCode();
+            result = prime * result + (isSysInclude ? 1231 : 1237);
+            result = prime * result + line;
+            return result;
         }
 
         @Override
@@ -99,7 +106,7 @@ public class DependencyCache {
             if (obj == null || getClass() != obj.getClass())
                 return false;
             Include other = (Include) obj;
-            return this == obj || (line==other.line && filename.equals(other.filename) && isSysInclude == other.isSysInclude);
+            return this == obj || (file.equals(other.file) && line==other.line && filename.equals(other.filename) && isSysInclude == other.isSysInclude);
         }
     }
 
@@ -361,7 +368,7 @@ public class DependencyCache {
     protected static List<Include> parseIncludes(IFile file) throws CoreException {
         try {
             String contents = FileUtils.readTextFile(file.getContents(), file.getCharset()) + "\n";
-            return parseIncludes(contents);
+            return parseIncludes(contents, file);
         }
         catch (Exception e) {
             throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e);
@@ -371,14 +378,14 @@ public class DependencyCache {
     /**
      * Collect #includes from C++ source file contents
      */
-    protected static List<Include> parseIncludes(String source) {
+    protected static List<Include> parseIncludes(String source, IFile sourceFile) {
         List<Include> result = new ArrayList<Include>();
         Matcher matcher = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$").matcher(source);
         while (matcher.find()) {
             boolean isSysInclude = matcher.group(1).equals("<");
             String fileName = matcher.group(2);
             int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
-            result.add(new Include(line, fileName.trim().replace('\\','/'), isSysInclude));
+            result.add(new Include(sourceFile, line, fileName.trim().replace('\\','/'), isSysInclude));
         }
         return result;
     }
@@ -397,7 +404,7 @@ public class DependencyCache {
                     IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc"))); //XXX or .cpp?
                     data.cppSourceFiles.put(mhFile, fileIncludes.get(file).includes);
                     List<Include> mccIncludes = new ArrayList<Include>();
-                    mccIncludes.add(new Include(1, mhFile.getName(), false));
+                    mccIncludes.add(new Include(mccFile, 1, mhFile.getName(), false));
                     data.cppSourceFiles.put(mccFile, mccIncludes);
                 }
                 else {
