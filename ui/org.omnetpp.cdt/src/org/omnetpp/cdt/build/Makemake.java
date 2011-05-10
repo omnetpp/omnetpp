@@ -12,6 +12,9 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,16 +330,16 @@ public class Makemake {
             IContainer srcFolder = srcDir.equals(".") ? folder : folder.getFolder(new Path(srcDir));
             Map<IFile,Set<IFile>> fileDepsMap = perFileDeps.get(srcFolder);
             if (fileDepsMap != null) {
-            	for (IFile srcFile : fileDepsMap.keySet()) {
-            		if (srcFile.getFileExtension().equals(ccExt)) {
-            			String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
-            			deps.append(objFileName + ": ");
-            			deps.append(abs2rel(srcFile.getLocation()).toString());
-            			for (IFile includeFile : fileDepsMap.get(srcFile))
-            				deps.append(sep + abs2rel(includeFile.getLocation()).toString());
-            			deps.append("\n");
-            		}
-            	}
+                for (IFile srcFile : sorted(fileDepsMap.keySet())) {
+                    if (srcFile.getFileExtension().equals(ccExt)) {
+                        String objFileName = "$O/" + abs2rel(srcFile.getLocation()).toString().replaceFirst("\\.[^.]+$", "." + objExt);
+                        deps.append(objFileName + ": ");
+                        deps.append(abs2rel(srcFile.getLocation()).toString());
+                        for (IFile includeFile : sorted(fileDepsMap.get(srcFile)))
+                            deps.append(sep + abs2rel(includeFile.getLocation()).toString());
+                        deps.append("\n");
+                    }
+                }
             }
         }
 
@@ -412,6 +415,18 @@ public class Makemake {
         // to avoid excessive Eclipse workspace refreshes and infinite builder invocations
         byte[] bytes = content.getBytes();
         MakefileTools.ensureFileContent(makefile, bytes, null);
+    }
+
+    private static class FileComparator implements Comparator<IFile> {
+        public int compare(IFile o1, IFile o2) {
+            return o1.getFullPath().toString().compareTo(o2.getFullPath().toString());
+        }
+    }
+
+    private static IFile[] sorted(Collection<IFile> files) {
+        IFile[] array = files.toArray(new IFile[]{});
+        Arrays.sort(array, new FileComparator());
+        return array;
     }
 
     public List<String> getSourceDirs(IContainer folder, MakemakeOptions options) throws CoreException {
