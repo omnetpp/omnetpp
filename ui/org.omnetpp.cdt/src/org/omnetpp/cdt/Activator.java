@@ -7,18 +7,7 @@
 
 package org.omnetpp.cdt;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -27,6 +16,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
+import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
@@ -35,8 +25,7 @@ import org.osgi.framework.BundleContext;
  * The activator class controls the plug-in life cycle.
  * @author Andras
  */
-public class Activator extends AbstractUIPlugin implements IResourceChangeListener {
-    private DependencyCache dependencyCache = new DependencyCache();
+public class Activator extends AbstractUIPlugin {
 
     // The plug-in ID
     public static final String PLUGIN_ID = "org.omnetpp.cdt";
@@ -45,6 +34,8 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     private static Activator plugin;
 
     private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
+    private IncludeFoldersCache includeFoldersCache = new IncludeFoldersCache();
+    private DependencyCache dependencyCache = new DependencyCache();
 
     /**
      * The constructor
@@ -59,8 +50,10 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        
         projectFeaturesListener.hookListeners();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+        includeFoldersCache.hookListeners();
+        dependencyCache.hookListeners();
     }
 
     /*
@@ -68,8 +61,10 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
         projectFeaturesListener.unhookListeners();
+        includeFoldersCache.unhookListeners();
+        dependencyCache.unhookListeners();
+        
         plugin = null;
         super.stop(context);
     }
@@ -199,35 +194,9 @@ public class Activator extends AbstractUIPlugin implements IResourceChangeListen
         return getDefault().dependencyCache;
     }
 
-    /**
-     * Reread include paths when folder gets created or removed
-     */
-    public synchronized void resourceChanged(IResourceChangeEvent event) {
-        try {
-            if (event.getDelta() == null || event.getType() != IResourceChangeEvent.POST_CHANGE)
-                return;
-
-            // collect projects in which a folder has been added or deleted
-            final Set<IProject> changedProjects = new HashSet<IProject>();
-            event.getDelta().accept(new IResourceDeltaVisitor() {
-                public boolean visit(IResourceDelta delta) throws CoreException {
-                    IResource resource = delta.getResource();
-                    if (resource instanceof IContainer) {
-                        int kind = delta.getKind();
-                        if (kind==IResourceDelta.ADDED || kind==IResourceDelta.REMOVED)
-                            changedProjects.add(resource.getProject());
-                    }
-                    return true;
-                }
-            });
-
-            // and invalidate discovered info for that project
-            for (IProject project : changedProjects)
-                CDTUtils.invalidateDiscoveredPathInfo(project);
-        }
-        catch (CoreException e) {
-            logError(e);
-        }
+    public static IncludeFoldersCache getIncludeFoldersCache() {
+        return getDefault().includeFoldersCache;
     }
+
 
 }

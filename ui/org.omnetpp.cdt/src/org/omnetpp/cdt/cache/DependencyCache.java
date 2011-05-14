@@ -143,10 +143,9 @@ public class DependencyCache {
     private Map<IProject,ProjectData> projectData = new HashMap<IProject, ProjectData>();
 
     public DependencyCache() {
-        hookListeners();
     }
 
-    protected void hookListeners() {
+    public void hookListeners() {
         // on resource change events, mark the corresponding project(s) as not up to date
         //XXX can be optimized so that we only invalidate when really needed (better look on the change event)
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
@@ -177,6 +176,11 @@ public class DependencyCache {
             }
         }, CProjectDescriptionEvent.APPLIED | CProjectDescriptionEvent.DATA_APPLIED);
     }
+    
+    public void unhookListeners() {
+        //TODO
+    }
+    
 
     /**
      * A file or something in the project has changed. We need to invalidate

@@ -34,6 +34,7 @@ Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.
 Export-Package: org.omnetpp.cdt,
  org.omnetpp.cdt.build,
+ org.omnetpp.cdt.cache,
  org.omnetpp.cdt.launch,
  org.omnetpp.cdt.ui,
  org.omnetpp.cdt.wizard

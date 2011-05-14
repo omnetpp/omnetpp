@@ -9,31 +9,21 @@ package org.omnetpp.cdt.build;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
-import org.eclipse.cdt.core.settings.model.ICSourceEntry;
-import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.CDTUtils;
-import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Utility functions for Makefile generation.
@@ -179,106 +169,6 @@ public class MakefileTools {
         }
     }
 
-    /**
-     * Collects source directories from the project and all dependent projects
-     * containing files matching the provided pattern (regexp). Nonexistent,
-     * closed and non-CDT dependent projects will be ignored.
-     */
-    public static List<IContainer> collectDirs(ICProjectDescription projectDescription, String pattern) throws CoreException {
-        Assert.isNotNull(projectDescription);
-		List<IContainer> result = new ArrayList<IContainer>();
-
-		// collect dirs from this project
-		collectDirs(projectDescription, result, pattern);
-
-		// collect directories from referenced projects too
-        IProject[] referencedProjects = ProjectUtils.getAllReferencedProjects(projectDescription.getProject());
-        for (IProject refProj : referencedProjects) {
-        	ICProjectDescription refProjDesc = CoreModel.getDefault().getProjectDescription(refProj);
-        	if (refProjDesc != null)
-        		collectDirs(refProjDesc, result, pattern);
-        }
-
-		return result;
-	}
-
-    private static void collectDirs(ICProjectDescription projectDescription, final List<IContainer> result, final String pattern) throws CoreException {
-        IProject project = projectDescription.getProject();
-        final ICSourceEntry[] srcEntries = CDataUtil.makeRelative(project, projectDescription.getActiveConfiguration().getSourceEntries());
-
-    	for (ICSourceEntry srcEntry : srcEntries) {
-    		IResource sourceFolder = project.findMember(srcEntry.getFullPath());
-    		if (sourceFolder != null) {
-		    	sourceFolder.accept(new IResourceVisitor() {
-		    		public boolean visit(IResource resource) throws CoreException {
-		    			if (MakefileTools.isGoodFolder(resource)) {
-		    				if (!CDTUtils.isExcluded(resource, srcEntries)
-		    						&& (pattern == null || containsFileMatchingPattern((IContainer)resource, pattern)))
-		    					result.add((IContainer)resource);
-
-		    				return true;
-		    			}
-		    			return false;
-		    		}
-		    	});
-    		}
-    	}
-    }
-
-    /**
-     * True if the given container has a file which name matches the given pattern.
-     */
-    private static boolean containsFileMatchingPattern(IContainer container, String pattern) throws CoreException {
-    	for (IResource member : container.members())
-    		if (member.getFullPath().toPortableString().matches(pattern))
-    			return true;
-    	return false;
-    }
-
-    /**
-     * Returns *location* paths for the include directories: the OMNeT++ include directory,
-     * plus source directories from the project and all dependent projects.
-     */
-    public static List<IPath> getOmnetppIncludeLocationsForProject(ICProjectDescription projectDescription) throws CoreException {
-
-    	// TODO improvement: return only directories in which a .h or hpp file is present
-    	
-    	// calculate the project output dir
-    	IProject proj = projectDescription.getProject();
-    	List<IPath> outLocation = new ArrayList<IPath>(); 
-    	BuildSpecification bspec = BuildSpecification.readBuildSpecFile(projectDescription.getProject());
-    	if (bspec != null) 
-    		for(IContainer makemakeFolder : bspec.getMakemakeFolders()) {
-    			MakemakeOptions mo = bspec.getMakemakeOptions(makemakeFolder);
-    			if (mo != null) {
-    			    String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
-    				IResource outDir = proj.findMember(outRoot);
-    				if (outDir != null)
-    					outLocation.add(outDir.getLocation());
-    			}
-    			
-    		}
-    		
-    	List<IPath> result = new ArrayList<IPath>();
-
-        // add the omnetpp include directory
-        result.add(new Path(OmnetppMainPlugin.getOmnetppInclDir()));
-
-        // add project source directories as include dirs for the indexer
-        // Note: "*.h" pattern is not good because of includes of the form "subdir/file.h"
-        // (i.e. "subdir" might need to be added to the include path too, even if it doesn't contain any header)
-        for (IContainer incDir : MakefileTools.collectDirs(projectDescription, null)) {
-        	boolean dirOk = true;
-        	for (IPath outLoc : outLocation)
-        		if (outLoc.isPrefixOf(incDir.getLocation()))
-        			dirOk = false;
-        	// do not add as an include dir if it is under one of the out directories
-        	if (dirOk)
-        		result.add(incDir.getLocation());
-        }
-        
-        return result;
-    }
 
 //XXX experimental
 //
