@@ -100,7 +100,7 @@ public class ProjectConfigurationUtils {
         int numConfigs = projectDescription.getConfigurations().length;
         for (String e : sourceEntryMap.keySet())
             if (sourceEntryMap.get(e).size() != numConfigs)
-                wrongSourceLocations.add(e + " in " + StringUtils.join(sourceEntryMap.get(e), ","));
+                wrongSourceLocations.add(StringUtils.join(sourceEntryMap.get(e), ",") + ": " + e);
         Collections.sort(wrongSourceLocations);
         if (!wrongSourceLocations.isEmpty())
             return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ") + 
