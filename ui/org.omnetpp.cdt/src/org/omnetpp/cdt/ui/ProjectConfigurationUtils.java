@@ -18,6 +18,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.statushandlers.StatusManager;
@@ -127,6 +129,7 @@ public class ProjectConfigurationUtils {
         return " <a href=\"" + problemId + "\">(Fix it)</a>";
     }
 
+    
     /**
      * Fix a problem detected by getDiagnosticMessage()
      */
@@ -137,22 +140,29 @@ public class ProjectConfigurationUtils {
             // fix the "Source locations differ across configurations" problem: copy the active configuration's 
             // source entry settings to all other configurations
             ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
-            ICConfigurationDescription activeConfiguration = projectDescription!=null ? projectDescription.getActiveConfiguration() : null;
-            if (activeConfiguration == null) {
-                MessageDialog.openError(parentShell, "Error", "Giving up: There is no active configuration.");
-                return;
-            }
-    
-            boolean proceed = MessageDialog.openConfirm(parentShell, "Fix Project Setup", 
-                    "This will copy the project's source location and excluded folder settings from " +
-                    "the active configuration (" + activeConfiguration.getName() + ") to all others.");
-            if (proceed) {
+            final ICConfigurationDescription activeConfiguration = projectDescription!=null ? projectDescription.getActiveConfiguration() : null;
+
+            ILabelProvider labelProvider = new LabelProvider() {
+                @Override
+                public String getText(Object element) {
+                    ICConfigurationDescription config = (ICConfigurationDescription)element;
+                    return config.getName() + (config == activeConfiguration ? "  [active]" : "");
+                }
+            };
+            
+            ICConfigurationDescription selectedConfiguration = (ICConfigurationDescription)
+            MessageDialogWithCombo.openAndSelect(parentShell, "Fix Project Setup", 
+                    "This will copy the project's source location and excluded folder settings from one configuration to all others.", 
+                    "Copy from:", projectDescription.getConfigurations(), labelProvider, activeConfiguration
+                    );
+
+            if (selectedConfiguration != null) {
                 for (ICConfigurationDescription cfg : projectDescription.getConfigurations()) {
-                    if (cfg != activeConfiguration) {
+                    if (cfg != selectedConfiguration) {
                         try {
-                            // copy the array from activeConfiguration; the entries themselves seem to be immutable, 
+                            // copy the array from selectedConfiguration; the entries themselves seem to be immutable, 
                             // so we don't need to duplicate them
-                            cfg.setSourceEntries(activeConfiguration.getSourceEntries().clone());
+                            cfg.setSourceEntries(selectedConfiguration.getSourceEntries().clone());
                         }
                         catch (WriteAccessException e) {
                             MessageDialog.openError(parentShell, "Error", "No write access to configuration " + cfg.getName());
