@@ -763,11 +763,11 @@ public class ProjectFeaturesManager {
                 Boolean isFolderExcluded = isFolderExcluded(configurations, folder); // null if mixed
                 if (enabled) {
                     if (isFolderExcluded==null || isFolderExcluded)
-                        addProblem(problems, feature, "Feature is enabled but folder is excluded from C++ build in at least one configuration: " + folder.getFullPath());
+                        addProblem(problems, feature, "Feature is enabled but folder " + folder.getFullPath() + " is excluded from C++ build in at least one configuration");
                 }
                 else {
                     if (isFolderExcluded==null || !isFolderExcluded)
-                        addProblem(problems, feature, "Feature is disabled but folder is not excluded from C++ build in at least one configuration: " + folder.getFullPath());
+                        addProblem(problems, feature, "Feature is disabled but folder " + folder.getFullPath() + " is not excluded from C++ build in at least one configuration");
                 }
             }
 
@@ -780,11 +780,11 @@ public class ProjectFeaturesManager {
                     Boolean isMacroSet = isMacroSet(project, configurations, symbol, enabled ? value : null);
                     if (enabled) {
                         if (isMacroSet==null || !isMacroSet)
-                            addProblem(problems, feature, "Feature is enabled but macro is not set in at least one configuration, folder or language: " + cflag.substring(2));
+                            addProblem(problems, feature, "Feature is enabled but macro " + cflag.substring(2) + " is not set in at least one configuration, folder or language");
                     }
                     else {
                         if (isMacroSet==null || isMacroSet)
-                            addProblem(problems, feature, "Feature is disabled but macro is set in at least one configuration, folder or language: " + cflag.substring(2));
+                            addProblem(problems, feature, "Feature is disabled but macro " + cflag.substring(2) + " is set in at least one configuration, folder or language");
                     }
                 }
             }
