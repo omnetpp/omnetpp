@@ -127,7 +127,7 @@ public class DependencyCache {
         IProject project;
         List<IProject> projectGroup;  // this project and its referenced projects
         Map<IFile,List<Include>> cppSourceFiles;  // only used during calculations; contains _m.cc/h instead of msg files; filtered for projectGroup
-        Map<Include,IFile> resolvedIncludes;
+        Map<Include,List<IFile>> includeResolutions; // ideally it should be Map<Include,IFile>, but we want to store all candidates for ambiguous #includes
         Map<IContainer,Set<IContainer>> folderDependencies;
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies;
     }
@@ -435,7 +435,7 @@ public class DependencyCache {
         }
 
         // resolve includes in each file
-        data.resolvedIncludes = new HashMap<Include, IFile>();
+        data.includeResolutions = new HashMap<Include, List<IFile>>();
         for (IFile file : data.cppSourceFiles.keySet()) {
             IContainer container = file.getParent();
             for (Include include : data.cppSourceFiles.get(file)) {
@@ -453,27 +453,27 @@ public class DependencyCache {
                         addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot resolve #include with '..' unless it is relative to the current dir", include.line); //XXX implement instead of warning!!!
                 }
                 else {
+                    List<IFile> includeTargets = new ArrayList<IFile>(); // will contain ideally 1 element, but 0 (unresolved #include) or >1 (ambiguous #include) are also possible
+                    
                     // determine which IFile(s) the include maps to
-                    List<IFile> list = filesByName.get(include.filename.replaceFirst("^.*/", ""));
-                    if (list == null) list = new ArrayList<IFile>();
+                    String justTheName = include.filename.replaceFirst("^.*/", ""); // strip prefix
+                    List<IFile> candidates = filesByName.get(justTheName);
+                    if (candidates == null) candidates = new ArrayList<IFile>();
 
                     int count = 0;
-                    IFile includedFile = null;
-                    for (IFile i : list)
-                        if (i.getLocation().toString().endsWith("/"+include.filename)) // note: we check "real" path (ie. location) not the workspace path!
-                        {count++; includedFile = i;}
+                    for (IFile candidate : candidates)
+                        if (candidate.getLocation().toString().endsWith("/"+include.filename)) // note: we check "real" path (ie. location) not the workspace path!
+                            {count++; includeTargets.add(candidate);}
+                    if (count > 0)
+                        data.includeResolutions.put(include, includeTargets);
 
-                    if (count == 1) {
-                        // include resolved successfully and unambiguously
-                        data.resolvedIncludes.put(include, includedFile);
-                    }
-                    else if (count == 0) {
+                    if (count == 0) {
                         // included file not found; skip warning if it's a system include (see comment above)
                         if (!include.isSysInclude)
                             addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot find included file: " + include.toString(), include.line);
                     }
-                    else {
-                        // count > 1: ambiguous include file
+                    else if (count > 1) {
+                        // ambiguous include file
                         addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: ambiguous include (more than one matching file found): " + include.toString(), include.line);
                     }
                 }
@@ -487,8 +487,9 @@ public class DependencyCache {
         for (IFile file : data.cppSourceFiles.keySet()) {
             Set<IFile> includedFiles = new HashSet<IFile>();
             for (Include include : data.cppSourceFiles.get(file))
-                if (data.resolvedIncludes.containsKey(include))
-                    includedFiles.add(data.resolvedIncludes.get(include));
+                if (data.includeResolutions.containsKey(include))
+                    for (IFile includedFile : data.includeResolutions.get(include))
+                        includedFiles.add(includedFile);
             includedFilesMap.put(file, includedFiles);
         }
 
@@ -527,20 +528,20 @@ public class DependencyCache {
             Set<IContainer> currentDeps = result.get(container);
 
             for (Include include : data.cppSourceFiles.get(file)) {
-                if (data.resolvedIncludes.containsKey(include)) {
-                    // include resolved successfully and unambiguously
-                    IFile includedFile = data.resolvedIncludes.get(include);
-                    IContainer dependency = includedFile.getParent();
-                    int numSubdirs = StringUtils.countMatches(include.filename, "/");
-                    for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
-                        dependency = dependency.getParent();
-                    if (dependency instanceof IWorkspaceRoot)
-                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile generation: cannot represent included directory in the workspace: it is higher than project root: " + include.toString(), include.line);
-                    Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
+                if (data.includeResolutions.containsKey(include)) {
+                    for (IFile includedFile : data.includeResolutions.get(include)) {
+                        IContainer dependency = includedFile.getParent();
+                        int numSubdirs = StringUtils.countMatches(include.filename, "/");
+                        for (int i=0; i<numSubdirs && !(dependency instanceof IWorkspaceRoot); i++)
+                            dependency = dependency.getParent();
+                        if (dependency instanceof IWorkspaceRoot)
+                            addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile generation: cannot represent included directory in the workspace: it is higher than project root: " + include.toString(), include.line);
+                        Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
 
-                    // add folder to the dependent folders
-                    if (dependency != container && !currentDeps.contains(dependency))
-                        currentDeps.add(dependency);
+                        // add folder to the dependent folders
+                        if (dependency != container && !currentDeps.contains(dependency))
+                            currentDeps.add(dependency);
+                    }
                 }
             }
         }
