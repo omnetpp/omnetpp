@@ -7,92 +7,26 @@
 
 package org.omnetpp.cdt;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.managedbuilder.core.IManagedProject;
-import org.eclipse.cdt.managedbuilder.macros.BuildMacroException;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacro;
 import org.eclipse.cdt.managedbuilder.macros.IBuildMacroProvider;
 import org.eclipse.cdt.managedbuilder.macros.IProjectBuildMacroSupplier;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.omnetpp.cdt.build.MakefileTools;
 
+/**
+ * Macro provider, currently empty.
+ * 
+ * @author Andras
+ */
 public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {
-    private static String INCLUDE_DIRS_MACRO = "IncludeDirs"; // all non excluded dirs containing a *.h file in the project
-    private static String MESSAGE_DIRS_MACRO = "MessageDirs";  // all non excluded dirs containing a *.msg file in the project
-
-    private static final String fProjectMacros[] = new String[]{
-        INCLUDE_DIRS_MACRO,
-        MESSAGE_DIRS_MACRO,
-    };
-
-    class SourcePathMacro implements IBuildMacro {
-        private IManagedProject cdtProject;
-        private String optionPrefix;
-        private String name;
-        private String pattern;
-
-        public SourcePathMacro(String name, IManagedProject project, String optionPrefix, String pattern) {
-            this.name = name;
-            this.pattern = pattern;
-            this.cdtProject = project;
-            this.optionPrefix = optionPrefix;
-        }
-
-        public String[] getStringListValue() throws BuildMacroException {
-            return null;
-        }
-
-        public String getStringValue() throws BuildMacroException {
-            try {
-            	IProject project = (IProject)cdtProject.getOwner();
-            	ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-            	String result = "";
-				for (IContainer cont : MakefileTools.collectDirs(projectDescription, pattern))
-					result += optionPrefix+cont.getLocation().toString()+" ";
-				return result;
-			}
-            catch (CoreException e) {
-				throw new BuildMacroException(e.getStatus());
-			}
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public int getMacroValueType() {
-            return getValueType();
-        }
-
-        public int getValueType() {
-            return VALUE_TEXT;
-        }
-    }
 
     public IBuildMacro getMacro(String macroName, IManagedProject project, IBuildMacroProvider provider) {
-        IBuildMacro macro = null;
-        if(INCLUDE_DIRS_MACRO.equals(macroName))
-            macro = new SourcePathMacro(macroName, project, "-I", null);
-        if(MESSAGE_DIRS_MACRO.equals(macroName))
-            macro = new SourcePathMacro(macroName, project, "", ".*\\.msg");
-        return macro;
+        // note: be careful NOT to access the CDT project settings (IConfigurationDescription) here! see bug #299
+        return null;
     }
 
     public IBuildMacro[] getMacros(IManagedProject project, IBuildMacroProvider provider) {
-        List<IBuildMacro> result = new ArrayList<IBuildMacro>();
-        for(String name : fProjectMacros) {
-            IBuildMacro macro = getMacro(name, project, provider);
-            Assert.isNotNull(macro, "Wrong macro name: "+name);
-            result.add(macro);
-        }
-        return result.toArray(new IBuildMacro[] {});
+        // note: be careful NOT to access the CDT project settings (IConfigurationDescription) here! see bug #299
+        return new IBuildMacro[0];
     }
 
 }
