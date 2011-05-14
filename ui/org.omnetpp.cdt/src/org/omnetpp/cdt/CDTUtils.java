@@ -48,20 +48,6 @@ public class CDTUtils {
     }
     
     /**
-     * Returns the source entries (source folders with exclusion patterns) for
-     * the given project and the active configuration. Returns empty array
-     * for non-CDT projects.
-     *
-     * NOTE: Do NOT use from property pages (or from code like MetaMakemake that gets
-     * invoked from property pages), as it returns the saved state not the edited one.
-     */
-    public static ICSourceEntry[] getSourceEntries(IProject project) {
-        IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        IConfiguration activeConfiguration = buildInfo==null ? null : buildInfo.getDefaultConfiguration();
-        return activeConfiguration==null ? new ICSourceEntry[0] : activeConfiguration.getSourceEntries();
-    }
-
-    /**
      * Returns the source locations from the given source entries. (This method does not access CDT state.)
      */
     public static List<IContainer> getSourceLocations(IProject project, ICSourceEntry[] sourceEntries) {
