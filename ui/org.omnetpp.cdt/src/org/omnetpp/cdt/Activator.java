@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
+import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
@@ -36,6 +37,7 @@ public class Activator extends AbstractUIPlugin {
     private ProjectFeaturesListener projectFeaturesListener = new ProjectFeaturesListener();
     private IncludeFoldersCache includeFoldersCache = new IncludeFoldersCache();
     private DependencyCache dependencyCache = new DependencyCache();
+    private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
 
     /**
      * The constructor
@@ -54,6 +56,7 @@ public class Activator extends AbstractUIPlugin {
         projectFeaturesListener.hookListeners();
         includeFoldersCache.hookListeners();
         dependencyCache.hookListeners();
+        newConfigConfigurer.hookListeners();
     }
 
     /*
@@ -64,6 +67,7 @@ public class Activator extends AbstractUIPlugin {
         projectFeaturesListener.unhookListeners();
         includeFoldersCache.unhookListeners();
         dependencyCache.unhookListeners();
+        newConfigConfigurer.unhookListeners();
         
         plugin = null;
         super.stop(context);
@@ -198,5 +202,7 @@ public class Activator extends AbstractUIPlugin {
         return getDefault().includeFoldersCache;
     }
 
-
+    public static NewConfigConfigurer getNewConfigConfigurer() {
+        return getDefault().newConfigConfigurer;
+    }
 }
