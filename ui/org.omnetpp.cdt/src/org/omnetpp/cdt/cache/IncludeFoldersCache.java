@@ -15,7 +15,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.core.resources.IContainer;
@@ -44,65 +46,95 @@ import org.omnetpp.common.util.StringUtils;
  * 
  * @author Andras
  */
-//TODO: should reread everything on project clean
-public class IncludeFoldersCache implements IResourceChangeListener {
+public class IncludeFoldersCache {
+    // Implementation note: we must be prepared for access from multiple threads, and also
+    // take care not to cause deadlock with CDT's configuration access code. Therefore, all
+    // access to member variables are synchronized, and we take care not to access CDT while
+    // in a synchronized block.
+    
+    // include folders for each project
     private Map<IProject, List<IContainer>> projectIncludeFolders = new HashMap<IProject, List<IContainer>>();
 
+    // if getProjectIncludeFolders() is called when we don't have the info yet, we schedule an asyncExec()
+    // job to collect it, and in the job we force CDT to ask us again by invalidating CDT scanner info.
     private List<IProject> todoList = new ArrayList<IProject>();
-    private Runnable asyncExecJob = null; 
+    private Runnable asyncExecJob = null;  // also protected by todoList as lock
 
+    private IResourceChangeListener resourceChangeListener = new IResourceChangeListener() {
+        public void resourceChanged(IResourceChangeEvent event) {
+            IncludeFoldersCache.this.resourceChanged(event);
+        }
+    }; 
+    private ICProjectDescriptionListener projectDescriptionListener = new ICProjectDescriptionListener() {
+        public void handleEvent(CProjectDescriptionEvent event) {
+            IncludeFoldersCache.this.projectDescriptionChanged(event);
+        }
+    };
+    
     public IncludeFoldersCache() {
     }
     
     public void hookListeners() {
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+        CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+        CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
     public List<IContainer> getProjectIncludeFolders(IProject project) {
         // Note: we MUST NOT compute the folders here, because this method is called
         // from our ScannerInfoCollector classes that must not access the CDT project
         // configuration, see bug #299
-        List<IContainer> result = projectIncludeFolders.get(project);
+        List<IContainer> result;
+        synchronized (projectIncludeFolders) {
+            result = projectIncludeFolders.get(project);
+        }
         
         if (result != null)
             return result;
         else {
             // if we don't have anything at the moment, schedule it for later
             schedule(project);
-            return new ArrayList<IContainer>(); // nothing available yet
+            return new ArrayList<IContainer>();
         }
     }
 
-    protected synchronized void schedule(IProject project) {
-        todoList.add(project);
-        if (asyncExecJob == null) {
-            asyncExecJob = new Runnable() {
-                public void run() {
+    protected void schedule(IProject project) {
+        Runnable asyncRunnable = new Runnable() {
+            public void run() {
+                IProject[] projects;
+                synchronized (todoList) {
+                    projects = todoList.toArray(new IProject[]{});
+                    todoList.clear();
+                    asyncExecJob = null;
+                }
+                for (IProject project : projects) {
                     try {
-                        for (IProject project : todoList)
-                            projectChanged(project);
+                        projectChanged(project);
                     }
                     catch (CoreException e) {
                         Activator.logError(e);
                     }
-                    finally {
-                        todoList.clear();
-                        asyncExecJob = null;
-                    }
                 }
-            };
-            Display.getDefault().asyncExec(asyncExecJob);
+            }
+        };
+        
+        synchronized (todoList) {
+            todoList.add(project);
+            if (asyncExecJob == null) {
+                asyncExecJob = asyncRunnable;
+                Display.getDefault().asyncExec(asyncExecJob);
+            }
         }
     }
 
     /**
      * Reread include paths when folder gets created or removed
      */
-    public synchronized void resourceChanged(IResourceChangeEvent event) {
+    protected void resourceChanged(IResourceChangeEvent event) {
         try {
             if (event.getDelta() == null || event.getType() != IResourceChangeEvent.POST_CHANGE)
                 return;
@@ -129,17 +161,40 @@ public class IncludeFoldersCache implements IResourceChangeListener {
             Activator.logError(e);
         }
     }
+    
+    protected void projectDescriptionChanged(CProjectDescriptionEvent event) {
+        try {
+            projectChanged(event.getProject());
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+        }
+    }
+    
+    protected void projectChanged(IProject project) throws CoreException {
+        rescanProject(project);
+    }
 
-    protected synchronized void projectChanged(IProject project) throws CoreException {
+    public void clean(IProject project) throws CoreException {
+        rescanProject(project);
+    }
+
+    protected void rescanProject(IProject project) throws CoreException {
         // compute current state
-        List<IContainer> folders = computeIncludeFoldersForProject(project);
+        List<IContainer> folders = scanProjectForIncludeFolders(project);
         
         // and if changed, store it and tell CDT to pick it up
-        List<IContainer> oldFolders = projectIncludeFolders.get(project);
-        if (!folders.equals(oldFolders)) {
-            projectIncludeFolders.put(project, folders);
-            CDTUtils.invalidateDiscoveredPathInfo(project); // and ScannerInfoCollector classes will get it from us
+        boolean changed = false;
+        synchronized (projectIncludeFolders) {
+            List<IContainer> oldFolders = projectIncludeFolders.get(project);
+            if (!folders.equals(oldFolders)) {
+                projectIncludeFolders.put(project, folders);
+                changed = true;
+            }
         }
+
+        if (changed)
+            CDTUtils.invalidateDiscoveredPathInfo(project); // and ScannerInfoCollector classes will get it from us
     }
     
     /**
@@ -147,7 +202,7 @@ public class IncludeFoldersCache implements IResourceChangeListener {
      * This is currently all folders under the source entries, minus those covered
      * by the output paths (out/ dirs)
      */
-    protected List<IContainer> computeIncludeFoldersForProject(IProject project) throws CoreException {
+    protected List<IContainer> scanProjectForIncludeFolders(IProject project) throws CoreException {
 
         List<IContainer> outFolders = new ArrayList<IContainer>(); 
         BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
@@ -219,6 +274,5 @@ public class IncludeFoldersCache implements IResourceChangeListener {
                 });
             }
         }
-    }
-        
+    }        
 }
