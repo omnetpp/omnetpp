@@ -94,6 +94,9 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     private Map<String,INedElement> expressionCache = new HashMap<String, INedElement>();
     private static final INedElement BOGUS_EXPRESSION = NedElementFactoryEx.getInstance().createElement(INedElement.NED_UNKNOWN); // special value to signal syntax error
     
+    // whether a job to call readMissingNedFiles() has been scheduled
+    private boolean isLoadingInProgress = false;
+    
     // job that performs NED validation in the background
     private Job nedValidationJob;
 
@@ -437,6 +440,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
      * Schedules a background job to read NED files that are not yet loaded.
      */
     public void scheduleReadMissingNedFiles() {
+        isLoadingInProgress = true;
         WorkspaceJob job = new WorkspaceJob("Parsing NED files...") {
             @Override
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
@@ -450,6 +454,10 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         job.schedule();
     }
 
+    public boolean isLoadingInProgress() {
+        return isLoadingInProgress;
+    }
+    
     /**
      * Reads NED files that are not yet loaded (not in our nedFiles table).
      * This should be run on startup and after rebuildProjectsTable();
@@ -479,6 +487,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             NedResourcesPlugin.logError("Error during workspace refresh: ",e);
         } finally {
             nedModelChangeNotificationDisabled = false;
+            isLoadingInProgress = false;
             Assert.isTrue(debugRehashCounter <= 1, "Too many rehash operations during readMissingNedFiles()");
             nedModelChanged(new NedModelChangeEvent(null));  // "everything changed"
         }

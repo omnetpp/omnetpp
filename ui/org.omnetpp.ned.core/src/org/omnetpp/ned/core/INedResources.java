@@ -84,6 +84,11 @@ public interface INedResources extends INedTypeResolver {
     public void runWithBeginEndNotification(Runnable runnable);
 
     /**
+     * Returns true if some NED files are being loaded, or are scheduled to be loaded.
+     */
+    public boolean isLoadingInProgress();
+    
+    /**
      * Operations that change the NED tree without having it open in an editor
      * (see connect()/disconnect()) must call this method with argument==true
      * before the changes, and with argument==false afterwards. Calls cannot be nested.

@@ -365,17 +365,19 @@ public class ProjectFeaturesManager {
 
         // check for nonexistent NED packages
         INedResources nedResources = NedResourcesPlugin.getNedResources();
-        for (String pkg : f.getNedPackages()) {
-            IContainer[] folders = nedResources.getFoldersForPackage(project, pkg);
-            if (folders.length == 0)
-                errors.add(prefix + "no such NED package: " + pkg);
-            boolean found = false;
-            for (IContainer folder : folders)
-                if (folder.exists())
-                    found = true;
+        if (!nedResources.isLoadingInProgress()) {
+            for (String pkg : f.getNedPackages()) {
+                IContainer[] folders = nedResources.getFoldersForPackage(project, pkg);
+                if (folders.length == 0)
+                    errors.add(prefix + "no such NED package: " + pkg);
+                boolean found = false;
+                for (IContainer folder : folders)
+                    if (folder.exists())
+                        found = true;
 
-            if (!found)
-                errors.add(prefix + "no folder corresponds to NED package " + pkg);
+                if (!found)
+                    errors.add(prefix + "no folder corresponds to NED package " + pkg);
+            }
         }
 
         // check for C++ source folders
