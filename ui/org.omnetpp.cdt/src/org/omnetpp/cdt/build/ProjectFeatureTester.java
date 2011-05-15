@@ -189,13 +189,13 @@ public class ProjectFeatureTester {
         finally {
             // restore original state
             for (ProjectFeature f : features.getFeatures())
-                features.setFeatureEnabled(configurations, nedSourceFoldersConfig, f, saveEnabledFeatures.contains(f));
+                features.setFeatureEnabled(f, saveEnabledFeatures.contains(f), configurations, nedSourceFoldersConfig);
         }
     }
 
     protected void setAllEnabled(boolean enable) throws CoreException {
         for (ProjectFeature f : features.getFeatures())
-            features.setFeatureEnabled(configurations, nedSourceFoldersConfig, f, enable);
+            features.setFeatureEnabled(f, enable, configurations, nedSourceFoldersConfig);
     }
 
     protected String makeMakefileFragment(String targetName, String extraNMakeOptions) throws CoreException {

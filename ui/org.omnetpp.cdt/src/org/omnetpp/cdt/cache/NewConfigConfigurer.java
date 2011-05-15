@@ -16,7 +16,6 @@ import java.util.Map;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.parser.util.ArrayUtil;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -28,6 +27,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.cdt.build.ProjectFeaturesManager;
 import org.omnetpp.common.Debug;
 
 /**
@@ -135,7 +135,23 @@ public class NewConfigConfigurer {
             }
         }
         
-        // TODO copy macros too?
+        // apply project feature settings (provided the project has features defined)
+        ProjectFeaturesManager features = new ProjectFeaturesManager(project);
+        if (features.loadFeaturesFile()) {
+            // convert config IDs to actual configs
+            List<ICConfigurationDescription> cfgs = new ArrayList<ICConfigurationDescription>();
+            for (String id : configIds) {
+                ICConfigurationDescription cfg = prjDesc.getConfigurationById(id);
+                if (cfg != null)
+                    cfgs.add(cfg);
+            }
+
+            // fix them up
+            if (!cfgs.isEmpty()) {
+                features.fixupConfigurations(cfgs.toArray(new ICConfigurationDescription[]{}), features.getEnabledFeatures());
+                changed = true;
+            }
+        }
         
         // save
         if (changed)

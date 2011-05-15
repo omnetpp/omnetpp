@@ -449,7 +449,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
         try {
             ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
-            features.setFeatureEnabled(configurations, nedSourceFoldersConfig, feature, enable);
+            features.setFeatureEnabled(feature, enable, configurations, nedSourceFoldersConfig);
         }
         catch (Exception e) {
             errorDialog(e.getMessage(), e);

@@ -480,10 +480,33 @@ public class ProjectFeaturesManager {
         CoreModel.getDefault().setProjectDescription(project, projectDescription);
     }
 
+    /**
+     * Shortcut for calling both fixupExcludedNedPackages() and fixupConfigurations().
+     */
     public void fixupProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
-        // refresh all features
-        for (ProjectFeature f : getFeatures())
-            setFeatureEnabled(configurations, nedSourceFoldersConfig, f, enabledFeatures.contains(f));
+        fixupExcludedNedPackages(nedSourceFoldersConfig, enabledFeatures);
+        fixupConfigurations(configurations, enabledFeatures);
+    }
+
+    /**
+     * Adjusts the excluded NED packages in the given configuration object to
+     * reflect the given feature enablement state.
+     */
+    public void fixupExcludedNedPackages(NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
+        for (ProjectFeature feature : getFeatures()) {
+            boolean enabled = enabledFeatures.contains(feature);
+            adjustExcludedNedPackages(feature, enabled, nedSourceFoldersConfig);
+        }
+    }
+
+    /**
+     * Adjusts the given CDT configurations to reflect the given feature enablement state.
+     */
+    public void fixupConfigurations(ICConfigurationDescription[] configurations, List<ProjectFeature> enabledFeatures) throws CoreException {
+        for (ProjectFeature feature : getFeatures()) {
+            boolean enabled = enabledFeatures.contains(feature);
+            adjustConfigurations(feature, enabled, configurations);
+        }
     }
 
     /**
@@ -553,10 +576,10 @@ public class ProjectFeaturesManager {
     }
 
     public void setFeatureEnabledRec(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, ProjectFeature feature, boolean enable) throws CoreException {
-        setFeatureEnabled(configurations, nedSourceFoldersConfig, feature, enable);
+        setFeatureEnabled(feature, enable, configurations, nedSourceFoldersConfig);
         Set<ProjectFeature> affectedFeatures = enable ? collectDependencies(feature) : collectDependentFeatures(feature);
         for (ProjectFeature f : affectedFeatures)
-            setFeatureEnabled(configurations, nedSourceFoldersConfig, f, enable);
+            setFeatureEnabled(f, enable, configurations, nedSourceFoldersConfig);
     }
 
     /**
@@ -564,11 +587,19 @@ public class ProjectFeaturesManager {
      * This method ignores dependencies, i.e. it is possible to create an inconsistent
      * state with it.
      */
-    public void setFeatureEnabled(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, ProjectFeature feature, boolean enable) throws CoreException {
+    public void setFeatureEnabled(ProjectFeature feature, boolean enable, ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig) throws CoreException {
         Assert.isTrue(getFeature(feature.getId()) == feature, "Alien feature!");
         Debug.println((enable ? "enabling" : "disabling") + " feature " + feature.getId());
 
-        // modify list of excluded NED packages
+        adjustExcludedNedPackages(feature, enable, nedSourceFoldersConfig);
+        adjustConfigurations(feature, enable, configurations);
+    }
+
+    /**
+     * Update the list of excluded NED packages in the given configuration object 
+     * according to the feature's enablement state.
+     */
+    protected void adjustExcludedNedPackages(ProjectFeature feature, boolean enable, NedSourceFoldersConfiguration nedSourceFoldersConfig) {
         Set<String> excludedPackages = new HashSet<String>();
         excludedPackages.addAll(Arrays.asList(nedSourceFoldersConfig.getExcludedPackages()));
         if (enable)
@@ -576,7 +607,12 @@ public class ProjectFeaturesManager {
         else
             excludedPackages.addAll(feature.getNedPackages());
         nedSourceFoldersConfig.setExcludedPackages(excludedPackages.toArray(new String[]{}));
+    }
 
+    /**
+     * Update the given CTD configurations according to the feature's enablement state.
+     */
+    protected void adjustConfigurations(ProjectFeature feature, boolean enable, ICConfigurationDescription[] configurations) throws CoreException {
         // exclude/include C++ source folders that correspond to the feature's NED packages
         List<IContainer> folders = getAllCxxSourceFolders(feature);
         for (IContainer folder : folders)
