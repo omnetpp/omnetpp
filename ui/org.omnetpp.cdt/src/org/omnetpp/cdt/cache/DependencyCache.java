@@ -49,24 +49,28 @@ import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
 /**
- * Keeps track of which cc/h files include which other files, to be used
- * for dependency generation in Makefiles.
- *
- * Conditionals (#ifdef) are ignored altogether; this vastly simplifies
- * things (compiler-defined and externally defined macros don't need to
- * be known; a header file's include list doesn't depend on which
- * project/file it is included from, etc), allows platform-independent
- * dependencies to be generated, and in general has much more advantages
- * than drawbacks.
- *
+ * Keeps track of which cc/h files include which other files, to be used for
+ * dependency generation in Makefiles.
+ * 
+ * Conditionals (#ifdef) are ignored altogether; this vastly simplifies things
+ * (compiler-defined and externally defined macros don't need to be known; a
+ * header file's include list doesn't depend on which project/file it is
+ * included from, etc), allows platform-independent dependencies to be
+ * generated, and in general has much more advantages than drawbacks.
+ * 
  * Strategy of handling msg files: pretend that _m.cc/h files exist, then
  * extract dependencies from them as from normal .cc/h files.
- *
+ * 
+ * Implementation note: We minimize file read operations (we only re-read file
+ * contents when the file has changed on the disk, as indicated by its
+ * timestamp), but to keep the code simple, we aggressively discard cached
+ * dependency info whenever something changes in the project. Dependency info is
+ * recomputed on demand.
+ * 
  * @author Andras
  */
 // Note: we may need to factor out a getNonTransitiveFolderDependencies() too
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
-//XXX mindenki a SAJAT projektre tegye csak r� a markereket, a referenced projekteket hagyja ki! -- igy minden marker csak 1x lesz!
 public class DependencyCache {
 	private static boolean debug = false;
     // the standard C/C++ headers (we'll ignore those #include directives)
@@ -116,7 +120,7 @@ public class DependencyCache {
 
     static class FileIncludes {
         List<Include> includes; // list of #includes in the file
-        long modificationStamp; // date/time of file when it was parsed
+        long modificationStamp; // date/time of file when it was parsed (we only re-parse the file if its timestamp has changed)
 
         @Override
         public String toString() {
@@ -124,73 +128,92 @@ public class DependencyCache {
         }
     }
 
-    static class ProjectData {
+    // list of #include directives per file; contains .msg files but not _m.cc/h files
+    // Note: this map is NOT touched when we receive resource change notifications! 
+    // (We use the timestamp to decide whether a FileIncludes entry is out of date.)
+    private Map<IFile,FileIncludes> fileIncludes = new HashMap<IFile, FileIncludes>();
+    
+    // list of projects whose files in fileIncludes are up to date
+    private Set<IProject> projectsWithUpToDateFileIncludes = new HashSet<IProject>();
+
+    static class DependencyData {
         IProject project;
         List<IProject> projectGroup;  // this project and its referenced projects
-        Map<IFile,List<Include>> cppSourceFiles;  // only used during calculations; contains _m.cc/h instead of msg files; filtered for projectGroup
         Map<Include,List<IFile>> includeResolutions; // ideally it should be Map<Include,IFile>, but we want to store all candidates for ambiguous #includes
         Map<IContainer,Set<IContainer>> folderDependencies;
         Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies;
     }
 
-    // per-file includes; contains .msg files but not _m.cc/h files
-    private Map<IFile,FileIncludes> fileIncludes = new HashMap<IFile, FileIncludes>();
-
-    // list of projects whose include lists are up-to-date in the cache
-    private Set<IProject> fileIncludesUpToDate = new HashSet<IProject>();
-
     // cached dependencies
-    private Map<IProject,ProjectData> projectData = new HashMap<IProject, ProjectData>();
+    private Map<IProject,DependencyData> projectDependencyData = new HashMap<IProject, DependencyData>();
 
+    // listeners
+    private IResourceChangeListener resourceChangeListener = new IResourceChangeListener() {
+        public void resourceChanged(IResourceChangeEvent event) {
+            DependencyCache.this.resourceChanged(event);
+        }
+    };
+    private ICProjectDescriptionListener projectDescriptionListener = new ICProjectDescriptionListener() {
+        public void handleEvent(CProjectDescriptionEvent e) {
+            projectDescriptionChanged(e);
+        }
+    };
+
+    /**
+     * Constructor,
+     */
     public DependencyCache() {
     }
 
     public void hookListeners() {
-        // on resource change events, mark the corresponding project(s) as not up to date
-        //XXX can be optimized so that we only invalidate when really needed (better look on the change event)
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
-            public void resourceChanged(IResourceChangeEvent event) {
-                try {
-                    if (event.getDelta() != null) {
-                        event.getDelta().accept(new IResourceDeltaVisitor() {
-                            public boolean visit(IResourceDelta delta) throws CoreException {
-                                if (delta.getResource() instanceof IProject) {
-                                    projectChanged((IProject)delta.getResource());
-                                    return false;
-                                }
-                                return true;
-                            }
-                        });
-                    }
-                }
-                catch (CoreException e) {
-                    Activator.logError(e);
-                }
-            }
-        });
-        
-        // also invalidate dependency cache on CDT configuration changes
-        CoreModel.getDefault().addCProjectDescriptionListener(new ICProjectDescriptionListener() {
-            public void handleEvent(CProjectDescriptionEvent e) {
-                projectChanged(e.getProject());
-            }
-        }, CProjectDescriptionEvent.APPLIED | CProjectDescriptionEvent.DATA_APPLIED);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+        CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
     
     public void unhookListeners() {
-        //TODO
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+        CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
+    }
+
+    protected void resourceChanged(IResourceChangeEvent event) {
+        try {
+            // on resource change events, mark the corresponding project(s) as not up to date
+            if (event.getDelta() != null) {
+                event.getDelta().accept(new IResourceDeltaVisitor() {
+                    public boolean visit(IResourceDelta delta) throws CoreException {
+                        IResource resource = delta.getResource();
+                        if (resource instanceof IFile) {
+                            int kind = delta.getKind();
+                            if (kind==IResourceDelta.ADDED || kind==IResourceDelta.REMOVED || kind==IResourceDelta.CHANGED) {
+                                if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource)) {
+                                    projectChanged(resource.getProject());
+                                    return false;
+                                }
+                            }
+                        }
+                        return true;
+                    }
+                });
+            }
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+        }
     }
     
-
+    protected void projectDescriptionChanged(CProjectDescriptionEvent e) {
+        projectChanged(e.getProject());
+    }
+    
     /**
      * A file or something in the project has changed. We need to invalidate
      * relevant parts of the cache.
      */
     synchronized protected void projectChanged(IProject project) {
-        fileIncludesUpToDate.remove(project);
-        for (IProject p : projectData.keySet().toArray(new IProject[]{}))
-            if (projectData.get(p).projectGroup.contains(project))
-                projectData.remove(p);
+        projectsWithUpToDateFileIncludes.remove(project);
+        for (IProject p : projectDependencyData.keySet().toArray(new IProject[]{}))
+            if (projectDependencyData.get(p).projectGroup.contains(project))
+                projectDependencyData.remove(p);
     }
 
     /**
@@ -211,7 +234,7 @@ public class DependencyCache {
      * where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
-        ProjectData projectData = getOrCreateProjectData(project);
+        DependencyData projectData = getProjectDependencyData(project);
         return projectData.folderDependencies;
     }
 
@@ -226,7 +249,7 @@ public class DependencyCache {
      * where UI responsiveness is an issue.
      */
     synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
-        ProjectData projectData = getOrCreateProjectData(project);
+        DependencyData projectData = getProjectDependencyData(project);
         return projectData.perFileDependencies;
     }
 
@@ -235,62 +258,64 @@ public class DependencyCache {
      * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
     synchronized public IProject[] getProjectGroup(IProject project) {
-        ProjectData projectData = getOrCreateProjectData(project);
+        DependencyData projectData = getProjectDependencyData(project);
         return projectData.projectGroup.toArray(new IProject[]{});
     }
 
-    protected ProjectData getOrCreateProjectData(IProject project) {
-        if (!projectData.containsKey(project)) {
-            ProjectData data = new ProjectData();
-            data.project = project;
-
-            // determine project group (this project plus all referenced projects)
-            data.projectGroup = new ArrayList<IProject>();
-            data.projectGroup.add(project);
-            try {
-                data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
-            }
-            catch (CoreException e) {
-                Activator.logError("Error getting the list of referenced projects", e);
-            }
-
-            ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
-
-            // Register all source files (including excluded ones!) in the marker synchronizer;
-            // we need to register all, because the "excluded" state of a folder may change
-            // over time, and we don't want to leave stale problem markers around.
-            // Also, ignore referenced projects, as they are processed on their own right
-            //XXX does not work somehow (try on INET/Obsolete!)
-            registerAllFilesInMarkerSynchronizer(project, markerSync);
-
-            // ensure all files in this project group have been parsed for #includes
-            long begin = System.currentTimeMillis();
-            for (IProject p : data.projectGroup)
-                if (!fileIncludesUpToDate.contains(p))
-                    collectIncludes(p, markerSync);
-            if (debug)
-            	Debug.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
-
-            // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
-            collectCppSourceFilesInProjectGroup(data, markerSync);
-
-            // resolve includes
-            resolveIncludes(data, markerSync);
-
-            // calculate per-file dependencies
-            data.perFileDependencies = calculatePerFileDependencies(data, markerSync);
-
-            // calculate folder dependencies
-            data.folderDependencies = calculateFolderDependencies(data, markerSync);
-
-            data.cppSourceFiles = null; // no longer needed
-
-            // store
-            projectData.put(project, data);
-
-            markerSync.runAsWorkspaceJob();
+    protected DependencyData getProjectDependencyData(IProject project) {
+        if (!projectDependencyData.containsKey(project)) {
+            // compute and store dependency data
+            DependencyData data = computeDependencies(project);
+            projectDependencyData.put(project, data);
         }
-        return projectData.get(project);
+        return projectDependencyData.get(project);
+    }
+
+    protected DependencyData computeDependencies(IProject project) {
+        DependencyData data = new DependencyData();
+        data.project = project;
+
+        // determine project group (this project plus all referenced projects)
+        data.projectGroup = new ArrayList<IProject>();
+        data.projectGroup.add(project);
+        try {
+            data.projectGroup.addAll(Arrays.asList(ProjectUtils.getAllReferencedProjects(project)));
+        }
+        catch (CoreException e) {
+            Activator.logError("Error getting the list of referenced projects", e);
+        }
+
+        ProblemMarkerSynchronizer markerSync = new ProblemMarkerSynchronizer(MakefileBuilder.MARKER_ID);
+
+        // Register all source files (including excluded ones!) in the marker synchronizer;
+        // we need to register all, because the "excluded" state of a folder may change
+        // over time, and we don't want to leave stale problem markers around.
+        // Also, ignore referenced projects, as they are processed on their own right
+        registerAllFilesInMarkerSynchronizer(project, markerSync);
+
+        // ensure all files in this project group have been parsed for #includes
+        long begin = System.currentTimeMillis();
+        for (IProject p : data.projectGroup)
+            if (!projectsWithUpToDateFileIncludes.contains(p))
+                scanChangedFilesForIncludes(p, markerSync);
+        if (debug)
+        	Debug.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
+
+        // collect list of .h and .cc files in this project group (also, add _m.cc/_m.h for msg files)
+        Map<IFile,List<Include>> cppSourceFiles = collectCppSourceFilesInProjectGroup(data, markerSync);
+
+        // resolve includes
+        resolveIncludes(data, cppSourceFiles, markerSync);
+
+        // calculate per-file dependencies
+        data.perFileDependencies = calculatePerFileDependencies(data, cppSourceFiles, markerSync);
+
+        // calculate folder dependencies
+        data.folderDependencies = calculateFolderDependencies(data, cppSourceFiles, markerSync);
+
+        markerSync.runAsWorkspaceJob();
+        
+        return data;
     }
 
     protected void registerAllFilesInMarkerSynchronizer(IProject project, final ProblemMarkerSynchronizer markerSync) {
@@ -309,14 +334,23 @@ public class DependencyCache {
         }
     }
 
-    protected void collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
+    /**
+     * Brings fileIncludes up to date: checks all files in the project, and parses those for #include
+     * directives that have not yet been parsed or changed since the last check (based on modification 
+     * timestamp.) Also throws out files that are now in excluded folders.
+     */
+    protected void scanChangedFilesForIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
         if (debug)
-        	Debug.println("collectIncludes(): " + project);
+        	Debug.println("scanChangedFilesForIncludes(): " + project);
 
+        // Note: fileIncludes may contain files that are now in excluded folders; we'll throw them out
+        // of fileIncludes because dependency computation methods no longer checks for exclusions.
+        
         try {
             // parse all C++ source files for #include; also warn for linked-in files
             ICConfigurationDescription cfg = CoreModel.getDefault().getProjectDescription(project).getActiveConfiguration();
             final ICSourceEntry[] sourceEntries = cfg==null ? new ICSourceEntry[0] : cfg.getSourceEntries();
+            final Set<IFile> sourceFilesFound = new HashSet<IFile>();
             project.accept(new IResourceVisitor() {
                 // variables for caching CDTUtils.isExcluded(), which is expensive
                 IContainer lastFolder = null;
@@ -327,21 +361,30 @@ public class DependencyCache {
                     if (resource.isLinked())
                         addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles", -1);
                     if (resource instanceof IFile) {
-                        IContainer folder = resource.getParent();
+                        IFile file = (IFile) resource;
+                        IContainer folder = file.getParent();
                         if (folder != lastFolder) {
                             lastFolder = folder;
                             lastFolderIsExcluded = CDTUtils.isExcluded(folder, sourceEntries);
                         }
-                        if (!lastFolderIsExcluded)
-                            if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource))
-                                checkFileIncludes((IFile)resource);
+                        if (!lastFolderIsExcluded) {
+                            if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file)) {
+                                checkFileIncludes(file);
+                                sourceFilesFound.add(file);
+                            }
+                        }
                     }
                     return MakefileTools.isGoodFolder(resource);
                 }
             });
 
+            // remove from fileIncludes the files that became excluded since
+            for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
+                if (f.getProject().equals(project) && !sourceFilesFound.contains(f))
+                    fileIncludes.remove(f);
+            
             // project is OK now
-            fileIncludesUpToDate.add(project);
+            projectsWithUpToDateFileIncludes.add(project);
         }
         catch (CoreException e) {
             addMarker(markerSync, project, IMarker.SEVERITY_ERROR, "Error scanning source files for #includes: " + StringUtils.nullToEmpty(e.getMessage()), -1);
@@ -368,9 +411,9 @@ public class DependencyCache {
                 Debug.println("   parsed includes from " + file + ": " + fileData.toString());
 
             // clear cached dependencies (need to be recalculated)
-            for (IProject p : projectData.keySet().toArray(new IProject[]{}))
-                if (projectData.get(p).projectGroup.contains(file.getProject()))
-                    projectData.remove(p);
+            for (IProject p : projectDependencyData.keySet().toArray(new IProject[]{}))
+                if (projectDependencyData.get(p).projectGroup.contains(file.getProject()))
+                    projectDependencyData.remove(p);
         }
         else {
             if (debug)
@@ -406,10 +449,10 @@ public class DependencyCache {
         return result;
     }
 
-    protected void collectCppSourceFilesInProjectGroup(ProjectData data, ProblemMarkerSynchronizer markerSync) {
+    protected Map<IFile,List<Include>> collectCppSourceFilesInProjectGroup(DependencyData data, ProblemMarkerSynchronizer markerSync) {
         // collect list of .h and .cc files in this project group
         // (meanwhile resolve msg files to _m.cc and _m.h)
-        data.cppSourceFiles = new HashMap<IFile,List<Include>>();
+        Map<IFile,List<Include>> cppSourceFiles = new HashMap<IFile,List<Include>>();
         for (IFile file : fileIncludes.keySet()) {
             if (data.projectGroup.contains(file.getProject())) {
                 if (file.getFileExtension().equals("msg")) {
@@ -418,22 +461,23 @@ public class DependencyCache {
                     // - an _m.cc file which includes the _m.h file
                     IFile mhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.h")));
                     IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc"))); //XXX or .cpp?
-                    data.cppSourceFiles.put(mhFile, fileIncludes.get(file).includes);
+                    cppSourceFiles.put(mhFile, fileIncludes.get(file).includes);
                     List<Include> mccIncludes = new ArrayList<Include>();
                     mccIncludes.add(new Include(mccFile, 1, mhFile.getName(), false));
-                    data.cppSourceFiles.put(mccFile, mccIncludes);
+                    cppSourceFiles.put(mccFile, mccIncludes);
                 }
                 else {
-                    data.cppSourceFiles.put(file, fileIncludes.get(file).includes);
+                    cppSourceFiles.put(file, fileIncludes.get(file).includes);
                 }
             }
         }
+        return cppSourceFiles;
     }
 
-    protected void resolveIncludes(ProjectData data, ProblemMarkerSynchronizer markerSync) {
+    protected void resolveIncludes(DependencyData data, Map<IFile,List<Include>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
         // build a hash table of files in this project group, for easy lookup by name
         Map<String,List<IFile>> filesByName = new HashMap<String, List<IFile>>();
-        for (IFile file : data.cppSourceFiles.keySet()) {
+        for (IFile file : cppSourceFiles.keySet()) {
             String name = file.getName();
             if (!filesByName.containsKey(name))
                 filesByName.put(name, new ArrayList<IFile>());
@@ -442,9 +486,9 @@ public class DependencyCache {
 
         // resolve includes in each file
         data.includeResolutions = new HashMap<Include, List<IFile>>();
-        for (IFile file : data.cppSourceFiles.keySet()) {
+        for (IFile file : cppSourceFiles.keySet()) {
             IContainer container = file.getParent();
-            for (Include include : data.cppSourceFiles.get(file)) {
+            for (Include include : cppSourceFiles.get(file)) {
                 if (include.isSysInclude && standardHeaders.contains(include.filename)) {
                     // this is a standard C/C++ header file, just ignore.
                     // Note: non-standards angle-bracket #includes will be resolved and
@@ -454,9 +498,10 @@ public class DependencyCache {
                 else if (include.filename.contains("..")) {
                     // we only recognize an include containing ".." if it's relative to the current dir
                     IPath includeFileLocation = container.getLocation().append(new Path(include.filename));
+                    @SuppressWarnings("deprecation")
                     IFile[] f = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(includeFileLocation);
                     if (f.length == 0 || !f[0].exists())
-                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot resolve #include with '..' unless it is relative to the current dir", include.line); //XXX implement instead of warning!!!
+                        addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot resolve #include with '..' unless it is relative to the current dir", include.line);
                 }
                 else {
                     List<IFile> includeTargets = new ArrayList<IFile>(); // will contain ideally 1 element, but 0 (unresolved #include) or >1 (ambiguous #include) are also possible
@@ -487,12 +532,12 @@ public class DependencyCache {
         }
     }
 
-    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(ProjectData data, ProblemMarkerSynchronizer markerSync) {
+    protected Map<IContainer,Map<IFile,Set<IFile>>> calculatePerFileDependencies(DependencyData data, Map<IFile, List<Include>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
         // for each file, collect the list of files it includes
         Map<IFile,Set<IFile>> includedFilesMap = new HashMap<IFile, Set<IFile>>();
-        for (IFile file : data.cppSourceFiles.keySet()) {
+        for (IFile file : cppSourceFiles.keySet()) {
             Set<IFile> includedFiles = new HashSet<IFile>();
-            for (Include include : data.cppSourceFiles.get(file))
+            for (Include include : cppSourceFiles.get(file))
                 if (data.includeResolutions.containsKey(include))
                     for (IFile includedFile : data.includeResolutions.get(include))
                         includedFiles.add(includedFile);
@@ -523,17 +568,17 @@ public class DependencyCache {
         return result;
     }
 
-    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies(ProjectData data, ProblemMarkerSynchronizer markerSync) {
+    protected Map<IContainer,Set<IContainer>> calculateFolderDependencies(DependencyData data, Map<IFile, List<Include>> cppSourceFiles, ProblemMarkerSynchronizer markerSync) {
         // process each file, and gradually expand dependencies list
         Map<IContainer,Set<IContainer>> result = new HashMap<IContainer,Set<IContainer>>();
 
-        for (IFile file : data.cppSourceFiles.keySet()) {
+        for (IFile file : cppSourceFiles.keySet()) {
             IContainer container = file.getParent();
             if (!result.containsKey(container))
                 result.put(container, new HashSet<IContainer>());
             Set<IContainer> currentDeps = result.get(container);
 
-            for (Include include : data.cppSourceFiles.get(file)) {
+            for (Include include : cppSourceFiles.get(file)) {
                 if (data.includeResolutions.containsKey(include)) {
                     for (IFile includedFile : data.includeResolutions.get(include)) {
                         IContainer dependency = includedFile.getParent();
@@ -542,7 +587,7 @@ public class DependencyCache {
                             dependency = dependency.getParent();
                         if (dependency instanceof IWorkspaceRoot)
                             addMarker(markerSync, file, IMarker.SEVERITY_WARNING, "Makefile generation: cannot represent included directory in the workspace: it is higher than project root: " + include.toString(), include.line);
-                        Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename))); //XXX why as Assert...?
+                        Assert.isTrue(dependency.getLocation().toString().equals(StringUtils.removeEnd(includedFile.getLocation().toString(), "/"+include.filename)));
 
                         // add folder to the dependent folders
                         if (dependency != container && !currentDeps.contains(dependency))

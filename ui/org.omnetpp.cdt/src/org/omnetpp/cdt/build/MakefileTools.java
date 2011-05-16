@@ -71,7 +71,7 @@ public class MakefileTools {
      */
     public static boolean isNonGeneratedCppFile(IResource resource) {
         // not an _m.cc or _n.cc file
-        return isCppFile(resource) && !resource.getName().matches("_[mn]\\.[^.]+$");
+        return isCppFile(resource) && !resource.getName().matches(".*_[mn]\\.[^.]+$");
     }
 
     /**
