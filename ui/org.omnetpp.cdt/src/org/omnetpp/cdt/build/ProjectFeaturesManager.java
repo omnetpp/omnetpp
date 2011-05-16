@@ -471,7 +471,7 @@ public class ProjectFeaturesManager {
     public void fixupProjectState() throws CoreException {
         // load NED and CDT configuration
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription[] configurations = projectDescription.getConfigurations();
+        ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
 
         // fix them up
@@ -758,7 +758,7 @@ public class ProjectFeaturesManager {
     public List<Problem> validateProjectState() throws CoreException {
         // load NED and CDT configuration
         ICProjectDescription projectDescription = CoreModel.getDefault().getProjectDescription(project);
-        ICConfigurationDescription[] configurations = projectDescription.getConfigurations();
+        ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
 
         // fix them up

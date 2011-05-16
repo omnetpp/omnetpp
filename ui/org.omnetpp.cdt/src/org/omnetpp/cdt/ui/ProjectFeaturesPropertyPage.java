@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -501,7 +502,10 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             result += "Some features are missing dependencies. <a href=\"dependency\">Details</a>\n";
 
         // check that CDT and NED state corresponds to the feature selection
-        ICConfigurationDescription[] configurations = CDTPropertyManager.getProjectDescription(getProject()).getConfigurations();
+        ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(getProject());
+        if (projectDescription == null)
+            return "Cannot access CDT build information for this project. Is this a C/C++ project?";
+        ICConfigurationDescription[] configurations = projectDescription.getConfigurations();
         List<Problem> problems;
         try {
             problems = features.validateProjectState(configurations, nedSourceFoldersConfig, getEnabledFeaturesFromTree());

@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
+import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.core.resources.IContainer;
@@ -348,7 +349,8 @@ public class DependencyCache {
         
         try {
             // parse all C++ source files for #include; also warn for linked-in files
-            ICConfigurationDescription cfg = CoreModel.getDefault().getProjectDescription(project).getActiveConfiguration();
+            ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+            ICConfigurationDescription cfg = prjDesc==null ? null : prjDesc.getActiveConfiguration();
             final ICSourceEntry[] sourceEntries = cfg==null ? new ICSourceEntry[0] : cfg.getSourceEntries();
             final Set<IFile> sourceFilesFound = new HashSet<IFile>();
             project.accept(new IResourceVisitor() {
