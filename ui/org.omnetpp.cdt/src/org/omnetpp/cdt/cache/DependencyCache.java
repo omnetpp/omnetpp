@@ -46,6 +46,7 @@ import org.omnetpp.cdt.build.MakefileTools;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
 
@@ -74,6 +75,8 @@ import org.omnetpp.common.util.StringUtils;
 // when we write a "Cross-folder Dependencies View" (using DOT to render the graph?)
 public class DependencyCache {
 	private static boolean debug = false;
+	private static final int DELAY_MILLIS = 1000; // delay for updating markers
+	
     // the standard C/C++ headers (we'll ignore those #include directives)
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.trim().split(" +")));
 
@@ -148,6 +151,12 @@ public class DependencyCache {
     // cached dependencies
     private Map<IProject,DependencyData> projectDependencyData = new HashMap<IProject, DependencyData>();
 
+    private DelayedJob delayedJob = new DelayedJob(DELAY_MILLIS) {
+        public void run() {
+            refreshDependencies(ProjectUtils.getOpenProjects());
+        }
+    };
+    
     // listeners
     private IResourceChangeListener resourceChangeListener = new IResourceChangeListener() {
         public void resourceChanged(IResourceChangeEvent event) {
@@ -215,6 +224,7 @@ public class DependencyCache {
         for (IProject p : projectDependencyData.keySet().toArray(new IProject[]{}))
             if (projectDependencyData.get(p).projectGroup.contains(project))
                 projectDependencyData.remove(p);
+        delayedJob.restartTimer();
     }
 
     /**
@@ -228,6 +238,17 @@ public class DependencyCache {
         projectChanged(project);
     }
 
+    /**
+     * Computes dependency information for the given projects, and updates 
+     * corresponding markers as a side effect.
+     */
+    synchronized public void refreshDependencies(IProject[] projects) {
+        Debug.println("DependencyCache: running delayed refreshDependencies() job");
+        for (IProject project : projects) 
+            if (CoreModel.getDefault().getProjectDescription(project) != null)  // i.e. is a CDT project
+                getProjectDependencyData(project); // refresh dependency data and update markers
+    }
+    
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      *
@@ -273,6 +294,8 @@ public class DependencyCache {
     }
 
     protected DependencyData computeDependencies(IProject project) {
+        Debug.println("DependencyCache: (re)computing dependency info for project " + project.getName());
+
         DependencyData data = new DependencyData();
         data.project = project;
 
