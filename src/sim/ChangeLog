@@ -1,3 +1,8 @@
+2011-05-17  Andras Varga
+
+	* cexception.cc: fix #301: cException::init() wrote 1 byte past the
+	end of buffer[BUFLEN].
+
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
 2011-04-15  Andras Varga
