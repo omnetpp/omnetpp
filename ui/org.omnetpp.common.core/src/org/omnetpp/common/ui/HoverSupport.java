@@ -10,7 +10,6 @@ package org.omnetpp.common.ui;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
 import org.eclipse.jface.text.DefaultInformationControl;
@@ -424,7 +423,7 @@ public class HoverSupport {
 				} else {
 					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, new HTMLTextPresenter(false));
 					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
-					    final Shell shell = ((PopupDialog)ReflectionUtils.getFieldValue(defaultInformationControl,"fPopupDialog")).getShell();
+					    final Shell shell = getShellFrom(defaultInformationControl);
 					    ((GridLayout)shell.getLayout()).marginHeight = 5;
 					    ((GridLayout)shell.getLayout()).marginWidth = 5;
 					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
@@ -436,6 +435,11 @@ public class HoverSupport {
 		};
 	}
 
+    protected static Shell getShellFrom(DefaultInformationControl control) {
+        //return ((PopupDialog)ReflectionUtils.getFieldValue(control,"fPopupDialog")).getShell(); -- for Eclipse 3.5 (3.4?) or earlier
+        return (Shell)ReflectionUtils.getFieldValue(control,"fShell");  // Eclipse 3.6
+    }
+	
 	// WORKAROUND Solution for the bug 23980. It can be removed once it is integrated in the platform
 	/**
 	 * Adds a mouse listener to the shell which implements resize behavior. Any of the edges
