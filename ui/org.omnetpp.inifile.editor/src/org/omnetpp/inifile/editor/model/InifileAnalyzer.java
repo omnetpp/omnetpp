@@ -46,6 +46,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.collections.ProductIterator;
 import org.omnetpp.common.engine.Common;
 import org.omnetpp.common.engine.PatternMatcher;
+import org.omnetpp.common.engine.StringSet;
 import org.omnetpp.common.engine.StringTokenizer2;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.engineext.StringTokenizerException;
@@ -159,6 +160,7 @@ public final class InifileAnalyzer {
 	    public List<PropertyResolution> propertyResolutions = new ArrayList<PropertyResolution>();
 	    public List<IterationVariable> iterations = new ArrayList<IterationVariable>();
 	    public Map<String,IterationVariable> namedIterations = new HashMap<String, IterationVariable>();
+	    public StringSet validVariableRefs = new StringSet(); // global config vars + named iteration variables in the section chain
 	}
 
 
@@ -631,7 +633,8 @@ public final class InifileAnalyzer {
 		VALUES_PATTERN = Pattern.compile("\\s*(.*?)\\s*(!\\s*" + IDENTIFIER + "+)?"),    // something that optionally ends with "! <var>"
 		START_END_STEP_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)\\s*step\\s*(.*)"),  // "<from> .. <to> step <incr>"  
 		START_END_VALUE_PATTERN = Pattern.compile("(.*?)\\s*\\.\\.\\s*(.*?)"),  // "<from> .. <to>"
-		ANY_VALUE_PATTERN = Pattern.compile("(.*)");
+		ANY_VALUE_PATTERN = Pattern.compile("(.*)"),
+		DOLLAR_VARNAME_PATTERN = Pattern.compile("\\$(" + IDENTIFIER + ")");
 	
 	protected boolean validateValueWithIterationVars(String section, String key, String value) {
 		Matcher iterationVarMatcher = DOLLAR_BRACES_PATTERN.matcher(value);
@@ -640,14 +643,26 @@ public final class InifileAnalyzer {
 		boolean foundAny = false;
 		boolean validateValues = true;
 		while (iterationVarMatcher.find()) {
+		    String iteration = iterationVarMatcher.group(1); // the stuff inside ${...}
 			foundAny = true;
 
-			Matcher variableReferenceMatcher = VARIABLE_REFERENCE_PATTERN.matcher(iterationVarMatcher.group(1));
+			Matcher variableReferenceMatcher = VARIABLE_REFERENCE_PATTERN.matcher(iteration);
 			if (variableReferenceMatcher.matches()) {
+			    // not an iteration, just a reference to another iteration variable in the ${foo} syntax
 				String varName = variableReferenceMatcher.group(1);
 				if (!isValidIterationVariable(section, varName))
 				    markers.addError(section, key, "${"+varName+"} is undefined");
 				validateValues = false; // because references are not followed
+			}
+			else {
+			    // check referenced variables ($var syntax) within the iteration
+			    Matcher varRefMatcher = DOLLAR_VARNAME_PATTERN.matcher(iteration);
+			    while (varRefMatcher.find()) {
+			        validateValues = false; // because references are not followed
+			        String varName = varRefMatcher.group(1);
+			        if (!isValidIterationVariable(section, varName))
+			            markers.addError(section, key, "${"+varName+"} is undefined");
+			    }
 			}
 		}
 
@@ -672,18 +687,8 @@ public final class InifileAnalyzer {
 	}
 
 	protected boolean isValidIterationVariable(String section, String varName) {
-	    // is it a predefined variable like ${configname}?
-	    if (Arrays.asList(ConfigRegistry.getConfigVariableNames()).contains(varName))
-	        return true;
-
-	    // is it defined in this section or any fallback section?
-        String[] sectionChain = doc.getSectionChain(section);
-        for (String sec : sectionChain) {
-            SectionData sectionData = (SectionData) doc.getSectionData(sec);
-            if (sectionData.namedIterations.containsKey(varName))
-                return true;
-        }
-        return false;
+	    SectionData sectionData = (SectionData)doc.getSectionData(section);
+	    return sectionData.validVariableRefs.has_key("$"+varName);
     }
 	
     private void validateAnalyzedDocument() {
@@ -1017,7 +1022,7 @@ public final class InifileAnalyzer {
 		String value = doc.getValue(section, key).trim();
 		validateParamKey(section, key, value);
 	}
-
+	
 	protected void validateParamKey(String section, String key, String value) {
 		// value cannot be empty
 		if (value.equals("")) {
@@ -1034,14 +1039,14 @@ public final class InifileAnalyzer {
 
 		if (value.equals(ConfigRegistry.DEFAULT) || value.equals(ConfigRegistry.ASK)) {
 		    // nothing to check, actually
+		    return;
 		}
-		else {
-		    // check syntax. note: regex is faster in most cases than parsing
-		    if (!SIMPLE_EXPRESSION_REGEX.matcher(value).matches() && !NedTreeUtil.isExpressionValid(value)) {
+
+		// check syntax. note: regex is faster in most cases than parsing
+		if (!SIMPLE_EXPRESSION_REGEX.matcher(value).matches()) {
+		    if (!NedTreeUtil.isExpressionValid(value))
 		        markers.addError(section, key, "Syntax error in expression: " + value);
-                return;
-		    }
-        }
+		}
 	}
 
 	protected void validatePerObjectConfig(String section, String key, INedTypeResolver ned) {
@@ -1114,11 +1119,26 @@ public final class InifileAnalyzer {
 			else {
     			sectionData.iterations.clear();
     			sectionData.namedIterations.clear();
+    			sectionData.validVariableRefs.clear();
 			}
 			
 			for (String key : doc.getKeys(section))
 				if (doc.getValue(section, key).indexOf('$') != -1)
 					parseIterationVariables(section, key);
+		}
+
+		// compute valid variable references
+		for (String section : doc.getSectionNames()) {
+            SectionData sectionData = (SectionData) doc.getSectionData(section);
+            for (String var : ConfigRegistry.getConfigVariableNames())
+                sectionData.validVariableRefs.insert("$"+var);
+
+		    String[] sectionChain = doc.getSectionChain(section);
+		    for (String ancestorOrSelfSection : sectionChain) {
+		        SectionData ancestorData = (SectionData) doc.getSectionData(ancestorOrSelfSection);
+		        for (String var : ancestorData.namedIterations.keySet())
+		            sectionData.validVariableRefs.insert("$"+var);
+		    }
 		}
 	}
 

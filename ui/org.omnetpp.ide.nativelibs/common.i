@@ -34,6 +34,12 @@ namespace std {
 #define NAMESPACE_END
 #define USING_NAMESPACE
 
+%include "std_set.i"     // our custom version
+namespace std {
+   %template(StringSet) set<string>;
+};
+
+
 %rename(parseQuotedString)   ::opp_parsequotedstr;
 %rename(quoteString)         ::opp_quotestr;
 %rename(needsQuotes)         ::opp_needsquotes;
@@ -127,6 +133,43 @@ struct Value
     const char *dblunit; // stringpooled, may be NULL
     std::string s;
 };
+
+
+class SimpleResolver;
+
+%extend Expression {
+	void parse(const char* text, std::set<std::string> vars) {
+	  SimpleResolver resolver(vars);
+	  self->parse(text, &resolver); 
+	}
+}
+
+
+%{
+class SimpleVar : public Expression::Variable {
+  private:
+    std::string name;
+  public:
+    SimpleVar(const char *name) : name(name) {}
+    virtual Functor *dup() const { return new SimpleVar(name.c_str()); }
+    virtual const char *getName() const { return name.c_str(); }
+    virtual char getReturnType() const { return (char)Expression::Value::DBL; }
+    virtual Expression::Value evaluate(Expression::Value args[], int numargs) { return Expression::Value(); }
+};
+
+class SimpleResolver : public Expression::Resolver {
+  private:
+	std::set<std::string> vars;
+  public:
+    SimpleResolver(const std::set<std::string> &vars) : vars(vars) {}
+    virtual Expression::Functor *resolveVariable(const char *varname) {
+       if (vars.find(varname) == vars.end())
+         throw opp_runtime_error("Undefined variable: %s", varname);
+       return new SimpleVar(varname); 
+    }
+    virtual Expression::Functor *resolveFunction(const char *funcname, int argcount) { return new MathFunction(funcname); }
+};
+%}
 
 %ignore MathFunction;
 %include "expression.h"
