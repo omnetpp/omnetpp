@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -161,6 +162,12 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
 
+        // the "Paths and Symbols" CDT page tends to display out-of-date info at the first 
+        // invocation; the following, seemingly no-op code apparently cures that... 
+        if (CDTPropertyManager.getProjectDescription(getProject()) != null)
+            for (ICConfigurationDescription cfgDes : CDTPropertyManager.getProjectDescription(getProject()).getConfigurations())
+                ManagedBuildManager.getConfigurationForDescription(cfgDes);  // the magic!
+        
         // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
         composite.addControlListener(new ControlAdapter(){
             public void controlResized(ControlEvent e){

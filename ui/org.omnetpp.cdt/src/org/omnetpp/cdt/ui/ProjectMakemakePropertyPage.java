@@ -20,6 +20,7 @@ import org.eclipse.cdt.core.settings.model.ICSettingEntry;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
 import org.eclipse.cdt.core.settings.model.util.CDataUtil;
 import org.eclipse.cdt.internal.core.cdtvariables.CdtVariableManager;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.cdt.ui.newui.CDTPropertyManager;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -74,8 +75,8 @@ import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.cdt.build.MakefileTools;
 import org.omnetpp.cdt.build.Makemake;
 import org.omnetpp.cdt.build.MakemakeOptions;
-import org.omnetpp.cdt.build.MetaMakemake;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
+import org.omnetpp.cdt.build.MetaMakemake;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.HoverSupport;
@@ -253,6 +254,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
 
+        // the "Paths and Symbols" CDT page tends to display out-of-date info at the first 
+        // invocation; the following, seemingly no-op code apparently cures that... 
+        if (CDTPropertyManager.getProjectDescription(getProject()) != null)
+            for (ICConfigurationDescription cfgDes : CDTPropertyManager.getProjectDescription(getProject()).getConfigurations())
+                ManagedBuildManager.getConfigurationForDescription(cfgDes);  // the magic!
+        
         // configure the tree
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
             @Override
