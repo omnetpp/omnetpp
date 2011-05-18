@@ -181,12 +181,8 @@ std::vector<std::string> SectionBasedConfiguration::getConfigNames()
 
 std::string SectionBasedConfiguration::getConfigDescription(const char *configName) const
 {
-    int sectionId = resolveConfigName(configName);
-    if (sectionId == -1)
-        throw cRuntimeError("No such config: %s", configName);
-
     // determine the list of sections, from this one up to [General]
-    std::vector<int> sectionChain = resolveSectionChain(sectionId);
+    std::vector<int> sectionChain = resolveSectionChain(configName);
     return opp_nulltoempty(internalGetValue(sectionChain, CFGID_DESCRIPTION->getName()));
 }
 
@@ -243,13 +239,10 @@ std::vector<int> SectionBasedConfiguration::getBaseConfigIds(int sectionId) cons
     return result;
 }
 
-std::vector<std::string> SectionBasedConfiguration::getConfigChain(const char * configName) const
+std::vector<std::string> SectionBasedConfiguration::getConfigChain(const char *configName) const
 {
     std::vector<std::string> result;
-    int sectionId = resolveConfigName(configName);
-    if (sectionId == -1)
-        return result;
-    std::vector<int> sectionIds = resolveSectionChain(sectionId);
+    std::vector<int> sectionIds = resolveSectionChain(configName);
     for (std::vector<int>::iterator it = sectionIds.begin(); it != sectionIds.end(); ++it)
     {
         const char *section = ini->getSectionName(*it);
@@ -294,14 +287,8 @@ void SectionBasedConfiguration::activateConfig(const char *configName, int runNu
     activeConfig = configName==NULL ? "" : configName;
     activeRunNumber = runNumber;
 
-    int sectionId = resolveConfigName(configName);
-    if (sectionId == -1 && !strcmp(configName, "General"))
-        return;  // allow activating "General" even if it's empty
-    if (sectionId == -1)
-        throw cRuntimeError("No such config: %s", configName);
-
     // determine the list of sections, from this one up to [General]
-    std::vector<int> sectionChain = resolveSectionChain(sectionId);
+    std::vector<int> sectionChain = resolveSectionChain(configName);
 
     // extract all iteration vars from values within this section
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
@@ -386,12 +373,8 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
 
 int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
 {
-    int sectionId = resolveConfigName(configName);
-    if (sectionId == -1)
-        throw cRuntimeError("No such config: %s", configName);
-
-    // extract all iteration vars from values within this section
-    std::vector<int> sectionChain = resolveSectionChain(sectionId);
+    // extract all iteration vars from values within this config
+    std::vector<int> sectionChain = resolveSectionChain(configName);
     std::vector<IterationVariable> v = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
@@ -408,12 +391,8 @@ int SectionBasedConfiguration::getNumRunsInConfig(const char *configName) const
 
 std::vector<std::string> SectionBasedConfiguration::unrollConfig(const char *configName, bool detailed) const
 {
-    int sectionId = resolveConfigName(configName);
-    if (sectionId == -1)
-        throw cRuntimeError("No such config: %s", configName);
-
     // extract all iteration vars from values within this section
-    std::vector<int> sectionChain = resolveSectionChain(sectionId);
+    std::vector<int> sectionChain = resolveSectionChain(configName);
     std::vector<IterationVariable> itervars = collectIterationVariables(sectionChain);
 
     // see if there's a constraint given
@@ -711,17 +690,18 @@ typedef std::vector<SectionChain> SectionChainList;
 
 std::vector<int> SectionBasedConfiguration::resolveSectionChain(int sectionId) const
 {
-    Assert(sectionId >= 0);
+    if (sectionId == -1)
+        return std::vector<int>(); // assume implicit [General] section
     if (sectionChains.at(sectionId).empty())
         sectionChains[sectionId] = computeSectionChain(sectionId);
     return sectionChains[sectionId];
 }
 
-std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *sectionName) const
+std::vector<int> SectionBasedConfiguration::resolveSectionChain(const char *configName) const
 {
-    int sectionId = internalFindSection(sectionName);
-    if (sectionId == -1)
-        throw cRuntimeError("Section not found: %s", sectionName);
+    int sectionId = resolveConfigName(configName);
+    if (sectionId == -1 && strcmp(configName, "General") != 0)  // allow implicit [General] section
+        throw cRuntimeError("No such config: %s", configName);
     return resolveSectionChain(sectionId);
 }
 
