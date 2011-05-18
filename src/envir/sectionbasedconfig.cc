@@ -1071,7 +1071,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
         {
             const char *key = ini->getEntry(i, j).getKey();
             if (findInArray(key, cmdenvNames) != -1 || findInArray(key, tkenvNames) != -1)
-                throw cRuntimeError("Obsolete configuration key %s= found, please convert the ini file to 4.x format", key);
+                throw cRuntimeError("Obsolete configuration option %s= found, please convert the ini file to 4.x format", key);
         }
     }
 
@@ -1125,11 +1125,11 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 if (!e && isIgnorableConfigKey(ignorableConfigKeys, key))
                     continue;
                 if (!e)
-                    throw cRuntimeError("Unknown configuration key: %s", key);
+                    throw cRuntimeError("Unknown configuration option: %s", key);
                 if (e->isPerObject())
-                    throw cRuntimeError("Configuration key %s should be specified per object, try **.%s=", key, key);
+                    throw cRuntimeError("Configuration option %s should be specified per object, try **.%s=", key, key);
                 if (e->isGlobal() && strcmp(section, "General")!=0)
-                    throw cRuntimeError("Configuration key %s may only occur in the [General] section", key);
+                    throw cRuntimeError("Configuration option %s may only occur in the [General] section", key);
 
                 // check section hierarchy
                 if (strcmp(key, CFGID_EXTENDS->getName())==0)
