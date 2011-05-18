@@ -34,6 +34,7 @@ import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
+import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
@@ -327,12 +328,12 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
         if (line.matches("@display\\(\".*")) {
             if (line.matches(".*(;|\")")) {
                 // add generic display string proposals
-                if (info.sectionType == SECT_PARAMETERS)
-                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
-                else if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
+                if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
                     addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
-                else if (info.sectionType == SECT_CONNECTIONS)
+                else if (info.sectionType == SECT_CONNECTION_PARAMETERS || (nedTypeInfo != null && nedTypeInfo.getNedElement() instanceof IChannelKindTypeElement))
                     addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
+                else if (info.sectionType == SECT_PARAMETERS)
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());
             }
             else {
                 // determine tag name and tag position from display string line
