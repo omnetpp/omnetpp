@@ -31,10 +31,10 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IChannelKindTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 
@@ -74,33 +74,32 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 		//Debug.println(">>>" + line + "<<<");
 
 		// calculate the lookup context used in nedresource calls
-		INedTypeLookupContext context = nedFileElement;
-		if (info.enclosingNedTypeName != null) {
-		    INedElement enclosingNedType = res.lookupNedType(info.enclosingNedTypeName, nedFileElement).getNedElement();
-		    if (enclosingNedType instanceof INedTypeLookupContext)
-		        context = (INedTypeLookupContext)enclosingNedType;
+		INedTypeInfo nedEnclosingTypeInfo = null;
+		CompoundModuleElementEx nedEnclosingTypeElement = null;
+        if (info.enclosingNedTypeName != null) {
+            nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
+            if (nedEnclosingTypeInfo != null && nedEnclosingTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
+                nedEnclosingTypeElement = (CompoundModuleElementEx)nedEnclosingTypeInfo.getNedElement();
 		}
 		INedTypeInfo nedTypeInfo = null;
-		if (info.nedTypeName!=null) {
-		    nedTypeInfo = res.lookupNedType(info.nedTypeName, context);
-		    if (nedTypeInfo != null && nedTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
-		        context = (CompoundModuleElementEx)nedTypeInfo.getNedElement();
-		}
-
-		INedTypeInfo nedEnclosingTypeInfo = null;
-		if (info.enclosingNedTypeName != null) { // we are inside an inner type
-		    nedEnclosingTypeInfo = res.lookupNedType(info.enclosingNedTypeName, nedFileElement);
-            if (nedEnclosingTypeInfo != null && nedEnclosingTypeInfo.getNedElement() instanceof CompoundModuleElementEx)
-                context = (CompoundModuleElementEx)nedEnclosingTypeInfo.getNedElement();
+		INedTypeElement nedTypeElement = null;
+		if (info.nedTypeName != null) {
+		    INedTypeLookupContext nedTypeLookupContext = info.enclosingNedTypeName != null ? nedEnclosingTypeElement : nedFileElement;
+	        if (nedTypeLookupContext != null) {
+                nedTypeInfo = res.lookupNedType(info.nedTypeName, nedTypeLookupContext);
+                if (nedTypeInfo != null)
+                    nedTypeElement = nedTypeInfo.getNedElement();
+	        }
 		}
 
 		INedTypeInfo submoduleType = null;
-		if (info.submoduleTypeName!=null)
-			submoduleType = res.lookupNedType(info.submoduleTypeName, context);
+		INedTypeLookupContext subcomponentLookupContext = info.enclosingNedTypeName != null ? nedEnclosingTypeElement : (nedTypeElement instanceof INedTypeLookupContext ? (INedTypeLookupContext)nedTypeElement : null);
+		if (info.submoduleTypeName != null && subcomponentLookupContext != null)
+			submoduleType = res.lookupNedType(info.submoduleTypeName, subcomponentLookupContext);
 
 		INedTypeInfo connectionType = null;
-        if (info.connectionTypeName!=null)
-            connectionType = res.lookupNedType(info.connectionTypeName, context);
+        if (info.connectionTypeName != null && subcomponentLookupContext != null)
+            connectionType = res.lookupNedType(info.connectionTypeName, subcomponentLookupContext);
 
 		if (info.sectionType==SECT_GLOBAL || info.sectionType==SECT_TYPES)
 		{
@@ -211,7 +210,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 					String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 					if (submodTypeName != null) {
 					    // Debug.println(" offering params of type "+submodTypeName);
-					    INedTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+					    INedTypeInfo submodType = res.lookupNedType(submodTypeName, subcomponentLookupContext);
 					    if (submodType!=null) {
 					        if (line.matches(".*\\bsizeof *\\(.*"))
 					            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
@@ -249,6 +248,10 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                 if (info.sectionType == SECT_SUBMODULE_PARAMETERS && submoduleType!=null) {
                     addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmodulePropertyTempl);
                     addProposals(viewer, documentOffset, result, "@", submoduleType.getProperties().keySet(), "", "property");
+                }
+                if (info.sectionType == SECT_CONNECTION_PARAMETERS && connectionType!=null) {
+                    addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionPropertyTempl);
+                    addProposals(viewer, documentOffset, result, "@", connectionType.getProperties().keySet(), "", "property");
                 }
             }
             else if ((line.contains("=") && !line.endsWith("=")) || !line.contains("=")) {
@@ -312,7 +315,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
 	    		    String submodTypeName = extractSubmoduleTypeName(line, nedTypeInfo);
 	    		    if (submodTypeName != null) {
 	    		        // Debug.println(" offering gates of type "+submodTypeName);
-	    		        INedTypeInfo submodType = res.lookupNedType(submodTypeName, context);
+                        INedTypeInfo submodType = res.lookupNedType(submodTypeName, subcomponentLookupContext);
 	    		        if (submodType != null)
 	    		            addProposals(viewer, documentOffset, result, submodType.getGateDeclarations().keySet(), "gate");
 	    		    }
@@ -330,7 +333,7 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                 // add generic display string proposals
                 if (info.sectionType == SECT_SUBMODULE_PARAMETERS)
                     addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedSubmoduleDisplayStringTempl, new NedDisplayStringTagDetector());
-                else if (info.sectionType == SECT_CONNECTION_PARAMETERS || (nedTypeInfo != null && nedTypeInfo.getNedElement() instanceof IChannelKindTypeElement))
+                else if (info.sectionType == SECT_CONNECTION_PARAMETERS || (nedTypeInfo != null && nedTypeElement instanceof IChannelKindTypeElement))
                     addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedConnectionDisplayStringTempl, new NedDisplayStringTagDetector());
                 else if (info.sectionType == SECT_PARAMETERS)
                     addProposals(viewer, documentOffset, result, NedCompletionHelper.proposedNedComponentDisplayStringTempl, new NedDisplayStringTagDetector());

@@ -140,6 +140,10 @@ public final class NedCompletionHelper {
         makeShortTemplate("@dynamic()", "property"),
     }; //XXX check this list before release
 
+    public final static Template[] proposedNedConnectionPropertyTempl = {
+        makeShortTemplate("@display(\"i=${icon}\");", "property"),
+    };
+
     public final static Template[] proposedNedParamPropertyTempl = {
         makeShortTemplate("@prompt(\"${message}\")", "property"),
         makeShortTemplate("@enum(${value1}, ${value2})", "property"),
