@@ -63,7 +63,7 @@ class COMMON_API Expression
     /**
      * One element in a (reverse Polish) expression
      */
-    class Elem
+    class COMMON_API Elem
     {
       friend class Expression;
       public:
@@ -186,7 +186,7 @@ class COMMON_API Expression
      * in double. XXX This is fine for 32-bit longs, but not for 64-bit ones,
      * as double's mantissa is only 53 bits.
      */
-    struct Value
+    struct COMMON_API Value
     {
         enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
         bool bl;
@@ -213,7 +213,7 @@ class COMMON_API Expression
     /**
      * Function object base class. They can be used to implement variables, etc.
      */
-    class Functor
+    class COMMON_API Functor
     {
       public:
         virtual ~Functor() {}
@@ -229,7 +229,7 @@ class COMMON_API Expression
     /**
      * A functor subclass that implements a variable; still an abstract class.
      */
-    class Variable : public Functor
+    class COMMON_API Variable : public Functor
     {
       public:
         virtual const char *getArgTypes() const {return "";}
@@ -240,7 +240,7 @@ class COMMON_API Expression
     /**
      * A functor subclass that implements a function; still an abstract class.
      */
-    class Function : public Functor
+    class COMMON_API Function : public Functor
     {
       public:
         // returns name(arg1,arg2,...)
@@ -250,16 +250,23 @@ class COMMON_API Expression
     /**
      * Abstract base class for variable and function resolvers. A resolver
      * is used during parsing, and tells the parser how to convert variable
-     * references and functions into Functor objects for the stored
-     * expression. Methods should throw an exception with a human-readable
+     * references and functions into Functor objects for the stored expression.
+     * Methods should return NULL or throw an exception with a human-readable
      * description when the variable or function cannot be resolved; this will
      * be converted to an error message.
      */
-    class Resolver
+    class COMMON_API Resolver
     {
       public:
         virtual ~Resolver() {}
+        /**
+         * Should return NULL or throw exception if variable is not found
+         */
         virtual Functor *resolveVariable(const char *varname) = 0;
+        /**
+         * Should return NULL or throw exception if variable is not found.
+         * Does not need to check the argcount, because it is also done by the caller.
+         */
         virtual Functor *resolveFunction(const char *funcname, int argcount) = 0;
     };
 

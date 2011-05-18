@@ -97,8 +97,13 @@ static void addFunction(const char *funcname, int numargs)
 {
     try {
         if (!resolver)
-	        throw opp_runtime_error("no resolver provided, cannot resolve function name: %s", funcname);
-        *e++ = resolver->resolveFunction(funcname, numargs);
+            throw opp_runtime_error("no resolver provided, cannot resolve function name: %s", funcname);
+        Expression::Functor *f = resolver->resolveFunction(funcname, numargs);
+        if (!f)
+            throw opp_runtime_error("cannot resolve function name: %s", funcname);
+        if (f->getNumArgs() != numargs)
+            throw opp_runtime_error("function %s() takes %d argument(s) and not %d", funcname, f->getNumArgs(), numargs);
+        *e++ = f;
     }
     catch (std::exception& e) {
         yyerror(e.what());
@@ -109,8 +114,13 @@ static void addVariableRef(const char *varname)
 {
     try {
         if (!resolver)
-	        throw opp_runtime_error("no resolver provided, cannot resolve variable name: %s", varname);
-        *e++ = resolver->resolveVariable(varname);
+            throw opp_runtime_error("no resolver provided, cannot resolve variable name: %s", varname);
+        Expression::Functor *f = resolver->resolveVariable(varname);
+        if (!f)
+            throw opp_runtime_error("cannot resolve variable: %s", varname);
+        if (f->getNumArgs() != 0)
+            throw opp_runtime_error("internal error: functor representing a variable cannot expect arguments: %s", varname);
+        *e++ = f;
     }
     catch (std::exception& e) {
         yyerror(e.what());
