@@ -111,6 +111,7 @@ public class NedTreeUtil {
 				// return an empty NedFileElement if parsing totally failed
 				NedFileElementEx fileNode = (NedFileElementEx)NedElementFactoryEx.getInstance().createElement(resolver, NedElementTags.NED_NED_FILE, null);
 				fileNode.setFilename(displayFilename);
+                copyGlobalErrors(swigErrors, fileNode, errors); // piggyback errors which came without context node onto the tree root
 				return fileNode;
 			}
 
@@ -165,6 +166,7 @@ public class NedTreeUtil {
                 // return an empty MsgFileElement if parsing totally failed
                 MsgFileElementEx fileNode = (MsgFileElementEx)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_MSG_FILE, null);
                 fileNode.setFilename(filename);
+                copyGlobalErrors(swigErrors, fileNode, errors); // piggyback errors which came without context node onto the tree root
                 return fileNode;
             }
 
@@ -235,13 +237,7 @@ public class NedTreeUtil {
 		INedElement pojoTree = doSwig2pojo(swigNode, parent, swigErrors, errors, resolver);
 
 		// piggyback errors which came without context node onto the tree root
-		if (swigErrors != null && swigErrors.findFirstErrorFor(null, 0) != -1) {
-			int i = -1;
-			while ((i = swigErrors.findFirstErrorFor(null, i+1)) != -1) {
-				int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
-				errors.add(severity, pojoTree, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
-			}
-		}
+		copyGlobalErrors(swigErrors, pojoTree, errors);
 
 		return pojoTree;
 	}
@@ -268,7 +264,6 @@ public class NedTreeUtil {
 			while ((i = swigErrors.findFirstErrorFor(swigNode, i+1)) != -1) {
 				int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
 				errors.add(severity, pojoNode, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
-				//FIXME handle errors where context==NULL too! find closest INedElement for them!
 			}
 		}
 
@@ -278,6 +273,17 @@ public class NedTreeUtil {
 
 		return pojoNode;
 	}
+
+    protected static void copyGlobalErrors(NEDErrorStore swigErrors, INedElement targetElement, INedErrorStore targetErrorStore) {
+        // piggyback errors which came without context node onto the given element
+        if (swigErrors != null && swigErrors.findFirstErrorFor(null, 0) != -1) {
+            int i = -1;
+            while ((i = swigErrors.findFirstErrorFor(null, i+1)) != -1) {
+                int severity = getMarkerSeverityFor(NEDErrorSeverity.swigToEnum(swigErrors.errorSeverityCode(i)));
+                targetErrorStore.add(severity, targetElement, getLineFrom(swigErrors.errorLocation(i)), swigErrors.errorText(i));
+            }
+        }
+    }
 
 	public static int getMarkerSeverityFor(NEDErrorSeverity severity) {
 		switch (severity) {
