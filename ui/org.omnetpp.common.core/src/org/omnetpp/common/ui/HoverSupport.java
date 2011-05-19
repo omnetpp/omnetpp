@@ -10,23 +10,28 @@ package org.omnetpp.common.ui;
 import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.jface.internal.text.InformationControlReplacer;
 import org.eclipse.jface.internal.text.html.BrowserInformationControl;
-import org.eclipse.jface.internal.text.html.HTMLTextPresenter;
+import org.eclipse.jface.text.AbstractHoverInformationControlManager;
+import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.IInformationControlExtension3;
+import org.eclipse.jface.util.Geometry;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -35,25 +40,11 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.ReflectionUtils;
 
-/**
- * Provides hover for a widget. SWT's Control.setTooltipText() has several
- * limitations which makes it unsuitable for presenting large multi-line
- * tooltips:
- *   - tends to wrap long lines (SWT's Tooltip class does that too)
- *   - tooltip disappears after about 5s (Windows), which is not enough time to
- *     read long texts
- *   - lazy generation of tooltip text is not possible (there's no such thing
- *     as TooltipAboutToShowListener)
- * This class overcomes these limitations.
- *
- * One instance can adapt several controls (i.e. controls may share the same
- * hover).
- *
- * @author Andras
- */
+
+@SuppressWarnings("restriction")
 public class HoverSupport {
     private static final String AFFORDANCE = "Press 'F2' for focus";
-	// Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
+    // Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
     private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
         "/* Font definitions*/\n" +
@@ -90,469 +81,361 @@ public class HoverSupport {
     private static final String HTML_EPILOG =
         "</body></html>\n";
 
-	protected IHoverTextProvider defaultHoverTextProvider = null;
-	protected HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>();
-	protected Point hoverSizeConstraints = new Point(320, 200);
+    private class LocalHoverInformationControlManager extends AbstractHoverInformationControlManager {
+        /**
+         * A global (workbench-wide) event filter for making a hover persistent (F2 key).
+         * This listener is hooked on Display when the first widget gets adapted,
+         * and unhooked when the last widget gets forgotten (or disposed).
+         *
+         * Global event filters are not without dangers; we chose to use it because this way
+         * we can catch keyboard events wherever the focus is.
+         */
+        protected Listener eventFilter = new Listener() {
+            public void handleEvent(Event e) {
+                if (e.type == SWT.KeyDown && e.keyCode == SWT.F2 && !getInternalAccessor().isReplaceInProgress()) {
+                    getInternalAccessor().replaceInformationControl(true);
+                    e.type = SWT.NONE;
+                }
+            }
+        };
 
-	protected IInformationControl hoverControl;
-	protected IInformationControl informationControl;
+        public LocalHoverInformationControlManager(IInformationControlCreator creator) {
+            super(creator);
+        }
 
-	/**
-	 * Listener added to each adapted widget: mouse hovering should show the tooltip
-	 */
-	protected MouseTrackListener mouseTrackListener = new MouseTrackListener() {
-		public void mouseEnter(MouseEvent e) {}
-		public void mouseExit(MouseEvent e) {}
+        @Override
+        protected void computeInformation() {
+            Point location = getHoverEventLocation();
+            IInformationControl informationControl = getInformationControl();
+            Point mouseLocation = Display.getDefault().getCursorLocation();
+            SizeConstraint preferredSize = new SizeConstraint();
+            String hoverText = hoverTextProviders.get(getSubjectControl()).getHoverTextFor(getSubjectControl(), location.x, location.y, preferredSize);
+            org.eclipse.swt.graphics.Rectangle subjectArea = new org.eclipse.swt.graphics.Rectangle(location.x, location.y, 1, 1);
+            setInformation(hoverText, subjectArea);
+            if (hoverText != null) {
+                informationControl.setSizeConstraints(hoverSizeConstraints.x, hoverSizeConstraints.y);
+                setInformation(hoverText, subjectArea);
+                Point size = informationControl.computeSizeHint(); //issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
+                size.x = calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth);
+                size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight);
+                informationControl.setSize(size.x, size.y);
+                informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
+            }
+        }
 
-		public void mouseHover(MouseEvent e) {
-			if (e.widget instanceof Control && (e.stateMask & SWT.BUTTON_MASK) == 0)
-				displayHover((Control)e.widget, e.x, e.y);
-		}
-	};
+        @Override
+        protected void showInformationControl(org.eclipse.swt.graphics.Rectangle subjectArea) {
+            hookGlobalEventFilter();
+            super.showInformationControl(subjectArea);
+        }
 
-	/**
-	 * A global (workbench-wide) event filter, responsible for removing the tooltip,
-	 * or making it persistent (F2 key). This listener is hooked on Display when the first
-	 * widget gets adapted, and unhooked when the last widget gets forgotten (or disposed).
-	 *
-	 * Global event filters are not without dangers; we chose to use it because this way
-	 * we can catch keyboard events wherever the focus is.
-	 */
-	protected Listener eventFilter = new Listener() {
-		public void handleEvent(Event e) {
-		    if (e.type == SWT.KeyDown && e.keyCode == SWT.F2)
-		        makeHoverSticky();
-		    else if (hoverControl != null)
-		        removeHover();
-		}
-	};
+        @Override
+        protected void hideInformationControl() {
+            try {
+                super.hideInformationControl();
+            }
+            finally {
+                unhookGlobalEventFilter();
+            }
+        }
 
-	/**
-	 * Create a hover support object.
-	 */
-	public HoverSupport() {
-	}
+        private void hookGlobalEventFilter() {
+            Display.getDefault().addFilter(SWT.KeyDown, eventFilter);
+        }
 
-	/**
-	 * Create a hover support object.
-	 */
-	public HoverSupport(IHoverTextProvider defaultHoverTextProvider) {
-		this.defaultHoverTextProvider = defaultHoverTextProvider;
-	}
+        private void unhookGlobalEventFilter() {
+            Display.getDefault().removeFilter(SWT.KeyDown, eventFilter);
+        }
 
-	protected void hookGlobalEventFilter() {
-		// Debug.println("HoverSupport: hooking global listener");
-		Display.getDefault().addFilter(SWT.MouseExit, eventFilter);
-		Display.getDefault().addFilter(SWT.MouseMove, eventFilter);
-		Display.getDefault().addFilter(SWT.MouseDown, eventFilter);
-		Display.getDefault().addFilter(SWT.MouseWheel, eventFilter);
-		Display.getDefault().addFilter(SWT.KeyDown, eventFilter);
-	}
+        private int calculateSize(int hoverSizeConstraint, int sizeHint, int minimumSize, int preferredSize) {
+            int size = sizeHint;
 
-	protected void unhookGlobalEventFilter() {
-		// Debug.println("HoverSupport: unhooking global listener");
-		Display.getDefault().removeFilter(SWT.MouseExit, eventFilter);
-		Display.getDefault().removeFilter(SWT.MouseMove, eventFilter);
-		Display.getDefault().removeFilter(SWT.MouseDown, eventFilter);
-		Display.getDefault().removeFilter(SWT.MouseWheel, eventFilter);
-		Display.getDefault().removeFilter(SWT.KeyDown, eventFilter);
-	}
+            if (minimumSize != SWT.DEFAULT)
+                size = Math.max(minimumSize, size);
 
-	/**
-	 * Adds hover support for the given control, with the default
-	 * hover text provider that was given in the constructor call.
-	 */
-	public void adapt(Control c) {
-		adapt(c, defaultHoverTextProvider);
-	}
+            if (preferredSize != SWT.DEFAULT)
+                size = Math.min(preferredSize, hoverSizeConstraint);
 
-	/**
-	 * Adds hover support for the given control.
-	 */
-	public void adapt(final Control c, IHoverTextProvider hoverTextProvider) {
-		if (hoverTextProviders.isEmpty())
-			hookGlobalEventFilter();
+            return size;
+        }
 
-		Assert.isTrue(hoverTextProvider != null);
-		Assert.isTrue(!hoverTextProviders.containsKey(c), "control already registered");
-		hoverTextProviders.put(c, hoverTextProvider);
+        private Point calculateHoverPosition(Point mouse, Point size) {
+            Monitor monitor = findMonitorByPosition(mouse);
+            if (monitor == null)
+                monitor = Display.getCurrent().getPrimaryMonitor();
 
-		c.addMouseTrackListener(mouseTrackListener);
-		c.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				forget(c);
-			}
-		});
-	}
+            Rectangle screen = monitor.getBounds();
+            Point p = new Point(mouse.x + 5, mouse.y + 20);
+            p.x = Math.min(p.x, screen.x + screen.width - size.x - 5);
+            if (p.y + 20 + size.y > screen.y + screen.height)
+                p.y = mouse.y - size.y - 20; // if no room below mouse, show it above
+            return p;
+        }
 
-	/**
-	 * Removes hover support from the given control. This does NOT need to
-	 * be called when the widget gets disposed, because this class listens on
-	 * widgetDisposed() automatically.
-	 */
-	//XXX but widgetDisposed is not always called when the widget gets disposed
-	public void forget(Control c) {
-		c.removeMouseTrackListener(mouseTrackListener);
-		hoverTextProviders.remove(c);
+        private Monitor findMonitorByPosition(Point position) {
+            Monitor[] monitors = Display.getCurrent().getMonitors();
+            for (Monitor monitor : monitors)
+                if (monitor.getBounds().contains(position))
+                    return monitor;
+            return null;
+        }
+    }
 
-		if (hoverTextProviders.isEmpty())
-			unhookGlobalEventFilter();
-	}
+    private static class BrowserInformationControlCreator extends AbstractReusableInformationControlCreator {
+        @Override
+        public IInformationControl doCreateInformationControl(Shell shell) {
+            if (BrowserInformationControl.isAvailable(shell))
+                return new BrowserInformationControl(shell, null, AFFORDANCE) {
+                    @Override
+                    public IInformationControlCreator getInformationPresenterControlCreator() {
+                        return HoverSupport.getInformationPresenterControlCreator();
+                    }
+            };
+            else
+                return new DefaultInformationControl(shell, false);
+        }
+    }
 
-	protected void displayHover(Control control, int x, int y) {
-		if (hoverControl != null || informationControl != null)
-			return; // we are already showing a hover or a (sticky) information control
 
-		IHoverTextProvider hoverTextProvider = hoverTextProviders.get(control);
-		SizeConstraint preferredSize = new SizeConstraint();
-		String hoverText = hoverTextProvider.getHoverTextFor(control, x, y, preferredSize);
-		if (hoverText != null) {
-			hoverControl = getHoverControlCreator().createInformationControl(control.getShell());
-			hoverControl.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent e) {  //XXX issue: this doesn't always get called on Linux; see note in removeHover() too
-					hoverControl = null;
-				}
-			});
-            configureControl(hoverControl, hoverText, control.toDisplay(x, y), preferredSize);
-		}
-	}
+    private static class StickyBrowserInformationControlCreator extends AbstractReusableInformationControlCreator {
+        @Override
+        public IInformationControl doCreateInformationControl(Shell shell) {
+            if (BrowserInformationControl.isAvailable(shell))
+                return new BrowserInformationControl(shell, null, true);
+            else
+                return new DefaultInformationControl(shell, true);
+        }
+    }
 
-	protected void removeHover() {
-		if (hoverControl != null) {
-		    // note: hoverControl may have been disposed already, but there's
-		    // no getter method to find that out. So try dispose() anyway, and
-		    // catch potential NPE from BrowserInformationControl.dispose().
-		    try { hoverControl.dispose(); } catch (RuntimeException e) { }
-			hoverControl = null;
-		}
-	}
+    // KLUDGE: this class is completely superfluous and should be deleted if the already existing eclipse code becomes reusable... :(
+    private static class LocalInformationControlReplacer extends InformationControlReplacer {
+        // KLUDGE: the contents of thie inner class is copied over from StickyHoverManager
+        // so much for code reuse... :(
+        class Closer implements IInformationControlCloser, ControlListener, MouseListener, KeyListener, FocusListener, Listener {
+            //TODO: Catch 'Esc' key in fInformationControlToClose: Don't dispose, just hideInformationControl().
+            // This would allow to reuse the information control also when the user explicitly closes it.
 
-	/**
-	 * Makes the currently displayed hover "sticky". This is the method to be called
-	 * from the hander of the SHOW_INFORMATION command (bound to "F2" by default).
-	 */
-    public void makeHoverSticky() {
-        Control control = Display.getDefault().getCursorControl();
-        if (control != null)
-            makeHoverSticky(control);
+            //TODO: if subject control is a Scrollable, should add selection listeners to both scroll bars
+            // (and remove the ViewPortListener, which only listens to vertical scrolling)
+
+            /** The subject control. */
+            private Control fSubjectControl;
+            /** Indicates whether this closer is active. */
+            private boolean fIsActive= false;
+            /** The display. */
+            private Display fDisplay;
+
+            /*
+             * @see IInformationControlCloser#setSubjectControl(Control)
+             */
+            public void setSubjectControl(Control control) {
+                fSubjectControl= control;
+            }
+
+            /*
+             * @see IInformationControlCloser#setInformationControl(IInformationControl)
+             */
+            public void setInformationControl(IInformationControl control) {
+                // NOTE: we use getCurrentInformationControl2() from the outer class
+            }
+
+            /*
+             * @see IInformationControlCloser#start(Rectangle)
+             */
+            public void start(org.eclipse.swt.graphics.Rectangle informationArea) {
+
+                if (fIsActive)
+                    return;
+                fIsActive= true;
+
+                if (fSubjectControl != null && !fSubjectControl.isDisposed()) {
+                    fSubjectControl.addControlListener(this);
+                    fSubjectControl.addMouseListener(this);
+                    fSubjectControl.addKeyListener(this);
+                }
+
+                //fTextViewer.addViewportListener(this);
+
+                IInformationControl fInformationControlToClose= getCurrentInformationControl2();
+                if (fInformationControlToClose != null)
+                    fInformationControlToClose.addFocusListener(this);
+
+                fDisplay= fSubjectControl.getDisplay();
+                if (!fDisplay.isDisposed()) {
+                    fDisplay.addFilter(SWT.MouseMove, this);
+                    fDisplay.addFilter(SWT.FocusOut, this);
+                }
+            }
+
+            /*
+             * @see IInformationControlCloser#stop()
+             */
+            public void stop() {
+
+                if (!fIsActive)
+                    return;
+                fIsActive= false;
+
+                //fTextViewer.removeViewportListener(this);
+
+                if (fSubjectControl != null && !fSubjectControl.isDisposed()) {
+                    fSubjectControl.removeControlListener(this);
+                    fSubjectControl.removeMouseListener(this);
+                    fSubjectControl.removeKeyListener(this);
+                }
+
+                IInformationControl fInformationControlToClose= getCurrentInformationControl2();
+                if (fInformationControlToClose != null)
+                    fInformationControlToClose.removeFocusListener(this);
+
+                if (fDisplay != null && !fDisplay.isDisposed()) {
+                    fDisplay.removeFilter(SWT.MouseMove, this);
+                    fDisplay.removeFilter(SWT.FocusOut, this);
+                }
+
+                fDisplay= null;
+            }
+
+            public void controlResized(ControlEvent e) { hideInformationControl(); }
+            public void controlMoved(ControlEvent e) { hideInformationControl(); }
+            public void mouseDown(MouseEvent e) { hideInformationControl(); }
+            public void mouseUp(MouseEvent e) { }
+            public void mouseDoubleClick(MouseEvent e) { hideInformationControl(); }
+            public void keyPressed(KeyEvent e) { hideInformationControl(); }
+            public void keyReleased(KeyEvent e) { }
+            public void focusGained(FocusEvent e) { }
+
+            public void focusLost(FocusEvent e) {
+                Display d= fSubjectControl.getDisplay();
+                d.asyncExec(new Runnable() {
+                    // Without the asyncExec, mouse clicks to the workbench window are swallowed.
+                    public void run() {
+                        hideInformationControl();
+                    }
+                });
+            }
+
+            public void handleEvent(Event event) {
+                if (event.type == SWT.MouseMove) {
+                    if (!(event.widget instanceof Control) || event.widget.isDisposed())
+                        return;
+
+                    IInformationControl infoControl= getCurrentInformationControl2();
+                    if (infoControl != null && !infoControl.isFocusControl() && infoControl instanceof IInformationControlExtension3) {
+                        IInformationControlExtension3 iControl3= (IInformationControlExtension3) infoControl;
+                        org.eclipse.swt.graphics.Rectangle controlBounds= iControl3.getBounds();
+                        if (controlBounds != null) {
+                            Point mouseLoc= event.display.map((Control) event.widget, null, event.x, event.y);
+                            int margin= getKeepUpMargin();
+                            Geometry.expand(controlBounds, margin, margin, margin, margin);
+                            if (!controlBounds.contains(mouseLoc)) {
+                                hideInformationControl();
+                            }
+                        }
+
+                    } else {
+                        /*
+                         * TODO: need better understanding of why/if this is needed.
+                         * Looks like the same panic code we have in org.eclipse.jface.text.AbstractHoverInformationControlManager.Closer.handleMouseMove(Event)
+                         */
+                        if (fDisplay != null && !fDisplay.isDisposed())
+                            fDisplay.removeFilter(SWT.MouseMove, this);
+                    }
+
+                } else if (event.type == SWT.FocusOut) {
+                    IInformationControl iControl= getCurrentInformationControl2();
+                    if (iControl != null && ! iControl.isFocusControl())
+                        hideInformationControl();
+                }
+            }
+        }
+
+        private LocalInformationControlReplacer(IInformationControlCreator creator) {
+            super(creator);
+            setCloser(new Closer());
+        }
+    }
+
+    private HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>();
+
+    private HashMap<Control, LocalHoverInformationControlManager> hoverInformationControlManagers = new HashMap<Control, LocalHoverInformationControlManager>();
+
+    private Point hoverSizeConstraints = new Point(320, 200);
+
+    /**
+     * Returns the maximum size for the hover widget.
+     */
+    public Point getHoverSizeConstaints() {
+        return hoverSizeConstraints;
+    }
+
+    /**
+     * Sets the maximum size for the hover widget.
+     */
+    public void setHoverSizeConstaints(int width, int height) {
+        this.hoverSizeConstraints = new Point(width, height);
+    }
+
+    /**
+     * Adds hover support for the given control.
+     */
+    public void adapt(final Control control, IHoverTextProvider hoverTextProvider) {
+        Assert.isTrue(hoverTextProvider != null);
+        Assert.isTrue(!hoverTextProviders.containsKey(control), "control already registered");
+        hoverTextProviders.put(control, hoverTextProvider);
+        control.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                forget(control);
+            }
+        });
+        LocalInformationControlReplacer informationControlReplacer = new LocalInformationControlReplacer(getInformationPresenterControlCreator());
+        informationControlReplacer.install(control);
+        LocalHoverInformationControlManager hoverInformationControlManager = new LocalHoverInformationControlManager(getHoverControlCreator());
+        hoverInformationControlManager.getInternalAccessor().setInformationControlReplacer(informationControlReplacer);
+        hoverInformationControlManager.install(control);
+        hoverInformationControlManagers.put(control, hoverInformationControlManager);
+    }
+
+    /**
+     * Removes hover support from the given control. This does NOT need to
+     * be called when the widget gets disposed, because this class listens on
+     * widgetDisposed() automatically.
+     */
+    //XXX but widgetDisposed is not always called when the widget gets disposed
+    public void forget(Control control) {
+        hoverTextProviders.remove(control);
+        hoverInformationControlManagers.remove(control);
     }
 
     /**
      * Creates a sticky hover for the given widget.
      */
     public void makeHoverSticky(Control control) {
-        removeHover();
-
-        IHoverTextProvider hoverProvider = hoverTextProviders.get(control);
-        if (hoverProvider != null) {
-            Point p = Display.getDefault().getCursorLocation();
-            SizeConstraint preferredSize = new SizeConstraint();
-            String hoverText = hoverProvider.getHoverTextFor(control, control.toControl(p).x, control.toControl(p).y, preferredSize);
-            if (hoverText != null) {
-                // create the control
-                final IInformationControl newInformationControl = getInformationPresenterControlCreator().createInformationControl(control.getShell());
-                configureControl(newInformationControl, hoverText, p, preferredSize);
-                newInformationControl.setFocus();
-
-                // it should close on losing the focus
-                newInformationControl.addDisposeListener(new DisposeListener() {
-                    public void widgetDisposed(DisposeEvent e) {
-                        informationControl = null;
-                    }
-                });
-                newInformationControl.addFocusListener(new FocusListener() {
-                    public void focusGained(FocusEvent e) {
-                    }
-                    public void focusLost(FocusEvent e) {
-                    	// asyncExec() is needed because on browser creation the focus is temporarily lost
-                    	// and transferred to the browser (this would close the infoControl on browser creation)
-            			Display.getCurrent().asyncExec(new Runnable() {
-            				public void run() {
-            					if (newInformationControl != null && !newInformationControl.isFocusControl())
-            						newInformationControl.dispose();
-            				}
-            			});
-                    }
-                });
-                informationControl = newInformationControl;
-            }
-		}
-	}
-
-	protected void configureControl(IInformationControl informationControl, String hoverText, Point mouseLocation, SizeConstraint preferredSize) {
-		informationControl.setSizeConstraints(hoverSizeConstraints.x, hoverSizeConstraints.y);
-		informationControl.setInformation(hoverText);
-		Point size = informationControl.computeSizeHint(); //issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
-		size.x = calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth);
-		size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight);
-		informationControl.setSize(size.x, size.y);
-		informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
-		informationControl.setVisible(true);
-	}
-
-	private int calculateSize(int hoverSizeConstraint, int sizeHint, int minimumSize, int preferredSize) {
-		int size = sizeHint;
-
-		if (minimumSize != SWT.DEFAULT)
-			size = Math.max(minimumSize, size);
-
-		if (preferredSize != SWT.DEFAULT)
-			size = Math.min(preferredSize, hoverSizeConstraint);
-
-		return size;
-	}
-
-	protected Point calculateHoverPosition(Point mouse, Point size) {
-		Monitor monitor = findMonitorByPosition(mouse);
-		if (monitor == null)
-			monitor = Display.getCurrent().getPrimaryMonitor();
-
-		Rectangle screen = monitor.getBounds();
-		Point p = new Point(mouse.x + 5, mouse.y + 20);
-		p.x = Math.min(p.x, screen.x + screen.width - size.x - 5);
-		if (p.y + 20 + size.y > screen.y + screen.height)
-			p.y = mouse.y - size.y - 20; // if no room below mouse, show it above
-		return p;
-	}
-
-	private Monitor findMonitorByPosition(Point position) {
-		Monitor[] monitors = Display.getCurrent().getMonitors();
-		for (Monitor monitor : monitors)
-			if (monitor.getBounds().contains(position))
-				return monitor;
-		return null;
-	}
-
-	/**
-	 * Returns the default over text provider.
-	 */
-	public IHoverTextProvider getDefaultHoverTextProvider() {
-		return defaultHoverTextProvider;
-	}
-
-	/**
-	 * Sets the default over text provider. This will be used for control adapted
-	 * after this call without a hover provider.
-	 */
-	public void setDefaultHoverTextProvider(IHoverTextProvider defaultHoverTextProvider) {
-		this.defaultHoverTextProvider = defaultHoverTextProvider;
-	}
-
-	/**
-	 * Returns the maximum size for the hover widget.
-	 */
-	public Point getHoverSizeConstaints() {
-		return hoverSizeConstraints;
-	}
-
-	/**
-	 * Sets the maximum size for the hover widget.
-	 */
-	public void setHoverSizeConstaints(int width, int height) {
-		this.hoverSizeConstraints = new Point(width, height);
-	}
-
-	/**
-	 * Returns the hover control if currently displayed, otherwise null.
-	 */
-	public IInformationControl getHoverControl() {
-		return hoverControl;
-	}
-
-	/**
-	 * Returns the (sticky) information control if currently displayed, otherwise null.
-	 */
-	public IInformationControl getInformationControl() {
-		return informationControl;
-	}
-
-	/**
-	 * Utility method for ITextHoverExtension.
-	 */
-	public static IInformationControlCreator getHoverControlCreator() {
-		return new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				// for more info, see JavadocHover class in JDT
-				if (BrowserInformationControl.isAvailable(parent))
-				    return (new BrowserInformationControl(parent, null, AFFORDANCE) {
-				        // note: this subclassing is sort of a hack, because the required width got
-				        // consistently underestimated by a few pixels on XP, resulting in an extra line wrap.
-				        // configureControl() is not a good place for extending the width, because
-				        // text editor hovers (inifile text editor) bypasses it.
-				        @Override
-				        public void setSize(int width, int height) {
-				            super.setSize(width + 20, height);
-				        }
-
-				        @Override
-				        public IInformationControlCreator getInformationPresenterControlCreator() {
-				            return HoverSupport.getInformationPresenterControlCreator();
-				        }
-				    });
-				else
-					return new DefaultInformationControl(parent, AFFORDANCE, new HTMLTextPresenter(false));
-			}
-		};
-	}
-
-	/**
-	 * Utility method for IInformationProviderExtension2.
-	 */
-	public static IInformationControlCreator getInformationPresenterControlCreator() {
-		return new IInformationControlCreator() {
-			public IInformationControl createInformationControl(Shell parent) {
-				// for more info, see JavadocHover class in JDT
-				if (BrowserInformationControl.isAvailable(parent)) {
-					BrowserInformationControl browserInformationControl = new BrowserInformationControl(parent, null, true) {
-				        // note: see similar code in getHoverControlCreator
-				        @Override
-				        public void setSize(int width, int height) {
-				            super.setSize(width + 20, height);
-				        }
-					};
-
-					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
-					    final Shell shell = (Shell)ReflectionUtils.getFieldValue(browserInformationControl,"fShell");
-					    ((GridLayout)shell.getLayout()).marginHeight = 5;
-					    ((GridLayout)shell.getLayout()).marginWidth = 5;
-					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					    makeShellResizeable(shell);
-					}
-
-					return browserInformationControl;
-				} else {
-					DefaultInformationControl defaultInformationControl = new DefaultInformationControl(parent, new HTMLTextPresenter(false));
-					if (!SWT.getPlatform().equals("win32") && !SWT.getPlatform().equals("wpf")) {
-					    final Shell shell = getShellFrom(defaultInformationControl);
-					    ((GridLayout)shell.getLayout()).marginHeight = 5;
-					    ((GridLayout)shell.getLayout()).marginWidth = 5;
-					    shell.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
-					    makeShellResizeable(shell);
-                    }
-					return defaultInformationControl;
-				}
-			}
-		};
-	}
-
-    protected static Shell getShellFrom(DefaultInformationControl control) {
-        //return ((PopupDialog)ReflectionUtils.getFieldValue(control,"fPopupDialog")).getShell(); -- for Eclipse 3.5 (3.4?) or earlier
-        return (Shell)ReflectionUtils.getFieldValue(control,"fShell");  // Eclipse 3.6
+        // KLUDGE: unfortunately the fHoverArea in the internal MouseTracker is null, we workaround this by using reflection utils... :(
+        LocalHoverInformationControlManager hoverInformationControlManager = hoverInformationControlManagers.get(control);
+        ReflectionUtils.setFieldValue(ReflectionUtils.getFieldValue(hoverInformationControlManager, "fMouseTracker"), "fHoverArea", Display.getCurrent().getBounds());
+        hoverInformationControlManager.showInformation();
+        hoverInformationControlManager.getInternalAccessor().replaceInformationControl(true);
     }
-	
-	// WORKAROUND Solution for the bug 23980. It can be removed once it is integrated in the platform
-	/**
-	 * Adds a mouse listener to the shell which implements resize behavior. Any of the edges
-	 * can be dragged to resize the shell, but the shell must expose a border which
-	 * can be dragged. (i.e. must not be fully covered by the contained Composite)
-	 */
-	public static void makeShellResizeable(final Shell shell) {
-		class MouseListener extends MouseAdapter implements MouseMoveListener {
-			private boolean mouse1Down;
-			private Point prevPos;
-			private int resizeEdge = 0;
-			private final static int BORDERSIZE = 15;
 
-			public void mouseDown(MouseEvent e) {
-                mouse1Down = true;
-                prevPos = Display.getCurrent().getCursorLocation();
-                resizeEdge = 0;
-                Point shellPos = shell.getLocation();
-                Point shellSize = shell.getSize();
-                if (Math.abs(prevPos.y - shellSize.y - shellPos.y) < BORDERSIZE)
-                	resizeEdge |= SWT.BOTTOM;
-                else if (Math.abs(prevPos.y - shellPos.y) < BORDERSIZE)
-                	resizeEdge |= SWT.TOP;
-                if (Math.abs(prevPos.x - shellSize.x - shellPos.x) < BORDERSIZE)
-                	resizeEdge |= SWT.RIGHT;
-                else if (Math.abs(prevPos.x - shellPos.x) < BORDERSIZE)
-                	resizeEdge |= SWT.LEFT;
-            }
+    /**
+     * Utility method for ITextHoverExtension.
+     */
+    public static IInformationControlCreator getHoverControlCreator() {
+        return new BrowserInformationControlCreator();
+    }
 
-			public void mouseUp(MouseEvent e) {
-                mouse1Down = false;
-            }
+    /**
+     * Utility method for IInformationProviderExtension2.
+     */
+    public static IInformationControlCreator getInformationPresenterControlCreator() {
+        return new StickyBrowserInformationControlCreator();
+    }
 
-			private void setMouseCursor() {
-                Point cpos = Display.getCurrent().getCursorLocation();
-                Point shellPos = shell.getLocation();
-                Point shellSize = shell.getSize();
-                boolean top = Math.abs(cpos.y - shellPos.y) < BORDERSIZE;
-                boolean bottom = Math.abs(cpos.y - shellSize.y - shellPos.y) < BORDERSIZE;
-                boolean left = Math.abs(cpos.x - shellPos.x) < BORDERSIZE;
-                boolean right = Math.abs(cpos.x - shellSize.x - shellPos.x) < BORDERSIZE;
-
-                int cursorid = SWT.NONE;
-                if (top) {
-                	if (left)
-                		cursorid = SWT.CURSOR_SIZENW;
-                	else if (right)
-                		cursorid = SWT.CURSOR_SIZENE;
-                	else
-                		cursorid = SWT.CURSOR_SIZEN;
-                }
-                else if (bottom) {
-                	if (left)
-                		cursorid = SWT.CURSOR_SIZESW;
-                	else if (right)
-                		cursorid = SWT.CURSOR_SIZESE;
-                	else
-                		cursorid = SWT.CURSOR_SIZES;
-                }
-                else {
-                	if (left)
-                		cursorid = SWT.CURSOR_SIZEW;
-                	else if (right)
-                		cursorid = SWT.CURSOR_SIZEE;
-                	else
-                		cursorid = SWT.NONE;
-                }
-
-                shell.setCursor(cursorid == SWT.NONE ? null : Display.getCurrent().getSystemCursor(cursorid));
-			}
-
-            public void mouseMove(MouseEvent e) {
-            	setMouseCursor();
-
-                if (mouse1Down) {
-                    Point p = Display.getCurrent().getCursorLocation();
-                    Point size = shell.getSize();
-                    Point loc = shell.getLocation();
-                    int dx = p.x - prevPos.x;
-                    int dy = p.y - prevPos.y;
-                    if ((resizeEdge & SWT.BOTTOM) != 0)
-                    	size.y += dy;
-                    if ((resizeEdge & SWT.RIGHT) != 0)
-                    	size.x += dx;
-                    if ((resizeEdge & SWT.TOP) != 0) {
-                    	size.y -= dy;
-                    	loc.y += dy;
-                    }
-                    if ((resizeEdge & SWT.LEFT) != 0) {
-                    	size.x -= dx;
-                    	loc.x += dx;
-                    }
-
-                    shell.setLocation(loc);
-                    shell.setSize(size);
-
-                    prevPos = p;
-                }
-            }
-		}
-
-		MouseListener ls = new MouseListener();
-        shell.addMouseListener(ls);
-        shell.addMouseMoveListener(ls);
-	}
-
-	/**
-	 * Wraps an HTML formatted string with a stylesheet for hover display
-	 */
-	public static String addHTMLStyleSheet(String htmlText) {
-	    return htmlText != null ? HTML_PROLOG + htmlText + HTML_EPILOG : null;
-	}
-
+    /**
+     * Wraps an HTML formatted string with a stylesheet for hover display
+     */
+    public static String addHTMLStyleSheet(String htmlText) {
+        return htmlText != null ? HTML_PROLOG + htmlText + HTML_EPILOG : null;
+    }
 }
-
-

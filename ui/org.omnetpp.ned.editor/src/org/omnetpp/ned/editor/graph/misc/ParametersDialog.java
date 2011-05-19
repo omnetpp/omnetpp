@@ -670,7 +670,8 @@ public class ParametersDialog extends TitleAreaDialog {
 
         addEditButtons(group);
 
-        hoverSupport = new HoverSupport(new IHoverTextProvider() {
+        hoverSupport = new HoverSupport();
+        hoverSupport.adapt(listViewer.getTable(), new IHoverTextProvider() {
             public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
                 Table table = (Table)control;
                 TableItem tableItem = table.getItem(new Point(x, y));
@@ -715,7 +716,6 @@ public class ParametersDialog extends TitleAreaDialog {
                 buffer.append("</li><br/><br/>");
             }
         });
-        hoverSupport.adapt(listViewer.getTable());
 
         Dialog.applyDialogFont(composite);
         return composite;

@@ -13,7 +13,6 @@ import java.util.List;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -65,9 +64,7 @@ class LegendTooltip implements ILegend
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
             public void widgetSelected(SelectionEvent e) {
-					IInformationControl infoControl = hoverSupport.getInformationControl();
-					if (infoControl == null)
-						hoverSupport.makeHoverSticky();
+			    hoverSupport.makeHoverSticky(button);
 			}
 		});
 	}
