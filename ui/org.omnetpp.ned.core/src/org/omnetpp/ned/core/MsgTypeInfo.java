@@ -7,8 +7,8 @@
 
 package org.omnetpp.ned.core;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,7 +55,7 @@ public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
     }
 
     public Map<String, FieldElement> getLocalFields() {
-        Map<String, FieldElement> fields = new HashMap<String, FieldElement>();
+        Map<String, FieldElement> fields = new LinkedHashMap<String, FieldElement>();
 
         for (FieldElement field = (FieldElement)typeNode.getFirstChildWithTag(NED_FIELD); field != null; field = field.getNextFieldSibling())
             fields.put(field.getName(), field);
@@ -64,13 +64,13 @@ public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
     }
 
     public Map<String, FieldElement> getFields() {
-        Map<String, FieldElement> fields = new HashMap<String, FieldElement>();
+        Map<String, FieldElement> fields = new LinkedHashMap<String, FieldElement>();
 
         IMsgTypeElement typeElement = typeNode;
 
         while (typeElement != null) {
             fields.putAll(typeElement.getMsgTypeInfo().getLocalFields());
-            typeElement = (IMsgTypeElement)typeElement.getMsgTypeInfo().getSuperType();
+            typeElement = typeElement.getMsgTypeInfo().getSuperType();
         }
 
         return fields;
@@ -78,7 +78,7 @@ public class MsgTypeInfo implements IMsgTypeInfo, NedElementTags {
 
     public Map<String, Map<String, PropertyElementEx>> getProperties() {
         // TODO:
-        return new HashMap<String, Map<String, PropertyElementEx>>();
+        return new LinkedHashMap<String, Map<String, PropertyElementEx>>();
     }
 
     public String getFullyQualifiedCppClassName() {
