@@ -192,7 +192,7 @@ public class DocumentationGenerator {
 
     // matches @page with name and URL
     private static final Pattern pagePattern = Pattern.compile("(?m)^//[ \t]*@page +([^,\n]+),? *(.*?)$");
-    
+
     // matches @include and extracts filename
     private final static Pattern includePattern = Pattern.compile("(?m)^//[ \t]*@include[ \t]+(.*?)$");
 
@@ -276,7 +276,7 @@ public class DocumentationGenerator {
 	public void setGenerateNedSourceListings(boolean generateNedSourceListings) {
 		this.generateNedSourceListings = generateNedSourceListings;
 	}
-	
+
 	public void setGenerateExplicitLinksOnly(boolean generateExplicitLinksOnly) {
 	    this.generateExplicitLinksOnly = generateExplicitLinksOnly;
 	}
@@ -339,7 +339,7 @@ public class DocumentationGenerator {
                     return Status.CANCEL_STATUS;
                 }
                 catch (NeddocException e) {
-                    return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e); 
+                    return NeddocPlugin.getErrorStatus("Error during generating NED documentation", e);
                 }
                 catch (final IllegalStateException e) {
                     if (e.getMessage() != null) {
@@ -664,7 +664,7 @@ public class DocumentationGenerator {
                 boolean evenPrefixes = prefix.length() % 2 == 0;
                 String identifier = matcher.group(2);
                 ITypeElement typeElement = typeNamesMap.get(identifier);
-                
+
                 if ((generateExplicitLinksOnly && !evenPrefixes) || (!generateExplicitLinksOnly && evenPrefixes && typeElement != null))
                 {
                     prefix = prefix.substring(0, prefix.length() / 2); // remove double '\' or '~' here, because they won't be followed by an
@@ -725,13 +725,13 @@ public class DocumentationGenerator {
                 "   <head>\r\n" +
                 "      <title>Model documentation -- generated from NED files</title>\r\n" +
                 "      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\r\n" +
-                "      <script language=\"JavaScript\">\r\n" + 
-                "         <!--\r\n" + 
-                "         url = window.location.toString();\r\n" + 
-                "         pos = url.lastIndexOf(\"p=\");\r\n" + 
-                "         startpage = (pos==-1) ? \"overview.html\" : url.substring(pos+2);\r\n" + 
-                "         //-->\r\n" + 
-                "      </script>\r\n" + 
+                "      <script language=\"JavaScript\">\r\n" +
+                "         <!--\r\n" +
+                "         url = window.location.toString();\r\n" +
+                "         pos = url.lastIndexOf(\"p=\");\r\n" +
+                "         startpage = (pos==-1) ? \"overview.html\" : url.substring(pos+2);\r\n" +
+                "         //-->\r\n" +
+                "      </script>\r\n" +
                 "   </head>\r\n" +
                 "   <frameset cols=\"25%,75%\" onload=\"document.getElementById('mainframe').src = startpage;\">\r\n" +
                 "      <frame src=\"navigation.html\" name=\"componentsframe\"/>\r\n" +
@@ -969,7 +969,7 @@ public class DocumentationGenerator {
                                 generateNavigationMenuItem(title, file);
                                 withGeneratingHTMLFile(file,
                                         "<h2>" + title + "</h2>" + processHTMLContent("comment", content));
-                                
+
                             }
                             else if (pageType == PageType.EXTERNAL_PAGE) {
                                 generateNavigationMenuItem(title, file);
@@ -981,7 +981,7 @@ public class DocumentationGenerator {
             });
         }
     }
-    
+
     protected enum PageType {
         PAGE,
         TITLE_PAGE,
@@ -991,7 +991,7 @@ public class DocumentationGenerator {
     protected static interface IPageMatcherVisitor {
         public boolean visit(PageType pageType, String file, String title, String content) throws Exception;
     }
-    
+
     protected void mapPageMatchers(IPageMatcherVisitor visitor) throws Exception {
         for (IFile file : files) {
             String comment = null;
@@ -1003,7 +1003,7 @@ public class DocumentationGenerator {
 
             if (comment != null) {
                 if (comment.contains("@page") || comment.contains("@titlepage") || comment.contains("@externalpage")) {
-                    
+
                     Matcher matcher = externalPagePattern.matcher(comment);
                     StringBuffer buffer = new StringBuffer();
 
@@ -1017,13 +1017,13 @@ public class DocumentationGenerator {
 
                     matcher.appendTail(buffer);
                     comment = buffer.toString();
-                    
+
                     List<String> pages = StringUtils.splitPreservingSeparators(comment, pageSeparatorPattern);
-                    
+
                     for (int i = 1; i < pages.size() - 1; i++) {
                         String header = pages.get(i);
                         String content = pages.get(i+1);
-                        
+
                         if (titlePagePattern.matcher(header).find()) {
                             if (!visitor.visit(PageType.TITLE_PAGE, null, null, content))
                                 return;
@@ -1045,14 +1045,14 @@ public class DocumentationGenerator {
     }
 
     protected String sanitizeFileName(String fileName, String requiredSuffix) {
-        // Replace characters that may cause trouble: control characters, characters that may 
-        // be invalid in a file name in some platform, may need quoting when put into a HTML 
-        // attribute (href), or may have different representations in different encodings 
+        // Replace characters that may cause trouble: control characters, characters that may
+        // be invalid in a file name in some platform, may need quoting when put into a HTML
+        // attribute (href), or may have different representations in different encodings
         // (i.e. non-ASCII chars). When changing this code, make sure that the page "Nasty-Filename"
         // in test/neddoc can be generated and also opened!
         fileName = fileName.trim().replaceAll("\\s+", "-").replace('[', '(').replace(']', ')');
         fileName = fileName.replaceAll("[^-A-Za-z0-9!@$(){};+=]", "_");
-        
+
         // add suffix
         if (!fileName.endsWith(requiredSuffix))
             fileName += requiredSuffix;
@@ -1149,7 +1149,7 @@ public class DocumentationGenerator {
                     for (ITypeElement typeElement : typeElements)
                         if (typeElement instanceof INedTypeElement)
                             if (packageName.equals(getPackageName((INedTypeElement)typeElement)))
-                                generateTypeReference(typeElement);
+                                generateTypeReferenceLine(typeElement);
 
                     out("</table>\r\n");
                 }
@@ -1181,7 +1181,7 @@ public class DocumentationGenerator {
                             typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
 
                         for (ITypeElement typeElement : typeElements)
-                            generateTypeReference(typeElement);
+                            generateTypeReferenceLine(typeElement);
 
                         out("</table>\r\n");
                         generateSourceContent(file);
@@ -1274,7 +1274,6 @@ public class DocumentationGenerator {
     protected void generateFieldsTable(IMsgTypeElement msgTypeElement) throws IOException {
         Map<String, FieldElement> fields = msgTypeElement.getMsgTypeInfo().getFields();
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
-
         if (fields.size() != 0) {
             out("<h3 class=\"subtitle\">Fields:</h3>\r\n" +
         		"<table class=\"paramtable\">\r\n" +
@@ -1283,21 +1282,22 @@ public class DocumentationGenerator {
         		"      <th>Type</th>\r\n" +
         		"      <th>Description</th>\r\n" +
         		"   </tr>\r\n");
-
             for (String name : fields.keySet())
             {
                 FieldElement field = fields.get(name);
                 String trClass = localFields.containsKey(name) ? "local" : "inherited";
-
                 out("<tr class=\"" + trClass + "\">\r\n" +
             		"   <td width=\"150\">" + name + "</td>\r\n" +
             		"   <td width=\"100\">\r\n" +
             		"      <i>\r\n");
-
-                out(field.getDataType());
+                String dataType = field.getDataType();
+                IMsgTypeElement fieldTypeElement = msgResources.lookupMsgType(dataType);
+                if (fieldTypeElement != null)
+                    generateTypeReference(fieldTypeElement);
+                else
+                    out(dataType);
         		if (field.getIsVector())
                     out("[" + field.getVectorSize() + "]");
-
         		out("</i>\r\n" +
             		"   </td>\r\n" +
             		"   <td>");
@@ -1305,7 +1305,6 @@ public class DocumentationGenerator {
         		out("</td>\r\n" +
             		"</tr>\r\n");
             }
-
             out("</table>\r\n");
         }
     }
@@ -1373,7 +1372,7 @@ public class DocumentationGenerator {
             		"<p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>\r\n" +
             		"<table>\r\n");
                 for (INedTypeElement userElement : compoundModules)
-                    generateTypeReference(userElement);
+                    generateTypeReferenceLine(userElement);
         		out("</table>\r\n");
             }
 
@@ -1381,7 +1380,7 @@ public class DocumentationGenerator {
                 out("<h3 class=\"subtitle\">Networks:</h3>\r\n" +
             		"<table>\r\n");
                 for (INedTypeElement userElement : networks)
-                    generateTypeReference(userElement);
+                    generateTypeReferenceLine(userElement);
         		out("</table>\r\n");
             }
         }
@@ -1580,33 +1579,43 @@ public class DocumentationGenerator {
             out(processHTMLContent("comment", comment));
     }
 
-    protected void generateTypeReference(ITypeElement typeElement) throws IOException {
+    protected void generateTypeReferenceLine(ITypeElement typeElement) throws IOException {
         out("<tr>\r\n" +
-            "   <td>\r\n" +
-            "      <a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" +
-            "      <i> (" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + ")</i>\r\n" +
-            "   </td>\r\n" +
             "   <td>\r\n");
+        generateTypeReference(typeElement);
+        out("   </td>\r\n" +
+            "   <td>\r\n");
+        generateTypeComment(typeElement);
+        out("   </td>\r\n" +
+            "</tr>\r\n");
+    }
 
+    protected void generateTypeReference(ITypeElement typeElement) throws IOException {
+        out("<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" +
+            "<i> (" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + ")</i>\r\n");
+    }
+
+    protected void generateTypeComment(ITypeElement typeElement) throws IOException {
         String comment = getExpandedComment(typeElement);
         if (comment != null)
             out(processHTMLContent("briefcomment", comment));
         else
             out("<i>(no description)</i>\r\n");
-
-        out("   </td>\r\n" +
-            "</tr>\r\n");
     }
 
-    protected void generateUnresolvedTypeReference(String name) throws IOException {
+    protected void generateUnresolvedTypeReferenceLine(String name) throws IOException {
         out("<tr>\r\n" +
-    		"   <td>\r\n" +
-    		name +
-    		"   </td>\r\n" +
+    		"   <td>\r\n");
+        generateUnresolvedTypeReference(name);
+        out("   </td>\r\n" +
     		"   <td>\r\n" +
     		"      <i>(unknown -- not in documented files)</i>\r\n" +
     		"   </td>\r\n" +
     		"</tr>\r\n");
+    }
+
+    protected void generateUnresolvedTypeReference(String name) throws IOException {
+        out(name);
     }
 
     protected void generateNedTypeCppDefinitionReference(ITypeElement typeElement) throws IOException {
@@ -1647,7 +1656,7 @@ public class DocumentationGenerator {
         		"<table>\r\n");
 
             for (ITypeElement subtype : subtypesMap.get(typeElement))
-                generateTypeReference(subtype);
+                generateTypeReferenceLine(subtype);
 
             out("</table>\r\n");
         }
@@ -1660,14 +1669,14 @@ public class DocumentationGenerator {
 
             if (typeElement instanceof IInterfaceTypeElement)
                 for (INedTypeElement supertype : ((IInterfaceTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces())
-                    generateTypeReference(supertype);
+                    generateTypeReferenceLine(supertype);
             else {
                 ITypeElement supertype = typeElement.getSuperType();
 
                 if (supertype != null)
-                    generateTypeReference(supertype);
+                    generateTypeReferenceLine(supertype);
                 else
-                    generateUnresolvedTypeReference(typeElement.getFirstExtends());
+                    generateUnresolvedTypeReferenceLine(typeElement.getFirstExtends());
             }
 
             out("</table>\r\n");
@@ -1781,14 +1790,14 @@ public class DocumentationGenerator {
                             for (Object child : compoundModuleEditPart.getChildren()) {
                                 if (child instanceof SubmoduleEditPart) {
                                     SubmoduleEditPart submoduleEditPart = (SubmoduleEditPart)child;
-                                    SubmoduleElementEx submoduleElement = (SubmoduleElementEx)submoduleEditPart.getModel();
+                                    SubmoduleElementEx submoduleElement = submoduleEditPart.getModel();
                                     outMapReference(submoduleElement.getEffectiveTypeRef(), submoduleEditPart.getFigure());
                                 }
                             }
                         }
                         else if (editPart instanceof NedTypeEditPart) {
                             NedTypeEditPart nedTypeEditPart = (NedTypeEditPart)editPart;
-                            outMapReference((INedTypeElement)nedTypeEditPart.getModel(), nedTypeEditPart.getFigure());
+                            outMapReference(nedTypeEditPart.getModel(), nedTypeEditPart.getFigure());
                         }
 
                         out("</map>\r\n");
@@ -2229,7 +2238,7 @@ public class DocumentationGenerator {
         }
         return result.toString();
     }
-    
+
     /**
      * Returns the comment of the given NED element with '@include' directives expanded.
      */
@@ -2247,12 +2256,12 @@ public class DocumentationGenerator {
         commentCache.put(element, comment);
         return comment;
     }
-    
+
     private String getFileContent(File file, Stack<File> parents) {
         try {
             if (includedFileCache.containsKey(file))
                 return includedFileCache.get(file);
-            
+
             int index = parents.indexOf(file);
             if (index >= 0) {
                 StringBuilder sb = new StringBuilder();
@@ -2260,10 +2269,10 @@ public class DocumentationGenerator {
                 for (int i = index; i < parents.size(); ++i)
                     sb.append(parents.get(i).getPath()).append(" --> ");
                 sb.append(file.getPath());
-                
+
                 throw new NeddocException(sb.toString());
             }
-            
+
             parents.push(file);
             String content = FileUtils.readTextFile(file, null);
             // add '// ' to the beginning of lines
@@ -2277,7 +2286,7 @@ public class DocumentationGenerator {
             throw new NeddocException("Cannot include file: " + file.getAbsolutePath(), e);
         }
     }
-    
+
     private String processIncludes(String comment, Stack<File> parents) throws IOException {
         if (comment.contains("@include")) {
             Matcher matcher = includePattern.matcher(comment);
@@ -2295,7 +2304,7 @@ public class DocumentationGenerator {
         }
         return comment;
     }
-    
+
     protected void out(String string) throws IOException {
         if (monitor.isCanceled())
             throw new CancellationException();
