@@ -424,7 +424,8 @@ std::string NEDResourceCache::getNedPackageForFolder(const char *folder) const
 
     std::string folderName = tidyFilename(toAbsolutePath(folder).c_str(), true);
     std::string suffix = folderName.substr(sourceFolder.size());
-    if (suffix[0] == '/') suffix = suffix.substr(1);
+    if (suffix.length() > 0 && suffix[0] == '/')
+        suffix = suffix.substr(1);
     std::string subpackage = opp_replacesubstring(suffix.c_str(), "/", ".", true);
     return opp_join(".", const_cast<StringMap&>(folderPackages)[sourceFolder].c_str(), subpackage.c_str());
 }
