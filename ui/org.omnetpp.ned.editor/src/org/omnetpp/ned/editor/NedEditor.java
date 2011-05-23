@@ -202,8 +202,8 @@ public class NedEditor
     @Override
     protected void setInput(IEditorInput newInput) {
         Assert.isNotNull(newInput, "input should not be null");
-        
-        
+
+
     	//FIXME it should be checked that the file is a valid NED file (inside an
     	// OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it.
     	// Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
@@ -328,6 +328,12 @@ public class NedEditor
             NedFileElementEx nedFileElement = getModel();
             if (graphicalEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
                 textEditor.pullChangesFromNedResourcesWhenPending();
+                // NOTE: the following line fixes http://dev.omnetpp.org/bugs/view.php?id=235
+                // we have to update the line information of the tree to be able to put the error markers on the right lines
+                // this requires to parse the text right after the tree changes has been applied to it
+                // luckily the tree will be only modified where it needs to thanks to the clever tree differencer
+                // still it will end up doing another round of pushing changes from the tree towards text but now without action... no infinite loop
+                textEditor.pushChangesIntoNedResources();
             }
 
             // keep the current selection between the two editors
