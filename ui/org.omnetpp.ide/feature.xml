@@ -8,17 +8,9 @@
       ws="carbon,gtk,win32"
       arch="ppc,x86,x86_64">
 
-   <url>
-      <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp"/>
-   </url>
-
    <includes
          id="de.unikassel.imageexport"
          version="0.11.0"/>
-
-   <includes
-         id="org.omnetpp.ide.source"
-         version="4.2.0.qualifier"/>
 
    <includes
          id="com.lowagie.itext"

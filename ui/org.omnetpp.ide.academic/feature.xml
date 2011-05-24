@@ -335,7 +335,7 @@ END OF TERMS AND CONDITIONS
    </license>
 
    <url>
-      <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp"/>
+      <update label="OMNeT++ IDE Update Site" url="http://www.omnetpp.org/update/omnetpp/4.2"/>
    </url>
 
    <includes

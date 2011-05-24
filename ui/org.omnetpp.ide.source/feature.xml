@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.omnetpp.ide.source"
+      label="OMNeT++ IDE Sources"
+      version="4.2.0.qualifier">
+
+   <description url="http://www.omnetpp.org/">
+      Source files for the OMNeT++ IDE.
+   </description>
+
+   <copyright url="http://www.example.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.example.com/license">
+      [Enter License Description here.]
+   </license>
+
+</feature>

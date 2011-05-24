@@ -7,7 +7,7 @@
       os="linux">
 
    <description url="http://eclipse.org/linuxtools/">
-      [Enter Feature Description here.]
+      Hand picked Linux tools for the OMNeT++ IDE from the Eclipse CDT linux tools project.
    </description>
 
    <copyright url="http://www.example.com/copyright">
