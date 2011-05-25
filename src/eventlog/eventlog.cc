@@ -212,9 +212,11 @@ void EventLog::parseKeyframes()
             }
             else if (dynamic_cast<MessageEntry *>(eventLogEntry)) {
                 MessageEntry *messageEntry = (MessageEntry *)eventLogEntry;
-                int blockIndex = messageEntry->previousEventNumber / keyframeBlockSize;
-                // NOTE: the last event number is a reasonable approximation here
-                consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], getLastEventNumber() - messageEntry->previousEventNumber);
+                if (messageEntry->previousEventNumber != -1) {
+                    int blockIndex = messageEntry->previousEventNumber / keyframeBlockSize;
+                    // NOTE: the last event number is a reasonable approximation here
+                    consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], getLastEventNumber() - messageEntry->previousEventNumber);
+                }
             }
             delete eventLogEntry;
             progress();

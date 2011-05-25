@@ -231,7 +231,9 @@ public class AnimationPosition implements Comparable<AnimationPosition> {
             return (int)Math.signum(eventNumber - other.eventNumber);
         else if (simulationTime != null && other.simulationTime != null && !simulationTime.equals(other.simulationTime))
             return simulationTime.less(other.simulationTime) ? -1 : 1;
-        else if (frameRelativeAnimationTime != null && other.frameRelativeAnimationTime != null && eventNumber.equals(other.eventNumber) && simulationTime.equals(other.simulationTime) && frameRelativeAnimationTime < other.frameRelativeAnimationTime)
+        else if (frameRelativeAnimationTime != null && other.frameRelativeAnimationTime != null)
+            // TODO: this was part of the condition here, but I don't know why... should I delete it?
+            // && eventNumber.equals(other.eventNumber) && simulationTime.equals(other.simulationTime) && frameRelativeAnimationTime < other.frameRelativeAnimationTime)
             return (int)Math.signum(frameRelativeAnimationTime - other.frameRelativeAnimationTime);
         else if (originRelativeAnimationTime != null && other.originRelativeAnimationTime != null)
             return (int)Math.signum(originRelativeAnimationTime - other.originRelativeAnimationTime);

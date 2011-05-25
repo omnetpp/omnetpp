@@ -41,6 +41,9 @@ import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.EventLogInput.TimelineMode;
 import org.omnetpp.common.eventlog.EventLogMessage;
 import org.omnetpp.common.eventlog.EventLogModule;
+import org.omnetpp.common.util.BinarySearchUtils;
+import org.omnetpp.common.util.BinarySearchUtils.BoundKind;
+import org.omnetpp.common.util.BinarySearchUtils.KeyComparator;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.Timer;
@@ -695,17 +698,17 @@ public class AnimationController {
 	}
 
     private void stepAnimationTowardToSiblingAnimationChange(boolean forward) {
-        double currentOriginRelativeAnimationTime = currentAnimationPosition.getOriginRelativeAnimationTime();
-        int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
-            public double getValue(int index) {
-                return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
+        final double currentOriginRelativeAnimationTime = currentAnimationPosition.getOriginRelativeAnimationTime();
+        int beginOrderedIndex = (int)BinarySearchUtils.binarySearch(new KeyComparator() {
+            public int compareTo(long index) {
+                return (int)Math.signum(currentOriginRelativeAnimationTime - beginAnimationTimeOrderedPrimitives.get((int)index).getBeginAnimationPosition().getOriginRelativeAnimationTime());
             }
-        }, beginAnimationTimeOrderedPrimitives.size(), currentOriginRelativeAnimationTime, forward);
-        int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
-            public double getValue(int index) {
-                return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
+        }, beginAnimationTimeOrderedPrimitives.size(), forward ? BoundKind.LOWER_BOUND : BoundKind.UPPER_BOUND);
+        int endOrderedIndex = (int)BinarySearchUtils.binarySearch(new KeyComparator() {
+            public int compareTo(long index) {
+                return (int)Math.signum(currentOriginRelativeAnimationTime - endAnimationTimeOrderedPrimitives.get((int)index).getEndAnimationPosition().getOriginRelativeAnimationTime());
             }
-        }, endAnimationTimeOrderedPrimitives.size(), currentOriginRelativeAnimationTime, forward);
+        }, endAnimationTimeOrderedPrimitives.size(), forward ? BoundKind.LOWER_BOUND : BoundKind.UPPER_BOUND);
         if (!forward) {
             beginOrderedIndex--;
             endOrderedIndex--;
@@ -943,19 +946,19 @@ public class AnimationController {
      * activate/deactivate in order.
      */
 	private void updateAnimationModel() {
-		double oldAnimationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getOriginRelativeAnimationTime() : Double.NEGATIVE_INFINITY;
+		final double oldAnimationTime = modelAnimationPosition.isCompletelySpecified() ? modelAnimationPosition.getOriginRelativeAnimationTime() : Double.NEGATIVE_INFINITY;
 		double newAnimationTime = currentAnimationPosition.getOriginRelativeAnimationTime();
 		boolean forward = newAnimationTime >= oldAnimationTime;
-		int beginOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
-		        public double getValue(int index) {
-		            return beginAnimationTimeOrderedPrimitives.get(index).getBeginAnimationPosition().getOriginRelativeAnimationTime();
-		        }
-		    }, beginAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward);
-		int endOrderedIndex = getAnimationPrimitiveIndexForValue(new IValueProvider() {
-			    public double getValue(int index) {
-			        return endAnimationTimeOrderedPrimitives.get(index).getEndAnimationPosition().getOriginRelativeAnimationTime();
-		        }
-		    }, endAnimationTimeOrderedPrimitives.size(), oldAnimationTime, forward);
+		int beginOrderedIndex = (int)BinarySearchUtils.binarySearch(new KeyComparator() {
+            public int compareTo(long index) {
+                return (int)Math.signum(oldAnimationTime - beginAnimationTimeOrderedPrimitives.get((int)index).getBeginAnimationPosition().getOriginRelativeAnimationTime());
+            }
+		}, beginAnimationTimeOrderedPrimitives.size(), forward ? BoundKind.LOWER_BOUND : BoundKind.UPPER_BOUND);
+		int endOrderedIndex = (int)BinarySearchUtils.binarySearch(new KeyComparator() {
+            public int compareTo(long index) {
+                return (int)Math.signum(oldAnimationTime - endAnimationTimeOrderedPrimitives.get((int)index).getEndAnimationPosition().getOriginRelativeAnimationTime());
+            }
+		}, endAnimationTimeOrderedPrimitives.size(), forward ? BoundKind.LOWER_BOUND : BoundKind.UPPER_BOUND);
 		if (!forward) {
 			beginOrderedIndex--;
 			endOrderedIndex--;
@@ -1068,68 +1071,6 @@ public class AnimationController {
 	private void runningStateChanged() {
 		for (IAnimationListener listener : animationListeners)
 			listener.runningStateChanged(isRunning);
-	}
-
-	/**
-	 * Helper to provide the value for an index on which the binary search is working.
-	 */
-	private interface IValueProvider {
-		public double getValue(int index);
-	}
-
-	/**
-	 * Binary search among animation primitives. Search key is provided by valueProvider.
-	 * If exactly one match is found, then (if first == true) returns that one, otherwise returns the next one.
-	 * If more than one equal values are found, returns the first one
-	 * (if first == true) or the one after the last one (if first == false) of them.
-	 * If none are found, returns the next one.
-	 *
-	 * The returned index may be used to insert into the list, so valid values are [0, size].
-	 * The flag specifies in what order the same values are to be inserted.
-	 *
-	 * @param valueProvider  provides search key
-	 * @param value  search for this value
-	 * @param first  return first or last among equal values
-	 */
-	private int getAnimationPrimitiveIndexForValue(IValueProvider valueProvider, int size, double value, boolean first) {
-		int index = -1;
-		int left = 0;
-		int right = size - 1;
-
-		while (left <= right) {
-	        int mid = (int)Math.floor((right + left) / 2);
-	        double midValue = valueProvider.getValue(mid);
-
-	        if (midValue == value) {
-	        	do {
-	        		index = mid;
-
-	        		if (first)
-	        			mid--;
-	        		else
-	        			mid++;
-	        	}
-	        	while (mid >= 0 && mid < size && valueProvider.getValue(mid) == value);
-
-	        	if (!first)
-	        		index++;
-	        	break;
-	        }
-            else if (value < midValue)
-	            right = mid - 1;
-	        else
-	            left = mid + 1;
-		}
-
-		if (left > right)
-			index = left;
-
-		if (index < 0 || index > size)
-			return -1;
-		else {
-//            TODO: revive Assert.isTrue(size == index || (first && valueProvider.getValue(index) < value) || (!first && valueProvider.getValue(index) > value));
-			return index;
-		}
 	}
 
 	/**
@@ -1286,13 +1227,16 @@ public class AnimationController {
 
     private void calculateAnimationTimesForSortedAnimationPositions(ArrayList<AnimationPosition> animationPositions) {
         double animationTime = 0;
+        double animationTimeDelta = 0;
         AnimationPosition previousAnimationPosition = null;
         for (AnimationPosition animationPosition : animationPositions) {
             if (previousAnimationPosition != null) {
-                double animationTimeDelta = getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+                animationTimeDelta = getAnimationTimeDelta(previousAnimationPosition, animationPosition);
                 Assert.isTrue(animationTimeDelta >= 0);
-                animationTime += animationTimeDelta;
+                if (!Double.isInfinite(animationTimeDelta))
+                    animationTime += animationTimeDelta;
             }
+            Assert.isTrue(!Double.isNaN(animationTime) && !Double.isInfinite(animationTime));
             previousAnimationPosition = animationPosition;
             if (animationPosition.getEventNumber() >= animationTimeOriginEventNumber)
                 break;
@@ -1304,7 +1248,7 @@ public class AnimationController {
         for (AnimationPosition animationPosition : animationPositions) {
             if (previousAnimationPosition != null) {
                 Assert.isTrue(previousAnimationPosition.getEventNumber() < animationPosition.getEventNumber() || previousAnimationPosition.getSimulationTime().less(animationPosition.getSimulationTime()) || previousAnimationPosition.getFrameRelativeAnimationTime() <= animationPosition.getFrameRelativeAnimationTime() || previousAnimationPosition.equals(animationPosition));
-                double animationTimeDelta = getAnimationTimeDelta(previousAnimationPosition, animationPosition);
+                animationTimeDelta = getAnimationTimeDelta(previousAnimationPosition, animationPosition);
                 Assert.isTrue(animationTimeDelta >= 0);
                 animationTime += animationTimeDelta;
             }
