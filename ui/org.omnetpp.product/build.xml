@@ -1,5 +1,9 @@
+<!-- BUILDID, BUILD_DIRECTORY and ECLIPSE_HOME must be specified as environment variables -->
 <project default="omnetpp">
 	<property environment="env" />
+	<property name="forceContextQualifier" value="${env.BUILDID}"/>
+	<property name="baseLocation" value="${env.ECLIPSE_HOME}"/>
+	<property name="buildDirectory" value="${env.BUILD_DIRECTORY}"/>
 	<property file="build.properties" />
 
 	<target name="clean">
@@ -27,6 +31,7 @@
 		<copy todir="${srcDirectory}/features">
 			<fileset dir="../">
 				<include name="org.omnetpp.ide/**" />
+				<include name="org.omnetpp.ide.source/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
 				<include name="org.omnetpp.ide.linuxtools/**" />
@@ -53,6 +58,7 @@
 		</replace>
 		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnest-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
 		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnest.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+		<property name="main_feature_group" value="org.omnetpp.ide.commercial.feature.group"/>
 	</target>
 
 	<!-- prepare for academic build / throw out commercial features etc. -->
@@ -62,6 +68,7 @@
 		</replace>
 		<copy file="${srcDirectory}/plugins/org.omnetpp.product/omnetpp-ide.product" tofile="${srcDirectory}/plugins/org.omnetpp.product/ide.product" />
 		<move file="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-omnetpp.png" tofile="${srcDirectory}/plugins/org.omnetpp.main/icons/intro-image.png" />
+		<property name="main_feature_group" value="org.omnetpp.ide.academic.feature.group"/>
 	</target>
 
 	<target name="pde-build">
@@ -92,17 +99,7 @@
 		<available property="haveImageexport" file="${imageexport}" />
 		<fail unless="haveImageexport" message="Image export feature required in the ${eclipse_home}/target directory." />
 
-		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
-			<arg value="-application" />
-			<arg value="org.eclipse.ant.core.antRunner" />
-			<arg value="-buildfile" />
-			<arg value="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
-			<arg value="-Dbuilder=${basedir}" />
-			<arg value="-DforceContextQualifier=${env.BUILDID}" />
-			<classpath>
-			    <pathelement location="${baseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar"/>
-			</classpath>
-		</java>
+		<ant antfile="${eclipse.pdebuild.scripts}/productBuild/productBuild.xml" />
 	</target>
 
 	<!-- Extract / rearange the output for a single configuration
@@ -141,14 +138,23 @@
           </ant>
 	</target>
 
-<!-- clean, init-omnetpp, pde-build, -->
-	<target name="omnetpp" depends="clean, init-omnetpp, pde-build, package">
+<!-- clean, init-omnetpp, pde-build -->
+    <target name="create-repo">
+        <p2.mirror source="file:${buildDirectory}/buildRepo" destination="${updateRepo}" description="OMNeT++ updates">
+          <iu id="${main_feature_group}" />
+          <iu id="org.omnetpp.ide.source.feature.group" />
+          <iu id="org.omnetpp.ide.linuxtools.feature.group" />
+          <slicingOptions includeFeatures="true" followStrict="true"/>
+        </p2.mirror>
+    </target>
+
+	<target name="omnetpp" depends="clean, init-omnetpp, pde-build, package, create-repo">
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnetpp" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnetpp" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnetpp.app/Contents/MacOS/omnetpp" perm="755" />
 	</target>
 
-	<target name="omnest" depends="clean, init-omnest, pde-build, package">
+	<target name="omnest" depends="clean, init-omnest, pde-build, package, create-repo">
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux/omnest" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/linux64/omnest" perm="755" />
 		<chmod file="${buildDirectory}/${buildLabel}/${archivePrefix}/macosx/omnest.app/Contents/MacOS/omnest" perm="755" />
