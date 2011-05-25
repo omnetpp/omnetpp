@@ -136,6 +136,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\neq:!=::
 :comm   :\c{S}:S::
 :comm   :\u{g}:g::
+:comm   :\textrm(\[.*?\])?{(.*?)}:<i>$2</i>::
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fdef(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fvar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
@@ -144,6 +145,7 @@ htmlfile_spec := $BASE.htm
 :comm   :\cclass(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fmac(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fkeyword(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
+:comm   :\fprop(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
 :comm   :\fconfig(\[.*?\])?{(.*?)}:<b><tt>$2</tt></b>::
 :comm   :\ffilename(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\includegraphics(\[.*?\])?{figures/(.*?)}:<img src="$2.png">::
