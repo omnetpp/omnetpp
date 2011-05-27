@@ -388,23 +388,26 @@ void cKSplit::newRootGrids(double x)
             gridv[rootgrid].cells[i] = 0;
 
         double gridsize = rangemax - rangemin;
-#if K==2
-        if (x<rangemin)
+        if (K==2)
         {
-            gridv[rootgrid].cells[1] = -old_rootgrid;
-            rangemin -= gridsize;
+            if (x<rangemin)
+            {
+                gridv[rootgrid].cells[1] = -old_rootgrid;
+                rangemin -= gridsize;
+            }
+            else // (x>=rangemax)
+            {
+                gridv[rootgrid].cells[0] = -old_rootgrid;
+                rangemax += gridsize;
+            }
         }
-        else // (x>=rangemax)
+        else
         {
-            gridv[rootgrid].cells[0] = -old_rootgrid;
-            rangemax += gridsize;
-        }
-#else
-        gridv[rootgrid].cells[(K-1)/2] = -old_rootgrid;
+            gridv[rootgrid].cells[(K-1)/2] = -old_rootgrid;
 
-        rangemin -= (K-1)/2*gridsize;
-        rangemax += (K-1)/2*gridsize;
-#endif
+            rangemin -= (K-1)/2.0*gridsize;
+            rangemax += (K-1)/2.0*gridsize;
+        }
 
         if (x >= rangemin && x < rangemax)
             break;
@@ -721,12 +724,13 @@ void cKSplit::saveToFile(FILE *f) const
             fprintf(f, "%d\t #= reldepth\n", gridv[i].reldepth);
             fprintf(f, "%ld\t #= total\n", gridv[i].total);
             fprintf(f, "%d\t #= mother\n", gridv[i].mother);
-#if K==2
-            fprintf(f, "%d %d\t #= cells[0], cells[1]\n", gridv[i].cells[0], gridv[i].cells[1]);
-#else
-            fprintf(f, "#= cells[]\n");
-            for (int j=0; j<K; j++)  fprintf(f, " %d\n", gridv[i].cells[j]);
-#endif
+            if (K==2)
+                fprintf(f, "%d %d\t #= cells[0], cells[1]\n", gridv[i].cells[0], gridv[i].cells[1]);
+            else
+            {
+                fprintf(f, "#= cells[]\n");
+                for (int j=0; j<K; j++)  fprintf(f, " %d\n", gridv[i].cells[j]);
+            }
         }
     }
 }
@@ -755,12 +759,13 @@ void cKSplit::loadFromFile(FILE *f)
             freadvarsf(f, "%d\t #= reldepth", &gridv[i].reldepth);
             freadvarsf(f, "%ld\t #= total", &gridv[i].total);
             freadvarsf(f, "%d\t #= mother", &gridv[i].mother);
-#if K==2
-            freadvarsf(f, "%d %d\t #= cells[0], cells[1]", gridv[i].cells+0, gridv[i].cells+1);
-#else
-            freadvarsf(f, "#= cells[]");
-            for (int j=0; j<K; j++)  freadvarsf(f, " %d", gridv[i].cells+j);
-#endif
+            if (K==2)
+                freadvarsf(f, "%d %d\t #= cells[0], cells[1]", gridv[i].cells+0, gridv[i].cells+1);
+            else
+            {
+                freadvarsf(f, "#= cells[]");
+                for (int j=0; j<K; j++)  freadvarsf(f, " %d", gridv[i].cells+j);
+            }
         }
     }
 }
