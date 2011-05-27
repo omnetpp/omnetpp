@@ -38,6 +38,10 @@ public class OrganizeImportsAction extends NedTextEditorAction {
         if (nedFileElement.hasSyntaxError())
         	return; // don't mess with the source while it has syntax error
 
+        // update the tree to avoid loosing text changes
+        TextualNedEditor textualNedEditor = (TextualNedEditor)getTextEditor();
+        textualNedEditor.pushChangesIntoNedResources();
+
         // fix the package as a bonus
         RefactoringTools.fixupPackageDeclaration(nedFileElement);
 
@@ -46,7 +50,6 @@ public class OrganizeImportsAction extends NedTextEditorAction {
 
         // update text editor
         ((TextualNedEditor)getTextEditor()).pullChangesFromNedResources();
-        //((TextualNedEditor)getTextEditor()).setText(nedFileElement.getNEDSource());
     }
 
 	protected NedFileElementEx getNedFileElement() {
