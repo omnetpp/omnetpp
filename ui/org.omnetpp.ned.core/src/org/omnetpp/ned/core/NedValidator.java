@@ -9,6 +9,7 @@ package org.omnetpp.ned.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.core.resources.IFile;
@@ -31,6 +32,7 @@ import org.omnetpp.ned.model.ex.PropertyElementEx;
 import org.omnetpp.ned.model.ex.SimpleModuleElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasGates;
+import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -229,6 +231,19 @@ public class NedValidator extends AbstractNedValidatorEx {
 			else
 			    members.put(memberName, e.getMembers().get(memberName));
 		}
+
+		// validate xxx
+		Set<String> inheritedSubmodules = e.getSubmodules().keySet();
+        INedElement section = componentNode.getFirstChildWithTag(NED_SUBMODULES);
+        if (section != null) {
+            for (INedElement submodule : section) {
+                if (submodule instanceof IHasName && submodule.getTagCode()==NED_SUBMODULE) {
+                    String submoduleName = ((IHasName)submodule).getName();
+                    if (inheritedSubmodules.contains(submoduleName))
+                        errors.addError(submodule, "conflict: '"+submoduleName+"' is already defined as an inherited submodule");
+                }
+            }
+        }
 
 		// then process children
 		validateChildren(node);
