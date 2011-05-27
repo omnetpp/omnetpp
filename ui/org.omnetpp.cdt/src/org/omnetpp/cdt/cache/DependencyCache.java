@@ -328,7 +328,7 @@ public class DependencyCache {
         long begin = System.currentTimeMillis();
         for (IProject p : data.projectGroup)
             if (!projectsWithUpToDateFileIncludes.contains(p))
-                scanChangedFilesForIncludes(p, markerSync);
+                refreshIncludes(p, markerSync);
         if (debug)
         	Debug.println("SCANNED: " + (System.currentTimeMillis() - begin) + "ms");
 
@@ -370,9 +370,9 @@ public class DependencyCache {
      * directives that have not yet been parsed or changed since the last check (based on modification 
      * timestamp.) Also throws out files that are now in excluded folders.
      */
-    protected void scanChangedFilesForIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
+    protected void refreshIncludes(IProject project, final ProblemMarkerSynchronizer markerSync) {
         if (debug)
-        	Debug.println("scanChangedFilesForIncludes(): " + project);
+        	Debug.println("refreshIncludes(): " + project);
 
         // Note: fileIncludes may contain files that are now in excluded folders; we'll throw them out
         // of fileIncludes because dependency computation methods no longer checks for exclusions.
@@ -401,7 +401,7 @@ public class DependencyCache {
                         }
                         if (!lastFolderIsExcluded) {
                             if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file)) {
-                                checkFileIncludes(file);
+                                refreshIncludes(file);
                                 sourceFilesFound.add(file);
                             }
                         }
@@ -425,9 +425,10 @@ public class DependencyCache {
     }
 
     /**
-     * Parses the file for the list of #includes, if it's not up to date already.
+     * Brings the fileIncludes entry for this file up to date: if the file has changed since 
+     * last checked, parse it for the list of active #includes.
      */
-    protected void checkFileIncludes(IFile file) throws CoreException {
+    protected void refreshIncludes(IFile file) throws CoreException {
         long fileTime = file.getModificationStamp(); // Note: must NOT compare this for greater/less, only for equals!
         FileIncludes fileData = fileIncludes.get(file);
         if (fileData == null || fileData.modificationStamp != fileTime) {
@@ -435,7 +436,7 @@ public class DependencyCache {
                 fileData = new FileIncludes();
 
             // re-parse file for includes
-            fileData.includes = parseIncludes(file);
+            fileData.includes = collectIncludes(file);
             fileData.modificationStamp = fileTime;
             fileIncludes.put(file, fileData);
 
@@ -456,61 +457,54 @@ public class DependencyCache {
     /**
      * Collect #includes from a C++ source file
      */
-    protected static List<Include> parseIncludes(IFile file) throws CoreException {
+    protected static List<Include> collectIncludes(IFile file) throws CoreException {
         try {
-            String contents = FileUtils.readTextFile(file.getContents(), file.getCharset()) + "\n";
-            return parseIncludes(contents, file);
+            List<Include> result = new ArrayList<Include>();
+
+            // try to get the #includes from CDT (reason: CDT's parser is quite sophisticated and 
+            // can follow #ifdefs, recognizes outcommented code, etc, all of which our simple parser
+            // does not do)
+            boolean success = false;
+            try {
+                ITranslationUnit translationUnit = getTranslationUnitFor(file);
+                if (translationUnit != null) {
+                    IInclude[] includes = translationUnit.getIncludes();
+                    for (IInclude i : includes)
+                        if (i.isActive())
+                            result.add(new Include(file, i.getSourceRange().getStartLine(), i.getIncludeName(), i.isStandard()));
+                    success = true;
+                }
+            }
+            catch (CModelException e) {
+                // we end up here e.g. for msg files; just ignore the exception
+            }
+
+            // if we could not get #includes from CDT, parse the file manually  
+            if (!success) {
+                String source = FileUtils.readTextFile(file.getContents(), file.getCharset()) + "\n";
+                Matcher matcher = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$").matcher(source);
+                while (matcher.find()) {
+                    boolean isSysInclude = matcher.group(1).equals("<");
+                    String fileName = matcher.group(2);
+                    int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
+                    result.add(new Include(file, line, fileName.trim().replace('\\','/'), isSysInclude));
+                }
+            }
+            return result;
         }
         catch (Exception e) {
             throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e);
         }
     }
 
-    /**
-     * Collect #includes from C++ source file contents
-     */
-    protected static List<Include> parseIncludes(String source, IFile sourceFile) {
-        List<Include> result = new ArrayList<Include>();
-
-        // try to get the #includes from CDT (reason: CDT's parser is quite sophisticated and 
-        // can follow #ifdefs, recognizes outcommented code, etc, all of which our simple parser
-        // does not do)
-        boolean success = false;
-        try {
-            ITranslationUnit translationUnit = getTranslationUnitFor(sourceFile);
-            if (translationUnit != null) {
-                IInclude[] includes = translationUnit.getIncludes();
-                for (IInclude i : includes)
-                    if (i.isActive())
-                        result.add(new Include(sourceFile, i.getSourceRange().getStartLine(), i.getIncludeName(), i.isStandard()));
-                success = true;
-            }
-        }
-        catch (CModelException e) {
-            // we end up here e.g. for msg files; just ignore the exception
-        }
-
-        // if we could not get #includes from CDT, parse the file manually  
-        if (!success) {
-            Matcher matcher = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$").matcher(source);
-            while (matcher.find()) {
-                boolean isSysInclude = matcher.group(1).equals("<");
-                String fileName = matcher.group(2);
-                int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
-                result.add(new Include(sourceFile, line, fileName.trim().replace('\\','/'), isSysInclude));
-            }
-        }
-        return result;
-    }
-
     /** 
      * Returns the CDT translation unit for the given file, or null
      */
-    protected static ITranslationUnit getTranslationUnitFor(IFile sourceFile) throws CModelException {
-        ICProject cproject = CoreModel.getDefault().getCModel().getCProject(sourceFile.getProject().getName());
-        ICElement element = cproject==null ? null : cproject.findElement(sourceFile.getProjectRelativePath());  // this apparently throws exception for .msg files instead of returning null
-        ITranslationUnit unit = (element instanceof ITranslationUnit) ? (ITranslationUnit)element : null;
-        return unit;
+    protected static ITranslationUnit getTranslationUnitFor(IFile file) throws CModelException {
+        ICProject cproject = CoreModel.getDefault().getCModel().getCProject(file.getProject().getName());
+        ICElement element = cproject==null ? null : cproject.findElement(file.getProjectRelativePath());  // this apparently throws exception for .msg files instead of returning null
+        ITranslationUnit translationUnit = (element instanceof ITranslationUnit) ? (ITranslationUnit)element : null;
+        return translationUnit;
     }
 
     protected Map<IFile,List<Include>> collectCppSourceFilesInProjectGroup(DependencyData data, ProblemMarkerSynchronizer markerSync) {
@@ -524,7 +518,7 @@ public class DependencyCache {
                     // - an _m.h file gets generated with all the #include from the msg file
                     // - an _m.cc file which includes the _m.h file
                     IFile mhFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.h")));
-                    IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc"))); //XXX or .cpp?
+                    IFile mccFile = file.getParent().getFile(new Path(file.getName().replaceFirst("\\.msg$", "_m.cc")));
                     cppSourceFiles.put(mhFile, fileIncludes.get(file).includes);
                     List<Include> mccIncludes = new ArrayList<Include>();
                     mccIncludes.add(new Include(mccFile, 1, mhFile.getName(), false));
