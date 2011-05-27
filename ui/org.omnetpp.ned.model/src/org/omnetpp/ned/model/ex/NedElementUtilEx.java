@@ -428,20 +428,29 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     /**
      * Returns a good insertion point for a new "import" element in a NED file; see INedElement.insertBefore().
      */
-    public static INedElement findInsertionPointForNewImport(NedFileElement nedFileElement) {
-        // insert just before other imports, so the trailing new lines (in the trailing comment 
+    public static INedElement findInsertionPointForNewImport(NedFileElement nedFileElement, ImportElement importElement) {
+        // insert just before other imports, so the trailing new lines (in the trailing comment
         // of the last import) will not appear between the import lines.
         ImportElement firstImport = nedFileElement.getFirstImportChild();
-        if (firstImport != null)
-            return firstImport;
-        
-        // no existing imports; so skip comments and the package declaration at the top of file, and insert there 
+        ImportElement lastImport = firstImport;
+        ImportElement currentImport = firstImport;
+        while (currentImport != null && importElement != null && currentImport.getImportSpec().compareTo(importElement.getImportSpec()) < 0) {
+            currentImport = currentImport.getNextImportSibling();
+            if (currentImport != null)
+                lastImport = currentImport;
+        }
+        if (currentImport != null)
+            return currentImport;
+        else if (lastImport != null)
+            return lastImport.getNextSibling();
+
+        // no existing imports; so skip comments and the package declaration at the top of file, and insert there
         for (INedElement child : nedFileElement)
             if (!(child instanceof CommentElement) && !(child instanceof PackageElement))
                 return child;
         return null; // file only contains comments and package, so append import at the bottom
     }
-    
+
     /**
      * Given a type which extends an other type and the base type name is a fully qualified name,
      * this method replaces it with the simple name plus an import in the NED file
@@ -449,10 +458,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      *
      * Returns the newly created ImportElement, or null if no import got added.
      * (I.e. it returns null as well if an existing import already covered this type.)
-     * 
-     * The new import is inserted at the beginning rather than after 
-     * the last import so the trailing new lines (in the trailing comment 
-     * of the last import) will not appear between the import lines. 
+     *
+     * The new import is inserted at the beginning rather than after
+     * the last import so the trailing new lines (in the trailing comment
+     * of the last import) will not appear between the import lines.
      */
     public static ImportElement addImportForExtends(INedTypeElement typeElement) {
         String fullyQualifiedTypeName = typeElement.getFirstExtends();

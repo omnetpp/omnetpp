@@ -146,11 +146,16 @@ public class NedFileElementEx extends NedFileElement implements IHasProperties, 
      * Inserts the given import into the file. May add newlines to the import as trailing comment.
      */
     public void insertImport(ImportElement importElement) {
-        insertChildBefore(NedElementUtilEx.findInsertionPointForNewImport(this), importElement);
+        insertChildBefore(NedElementUtilEx.findInsertionPointForNewImport(this, importElement), importElement);
 
         // if this is the last import element, add some additional new lines as trailing comment
-        if (importElement.getNextImportSibling() == null)
+        if (importElement.getNextImportSibling() == null) {
             importElement.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
+            INedElement prevSibling = importElement.getPrevSibling();
+            // remove comments from the previous import element
+            if (prevSibling instanceof ImportElement)
+                prevSibling.removeAllChildren();
+        }
     }
 
 	/**

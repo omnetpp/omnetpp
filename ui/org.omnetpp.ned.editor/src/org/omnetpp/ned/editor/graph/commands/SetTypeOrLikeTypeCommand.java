@@ -62,7 +62,9 @@ public class SetTypeOrLikeTypeCommand extends CompoundCommand {
         // insert the new import
         if (importElement != null) {
             NedFileElementEx nedFileElement = submoduleOrConnection.getContainingNedFileElement();
-            INedElement importsInsertionPoint = NedElementUtilEx.findInsertionPointForNewImport(nedFileElement);
+            // TODO: this will always insert to the beginning of the imports, we could pass in the importElement
+            // but that might leave extra new lines between two import elements...
+            INedElement importsInsertionPoint = NedElementUtilEx.findInsertionPointForNewImport(nedFileElement, null);
 
             add(new InsertCommand(nedFileElement, importElement, importsInsertionPoint));
 

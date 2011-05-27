@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.resources.IFile;
@@ -25,7 +24,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -36,6 +34,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
+import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ConnectionsElement;
@@ -74,68 +73,66 @@ public class RefactoringTools {
      * dialog is presented to the user.
      */
     //XXX factor out UI part (dialog), and pass it in as lambda?
-    public static void organizeImports(NedFileElementEx nedFileElement) {
+    public static void organizeImports(final NedFileElementEx nedFileElement) {
         if (nedFileElement.hasSyntaxError())
             return;
 
-        INedTypeResolver resolver = nedFileElement.getResolver();
+        final INedTypeResolver resolver = nedFileElement.getResolver();
         IFile file = resolver.getNedFile(nedFileElement);
-        IProject contextProject = file.getProject();
-
-        // collect names to import
-        Set<String> unqualifiedTypeNames = collectUnqualifiedTypeNames(nedFileElement);
+        final IProject contextProject = file.getProject();
 
         // resolve all imports
-        List<String> oldImports = nedFileElement.getImports();
-        List<String> imports = new ArrayList<String>();
-        for (String typeName : unqualifiedTypeNames)
-        	resolveImport(resolver, contextProject, typeName, nedFileElement.getQNameAsPrefix(), oldImports, imports);
+        final List<String> oldImports = nedFileElement.getImports();
+        final HashSet<String> imports = new HashSet<String>();
+        NedElementUtilEx.visitNedTree(nedFileElement, new NedElementUtilEx.INedElementVisitor() {
+            public void visit(INedElement element) {
+                if (element instanceof ISubmoduleOrConnection)
+                    collect(element.getEnclosingLookupContext(), NedElementUtilEx.getTypeOrLikeType((ISubmoduleOrConnection)element));
+                else if (element instanceof ExtendsElement)
+                    collect(element.getEnclosingLookupContext(), ((ExtendsElement)element).getName());
+                else if (element instanceof InterfaceNameElement)
+                    collect(element.getEnclosingLookupContext(), ((InterfaceNameElement)element).getName());
+            }
+
+            private void collect(INedTypeLookupContext lookupContext, String typeName) {
+                if (typeName != null && !typeName.contains("."))
+                    resolveImport(lookupContext, contextProject, typeName, nedFileElement.getQNameAsPrefix(), oldImports, imports);
+            }
+        });
 
         // update model if imports have changed
-        Collections.sort(imports);
+        List<String> newImports = org.omnetpp.common.util.CollectionUtils.toSorted(imports);
         Collections.sort(oldImports);
-        if (!imports.equals(oldImports)) {
+        if (!newImports.equals(oldImports)) {
             nedFileElement.removeImports();
-            for (String importSpec : imports)
+            for (String importSpec : newImports)
                 nedFileElement.addImport(importSpec);
-            if (!imports.isEmpty())
-                nedFileElement.getLastImportChild().appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
         }
     }
-
-    /**
-     * Collect those names from the NED file that need imports.
-     */
-	protected static Set<String> collectUnqualifiedTypeNames(NedFileElementEx nedFileElement) {
-		final Set<String> result = new HashSet<String>();
-		NedElementUtilEx.visitNedTree(nedFileElement, new NedElementUtilEx.INedElementVisitor() {
-			public void visit(INedElement element) {
-				if (element instanceof ISubmoduleOrConnection)
-					collect(result, NedElementUtilEx.getTypeOrLikeType((ISubmoduleOrConnection)element));
-				else if (element instanceof ExtendsElement)
-					collect(result, ((ExtendsElement)element).getName());
-				else if (element instanceof InterfaceNameElement)
-					collect(result, ((InterfaceNameElement)element).getName());
-			}
-
-			private void collect(Set<String> result, String typeName) {
-				if (typeName != null && !typeName.contains("."))
-					result.add(typeName);
-			}
-		});
-		return result;
-	}
 
 	/**
 	 * Find the fully qualified type for the given simple name, and add it to the imports list.
 	 */
-	protected static void resolveImport(INedTypeResolver resolver, IProject contextProject, String unqualifiedTypeName, String packagePrefix, List<String> oldImports, List<String> imports) {
+	protected static void resolveImport(INedTypeLookupContext lookupContext, IProject contextProject, final String unqualifiedTypeName, String packagePrefix, List<String> oldImports, HashSet<String> imports) {
+	    INedTypeResolver resolver = lookupContext.getResolver();
 		// name is in the same package as this file, no need to add an import
 		if (resolver.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
 			return;
 
-		// find all potential types
         List<String> potentialMatches = new ArrayList<String>();
+		// find local types
+        potentialMatches.addAll(resolver.getLocalTypeNames(lookupContext, new INedTypeResolver.IPredicate() {
+            public boolean matches(INedTypeInfo typeInfo) {
+                return typeInfo.getFullyQualifiedName().endsWith("." + unqualifiedTypeName);
+            }
+        }));
+        // local types silently win over toplevel types, and we don't need to import any of them
+        if (potentialMatches.size() == 1)
+            return;
+        else
+            potentialMatches.clear();
+
+		// find all potential types
 		for (String qualifiedName : resolver.getToplevelNedTypeQNames(contextProject))
 			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
 				potentialMatches.add(qualifiedName);
@@ -147,7 +144,6 @@ public class RefactoringTools {
 			imports.add(potentialMatches.get(0));
 			return;
 		}
-
 
 		// if there's an import for one of them already, use that
 		for (String potentialMatch : potentialMatches) {

@@ -63,7 +63,9 @@ public class SetInheritanceCommand extends CompoundCommand {
         
         // add new elements
         NedFileElementEx nedFileElement = typeElement.getContainingNedFileElement();
-        INedElement importsInsertionPoint = NedElementUtilEx.findInsertionPointForNewImport(nedFileElement);
+        // TODO: this will always insert to the beginning of the imports, we could pass in the importElement
+        // but that might leave extra new lines between two import elements...
+        INedElement importsInsertionPoint = NedElementUtilEx.findInsertionPointForNewImport(nedFileElement, null);
         ImportElement lastNewImportElement = null;
         for (String qname : qnames) {
             StringBuffer modifiedName = new StringBuffer();
