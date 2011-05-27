@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.compare.rangedifferencer.IRangeComparator;
 import org.eclipse.compare.rangedifferencer.RangeDifference;
 import org.eclipse.compare.rangedifferencer.RangeDifferencer;
@@ -64,7 +65,7 @@ public class NedTreeDifferenceUtils {
 			int rightStart = difference.rightStart();
 			int rightEnd = difference.rightEnd();
 
-			if (difference.kind() == RangeDifference.NOCHANGE) {
+			if (difference.kind() == RangeDifference.NOCHANGE || (difference.leftLength() == 0 && difference.rightLength() == 0 && difference.ancestorLength() == 0)) {
 				for (int i = leftStart; i < leftEnd; i++)
 					applyTreeDifferences(original.getChild(i) , target.getChild(rightStart + i - leftStart), applier);
 			}
@@ -102,15 +103,19 @@ public class NedTreeDifferenceUtils {
 
 		public void replaceNonAttributeData(final INedElement element, final String sourceLocation, final NedSourceRegion sourceRegion,
 				final int syntaxProblemMaxLocalSeverity, final int consistencyProblemMaxLocalSeverity) {
-			numNonAttributeDataChanges++;
-			runnables.add(new Runnable() {
-				public void run() {
-					element.setSourceLocation(sourceLocation);
-					element.setSourceRegion(sourceRegion);
-					element.setSyntaxProblemMaxLocalSeverity(syntaxProblemMaxLocalSeverity);
-					element.setConsistencyProblemMaxLocalSeverity(consistencyProblemMaxLocalSeverity);
-				}
-			});
+			if (!ObjectUtils.equals(element.getSourceLocation(), sourceLocation) || !ObjectUtils.equals(element.getSourceRegion(), sourceRegion) ||
+			    element.getSyntaxProblemMaxLocalSeverity() != syntaxProblemMaxLocalSeverity || element.getConsistencyProblemMaxLocalSeverity() != consistencyProblemMaxLocalSeverity)
+			{
+	            numNonAttributeDataChanges++;
+                runnables.add(new Runnable() {
+                    public void run() {
+                        element.setSourceLocation(sourceLocation);
+                        element.setSourceRegion(sourceRegion);
+                        element.setSyntaxProblemMaxLocalSeverity(syntaxProblemMaxLocalSeverity);
+                        element.setConsistencyProblemMaxLocalSeverity(consistencyProblemMaxLocalSeverity);
+                    }
+                });
+			}
 		}
 
 		public void replaceAttribute(final INedElement element, final String name, final String value) {

@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension4;
 import org.eclipse.jface.text.ITextViewerExtension5;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -356,18 +357,19 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
 			extension.exposeModelRange(new Region(offset, length));
 		}
 	}
-	
+
+    @Override
     public void setHighlightRange(int offset, int length, boolean moveCursor) {
-        // Overridden to work around for bug in AbstractTextEditor: if range indicator is 
-        // already at the desired offset/length, it ignores moveCursor (i.e. does not move 
-        // the cursor). 
+        // Overridden to work around for bug in AbstractTextEditor: if range indicator is
+        // already at the desired offset/length, it ignores moveCursor (i.e. does not move
+        // the cursor).
         if (getSourceViewer() == null)
             return;
         super.setHighlightRange(offset, length, moveCursor);
         if (moveCursor && getSourceViewer().getSelectedRange().x != offset)
             getSourceViewer().setSelectedRange(offset, 0);
     }
-    
+
 	/**
 	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
 	 * active part.
@@ -461,8 +463,9 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
     public void pullChangesFromNedResources() {
         Assert.isTrue(Display.getCurrent() != null);
 //        Debug.println("texteditor: pulling changes from NEDResources");
-        TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(
-        		getDocument(), getModel().getNedSource());
+        IDocument document = getDocument();
+        String nedSource = getModel().getNedSource().replace("\n", ((IDocumentExtension4)document).getDefaultLineDelimiter());
+        TextDifferenceUtils.modifyTextEditorContentByApplyingDifferences(document, nedSource);
         TextEditorUtil.resetMarkerAnnotations(TextualNedEditor.this); // keep markers from disappearing
         // TODO: then parse in again, and update line numbers with the resulting tree? I think this should not be done here but somewhere else
     }
