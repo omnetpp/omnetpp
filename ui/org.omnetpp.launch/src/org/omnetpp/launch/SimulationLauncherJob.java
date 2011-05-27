@@ -13,8 +13,11 @@ import java.text.MessageFormat;
 import java.util.Date;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.Job;
@@ -96,14 +99,26 @@ public class SimulationLauncherJob extends Job {
         	monitor.subTask("run #"+runNo+" - Initializing...");
 
         monitor.setWorkRemaining(100);
-        StringBuilder info = new StringBuilder();
-        Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false, info);
-        IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
-        printToConsole(iprocess, "Starting...\n"+info.toString().replaceAll("\n\\S+=.*", "")+"\n", false);  // print ut command line but throw out environment variables
+        
+        String additionalArgs = runNo != 0 ? " -r "+runNo : "";  // set the run number if not default
+        
+        // calculate the command-line for display purposes (dump to the console before start)
+        String[] cmdLineArgs = OmnetppLaunchUtils.createCommandLine(configuration, additionalArgs);
+        IPath workingDir = OmnetppLaunchUtils.getWorkingDirectoryPath(configuration);
+        String commandLine = OmnetppLaunchUtils.makeRelativePathTo(new Path(cmdLineArgs[0]), workingDir).toString();
+        // if opp_run is used, do not display any path info
+        if (commandLine.endsWith("/opp_run"))
+            commandLine = "opp_run";
+        for (int i=1; i<cmdLineArgs.length; ++i)
+            commandLine += " " + cmdLineArgs[i];
 
-        // we add the process info string as the command line so the whole info will be
-        // visible in the debug view's property dialog
-        iprocess.setAttribute(IProcess.ATTR_CMDLINE, info.toString());
+        // launch the process
+        Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, cmdLineArgs, false);
+        IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
+        printToConsole(iprocess, "Starting...\n\n$ "+workingDir+"\n$ "+commandLine+"\n\n", false);
+
+        // command line will be visible in the debug view's property dialog
+        iprocess.setAttribute(IProcess.ATTR_CMDLINE, commandLine);
 
         // setup a stream monitor on the process output, so we can track the progress
         if (reportProgress)
@@ -144,9 +159,23 @@ public class SimulationLauncherJob extends Job {
         // do some error reporting if the process finished with error
         if (iprocess.isTerminated() && iprocess.getExitValue() != 0 )
         	try {
-		    String errorMsg = "\nSimulation terminated with exit code: "+iprocess.getExitValue();
-		    errorMsg += "\nStarted with:\n"+info;
-		    printToConsole(iprocess, errorMsg, true);
+        	    String errorMsg = "\nSimulation terminated with exit code: "+iprocess.getExitValue();
+        	    errorMsg += "\nWorking directory: "+workingDir;
+        	    errorMsg += "\nStarted with: "+commandLine;
+
+        	    String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+        	    errorMsg += "\nEnvironment: ";
+                for (String env : environment) {
+                    // on windows the environment is case insensitive, so we convert it to upper case
+                    if (Platform.getOS().equals(Platform.OS_WIN32))
+                        env = env.toUpperCase();
+                    // print the env vars we are interested in
+                    if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=")
+                             || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
+                        errorMsg += "\n"+env;
+                }
+        	    
+        	    printToConsole(iprocess, errorMsg, true);
         	} catch (DebugException e) {
         		LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
         	}

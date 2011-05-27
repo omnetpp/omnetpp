@@ -551,19 +551,9 @@ public class OmnetppLaunchUtils {
 
 	/**
 	 * Starts the simulation program.
-	 *
-	 * @param configuration
-	 * @param additionalArgs extra command line arguments to be prepended to the command line
-	 * @param requestInfo Setting it to true runs the process in "INFO" mode (replaces the -c arg with -x)
-	 * @param infoBuffer returns an info string that describes command line, working dir, environment etc.
-	 * @return The created process object,
-	 * @throws CoreException if process is not started correctly
 	 */
-	// FIXME if requestInfo specified
-	public static Process startSimulationProcess(ILaunchConfiguration configuration, String additionalArgs,
-			         boolean requestInfo, StringBuilder infoBuffer) throws CoreException {
-		String[] cmdLine = createCommandLine(configuration, additionalArgs);
-
+	public static Process startSimulationProcess(ILaunchConfiguration configuration, 
+	                     String[] cmdLine, boolean requestInfo) throws CoreException {
 		// Debug.println("starting with command line: "+StringUtils.join(cmdLine," "));
 
 		if (requestInfo) {
@@ -587,32 +577,8 @@ public class OmnetppLaunchUtils {
 			cmdLine = (String[]) ArrayUtils.add(cmdLine, 1, "-g");
 		}
 
-		IPath expandedWd = getWorkingDirectoryPath(configuration);
-
         String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
-    	for (String env : environment) {
-    		// on windows the environment is case insensitive, so we convert it to upper case
-    		if (Platform.getOS().equals(Platform.OS_WIN32))
-    			env = env.toUpperCase();
-    		// print the env vars we are interested in
-    		if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=")
-    				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
-    			infoBuffer.append("\n"+env);
-    	}
-
-	infoBuffer.append("\n$ cd "+expandedWd.toString());
-
-	// fill in the infoBuffer (turn the first argument (program name to relative path))
-        String displayedCommand = makeRelativePathTo(new Path(cmdLine[0]), expandedWd).toString();
-        // if opp_run is used, do not display any path info
-        if (displayedCommand.endsWith("/opp_run"))
-            displayedCommand = "opp_run";
-        infoBuffer.append("\n$ "+displayedCommand);
-        // add the rest of the command line options
-        for (int i=1; i<cmdLine.length; ++i)
-            infoBuffer.append(" "+cmdLine[i]);
-
-		return DebugPlugin.exec(cmdLine, new File(expandedWd.toString()), environment);
+		return DebugPlugin.exec(cmdLine, new File(getWorkingDirectoryPath(configuration).toString()), environment);
 	}
 
 	/**
@@ -651,8 +617,7 @@ public class OmnetppLaunchUtils {
 		    // launch the program
 		    long startTime = System.currentTimeMillis();
 			configuration = convertLaunchConfig(configuration, ILaunchManager.RUN_MODE);
-			StringBuilder info = new StringBuilder();
-			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, "", true, info);
+			Process proc = OmnetppLaunchUtils.startSimulationProcess(configuration, createCommandLine(configuration, ""), true);
 
 			// read its standard output
 			final int BUFFERSIZE = 8192;
