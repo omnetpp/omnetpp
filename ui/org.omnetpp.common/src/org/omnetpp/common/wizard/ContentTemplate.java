@@ -8,10 +8,12 @@
 package org.omnetpp.common.wizard;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -38,6 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.LicenseUtils;
+import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.support.FileUtils;
 import org.omnetpp.common.wizard.support.LangUtils;
@@ -486,6 +489,16 @@ public abstract class ContentTemplate implements IContentTemplate {
                 file.create(inputStream, true, context.getProgressMonitor());
             else if (shouldOverwriteExistingFile(file, context))
                 file.setContents(inputStream, true, true, context.getProgressMonitor());
+
+            // check the shebang at the beginning and make it executable if it is #!
+            byte buff[] = new byte[2];
+            file.getContents().read(buff, 0, 2);
+            boolean executable = (buff[0] == '#') && (buff[1] == '!');
+            // Use reflection because this method is not supported on java 1.5 (we silently fail on java 1.5)
+            Method m = ReflectionUtils.getMethod(File.class, "setExecutable", Boolean.class);
+            if (m != null)
+                m.invoke(file.getLocation().toFile(), executable);
+
         } catch (Exception e) {
             throw CommonPlugin.wrapIntoCoreException("Cannot create file: "+file.getFullPath().toString(), e);
         }
