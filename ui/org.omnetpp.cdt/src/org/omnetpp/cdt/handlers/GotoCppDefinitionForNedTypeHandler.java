@@ -43,6 +43,7 @@ import org.omnetpp.cdt.Activator;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
@@ -80,7 +81,19 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
 
                 if (element instanceof INedModelProvider)
                     nedElement = ((INedModelProvider)element).getModel();
+
+                // if the whole file is selected find the first simple module element that may
+                // have C++ implementation. Or try a Channel if no simple module exist in the file
+                if (nedElement instanceof NedFileElementEx) {
+                    INedElement implicitSelection = ((NedFileElementEx)nedElement).getFirstSimpleModuleChild();
+                    if (implicitSelection == null)
+                        implicitSelection = ((NedFileElementEx)nedElement).getFirstChannelChild();
+
+                    if (implicitSelection != null)
+                        nedElement = implicitSelection;
+                }
                 
+                // we have a selection on an inner element. Find the first element up that may have a C++ implementaion
                 while (nedElement!=null && !(nedElement instanceof INedTypeElement || nedElement instanceof ISubmoduleOrConnection))
                         nedElement = nedElement.getParent();
 
