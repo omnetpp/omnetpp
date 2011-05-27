@@ -17,7 +17,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICElement;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IInclude;
+import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
@@ -53,8 +58,10 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * Keeps track of which cc/h files include which other files, to be used for
  * dependency generation in Makefiles.
- * 
- * Conditionals (#ifdef) are ignored altogether; this vastly simplifies things
+ *
+ * By default, we try to get the active #includes in a source file from CDT. If CDT cannot 
+ * supply the information, we fall back to parsing the file ourselves. When using our own parser, 
+ * conditionals (#ifdef) are ignored altogether; this vastly simplifies things
  * (compiler-defined and externally defined macros don't need to be known; a
  * header file's include list doesn't depend on which project/file it is
  * included from, etc), allows platform-independent dependencies to be
@@ -464,14 +471,46 @@ public class DependencyCache {
      */
     protected static List<Include> parseIncludes(String source, IFile sourceFile) {
         List<Include> result = new ArrayList<Include>();
-        Matcher matcher = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$").matcher(source);
-        while (matcher.find()) {
-            boolean isSysInclude = matcher.group(1).equals("<");
-            String fileName = matcher.group(2);
-            int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
-            result.add(new Include(sourceFile, line, fileName.trim().replace('\\','/'), isSysInclude));
+
+        // try to get the #includes from CDT (reason: CDT's parser is quite sophisticated and 
+        // can follow #ifdefs, recognizes outcommented code, etc, all of which our simple parser
+        // does not do)
+        boolean success = false;
+        try {
+            ITranslationUnit translationUnit = getTranslationUnitFor(sourceFile);
+            if (translationUnit != null) {
+                IInclude[] includes = translationUnit.getIncludes();
+                for (IInclude i : includes)
+                    if (i.isActive())
+                        result.add(new Include(sourceFile, i.getSourceRange().getStartLine(), i.getIncludeName(), i.isStandard()));
+                success = true;
+            }
+        }
+        catch (CModelException e) {
+            // we end up here e.g. for msg files; just ignore the exception
+        }
+
+        // if we could not get #includes from CDT, parse the file manually  
+        if (!success) {
+            Matcher matcher = Pattern.compile("(?m)^[ \t]*#\\s*include[ \t]+([\"<])(.*?)[\">].*$").matcher(source);
+            while (matcher.find()) {
+                boolean isSysInclude = matcher.group(1).equals("<");
+                String fileName = matcher.group(2);
+                int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
+                result.add(new Include(sourceFile, line, fileName.trim().replace('\\','/'), isSysInclude));
+            }
         }
         return result;
+    }
+
+    /** 
+     * Returns the CDT translation unit for the given file, or null
+     */
+    protected static ITranslationUnit getTranslationUnitFor(IFile sourceFile) throws CModelException {
+        ICProject cproject = CoreModel.getDefault().getCModel().getCProject(sourceFile.getProject().getName());
+        ICElement element = cproject==null ? null : cproject.findElement(sourceFile.getProjectRelativePath());  // this apparently throws exception for .msg files instead of returning null
+        ITranslationUnit unit = (element instanceof ITranslationUnit) ? (ITranslationUnit)element : null;
+        return unit;
     }
 
     protected Map<IFile,List<Include>> collectCppSourceFilesInProjectGroup(DependencyData data, ProblemMarkerSynchronizer markerSync) {
