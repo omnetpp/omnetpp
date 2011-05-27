@@ -588,20 +588,8 @@ public class OmnetppLaunchUtils {
 		}
 
 		IPath expandedWd = getWorkingDirectoryPath(configuration);
-		String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
 
-		// fill in the infoBuffer (turn the first argument (program name to relative path))
-		String displayedCommand = makeRelativePathTo(new Path(cmdLine[0]), expandedWd).toString();
-		// if opp_run is used, do not display any path info
-		if (displayedCommand.endsWith("/opp_run"))
-		    displayedCommand = "opp_run";
-        infoBuffer.append(displayedCommand);
-        // add the rest of the command line options
-		for (int i=1; i<cmdLine.length; ++i)
-		    infoBuffer.append(" "+cmdLine[i]);
-		
-        infoBuffer.append("\nWorking directory: "+expandedWd.toString()+"\n");
-        
+        String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
     	for (String env : environment) {
     		// on windows the environment is case insensitive, so we convert it to upper case
     		if (Platform.getOS().equals(Platform.OS_WIN32))
@@ -611,6 +599,18 @@ public class OmnetppLaunchUtils {
     				 || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
     			infoBuffer.append("\n"+env);
     	}
+
+	infoBuffer.append("\n$ cd "+expandedWd.toString());
+
+	// fill in the infoBuffer (turn the first argument (program name to relative path))
+        String displayedCommand = makeRelativePathTo(new Path(cmdLine[0]), expandedWd).toString();
+        // if opp_run is used, do not display any path info
+        if (displayedCommand.endsWith("/opp_run"))
+            displayedCommand = "opp_run";
+        infoBuffer.append("\n$ "+displayedCommand);
+        // add the rest of the command line options
+        for (int i=1; i<cmdLine.length; ++i)
+            infoBuffer.append(" "+cmdLine[i]);
 
 		return DebugPlugin.exec(cmdLine, new File(expandedWd.toString()), environment);
 	}

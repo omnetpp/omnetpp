@@ -99,6 +99,8 @@ public class SimulationLauncherJob extends Job {
         StringBuilder info = new StringBuilder();
         Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, " -r "+runNo, false, info);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
+        printToConsole(iprocess, "Starting...\n"+info.toString().replaceAll("\n\\S+=.*", "")+"\n", false);  // print ut command line but throw out environment variables
+
         // we add the process info string as the command line so the whole info will be
         // visible in the debug view's property dialog
         iprocess.setAttribute(IProcess.ATTR_CMDLINE, info.toString());
@@ -142,25 +144,38 @@ public class SimulationLauncherJob extends Job {
         // do some error reporting if the process finished with error
         if (iprocess.isTerminated() && iprocess.getExitValue() != 0 )
         	try {
-        		ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
-        		if (console != null) {
-        			final IOConsoleOutputStream errStream = console.newOutputStream();
-        			errStream.setActivateOnWrite(true);
-        			// we have to set the color in the UI thread otherwise SWT will throw an error
-        			Display.getDefault().syncExec(new Runnable() {
-						public void run() {
-							errStream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
-						}
-        			});
-        			errStream.write("\nSimulation terminated with exit code: "+iprocess.getExitValue());
-        			errStream.write("\nCommand line: "+info.toString());
-        			errStream.close();
-        		}
-        	} catch (IOException e) {
-        		LaunchPlugin.logError("Unable to write to error console", e);
+		    String errorMsg = "\nSimulation terminated with exit code: "+iprocess.getExitValue();
+		    errorMsg += "\nStarted with:\n"+info;
+		    printToConsole(iprocess, errorMsg, true);
         	} catch (DebugException e) {
         		LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
         	}
+    }
+
+    /**
+     * Print something to the process's console output. Error message will be written in red
+     * and the console will be brought to focus.
+     */
+    private void printToConsole(IProcess iprocess, String text, boolean isErrorMessage) {
+        try {
+            ProcessConsole console = (ProcessConsole)DebugUIPlugin.getDefault().getProcessConsoleManager().getConsole(iprocess);
+            if (console != null) {
+                final IOConsoleOutputStream stream = console.newOutputStream();
+                if (isErrorMessage) {
+                    stream.setActivateOnWrite(true);
+                    // we have to set the color in the UI thread otherwise SWT will throw an error
+                    Display.getDefault().syncExec(new Runnable() {
+                        public void run() {
+                            stream.setColor(DebugUITools.getPreferenceColor(IDebugPreferenceConstants.CONSOLE_SYS_ERR_COLOR));
+                        }
+                    });
+                }
+                stream.write(text);
+                stream.close();
+            }
+        } catch (IOException e) {
+            LaunchPlugin.logError("Unable to write to console", e);
+        }
     }
 
     /**
