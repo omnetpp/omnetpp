@@ -84,7 +84,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
-                    ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error refreshing Makefiles", e.getStatus());
+                    ErrorDialog.openError(getActiveShell(), "Error", "Error refreshing Makefiles", e.getStatus());
                 }
             });
         }
@@ -138,8 +138,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             }
             catch (CoreException e) {
                 Activator.logError(e);
-                Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-                ErrorDialog.openError(parentShell, "Error", "Error fixing project state", e.getStatus());
+                ErrorDialog.openError(getActiveShell(), "Error", "Error fixing project state", e.getStatus());
             }
         }
     }
@@ -148,8 +147,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         List<String> problemTexts = new ArrayList<String>();
         for (Problem p : problems)
             problemTexts.add(p.toString());
-        Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency", 
+        return ProblemsMessageDialog.openConfirm(getActiveShell(), "Project Setup Inconsistency",
                 "Some configuration settings in project \"" + project.getName() + "\" do not correspond " +
                 "to the enabled project features. This may cause build errors as well. " +
                 "Do you want to fix the project state?", 
