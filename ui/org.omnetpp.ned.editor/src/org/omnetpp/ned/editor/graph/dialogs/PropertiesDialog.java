@@ -135,7 +135,7 @@ public class PropertiesDialog extends TrayDialog {
 
     private INedElement[] elements;
     private Command resultCommand;
-    
+
     private boolean initializing = true;  // while dialog is being set up and created
 
     private TabFolder tabfolder;
@@ -164,7 +164,7 @@ public class PropertiesDialog extends TrayDialog {
     private NedTypeFieldEditor interfacesField;
     private NedTypeFieldEditor typeField;
     private NedTypeFieldEditor likeTypeField;
-    private TextFieldEditor likeParamField;
+    private TextFieldEditor likeExprField;
     private TextFieldEditor vectorSizeField;
     private TristateButton isBidirectionalField;
     private TextFieldEditor documentationField;
@@ -234,12 +234,12 @@ public class PropertiesDialog extends TrayDialog {
     private TextFieldEditor bgLayoutSeedField;
     //private ComboFieldEditor bgLayoutAlgorithmField;
     private List<Label> unitLabels = new ArrayList<Label>();
-    
-    private INedTypeInfo editedTypeOrSupertype; // when not null, use this instead of the type or supertype of the selected elements for computing the preview, etc. 
+
+    private INedTypeInfo editedTypeOrSupertype; // when not null, use this instead of the type or supertype of the selected elements for computing the preview, etc.
 
     private Map<IFieldEditor, String> validationErrors = new LinkedHashMap<IFieldEditor, String>();
-    
-    
+
+
     private ModifyListener modifyListener = new ModifyListener() {
         public void modifyText(ModifyEvent e) {
             if (initializing || modifyInProgress)
@@ -252,26 +252,26 @@ public class PropertiesDialog extends TrayDialog {
                 updateControlStates();
                 updatePreview();
                 validateDialogContents();
-            } 
+            }
             finally {
                 modifyInProgress = false;
             }
         }
     };
-    
+
     /**
      * Adapter interface for all properties (graphical and non-graphical) editable in this dialog
      */
     interface IPropertyAccess {
         /**
-         * Returns the property value, which is never return null (missing value should be represented 
+         * Returns the property value, which is never return null (missing value should be represented
          * with some object such as ""). Throws exception if e does not have this property.
          * (Implementors may use a more specific return type that corresponds to the actual objects returned.)
          */
         Object getValue(INedElement e);
-        
+
         /**
-         * Returns a command that the property value (never null) on e. Throws exception if e does 
+         * Returns a command that the property value (never null) on e. Throws exception if e does
          * not have this property.
          */
         Command makeChangeCommand(INedElement e, Object value);
@@ -321,13 +321,13 @@ public class PropertiesDialog extends TrayDialog {
         }
     }
 
-    static class LikeParamPropertyAccess implements IPropertyAccess {
+    static class LikeExprPropertyAccess implements IPropertyAccess {
         public String getValue(INedElement e) {
-            return StringUtils.nullToEmpty(((ISubmoduleOrConnection)e).getLikeParam());
+            return StringUtils.nullToEmpty(((ISubmoduleOrConnection)e).getLikeExpr());
         }
 
         public Command makeChangeCommand(INedElement e, Object value) {
-            return new SetAttributeCommand((ISubmoduleOrConnection)e, SubmoduleElement.ATT_LIKE_PARAM, ((String)value).trim());
+            return new SetAttributeCommand((ISubmoduleOrConnection)e, SubmoduleElement.ATT_LIKE_EXPR, ((String)value).trim());
         }
     }
 
@@ -420,11 +420,11 @@ public class PropertiesDialog extends TrayDialog {
                 displayString = new DisplayString(displayString.toString()); // clone
                 displayString.setFallbackDisplayString(editedTypeOrSupertype.getNedElement().getDisplayString());
             }
-            String value = StringUtils.nullToEmpty(displayString.getAsString(displayProperty, false, false)); 
+            String value = StringUtils.nullToEmpty(displayString.getAsString(displayProperty, false, false));
             if (!value.equals("") && displayProperty.getEnumSpec() != null) {
                 String expandedValue = displayProperty.getEnumSpec().getNameFor(value); // expand abbreviation
                 if (expandedValue != null)
-                    value = expandedValue;  
+                    value = expandedValue;
             }
             return value;
         }
@@ -438,7 +438,7 @@ public class PropertiesDialog extends TrayDialog {
             if (!value.equals("") && displayProperty.getEnumSpec() != null) {
                 String shorthand = displayProperty.getEnumSpec().getShorthandFor((String)value);
                 if (shorthand != null)
-                    value = shorthand;  // use shorthand, e.g. replace "left" with "l" 
+                    value = shorthand;  // use shorthand, e.g. replace "left" with "l"
             }
             String newValue = getLocalDisplayPropertyChange(displayString, displayProperty, (String)value);
             if (newValue == null)
@@ -461,7 +461,7 @@ public class PropertiesDialog extends TrayDialog {
 
     /**
      * Returns whether this dialog can handle the given elements. Elements must be
-     * of the same type, and, for submodules and connections, they must be 
+     * of the same type, and, for submodules and connections, they must be
      * under the same compound module. (Reason for the latter is that otherwise
      * we cannot display the measurement unit, e.g. "m" or "km".)
      */
@@ -470,7 +470,7 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     protected static boolean areSameType(INedElement[] elements) {
-        if (elements.length < 2) 
+        if (elements.length < 2)
             return true;
         int firstType = elements[0].getTagCode();
         for (INedElement element : elements)
@@ -478,9 +478,9 @@ public class PropertiesDialog extends TrayDialog {
                 return false;
         return true;
     }
-    
+
     protected static boolean areInSameCompoundModule(INedElement[] elements) {
-        if (elements.length < 2) 
+        if (elements.length < 2)
             return true;
         CompoundModuleElementEx firstCompoundModule = compoundModuleOf(elements[0]);
         for (INedElement e : elements)
@@ -501,7 +501,7 @@ public class PropertiesDialog extends TrayDialog {
 
     protected IDialogSettings getDialogSettings() {
         // return a different settings object for each class we edit (simple module, compound module, etc)
-        return UIUtils.getDialogSettings(NedEditorPlugin.getDefault(), getClass().getName()+":"+elements[0].getTagName()); 
+        return UIUtils.getDialogSettings(NedEditorPlugin.getDefault(), getClass().getName()+":"+elements[0].getTagName());
     }
 
 	@Override
@@ -511,7 +511,7 @@ public class PropertiesDialog extends TrayDialog {
 	    String what;
 	    if (elements.length == 1)
 	        what = new NedModelLabelProvider().getText(elements[0]);
-	    else 
+	    else
 	        what = elements.length + " " + elements[0].getReadableTagName() + "s";
 	    shell.setText("Properties of " + what);
 	}
@@ -550,11 +550,11 @@ public class PropertiesDialog extends TrayDialog {
 
         // error display
         Composite errorArea = createComposite(composite, 2);
-        errorImageLabel = new Label(errorArea, SWT.NONE); 
+        errorImageLabel = new Label(errorArea, SWT.NONE);
         errorImageLabel.setLayoutData(new GridData(UIUtils.ICON_ERROR.getBounds().width, SWT.DEFAULT));
         errorMessageLabel = new Label(errorArea, SWT.NONE);
         errorMessageLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        
+
         // when user flips to the Background page, show background preview
         tabfolder.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -563,21 +563,21 @@ public class PropertiesDialog extends TrayDialog {
         });
 
         Dialog.applyDialogFont(composite);
-        
+
         populateDialog();
 
         initializing = false; // done
-        
+
         updateControlStates();
         updatePreview();
         updateLabelsWithUnit();
-        
+
         // restore active page
         try {
             int pageIndex = getDialogSettings().getInt("activePage");
             if (pageIndex > 0 && pageIndex < tabfolder.getItemCount())
                 tabfolder.setSelection(pageIndex);
-        } 
+        }
         catch (NumberFormatException e) { /*not saved, or wrong*/ }
 
         tabfolderPageChanged();
@@ -592,7 +592,7 @@ public class PropertiesDialog extends TrayDialog {
                 }
             }
         });
-        
+
         return composite;
     }
 
@@ -605,28 +605,28 @@ public class PropertiesDialog extends TrayDialog {
         gc.dispose();
         return averageWidth;
     }
-   
+
     protected Composite createGeneralPage(TabFolder tabfolder) {
         INedElement e = elements[0];  // all elements are of the same class (i.e. same tag code)
         Composite page = createTabPage(tabfolder, "General");
         page.setLayout(new GridLayout(2,false));
         Group group;
-        
+
         if (e instanceof INedTypeElement) {
             // Types
-            createLabel(page, "Name:", false); 
-            nameField = createText(page, 20); 
+            createLabel(page, "Name:", false);
+            nameField = createText(page, 20);
             nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to multiple elements
-            
-            createLabel(page, "Extends:", false); 
+
+            createLabel(page, "Extends:", false);
             boolean areInterfaces = e instanceof IInterfaceTypeElement;
             boolean areModuleKind = e instanceof IModuleKindTypeElement;
             extendsField = createNedTypeSelector(page, areInterfaces, new INedResources.InstanceofPredicate(((INedTypeElement)e).getClass()));
             if (!areInterfaces) {
-                createLabel(page, "Interfaces:", false); 
+                createLabel(page, "Interfaces:", false);
                 interfacesField = createNedTypeSelector(page, true, areModuleKind ? MODULEINTERFACE_FILTER : CHANNELINTERFACE_FILTER);
             }
-            
+
             createLabel(page, "", false, 2);
             createLabel(page, "Documentation: ", false, 2);
             documentationField = createMultilineText(page, 8);
@@ -637,25 +637,25 @@ public class PropertiesDialog extends TrayDialog {
             boolean areSubmodules = e instanceof SubmoduleElement;
             if (areSubmodules) {
                 group = createGroup(page, "Name and Size", 2, 2);
-                createLabel(group, "Name:", false); 
-                nameField = createText(group, 20); 
+                createLabel(group, "Name:", false);
+                nameField = createText(group, 20);
                 nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to multiple elements
 
-                createLabel(group, "Vector size:*", false); 
+                createLabel(group, "Vector size:*", false);
                 vectorSizeField = createText(group, 10);
                 createWrappingLabel(group, "* Number of elements in this submodule vector. Leave empty for scalar submodule", false, 2);
             }
 
             group = createGroup(page, "Type", 2, 2);
             fixedTypeRadioButton = createRadioButton(group, "Fixed type:", 2);
-            createLabel(group, "Type:", true); 
-            typeField = createNedTypeSelector(group, false, areSubmodules ? MODULE_EXCEPT_NETWORK_FILTER : CHANNEL_FILTER); 
+            createLabel(group, "Type:", true);
+            typeField = createNedTypeSelector(group, false, areSubmodules ? MODULE_EXCEPT_NETWORK_FILTER : CHANNEL_FILTER);
             parametricTypeRadioButton = createRadioButton(group, "Parametric type:", 2);
-            createLabel(group, "Interface:", true); 
-            likeTypeField = createNedTypeSelector(group, false, areSubmodules ? MODULEINTERFACE_FILTER : CHANNELINTERFACE_FILTER); 
-            createLabel(group, "Type expression:*", true); 
-            likeParamField = createText(group, 20);
-            createWrappingLabel(group, "* Leave empty to use **.type-name= syntax in ini files", true, 2); 
+            createLabel(group, "Interface:", true);
+            likeTypeField = createNedTypeSelector(group, false, areSubmodules ? MODULEINTERFACE_FILTER : CHANNELINTERFACE_FILTER);
+            createLabel(group, "Type expression:*", true);
+            likeExprField = createText(group, 20);
+            createWrappingLabel(group, "* Leave empty to use **.type-name= syntax in ini files", true, 2);
 
             if (!areSubmodules) {
                 createLabel(group, "", false, 2);  // separator
@@ -671,37 +671,37 @@ public class PropertiesDialog extends TrayDialog {
             fixedTypeRadioButton.addSelectionListener(radioListener);
             parametricTypeRadioButton.addSelectionListener(radioListener);
         }
-        
+
         return page;
     }
 
     protected Composite createEndpointsPage(TabFolder tabfolder) {
         Assert.isTrue(elements[0] instanceof ConnectionElement);
-        
+
         Composite page = createTabPage(tabfolder, "Endpoints");
         page.setLayout(new GridLayout(1,true));
         Group group;
-        
+
         // "Source" group
         group = createGroup(page, "Source", 8);
-        createLabel(group, "Module:", false); 
+        createLabel(group, "Module:", false);
         connSrcModuleField = createCombo(group, 16);
-        createLabel(group, "Index:", true); 
-        connSrcModuleIndexField = createText(group, 5); 
-        createLabel(group, "Gate:", true); 
+        createLabel(group, "Index:", true);
+        connSrcModuleIndexField = createText(group, 5);
+        createLabel(group, "Gate:", true);
         connSrcGateField = createCombo(group, 16);
-        createLabel(group, "Index:", true); 
+        createLabel(group, "Index:", true);
         connSrcGateIndexField = createText(group, 5);
 
         // "Destination" group
         group = createGroup(page, "Destination", 8);
-        createLabel(group, "Module:", false); 
+        createLabel(group, "Module:", false);
         connDestModuleField = createCombo(group, 16);
-        createLabel(group, "Index:", true); 
+        createLabel(group, "Index:", true);
         connDestModuleIndexField = createText(group, 5);
-        createLabel(group, "Gate:", true); 
+        createLabel(group, "Gate:", true);
         connDestGateField = createCombo(group, 16);
-        createLabel(group, "Index:", true); 
+        createLabel(group, "Index:", true);
         connDestGateIndexField = createText(group, 5);
 
         Map<String,String> gateIndexProposals = new LinkedHashMap<String, String>();
@@ -712,10 +712,10 @@ public class PropertiesDialog extends TrayDialog {
 
         return page;
     }
-    
+
     protected Composite createPositionPage(TabFolder tabfolder) {
         Assert.isTrue(elements[0] instanceof SubmoduleElement);
-        
+
         Composite page = createTabPage(tabfolder, "Position");
         page.setLayout(new GridLayout(1,false));
         Group group;
@@ -723,79 +723,79 @@ public class PropertiesDialog extends TrayDialog {
 
         group = createGroup(page, "Position", 6);
         // P tag
-        createLabel(group, "X:", false); 
+        createLabel(group, "X:", false);
         xField = createText(group, 10);
-        createUnitLabel(group); 
-        createLabel(group, "Y:", true); 
+        createUnitLabel(group);
+        createLabel(group, "Y:", true);
         yField = createText(group, 10);
-        createUnitLabel(group); 
+        createUnitLabel(group);
 
         group = createGroup(page, "Transmission Range Indicator", 1);
         // R tag
         comp = createComposite(group, 4);
-        createLabel(comp, "Radius:", false); 
-        rangeField = createText(comp, 10); 
-        createUnitLabel(comp); 
+        createLabel(comp, "Radius:", false);
+        rangeField = createText(comp, 10);
+        createUnitLabel(comp);
         comp = createComposite(group, 7);
-        createLabel(comp, "Line width:", false); 
-        rangeBorderWidthField = createSpinner(comp, 0, 0, 100, 1); 
-        createLabel(comp, "px", false); 
-        createLabel(comp, "Line color:", true); 
+        createLabel(comp, "Line width:", false);
+        rangeBorderWidthField = createSpinner(comp, 0, 0, 100, 1);
+        createLabel(comp, "px", false);
+        createLabel(comp, "Line color:", true);
         rangeBorderColorField = createColorSelector(comp);
-        createLabel(comp, "Fill color:", true); 
+        createLabel(comp, "Fill color:", true);
         rangeFillColorField = createColorSelector(comp);
 
         group = createGroup(page, "Module Vector", 8);
-        createLabel(group, "Arrangement:", false); 
+        createLabel(group, "Arrangement:", false);
         layoutField = createCombo(group, IDisplayString.Prop.LAYOUT.getEnumSpec().getNames());
-        layoutPar1Label = createLabel(group, "", true);  // temporary labels 
-        layoutPar1Field = createText(group, 5); 
-        layoutPar2Label = createLabel(group, "", true); 
-        layoutPar2Field = createText(group, 5); 
-        layoutPar3Label = createLabel(group, "", true); 
-        layoutPar3Field = createText(group, 5); 
+        layoutPar1Label = createLabel(group, "", true);  // temporary labels
+        layoutPar1Field = createText(group, 5);
+        layoutPar2Label = createLabel(group, "", true);
+        layoutPar2Field = createText(group, 5);
+        layoutPar3Label = createLabel(group, "", true);
+        layoutPar3Field = createText(group, 5);
         layoutField.addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 updateLayoutParLabels();
             }
         });
 
-        String parentType = ((SubmoduleElementEx) elements[0]).getCompoundModule().isNetwork() ? "network" : "compound module"; 
+        String parentType = ((SubmoduleElementEx) elements[0]).getCompoundModule().isNetwork() ? "network" : "compound module";
         createWrappingLabel(page, "Note: Coordinates and sizes are understood in the " + parentType + "'s units, not pixels.", false, 1);
 
         return page;
     }
-    
+
     protected Composite createAppearancePage(TabFolder tabfolder) {
         INedElement e = elements[0];  // all elements are of the same class (i.e. same tag code)
         Composite page = createTabPage(tabfolder, "Appearance");
         page.setLayout(new GridLayout(1,false));
         Group group;
         Composite comp;
-        
+
         if (e instanceof SimpleModuleElement || e instanceof CompoundModuleElement || e instanceof ModuleInterfaceElement) {
             group = createGroup(page, "Icon", 1);
             // I tag
             comp = createComposite(group, 7);
-            createLabel(comp, "Image:", false); 
-            imageField = createImageSelector(comp); 
+            createLabel(comp, "Image:", false);
+            imageField = createImageSelector(comp);
             imageSizeField = createCombo(comp, IDisplayString.Prop.IMAGE_SIZE.getEnumSpec().getNames());
-            createLabel(comp, " Tint:", true); 
+            createLabel(comp, " Tint:", true);
             imageColorField = createColorSelector(comp);
-            imageColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
-            createLabel(comp, "%", false); 
+            imageColorPercentageField = createSpinner(comp, 0, 0, 100, 1);
+            createLabel(comp, "%", false);
 
             group = createGroup(page, "Decorations", 1);
 
             comp = createComposite(group, 7);
             // I2 tag
-            createLabel(comp, "Status image:", false); 
+            createLabel(comp, "Status image:", false);
             image2Field = createImageSelector(comp, "status/");
-            createLabel(comp, "", false); 
-            createLabel(comp, " Tint:", true); 
+            createLabel(comp, "", false);
+            createLabel(comp, " Tint:", true);
             image2ColorField = createColorSelector(comp);
-            image2ColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
-            createLabel(comp, "%", false); 
+            image2ColorPercentageField = createSpinner(comp, 0, 0, 100, 1);
+            createLabel(comp, "%", false);
 
             // notes
             if (e instanceof CompoundModuleElementEx && !((CompoundModuleElementEx)e).isNetwork())
@@ -806,12 +806,12 @@ public class PropertiesDialog extends TrayDialog {
             group = createGroup(page, "Line Style", 7);
 
             // LS tag
-            createLabel(group, "Line color:", false); 
-            connectionColorField = createColorSelector(group); 
-            createLabel(group, "Line width:", true); 
-            connectionWidthField = createSpinner(group, 0, 0, 100, 1); 
-            createLabel(group, "px", false); 
-            createLabel(group, "Line style:", true); 
+            createLabel(group, "Line color:", false);
+            connectionColorField = createColorSelector(group);
+            createLabel(group, "Line width:", true);
+            connectionWidthField = createSpinner(group, 0, 0, 100, 1);
+            createLabel(group, "px", false);
+            createLabel(group, "Line style:", true);
             connectionStyleField = createCombo(group, IDisplayString.Prop.CONNECTION_STYLE.getEnumSpec().getNames());
 
             createWrappingLabel(page, "Note: The display string (@display) may contain other graphical properties as well, only they are not editable in this dialog.", false, 1);
@@ -820,92 +820,92 @@ public class PropertiesDialog extends TrayDialog {
             group = createGroup(page, "Icon", 1);
             // I tag
             comp = createComposite(group, 7);
-            createLabel(comp, "Image:", false); 
-            imageField = createImageSelector(comp); 
+            createLabel(comp, "Image:", false);
+            imageField = createImageSelector(comp);
             imageSizeField = createCombo(comp, IDisplayString.Prop.IMAGE_SIZE.getEnumSpec().getNames());
-            createLabel(comp, " Tint:", true); 
+            createLabel(comp, " Tint:", true);
             imageColorField = createColorSelector(comp);
-            imageColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
-            createLabel(comp, "%", false); 
+            imageColorPercentageField = createSpinner(comp, 0, 0, 100, 1);
+            createLabel(comp, "%", false);
 
             group = createGroup(page, "Shape", 1);
 
             // B tag
             comp = createComposite(group, 8);
-            createLabel(comp, "Shape:", false); 
+            createLabel(comp, "Shape:", false);
             shapeField = createCombo(comp, IDisplayString.Prop.SHAPE.getEnumSpec().getNames());
-            createLabel(comp, "Width:", true); 
-            shapeWidthField = createText(comp, 10); 
-            createUnitLabel(comp); 
-            createLabel(comp, "Height:", true); 
-            shapeHeightField = createText(comp, 10); 
-            createUnitLabel(comp); 
+            createLabel(comp, "Width:", true);
+            shapeWidthField = createText(comp, 10);
+            createUnitLabel(comp);
+            createLabel(comp, "Height:", true);
+            shapeHeightField = createText(comp, 10);
+            createUnitLabel(comp);
             comp = createComposite(group, 7);
-            createLabel(comp, "Border width:", false); 
-            shapeBorderWidthField = createSpinner(comp, 0, 0, 100, 1); 
-            createLabel(comp, "px", false); 
-            createLabel(comp, "Border color:", true); 
-            shapeBorderColorField = createColorSelector(comp); 
-            createLabel(comp, "Fill color:", true); 
-            shapeFillColorField = createColorSelector(comp); 
-            createWrappingLabel(group, "Note: Shape is displayed behind the icon if both are present", false, 1); 
+            createLabel(comp, "Border width:", false);
+            shapeBorderWidthField = createSpinner(comp, 0, 0, 100, 1);
+            createLabel(comp, "px", false);
+            createLabel(comp, "Border color:", true);
+            shapeBorderColorField = createColorSelector(comp);
+            createLabel(comp, "Fill color:", true);
+            shapeFillColorField = createColorSelector(comp);
+            createWrappingLabel(group, "Note: Shape is displayed behind the icon if both are present", false, 1);
 
             group = createGroup(page, "Decorations", 1);
 
             // T and TT tags
             comp = createComposite(group, 6);
-            createLabel(comp, "Text:", false); 
+            createLabel(comp, "Text:", false);
             textField = createText(comp, 30);
-            createLabel(comp, "Position:", true); 
+            createLabel(comp, "Position:", true);
             textPosField = createCombo(comp, IDisplayString.Prop.TEXT_POS.getEnumSpec().getNames());
-            createLabel(comp, "Color:", true); 
+            createLabel(comp, "Color:", true);
             textColorField = createColorSelector(comp);
 
             comp = createComposite(group, 2);
-            createLabel(comp, "Tooltip:", false); 
-            tooltipField = createText(comp, 70); 
+            createLabel(comp, "Tooltip:", false);
+            tooltipField = createText(comp, 70);
 
             comp = createComposite(group, 7);
             // I2 tag
-            createLabel(comp, "Status image:", false); 
+            createLabel(comp, "Status image:", false);
             image2Field = createImageSelector(comp, "status/");
-            createLabel(comp, "", false); 
-            createLabel(comp, " Tint:", true); 
+            createLabel(comp, "", false);
+            createLabel(comp, " Tint:", true);
             image2ColorField = createColorSelector(comp);
-            image2ColorPercentageField = createSpinner(comp, 0, 0, 100, 1); 
-            createLabel(comp, "%", false); 
-            
+            image2ColorPercentageField = createSpinner(comp, 0, 0, 100, 1);
+            createLabel(comp, "%", false);
+
             // Q tag
             comp = createComposite(group, 2);
-            createLabel(comp, "Queue object's name for queue length indicator: ", false); 
-            queueNameField = createText(comp, 20); 
+            createLabel(comp, "Queue object's name for queue length indicator: ", false);
+            queueNameField = createText(comp, 20);
         }
         else if (e instanceof ConnectionElement) {
             group = createGroup(page, "Line Style", 7);
             // LS tag
-            createLabel(group, "Line color:", false); 
+            createLabel(group, "Line color:", false);
             connectionColorField = createColorSelector(group);
-            createLabel(group, "Line width:", true); 
-            connectionWidthField = createSpinner(group, 0, 0, 100, 1); 
-            createLabel(group, "px", false); 
-            createLabel(group, "Line style:", true); 
+            createLabel(group, "Line width:", true);
+            connectionWidthField = createSpinner(group, 0, 0, 100, 1);
+            createLabel(group, "px", false);
+            createLabel(group, "Line style:", true);
             connectionStyleField = createCombo(group, IDisplayString.Prop.CONNECTION_STYLE.getEnumSpec().getNames());
 
             group = createGroup(page, "Text Label", 6);
             // T tag
-            createLabel(group, "Text:", false); 
-            textField = createText(group, 30); 
-            createLabel(group, "Position:", true); 
-            textPosField = createCombo(group, IDisplayString.Prop.TEXT_POS.getEnumSpec().getNames()); //XXX offers "left"/"right"/"top", which are interpreted as beginning/end/center; unfixable because it uses the same display string property as submodule text position 
-            createLabel(group, "Text color:", true); 
+            createLabel(group, "Text:", false);
+            textField = createText(group, 30);
+            createLabel(group, "Position:", true);
+            textPosField = createCombo(group, IDisplayString.Prop.TEXT_POS.getEnumSpec().getNames()); //XXX offers "left"/"right"/"top", which are interpreted as beginning/end/center; unfixable because it uses the same display string property as submodule text position
+            createLabel(group, "Text color:", true);
             textColorField = createColorSelector(group);
 
             group = createGroup(page, "Tooltip", 2);
             // TT tag
-            createLabel(group, "Tooltip:", false); 
-            tooltipField = createText(group, 70); 
+            createLabel(group, "Tooltip:", false);
+            tooltipField = createText(group, 70);
         }
-        
+
         return page;
     }
 
@@ -915,27 +915,27 @@ public class PropertiesDialog extends TrayDialog {
         Group group;
         Composite comp;
 
-        // NOTE: we do not edit the MODULE_X and MODULE_Y properties, because their semantics is unclear 
+        // NOTE: we do not edit the MODULE_X and MODULE_Y properties, because their semantics is unclear
         // (coordinate offset??) and are ignored by the graphical editor anyway
-        
+
         group = createGroup(page, "Area", 3);
         // BGP tag
-        createLabel(group, "Width:", false); 
-        bgWidthField = createText(group, 10); 
-        createUnitLabel(group); 
-        createLabel(group, "Height:", false); 
-        bgHeightField = createText(group, 10); 
-        createUnitLabel(group); 
+        createLabel(group, "Width:", false);
+        bgWidthField = createText(group, 10);
+        createUnitLabel(group);
+        createLabel(group, "Height:", false);
+        bgHeightField = createText(group, 10);
+        createUnitLabel(group);
 
         group = createGroup(page, "Unit and Scale", 1);
         comp = createComposite(group, 2);
-        createLabel(comp, "Measurement unit:", false); 
+        createLabel(comp, "Measurement unit:", false);
         bgUnitField = createText(comp, 10);
         comp = createComposite(group, 3);
         bgScaleLabel = createLabel(comp, "One unit corresponds to:", false); // text is updated from updateLabelsWithUnit()
-        bgScaleField = createText(comp, 10); 
+        bgScaleField = createText(comp, 10);
         createLabel(comp, "pixel(s)", false);
-        
+
         bgNoteLabel = createLabel(page, "Note: ...", false); // text will be set in updateUnit()
         ((GridData)bgNoteLabel.getLayoutData()).horizontalSpan = 2;
         bgUnitField.addModifyListener(new ModifyListener() {
@@ -943,45 +943,45 @@ public class PropertiesDialog extends TrayDialog {
                 updateLabelsWithUnit();
             }
         });
-        
+
         group = createGroup(page, "Background", 1, 2);
         // BGB tag
         comp = createComposite(group, 7);
-        createLabel(comp, "Color:", false); 
-        bgFillColorField = createColorSelector(comp); 
-        createLabel(comp, "Border color:", true); 
-        bgBorderColorField = createColorSelector(comp); 
-        createLabel(comp, "Border width:", true); 
-        bgBorderWidthField = createSpinner(comp, 0, 0, 100, 1); 
-        createLabel(comp, "px", false); 
+        createLabel(comp, "Color:", false);
+        bgFillColorField = createColorSelector(comp);
+        createLabel(comp, "Border color:", true);
+        bgBorderColorField = createColorSelector(comp);
+        createLabel(comp, "Border width:", true);
+        bgBorderWidthField = createSpinner(comp, 0, 0, 100, 1);
+        createLabel(comp, "px", false);
 
         // BGI tag
         comp = createComposite(group, 4);
-        createLabel(comp, "Image:", false); 
+        createLabel(comp, "Image:", false);
         bgImageField = createImageSelector(comp, "background/");
-        createLabel(comp, "Arrangement:", true); 
-        bgImageArrangement = createCombo(comp, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT.getEnumSpec().getNames()); 
+        createLabel(comp, "Arrangement:", true);
+        bgImageArrangement = createCombo(comp, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT.getEnumSpec().getNames());
 
         comp = createComposite(group, 2);
-        createLabel(comp, "Tooltip:", false); 
-        bgTooltipField = createText(comp, 70); 
+        createLabel(comp, "Tooltip:", false);
+        bgTooltipField = createText(comp, 70);
 
         group = createGroup(page, "Grid", 7, 2);
         // BGG tag
-        createLabel(group, "Major gridline distance:", false); 
-        bgGridDistanceField = createText(group, 10); 
-        createUnitLabel(group); 
-        createLabel(group, "Subdivision:", true); 
-        bgGridSubdivisionField = createSpinner(group, 0, 0, 100, 1); 
-        createLabel(group, "Color:", true); 
-        bgGridColorField = createColorSelector(group); 
+        createLabel(group, "Major gridline distance:", false);
+        bgGridDistanceField = createText(group, 10);
+        createUnitLabel(group);
+        createLabel(group, "Subdivision:", true);
+        bgGridSubdivisionField = createSpinner(group, 0, 0, 100, 1);
+        createLabel(group, "Color:", true);
+        bgGridColorField = createColorSelector(group);
 
         group = createGroup(page, "Submodule Layouting", 2, 2);
-        // BGL tag 
-        createLabel(group, "RNG seed:", false); 
-        bgLayoutSeedField = createText(group, 10); 
-        //createLabel(group, "Layouting algorithm:"); 
-        //bgLayoutAlgorithmField = createCombo(group, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM.getEnumSpec().getNames()); 
+        // BGL tag
+        createLabel(group, "RNG seed:", false);
+        bgLayoutSeedField = createText(group, 10);
+        //createLabel(group, "Layouting algorithm:");
+        //bgLayoutAlgorithmField = createCombo(group, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM.getEnumSpec().getNames());
 
         return page;
     }
@@ -993,7 +993,7 @@ public class PropertiesDialog extends TrayDialog {
         previewGroup.setLayout(layout);
         previewGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         createLabel(previewGroup, "Preview", false);
-        
+
         Canvas canvas = new Canvas(previewGroup, SWT.BORDER | SWT.DOUBLE_BUFFERED);
         canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         canvas.setBackground(ColorFactory.WHITE);
@@ -1010,7 +1010,7 @@ public class PropertiesDialog extends TrayDialog {
                 graphics.setAntialias(SWT.ON);
                 super.paint(graphics);
             }
-            
+
             @Override
             public Rectangle getFreeformExtent() {
                 return super.getFreeformExtent().getCopy().expand(10, 10);
@@ -1025,16 +1025,16 @@ public class PropertiesDialog extends TrayDialog {
 
         INedElement e = elements[0];
         int n = Math.min(elements.length, 10);
-        previewFigure = new IFigure[n]; 
+        previewFigure = new IFigure[n];
         for (int i=0; i<n; i++) {
             if (e instanceof SubmoduleElement || e instanceof IModuleKindTypeElement) {
                 SubmoduleFigure submoduleFigure = new SubmoduleFigure();
                 submoduleFigure.setRangeFigureLayer(rangeFigureLayer);
                 previewFigureLayer.add(submoduleFigure);
                 previewFigure[i] = submoduleFigure;
-            } 
+            }
             else {
-                ConnectionFigure connectionFigure = new ConnectionFigure(); 
+                ConnectionFigure connectionFigure = new ConnectionFigure();
                 previewFigureLayer.add(connectionFigure);
                 connectionFigure.setPoints(new PointList(new int[] {10,10,50,50}));
                 connectionFigure.setLineWidth(1);
@@ -1052,7 +1052,7 @@ public class PropertiesDialog extends TrayDialog {
         layout.marginHeight = layout.marginWidth = 0;
         previewGroup.setLayout(layout);
         previewGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        
+
         createLabel(previewGroup, "Preview", false);
         Canvas canvas = new Canvas(previewGroup, SWT.BORDER | SWT.DOUBLE_BUFFERED);
         canvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -1082,7 +1082,7 @@ public class PropertiesDialog extends TrayDialog {
         layerFigure.add(compoundModuleFigure);
         compoundModuleFigure.setLocation(new Point(10,10));
         bgPreviewFigure = compoundModuleFigure;
-        
+
         return previewGroup;
     }
 
@@ -1092,8 +1092,8 @@ public class PropertiesDialog extends TrayDialog {
         if (stackLayout.topControl == null)
             stackLayout.topControl = previewComposite; // initialize
 
-        // if user goes to the Background page, display the background preview; 
-        // if user goes to Appearance or Position page, display the normal preview; 
+        // if user goes to the Background page, display the background preview;
+        // if user goes to Appearance or Position page, display the normal preview;
         // otherwise keep currently shown preview.
         TabItem[] items = tabfolder.getSelection();
         if (items.length != 0 && items[0] != null) {
@@ -1109,11 +1109,11 @@ public class PropertiesDialog extends TrayDialog {
             }
         }
     }
-    
+
     protected Label createLabel(Composite parent, String text, boolean indented) {
         return createLabel(parent, text, indented, 1);
     }
-    
+
     protected Label createLabel(Composite parent, String text, boolean indented, int hspan) {
         Label label = new Label(parent, SWT.NONE);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, false, false);
@@ -1128,7 +1128,7 @@ public class PropertiesDialog extends TrayDialog {
     protected Label createWrappingLabel(Composite parent, String text, boolean indented, int hspan) {
         Label label = new Label(parent, SWT.WRAP);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        gridData.widthHint = 200; // cannot be too small, otherwise label will request a large height 
+        gridData.widthHint = 200; // cannot be too small, otherwise label will request a large height
         if (indented)
             gridData.horizontalIndent = 10; // note: indent usually serves as separator between adjacent controls
         gridData.horizontalSpan = hspan;
@@ -1140,15 +1140,15 @@ public class PropertiesDialog extends TrayDialog {
     protected void createUnitLabel(Composite parent) {
         Label label = new Label(parent, SWT.NONE);
         GridData gridData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
-        gridData.widthHint = 4 * computeDialogFontAverageCharWidth(parent);  // we use a fixed width, and e.g. "nm." is already 4 chars wide) 
+        gridData.widthHint = 4 * computeDialogFontAverageCharWidth(parent);  // we use a fixed width, and e.g. "nm." is already 4 chars wide)
         label.setLayoutData(gridData);
         unitLabels.add(label);
     }
-    
+
     protected Button createRadioButton(Composite parent, String text) {
         return createRadioButton(parent, text, 1);
     }
-    
+
     protected Button createRadioButton(Composite parent, String text, int hspan) {
         Button radio = new Button(parent, SWT.RADIO);
         GridData gridData = new GridData(SWT.BEGINNING, SWT.CENTER, false, false);
@@ -1217,7 +1217,7 @@ public class PropertiesDialog extends TrayDialog {
         });
         return checkbox;
     }
-    
+
     protected ComboFieldEditor createCombo(Composite parent, String[] items, int widthInChars) {
         ComboFieldEditor fieldEditor = new ComboFieldEditor(parent, SWT.BORDER);
         fieldEditor.addModifyListener(modifyListener);
@@ -1240,7 +1240,7 @@ public class PropertiesDialog extends TrayDialog {
     protected ImageFieldEditor createImageSelector(Composite parent) {
         return createImageSelector(parent, "");
     }
-    
+
     protected ImageFieldEditor createImageSelector(Composite parent, String defaultFilter) {
         ImageFieldEditor fieldEditor = new ImageFieldEditor(parent, SWT.BORDER);
         fieldEditor.addModifyListener(modifyListener);
@@ -1258,7 +1258,7 @@ public class PropertiesDialog extends TrayDialog {
         Control control = fieldEditor.getControl();
         control.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false));
         ((GridData)control.getLayoutData()).widthHint = (multiple ? 70 : 50) * computeDialogFontAverageCharWidth(getShell());
-        
+
         return fieldEditor;
     }
 
@@ -1276,14 +1276,14 @@ public class PropertiesDialog extends TrayDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         GridLayout layout = new GridLayout(numColumns,false);
         layout.marginHeight = layout.marginWidth = 0;
-        composite.setLayout(layout); 
+        composite.setLayout(layout);
         return composite;
     }
-    
+
     protected Group createGroup(Composite parent, String text, int numColumns) {
         return createGroup(parent, text, numColumns, 1);
     }
-    
+
     protected Group createGroup(Composite parent, String text, int numColumns, int horizSpanInParent) {
         Group group = new Group(parent, SWT.NONE);
         group.setText(text);
@@ -1298,7 +1298,7 @@ public class PropertiesDialog extends TrayDialog {
         createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
-    
+
     @SuppressWarnings("unchecked")
     protected void populateDialog() {
         // "General" page
@@ -1315,13 +1315,13 @@ public class PropertiesDialog extends TrayDialog {
                 populateField(nameField, (String)getCommonProperty(new NamePropertyAccess()));
                 populateField(vectorSizeField, (String)getCommonProperty(new VectorSizePropertyAccess()));
             }
-            
+
             // type, likeType
             populateField(typeField, NedElementUtilEx.qnameToFriendlyTypeName((String)getCommonProperty(new TypePropertyAccess())));
             populateField(likeTypeField, NedElementUtilEx.qnameToFriendlyTypeName((String)getCommonProperty(new LikeTypePropertyAccess())));
-            populateField(likeParamField, (String)getCommonProperty(new LikeParamPropertyAccess()));
-            
-            if (!likeTypeField.isGrayed() && !likeParamField.isGrayed() && StringUtils.isEmpty(likeTypeField.getText()) && StringUtils.isEmpty(likeParamField.getText())) {
+            populateField(likeExprField, (String)getCommonProperty(new LikeExprPropertyAccess()));
+
+            if (!likeTypeField.isGrayed() && !likeExprField.isGrayed() && StringUtils.isEmpty(likeTypeField.getText()) && StringUtils.isEmpty(likeExprField.getText())) {
                 fixedTypeRadioButton.setSelection(true);
                 updateTypeRadioButtons();
             }
@@ -1329,7 +1329,7 @@ public class PropertiesDialog extends TrayDialog {
                 parametricTypeRadioButton.setSelection(true);
                 updateTypeRadioButtons();
             }
-            else { 
+            else {
                 // leave both radio buttons unselected (let user deal with the mess)
             }
         }
@@ -1359,16 +1359,16 @@ public class PropertiesDialog extends TrayDialog {
             // populate fields
             String srcModule = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE));
             populateField(connSrcModuleField, "".equals(srcModule) /* and srcModule!=null!!! */ ? STR_PARENTMODULE : srcModule);
-            populateField(connSrcModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE_INDEX))); 
-            populateField(connSrcGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(true))); 
+            populateField(connSrcModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE_INDEX)));
+            populateField(connSrcGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(true)));
             String srcGateIndex = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE_INDEX));
             String srcGatePlusPlus = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_GATE_PLUSPLUS));
             populateField(connSrcGateIndexField, (srcGateIndex==null || srcGatePlusPlus==null) ? null : srcGateIndex + (srcGatePlusPlus.equals("true")?STR_GATEPLUSPLUS:""));
 
             String destModule = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE));
             populateField(connDestModuleField, "".equals(destModule) /* and destModule!=null!!! */ ? STR_PARENTMODULE : destModule);
-            populateField(connDestModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE_INDEX))); 
-            populateField(connDestGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(false)));  
+            populateField(connDestModuleIndexField, (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE_INDEX)));
+            populateField(connDestGateField, (String)getCommonProperty(new ConnectionGatePropertyAccess(false)));
             String destGateIndex = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE_INDEX));
             String destGatePlusPlus = (String)getCommonProperty(new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE_PLUSPLUS));
             populateField(connDestGateIndexField, (destGateIndex==null || destGatePlusPlus==null) ? null : destGateIndex + (destGatePlusPlus.equals("true")?STR_GATEPLUSPLUS:""));
@@ -1376,7 +1376,7 @@ public class PropertiesDialog extends TrayDialog {
 
         // display properties
         populateDisplayPropertyFields();
-        
+
         updatePreview();
     }
 
@@ -1384,18 +1384,18 @@ public class PropertiesDialog extends TrayDialog {
         //============== SUBMODULE ================
         // P tag
         populateField(xField, IDisplayString.Prop.X);
-        populateField(yField, IDisplayString.Prop.Y); 
-        populateField(layoutField, IDisplayString.Prop.LAYOUT); 
-        populateField(layoutPar1Field, IDisplayString.Prop.LAYOUT_PAR1); 
-        populateField(layoutPar2Field, IDisplayString.Prop.LAYOUT_PAR2); 
-        populateField(layoutPar3Field, IDisplayString.Prop.LAYOUT_PAR3); 
+        populateField(yField, IDisplayString.Prop.Y);
+        populateField(layoutField, IDisplayString.Prop.LAYOUT);
+        populateField(layoutPar1Field, IDisplayString.Prop.LAYOUT_PAR1);
+        populateField(layoutPar2Field, IDisplayString.Prop.LAYOUT_PAR2);
+        populateField(layoutPar3Field, IDisplayString.Prop.LAYOUT_PAR3);
 
         // B tag
-        populateField(shapeField, IDisplayString.Prop.SHAPE); 
-        populateField(shapeWidthField, IDisplayString.Prop.SHAPE_WIDTH); 
-        populateField(shapeHeightField, IDisplayString.Prop.SHAPE_HEIGHT); 
-        populateField(shapeFillColorField, IDisplayString.Prop.SHAPE_FILL_COLOR); 
-        populateField(shapeBorderColorField, IDisplayString.Prop.SHAPE_BORDER_COLOR); 
+        populateField(shapeField, IDisplayString.Prop.SHAPE);
+        populateField(shapeWidthField, IDisplayString.Prop.SHAPE_WIDTH);
+        populateField(shapeHeightField, IDisplayString.Prop.SHAPE_HEIGHT);
+        populateField(shapeFillColorField, IDisplayString.Prop.SHAPE_FILL_COLOR);
+        populateField(shapeBorderColorField, IDisplayString.Prop.SHAPE_BORDER_COLOR);
         populateField(shapeBorderWidthField, IDisplayString.Prop.SHAPE_BORDER_WIDTH);
 
         if (shapeField != null && !shapeField.isGrayed() && shapeField.getText().length()==0) {
@@ -1405,78 +1405,78 @@ public class PropertiesDialog extends TrayDialog {
         }
 
         // I tag
-        populateField(imageField, IDisplayString.Prop.IMAGE); 
-        populateField(imageColorField, IDisplayString.Prop.IMAGE_COLOR); 
-        populateField(imageColorPercentageField, IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE); 
+        populateField(imageField, IDisplayString.Prop.IMAGE);
+        populateField(imageColorField, IDisplayString.Prop.IMAGE_COLOR);
+        populateField(imageColorPercentageField, IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE);
 
         // IS tag
-        populateField(imageSizeField, IDisplayString.Prop.IMAGE_SIZE); 
+        populateField(imageSizeField, IDisplayString.Prop.IMAGE_SIZE);
 
         // I2 tag
-        populateField(image2Field, IDisplayString.Prop.IMAGE2); 
-        populateField(image2ColorField, IDisplayString.Prop.IMAGE2_COLOR); 
-        populateField(image2ColorPercentageField, IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE); 
+        populateField(image2Field, IDisplayString.Prop.IMAGE2);
+        populateField(image2ColorField, IDisplayString.Prop.IMAGE2_COLOR);
+        populateField(image2ColorPercentageField, IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE);
 
         // R tag
-        populateField(rangeField, IDisplayString.Prop.RANGE); 
-        populateField(rangeFillColorField, IDisplayString.Prop.RANGE_FILL_COLOR); 
-        populateField(rangeBorderColorField, IDisplayString.Prop.RANGE_BORDER_COLOR); 
-        populateField(rangeBorderWidthField, IDisplayString.Prop.RANGE_BORDER_WIDTH); 
+        populateField(rangeField, IDisplayString.Prop.RANGE);
+        populateField(rangeFillColorField, IDisplayString.Prop.RANGE_FILL_COLOR);
+        populateField(rangeBorderColorField, IDisplayString.Prop.RANGE_BORDER_COLOR);
+        populateField(rangeBorderWidthField, IDisplayString.Prop.RANGE_BORDER_WIDTH);
 
         // Q tag
-        populateField(queueNameField, IDisplayString.Prop.QUEUE_NAME); 
+        populateField(queueNameField, IDisplayString.Prop.QUEUE_NAME);
 
         //============== CONNECTION ================
         // LS tag
-        populateField(connectionColorField, IDisplayString.Prop.CONNECTION_COLOR); 
-        populateField(connectionWidthField, IDisplayString.Prop.CONNECTION_WIDTH); 
-        populateField(connectionStyleField, IDisplayString.Prop.CONNECTION_STYLE); 
+        populateField(connectionColorField, IDisplayString.Prop.CONNECTION_COLOR);
+        populateField(connectionWidthField, IDisplayString.Prop.CONNECTION_WIDTH);
+        populateField(connectionStyleField, IDisplayString.Prop.CONNECTION_STYLE);
 
         //============== SUBMODULE, CONNECTION ================
         // T tag
-        populateField(textField, IDisplayString.Prop.TEXT); 
-        populateField(textPosField, IDisplayString.Prop.TEXT_POS); 
-        populateField(textColorField, IDisplayString.Prop.TEXT_COLOR); 
+        populateField(textField, IDisplayString.Prop.TEXT);
+        populateField(textPosField, IDisplayString.Prop.TEXT_POS);
+        populateField(textColorField, IDisplayString.Prop.TEXT_COLOR);
 
         // TT tag
-        populateField(tooltipField, IDisplayString.Prop.TOOLTIP); 
+        populateField(tooltipField, IDisplayString.Prop.TOOLTIP);
 
 
         //============== COMPOUND MODULE ================
-        // BGP tag: not edited because its semantics is unclear and it is ignored by the graphical editor 
-        //populateField(bgXField, IDisplayString.Prop.MODULE_X); 
-        //populateField(bgYField, IDisplayString.Prop.MODULE_Y); 
+        // BGP tag: not edited because its semantics is unclear and it is ignored by the graphical editor
+        //populateField(bgXField, IDisplayString.Prop.MODULE_X);
+        //populateField(bgYField, IDisplayString.Prop.MODULE_Y);
 
         // BGB tag
-        populateField(bgWidthField, IDisplayString.Prop.MODULE_WIDTH); 
-        populateField(bgHeightField, IDisplayString.Prop.MODULE_HEIGHT); 
-        populateField(bgFillColorField, IDisplayString.Prop.MODULE_FILL_COLOR); 
-        populateField(bgBorderColorField, IDisplayString.Prop.MODULE_BORDER_COLOR); 
-        populateField(bgBorderWidthField, IDisplayString.Prop.MODULE_BORDER_WIDTH); 
+        populateField(bgWidthField, IDisplayString.Prop.MODULE_WIDTH);
+        populateField(bgHeightField, IDisplayString.Prop.MODULE_HEIGHT);
+        populateField(bgFillColorField, IDisplayString.Prop.MODULE_FILL_COLOR);
+        populateField(bgBorderColorField, IDisplayString.Prop.MODULE_BORDER_COLOR);
+        populateField(bgBorderWidthField, IDisplayString.Prop.MODULE_BORDER_WIDTH);
 
         // BGTT tag
-        populateField(bgTooltipField, IDisplayString.Prop.MODULE_TOOLTIP); 
+        populateField(bgTooltipField, IDisplayString.Prop.MODULE_TOOLTIP);
 
         // BGI tag
-        populateField(bgImageField, IDisplayString.Prop.MODULE_IMAGE); 
-        populateField(bgImageArrangement, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT); 
+        populateField(bgImageField, IDisplayString.Prop.MODULE_IMAGE);
+        populateField(bgImageArrangement, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT);
 
         // BGG tag
-        populateField(bgGridDistanceField, IDisplayString.Prop.MODULE_GRID_DISTANCE); 
-        populateField(bgGridSubdivisionField, IDisplayString.Prop.MODULE_GRID_SUBDIVISION); 
-        populateField(bgGridColorField, IDisplayString.Prop.MODULE_GRID_COLOR); 
+        populateField(bgGridDistanceField, IDisplayString.Prop.MODULE_GRID_DISTANCE);
+        populateField(bgGridSubdivisionField, IDisplayString.Prop.MODULE_GRID_SUBDIVISION);
+        populateField(bgGridColorField, IDisplayString.Prop.MODULE_GRID_COLOR);
 
-        // module layouting 
-        populateField(bgLayoutSeedField, IDisplayString.Prop.MODULE_LAYOUT_SEED); 
-        //populateField(bgLayoutAlgorithmField, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM); 
-        populateField(bgScaleField, IDisplayString.Prop.MODULE_SCALE); 
+        // module layouting
+        populateField(bgLayoutSeedField, IDisplayString.Prop.MODULE_LAYOUT_SEED);
+        //populateField(bgLayoutAlgorithmField, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM);
+        populateField(bgScaleField, IDisplayString.Prop.MODULE_SCALE);
         populateField(bgUnitField, IDisplayString.Prop.MODULE_UNIT);
     }
 
     protected void populateField(IFieldEditor field, IDisplayString.Prop displayProperty) {
         populateField(field, (String)getCommonProperty(new DisplayPropertyAccess(displayProperty)));
     }
-    
+
     protected void populateField(IFieldEditor field, String value) {
         if (field != null) {
             if (value == null)
@@ -1514,7 +1514,7 @@ public class PropertiesDialog extends TrayDialog {
     protected static String resolveType(String value, INedTypeLookupContext lookupContext) {
         if (StringUtils.isEmpty(value))
             return "";
-        
+
         // if we can resolve this type, convert to fully qualified name
         INedTypeInfo typeInfo = NedResourcesPlugin.getNedResources().lookupNedType(value, lookupContext);
 
@@ -1522,19 +1522,19 @@ public class PropertiesDialog extends TrayDialog {
             return typeInfo.getFullyQualifiedName();
         }
         else if (value.indexOf('.') != -1) {
-            return value; // qualified name: leave as it is  
+            return value; // qualified name: leave as it is
         }
         else {
             // utilize leftover imports:
             // if the referred type used to exist and had been properly imported, we can recover
             // the fully qualified type name from the imports. E.g. if we have a "tcp: TCP" submodule
             // which is unresolved (typeInfo==null), but there is an "import inet.transport.tcp.TCP"
-            // line in the file, we can conclude that the "tcp" module's type is "inet...", even though 
+            // line in the file, we can conclude that the "tcp" module's type is "inet...", even though
             // such type currently does not exist.
             for (String importSpec : lookupContext.getContainingNedFileElement().getImports())
                 if (importSpec.endsWith("."+value) && importSpec.indexOf('*') == -1)
                     return importSpec;
-            
+
             // treat it as a currently nonexistent inner type or type from the local package
             return lookupContext.getQNameAsPrefix() + value;
         }
@@ -1556,7 +1556,7 @@ public class PropertiesDialog extends TrayDialog {
         boolean isFixed = fixedTypeRadioButton.getSelection();
         typeField.setEnabled(isFixed);
         likeTypeField.setEnabled(!isFixed);
-        likeParamField.setEnabled(!isFixed);
+        likeExprField.setEnabled(!isFixed);
     }
 
     protected void updateLabelsWithUnit() {
@@ -1568,8 +1568,8 @@ public class PropertiesDialog extends TrayDialog {
             // update texts with embedded units
             bgScaleLabel.setText("One " + StringUtils.defaultIfEmpty(unit, "unit")+ " corresponds to:");
             bgScaleLabel.getParent().layout(true);
-            
-            bgNoteLabel.setText("Note: all sizes and distances in the compound module are understood in units" 
+
+            bgNoteLabel.setText("Note: all sizes and distances in the compound module are understood in units"
                     + (unit.equals("") ? "" : " (" + unit + ")")
                     + ", not pixels");
         }
@@ -1584,7 +1584,7 @@ public class PropertiesDialog extends TrayDialog {
             // no units in simple module, channel, module interface, connection interface dialog pages
             unit = "";
         }
-        
+
         // update labels
         String abbreviatedUnit = unit.length() <= 2 ? unit : unit.substring(0,2)+".";
         String unitTooltip = unit.length() <= 2 ? null : unit;
@@ -1593,10 +1593,10 @@ public class PropertiesDialog extends TrayDialog {
             label.setToolTipText(unitTooltip);
         }
     }
-    
+
     protected void updateLayoutParLabels() {
         String value = layoutField.getText();
-        
+
         // normalize value (replace enum value with its standard abbreviation)
         if (!value.equals(""))
             value = StringUtils.nullToEmpty(IDisplayString.Prop.LAYOUT.getEnumSpec().getShorthandFor(value));
@@ -1625,7 +1625,7 @@ public class PropertiesDialog extends TrayDialog {
             // cannot happen
             NedEditorPlugin.logError("Invalid module vector layout: " + value, new Exception());
         }
-        
+
         layoutPar1Label.setVisible(par1Label != null);
         layoutPar1Field.getControl().setVisible(par1Label != null);
         layoutPar2Label.setVisible(par2Label != null);
@@ -1636,7 +1636,7 @@ public class PropertiesDialog extends TrayDialog {
         layoutPar1Label.setText(StringUtils.nullToEmpty(par1Label));
         layoutPar2Label.setText(StringUtils.nullToEmpty(par2Label));
         layoutPar3Label.setText(StringUtils.nullToEmpty(par3Label));
-        
+
         layoutPar1Label.getParent().layout(true);
     }
 
@@ -1658,27 +1658,27 @@ public class PropertiesDialog extends TrayDialog {
                 nedType = resolver.getToplevelOrInnerNedType(superType, project);
             }
         }
-        
+
         if (editedTypeOrSupertype != nedType) {
             // store changed value
             editedTypeOrSupertype = nedType;
-            
+
             // offer the user to re-populate graphical properties
             String fieldName = extendsField!=null ? "Extends" : "Type";
-            boolean repopulate = MessageDialog.openQuestion(getShell(), 
-                    "Type or Supertype Changed", 
+            boolean repopulate = MessageDialog.openQuestion(getShell(),
+                    "Type or Supertype Changed",
                     "You have edited the '" + fieldName + "' field. Do you want to discard edits of graphical properties and " +
                     "reflect the graphical properties of the the new type in the dialog contents?");
             if (repopulate)
                 populateDisplayPropertyFields();
         }
     }
-    
+
     protected void updateControlStates() {
         if (connSrcModuleField != null) {
             updateConnectionEndpoint(true, connSrcModuleField, connSrcModuleIndexField, connSrcGateField, connSrcGateIndexField);
             updateConnectionEndpoint(false, connDestModuleField, connDestModuleIndexField, connDestGateField, connDestGateIndexField);
-        } 
+        }
         if (vectorSizeField != null) {
             boolean isVector = vectorSizeField.getText().trim().length() > 0;
             layoutField.setEnabled(isVector);
@@ -1744,10 +1744,10 @@ public class PropertiesDialog extends TrayDialog {
             gateIndexField.setEnabled(true);
             return;
         }
-        
+
         // update moduleIndexField
-        boolean isParent = (module instanceof CompoundModuleElementEx);  
-        if (isParent) {  
+        boolean isParent = (module instanceof CompoundModuleElementEx);
+        if (isParent) {
             moduleIndexField.setEnabled(false);
         }
         else {
@@ -1805,20 +1805,20 @@ public class PropertiesDialog extends TrayDialog {
         label += ": " + gateDecl.getAttribute(ParamElement.ATT_TYPE);
         return label;
     }
-    
+
     protected void updatePreview() {
         // background preview
         if (bgPreviewFigure != null) {
             INedElement e = elements[elements.length-1]; // the primary selection in the editor (black handles)
             // set fallback display string
             DisplayString fallbackDisplayString = getFallbackDisplayString(e);
-            
+
             DisplayString origDisplayString = ((IHasDisplayString)e).getDisplayString();
             DisplayString displayString = new DisplayString(origDisplayString.toString());
-            displayString.setFallbackDisplayString(fallbackDisplayString); 
-            
-            updatePreviewDisplayString(displayString); 
-            
+            displayString.setFallbackDisplayString(fallbackDisplayString);
+
+            updatePreviewDisplayString(displayString);
+
             bgPreviewFigure.setDisplayString(displayString);
             Dimension compoundModuleSize = displayString.getCompoundSize(displayString.getScale());
             if (compoundModuleSize.height == -1)
@@ -1835,20 +1835,20 @@ public class PropertiesDialog extends TrayDialog {
             INedElement e = elements[i];
             // set fallback display string
             DisplayString fallbackDisplayString = getFallbackDisplayString(e);
-            
+
             DisplayString origDisplayString = ((IHasDisplayString)e).getDisplayString();
             DisplayString displayString = new DisplayString(origDisplayString.toString());
-            displayString.setFallbackDisplayString(fallbackDisplayString); 
-            
-            updatePreviewDisplayString(displayString); 
-            
+            displayString.setFallbackDisplayString(fallbackDisplayString);
+
+            updatePreviewDisplayString(displayString);
+
             // normal preview
             if (previewFigure != null) {
                 if (e instanceof SubmoduleElement || e instanceof IModuleKindTypeElement) {
                     SubmoduleFigure submoduleFigure = (SubmoduleFigure)previewFigure[i];
                     float scale = 1.0f;
                     String name = (nameField.isEnabled() && !nameField.isGrayed()) ? nameField.getText() : ((IHasName)e).getName();
-                    
+
                     if (e instanceof SubmoduleElement) {
                         SubmoduleElementEx submodule = (SubmoduleElementEx)e;
                         String vectorSize = (vectorSizeField.isEnabled() && !vectorSizeField.isGrayed()) ? vectorSizeField.getText() : ((SubmoduleElement)e).getVectorSize();
@@ -1857,15 +1857,15 @@ public class PropertiesDialog extends TrayDialog {
                         DisplayString parentDisplayString = submodule.getCompoundModule().getDisplayString();
                         scale = parentDisplayString.getScale();
                     }
-                    
+
                     submoduleFigure.setName(name);
                     submoduleFigure.setDisplayString(scale, displayString);
                     int width = submoduleFigure.getSize().width;
                     submoduleFigure.setCenterLocation(new Point(x+width/2, 50));
-                    x += width + 10; 
+                    x += width + 10;
                 }
                 else {
-                    ConnectionFigure connectionFigure = (ConnectionFigure)previewFigure[i]; 
+                    ConnectionFigure connectionFigure = (ConnectionFigure)previewFigure[i];
                     connectionFigure.setDisplayString(displayString);
                     connectionFigure.setPoints(new PointList(new int[] {x, 10, x+40, 50}));
                     if (isBidirectionalField != null) {
@@ -1898,84 +1898,84 @@ public class PropertiesDialog extends TrayDialog {
     protected void updatePreviewDisplayString(DisplayString displayString) {
         // update display string
         updatePreviewDisplayProperty(displayString, IDisplayString.Prop.X, xField);
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.Y, yField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT, layoutField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT_PAR1, layoutPar1Field); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT_PAR2, layoutPar2Field); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT_PAR3, layoutPar3Field); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.Y, yField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT, layoutField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT_PAR1, layoutPar1Field);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT_PAR2, layoutPar2Field);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.LAYOUT_PAR3, layoutPar3Field);
 
         // B tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE, shapeField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_WIDTH, shapeWidthField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_HEIGHT, shapeHeightField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_FILL_COLOR, shapeFillColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_BORDER_COLOR, shapeBorderColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_BORDER_WIDTH, shapeBorderWidthField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE, shapeField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_WIDTH, shapeWidthField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_HEIGHT, shapeHeightField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_FILL_COLOR, shapeFillColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_BORDER_COLOR, shapeBorderColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.SHAPE_BORDER_WIDTH, shapeBorderWidthField);
 
         // I tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE, imageField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE_COLOR, imageColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE, imageColorPercentageField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE, imageField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE_COLOR, imageColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE, imageColorPercentageField);
 
         // IS tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE_SIZE, imageSizeField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE_SIZE, imageSizeField);
 
         // I2 tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE2, image2Field); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE2_COLOR, image2ColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE, image2ColorPercentageField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE2, image2Field);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE2_COLOR, image2ColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE, image2ColorPercentageField);
 
         // R tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE, rangeField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE_FILL_COLOR, rangeFillColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE_BORDER_COLOR, rangeBorderColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE_BORDER_WIDTH, rangeBorderWidthField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE, rangeField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE_FILL_COLOR, rangeFillColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE_BORDER_COLOR, rangeBorderColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.RANGE_BORDER_WIDTH, rangeBorderWidthField);
 
         // Q tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.QUEUE_NAME, queueNameField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.QUEUE_NAME, queueNameField);
 
         // T tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TEXT, textField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TEXT_POS, textPosField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TEXT_COLOR, textColorField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TEXT, textField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TEXT_POS, textPosField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TEXT_COLOR, textColorField);
 
         // TT tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TOOLTIP, tooltipField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.TOOLTIP, tooltipField);
 
         //============== CONNECTION ================
         // LS tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.CONNECTION_COLOR, connectionColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.CONNECTION_WIDTH, connectionWidthField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.CONNECTION_STYLE, connectionStyleField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.CONNECTION_COLOR, connectionColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.CONNECTION_WIDTH, connectionWidthField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.CONNECTION_STYLE, connectionStyleField);
 
         //============== COMPOUND MODULE ================
-        // BGP tag: not edited because its semantics is unclear and it is ignored by the graphical editor 
-        //updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_X, bgXField); 
-        //updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_Y, bgYField); 
+        // BGP tag: not edited because its semantics is unclear and it is ignored by the graphical editor
+        //updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_X, bgXField);
+        //updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_Y, bgYField);
 
         // BGB tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_WIDTH, bgWidthField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_HEIGHT, bgHeightField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_FILL_COLOR, bgFillColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_BORDER_COLOR, bgBorderColorField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_BORDER_WIDTH, bgBorderWidthField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_WIDTH, bgWidthField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_HEIGHT, bgHeightField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_FILL_COLOR, bgFillColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_BORDER_COLOR, bgBorderColorField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_BORDER_WIDTH, bgBorderWidthField);
 
         // BGTT tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_TOOLTIP, bgTooltipField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_TOOLTIP, bgTooltipField);
 
         // BGI tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_IMAGE, bgImageField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT, bgImageArrangement); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_IMAGE, bgImageField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT, bgImageArrangement);
 
         // BGG tag
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_DISTANCE, bgGridDistanceField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_SUBDIVISION, bgGridSubdivisionField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_COLOR, bgGridColorField); 
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_DISTANCE, bgGridDistanceField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_SUBDIVISION, bgGridSubdivisionField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_GRID_COLOR, bgGridColorField);
 
-        // module layouting 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField); 
-        //updatePreviewDisplayProperty(IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField); 
-        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_SCALE, bgScaleField); 
+        // module layouting
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField);
+        //updatePreviewDisplayProperty(IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField);
+        updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_SCALE, bgScaleField);
         updatePreviewDisplayProperty(displayString, IDisplayString.Prop.MODULE_UNIT, bgUnitField);
     }
 
@@ -1996,7 +1996,7 @@ public class PropertiesDialog extends TrayDialog {
                 displayString.set(property, newValue);
         }
     }
-    
+
     @Override
 	protected void okPressed() {
         // creating the result command
@@ -2018,28 +2018,28 @@ public class PropertiesDialog extends TrayDialog {
                 List<String> interfacesList = NedTypeFieldEditor.parseNedTypeList(interfacesField.getText());
                 addPropertyChangeCommands(compoundCommand, new InterfacesPropertyAccess(), interfacesList);
             }
-            
+
             if (!documentationField.isGrayed())
                 addPropertyChangeCommands(compoundCommand, new DocumentationPropertyAccess(), documentationField.getText());
         }
 
-        // submodule or connection 
+        // submodule or connection
         if (elements[0] instanceof ISubmoduleOrConnection) {
             // vector size
             if (elements[0] instanceof SubmoduleElement && !vectorSizeField.isGrayed())
                 addPropertyChangeCommands(compoundCommand, new VectorSizePropertyAccess(), vectorSizeField.getText().trim());
 
             if (!typeField.isEnabled() || !typeField.isGrayed()) {
-                String type = typeField.isEnabled() ? NedElementUtilEx.friendlyTypeNameToQName(typeField.getText()) : ""; // if disabled, clear the attribute 
+                String type = typeField.isEnabled() ? NedElementUtilEx.friendlyTypeNameToQName(typeField.getText()) : ""; // if disabled, clear the attribute
                 addPropertyChangeCommands(compoundCommand, new TypePropertyAccess(), type);
             }
-            
+
             if (!likeTypeField.isEnabled() || !likeTypeField.isGrayed()) {
                 String likeType = likeTypeField.isEnabled() ? NedElementUtilEx.friendlyTypeNameToQName(likeTypeField.getText()) : ""; // if disabled, clear the attribute
                 addPropertyChangeCommands(compoundCommand, new LikeTypePropertyAccess(), likeType);
             }
 
-            addPropertyChangeCommands(compoundCommand, new LikeParamPropertyAccess(), likeParamField);
+            addPropertyChangeCommands(compoundCommand, new LikeExprPropertyAccess(), likeExprField);
         }
 
         // "Endpoints" page
@@ -2049,11 +2049,11 @@ public class PropertiesDialog extends TrayDialog {
                 String value = isBidirectionalField.getSelection() ? "true" : "false";
                 addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_IS_BIDIRECTIONAL), value);
             }
-            
+
             // source gate
             if (!connSrcModuleField.isGrayed()) {
                 String value = connSrcModuleField.getText().trim();
-                if (value.equals(STR_PARENTMODULE)) 
+                if (value.equals(STR_PARENTMODULE))
                     value = "";
                 addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_SRC_MODULE), value);
             }
@@ -2069,7 +2069,7 @@ public class PropertiesDialog extends TrayDialog {
             // destination gate
             if (!connDestModuleField.isGrayed()) {
                 String value = connDestModuleField.getText().trim();
-                if (value.equals(STR_PARENTMODULE)) 
+                if (value.equals(STR_PARENTMODULE))
                     value = "";
                 addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_MODULE), value);
             }
@@ -2082,91 +2082,91 @@ public class PropertiesDialog extends TrayDialog {
                 addPropertyChangeCommands(compoundCommand, new ElementAttributePropertyAccess(ConnectionElement.ATT_DEST_GATE_PLUSPLUS), isPlusPlus ? "true" : "false");
             }
         }
-        
+
         // display string properties
         addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.X, xField);
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.Y, yField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT, layoutField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT_PAR1, layoutPar1Field); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT_PAR2, layoutPar2Field); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT_PAR3, layoutPar3Field); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.Y, yField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT, layoutField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT_PAR1, layoutPar1Field);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT_PAR2, layoutPar2Field);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.LAYOUT_PAR3, layoutPar3Field);
 
         // B tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE, shapeField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_WIDTH, shapeWidthField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_HEIGHT, shapeHeightField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_FILL_COLOR, shapeFillColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_BORDER_COLOR, shapeBorderColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_BORDER_WIDTH, shapeBorderWidthField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE, shapeField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_WIDTH, shapeWidthField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_HEIGHT, shapeHeightField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_FILL_COLOR, shapeFillColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_BORDER_COLOR, shapeBorderColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.SHAPE_BORDER_WIDTH, shapeBorderWidthField);
 
         // I tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE, imageField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE_COLOR, imageColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE, imageColorPercentageField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE, imageField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE_COLOR, imageColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE_COLOR_PERCENTAGE, imageColorPercentageField);
 
         // IS tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE_SIZE, imageSizeField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE_SIZE, imageSizeField);
 
         // I2 tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE2, image2Field); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE2_COLOR, image2ColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE, image2ColorPercentageField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE2, image2Field);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE2_COLOR, image2ColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.IMAGE2_COLOR_PERCENTAGE, image2ColorPercentageField);
 
         // R tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE, rangeField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE_FILL_COLOR, rangeFillColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE_BORDER_COLOR, rangeBorderColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE_BORDER_WIDTH, rangeBorderWidthField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE, rangeField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE_FILL_COLOR, rangeFillColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE_BORDER_COLOR, rangeBorderColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.RANGE_BORDER_WIDTH, rangeBorderWidthField);
 
         // Q tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.QUEUE_NAME, queueNameField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.QUEUE_NAME, queueNameField);
 
         // T tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TEXT, textField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TEXT_POS, textPosField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TEXT_COLOR, textColorField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TEXT, textField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TEXT_POS, textPosField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TEXT_COLOR, textColorField);
 
         // TT tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TOOLTIP, tooltipField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.TOOLTIP, tooltipField);
 
         //============== CONNECTION ================
         // LS tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.CONNECTION_COLOR, connectionColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.CONNECTION_WIDTH, connectionWidthField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.CONNECTION_STYLE, connectionStyleField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.CONNECTION_COLOR, connectionColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.CONNECTION_WIDTH, connectionWidthField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.CONNECTION_STYLE, connectionStyleField);
 
         //============== COMPOUND MODULE ================
-        // BGP tag: not edited because its semantics is unclear and it is ignored by the graphical editor 
-        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_X, bgXField); 
-        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_Y, bgYField); 
+        // BGP tag: not edited because its semantics is unclear and it is ignored by the graphical editor
+        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_X, bgXField);
+        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_Y, bgYField);
 
         // BGB tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_WIDTH, bgWidthField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_HEIGHT, bgHeightField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_FILL_COLOR, bgFillColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_BORDER_COLOR, bgBorderColorField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_BORDER_WIDTH, bgBorderWidthField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_WIDTH, bgWidthField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_HEIGHT, bgHeightField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_FILL_COLOR, bgFillColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_BORDER_COLOR, bgBorderColorField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_BORDER_WIDTH, bgBorderWidthField);
 
         // BGTT tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_TOOLTIP, bgTooltipField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_TOOLTIP, bgTooltipField);
 
         // BGI tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_IMAGE, bgImageField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT, bgImageArrangement); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_IMAGE, bgImageField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT, bgImageArrangement);
 
         // BGG tag
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_DISTANCE, bgGridDistanceField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_SUBDIVISION, bgGridSubdivisionField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_COLOR, bgGridColorField); 
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_DISTANCE, bgGridDistanceField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_SUBDIVISION, bgGridSubdivisionField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_GRID_COLOR, bgGridColorField);
 
-        // module layouting 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField); 
-        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_SCALE, bgScaleField); 
-        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_UNIT, bgUnitField); 
+        // module layouting
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_SEED, bgLayoutSeedField);
+        //addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_LAYOUT_ALGORITHM, bgLayoutAlgorithmField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_SCALE, bgScaleField);
+        addDisplayPropertyChangeCommands(compoundCommand, IDisplayString.Prop.MODULE_UNIT, bgUnitField);
 
         resultCommand = compoundCommand;
-        
+
         super.okPressed();
     }
 
@@ -2177,10 +2177,10 @@ public class PropertiesDialog extends TrayDialog {
             addPropertyChangeCommands(compoundCommand, new DisplayPropertyAccess(displayProperty), value);
         }
     }
-    
+
     /**
-     * Sets the given property to the value taken from the field editor. If the field editor is grayed, 
-     * does nothing; if it is disabled, sets the property to the empty string.   
+     * Sets the given property to the value taken from the field editor. If the field editor is grayed,
+     * does nothing; if it is disabled, sets the property to the empty string.
      */
     protected void addPropertyChangeCommands(CompoundCommand compoundCommand, IPropertyAccess property, IFieldEditor fieldEditor) {
         if (!fieldEditor.isEnabled() || !fieldEditor.isGrayed()) {
@@ -2196,16 +2196,16 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     /**
-     * Tells what to change a local display string property to, so that it yields the given value 
+     * Tells what to change a local display string property to, so that it yields the given value
      * when considering fallback display strings, default values, etc.
-     *  
+     *
      * It returns the new value, or null if no change is required.
-     * 
+     *
      * This same function is used by both the preview and the dialog commit function so we can be
      * sure the preview is accurate.
      *
      * Strategy:
-     *   1. if existing display string already results in the desired value, whichever way  
+     *   1. if existing display string already results in the desired value, whichever way
      *       (explicitly, via inherited value or default value), leave it unchanged
      *   2. if not, try to achieve that with the shortest possible display string:
      *      2a. if the inherited value is the same as the desired one, remove local
@@ -2226,21 +2226,21 @@ public class PropertiesDialog extends TrayDialog {
                 newValue = "";  // remove local value to let inherited value through
             }
             else if (value.equals("")) {
-                // to create an empty value, we may need to use "-" (the antivalue) to kill off the inherited one  
+                // to create an empty value, we may need to use "-" (the antivalue) to kill off the inherited one
                 newValue = inheritedValue.equals("") ? "" : "-";
-            } 
+            }
             else {
                 newValue = value;
             }
             return newValue;
         }
     }
-    
+
     @Override
     public boolean close() {
         // save which page is shown
         getDialogSettings().put("activePage", tabfolder.getSelectionIndex());
-       
+
         return super.close();
     }
 
@@ -2254,21 +2254,21 @@ public class PropertiesDialog extends TrayDialog {
             return;  // we are still within createDialogArea(), when createButtonsForButtonBar() was not yet called
 
         // GUIDELINE: only add "error" for issues that will make NED unparseable in text mode; the rest (no such gate, etc) are only warnings!
-        
+
         Map<IFieldEditor, String> errors = new LinkedHashMap<IFieldEditor, String>();
-        
+
         // name
         if (elements[0] instanceof INedTypeElement && nameField.isEnabled() && !nameField.isGrayed())
             addErrorIfNotNull(errors, nameField, "Name", new TypeNameValidator((INedTypeElement)elements[0]).isValid(nameField.getText()));
         else if (elements[0] instanceof SubmoduleElementEx && nameField.isEnabled() && !nameField.isGrayed())
             addErrorIfNotNull(errors, nameField, "Name", new SubmoduleNameValidator((SubmoduleElementEx)elements[0]).isValid(nameField.getText()));
 
-        // submodule size, like param expression
+        // submodule size, "like" type name expression
         if (vectorSizeField != null && vectorSizeField.isEnabled() && !vectorSizeField.isGrayed())
             validateExpressionField(errors, vectorSizeField, "Vector size", true, null);
 
-        if (likeParamField != null)
-            validateExpressionField(errors, likeParamField, "Submodule type name expression", true, null);
+        if (likeExprField != null)
+            validateExpressionField(errors, likeExprField, "Submodule type name expression", true, null);
 
         // validate type and type list fields
         if (elements[0] instanceof INedTypeElement) {
@@ -2282,7 +2282,7 @@ public class PropertiesDialog extends TrayDialog {
             else
                 validateNedTypeField(errors, "Interface", likeTypeField, false);
         }
-        
+
         // validate connection stuff
         if (elements[0] instanceof ConnectionElement) {
             validateConnectionGate(errors, true, connSrcModuleField, connSrcModuleIndexField, connSrcGateField, connSrcGateIndexField);
@@ -2291,7 +2291,7 @@ public class PropertiesDialog extends TrayDialog {
 
         // graphical properties
         if (bgWidthField != null && bgHeightField != null && !bgWidthField.isGrayed() && !bgHeightField.isGrayed()) {
-            // our layouter cannot handle it if only width or height is given 
+            // our layouter cannot handle it if only width or height is given
             if (StringUtils.isBlank(bgWidthField.getText()) != StringUtils.isBlank(bgHeightField.getText())) {
                 IFieldEditor bogusField = StringUtils.isBlank(bgWidthField.getText()) ? bgWidthField : bgHeightField;
                 addErrorIfNotNull(errors, bogusField, "Background", "Width and height must be specified together, or both of them should be left empty");
@@ -2338,7 +2338,7 @@ public class PropertiesDialog extends TrayDialog {
         validateIntegerField(errors, "Grid subdivision", bgGridSubdivisionField);
         validateColorField(errors, "Grid color", bgGridColorField);
         validateNumericField(errors, "Layout seed", bgLayoutSeedField);
-        
+
         boolean hasError = synchronizeErrors(errors);
 
         okButton.setEnabled(!hasError);
@@ -2349,14 +2349,14 @@ public class PropertiesDialog extends TrayDialog {
             String value = fieldEditor.getText();
             if (canBeEmpty && StringUtils.isBlank(value))
                 return;
-            
+
             // check syntax
             String msg = isValidTypeName(value, fieldEditor.getMultiple(), canBeEmpty);
             if (msg != null) {
                 addErrorIfNotNull(errors, fieldEditor, fieldName, msg);
                 return;
             }
-            
+
             // check whether such type really exists
             INedTypeResolver resolver = NedElement.getDefaultNedTypeResolver();
             IProject project = resolver.getNedFile(elements[0].getContainingNedFileElement()).getProject();
@@ -2365,7 +2365,7 @@ public class PropertiesDialog extends TrayDialog {
                 INedTypeInfo nedType = resolver.getToplevelOrInnerNedType(qname, project);
                 if (nedType == null)
                     addWarningIfNotNull(errors, fieldEditor, fieldName, "No such NED type");
-                else if (!fieldEditor.getTypeFilter().matches(nedType)) {               
+                else if (!fieldEditor.getTypeFilter().matches(nedType)) {
                     String what = nedType.getNedElement().getReadableTagName();
                     addWarningIfNotNull(errors, fieldEditor, fieldName, StringUtils.indefiniteArticle(what, true) + " " + what + " is not allowed here");
                 }
@@ -2399,7 +2399,7 @@ public class PropertiesDialog extends TrayDialog {
         if (moduleIndexField.isEnabled() && !moduleIndexField.isGrayed()) {
             validateExpressionField(errors, moduleIndexField, prefix+" module index", module==null, null);
         }
-        
+
         // validate gate name
         GateElementEx gateDecl = null;
         if (!gateField.isGrayed()) {
@@ -2419,14 +2419,14 @@ public class PropertiesDialog extends TrayDialog {
                             else if (gateName.endsWith("$o"))
                                 gateDir = INedElement.NED_GATETYPE_OUTPUT;
                         }
-                        
+
                         // similar code as in updateConnectionEndPoint()
                         boolean isParent = module instanceof CompoundModuleElement;
                         Boolean areBidirConns = isBidirectionalField.getGrayed() ? null : isBidirectionalField.getSelection();
                         boolean allowInputs = areBidirConns == null || (!areBidirConns && isSrcGate == isParent);
                         boolean allowOutputs = areBidirConns == null || (!areBidirConns && isSrcGate != isParent);
                         boolean allowInouts = areBidirConns == null || areBidirConns;
-                        
+
                         if ((!allowInputs && gateDir==INedElement.NED_GATETYPE_INPUT) ||
                                 (!allowOutputs && gateDir==INedElement.NED_GATETYPE_OUTPUT) ||
                                 (!allowInouts && gateDir==INedElement.NED_GATETYPE_INOUT))
@@ -2446,9 +2446,9 @@ public class PropertiesDialog extends TrayDialog {
      * Remove "$i" / "$o" suffix from a gate name
      */
     protected String stripSubgate(String gateName) {
-        if (gateName.endsWith("$i") || gateName.endsWith("$o")) 
+        if (gateName.endsWith("$i") || gateName.endsWith("$o"))
             return gateName.substring(0, gateName.length()-2);
-        else 
+        else
             return gateName;
     }
 
@@ -2512,7 +2512,7 @@ public class PropertiesDialog extends TrayDialog {
             if (!StringUtils.isBlank(value) && !value.contains("$")) {
                 try {
                     Double.parseDouble(value);
-                } 
+                }
                 catch (NumberFormatException e) {
                     addWarningIfNotNull(errors, fieldEditor, fieldName, "Number expected");
                 }
@@ -2526,7 +2526,7 @@ public class PropertiesDialog extends TrayDialog {
             if (!StringUtils.isBlank(value) && !value.contains("$")) {
                 try {
                     Integer.parseInt(value);
-                } 
+                }
                 catch (NumberFormatException e) {
                     addWarningIfNotNull(errors, fieldEditor, fieldName, "Integer expected");
                 }
@@ -2545,20 +2545,20 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     /**
-     * Adds an error message to the given errors list. If the message is null or if the given 
-     * field editor already has an error/warning message assigned, the method does nothing. 
-     * (One field can only display one message at a time.) 
+     * Adds an error message to the given errors list. If the message is null or if the given
+     * field editor already has an error/warning message assigned, the method does nothing.
+     * (One field can only display one message at a time.)
      */
     protected void addErrorIfNotNull(Map<IFieldEditor, String> errors, IFieldEditor fieldEditor, String fieldName, String message) {
         Assert.isTrue(fieldName.indexOf(':') == -1); // prefix cannot contain colon, otherwise we cannot strip it off in synchronizeErrors()
         if (message != null && !errors.containsKey(fieldEditor)) // only one message is added per field
             errors.put(fieldEditor, "E " + fieldName + ": " + message);
     }
-    
+
     /**
-     * Adds a warning message to the given errors list. If the message is null or if the given 
-     * field editor already has an error/warning message assigned, the method does nothing. 
-     * (One field can only display one message at a time.) 
+     * Adds a warning message to the given errors list. If the message is null or if the given
+     * field editor already has an error/warning message assigned, the method does nothing.
+     * (One field can only display one message at a time.)
      */
     protected void addWarningIfNotNull(Map<IFieldEditor, String> errors, IFieldEditor fieldEditor, String fieldName, String message) {
         Assert.isTrue(fieldName.indexOf(':') == -1); // prefix cannot contain colon, otherwise we cannot strip it off in synchronizeErrors()
@@ -2567,8 +2567,8 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     /**
-     * Displays the given errors in the dialog. Returns true if there are errors in the list, 
-     * false if there are none (it is empty or all warnings). 
+     * Displays the given errors in the dialog. Returns true if there are errors in the list,
+     * false if there are none (it is empty or all warnings).
      */
     protected boolean synchronizeErrors(Map<IFieldEditor, String> newErrors) {
         // update field error markers that changed (we mustn't touch them if they haven't changed,

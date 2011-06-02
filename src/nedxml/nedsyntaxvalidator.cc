@@ -327,7 +327,7 @@ void NEDSyntaxValidator::validateElement(SubmodulesElement *node)
 void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
 {
     //FIXME revise
-    const char *expr[] = {"like-param", "vector-size"};
+    const char *expr[] = {"like-expr", "vector-size"};
     bool opt[] = {true, true};
     checkExpressionAttributes(node, expr, opt, 2);
 
@@ -336,9 +336,9 @@ void NEDSyntaxValidator::validateElement(SubmoduleElement *node)
 
 
 //    // if there's a "like", name should be an existing module parameter name
-//    if (!opp_isempty(node->getLikeParam()))
+//    if (!opp_isempty(node->getLikeExpr()))
 //    {
-//        const char *paramName = node->getLikeParam();
+//        const char *paramName = node->getLikeExpr();
 //        NEDElement *compound = node->getParentWithTag(NED_COMPOUND_MODULE);
 //        if (!compound)
 //            INTERNAL_ERROR0(node,"occurs outside a compound-module");
@@ -394,7 +394,7 @@ void NEDSyntaxValidator::validateElement(ConnectionsElement *node)
 void NEDSyntaxValidator::validateElement(ConnectionElement *node)
 {
     //FIXME revise
-    const char *expr[] = {"condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index", "like-param"};
+    const char *expr[] = {"condition", "src-module-index", "src-gate-index", "dest-module-index", "dest-gate-index", "like-expr"};
     bool opt[] = {true, true, true, true, true, true};
     checkExpressionAttributes(node, expr, opt, 6);
 

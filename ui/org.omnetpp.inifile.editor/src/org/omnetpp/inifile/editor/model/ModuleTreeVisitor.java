@@ -126,22 +126,22 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     }
 
     public String resolveLikeType(ISubmoduleOrConnection element) {
-        // Note: we cannot use InifileUtils.resolveLikeParam(), as that calls
-        // resolveLikeParam() which relies on the data structure we are currently building
-        
+        // Note: we cannot use InifileUtils.resolveLikeExpr(), as that calls
+        // resolveLikeExpr() which relies on the data structure we are currently building
+
         if (!collectParameters)
             return null;
 
-        // get like parameter name
-        String likeParamName = element.getLikeParam();
-        if (likeParamName != null && !likeParamName.matches("[A-Za-z_][A-Za-z0-9_]*"))
+        // get like expression
+        String likeExpr = element.getLikeExpr();
+        if (likeExpr != null && !likeExpr.matches("[A-Za-z_][A-Za-z0-9_]*"))
             return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
-        // look up parameter value (note: we cannot use resolveLikeParam() here yet)
+        // look up parameter value (note: we cannot use resolveLikeExpr() here yet)
         String fullPath = StringUtils.join(fullPathStack, ".");
         ParamResolution res = null;
         for (ParamResolution r : paramResolutions)
-            if (r.paramDeclaration.getName().equals(likeParamName) && r.fullPath.equals(fullPath))
+            if (r.paramDeclaration.getName().equals(likeExpr) && r.fullPath.equals(fullPath))
                 {res = r; break;}
         if (res == null)
             return null; // likely no such parameter

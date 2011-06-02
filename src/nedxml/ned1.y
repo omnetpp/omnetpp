@@ -608,7 +608,7 @@ submodule
                   ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@5));
-                  ps.submod->setLikeParam(toString(@3)); //TODO store as expression
+                  ps.submod->setLikeExpr(toString(@3)); //TODO store as expression
                   storeBannerAndRightComments(ps.submod,@1,@6);
                 }
           submodule_body
@@ -620,7 +620,7 @@ submodule
                   ps.submod = (SubmoduleElement *)createElementWithTag(NED_SUBMODULE, ps.submods);
                   ps.submod->setName(toString(@1));
                   ps.submod->setLikeType(toString(@6));
-                  ps.submod->setLikeParam(toString(@3)); //TODO store as expression
+                  ps.submod->setLikeExpr(toString(@3)); //TODO store as expression
                   addExpression(ps.submod, "vector-size",ps.exprPos,$4);
                   storeBannerAndRightComments(ps.submod,@1,@7);
                 }

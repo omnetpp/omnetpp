@@ -675,7 +675,7 @@ public class ModuleHierarchyView extends AbstractModuleView {
                 
                 String moduleFullPath = current instanceof SubmoduleOrConnectionNode ? ((SubmoduleOrConnectionNode)current).getFullPath() : "";
                 Timeout timeout = new Timeout(100); //XXX
-                return InifileUtils.resolveLikeParam(moduleFullPath, element, section, inifileAnalyzer, inifileDocument, timeout);
+                return InifileUtils.resolveLikeExpr(moduleFullPath, element, section, inifileAnalyzer, inifileDocument, timeout);
             } catch (ParamResolutionDisabledException e) {
                 return null;
             } catch (ParamResolutionTimeoutException e) {

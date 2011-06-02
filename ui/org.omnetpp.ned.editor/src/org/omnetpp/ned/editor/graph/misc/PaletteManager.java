@@ -466,7 +466,7 @@ public class PaletteManager {
             }
         }
 
-        // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like parameter
+        // create the tool entry (if we are currently dropping an interface, we should use the IF type for the like expression
         String instanceName = StringUtils.toInstanceName(typeElement.getName());
         // KLUDGE: workaround Java's strictness when capturing local variables
         final CombinedTemplateCreationEntry toolEntries[] = new CombinedTemplateCreationEntry[1];

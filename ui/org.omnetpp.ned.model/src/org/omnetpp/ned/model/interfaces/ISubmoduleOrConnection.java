@@ -61,21 +61,21 @@ public interface ISubmoduleOrConnection extends IHasResolver, IHasDisplayString,
      * For a parametric submodule or connection, it returns the type name expression as it occurs 
      * between the angle brackets in the NED source; otherwise it returns null or the empty string.
      */
-    public String getLikeParam();
+    public String getLikeExpr();
 
     /**
      * Sets the type name expression for for a parametric submodule or connection.
      */
-    public void setLikeParam(String type);
+    public void setLikeExpr(String type);
 
     /**
-     * Returns true if the parametric type name expression (the "like-param") is just a default value,
+     * Returns true if the parametric type name expression (the "like-expr") is just a default value,
      * that is, it occurs in the NED text as <code>&lt;default(expression)&gt;</code>.
      */
     public boolean getIsDefault();
 
     /**
-     * Sets whether the parametric type name expression (the "like-param") is to be surrounded with
+     * Sets whether the parametric type name expression (the "like-expr") is to be surrounded with
      * <code>default(...)</code> in the NED source.
      */
     public void setIsDefault(boolean isDefault);

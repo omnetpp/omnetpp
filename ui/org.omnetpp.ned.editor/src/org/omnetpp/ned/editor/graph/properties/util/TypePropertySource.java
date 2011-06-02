@@ -25,7 +25,7 @@ import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
  * @author rhornig
  */
 public class TypePropertySource extends NedBasePropertySource {
-        public enum Prop { Type, Like, LikeParam }
+        public enum Prop { Type, Like, LikeExpr }
         protected IPropertyDescriptor[] descriptors;
         EditableComboBoxPropertyDescriptor typeProp;
         EditableComboBoxPropertyDescriptor likeProp;
@@ -48,11 +48,11 @@ public class TypePropertySource extends NedBasePropertySource {
             likeProp.setValidator(new ExistingTypeNameValidator(likeTypeValues));
             likeProp.setDescription("The interface type of the component");
 
-            PropertyDescriptor likeParamProp = new TextPropertyDescriptor(Prop.LikeParam, "like-param");
-            likeParamProp.setCategory(MergedPropertySource.BASE_CATEGORY);
-            likeParamProp.setDescription("Parameter for like syntax");
+            PropertyDescriptor likeExprProp = new TextPropertyDescriptor(Prop.LikeExpr, "like-expr");
+            likeExprProp.setCategory(MergedPropertySource.BASE_CATEGORY);
+            likeExprProp.setDescription("Parameter for like syntax");
 
-            descriptors = new IPropertyDescriptor[] { typeProp, likeProp, likeParamProp };
+            descriptors = new IPropertyDescriptor[] { typeProp, likeProp, likeExprProp };
         }
 
         public Object getEditableValue() {
@@ -75,8 +75,8 @@ public class TypePropertySource extends NedBasePropertySource {
                 String result = lookupFullyQualifiedName(getModel().getEnclosingLookupContext(), getModel().getLikeType());
                 return convertQNameToDisplayName(result);
             }
-            if (Prop.LikeParam.equals(propName))
-                return getModel().getLikeParam();
+            if (Prop.LikeExpr.equals(propName))
+                return getModel().getLikeExpr();
 
             return null;
         }
@@ -86,9 +86,9 @@ public class TypePropertySource extends NedBasePropertySource {
                 getModel().setType(NedElementUtilEx.friendlyTypeNameToQName((String)value));
             if (Prop.Like.equals(propName))
                 getModel().setLikeType(NedElementUtilEx.friendlyTypeNameToQName((String)value));
-            if (Prop.LikeParam.equals(propName))
-                getModel().setLikeParam((String)value);
-            
+            if (Prop.LikeExpr.equals(propName))
+                getModel().setLikeExpr((String)value);
+
             NedElementUtilEx.addImportFor(getModel()); // note: overwrites "type" (or "like-type") attribute
             // note that this will add an import statement if needed, but WILL not remove when undo is invoked
             // there is no way to distinguish here between do and undo operations
@@ -99,8 +99,8 @@ public class TypePropertySource extends NedBasePropertySource {
                 return StringUtils.isNotEmpty(getModel().getType()); ;
             if (Prop.Like.equals(propName))
                 return StringUtils.isNotEmpty(getModel().getLikeType());
-            if (Prop.LikeParam.equals(propName))
-                return StringUtils.isNotEmpty(getModel().getLikeParam());
+            if (Prop.LikeExpr.equals(propName))
+                return StringUtils.isNotEmpty(getModel().getLikeExpr());
 
             return false;
         }
@@ -110,8 +110,8 @@ public class TypePropertySource extends NedBasePropertySource {
                 getModel().setType(null);
             if (Prop.Like.equals(propName))
                 getModel().setLikeType(null);
-            if (Prop.LikeParam.equals(propName))
-                getModel().setLikeParam(null);
+            if (Prop.LikeExpr.equals(propName))
+                getModel().setLikeExpr(null);
         }
 
         public boolean isPropertyResettable(Object propName) {

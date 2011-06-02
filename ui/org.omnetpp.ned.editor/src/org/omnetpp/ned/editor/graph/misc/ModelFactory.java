@@ -99,7 +99,7 @@ public class ModelFactory implements CreationFactory {
             else {
                 ((ISubmoduleOrConnection)element).setLikeType(type);
                 // TODO maybe we could ask the user to specify the param name in a dialog box
-                ((ISubmoduleOrConnection)element).setLikeParam("paramName");
+                ((ISubmoduleOrConnection)element).setLikeExpr("paramName");
             }
         }
 

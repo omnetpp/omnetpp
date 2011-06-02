@@ -619,11 +619,11 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
     {
         // first, try to use expression between angle braces from the NED file
         if (!submod->getIsDefault()) {
-            if (!opp_isempty(submod->getLikeParam()))
-                return modp->par(submod->getLikeParam()).stringValue();
-            ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
-            if (likeParamExpr)
-                return evaluateAsString(likeParamExpr, modp, false);
+            if (!opp_isempty(submod->getLikeExpr()))
+                return modp->par(submod->getLikeExpr()).stringValue();
+            ExpressionElement *likeExprElement = findExpression(submod, "like-expr");
+            if (likeExprElement)
+                return evaluateAsString(likeExprElement, modp, false);
         }
 
         std::string submodFullName = submodName;
@@ -655,11 +655,11 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
 
         // last, use default(expression) between angle braces from the NED file
         if (submod->getIsDefault()) {
-            if (!opp_isempty(submod->getLikeParam()))
-                return modp->par(submod->getLikeParam()).stringValue();
-            ExpressionElement *likeParamExpr = findExpression(submod, "like-param");
-            if (likeParamExpr)
-                return evaluateAsString(likeParamExpr, modp, false);
+            if (!opp_isempty(submod->getLikeExpr()))
+                return modp->par(submod->getLikeExpr()).stringValue();
+            ExpressionElement *likeExprElement = findExpression(submod, "like-expr");
+            if (likeExprElement)
+                return evaluateAsString(likeExprElement, modp, false);
         }
         throw cRuntimeError(modp, "Unable to determine type name for submodule %s, missing entry %s.%s and no default value", submodName, key.c_str(), CFGID_TYPENAME->getName());
     }
@@ -1138,11 +1138,11 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
     {
         // first, try to use expression betweeen angle braces from the NED file
         if (!conn->getIsDefault()) {
-            if (!opp_isempty(conn->getLikeParam()))
-                return parentmodp->par(conn->getLikeParam()).stringValue();
-            ExpressionElement *likeParamExpr = findExpression(conn, "like-param");
-            if (likeParamExpr)
-                return evaluateAsString(likeParamExpr, parentmodp, false);
+            if (!opp_isempty(conn->getLikeExpr()))
+                return parentmodp->par(conn->getLikeExpr()).stringValue();
+            ExpressionElement *likeExprElement = findExpression(conn, "like-expr");
+            if (likeExprElement)
+                return evaluateAsString(likeExprElement, parentmodp, false);
         }
 
         // produce key to identify channel within the parent module, e.g. "in[3].channel" or "queue.out.channel"
@@ -1174,11 +1174,11 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 
         // last, use default(expression) betweeen angle braces from the NED file
         if (conn->getIsDefault()) {
-            if (!opp_isempty(conn->getLikeParam()))
-                return parentmodp->par(conn->getLikeParam()).stringValue();
-            ExpressionElement *likeParamExpr = findExpression(conn, "like-param");
-            if (likeParamExpr)
-                return evaluateAsString(likeParamExpr, parentmodp, false);
+            if (!opp_isempty(conn->getLikeExpr()))
+                return parentmodp->par(conn->getLikeExpr()).stringValue();
+            ExpressionElement *likeExprElement = findExpression(conn, "like-expr");
+            if (likeExprElement)
+                return evaluateAsString(likeExprElement, parentmodp, false);
         }
         throw cRuntimeError(parentmodp, "Unable to determine type name for channel: missing config entry %s.%s and no default value", key.c_str(), CFGID_TYPENAME->getName());
     }

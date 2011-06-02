@@ -111,7 +111,7 @@
      name               NMTOKEN   #REQUIRED
      type               CDATA     #IMPLIED
      like-type          CDATA     #IMPLIED
-     like-param         CDATA     #IMPLIED
+     like-expr          CDATA     #IMPLIED
      is-default         (true|false) "false"
      vector-size        CDATA     #IMPLIED>
 
@@ -135,7 +135,7 @@
      dest-gate-subg      (i|o)     #IMPLIED
      type                CDATA     #IMPLIED
      like-type           CDATA     #IMPLIED
-     like-param          CDATA     #IMPLIED
+     like-expr           CDATA     #IMPLIED
      is-default         (true|false) "false"
      is-bidirectional   (true|false) "false"
      is-forward-arrow   (true|false) "true">

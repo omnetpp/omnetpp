@@ -723,7 +723,7 @@ void NED1Generator::doSubmodule(SubmoduleElement *node, const char *indent, bool
     if (!opp_isempty(node->getLikeType()))
     {
         // "like" version
-        printExpression(node, "like-param", indent); // this (incidentally) also works if like-param contains a property (ie. starts with "@")
+        printExpression(node, "like-expr", indent); // this (incidentally) also works if like-expr contains a property (ie. starts with "@")
         printOptVector(node, "vector-size",indent);
         OUT << " like " << node->getLikeType();
     }

@@ -1106,9 +1106,9 @@ submoduleheader
                   ps.submod->setType(removeSpaces(@3).c_str());
                   if ($4) ps.submod->appendChild($4);
                 }
-        | submodulename ':' likeparam LIKE dottedname opt_condition
+        | submodulename ':' likeexpr LIKE dottedname opt_condition
                 {
-                  addOptionalExpression(ps.submod, "like-param", ps.exprPos, $3);
+                  addOptionalExpression(ps.submod, "like-expr", ps.exprPos, $3);
                   ps.submod->setLikeType(removeSpaces(@5).c_str());
                   ps.submod->setIsDefault(ps.isDefault);
                   if ($6) ps.submod->appendChild($6);
@@ -1129,7 +1129,7 @@ submodulename
                 }
         ;
 
-likeparam
+likeexpr
         : '<' '>'
                 { $$ = NULL; ps.exprPos = makeEmptyYYLTYPE(); ps.isDefault = false; }
         | '<' expression '>' /* XXX this expression is the source of one shift-reduce conflict because it may contain '>' */
@@ -1454,9 +1454,9 @@ channelspec_header
                 {
                   ps.conn->setType(removeSpaces(@1).c_str());
                 }
-        | likeparam LIKE dottedname
+        | likeexpr LIKE dottedname
                 {
-                  addOptionalExpression(ps.conn, "like-param", ps.exprPos, $1);
+                  addOptionalExpression(ps.conn, "like-expr", ps.exprPos, $1);
                   ps.conn->setLikeType(removeSpaces(@3).c_str());
                   ps.conn->setIsDefault(ps.isDefault);
                 }

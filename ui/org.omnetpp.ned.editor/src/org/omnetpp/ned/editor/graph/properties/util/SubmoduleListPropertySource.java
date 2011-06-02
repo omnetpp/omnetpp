@@ -42,7 +42,7 @@ public class SubmoduleListPropertySource extends NedBasePropertySource {
                 definedIn= " (inherited from "+smodule.getCompoundModule().getName()+")";
             }
             String typeString = "".equals(smodule.getLikeType()) || smodule.getLikeType() == null ?
-                            smodule.getType() : "<"+smodule.getLikeParam()+"> like "+smodule.getLikeType();
+                            smodule.getType() : "<"+smodule.getLikeExpr()+"> like "+smodule.getLikeType();
             pdesc[totalSubmoduleCount] = new PropertyDescriptor(smodule, typeString);
             pdesc[totalSubmoduleCount].setCategory(CATEGORY);
             pdesc[totalSubmoduleCount].setDescription("Submodule "+smodule.getNameWithIndex()+" with type "+typeString

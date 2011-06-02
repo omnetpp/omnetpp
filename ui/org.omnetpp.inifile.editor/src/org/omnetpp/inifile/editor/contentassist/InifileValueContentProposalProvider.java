@@ -380,7 +380,7 @@ s	 * before getting presented to the user.
         INedTypeResolver res = NedResourcesPlugin.getNedResources();
         String paramName = param.paramDeclaration.getName();
         for (SubmoduleElementEx submodule : module.getSubmodules()) {
-            if (submodule.getLikeParam().equals(paramName)) {
+            if (submodule.getLikeExpr().equals(paramName)) {
                 // resolve interface, then add to the result
                 //Debug.println("found 'like' submodule: " + submodule + " --> " + submodule.getLikeType());
                 String likeType = submodule.getLikeType();

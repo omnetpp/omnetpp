@@ -189,16 +189,16 @@ public class InifileUtils {
 	 * Resolves the run-time NED type of a "like" submodule, using the parameter
 	 * settings in the inifile. Returns null if the lookup is unsuccessful.
 	 */
-	public static String resolveLikeParam(String moduleFullPath, ISubmoduleOrConnection element, String activeSection,
+	public static String resolveLikeExpr(String moduleFullPath, ISubmoduleOrConnection element, String activeSection,
 	                                        InifileAnalyzer analyzer, IReadonlyInifileDocument doc, ITimeout timeout)
 	    throws ParamResolutionDisabledException, ParamResolutionTimeoutException {
-		// get like parameter name
-		String likeParamName = element.getLikeParam();
-		if (likeParamName == null || !likeParamName.matches("[A-Za-z0-9_]+"))
+		// get "like" expression
+		String likeExpr = element.getLikeExpr();
+		if (likeExpr == null || !likeExpr.matches("[A-Za-z0-9_]+"))
 			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
 		// look up parameter value
-		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeParamName, activeSection, timeout);
+		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeExpr, activeSection, timeout);
 		if (res == null)
 			return null; // likely no such parameter
 		String value = InifileUtils.getParamValue(res, doc);
