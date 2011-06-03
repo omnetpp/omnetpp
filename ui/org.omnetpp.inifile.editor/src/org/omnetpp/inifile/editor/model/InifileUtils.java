@@ -192,25 +192,91 @@ public class InifileUtils {
 	public static String resolveLikeExpr(String moduleFullPath, ISubmoduleOrConnection element, String activeSection,
 	                                        InifileAnalyzer analyzer, IReadonlyInifileDocument doc, ITimeout timeout)
 	    throws ParamResolutionDisabledException, ParamResolutionTimeoutException {
-		// get "like" expression
-		String likeExpr = element.getLikeExpr();
-		if (likeExpr == null || !likeExpr.matches("[A-Za-z0-9_]+"))
-			return null;  // sorry, we are only prepared to resolve parent module parameters (but not expressions)
 
-		// look up parameter value
-		ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeExpr, activeSection, timeout);
-		if (res == null)
-			return null; // likely no such parameter
-		String value = InifileUtils.getParamValue(res, doc);
-		if (value == null)
-			return null; // likely unassigned
-		try {
-			value = Common.parseQuotedString(value);
-		} catch (RuntimeException e) {
-			return null; // something is wrong: value is not a string constant?
-		}
-		return value;
+        // get module type expression
+        String likeExpr = element.getLikeExpr();
+
+        // note: the following lookup order is based on src/sim/netbuilder code, namely cNEDNetworkBuilder::getSubmoduleTypeName()
+
+        //XXX this code is a near duplicate of one in ModuleTreeVisitor
+        
+        // first, try to use expression between angle braces from the NED file
+        if (!element.getIsDefault() && StringUtils.isNotEmpty(likeExpr)) {
+            return evaluateLikeExpr(likeExpr, moduleFullPath, activeSection, analyzer, doc, timeout);
+        }
+
+        // then, use **.typename from NED deep param assignments
+        // XXX this is not implemented yet
+
+        // then, use **.typename option in the configuration if exists
+        String name = "channel";  // unless it's a submodule:
+        if (element instanceof SubmoduleElement) {
+            name = ((SubmoduleElement)element).getName();
+            if (!StringUtils.isEmpty(((SubmoduleElement)element).getVectorSize()))
+                name += "[*]";
+        }
+        String key = moduleFullPath + "." + name + "." + ConfigRegistry.TYPENAME;
+        List<SectionKey> sectionKeys = InifileUtils.lookupParameter(key, false, doc.getSectionChain(activeSection), doc);
+
+        // prefer the one with all asterisk indices, "[*]"
+        SectionKey chosenKey = null;
+        for (SectionKey sectionKey : sectionKeys)
+            if (ParamUtil.isTotalParamAssignment(sectionKey.key))
+                chosenKey = sectionKey;
+        if (chosenKey == null && !sectionKeys.isEmpty())
+            chosenKey = sectionKeys.get(0);
+        if (chosenKey != null) {
+            // we only understand if there's a string constant there
+            String value = doc.getValue(chosenKey.section, chosenKey.key);
+            try {
+                return Common.parseQuotedString(value);
+            } 
+            catch (RuntimeException e) {
+                return null; // it is something we don't understand
+            }
+        }
+        
+        // then, use **.typename=default() expressions from NED deep param assignments
+        // XXX this is not implemented yet
+
+        // last, use default(expression) between angle braces from the NED file
+        if (StringUtils.isEmpty(likeExpr))
+            return null; // cannot happen (<default()> is not an accepted NED syntax)
+        return evaluateLikeExpr(likeExpr, moduleFullPath, activeSection, analyzer, doc, timeout);
 	}
+
+	protected static String evaluateLikeExpr(String likeExpr, String moduleFullPath, String activeSection, 
+	        InifileAnalyzer analyzer, IReadonlyInifileDocument doc, ITimeout timeout) 
+	throws ParamResolutionDisabledException, ParamResolutionTimeoutException {
+        // understands string literals and references to parent module parameters;
+        // return null for anything else (i.e. when we are not sophisticated enough to figure it out) 
+        if (likeExpr.charAt(0) == '"') {
+            try {
+                // looks like a string literal
+                return Common.parseQuotedString(likeExpr);
+            } 
+            catch (RuntimeException e) {
+                return null;  // nope
+            }
+        }
+        else if (likeExpr.matches("[A-Za-z_][A-Za-z0-9_]*")) {
+            // identifier: it should be parameter of the parent module; we should look up and 
+            // return its value (note: we cannot use InifileUtils.resolveLikeParam() here yet)
+            ParamResolution res = analyzer.getParamResolutionForModuleParam(moduleFullPath, likeExpr, activeSection, timeout);
+            String value = getParamValue(res, doc);
+            if (value == null)
+                return null; // likely unassigned
+            try {
+                return Common.parseQuotedString(value);
+            } 
+            catch (RuntimeException e) {
+                return null; // value is not a string literal
+            }
+        }
+        else {
+            return null; 
+        }
+    }
 
 	/**
 	 * Returns the submodule type name. If it uses "like", returns the "like" name.

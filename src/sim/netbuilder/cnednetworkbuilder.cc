@@ -649,7 +649,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
         if (!submodTypeName.empty())
             return submodTypeName;
 
-        // then, use default() expression from NED deep param assignments
+        // then, use **.typename=default() expressions from NED deep param assignments
         if (!defaultDeepSubmodTypeName.empty())
             return defaultDeepSubmodTypeName;
 
