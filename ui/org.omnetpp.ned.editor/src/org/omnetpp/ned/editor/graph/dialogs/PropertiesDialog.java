@@ -655,7 +655,7 @@ public class PropertiesDialog extends TrayDialog {
             likeTypeField = createNedTypeSelector(group, false, areSubmodules ? MODULEINTERFACE_FILTER : CHANNELINTERFACE_FILTER);
             createLabel(group, "Type expression:*", true);
             likeExprField = createText(group, 20);
-            createWrappingLabel(group, "* Leave empty to use **.type-name= syntax in ini files", true, 2);
+            createWrappingLabel(group, "* Leave empty to use **.typename= syntax in ini files", true, 2);
 
             if (!areSubmodules) {
                 createLabel(group, "", false, 2);  // separator

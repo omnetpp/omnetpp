@@ -46,7 +46,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
         KIND_NONE,
         KIND_MODULE,
         KIND_SIMPLE_MODULE,
-        KIND_UNSPECIFIED_TYPE, // for 'type-name' option (object is submodule/channel declared with 'like')
+        KIND_UNSPECIFIED_TYPE, // for 'typename' option (object is submodule/channel declared with 'like')
         KIND_PARAMETER,
         KIND_STATISTIC,
         KIND_SCALAR,

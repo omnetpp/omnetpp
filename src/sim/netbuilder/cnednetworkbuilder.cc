@@ -641,7 +641,7 @@ std::string cNEDNetworkBuilder::getSubmoduleTypeName(cModule *modp, SubmoduleEle
                 defaultDeepSubmodTypeName = submodTypeName;
         }
 
-        // then, use **.type-name option in the configuration if exists
+        // then, use **.typename option in the configuration if exists
         std::string key = modp->getFullPath() + "." + submodName;
         if (index != -1)
             key = opp_stringf("%s[%d]", key.c_str(), index);
