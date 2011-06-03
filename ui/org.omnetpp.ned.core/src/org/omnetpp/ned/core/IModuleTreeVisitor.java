@@ -52,6 +52,7 @@ public interface IModuleTreeVisitor {
 	 * actual (resolved) module type, or null if it cannot (or does not wish to)
 	 * resolve it.
 	 */
+    // TODO: this should probably return a string array, because if the submodule is a vector, different indices may have different NED types
 	String resolveLikeType(ISubmoduleOrConnection element);
 
 	/**

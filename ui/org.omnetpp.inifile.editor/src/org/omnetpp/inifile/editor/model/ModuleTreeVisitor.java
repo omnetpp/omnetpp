@@ -16,14 +16,16 @@ import org.omnetpp.ned.core.IModuleTreeVisitor;
 import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
+import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
 /**
  * Module tree visitor for collecting module parameters and properties.
+ * It can optionally use an inifile as additional input for parameter values, etc.
  */
 class ModuleTreeVisitor  implements IModuleTreeVisitor {
     
-    private final IReadonlyInifileDocument doc;
-    private final String[] sectionChain;
+    private final IReadonlyInifileDocument doc; // null if running without an inifile
+    private final String[] sectionChain; // null if running without an inifile
     private final IProgressMonitor monitor;
     private final boolean collectParameters;
     private final String[] propertiesToCollect;     // names of properties to be collected, null if none
@@ -38,7 +40,7 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
     
     /**
-     * For traversing a given ned element or ned type.
+     * For traversing a given NED element or NED type.
      */
     public ModuleTreeVisitor(boolean collectParameters, String[] propertiesToCollect, PatternMatcher moduleNamePattern) {
         this.doc = null;
@@ -129,6 +131,9 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         // Note: we cannot use InifileUtils.resolveLikeExpr(), as that calls
         // resolveLikeExpr() which relies on the data structure we are currently building
 
+        // TODO: we should probably return a string array, because if the submodule is a vector,
+        // different indices may have different NED types.
+       
         if (!collectParameters)
             return null;
 

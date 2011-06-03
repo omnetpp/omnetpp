@@ -11,7 +11,6 @@ import org.eclipse.core.resources.IProject;
 import org.omnetpp.common.engine.PatternMatcher;
 import org.omnetpp.common.util.CollectionUtils;
 import org.omnetpp.common.util.StringUtils;
-import org.omnetpp.ned.engine.NEDParser;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
@@ -251,6 +250,10 @@ public class ParamUtil {
         return !paramAssignment.getIsPattern() || isTotalParamAssignment(paramAssignment.getName());
     }
 
+    /**
+     * Expects a module path pattern, and returns true if it matches all module indices 
+     * at every level, i.e. all bracketed expressions in it are "[*]".
+     */
     public static boolean isTotalParamAssignment(String pattern) {
         for (int i = 0; i < pattern.length(); i++) {
             char ch = pattern.charAt(i);

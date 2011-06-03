@@ -131,18 +131,18 @@ public class InifileUtils {
                 return doc.getValue(section, key);
         return defaultValue;
     }
-	
-	/**
-	 * Given a parameter's fullPath, returns the key of the matching
-	 * inifile entry, or null if the parameter matches nothing. If hasNedDefault
-	 * is set, "=default" entries are also considered, otherwise they are ignored
-	 */
+
+    /**
+     * Given a parameter's fullPath, returns the key of the matching inifile
+     * entry, or null if the parameter matches nothing. If hasNedDefault is set,
+     * "=default" entries are also considered, otherwise they are ignored.
+     * 
+     * Note: we need to return multiple matches because of keys like
+     * "*.node[0].power=...", "*.node[1..5].power=...", and
+     * "net.node[6..].power=..." etc. Scanning stops at "*.node[*].power="
+     * because that eats all matching params (anything after that cannot match.)
+     */
 	public static List<SectionKey> lookupParameter(String paramFullPath, boolean hasNedDefault, String[] sectionChain, IReadonlyInifileDocument doc) {
-		//
-		// note: we need to return multiple matches because of keys like "*.node[0].power=...",
-	    // "*.node[1..5].power=...", and "net.node[6..].power=..." etc. Scanning stops at
-	    // "*.node[*].power=" because that eats all matching params (anything after that cannot match)
-	    //
 	    List<SectionKey> result = new ArrayList<SectionKey>();
 		for (String section : sectionChain) {
 			for (String key : doc.getKeys(section)) {
