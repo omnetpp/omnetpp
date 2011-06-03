@@ -43,7 +43,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
@@ -146,6 +150,10 @@ public class DependencyCache {
     
     // list of projects whose files in fileIncludes are up to date
     private Set<IProject> projectsWithUpToDateFileIncludes = new HashSet<IProject>();
+    
+    // we collect invalidation requests in this collection, so that listeners don't need to wait 
+    // on DependencyCache's lock while it is busy scanning files and computing dependency info 
+    private Set<IProject> projectsToInvalidate = new HashSet<IProject>();
 
     static class DependencyData {
         IProject project;
@@ -160,7 +168,15 @@ public class DependencyCache {
 
     private DelayedJob delayedJob = new DelayedJob(DELAY_MILLIS) {
         public void run() {
-            refreshDependencies(ProjectUtils.getOpenProjects());
+            Job job = new Job("Analyzing includes...") {
+                @Override
+                protected IStatus run(IProgressMonitor monitor) {
+                    refreshDependencies(ProjectUtils.getOpenProjects());
+                    return Status.OK_STATUS;
+                }
+            };
+            job.setPriority(Job.SHORT);
+            job.schedule();
         }
     };
     
@@ -203,7 +219,7 @@ public class DependencyCache {
                             int kind = delta.getKind();
                             if (kind==IResourceDelta.ADDED || kind==IResourceDelta.REMOVED || kind==IResourceDelta.CHANGED) {
                                 if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource)) {
-                                    projectChanged(resource.getProject());
+                                    invalidateProject(resource.getProject());
                                     return false;
                                 }
                             }
@@ -217,52 +233,54 @@ public class DependencyCache {
             Activator.logError(e);
         }
     }
-    
+
     protected void projectDescriptionChanged(CProjectDescriptionEvent e) {
-        projectChanged(e.getProject());
+        invalidateProject(e.getProject());
     }
     
     /**
-     * A file or something in the project has changed. We need to invalidate
-     * relevant parts of the cache.
+     * Invalidates parts of the cache related to the project. To be called when a source file 
+     * or something in the project has changed. 
      */
-    synchronized protected void projectChanged(IProject project) {
-        projectsWithUpToDateFileIncludes.remove(project);
-        for (IProject p : projectDependencyData.keySet().toArray(new IProject[]{}))
-            if (projectDependencyData.get(p).projectGroup.contains(project))
-                projectDependencyData.remove(p);
-        delayedJob.restartTimer();
+    protected /*unsynchronized*/ void invalidateProject(IProject project) {
+        // we don't invalidate the cache directly, because DependencyCache may be busy (locked),
+        // and we don't want to block the listener that invoked us. Instead we just add the 
+        // invalidation request to a todo list which is only locked for short intervals.
+        synchronized(projectsToInvalidate) {
+            projectsToInvalidate.add(project);
+            delayedJob.restartTimer();
+        }
     }
 
     /**
      * Discards cached #include information for this project. Useful for incremental
      * builder invocations with type==CLEAN_BUILD.
      */
-    synchronized public void clean(IProject project) {
+    public synchronized void clean(IProject project) {
         for (IFile f : fileIncludes.keySet().toArray(new IFile[]{}))
             if (f.getProject().equals(project))
                 fileIncludes.remove(f);
-        projectChanged(project);
+        invalidateProject(project);
     }
 
     /**
      * Computes dependency information for the given projects, and updates 
      * corresponding markers as a side effect.
      */
-    synchronized public void refreshDependencies(IProject[] projects) {
+    public synchronized void refreshDependencies(IProject[] projects) {
         Debug.println("DependencyCache: running delayed refreshDependencies() job");
         for (IProject project : projects) 
             if (CoreModel.getDefault().getProjectDescription(project) != null)  // i.e. is a CDT project
                 getProjectDependencyData(project); // refresh dependency data and update markers
     }
-    
+
     /**
      * For each folder, it determines which other folders it depends on (i.e. includes files from).
      *
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    synchronized public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
+    public synchronized Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
         DependencyData projectData = getProjectDependencyData(project);
         return projectData.folderDependencies;
     }
@@ -277,7 +295,7 @@ public class DependencyCache {
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    synchronized public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
+    public synchronized Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
         DependencyData projectData = getProjectDependencyData(project);
         return projectData.perFileDependencies;
     }
@@ -286,18 +304,41 @@ public class DependencyCache {
      * Return the given project and all projects referenced from it (transitively).
      * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
-    synchronized public IProject[] getProjectGroup(IProject project) {
+    public synchronized IProject[] getProjectGroup(IProject project) {
         DependencyData projectData = getProjectDependencyData(project);
         return projectData.projectGroup.toArray(new IProject[]{});
     }
 
+    /**
+     * The central function of DependencyCache, all getters delegate here to obtain all
+     * dependency data related to the project. May be a long-running operation, so it is
+     * supposed to be called from a background thread. 
+     * 
+     * All methods that invoke this MUST be synchronized (or directly lock the DependencyCache 
+     * object).
+     */
     protected DependencyData getProjectDependencyData(IProject project) {
+        // do the invalidation tasks collected in projectsToInvalidate
+        purgeInvalidatedData();
+        
+        // then recompute stuff if needed 
         if (!projectDependencyData.containsKey(project)) {
-            // compute and store dependency data
             DependencyData data = computeDependencies(project);
             projectDependencyData.put(project, data);
         }
         return projectDependencyData.get(project);
+    }
+
+    protected void purgeInvalidatedData() {
+        synchronized (projectsToInvalidate) {
+            for (IProject project : projectsToInvalidate) {
+                projectsWithUpToDateFileIncludes.remove(project);
+                for (IProject p : projectDependencyData.keySet().toArray(new IProject[]{}))
+                    if (projectDependencyData.get(p).projectGroup.contains(project))
+                        projectDependencyData.remove(p);
+            }
+            projectsToInvalidate.clear();
+        }
     }
 
     protected DependencyData computeDependencies(IProject project) {
@@ -669,7 +710,16 @@ public class DependencyCache {
         return result;
     }
 
-    public static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
+    protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, IResource file, int severity, String message, int line) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put(IMarker.SEVERITY, severity);
+        if (line >= 0)
+            map.put(IMarker.LINE_NUMBER, line);
+        map.put(IMarker.MESSAGE, message);
+        markerSynchronizer.addMarker(file, MakefileBuilder.MARKER_ID, map);
+    }
+
+    public synchronized static void dumpFolderDependencies(Map<IContainer, Set<IContainer>> deps) {
         Debug.println("Folder dependencies:");
         for (IContainer folder : deps.keySet()) {
             Debug.print("  " + folder.getFullPath().toString() + " depends on: ");
@@ -680,21 +730,12 @@ public class DependencyCache {
         }
     }
 
-    public void dumpPerFileDependencies(IProject project) {
+    public synchronized void dumpPerFileDependencies(IProject project) {
     	Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project);
     	for(IContainer con : perFileDependencies.keySet()) {
     		Debug.println("folder: "+con.getFullPath());
     		for(IFile file : perFileDependencies.get(con).keySet())
     			Debug.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
     	}
-    }
-
-    protected void addMarker(ProblemMarkerSynchronizer markerSynchronizer, IResource file, int severity, String message, int line) {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put(IMarker.SEVERITY, severity);
-        if (line >= 0)
-            map.put(IMarker.LINE_NUMBER, line);
-        map.put(IMarker.MESSAGE, message);
-        markerSynchronizer.addMarker(file, MakefileBuilder.MARKER_ID, map);
     }
 }
