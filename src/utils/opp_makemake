@@ -1192,6 +1192,14 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {sourcedirs:}COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 {sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 {sourcedirs:}
+# we want to recompile everything if COPTS changes,
+# so we store COPTS into $COPTS_FILE and have object 
+# files depend on it
+COPTS_FILE = $O/.last-copts
+ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+endif
+
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
 # >>>
@@ -1249,7 +1257,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### Pattern rules for cc files. For gnu make a single rule is enough;
 ### for nmake we need per-directory rules, plus one for "." (even though
 ### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
-{sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc}
+{sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc} $(COPTS_FILE)
 {sourcedirs:}{~nmake:}	@$(MKPATH) $(dir $@)
 {sourcedirs:}{~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
 {sourcedirs:}{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
