@@ -167,7 +167,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 			fProgText.setText(exeName);
 
             fInifileText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES,"" ).trim());
+
+            updateDialogStateInProgress = true;  // disable the change notification until we finish filling all controls and we are in consistent state
+                                                 // disable only AFTER setting the INI file so the configuration selection combo is filled out automatically
+            
             setConfigName(config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim());
+            
             if (debugLaunchMode)
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, ""));
             else
@@ -203,6 +208,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             fShowDebugViewButton.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false));
 
             // bring dialog to consistent state
+            updateDialogStateInProgress = false;
             updateDialogState();
 
         } catch (CoreException ce) {
@@ -226,9 +232,6 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, strippedRun);
 
-        if (fParallelismSpinner != null)
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
-
         if (fCmdenvButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "Cmdenv");
         else if (fTkenvButton.getSelection())
@@ -236,6 +239,11 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         else if (fOtherEnvButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, fOtherEnvText.getText());
         else configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
+
+        // this MUST be filled only after the environment buttons are set otherwise
+        // the UpdateDialogState method will set the value to 1 (the default if Tkenv is used)
+        if (fParallelismSpinner != null)
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, fParallelismSpinner.getSelection());
 
         if (fEventLogYesButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RECORD_EVENTLOG, "true");
