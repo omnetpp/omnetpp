@@ -16,6 +16,7 @@ import org.omnetpp.inifile.editor.model.ConfigRegistry;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.ITimeout;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
+import org.omnetpp.inifile.editor.model.InifileUtils;
 import org.omnetpp.inifile.editor.model.KeyType;
 import org.omnetpp.inifile.editor.model.ParamCollector;
 import org.omnetpp.inifile.editor.model.ParamResolution;
@@ -209,10 +210,18 @@ public class NedElementDetector {
     }
     
     private void collectMatchingModules(PatternMatcher fullNameMatcher, String section, Set<INedElement> elements) {
+        addMatchingNetwork(fullNameMatcher, section, elements);
         Map<String,ISubmoduleOrConnection> modules = ParamCollector.collectModules(doc, section, fullNameMatcher, nedResolver, null);
         elements.addAll(modules.values());
     }
     
+    private void addMatchingNetwork(PatternMatcher fullNameMatcher, String section, Set<INedElement> elements) {
+        String networkName = InifileUtils.lookupNetwork(doc, section);
+        INedTypeInfo network = networkName != null ? ParamCollector.resolveNetwork(doc, nedResolver, networkName) : null;
+        if (network != null && fullNameMatcher.matches(network.getName()))
+            elements.add(network.getNedElement());
+    }
+
     private static INedElement getNetworkElement(ParamResolution resolution) {
         // either the parent of the first element in elementPath
         if (resolution.elementPath.length >= 2 && 

@@ -96,7 +96,7 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         String fullPath = StringUtils.join(fullPathStack, ".");
         
         if (moduleNamePattern == null || moduleNamePattern.matches(fullPath)) {
-            if (moduleNamePattern != null)
+            if (moduleNamePattern != null && element != null)
                 modules.put(fullPath,element);
             
             // collect parameters
