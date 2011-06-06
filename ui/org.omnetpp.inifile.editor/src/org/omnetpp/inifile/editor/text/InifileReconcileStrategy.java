@@ -25,9 +25,7 @@ import org.omnetpp.inifile.editor.editors.InifileEditorData;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument;
 import org.omnetpp.inifile.editor.model.IReadonlyInifileDocument.LineInfo;
 import org.omnetpp.inifile.editor.model.InifileParser;
-import org.omnetpp.inifile.editor.model.ParamResolutionTimeoutException;
 import org.omnetpp.inifile.editor.model.ParseException;
-import org.omnetpp.inifile.editor.model.Timeout;
 
 /**
  * This class has one instance per editor. It performs

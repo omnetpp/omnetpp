@@ -332,7 +332,6 @@ public class ModuleParametersView extends AbstractModuleView {
 		menuManager.add(pinAction);
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void sortTableInput(TableColumn column, final int sortDirection) {
 		Object[] input = (Object[]) tableViewer.getInput();
 
@@ -349,7 +348,7 @@ public class ModuleParametersView extends AbstractModuleView {
 			//XXX too slow! cache labels  before sorting?
 			final int finalColumnNumber = columnNumber;
 			final ITableLabelProvider labelProvider = (ITableLabelProvider) tableViewer.getLabelProvider();
-			Arrays.sort(input, new Comparator() {
+			Arrays.sort(input, new Comparator<Object>() {
 				public int compare(Object o1, Object o2) {
 					String label1 = labelProvider.getColumnText(o1, finalColumnNumber);
 					String label2 = labelProvider.getColumnText(o2, finalColumnNumber);

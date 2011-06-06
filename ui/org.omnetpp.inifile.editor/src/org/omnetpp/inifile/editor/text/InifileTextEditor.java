@@ -121,7 +121,6 @@ public class InifileTextEditor extends TextEditor {
 	 * Return projection support for the editor.
 	 */
 	@Override
-    @SuppressWarnings("unchecked")
 	public Object getAdapter(Class required) {
 		if (projectionSupport != null) {
 			Object adapter = projectionSupport.getAdapter(getSourceViewer(), required);

@@ -259,9 +259,8 @@ public class SectionsPage extends FormPage {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	protected static String[] getSectionNamesFromTreeSelection(ISelection selection) {
-		ArrayList list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 		if (selection instanceof IStructuredSelection) {
 			for (Object item : ((IStructuredSelection)selection).toArray()) {
 				String payload = getSectionNameFromTreeNode(item);
