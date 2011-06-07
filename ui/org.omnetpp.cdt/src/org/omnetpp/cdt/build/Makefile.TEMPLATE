@@ -99,14 +99,14 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {sourcedirs:}COPTS = $(CFLAGS) {defines} $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 {sourcedirs:}MSGCOPTS = $(INCLUDE_PATH){dllsymbol? -P}{dllsymbol}{dllsymbol?_API}
 {sourcedirs:}
-# we want to recompile everything if COPTS changes,
-# so we store COPTS into $COPTS_FILE and have object 
-# files depend on it
-COPTS_FILE = $O/.last-copts
-ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
-$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
-endif
-
+{~nmake:}# we want to recompile everything if COPTS changes,
+{~nmake:}# so we store COPTS into $COPTS_FILE and have object
+{~nmake:}# files depend on it
+{~nmake:}COPTS_FILE = $O/.last-copts
+{~nmake:}ifneq ("$(COPTS)","$(shell cat $(COPTS_FILE) 2>/dev/null || echo '')")
+{~nmake:}$(shell $(MKPATH) "$O" && echo "$(COPTS)" >$(COPTS_FILE))
+{~nmake:}endif
+{~nmake:}
 #------------------------------------------------------------------------------
 # User-supplied makefile fragment(s)
 # >>>
