@@ -173,8 +173,10 @@ clean: makefiles
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.* 2>nul
 	-rmdir /s /q $(OMNETPP_OUT_DIR:/=\)\$(CONFIGNAME) 2>nul
 	-rmdir /s /q $(OMNETPP_LIB_DIR:/=\)\$(CONFIGNAME) 2>nul
-	-for %%i in ( $(BASE) $(JNILIBS) ) do \
+	-for %%i in ( $(BASE) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
+	-for %%i in ( $(JNILIBS) ) do \
+	    cd /d $(OMNETPP_UI_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-cd $(OMNETPP_TEST_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE) clean
@@ -183,8 +185,10 @@ clean: makefiles
 cleanall: makefiles
 	-del /s /q $(OMNETPP_LIB_DIR:/=\)\*.* 2>nul
 	-rmdir /s /q $(OMNETPP_OUT_DIR:/=\) 2>nul
-	-for %%i in ( $(BASE) $(JNILIBS) ) do \
+	-for %%i in ( $(BASE) ) do \
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
+	-for %%i in ( $(JNILIBS) ) do \
+	    cd /d $(OMNETPP_UI_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) cleanall
 	-cd $(OMNETPP_TEST_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE) clean
