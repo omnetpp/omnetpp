@@ -159,6 +159,9 @@ clean: makefiles
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
+	for i in $(JNILIBS); do \
+	    (cd $(OMNETPP_UI_DIR)/$$i && $(MAKE) clean); \
+	done
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
@@ -170,6 +173,9 @@ cleanall: makefiles
 	-rm -rf $(OMNETPP_LIB_DIR)/*
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
+	done
+	for i in $(JNILIBS); do \
+	    (cd $(OMNETPP_UI_DIR)/$$i && $(MAKE) clean); \
 	done
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) cleanall); fi;\
