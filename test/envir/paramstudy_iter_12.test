@@ -1,0 +1,19 @@
+%description:
+Tests scenario generation: nesting with empty loops
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${a=0..10}
+*.b = ${b=($a%2==0?1:0)..0}
+*.c = ${c=($a%3==0?1:0)..0}
+*.d = ${d=($a%5==0?1:0)..0}
+*.e = ${e=($a%7==0?1:0)..0}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 1
+Run 0: $a=1, $b=0, $c=0, $d=0, $e=0, $repetition=0
+
+End.

@@ -3,7 +3,7 @@ Tests scenario generation: constraint in a base section
 
 %inifile: omnetpp.ini
 [Config Base]
-constraint = x < y
+constraint = $x < $y
 
 [Config Test]
 extends=Base

@@ -349,7 +349,6 @@ void SectionBasedConfiguration::setupVariables(const char *configName, int runNu
     {
         const char *varid = itervars[i].varid.c_str();
         variables[varid] = scenario->getVariable(varid);
-        variables[VARPOS_PREFIX+varid] = opp_stringf("%d", scenario->getIteratorPosition(varid));
     }
 
     // assemble ${iterationvars}
@@ -473,7 +472,7 @@ std::vector<SectionBasedConfiguration::IterationVariable> SectionBasedConfigurat
                     throw cRuntimeError("Scenario generator: %s at %s=%s", e.what(), entry.getKey(), entry.getValue());
                 }
 
-                if (!loc.value.empty() && loc.parvar.empty())
+                if (!loc.value.empty())
                 {
                     // store variable
                     if (!loc.varname.empty())
@@ -583,9 +582,6 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         }
     }
 
-    if (varbegin && parvarbegin)
-        throw cRuntimeError("the ${var=...} and ${...!var} syntaxes cannot be used together");
-
     outVarname = outValue = outParvar = "";
     if (varbegin)
         outVarname.assign(varbegin, varend-varbegin);
@@ -606,28 +602,14 @@ std::string SectionBasedConfiguration::substituteVariables(const char *text, int
         std::string varname, iterationstring, parvar;
         parseVariable(pos, varname, iterationstring, parvar, endPos);
         std::string value;
-        if (parvar.empty())
-        {
-            // handle named and unnamed iteration variable references
-            std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
-            StringMap::const_iterator it = variables.find(varid.c_str());
-            if (it==variables.end())
-                throw cRuntimeError("no such variable: ${%s}", varid.c_str());
-            value = it->second;
-        }
-        else
-        {
-            // handle parallel iterations: if parvar is at its kth value,
-            // we should take the kth value from iterationstring as well
-            StringMap::const_iterator it = variables.find(VARPOS_PREFIX+parvar);
-            if (it==variables.end())
-                throw cRuntimeError("no such variable: ${%s}", parvar.c_str());
-            int parvarPos = atoi(it->second.c_str());
-            ValueIterator v(iterationstring.c_str());
-            if (parvarPos >= v.length())
-                throw cRuntimeError("parallel iterator ${...!%s} does not have enough values", parvar.c_str());
-            value = v.get(parvarPos);
-        }
+
+        // handle named and unnamed iteration variable references
+        std::string varid = !varname.empty() ? varname : opp_stringf("%d-%d-%d", sectionId, entryId, k);
+        StringMap::const_iterator it = variables.find(varid.c_str());
+        if (it==variables.end())
+            throw cRuntimeError("no such variable: ${%s}", varid.c_str());
+        value = it->second;
+
         result.replace(pos-result.c_str(), endPos-pos+1, value);
         k++;
     }

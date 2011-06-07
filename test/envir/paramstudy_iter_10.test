@@ -1,0 +1,25 @@
+%description:
+Tests scenario generation: inner loops with string values
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${x="a","b","c"}
+*.b = ${y="1","2","3"}
+*.c = ${z=$x+$y}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 9
+Run 0: $x="a", $y="1", $z="a"+"1", $repetition=0
+Run 1: $x="a", $y="2", $z="a"+"2", $repetition=0
+Run 2: $x="a", $y="3", $z="a"+"3", $repetition=0
+Run 3: $x="b", $y="1", $z="b"+"1", $repetition=0
+Run 4: $x="b", $y="2", $z="b"+"2", $repetition=0
+Run 5: $x="b", $y="3", $z="b"+"3", $repetition=0
+Run 6: $x="c", $y="1", $z="c"+"1", $repetition=0
+Run 7: $x="c", $y="2", $z="c"+"2", $repetition=0
+Run 8: $x="c", $y="3", $z="c"+"3", $repetition=0
+
+End.

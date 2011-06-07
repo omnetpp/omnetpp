@@ -5,7 +5,7 @@ Tests scenario generation: referring to existing iteration variables
 [Config Test]
 *.foo = ${x=100..300 step 100} + ${y=1,2,3}
 *.bar = ${x} + ${y}
-constraint = x*y <= 400
+constraint = $x*$y <= 400
 
 %extraargs: -G -x Test
 

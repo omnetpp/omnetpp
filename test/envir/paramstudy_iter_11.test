@@ -1,0 +1,26 @@
+%description:
+Tests scenario generation: 
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${x=1,2,3}
+*.b = ${y=$x .. 6 step $x}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 11
+Run 0: $x=1, $y=1, $repetition=0
+Run 1: $x=1, $y=2, $repetition=0
+Run 2: $x=1, $y=3, $repetition=0
+Run 3: $x=1, $y=4, $repetition=0
+Run 4: $x=1, $y=5, $repetition=0
+Run 5: $x=1, $y=6, $repetition=0
+Run 6: $x=2, $y=2, $repetition=0
+Run 7: $x=2, $y=4, $repetition=0
+Run 8: $x=2, $y=6, $repetition=0
+Run 9: $x=3, $y=3, $repetition=0
+Run 10: $x=3, $y=6, $repetition=0
+
+End.

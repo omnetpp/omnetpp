@@ -42,16 +42,20 @@ class ENVIR_API Scenario
   private:
     // the input
     const std::vector<IterationVariable>& vars;
-    Expression *constraint;
+    ValueIterator::Expr *constraint;
 
     // the iteration variables, named (${x=1..5}) and unnamed (${1..5})
     std::vector<ValueIterator> variterators; // indices correspond to vars[]
     std::map<std::string, ValueIterator*> varmap; // varid-to-iterator
+    std::vector<int> sortOrder; // permutation of indeces of vars/variterators defining the nesting of loops (innermost first)
 
   private:
-    bool inc();
+    bool inc() { return incOuter(vars.size()); }
+    bool incOuter(int n);
+    bool isParallelIteration(int index) { return !vars[index].parvar.empty(); }
     bool evaluateConstraint();
-    Expression::Value getIterationVariable(const char *varname);
+    Expression::Value getIterationVariableValue(const char *varname);
+    int getIteratorPosition(const char *varid) const;
 
   public:
     /**
@@ -70,7 +74,7 @@ class ENVIR_API Scenario
         virtual const char *getName() const {return varname.c_str();}
         virtual char getReturnType() const {return Expression::Value::DBL;}
         virtual Expression::Value evaluate(Expression::Value args[], int numargs)
-            {return hostnode->getIterationVariable(varname.c_str());}
+            {return hostnode->getIterationVariableValue(varname.c_str());}
     };
 
   public:
@@ -107,14 +111,9 @@ class ENVIR_API Scenario
     bool next();
 
     /**
-     * XXX
+     * Returns the value of the given variable.
      */
     std::string getVariable(const char *varid) const;
-
-    /**
-     * XXX
-     */
-    int getIteratorPosition(const char *varid) const;
 
     /**
      * Returns the current iteration state as a string ("$x=100, $y=3, $2=.4").

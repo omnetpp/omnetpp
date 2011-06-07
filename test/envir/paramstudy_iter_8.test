@@ -1,0 +1,28 @@
+%description:
+Tests scenario generation: complex dependencies
+
+%inifile: omnetpp.ini
+[Config Test]
+# order: v -> u -> y -> x
+*.a = ${x=$y..2}
+*.b = ${y=$u..2}
+*.d = ${v=1,2}
+*.c = ${u=1,$v}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 10
+Run 0: $v=1, $u=1, $y=1, $x=1, $repetition=0
+Run 1: $v=1, $u=1, $y=1, $x=2, $repetition=0
+Run 2: $v=1, $u=1, $y=2, $x=2, $repetition=0
+Run 3: $v=1, $u=1, $y=1, $x=1, $repetition=0
+Run 4: $v=1, $u=1, $y=1, $x=2, $repetition=0
+Run 5: $v=1, $u=1, $y=2, $x=2, $repetition=0
+Run 6: $v=2, $u=1, $y=1, $x=1, $repetition=0
+Run 7: $v=2, $u=1, $y=1, $x=2, $repetition=0
+Run 8: $v=2, $u=1, $y=2, $x=2, $repetition=0
+Run 9: $v=2, $u=2, $y=2, $x=2, $repetition=0
+
+End.

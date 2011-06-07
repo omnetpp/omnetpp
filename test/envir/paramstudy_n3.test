@@ -4,11 +4,10 @@ Tests scenario generation
 %inifile: omnetpp.ini
 [Config Bogus]
 *.a = ${a=1,2,korte}
-constraint = a > 1  # "korte" should generate an error here
+constraint = $a > 1  # "korte" should generate an error here
 
 %extraargs: -g -x Bogus
 
 %exitcode: 1
 %contains: stderr
-Wrong value for iteration variable a
-
+Cannot evaluate constraint expression: Parse error in expression: korte > 1

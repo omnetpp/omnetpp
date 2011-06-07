@@ -12,19 +12,19 @@ Tests scenario generation: parallel iterations
 Config: Test
 Number of runs: 4
 Run 0:
-	# $i=10, $repetition=0
+	# $i=10, $0=100, $repetition=0
 	**.a = 10
 	**.b = 100
 Run 1:
-	# $i=20, $repetition=0
+	# $i=20, $0=200, $repetition=0
 	**.a = 20
 	**.b = 200
 Run 2:
-	# $i=30, $repetition=0
+	# $i=30, $0=300, $repetition=0
 	**.a = 30
 	**.b = 300
 Run 3:
-	# $i=40, $repetition=0
+	# $i=40, $0=400, $repetition=0
 	**.a = 40
 	**.b = 400
 

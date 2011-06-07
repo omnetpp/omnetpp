@@ -519,8 +519,6 @@ public final class InifileAnalyzer {
             for (IterationVariable var : iterations) {
                 if (var.parvar != null && !isValidIterationVariable(section, var.parvar))  //XXX this again calculates sectionChain! (sectionChain should be cached in sectionData)
                     markers.addError(section, var.key, "Unknown iteration variable " + var.parvar);
-                if (var.varname != null && var.parvar != null)
-                    markers.addError(section, var.key, "The ${var=...} and ${...!var} syntaxes cannot be used together");
                 //TODO check whether a ${...!var} line has enough values (at least as many as the variable definition, ${var=...} 
             }
         }

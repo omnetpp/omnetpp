@@ -1,0 +1,48 @@
+%description:
+Tests scenario generation: primes
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${a=2..120}
+*.b = ${($a>2&&$a%2==0?1:0)..0}
+*.c = ${($a>3&&$a%3==0?1:0)..0}
+*.d = ${($a>5&&$a%5==0?1:0)..0}
+*.e = ${($a>7&&$a%7==0?1:0)..0}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 30
+Run 0: $a=2, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 1: $a=3, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 2: $a=5, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 3: $a=7, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 4: $a=11, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 5: $a=13, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 6: $a=17, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 7: $a=19, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 8: $a=23, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 9: $a=29, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 10: $a=31, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 11: $a=37, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 12: $a=41, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 13: $a=43, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 14: $a=47, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 15: $a=53, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 16: $a=59, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 17: $a=61, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 18: $a=67, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 19: $a=71, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 20: $a=73, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 21: $a=79, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 22: $a=83, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 23: $a=89, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 24: $a=97, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 25: $a=101, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 26: $a=103, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 27: $a=107, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 28: $a=109, $0=0, $1=0, $2=0, $3=0, $repetition=0
+Run 29: $a=113, $0=0, $1=0, $2=0, $3=0, $repetition=0
+
+End.

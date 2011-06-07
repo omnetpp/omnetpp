@@ -5,7 +5,7 @@ Tests scenario generation: non-numeric enumerated values
 [Config Test]
 *.a = ${x=1,2}
 *.b = ${y="Hapci", "Morgo"}
-constraint = x!=0
+constraint = $x!=0
 
 %extraargs: -G -x Test
 

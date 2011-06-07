@@ -1,0 +1,18 @@
+%description:
+Tests scenario generation: variable substitution
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${x=1+1}
+*.b = ${y=$x*2,($x)*2,$x..$x}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 3
+Run 0: $x=1+1, $y=1+1*2, $repetition=0
+Run 1: $x=1+1, $y=(1+1)*2, $repetition=0
+Run 2: $x=1+1, $y=2, $repetition=0
+
+End.

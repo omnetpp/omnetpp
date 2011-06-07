@@ -1,0 +1,14 @@
+%description:
+Tests scenario generation: circular variable references
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${x=1..$y}
+*.b = ${y=1..$x}
+
+%extraargs: -g -x Test
+
+%exitcode: 1
+
+%contains: stderr
+Error while computing the number of runs in config Test: Cycle detected in iteration variable references.

@@ -1,0 +1,16 @@
+%description:
+Tests scenario generation: variable substitution with ${x} syntax
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${x=hello}
+*.b = ${y="$ ${ $!@#$"} # these are not variable refs 
+*.v = ${z="${x}bello"}
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 1
+Run 0: $x=hello, $y="$ ${ $!@#$", $z="hellobello", $repetition=0
+
+End.

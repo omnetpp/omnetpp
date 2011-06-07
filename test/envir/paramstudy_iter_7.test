@@ -1,11 +1,10 @@
 %description:
-Tests scenario generation: basic constraint
+Tests scenario generation: basic iteration variable reference
 
 %inifile: omnetpp.ini
 [Config Test]
 *.a = ${x=1..5}
-*.b = ${y=1..5}
-constraint = $x < $y
+*.b = ${y=$x+1..5}
 
 %extraargs: -g -x Test
 

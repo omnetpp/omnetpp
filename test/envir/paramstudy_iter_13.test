@@ -1,0 +1,32 @@
+%description:
+Tests scenario generation: factoring example
+
+%inifile: omnetpp.ini
+[Config Test]
+*.a = ${a=2..20}
+*.b = ${b=2..10}
+*.c = ${c=$b..10}
+*.d = ${($a==$b*$c?0:1)..0}
+
+%extraargs: -g -x Test
+
+%contains: stdout
+Config: Test
+Number of runs: 15
+Run 0: $a=4, $b=2, $c=2, $0=0, $repetition=0
+Run 1: $a=6, $b=2, $c=3, $0=0, $repetition=0
+Run 2: $a=8, $b=2, $c=4, $0=0, $repetition=0
+Run 3: $a=9, $b=3, $c=3, $0=0, $repetition=0
+Run 4: $a=10, $b=2, $c=5, $0=0, $repetition=0
+Run 5: $a=12, $b=2, $c=6, $0=0, $repetition=0
+Run 6: $a=12, $b=3, $c=4, $0=0, $repetition=0
+Run 7: $a=14, $b=2, $c=7, $0=0, $repetition=0
+Run 8: $a=15, $b=3, $c=5, $0=0, $repetition=0
+Run 9: $a=16, $b=2, $c=8, $0=0, $repetition=0
+Run 10: $a=16, $b=4, $c=4, $0=0, $repetition=0
+Run 11: $a=18, $b=2, $c=9, $0=0, $repetition=0
+Run 12: $a=18, $b=3, $c=6, $0=0, $repetition=0
+Run 13: $a=20, $b=2, $c=10, $0=0, $repetition=0
+Run 14: $a=20, $b=4, $c=5, $0=0, $repetition=0
+
+End.
