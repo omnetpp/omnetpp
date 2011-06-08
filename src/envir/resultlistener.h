@@ -71,6 +71,9 @@ class SignalSource
     SignalSource(cComponent *comp, simsignal_t sigID) {filter=NULL; component=comp; signalID=sigID;}
     bool isNull() const {return !filter && !component;}
     void subscribe(ResultListener *listener) const;
+    ResultFilter *getFilter() const {return filter;}
+    cComponent *getComponent() const {return component;}
+    simsignal_t getSignalID() const {return signalID;}
 };
 
 #endif

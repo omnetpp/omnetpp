@@ -93,32 +93,7 @@ bool TimeAverageFilter::process(simtime_t& t, double& value)
 
 //---
 
-class ValueVariable : public Expression::Variable
-{
-  private:
-    ExpressionFilter *owner;
-  public:
-    ValueVariable(ExpressionFilter *filter) {owner = filter;}
-    virtual Functor *dup() const {return new ValueVariable(owner);}
-    virtual const char *getName() const {return "<signalvalue>";}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return owner->currentValue;}
-};
-
-//XXX currently unused
-class TimeVariable : public Expression::Variable
-{
-  private:
-    ExpressionFilter *owner;
-  public:
-    TimeVariable(ExpressionFilter *filter) {owner = filter;}
-    virtual Functor *dup() const {return new TimeVariable(owner);}
-    virtual const char *getName() const {return "<signaltime>";}
-    virtual char getReturnType() const {return Expression::Value::DBL;}
-    virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(owner->currentTime);}
-};
-
-bool ExpressionFilter::process(simtime_t& t, double& value)
+bool UnaryExpressionFilter::process(simtime_t& t, double& value)
 {
     currentTime = t;
     currentValue = value;
@@ -126,14 +101,56 @@ bool ExpressionFilter::process(simtime_t& t, double& value)
     return true;
 }
 
-Expression::Functor *ExpressionFilter::makeValueVariable()
+void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
 {
-    return new ValueVariable(this);
+    simtime_t tt = t;
+    double d = l;
+    if (process(prev, tt, d))
+        fire(this, tt, d);
 }
 
-Expression::Functor *ExpressionFilter::makeTimeVariable()
+void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
-    return new TimeVariable(this);
+    simtime_t tt = t;
+    double d = l;
+    if (process(prev, tt, d))
+        fire(this, tt, d);
+}
+
+void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
+{
+    simtime_t tt = t;
+    if (process(prev, tt, d))
+        fire(this, tt, d);
+}
+
+void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+{
+    simtime_t tt = t;
+    double d = v.dbl();
+    if (process(prev, tt, d))
+        fire(this, tt, d);
+}
+
+bool NaryExpressionFilter::process(ResultFilter *prev, simtime_t& t, double& value)
+{
+    currentTime = t;
+    for (int i = 0; i < signalCount; i++) {
+        if (prevFilters[i] == prev) {
+            currentValues[i] = value;
+            value = expr.doubleValue();
+            return true;
+        }
+    }
+    throw cRuntimeError("unknown signal");
+}
+
+Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, ResultFilter *prevFilter)
+{
+    Assert(0 <= index && index <= signalCount);
+    prevFilters[index] = prevFilter;
+    currentValues[index] = NaN;
+    return new ValueVariable(this, &(currentValues[index]));
 }
 
 //---

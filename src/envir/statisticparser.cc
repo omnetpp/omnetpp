@@ -115,6 +115,23 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
 
     std::vector<Expression::Elem> stack;
 
+    // NOTE: forbid using signals more than once in the source expression, because that would result weird glitches in the output.
+    // e.g. count(x) - count(x) (whenever x changes it can reach the recorder through two different paths)
+    for (int i = 0; i < exprLen; i++) {
+        const Expression::Elem& e = elems[i];
+        for (int j = 0; j < i; j++) {
+            const Expression::Elem& f = elems[j];
+            if (e.getType()==Expression::Elem::FUNCTOR && f.getType()==Expression::Elem::FUNCTOR &&
+                dynamic_cast<SignalSourceReference*>(e.getFunctor()) && dynamic_cast<SignalSourceReference*>(f.getFunctor()))
+            {
+                const SignalSource &u = ((SignalSourceReference*)e.getFunctor())->getSignalSource();
+                const SignalSource &v = ((SignalSourceReference*)f.getFunctor())->getSignalSource();
+                if (u.getComponent() && v.getComponent() && u.getComponent() == v.getComponent() && u.getSignalID() == v.getSignalID())
+                    throw opp_runtime_error("cannot use a signal more than once in a statistics source expression"); // something wrong
+            }
+        }
+    }
+
     for (int i = 0; i < exprLen; i++)
     {
        const Expression::Elem& e = elems[i];
@@ -161,7 +178,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
     if (stack.size() != 1)
         throw opp_runtime_error("malformed expression"); // something wrong
     if (stack[0].getType()!=Expression::Elem::FUNCTOR || !dynamic_cast<SignalSourceReference*>(stack[0].getFunctor()))
-        throw opp_runtime_error("malformed expression"); // something wrong
+        throw opp_runtime_error("a constant statistics source is meaningless"); // something wrong
     SignalSourceReference *signalSourceReference = (SignalSourceReference*) stack[0].getFunctor();
     return signalSourceReference->getSignalSource();
 }
@@ -170,7 +187,6 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
 {
     Assert(len >= 1);
     int stackSize = stack.size();
-
     int argLen = filterRef ? len-1 : len;  // often we need to ignore the last element on the stack, which is the filter name itself
 
     // count SignalSourceReferences (nested filter) - there must be exactly one;
@@ -183,14 +199,6 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
         if (e.getType()==Expression::Elem::FUNCTOR)
             if (dynamic_cast<SignalSourceReference*>(e.getFunctor()))
                 {numSignalRefs++; signalSourceReference = (SignalSourceReference*)e.getFunctor();}
-    }
-
-    if (numSignalRefs != 1)
-    {
-        if (numSignalRefs == 0)
-            throw cRuntimeError("expression inside %s() does not refer to any signal", filterRef->getName());
-        else
-            throw cRuntimeError("expression inside %s() may only refer to one signal", filterRef->getName());
     }
 
     // Note: filterRef==NULL is also valid input, need to be prepared for it!
@@ -214,25 +222,46 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
             result = SignalSource(filter);
         }
     }
-    else // (argLen > 1)
+    else // (argLen > 1) an ExpressionFilter is needed
     {
         // some expression -- add an ExpressionFilter, and the new filter on top
         // replace Expr with SignalSourceReference
-        ExpressionFilter *exprFilter = new ExpressionFilter();
+        ExpressionFilter *exprFilter;
+        if (numSignalRefs == 0)
+            throw opp_runtime_error("a constant statistics source expression is meaningless");
+        else if (numSignalRefs == 1)
+            exprFilter = new UnaryExpressionFilter();
+        else if (numSignalRefs > 1)
+            exprFilter = new NaryExpressionFilter(numSignalRefs);
 
+        int index = 0;
         Expression::Elem *v = new Expression::Elem[argLen];
         for (int i=0; i<argLen; i++)
         {
             v[i] = stack[stackSize-len+i];
-            if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
-                v[i] = exprFilter->makeValueVariable();
+            if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor())) {
+                signalSourceReference = (SignalSourceReference*)v[i].getFunctor();
+                const SignalSource &signalSource = signalSourceReference->getSignalSource();
+                ResultFilter *signalFilter = signalSource.getFilter();
+                if (signalFilter) {
+                    signalSource.subscribe(exprFilter);
+                    v[i] = exprFilter->makeValueVariable(index, signalFilter);
+                }
+                else if (numSignalRefs == 1) {
+                    signalSource.subscribe(exprFilter);
+                    v[i] = exprFilter->makeValueVariable(index, NULL);
+                }
+                else {
+                    LastValueFilter *identityFilter = new LastValueFilter();
+                    signalSource.subscribe(identityFilter);
+                    identityFilter->addDelegate(exprFilter);
+                    v[i] = exprFilter->makeValueVariable(index, identityFilter);
+                }
+                index++;
+            }
         }
-
         exprFilter->getExpression().setExpression(v, argLen);
 
-        // subscribe
-        const SignalSource& signalSource = signalSourceReference->getSignalSource();
-        signalSource.subscribe(exprFilter);
         if (!filter)
             result = SignalSource(exprFilter);
         else {
@@ -430,14 +459,18 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         else
         {
             // expression filter
-            ExpressionFilter *exprFilter = new ExpressionFilter();
+            UnaryExpressionFilter *exprFilter = new UnaryExpressionFilter();
 
+            int index = 0;
             Expression::Elem *v = new Expression::Elem[argLen];
             for (int i=0; i<argLen; i++)
             {
                 v[i] = stack[stackSize-len+i];
-                if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor()))
-                    v[i] = exprFilter->makeValueVariable();
+                if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor())) {
+                    signalSourceReference = (SignalSourceReference*)v[i].getFunctor();
+                    v[i] = exprFilter->makeValueVariable(index, signalSourceReference->getSignalSource().getFilter());
+                    index++;
+                }
             }
             exprFilter->getExpression().setExpression(v, argLen);
             exprListener = exprFilter;
@@ -448,12 +481,12 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         const SignalSource& signalSource = signalSourceReference->getSignalSource();
         signalSource.subscribe(exprListener);
         if (!filterOrRecorder) {
-            if (dynamic_cast<ExpressionFilter*>(exprListener))
-                result = SignalSource((ExpressionFilter*)exprListener);
+            if (dynamic_cast<UnaryExpressionFilter*>(exprListener))
+                result = SignalSource((UnaryExpressionFilter*)exprListener);
         }
         else {
-            Assert(dynamic_cast<ExpressionFilter*>(exprListener));
-            ((ExpressionFilter*)exprListener)->addDelegate(filterOrRecorder);
+            Assert(dynamic_cast<UnaryExpressionFilter*>(exprListener));
+            ((UnaryExpressionFilter*)exprListener)->addDelegate(filterOrRecorder);
             if (!makeRecorder)
                 result = SignalSource((ResultFilter*)filterOrRecorder);
         }

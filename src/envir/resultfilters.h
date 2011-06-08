@@ -170,25 +170,81 @@ class ENVIR_API TimeAverageFilter : public NumericResultFilter
         TimeAverageFilter() {startTime = lastTime = -1; lastValue = weightedSum = 0;}
 };
 
-/**
- * Result filter that computes an expression from signal values
- */
 class ENVIR_API ExpressionFilter : public NumericResultFilter
 {
     protected:
+        class ValueVariable : public Expression::Variable
+        {
+          private:
+            ExpressionFilter *owner;
+            double *currentValue;
+          public:
+            ValueVariable(ExpressionFilter *owner, double *currentValue) {this->owner = owner; this->currentValue = currentValue;}
+            virtual Functor *dup() const {return new ValueVariable(owner, currentValue);}
+            virtual const char *getName() const {return "<signalvalue>";}
+            virtual char getReturnType() const {return Expression::Value::DBL;}
+            virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return *currentValue;}
+        };
+        //XXX currently unused
+        class TimeVariable : public Expression::Variable
+        {
+          private:
+            ExpressionFilter *owner;
+          public:
+            TimeVariable(ExpressionFilter *filter) {owner = filter;}
+            virtual Functor *dup() const {return new TimeVariable(owner);}
+            virtual const char *getName() const {return "<signaltime>";}
+            virtual char getReturnType() const {return Expression::Value::DBL;}
+            virtual Expression::Value evaluate(Expression::Value args[], int numargs) {return SIMTIME_DBL(owner->currentTime);}
+        };
+
+    protected:
         Expression expr;
-    public:
-        // current values, valid inside process() only
         simtime_t currentTime;
+    protected:
+        virtual bool process(simtime_t& t, double& value) {currentTime = t; value = expr.doubleValue(); return true;}
+    public:
+        Expression& getExpression() {return expr;}
+        virtual Expression::Functor *makeValueVariable(int index, ResultFilter *prevFilter) {throw cRuntimeError("constant expression cannot have variables");};
+        Expression::Functor *makeTimeVariable() {return new TimeVariable(this);} // XXX: unused
+};
+
+/**
+ * Result filter that computes an expression from signal values
+ */
+class ENVIR_API UnaryExpressionFilter : public ExpressionFilter
+{
+    protected:
         double currentValue;
     protected:
         virtual bool process(simtime_t& t, double& value);
     public:
-        ExpressionFilter() {}
-        virtual std::string str() const {return expr.str()+" (ExpressionFilter)";}
-        Expression& getExpression() {return expr;}
-        Expression::Functor *makeValueVariable();
-        Expression::Functor *makeTimeVariable();
+        UnaryExpressionFilter() {}
+        virtual std::string str() const {return expr.str()+" (UnaryExpressionFilter)";}
+        virtual Expression::Functor *makeValueVariable(int index, ResultFilter *prevFilter) {Assert(index == 0); return new ValueVariable(this, &currentValue);}
+};
+
+/**
+ * Result filter that computes an expression from multiple signal values.
+ */
+class ENVIR_API NaryExpressionFilter : public ExpressionFilter
+{
+    protected:
+        int signalCount;
+        ResultFilter **prevFilters;
+        double *currentValues;
+    protected:
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d);
+        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v);
+        virtual bool process(ResultFilter *prev, simtime_t& t, double& value);
+        virtual void subscribedTo(ResultFilter *prev) {}
+    public:
+        NaryExpressionFilter(int signalCount) {this->signalCount = signalCount; prevFilters = new ResultFilter*[signalCount]; currentValues = new double[signalCount];}
+        virtual ~NaryExpressionFilter() {delete [] prevFilters; delete [] currentValues; }
+        virtual std::string str() const {return expr.str()+" (NaryExpressionFilter)";}
+        virtual Expression::Functor *makeValueVariable(int index, ResultFilter *prevFilter);
 };
 
 /**

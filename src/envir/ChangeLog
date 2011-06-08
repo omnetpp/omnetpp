@@ -1,3 +1,15 @@
+2011-05-26  Levente Mészáros
+
+	* Implemented number filter expressions using multiple inputs for
+	statistics source expressions. Enhanced error reporting for constant
+	expressions that are meaningless as statistics source (they never
+	provide a value).
+	  - source="3.14"       => error, meaningless
+	  - source="3.14 / 180" => error, meaningless
+	  - source="sum(packetLength)/count(packetLength)" => error, multiple
+	    uses of the same signal is still not supported due to output glitches
+	  - source="count(packetSent)/count(packetDropped)" => valid expression
+
 2011-05-25  Tamas Borbely [docu below by Andras]
 
 	* Ini files: iterations (${...}) can now refer to other iteration
