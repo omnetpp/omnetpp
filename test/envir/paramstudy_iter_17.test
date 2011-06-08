@@ -1,0 +1,17 @@
+%description:
+Tests scenario generation: variable substitution inside string literals
+
+%inifile: omnetpp.ini
+[Config Test]
+**.foo = "${i=Jo}"  # -> Jo
+**.bar = "Hi $i and ${i}hn"  # -> Hi Jo and John
+**.baz = ${"Hi $i and ${i}hn"}  # -> Hi Jo and John
+
+%extraargs: -G -x Test
+
+%contains: stdout
+	# $i=Jo, $0="Hi Jo and John", $repetition=0
+	**.foo = "Jo"
+	**.bar = "Hi $i and John"
+	**.baz = "Hi Jo and John"
+

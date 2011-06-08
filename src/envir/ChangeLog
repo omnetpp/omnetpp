@@ -29,6 +29,10 @@
 	    **.foo = "${i=Jo}"  # -> Jo
 	    **.bar = ${"Hi $i", "Hi ${i}hn"}  # -> Hi Jo /John
 
+	(However, string constants outside ${..} are a little different: e.g.
+	in **.baz="Hello $i" the variable won't be substituted, you need to 
+	write **.baz="Hello ${i}".)
+
 	CAUTION: Because of textual substitution, similarly to C/C++ macros,
 	variables in arithmetic expressions should generally be protected
 	with parentheses. Consider the lines below:
