@@ -159,9 +159,6 @@ clean: makefiles
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	for i in $(JNILIBS); do \
-	    (cd $(OMNETPP_UI_DIR)/$$i && $(MAKE) clean); \
-	done
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
@@ -174,9 +171,6 @@ cleanall: makefiles
 	for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	for i in $(JNILIBS); do \
-	    (cd $(OMNETPP_UI_DIR)/$$i && $(MAKE) clean); \
-	done
 	for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) cleanall); fi;\
 	done
@@ -184,6 +178,10 @@ cleanall: makefiles
 # bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
 	-rm -rf $(OMNETPP_BIN_DIR)/*
 
+cleanui:
+	for i in $(JNILIBS); do \
+	    (cd $(OMNETPP_UI_DIR)/$$i && $(MAKE) clean); \
+	done
 
 depend:
 	for i in $(BASE); do \
