@@ -17,6 +17,10 @@ module Node
     @statistic[src7](source="3+fabs(mean(foo+1))";record=vector,histogram);
     @statistic[src8](source="max(mean(timeavg(foo)))";record=vector,histogram);
     @statistic[src9](source="max(1+mean(2+timeavg(3+foo)))";record=vector,histogram);
+    @statistic[src10](source="foo+bar";record=vector);
+    @statistic[src11](source="max(foo+3*bar)";record=vector);
+    @statistic[src12](source="max(foo)+sin(bar)";record=vector);
+    @statistic[src13](source="max(foo)+min(bar)";record=vector);
 }
 
 network Test
@@ -34,29 +38,43 @@ debug-statistics-recording = true
 
 %contains: stdout
 Test.node (Node):
+    "bar" (signalID=4):
+        LastValueFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                VectorRecorder ==> src10:vector
+        LastValueFilter
+            <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
+                MaxFilter
+                    VectorRecorder ==> src11:vector
+        LastValueFilter
+            <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
+                VectorRecorder ==> src12:vector
+        MinFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                VectorRecorder ==> src13:vector
     "foo" (signalID=3):
         VectorRecorder ==> src1:vector
         HistogramRecorder ==> src1:histogram
-        <signalvalue> + 1 (ExpressionFilter)
+        <signalvalue> + 1 (UnaryExpressionFilter)
             VectorRecorder ==> src2:vector
             HistogramRecorder ==> src2:histogram
-        2 * fabs(<signalvalue> + 1) (ExpressionFilter)
+        2 * fabs(<signalvalue> + 1) (UnaryExpressionFilter)
             VectorRecorder ==> src3:vector
             HistogramRecorder ==> src3:histogram
         MeanFilter
             VectorRecorder ==> src4:vector
             HistogramRecorder ==> src4:histogram
         MeanFilter
-            fabs(<signalvalue>) (ExpressionFilter)
+            fabs(<signalvalue>) (UnaryExpressionFilter)
                 VectorRecorder ==> src5:vector
                 HistogramRecorder ==> src5:histogram
-        <signalvalue> + 1 (ExpressionFilter)
+        <signalvalue> + 1 (UnaryExpressionFilter)
             MeanFilter
                 VectorRecorder ==> src6:vector
                 HistogramRecorder ==> src6:histogram
-        <signalvalue> + 1 (ExpressionFilter)
+        <signalvalue> + 1 (UnaryExpressionFilter)
             MeanFilter
-                3 + fabs(<signalvalue>) (ExpressionFilter)
+                3 + fabs(<signalvalue>) (UnaryExpressionFilter)
                     VectorRecorder ==> src7:vector
                     HistogramRecorder ==> src7:histogram
         TimeAverageFilter
@@ -64,15 +82,27 @@ Test.node (Node):
                 MaxFilter
                     VectorRecorder ==> src8:vector
                     HistogramRecorder ==> src8:histogram
-        3 + <signalvalue> (ExpressionFilter)
+        3 + <signalvalue> (UnaryExpressionFilter)
             TimeAverageFilter
-                2 + <signalvalue> (ExpressionFilter)
+                2 + <signalvalue> (UnaryExpressionFilter)
                     MeanFilter
-                        1 + <signalvalue> (ExpressionFilter)
+                        1 + <signalvalue> (UnaryExpressionFilter)
                             MaxFilter
                                 VectorRecorder ==> src9:vector
                                 HistogramRecorder ==> src9:histogram
+        LastValueFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                VectorRecorder ==> src10:vector
+        LastValueFilter
+            <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
+                MaxFilter
+                    VectorRecorder ==> src11:vector
+        MaxFilter
+            <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
+                VectorRecorder ==> src12:vector
+        MaxFilter
+            <signalvalue> + <signalvalue> (NaryExpressionFilter)
+                VectorRecorder ==> src13:vector
     "src0" (signalID=2):
         VectorRecorder ==> src0:vector
         HistogramRecorder ==> src0:histogram
-

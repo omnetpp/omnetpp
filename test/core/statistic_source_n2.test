@@ -1,0 +1,29 @@
+%description:
+Tests constant expression statistics source.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @statistic[src0](source="3.14+3.14"; record=vector);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%exitcode: 1
+
+%contains: stdout
+error in source=3.14+3.14: a constant statistics source expression is meaningless

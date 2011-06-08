@@ -1,0 +1,29 @@
+%description:
+Tests multiple uses of the same signal in statistics source.
+
+%file: test.ned
+
+import testlib.Dump;
+
+module Node
+{
+    @statistic[src0](source="foo-foo"; record=vector);
+}
+
+network Test
+{
+    submodules:
+        node: Node;
+}
+
+%file: test.cc
+
+%inifile: test.ini
+[General]
+network = Test
+debug-statistics-recording = true
+
+%exitcode: 1
+
+%contains: stdout
+error in source=foo-foo: cannot use a signal more than once in a statistics source expression
