@@ -154,8 +154,8 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {~nmake:}{/@}
 {submakedirs:}
 {@i:submakenames,dir:submakedirs}{i}_dir:
-{nmake:}	echo [Entering {dir}] && cd {dir} && $(MAKE) && echo [Leaving {dir}]
-{~nmake:}	cd {dir} && $(MAKE)
+{nmake:}	echo [Entering {dir}] && cd {dir} && $(MAKE) all && echo [Leaving {dir}]
+{~nmake:}	cd {dir} && $(MAKE) all
 
 {/@}
 
