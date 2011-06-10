@@ -87,6 +87,12 @@ public class NedEditorLauncher implements IEditorLauncher {
     private IFile getFileFor(IPath path) throws CoreException {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         IFile[] files = root.findFilesForLocation(path);
-        return files.length > 0 ? files[0] : null;
+        // choose the most inner one
+        IFile foundFile = null;
+        for (IFile file : files) {
+            if (foundFile == null || file.getFullPath().segmentCount() < foundFile.getFullPath().segmentCount())
+                foundFile = file;
+        }
+        return foundFile;
     }
 }
