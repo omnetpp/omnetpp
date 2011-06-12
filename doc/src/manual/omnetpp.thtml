@@ -1,47 +1,51 @@
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
-<html>
 <head>
-   <title>OMNeT++ - Manual</title>
-   <meta name="Author" content="Andras Varga">
+<html>
+  <title>OMNeT++ - Manual</title>
+  <meta name="copyright" content="OpenSim Ltd.">
+  <meta name="author" content="Andras Varga">
+  <meta http-equiv="Content-Language" content="en-us">
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 </head>
 
 <style type="text/css">
-body,th,td,p,ul,ol,li,h1,h2,h3,h4 { font-family: arial,sans-serif; }
-body,td,p,ul,ol,li { font-size:11pt; }
-th,td { font-size:10pt; }
-body { margin-left: 30px; margin-right: 30px; }
+  body,th,td,p,ul,ol,li,h1,h2,h3,h4 { font-family: arial,sans-serif; color: #000000}
+  body,td,p,ul,ol,li { font-size:11pt; }
+  th,td { font-size:10pt; }
+  body { margin-left: 30px; margin-right: 30px; }
 
-h1 { color: #1A41A8; margin-top: 50px; }
-h2 { color: #1A41A8; margin-top: 50px; }
-h3 { color: #1A41A8; margin-top: 40px; }
+  h1 { color: #1A41A8; margin-top: 50px; margin-bottom: 20px; }
+  h2 { color: #1A41A8; margin-top: 40px; margin-bottom: 20px; }
+  h3 { color: #1A41A8; margin-top: 30px; margin-bottom: 20px; }
 
-hr.pgbr { color: #f5f5f5; margin-top: 50px; margin-bottom: 50px; }
-p.subheading { color: #1A41A8; margin-top: 30px; font-weight: bold; }
-pre { margin: 4px 8px 4px 2px; padding: 4px 6px; background:#fffff4; border: 1px solid #dddddd; }
-pre.ned { background:#f5fff5; }
-pre.msg { background:#f5fff5; }
-pre.cpp { background:#f5f5f5; }
-pre.inifile { background:#fffff0; }
-pre.filelisting { background:#f0f0f0; }
-pre.commandline { background:#fffff0; }
-table { background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid; }
-td,th { text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000; }
-a { text-decoration: none; }
-a:visited { text-decoration: none; }
-# a:hover { text-decoration: underline; }
+  hr.pgbr { color: #f5f5f5; margin-top: 40px; margin-bottom: 10px; }
+  p.subheading { color: #1A41A8; margin-top: 30px; font-weight: bold; }
+  pre { margin: 4px 8px 4px 2px; padding: 8px 10px; background:#fffff4; border: 1px solid #dddddd; }
+  pre.ned { background:#f5fff5; }
+  pre.msg { background:#f5fff5; }
+  pre.cpp { background:#f5f5f5; }
+  pre.inifile { background:#fffff0; }
+  pre.filelisting { background:#f0f0f0; }
+  pre.commandline { background:#fffff0; }
+  table { background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid; }
+  td,th { text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000; }
+  a { text-decoration: none; }
+  a:visited { text-decoration: none; }
+  # a:hover { text-decoration: underline; }
 </style>
 
-<body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b" alink="#ff0000">
+<body>
 
-<br>
-<img src="omnetpp.png" border="0">
-<!--
-<h1><font color="#ff0000"><b><font size=+4>OMNeT++ </font></b>
-<i><font size=+1>Discrete Event Simulation System</font></i></font></h1>
--->
+__TITLEPAGE_START__
+  <br>
+  <img src='omnetpp.png' border='0'>
+  <p style="color: #1A41A8; font-weight: bold; font-size: 32px; margin-top: 15px; margin-bottom: 5px">User Manual</p>
+  <p style="color: #1A41A8; font-weight: bold; font-size: 18px; margin-top: 5px; margin-bottom: 10px">OMNeT++ version __VERSION__</p>
+  <p style="color: #1A41A8; font-weight: bold; font-size: 12px; margin-top: 5px; margin-bottom: 40px"><a href="http://omnetpp.org">http://omnetpp.org</a></p>
+  <hr>
+__TITLEPAGE_END__
 
 __BODY__
-
 
 </body>
 </html>

@@ -79,11 +79,14 @@ $html =~ s/(\<h[0-9]\>)/$1."<a name=\"sec".$ctr++."\"\/>"/gie;
 $html =~ s/\\'([AEOUaeuo])/&$1acute;/g;
 $html =~ s/\\"([OUuo])/&$1uml;/g;
 $html =~ s/\\-//g;
+$html =~ s/\\\^/^/g;
+$html =~ s/``(.*?)''/&#8220;$1&#8221;/sg; # unicode left/right double quotation marks
+$html =~ s|<li>\[(.*?)\]|<li><b>$1:</b> |sg;  # definition item, e.g. \item[Hierarchical]
 
 #
-# kill <p> inside <pre>...
+# kill <p> inside <pre>
 #
-$html =~ s|(\<pre\>.*?\</pre\>)|kill_p_tag($1)|sgei;
+$html =~ s|(\<pre( .*?)?\>.*?\</pre\>)|kill_p_tag($1)|sgei;
 
 sub kill_p_tag ()
 {
@@ -287,15 +290,29 @@ $names = join('|',@components);
 $html =~ s!\b($names)\b!'<a href="'.$apidir.'/'.$htmlfile{$1}.'">'.$1.'</a>'!gse unless($names eq '');
 
 
+sub savepage($$$)
+{
+      my $filename = shift @_;
+      my $body = shift @_;
+      my $needtitlepage = shift @_;
+
+      my $new_html = $template;
+      $new_html =~ s/__PRODUCT__/$product/;
+      $new_html =~ s/__VERSION__/$opp_version/;
+      $new_html =~ s/__TITLEPAGE_START__(.*)__TITLEPAGE_END__//s unless ($needtitlepage);
+      $new_html =~ s/__TITLEPAGE_(START|END)__//sg;
+      $new_html =~ s/__BODY__/$body/;
+
+      open(FILE,">$filename");
+      print FILE $new_html;
+      close FILE;
+}
+
+
 if ($singlePage)
 {
       print "writing page\n" unless $quiet;
-      $new_html = $template;
-      $body = "<h1><b>User Manual</b></h1><h3>$product version $opp_version</h3>$chapters<hr>$toc$html";
-      $new_html =~ s/__BODY__/$body/;
-      open(FILE,">usman.$ext");
-      print FILE $new_html;
-      close FILE;
+      savepage("usman.$ext", $chapters . $toc . $html, 1);
 }
 else
 {
@@ -330,33 +347,20 @@ else
       print "writing chapter files\n" unless $quiet;
       for ($i=1; $i<=$nchapters; $i++)
       {
-            $new_html = $template;
-            $new_html =~ s/__BODY__/$navbar[$i]$chapter[$i]$navbar[$i]/;
-            open(FILE,">chap$i.$ext");
-            print FILE $new_html;
-            close FILE;
+            savepage("chap$i.$ext", $navbar[$i] . $chapter[$i] . $navbar[$i], 0);
       }
 
       #
       # write chapters file (usman.html)
       #
       print "writing chapters file\n" unless $quiet;
-      $new_html = $template;
-      $body = "<h1><b>User Manual</b></h1><h3>$product version $opp_version</h3>$chapters";
-      $new_html =~ s/__BODY__/$body/;
-      open(FILE,">usman.$ext");
-      print FILE $new_html;
-      close FILE;
+      savepage("usman.$ext", $chapters, 1);
 
       #
       # write toc file (toc.html)
       #
       print "writing toc file\n" unless $quiet;
-      $new_html = $template;
-      $new_html =~ s/__BODY__/$toc/;
-      open(FILE,">toc.$ext");
-      print FILE $new_html;
-      close FILE;
+      savepage("toc.$ext", $toc, 0);
 }
 
 #
