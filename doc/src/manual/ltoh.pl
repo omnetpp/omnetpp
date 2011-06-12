@@ -117,7 +117,7 @@ sub print_html_trailer {
     #     print "</samp></font>)<br>\n";
     # }
     # print "</ADDRESS>\n";
-    print "</BODY>\n</HTML>\n";
+    #print "</BODY>\n</HTML>\n";
 }
 
 sub strip_hms_and_day {

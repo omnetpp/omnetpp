@@ -38,10 +38,10 @@ htmlfile_spec := $BASE.htm
 :{}	:\texttt:<tt>:</>:
 :{}	:\textsf:<i>:</>:
 :{}	:\underline:<ul>:</>:
-:{}	:\chapter:<hr><hr><H1>:</H1>:
-:{}	:\appendixchapter:<hr><hr><H1>Appendix&#58; :</H1>:
-:{}	:\section:<H2>:</H2>:
-:{}	:\subsection:<H3>:</H3>:
+:{}	:\chapter:<hr class='pgbr'><h1>:</h1>:
+:{}	:\appendixchapter:<hr class='pgbr'><h1>Appendix&#58; :</h1>:
+:{}	:\section:<h2>:</h2>:
+:{}	:\subsection:<h3>:</h3>:
 :{}	:\subsubsection:<p class="subheading">:</p>:
 :{}	:\centerline:<p align=center>:</>:
 :{}	:\footnote:<br><ul><font size=-1>[:]</font></ul>:

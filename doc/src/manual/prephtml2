@@ -8,7 +8,7 @@
 # *** check settings below -- also ltoh.specs for \opp definition! ***
 #$product = "OMNEST";
 $product = "OMNeT++";
-$opp_version = "4.0";
+$opp_version = "4.2";
 $templatefile = "omnetpp.thtml";
 #$templatefile = "omnest.thtml";
 
@@ -61,9 +61,6 @@ read( htmlf, $html, 1000000 ) || die "cannot read $fname";
 # kill unwanted formatting
 #
 print "removing unnecessary formatting and parts\n" unless $quiet;
-$html =~ s/ SIZE=2//g;
-$html =~ s/ FACE="[^"]*"//g;
-$html =~ s/ color=[a-z]*?//g;
 
 if ($product ne "OMNEST") {
    $html =~ s/\@ifcommercial\@.*?\@fi\@//sg;
@@ -72,17 +69,13 @@ if ($product ne "OMNEST") {
    $html =~ s/\@fi\@//sg;
 }
 
-#$html =~ s/(\<H[0-9]\>.*?\<\/H[0-9]\>)/<font color="#006f00">\1<\/font>/g;
-
 # add IDs to headers
 $ctr=100;
-$html =~ s/(\<H[0-9]\>)/$1."<A NAME=\"sec".$ctr++."\"\/>"/ge;
+$html =~ s/(\<h[0-9]\>)/$1."<a name=\"sec".$ctr++."\"\/>"/gie;
 
 #
 # Do some more LaTeX formatting, not done by L2H
 #
-#$html =~ s/\$([^\n]+?)\$/formatmath($1)/gse;
-$html =~ s/\\chapter\*(.*)/\<hr\>\<b\>$1\<\/b\>/g;
 $html =~ s/\\'([AEOUaeuo])/&$1acute;/g;
 $html =~ s/\\"([OUuo])/&$1uml;/g;
 $html =~ s/\\-//g;
@@ -90,30 +83,14 @@ $html =~ s/\\-//g;
 #
 # kill <p> inside <pre>...
 #
-$html =~ s|(\<pre\>.*?\</pre\>)|kill_p_tag($1)|sge;
+$html =~ s|(\<pre\>.*?\</pre\>)|kill_p_tag($1)|sgei;
 
 sub kill_p_tag ()
 {
       my $txt = shift @_;
-      $txt =~ s/\<p\>//sg;
+      $txt =~ s/\<p\>//sgi;
       return $txt;
 }
-
-#
-# kill html header, title page, bad table of contents etc.
-#
-#$html =~ s/^(.*?)\<H1\>/<H1>/s;
-#$html =~ s/\<\/BODY\>.*$//s;
-
-##
-## add horiz bar before each H1 heading
-##
-# $html =~ s/\<H1\>/<HR><H1>/g;
-
-#
-# convert filenames in <IMG SRC="IMG00010.GIF"> tags to lowercase
-#
-#$html =~ s/\"IMG([0-9]*)\.GIF\"/\"img$1.gif\"/g;
 
 #
 # collect heading info from document
@@ -121,10 +98,10 @@ sub kill_p_tag ()
 print "collecting headings\n" unless $quiet;
 $scrap = $html;
 $i = 0;
-while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s)
+while ($scrap =~ s/\<h([0-9])\>(.*?)\<\/h[0-9]\>//si)
 {
       $level[$i] = $1;
-      $2 =~ m/\<A NAME\=\"(.*?)\"\/\>(.*)/s;
+      $2 =~ m/\<a name\=\"(.*?)\"\/\>(.*)/si;
       $label[$i] = $1;
       $title[$i] = $2;
       $aname2index{$1} = $i;
@@ -161,8 +138,8 @@ for ($i=0; $i<$nheadings; $i++)
 #
 for ($i=0; $i<$nheadings; $i++)
 {
-      # search replace phrases like this: <A NAME="_Toc473901724">Expressions</A>
-      $html =~ s/(\<A NAME=\"$label[$i]\"\/>)/\1$number[$i] /sg;
+      # search replace phrases like this: <a name="_Toc473901724">Expressions</A>
+      $html =~ s/(\<a name=\"$label[$i]\"\/>)/\1$number[$i] /sgi;
 }
 
 #
@@ -212,17 +189,17 @@ $html =~ s|\<A HREF=\"#([^\"]+)\"\>\[click\]\</A\>|\<a href=\"$xref{$1}\"\>$xref
 #
 print "creating Topics and TOC tables\n" unless $quiet;
 if ($singlePage) {
-      $chapters = "<H1>Chapters</H1>\n<p>\n";
+      $chapters = "<h1>Chapters</h1>\n<p>\n";
 } else {
-      $navbar="<p><b><hr><A HREF=\"toc.$ext\">[Table of Contents]</a><hr></b></p>";
-      $chapters = $navbar . "<H1>$product User Manual -- Chapters</H1>\n<p>\n";
+      $navbar="<p><b><hr><a href=\"toc.$ext\">[Table of Contents]</a><hr></b></p>";
+      $chapters = $navbar . "<h1>$product User Manual -- Chapters</h1>\n<p>\n";
 }
 for ($i=0; $i<$nheadings; $i++)
 {
       if ($level[$i]==1)
       {
            $link = $singlePage ? "#toc_$number[$i]" : "chap$chapnum[$i].$ext";
-           $entry = "<B><A HREF=\"$link\" class=\"toc\">$number[$i] $title[$i]</A></B><BR>";
+           $entry = "<b><a href=\"$link\" class=\"toc\">$number[$i] $title[$i]</a></b><br>";
            $chapters .= "$entry\n";
       }
 }
@@ -232,19 +209,19 @@ $chapters .= "</p>";
 # create table of contents
 #
 if ($singlePage) {
-      $toc = "<H1>Table of Contents</H1>\n<p>\n";
+      $toc = "<h1>Table of Contents</h1>\n<p>\n";
 } else {
-      $navbar="<p><b><hr><A HREF=\"usman.$ext\">[Chapters]</a><hr></b>\n</p>";
-      $toc = $navbar . "<H1>Table of Contents</H1><p>\n";
+      $navbar="<p><b><hr><a href=\"usman.$ext\">[Chapters]</a><hr></b>\n</p>";
+      $toc = $navbar . "<h1>Table of Contents</h1><p>\n";
 }
 for ($i=0; $i<$nheadings; $i++)
 {
       $link = $singlePage ? "#$label[$i]" : "chap$chapnum[$i].$ext#$label[$i]";
-      $entry = "<A NAME=\"toc_$number[$i]\"/><A HREF=\"$link\" class=\"toc\">$number[$i] $title[$i]</A>";
+      $entry = "<a name=\"toc_$number[$i]\"/><a href=\"$link\" class=\"toc\">$number[$i] $title[$i]</A>";
       for ($j=0; $j<$level[$i]; $j++) {$entry = "&nbsp;&nbsp;$entry";}
-      if ($level[$i]==1)    {$entry = "<BR><FONT SIZE=+1><B>$entry</B></FONT>";}
-      elsif ($level[$i]==2) {$entry = "<B>$entry</B>";}
-      $toc .= "$entry<BR>\n";
+      if ($level[$i]==1)    {$entry = "<br><font size=+1><b>$entry</b></font>";}
+      elsif ($level[$i]==2) {$entry = "<b>$entry</b>";}
+      $toc .= "$entry<br>\n";
 }
 $toc .= "</p>";
 
@@ -314,7 +291,7 @@ if ($singlePage)
 {
       print "writing page\n" unless $quiet;
       $new_html = $template;
-      $body = "<H1><B>User Manual</B></H1><H3>$product version $opp_version</H3>$chapters<HR>$toc$html";
+      $body = "<h1><b>User Manual</b></h1><h3>$product version $opp_version</h3>$chapters<hr>$toc$html";
       $new_html =~ s/__BODY__/$body/;
       open(FILE,">usman.$ext");
       print FILE $new_html;
@@ -328,7 +305,7 @@ else
       print "splitting up to chapters\n" unless $quiet;
       $nchapters = 0;
       $scrap = $html;
-      while ($scrap =~ s/(\<H1\>.*?)\<H1\>/\<H1\>/s)
+      while ($scrap =~ s/(\<h1\>.*?)\<h1\>/\<h1\>/si)
       {
             $chapter[++$nchapters] = $1;
       }
@@ -340,10 +317,10 @@ else
       for ($i=1; $i<=$nchapters; $i++)
       {
             $navbar[$i] = "<p><hr><b>";
-            if ($i>1) {$t=$i-1; $navbar[$i] .= "<A HREF=\"chap$t.$ext\">[Prev]</A>";}
-            if ($i<$nchapters) {$t=$i+1; $navbar[$i] .= "&nbsp;<A HREF=\"chap$t.$ext\">[Next]</A>";}
-            $navbar[$i] .= "&nbsp;<A HREF=\"toc.$ext#toc_$i.\">[TOC]</A>";
-            $navbar[$i] .= "&nbsp;<A HREF=\"usman.$ext\">[Chapters]</A>";
+            if ($i>1) {$t=$i-1; $navbar[$i] .= "<a href=\"chap$t.$ext\">[Prev]</A>";}
+            if ($i<$nchapters) {$t=$i+1; $navbar[$i] .= "&nbsp;<a href=\"chap$t.$ext\">[Next]</A>";}
+            $navbar[$i] .= "&nbsp;<a href=\"toc.$ext#toc_$i.\">[TOC]</a>";
+            $navbar[$i] .= "&nbsp;<a href=\"usman.$ext\">[Chapters]</a>";
             $navbar[$i] .= "</b><hr></p>";
       }
 
@@ -365,7 +342,7 @@ else
       #
       print "writing chapters file\n" unless $quiet;
       $new_html = $template;
-      $body = "<H1><B>User Manual</B></H1><H3>$product version $opp_version</H3>$chapters";
+      $body = "<h1><b>User Manual</b></h1><h3>$product version $opp_version</h3>$chapters";
       $new_html =~ s/__BODY__/$body/;
       open(FILE,">usman.$ext");
       print FILE $new_html;

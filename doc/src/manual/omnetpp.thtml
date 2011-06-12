@@ -1,48 +1,48 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-   <TITLE>OMNeT++ - Manual</TITLE>
-   <META NAME="Author" CONTENT="Andras Varga">
-</HEAD>
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+   <title>OMNeT++ - Manual</title>
+   <meta name="Author" content="Andras Varga">
+</head>
 
 <style type="text/css">
-body,th,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }
-body,td,p,ul,ol,li { font-size:11pt }
+body,th,td,p,ul,ol,li,h1,h2,h3,h4 { font-family: arial,sans-serif; }
+body,td,p,ul,ol,li { font-size:11pt; }
 th,td { font-size:10pt; }
+body { margin-left: 30px; margin-right: 30px; }
 
-h1 {color: #006f00;}
-h2 {color: #006f00;}
-h3 {color: #006f00;}
-pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
-pre.ned { background:#e8ffe8; }
-pre.msg { background:#e8ffe8; }
-pre.cpp { background:#e8e8ff; }
-pre.inifile { background:#f8f8d0; }
+h1 { color: #1A41A8; margin-top: 50px; }
+h2 { color: #1A41A8; margin-top: 50px; }
+h3 { color: #1A41A8; margin-top: 40px; }
+
+hr.pgbr { color: #f5f5f5; margin-top: 50px; margin-bottom: 50px; }
+p.subheading { color: #1A41A8; margin-top: 30px; font-weight: bold; }
+pre { margin: 4px 8px 4px 2px; padding: 4px 6px; background:#fffff4; border: 1px solid #dddddd; }
+pre.ned { background:#f5fff5; }
+pre.msg { background:#f5fff5; }
+pre.cpp { background:#f5f5f5; }
+pre.inifile { background:#fffff0; }
 pre.filelisting { background:#f0f0f0; }
 pre.commandline { background:#fffff0; }
-table {background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid}
-td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000}
-.subheading {color: black; font-weight: bold;}
-a {text-decoration: none;}
-a:visited {text-decoration: none;}
-# a:hover {text-decoration: underline;}
+table { background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid; }
+td,th { text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000; }
+a { text-decoration: none; }
+a:visited { text-decoration: none; }
+# a:hover { text-decoration: underline; }
 </style>
 
-<BODY TEXT="#000000" BGCOLOR="#ffffff" LINK="#0000ee" VLINK="#551a8b" ALINK="#ff0000">
+<body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b" alink="#ff0000">
 
 <br>
 <img src="omnetpp.png" border="0">
 <!--
-<h1><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
-<I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></h1>
+<h1><font color="#ff0000"><b><font size=+4>OMNeT++ </font></b>
+<i><font size=+1>Discrete Event Simulation System</font></i></font></h1>
 -->
 
 __BODY__
 
-<HR>
-<EM>Document converted from LaTeX by <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>
-from <A href="http://www.best.com/~quong">Russell W. Quong</A>
-(<A href="mailto:quong@best.com">quong@best.com</A>)</EM>
 
-</BODY>
-</HTML>
+</body>
+</html>
+
