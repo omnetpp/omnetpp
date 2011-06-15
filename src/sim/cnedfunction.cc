@@ -177,21 +177,6 @@ cNEDValue cNEDFunction::invoke(cComponent *context, cNEDValue argv[], int argc)
     return f(context, argv, argc);
 }
 
-static const char *getTypeName(char t)
-{
-    switch (t)
-    {
-        case 'B': return "bool";
-        case 'L': return "long";
-        case 'D': return "double";
-        case 'Q': return "quantity";
-        case 'S': return "string";
-        case 'X': return "xml";
-        case '*': return "any";
-        default:  return "?";
-    }
-}
-
 std::string cNEDFunction::info() const
 {
     return getSignature();

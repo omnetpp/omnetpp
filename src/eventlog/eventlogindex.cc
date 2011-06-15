@@ -132,6 +132,8 @@ void EventLogIndex::clearInternalState()
 void EventLogIndex::synchronize(FileReader::FileChangedState change)
 {
     switch (change) {
+        case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
+            break;
         case FileReader::OVERWRITTEN:
             clearInternalState();
             break;

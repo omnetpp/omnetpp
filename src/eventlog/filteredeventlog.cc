@@ -76,6 +76,8 @@ void FilteredEventLog::synchronize(FileReader::FileChangedState change)
     if (change != FileReader::UNCHANGED) {
         eventLog->synchronize(change);
         switch (change) {
+            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
+                 break;
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
                 clearInternalState();

@@ -87,6 +87,8 @@ void FilteredEvent::synchronize(FileReader::FileChangedState change)
             case FileReader::APPENDED:
                 deleteConsequences();
                 break;
+            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
+                break;
         }
     }
 }

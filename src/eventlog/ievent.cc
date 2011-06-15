@@ -34,15 +34,8 @@ void IEvent::clearInternalState()
 
 void IEvent::synchronize(FileReader::FileChangedState change)
 {
-    if (change != FileReader::UNCHANGED) {
-        switch (change) {
-            case FileReader::OVERWRITTEN:
-                clearInternalState();
-                break;
-            case FileReader::APPENDED:
-                break;
-        }
-    }
+    if (change == FileReader::OVERWRITTEN)
+        clearInternalState();
 }
 
 int IEvent::findBeginSendEntryIndex(int messageId)

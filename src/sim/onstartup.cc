@@ -41,7 +41,7 @@ class StartupChecker
 
             // we set the environment variable so a new instance will be able to
             // detect it (note: there is no setenv() on windows)
-            putenv("__OPPSIM_LOADED__=yes");
+            putenv((char *)"__OPPSIM_LOADED__=yes");
         }
 };
 

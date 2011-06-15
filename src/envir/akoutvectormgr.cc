@@ -66,7 +66,7 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
 
         // Akaroa starts parameter numbering with one
         vp->ak_id = ++ak_count;
-        AkMessage("Parameter %i is equivalent to vector: %s.\"%s\".", vp->ak_id, modulename, vectorname);
+        AkMessage((char *)"Parameter %i is equivalent to vector: %s.\"%s\".", vp->ak_id, modulename, vectorname);
     }
     return vp;
 }
@@ -85,7 +85,7 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
         if (!ak_declared)
         {
             AkDeclareParameters(ak_count);
-            AkMessage("Parameters declared:  %i", ak_count);
+            AkMessage((char *)"Parameters declared:  %i", ak_count);
             ak_declared = true;
         }
 

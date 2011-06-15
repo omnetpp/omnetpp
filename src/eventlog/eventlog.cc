@@ -69,6 +69,8 @@ void EventLog::synchronize(FileReader::FileChangedState change)
         IEventLog::synchronize(change);
         EventLogIndex::synchronize(change);
         switch (change) {
+            case FileReader::UNCHANGED:   // just to avoid unused enumeration value warnings
+                break;
             case FileReader::OVERWRITTEN:
                 deleteAllocatedObjects();
                 clearInternalState();
@@ -191,7 +193,7 @@ void EventLog::parseKeyframes()
         keyframeBlockSize = simulationBeginEntry->keyframeBlockSize;
         consequenceLookaheadLimits.resize(getLastEventNumber() / keyframeBlockSize + 1, 0);
         reader->seekTo(reader->getFileSize());
-        while (line = reader->getPreviousLineBufferPointer()) {
+        while ((line = reader->getPreviousLineBufferPointer())) {
             EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(NULL, 0, line, reader->getCurrentLineLength());
             if (dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
                 KeyframeEntry *keyframeEntry = (KeyframeEntry *)eventLogEntry;

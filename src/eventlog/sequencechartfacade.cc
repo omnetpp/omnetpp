@@ -42,6 +42,8 @@ void SequenceChartFacade::synchronize(FileReader::FileChangedState change)
 		EventLogFacade::synchronize(change);
 		nonLinearFocus = -1;
         switch (change) {
+            case FileReader::UNCHANGED:   // cannot be reached. just to avoid warnings of unhandled enum value
+                break;
             case FileReader::OVERWRITTEN:
 	    		undefineTimelineCoordinateSystem();
                 break;
