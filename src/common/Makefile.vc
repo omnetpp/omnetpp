@@ -127,8 +127,10 @@ $O/exception.obj: exception.cc \
   commonutil.h
 $O/expression.obj: expression.cc \
   expressionyydefs.h \
+  unitconversion.h \
   stringutil.h \
   expression.h \
+  stringpool.h \
   exception.h \
   commondefs.h \
   commonutil.h
@@ -137,6 +139,7 @@ $O/expression.tab.obj: expression.tab.cc \
   unitconversion.h \
   stringutil.h \
   expression.h \
+  stringpool.h \
   exception.h \
   commondefs.h \
   commonutil.h
@@ -167,6 +170,7 @@ $O/lex.expressionyy.obj: lex.expressionyy.cc \
   expressionyydefs.h \
   expression.h \
   stringutil.h \
+  stringpool.h \
   exception.h \
   commonutil.h \
   commondefs.h \
@@ -211,6 +215,11 @@ $O/stringpool.obj: stringpool.cc \
 $O/stringtokenizer.obj: stringtokenizer.cc \
   commondefs.h \
   stringtokenizer.h
+$O/stringtokenizer2.obj: stringtokenizer2.cc \
+  exception.h \
+  commondefs.h \
+  commonutil.h \
+  stringtokenizer2.h
 $O/stringutil.obj: stringutil.cc \
   stringutil.h \
   exception.h \

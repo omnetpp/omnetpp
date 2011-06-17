@@ -163,6 +163,7 @@ $O/customfilter.obj: customfilter.cc \
   scavedefs.h \
   node.h \
   ../common/stringutil.h \
+  ../common/stringpool.h \
   customfilter.h \
   nodetype.h \
   ../common/expression.h
@@ -415,6 +416,7 @@ $O/nodetyperegistry.obj: nodetyperegistry.cc \
   resultfilemanager.h \
   scavedefs.h \
   ../common/stringutil.h \
+  ../common/stringpool.h \
   mergernodes.h \
   teenode.h \
   idlist.h \
@@ -498,6 +500,7 @@ $O/scavetool.obj: scavetool.cc \
   ../common/rwlock.h \
   ../common/linetokenizer.h \
   statistics.h \
+  ../common/stringtokenizer.h \
   arraybuilder.h \
   ../common/patternmatcher.h \
   ../common/exception.h \

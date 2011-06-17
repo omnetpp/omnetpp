@@ -108,8 +108,10 @@ $O/arrow.obj: arrow.cc \
   ../../include/cownedobject.h \
   ../../include/platdep/platdefs.h \
   tkutil.h \
-  ../../include/simkerneldefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
   ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
   ../../include/regmacros.h
@@ -141,7 +143,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
-  ../../include/cobjectfactory.h \
   ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
@@ -157,6 +158,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/compat.h \
   ../../include/crng.h \
   ../../include/clistener.h \
@@ -186,6 +188,7 @@ $O/inspector.obj: inspector.cc \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
+  ../../include/cnedvalue.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -242,7 +245,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
-  ../../include/cobjectfactory.h \
   ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
@@ -258,6 +260,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/compat.h \
   ../../include/crng.h \
   ../../include/clistener.h \
@@ -288,6 +291,7 @@ $O/inspfactory.obj: inspfactory.cc \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
+  ../../include/cnedvalue.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -333,7 +337,6 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
@@ -342,10 +345,12 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/cqueue.h \
   ../../include/ccomponent.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
@@ -380,11 +385,11 @@ $O/logbuffer.obj: logbuffer.cc \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
   ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/ccomponent.h \
   ../../include/cregistrationlist.h \
@@ -422,7 +427,6 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/simkerneldefs.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
@@ -431,10 +435,12 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/cdisplaystring.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   inspfactory.h \
   ../../include/cvisitor.h \
@@ -489,7 +495,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cobject.h \
   ../../include/cfsm.h \
   ../../include/nedsupport.h \
-  ../../include/cobjectfactory.h \
   ../../include/cnullenvir.h \
   ../../include/cstddev.h \
   ../../include/cdoubleparimpl.h \
@@ -505,6 +510,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cexpression.h \
   ../../include/cdisplaystring.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/compat.h \
   ../../include/crng.h \
   ../../include/clistener.h \
@@ -535,6 +541,7 @@ $O/objinsp.obj: objinsp.cc \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
+  ../../include/cnedvalue.h \
   ../../include/cxmlparimpl.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -579,7 +586,6 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cobjectfactory.h \
   statinsp.h \
   ../../include/errmsg.h \
   tkdefs.h \
@@ -587,9 +593,11 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   inspfactory.h \
   ../../include/cvisitor.h \
@@ -625,16 +633,15 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cmessage.h \
   logbuffer.h \
   ../../include/csimulation.h \
-  tkutil.h \
   ../../include/simtime.h \
-  ../../include/simutil.h \
+  tkutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cwatch.h \
   ../../include/cenum.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/cstatistic.h \
@@ -642,11 +649,13 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
   ../../include/cdisplaystring.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cqueue.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   visitor.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   inspfactory.h \
   ../../include/cstringpool.h \
@@ -659,8 +668,8 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/simtime_t.h \
   ../../include/csimplemodule.h \
   ../../include/cdensityestbase.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \
@@ -691,7 +700,6 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cstddev.h \
-  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/cstatistic.h \
   tkdefs.h \
@@ -699,6 +707,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cdisplaystring.h \
   ../../include/cownedobject.h \
   ../../include/cexpression.h \
+  ../../include/cobjectfactory.h \
   ../common/ver.h \
   ../../include/clistener.h \
   ../../include/cproperty.h \
@@ -706,6 +715,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cchannel.h \
   ../../include/cproperties.h \
   ../../include/ccomponent.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   inspfactory.h \
   ../../include/cscheduler.h \
@@ -732,28 +742,33 @@ $O/tkenv.obj: tkenv.cc \
   tkenv.h \
   ../../include/regmacros.h
 $O/tklib.obj: tklib.cc \
+  ../../include/carray.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
   logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
+  ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   ../../include/ccomponenttype.h \
   tkdefs.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cmathfunction.h \
   tklib.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -770,30 +785,35 @@ $O/tklib.obj: tklib.cc \
   tkenv.h \
   ../../include/regmacros.h
 $O/tkutil.obj: tkutil.cc \
+  ../../include/carray.h \
   ../../include/cgate.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
+  ../../include/cmessage.h \
   logbuffer.h \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
   ../../include/simkerneldefs.h \
   ../../include/simutil.h \
+  ../../include/cmsgpar.h \
   ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../common/ver.h \
   ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/ccomponent.h \
   visitor.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
+  ../../include/cmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/cmessageheap.h \
@@ -818,24 +838,25 @@ $O/visitor.obj: visitor.cc \
   ../../include/csimulation.h \
   ../../include/simtime.h \
   tkutil.h \
-  ../../include/simutil.h \
   ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
   ../../include/cwatch.h \
   ../../include/cmsgpar.h \
   ../../include/cobject.h \
   ../../include/cfsm.h \
-  ../../include/cobjectfactory.h \
   ../../include/errmsg.h \
   tkdefs.h \
   ../../include/ccomponenttype.h \
   ../../include/cstatistic.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/cchannel.h \
   ../../include/cqueue.h \
   ../../include/ccomponent.h \
   visitor.h \
+  ../../include/ctimestampedvalue.h \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
@@ -843,8 +864,8 @@ $O/visitor.obj: visitor.cc \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
-  ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
+  ../../include/cmessageheap.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
   ../../include/cdefaultlist.h \

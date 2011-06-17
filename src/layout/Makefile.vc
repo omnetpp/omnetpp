@@ -74,6 +74,11 @@ $O/basicspringembedderlayout.obj: basicspringembedderlayout.cc \
   graphlayouter.h \
   layoutdefs.h \
   basicspringembedderlayout.h
+$O/concentrictreeembedding.obj: concentrictreeembedding.cc \
+  graphcomponent.h \
+  concentrictreeembedding.h \
+  layoutdefs.h \
+  geometry.h
 $O/forcedirectedembedding.obj: forcedirectedembedding.cc \
   forcedirectedparameters.h \
   layoutdefs.h \

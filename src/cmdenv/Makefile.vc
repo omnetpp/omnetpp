@@ -73,8 +73,8 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cregistrationlist.h \
   ../../include/carray.h \
   ../../include/cgate.h \
-  ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
   ../../include/cmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -91,7 +91,6 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cmessageheap.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cobject.h \
-  ../../include/cobjectfactory.h \
   cmddefs.h \
   ../../include/globals.h \
   ../../include/platdep/platmisc.h \
@@ -103,6 +102,7 @@ $O/cmdenv.obj: cmdenv.cc \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
   ../../include/clistener.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
