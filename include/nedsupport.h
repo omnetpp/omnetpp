@@ -24,8 +24,6 @@ NAMESPACE_BEGIN
 
 namespace NEDSupport {
 
-typedef cDynamicExpression::Value Value; // abbreviation for local use
-
 class ModuleIndex : public cDynamicExpression::Functor
 {
   public:
@@ -34,7 +32,7 @@ class ModuleIndex : public cDynamicExpression::Functor
     virtual const char *getFullName() const {return "index";}
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs);
 };
 
@@ -53,7 +51,7 @@ class ParameterRef : public cDynamicExpression::Functor
     virtual const char *getFullName() const {return paramName.c_str();}
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return '*';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs);
 };
 
@@ -73,7 +71,7 @@ class SiblingModuleParameterRef : public cDynamicExpression::Functor
     virtual const char *getFullName() const {return paramName.c_str();}
     virtual const char *getArgTypes() const {return withModuleIndex ? "L" : "";}
     virtual char getReturnType() const {return '*';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs);
 };
 
@@ -102,7 +100,7 @@ class LoopVar : public cDynamicExpression::Functor
     virtual const char *getFullName() const {return varName.c_str();}
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs);
 };
 
@@ -122,16 +120,16 @@ class Sizeof : public cDynamicExpression::Functor
     virtual const char *getFullName() const {return ident.c_str();}
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs);
 };
 
 /*XXX TODO
-static Value getSizeofIdent(cComponent *context, Value args[], int numargs);
-static Value getSizeofGate(cComponent *context, Value args[], int numargs);
-static Value getSizeofParentModuleGate(cComponent *context, Value args[], int numargs);
-static Value getSizeofSiblingModuleGate(cComponent *context, Value args[], int numargs);
-static Value getSizeofIndexedSiblingModuleGate(cComponent *context, Value args[], int numargs);
+static cNEDValue getSizeofIdent(cComponent *context, cNEDValue args[], int numargs);
+static cNEDValue getSizeofGate(cComponent *context, cNEDValue args[], int numargs);
+static cNEDValue getSizeofParentModuleGate(cComponent *context, cNEDValue args[], int numargs);
+static cNEDValue getSizeofSiblingModuleGate(cComponent *context, cNEDValue args[], int numargs);
+static cNEDValue getSizeofIndexedSiblingModuleGate(cComponent *context, cNEDValue args[], int numargs);
 
 class Sizeof : public Functor
 {
@@ -142,7 +140,7 @@ class Sizeof : public Functor
   public:
     virtual const char *getArgTypes() const {return "";}
     virtual char getReturnType() const {return 'L';}
-    virtual Value evaluate(cComponent *context, Value args[], int numargs);
+    virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs);
     virtual std::string str(std::string args[], int numargs) {return "index";}
 };
 */

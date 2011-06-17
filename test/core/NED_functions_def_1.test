@@ -1,0 +1,65 @@
+%description:
+basic positive test case for user-defined NED functions (Define_NED_Function() macro)
+
+%file: test.ned
+
+import testlib.*;
+
+network Test {
+    parameters:
+        bool p0 = @TESTNAME@_haveClass("foo%*&@");
+        bool p1 = @TESTNAME@_haveClass("cMessage");
+        string p2 = @TESTNAME@_lindex(3, "one", "two", "three", "four");
+        string p3 = @TESTNAME@_lindex(3, true, 42, "three", false);
+    submodules:
+        dump: Dump;
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+cNEDValue nedf_haveClass(cComponent *context, cNEDValue argv[], int argc)
+{
+    return classes.getInstance()->lookup(argv[0].s.c_str()) != NULL;
+}
+
+Define_NED_Function2(nedf_haveClass,
+        "bool @TESTNAME@_haveClass(string className)",
+        "@TESTNAME@",
+        "Returns true if the given C++ class exists"
+);
+
+cNEDValue nedf_lindex(cComponent *context, cNEDValue argv[], int argc)
+{
+    int index = (int)argv[0].dbl;
+    if (index < 0)
+        throw cRuntimeError("lindex(): negative index");
+    if (index > argc)
+        throw cRuntimeError("lindex(): index out of bounds: %d", index);
+    return argv[index];
+}
+
+Define_NED_Function2(nedf_lindex,
+        "any @TESTNAME@_lindex(long index, any item1, ...)",
+        "@TESTNAME@",
+        "Returns the indexth item from the arg list item1, item2, etc."
+);
+
+}; //namespace
+
+//%extraargs: --debug-on-errors=true
+
+%contains: stdout
+module Test: Test {
+    parameters:
+        @isNetwork
+        p0 = false
+        p1 = true
+        p2 = "three"
+        p3 = "three"
+    submodules:
+}
+

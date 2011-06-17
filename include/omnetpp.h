@@ -60,6 +60,7 @@
 #include "cmodule.h"
 #include "cmessageheap.h"
 #include "cnedfunction.h"
+#include "cnedvalue.h"
 #include "cobject.h"
 #include "cnamedobject.h"
 #include "cnullenvir.h"

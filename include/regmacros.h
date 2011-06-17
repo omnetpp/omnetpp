@@ -74,14 +74,16 @@ NAMESPACE_BEGIN
  * signature in NED.
  *
  * The C++ function should have the following signature:
- * <pre>Value f(cComponent *context, Value argv[], int argc)</pre>
- * where Value stands for cDynamicExpression::Value.
+ * <pre>
+ * cNEDValue f(cComponent *context, cNEDValue argv[], int argc)
+ * </pre>
  *
  * SIGNATURE is a string with the following syntax:
- * <pre>returntype name(argtype argname,...)</pre>
- * where types can be bool, long, double, quantity, string, xml, any
- * (where quantity is a double with a unit of measurement); names of
- * optional args should end in '?'.
+ * <tt>returntype functionname(argtype1 argname1, ...)</tt>, where a type
+ * can be one of 'bool', 'int', 'double', 'quantity' ('double' with measurement
+ * unit), 'string', 'xml' and 'any'. Optional arguments are denoted by
+ * appending a '?' to their names. To let the function accept any number of
+ * additional arguments of arbitrary types, add ',...' to the signature.
  *
  * Example:
  * <pre>

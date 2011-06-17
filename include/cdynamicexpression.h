@@ -18,6 +18,7 @@
 #ifndef __CDYNAMICEXPRESSION_H
 #define __CDYNAMICEXPRESSION_H
 
+#include "cnedvalue.h"
 #include "cexpression.h"
 #include "cstringpool.h"
 
@@ -70,7 +71,7 @@ class SIM_API cDynamicExpression : public cExpression
         //  - string
         //  - pointer to an "external" cXMLElement
         //  - cMathFunction: function with 0/1/2/3/4 double arguments
-        //  - cNEDFunction: function taking/returning Value (NEDFunction)
+        //  - cNEDFunction: function taking/returning cNEDValue (NEDFunction)
         //  - functor
         //  - math operator (+-*/%^...)
         //  - constant subexpression
@@ -158,7 +159,7 @@ class SIM_API cDynamicExpression : public cExpression
 
         /**
          * Effect during evaluation of the expression: call a function
-         * that function takes an array of Values and returns a Value.
+         * that function takes an array of cNEDValues and returns a cNEDValue.
          */
         void set(cNEDFunction *f, int argc)  {type=NEDFUNC; ASSERT(f); nf.f=f; nf.argc=argc;}
 
@@ -185,47 +186,6 @@ class SIM_API cDynamicExpression : public cExpression
     };
 
     /**
-     * The dynamic expression evaluator calculates in Values.
-     *
-     * Note: There is no <tt>long</tt> field in it: all numeric calculations are
-     * performed in floating point (<tt>double</tt>). While this is fine on 32-bit
-     * architectures, on 64-bit architectures some precision will be lost
-     * because IEEE <tt>double</tt>'s mantissa is only 53 bits.
-     *
-     * NOTE: Experimental class -- API is subject to change.
-     */
-    struct SIM_API Value
-    {
-        // Note: char codes need to be present and be consistent with cNEDFunction::getArgTypes()
-        enum {UNDEF=0, BOOL='B', DBL='D', STR='S', XML='X'} type;
-        bool bl;
-        double dbl;
-        const char *dblunit; // stringpooled, may be NULL
-        std::string s;
-        cXMLElement *xml;
-
-        Value()  {type=UNDEF;}
-        Value(bool b)  {*this=b;}
-        Value(long l)  {*this=l;}
-        Value(double d)  {*this=d;}
-        Value(double d, const char *unit)  {set(d,unit);}
-        Value(const char *s)  {*this=s;}
-        Value(const std::string& s)  {*this=s;}
-        Value(cXMLElement *x)  {*this=x;}
-        Value(const cPar& par) {*this=par;}
-        void operator=(bool b)  {type=BOOL; bl=b;}
-        void operator=(long l)  {type=DBL; dbl=l; dblunit=NULL;}
-        void operator=(double d)  {type=DBL; dbl=d; dblunit=NULL;}
-        void set(double d, const char *unit) {type=DBL; dbl=d; dblunit=unit;}
-        void operator=(const char *s)  {type=STR; this->s=s?s:"";}
-        void operator=(const std::string& s)  {type=STR; this->s=s;}
-        void operator=(cXMLElement *x)  {type=XML; xml=x;}
-        void operator=(const cPar& par);
-        std::string str() const;
-        Value& convertTo(const char *unit) {dbl=convertUnit(dbl, dblunit, unit); dblunit=unit; return *this;}
-    };
-
-    /**
      * Function object base class. We use function objects to handle NED parameter
      * references, "index" and "sizeof" operators, and references to NED "for" loop
      * variables.
@@ -236,7 +196,7 @@ class SIM_API cDynamicExpression : public cExpression
         virtual const char *getArgTypes() const = 0;
         virtual int getNumArgs() const {return strlen(getArgTypes());}
         virtual char getReturnType() const = 0;
-        virtual Value evaluate(cComponent *context, Value args[], int numargs) = 0;
+        virtual cNEDValue evaluate(cComponent *context, cNEDValue args[], int numargs) = 0;
         virtual std::string str(std::string args[], int numargs) = 0;
     };
 
@@ -296,11 +256,11 @@ class SIM_API cDynamicExpression : public cExpression
     virtual void setExpression(Elem e[], int size);
 
     /**
-     * Evaluate the expression, and return the results as a Value.
+     * Evaluate the expression, and return the results as a cNEDValue.
      * Throws an error if the expression has some problem (i.e. stack
      * overflow/underflow, "cannot cast", "function not found", etc.)
      */
-    virtual Value evaluate(cComponent *context) const;
+    virtual cNEDValue evaluate(cComponent *context) const;
 
     /**
      * Evaluate the expression and convert the result to bool if possible;

@@ -31,9 +31,7 @@ NAMESPACE_BEGIN
  * @see cNEDFunction, Define_NED_Function().
  * @ingroup EnumsTypes
  */
-typedef cDynamicExpression::Value (*NEDFunction)(cComponent *context,
-                                                 cDynamicExpression::Value argv[],
-                                                 int argc);
+typedef cNEDValue (*NEDFunction)(cComponent *context, cNEDValue argv[], int argc);
 
 
 /**
@@ -57,7 +55,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
 
   protected:
     void parseSignature(const char *signature);
-    void checkArgs(cDynamicExpression::Value argv[], int argc);
+    void checkArgs(cNEDValue argv[], int argc);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -99,7 +97,7 @@ class SIM_API cNEDFunction : public cNoncopyableOwnedObject
     /**
      * Performs argument type checking, and invokes the function.
      */
-    cDynamicExpression::Value invoke(cComponent *context, cDynamicExpression::Value argv[], int argc);
+    cNEDValue invoke(cComponent *context, cNEDValue argv[], int argc);
 
     /**
      * Returns the function pointer. Do not call the function

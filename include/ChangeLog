@@ -1,3 +1,11 @@
+2011-06-14  Andras Varga
+
+	* cDynamicExpression::Value, also shared by cNEDFunction, has been
+	factored out to a cNEDValue class. Data members are no longer public,
+	they can be manipulated via various methods. NOTE: This change is
+	NOT backwards compatible: user-supplied NED functions will need to be
+	revised. Look at src/sim/nedfunctions.cc for code examples.
+
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
 2011-04-15  Andras Varga

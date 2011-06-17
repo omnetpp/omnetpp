@@ -66,7 +66,7 @@ static char parseType(const std::string& str)
 {
     if (str=="bool")
         return 'B';
-    if (str=="long")
+    if (str=="int" || str=="long")
         return 'L';
     if (str=="double")
         return 'D';
@@ -86,16 +86,25 @@ static bool splitTypeAndName(const std::string& pair, char& type, std::string& n
     std::vector<std::string> v = StringTokenizer(pair.c_str()).asVector();
     if (v.size()!=2)
         return false;
+
     type = parseType(v[0]);
+    if (type == 0)
+        return false;
+
     name = v[1];
-    return type!=0;
+    for (const char *s = name.c_str(); *s; s++)
+        if (!opp_isalnum(*s) && *s != '_' && *s != '?') // '?': optional arg
+            return false;
+
+    return true;
 }
 
 static const char *syntaxErrorMessage =
         "Define_NED_Function(): syntax error in signature \"%s\": "
-        "should be <rettype> name(<argtype> argname,...), "
-        "where types can be bool, long, double, quantity, string, xml, any; "
-        "names of optional args end in '?'";
+        "should be <returntype> name(<argtype> argname, ...), "
+        "where a type can be one of 'bool', 'int', 'double', 'quantity', "
+        "'string', 'xml' and 'any'; names of optional args end in '?'; "
+        "append ',...' to accept any number of additional args of any type";
 
 void cNEDFunction::parseSignature(const char *signature)
 {
@@ -120,7 +129,7 @@ void cNEDFunction::parseSignature(const char *signature)
     std::vector<std::string> args = StringTokenizer(argList.c_str(), ",").asVector();
     for (int i=0; i < (int)args.size(); i++)
     {
-        if (args[i] == "...") {
+        if (opp_trim(args[i].c_str()) == "...") {
             if (i != (int)args.size()-1)
                 throw cRuntimeError(syntaxErrorMessage, signature); // "..." must be the last one
             hasvarargs = true;
@@ -140,7 +149,7 @@ void cNEDFunction::parseSignature(const char *signature)
         minargc = maxargc;
 }
 
-void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
+void cNEDFunction::checkArgs(cNEDValue argv[], int argc)
 {
     if (argc < minargc || (argc > maxargc && !hasvarargs))
         throw cRuntimeError("%s: called with wrong number of arguments", getName());
@@ -149,13 +158,13 @@ void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
     for (int i=0; i<n; i++) {
         char declType = argtypes[i];
         if (declType=='D' || declType=='L') {
-            if (argv[i].type != 'D')
+            if (argv[i].type != cNEDValue::DBL)
                 throw cRuntimeError(eEBADARGS, getName());
-            if (!opp_isempty(argv[i].dblunit))
+            if (!opp_isempty(argv[i].getUnit()))
                 throw cRuntimeError(eDIMLESS, getName()); //XXX better msg! only arg i is dimless
         }
         else if (declType=='Q') {
-            if (argv[i].type != 'D')
+            if (argv[i].type != cNEDValue::DBL)
                 throw cRuntimeError(eEBADARGS, getName());
         }
         else if (declType!='*' && argv[i].type!=declType) {
@@ -164,7 +173,7 @@ void cNEDFunction::checkArgs(cDynamicExpression::Value argv[], int argc)
     }
 }
 
-cDynamicExpression::Value cNEDFunction::invoke(cComponent *context, cDynamicExpression::Value argv[], int argc)
+cNEDValue cNEDFunction::invoke(cComponent *context, cNEDValue argv[], int argc)
 {
     checkArgs(argv, argc);
     return f(context, argv, argc);

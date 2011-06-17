@@ -1,3 +1,8 @@
+2011-06-14  Andras Varga
+
+	* cDynamicExpression::Value, also shared by cNEDFunction, has been
+	factored out to a cNEDValue class.
+
 2011-05-17  Andras Varga
 
 	* cexception.cc: fix #301: cException::init() wrote 1 byte past the
