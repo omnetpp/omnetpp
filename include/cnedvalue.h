@@ -35,10 +35,14 @@ class cDynamicExpression;
  *
  * <b>Double vs long:</b>
  *
- * There is no <tt>long</tt> field in cNEDValue: all numeric calculations are
- * performed in floating point (<tt>double</tt>). While this is fine on 32-bit
- * architectures, on 64-bit architectures some precision will be lost
- * because IEEE <tt>double</tt>'s mantissa is only 53 bits.
+ * There is no <tt>long</tt> field in cNEDValue; the reason is that the NED
+ * expression evaluator stores all numbers as <tt>double</tt>. The IEEE double's
+ * mantissa is 53 bits, so <tt>double</tt> can accurately represent <tt>long</tt>
+ * on 32-bit architectures. On 64-bit architectures the usual size of
+ * <tt>long</tt> is 64 bits, so precision loss will occur when converting
+ * very large integers to <tt>double</tt>. Note, however, that simulations
+ * that trigger this precision loss would not be able to run on 32-bit
+ * architectures at all.
  *
  * <b>Measurement unit strings:</b>
  *
@@ -49,7 +53,8 @@ class cDynamicExpression;
  * if the same pointer propagates to other cNEDValue objects. It is recommended
  * that you only pass pointers that stay valid during the entire simulation.
  * It is safe to use: (1) string constants from the code; (2) units strings
- * from other cNEDValues; and (3) stringpooled strings, see cStringPool.
+ * from other cNEDValues; and (3) stringpooled strings, e.g. from the
+ * getPooled() method or from cStringPool.
  *
  * @see cDynamicExpression, cNEDFunction, Define_NED_Function()
  * @ingroup EnumsTypes
@@ -132,6 +137,16 @@ class SIM_API cNEDValue
      * @see convertTo(), doubleValueInUnit(), setUnit()
      */
     static double convertUnit(double d, const char *unit, const char *targetUnit);
+
+    /**
+     * Returns a copy of the string that is guaranteed to stay valid
+     * until the program exits. Multiple calls with identical strings as
+     * parameter will return the same copy. Useful for getting measurement
+     * unit strings suitable for cNEDValue; see related class comment.
+     *
+     * @see cStringPool, setUnit(), convertTo()
+     */
+    static const char *getPooled(const char *s);
     //@}
 
     /** @name Setter functions. Note that overloaded assignment operators also exist. */
@@ -240,7 +255,7 @@ class SIM_API cNEDValue
     /**
      * Returns value as std::string. The type must be STR.
      */
-    std::string stdstringValue() const {assertType(STR); return s;}
+    const std::string& stdstringValue() const {assertType(STR); return s;}
 
     /**
      * Returns value as pointer to cXMLElement. The type must be XML.
@@ -333,31 +348,37 @@ class SIM_API cNEDValue
 
     /**
      * Calls longValue() and converts the result to char.
+     * Note that this is a potentially lossy operation.
      */
     operator char() const  {return (char)longValue();}
 
     /**
      * Calls longValue() and converts the result to unsigned char.
+     * Note that this is a potentially lossy operation.
      */
     operator unsigned char() const  {return (unsigned char)longValue();}
 
     /**
      * Calls longValue() and converts the result to int.
+     * Note that this is a potentially lossy operation.
      */
     operator int() const  {return (int)longValue();}
 
     /**
      * Calls longValue() and converts the result to unsigned int.
+     * Note that this is a potentially lossy operation.
      */
     operator unsigned int() const  {return (unsigned int)longValue();}
 
     /**
      * Calls longValue() and converts the result to short.
+     * Note that this is a potentially lossy operation.
      */
     operator short() const  {return (short)longValue();}
 
     /**
      * Calls longValue() and converts the result to unsigned short.
+     * Note that this is a potentially lossy operation.
      */
     operator unsigned short() const  {return (unsigned short)longValue();}
 
@@ -368,6 +389,7 @@ class SIM_API cNEDValue
 
     /**
      * Calls longValue() and converts the result to unsigned long.
+     * Note that the result may be misleading!
      */
     operator unsigned long() const  {return longValue();}
 
@@ -378,6 +400,7 @@ class SIM_API cNEDValue
 
     /**
      * Calls doubleValue() and converts the result to long double.
+     * Note that this is a potentially lossy operation.
      */
     operator long double() const  {return doubleValue();}
 

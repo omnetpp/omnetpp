@@ -20,6 +20,7 @@
 #include "cexception.h"
 #include "cpar.h"
 #include "stringutil.h"
+#include "stringpool.h"
 #include "unitconversion.h"
 
 USING_NAMESPACE
@@ -79,6 +80,12 @@ double cNEDValue::convertUnit(double d, const char *unit, const char *targetUnit
 {
     // not inline because simkernel header files cannot refer to common/ headers (unitconversion.h)
     return UnitConversion::convertUnit(d, unit, targetUnit);
+}
+
+const char *cNEDValue::getPooled(const char *s)
+{
+    static CommonStringPool stringPool; // non-refcounted
+    return stringPool.get(s);
 }
 
 std::string cNEDValue::str() const

@@ -22,7 +22,6 @@
 #include "cexception.h"
 #include "cstringtokenizer.h"
 #include "stringutil.h"
-#include "stringpool.h"
 #include "opp_ctype.h"
 #include "cconfiguration.h"
 #include "ccomponenttype.h"
@@ -104,8 +103,6 @@ DEF(nedf_max,
 // Unit handling
 //
 
-static CommonStringPool stringPool; // non-refcounted
-
 DEF(nedf_dropUnit,
     "double dropUnit(quantity x)",
     "units",
@@ -120,7 +117,7 @@ DEF(nedf_replaceUnit,
     "units",
     "Replaces the unit of x with the given unit.",
 {
-    const char *newUnit = stringPool.get((const char *)argv[1]);
+    const char *newUnit = cNEDValue::getPooled((const char *)argv[1]);
     argv[0].setUnit(newUnit);
     return argv[0];
 })
@@ -130,7 +127,7 @@ DEF(nedf_convertUnit,
     "units",
     "Converts x to the given unit.",
 {
-    const char *newUnit = stringPool.get((const char *)argv[1]);
+    const char *newUnit = cNEDValue::getPooled((const char *)argv[1]);
     argv[0].convertTo(newUnit);
     return argv[0];
 })
@@ -250,8 +247,8 @@ DEF(nedf_replace,
     "Replaces all occurrences of substr in s with the string repl. If startPos is given, search begins from position startPos in s.",
 {
     std::string str = argv[0].stdstringValue();
-    std::string& search = argv[1].stdstringValue();
-    std::string& replacement = argv[2].stdstringValue();
+    const std::string& search = argv[1].stdstringValue();
+    const std::string& replacement = argv[2].stdstringValue();
     int index = 0;
     if (argc==4) {
         index = (int)argv[3];
@@ -276,8 +273,8 @@ DEF(nedf_replaceFirst,
     "Replaces the first occurrence of substr in s with the string repl. If startPos is given, search begins from position startPos in s.",
 {
     std::string str = argv[0].stdstringValue();
-    std::string& search = argv[1].stdstringValue();
-    std::string& replacement = argv[2].stdstringValue();
+    const std::string& search = argv[1].stdstringValue();
+    const std::string& replacement = argv[2].stdstringValue();
     int index = 0;
     if (argc==4) {
         index = (int)argv[3];
