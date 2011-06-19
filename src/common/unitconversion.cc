@@ -52,10 +52,10 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yar
     { "mm",   1e-3, "m",    "millimeter" },
     { "W",       1, "W",    "watt" },
     { "mW",   1e-3, "W",    "milliwatt" },
-    { "Hz",      1, "Hz",   "herz" },
-    { "kHz",   1e3, "Hz",   "kiloherz" },
-    { "MHz",   1e6, "Hz",   "megaherz" },
-    { "GHz",   1e9, "Hz",   "gigaherz" },
+    { "Hz",      1, "Hz",   "hertz" },
+    { "kHz",   1e3, "Hz",   "kilohertz" },
+    { "MHz",   1e6, "Hz",   "megahertz" },
+    { "GHz",   1e9, "Hz",   "gigahertz" },
     { "kg",      1, "kg",   "kilogram" },
     { "g",    1e-3, "kg",   "gram" },
     { "J",       1, "J",    "joule" },
@@ -64,9 +64,9 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yar
     { "V",       1, "V",    "volt" },
     { "kV",    1e3, "V",    "kilovolt" },
     { "mV",   1e-3, "V",    "millivolt" },
-    { "A",       1, "A",    "amper" },
-    { "mA",   1e-3, "A",    "milliamper" },
-    { "uA",   1e-6, "A",    "microamper" },
+    { "A",       1, "A",    "ampere" },
+    { "mA",   1e-3, "A",    "milliampere" },
+    { "uA",   1e-6, "A",    "microampere" },
     // this many should be enough
     { NULL,      0, NULL,   NULL }
 };

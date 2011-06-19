@@ -1560,7 +1560,7 @@ they are normally of little interest to users.
 
 \subsection{Emulating Parameter Arrays}
 
-As of version 4.0, {\opp} does not support parameter arrays,
+As of version 4.2, {\opp} does not support parameter arrays,
 but in practice they can be emulated using string parameters.
 One can assign the parameter a string which contains all values
 in a textual form (for example, \ttt{"0 1.234 3.95 5.467"}), then
@@ -1635,7 +1635,7 @@ initialization of the given module}.
   stage of the initialization of the component is finished,
   \ffunc{handleParameterChange()} is called by the simulation kernel
   with \ttt{NULL} as a parameter name. This allows the component
-  to react to parameter changes occurred during the initialization phase.
+  to react to parameter changes that occurred during the initialization phase.
 \end{note}
 
 The method signature is the following:

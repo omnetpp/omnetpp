@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
  * For saving memory on the storage of (largely) constant strings that occur in
  * many instances during runtime: module names, gate names, property names,
  * keys and values, etc. These strings can be stored in a cStringPool as one
- * shared instance. Strings in the cStringPool are refcounted.
+ * shared instance. Strings in the cStringPool are reference counted.
  * (See Flyweight GoF pattern.)
  *
  * @ingroup internals

@@ -42,10 +42,10 @@ class cPar;
  *
  * A cTopology object stores an abstract representation of the network
  * in graph form:
- * <UL>
- *   <LI> each cTopology node corresponds to a module (simple or compound), and
- *   <LI> each cTopology edge corresponds to a link or series of connecting links.
- * </UL>
+ * <ul>
+ *   <li> each cTopology node corresponds to a module (simple or compound), and
+ *   <li> each cTopology edge corresponds to a link or series of connecting links.
+ * </ul>
  *
  * You can specify which modules (either simple or compound) you want to
  * include in the graph. The graph will include all connections among the
@@ -435,12 +435,12 @@ class SIM_API cTopology : public cOwnedObject
      * "false" (i.e. the first value of the default key may not be "false").
      *
      * For example, <tt>topo.extractByProperty("node");</tt> would extract
-     * all modules that contain the <tt>@node</tt> property, like the following
+     * all modules that contain the <tt>\@node</tt> property, like the following
      * one:
      *
      * <pre>
      * module X {
-     *     @node;
+     *     \@node;
      * }
      * </pre>
      *

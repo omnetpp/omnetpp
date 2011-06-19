@@ -14,17 +14,17 @@ The NED language has several features which let it scale well to large projects:
 
 \begin{description}
 
-\item[Hierarchical] The traditional way to deal with complexity is by
+\item[Hierarchical.] The traditional way to deal with complexity is by
 introducing hierarchies. In {\opp}, any module which would be too complex as
 a single entity can be broken down into smaller modules, and used as a
 compound module.
 
-\item[Component-Based] Simple modules and compound modules are inherently
+\item[Component-Based.] Simple modules and compound modules are inherently
 reusable, which not only reduces code copying, but more importantly, allows
 component libraries (like the INET Framework, MiXiM, Castalia, etc.) to
 exist.
 
-\item[Interfaces] Module and channel interfaces can be used as a
+\item[Interfaces.] Module and channel interfaces can be used as a
 placeholder where normally a module or channel type would be used, and the
 concrete module or channel type is determined at network setup time by a
 parameter. Concrete module types have to ``implement'' the interface they
@@ -34,7 +34,7 @@ can substitute. For example, given a compound module type named
 type of \ttt{mobility} may be chosen from the module types that implemented
 \ttt{IMobility} (\ttt{RandomWalkMobility}, \ttt{TurtleMobility}, etc.)
 
-\item[Inheritance] Modules and channels can be subclassed. Derived modules
+\item[Inheritance.] Modules and channels can be subclassed. Derived modules
 and channels may add new parameters, gates, and (in the case of compound
 modules) new submodules and connections. They may set existing parameters
 to a specific value, and also set the gate size of a gate vector. This
@@ -44,16 +44,16 @@ value; or to derive a \ttt{WebClientHost} compound module from a
 \ttt{BaseHost} compound module by adding a \ttt{WebClientApp} submodule and
 connecting it to the inherited \ttt{TCP} submodule.
 
-\item[Packages] The NED language features a Java-like package structure,
+\item[Packages.] The NED language features a Java-like package structure,
 to reduce the risk of name clashes between different models. \ttt{NEDPATH}
 (similar to Java's \ttt{CLASSPATH}) was also introduced to make it easier
 to specify dependencies among simulation models.
 
-\item[Inner types] Channel types and module types used locally by a
+\item[Inner types.] Channel types and module types used locally by a
 compound module can be defined within the compound module, in order to
 reduce namespace pollution.
 
-\item[Metadata annotations] It is possible to annotate module or channel
+\item[Metadata annotations.] It is possible to annotate module or channel
 types, parameters, gates and submodules by adding properties. Metadata are
 not used by the simulation kernel directly, but they can carry extra
 information for various tools, the runtime environment, or even for other

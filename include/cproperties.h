@@ -134,9 +134,14 @@ class SIM_API cProperties : public cObject
      * false; in all other cases (missing, empty, some other value) it
      * returns true.
      *
-     * Examples:  @foo: true, @foo(): true, @foo(false): false,
-     * @foo(true): true, @foo(any): true, @foo(a=x,b=y,c=z): true;
-     * @foo(somekey=false): true (!).
+     * Examples:
+     * <tt>\@foo</tt>: true,
+     * <tt>\@foo()</tt>: true,
+     * <tt>\@foo(false)</tt>: false,
+     * <tt>\@foo(true)</tt>: true,
+     * <tt>\@foo(any)</tt>: true,
+     * <tt>\@foo(a=x,b=y,c=z)</tt>: true;
+     * <tt>\@foo(somekey=false)</tt>: true (!)
      */
     virtual bool getAsBool(const char *name, const char *index=NULL) const;
 

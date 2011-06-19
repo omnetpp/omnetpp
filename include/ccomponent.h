@@ -498,7 +498,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * Convenience method; it is equivalent to
-     * <tt>subscribe(registerSignal(signalName), listener).</tt>
+     * <tt>subscribe(registerSignal(signalName), listener)</tt>.
      */
     void subscribe(const char *signalName, cIListener *listener);
 
@@ -510,7 +510,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * Convenience method; it is equivalent to
-     * <tt>unsubscribe(registerSignal(signalName), listener).</tt>
+     * <tt>unsubscribe(registerSignal(signalName), listener)</tt>.
      */
     void unsubscribe(const char *signalName, cIListener *listener);
 
@@ -523,7 +523,7 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
 
     /**
      * Convenience method; it is equivalent to
-     * <tt>isSubscribed(registerSignal(signalName), listener).</tt>
+     * <tt>isSubscribed(registerSignal(signalName), listener)</tt>.
      */
     bool isSubscribed(const char *signalName, cIListener *listener) const;
 

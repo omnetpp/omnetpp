@@ -103,7 +103,7 @@ Gates, parameters and modules all have names in the NED files. At runtime,
 those names are stored in the corresponding C++ objects, and are available
 for the code with the \ffunc{getName()} method. Other objects such as messages,
 queues, result collection objects, etc. may also have names.
-  \footnote{Object name is inherited from \cclass{cObject} (which defines 
+  \footnote{Object name is inherited from \cclass{cObject} (which defines
   \ffunc{getName()}), and from its subclass \cclass{cNamedObject} (which
   defines \ffunc{setName()} and actually stores the name string).}
 Object names are generally very useful when you are tracing, debugging or
@@ -1794,7 +1794,7 @@ do not show up by default in Tkenv; neither do STL classes
 classes. This is because the simulation kernel, being a library, knows
 nothing about types and variables in your source code.
 
-{\opp} provides \fmac{WATCH()} and a set of other macros to 
+{\opp} provides \fmac{WATCH()} and a set of other macros to
 allow variables to be inspectable in Tkenv and to be output into the snapshot
 file\index{snapshot file}. \fmac{WATCH()} macros are usually placed into
 \ffunc{initialize()} (to watch instance variables) or to the top of the
@@ -2072,7 +2072,7 @@ modules\index{module!stack size}\index{stack!size}.  If the stack is
 too large, it unnecessarily consumes memory; if it is too small, stack
 violation occurs.
 
-%From the Feb99 release, 
+%From the Feb99 release,
 {\opp} contains a mechanism that detects stack
 overflows\index{stack!overflow}. It checks the intactness of a
 predefined byte pattern (\texttt{0xdeadbeef}) at the stack boundary,
@@ -2090,7 +2090,7 @@ actually uses. It is most conveniently called from \ffunc{finish()}:
 \begin{cpp}
 void FooModule::finish()
 {
-  ev << getStackUsage() <<  "bytes of stack used\n";
+  ev << getStackUsage() << " bytes of stack used\n";
 }
 \end{cpp}
 
@@ -2101,7 +2101,7 @@ envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
 for Tkenv.
   \footnote{The actual value is platform-dependent.}
 
-\ffunc{getStackUsage()}also works by checking the existence of predefined
+\ffunc{getStackUsage()} also works by checking the existence of predefined
 byte patterns in the stack area, so it is also subject to the above
 effect with local variables.
 

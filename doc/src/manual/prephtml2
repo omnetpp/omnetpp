@@ -81,7 +81,7 @@ $html =~ s/\\"([OUuo])/&$1uml;/g;
 $html =~ s/\\-//g;
 $html =~ s/\\\^/^/g;
 $html =~ s/``(.*?)''/&#8220;$1&#8221;/sg; # unicode left/right double quotation marks
-$html =~ s|<li>\[(.*?)\]|<li><b>$1:</b> |sg;  # definition item, e.g. \item[Hierarchical]
+$html =~ s|<li>\[(.*?)\]|<li><b>$1</b> |sg;  # definition item, e.g. \item[Hierarchical]
 
 #
 # kill <p> inside <pre>
