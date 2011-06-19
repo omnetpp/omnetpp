@@ -559,7 +559,7 @@ nonnegative.
 
 If the above distributions don't suffice, you can write your own
 functions\index{distribution!custom}. If you register your functions
-with the \fmac{Register\_Function()} macro, you can use them in NED
+with the \fmac{Define\_NED\_Function()} macro, you can use them in NED
 files and ini files too.
 
 
@@ -2105,6 +2105,395 @@ for Tkenv.
 byte patterns in the stack area, so it is also subject to the above
 effect with local variables.
 
+
+\section{Defining New NED Functions\new}
+\label{sec:ch-sim-lib:defining-ned-functions}
+
+It is possible to extend the NED language with new functions beyond the
+built-in ones. New functions are implemented in C++, and then compiled into
+the simulation model. When a simulation program starts up, the new
+functions are registered in the NED runtime, and become available for use
+in NED and ini files.
+
+There are two methods to define NED functions. The \fmac{Define\_NED\_Function()}
+macro is the more flexible, preferred method of the two. \fmac{Define\_Function()}
+is the older one, and it supports only certain cases. Both macros have
+several variants.
+
+\subsection{Define\_NED\_Function()}
+
+The \fmac{Define\_NED\_Function()} macro lets you define new functions that
+can accept arguments of various data types (\ttt{bool}, \ttt{double},
+\ttt{string}, etc.), supports optional arguments and also variable
+argument lists (variadic functions).
+
+The macro has two variants:
+
+\begin{cpp}
+Define_NED_Function(FUNCTION,SIGNATURE);
+Define_NED_Function2(FUNCTION,SIGNATURE,CATEGORY,DESCRIPTION);
+\end{cpp}
+
+The two variants are basically equivalent; the only difference is that the
+second one allows you to specify two more parameters, \ttt{CATEGORY} and
+\ttt{DESCRIPTION}. These two parameters expect human-readable strings that
+are displayed when listing the available NED functions.
+
+The common parameters, \ttt{FUNCTION} and \ttt{SIGNATURE} are the important
+ones. \ttt{FUNCTION} is the name of (or pointer to) the C++ function that
+implements the NED function, and \ttt{SIGNATURE} is the function signature
+as a string; it defines the name, argument types and return type of the NED
+function.
+
+You can list the available NED functions by running \fprog{opp\_run} or
+any simulation executable with the \ttt{-h nedfunctions} option.
+The result will be similar to what you can see in Appendix
+\ref{cha:ned-functions}.
+
+\begin{commandline}
+$ opp_run -h nedfunctions
+OMNeT++ Discrete Event Simulation...
+Functions that can be used in NED expressions and in omnetpp.ini:
+
+ Category "conversion":
+  double : double double(any x)
+    Converts x to double, and returns the result. A boolean argument becomes
+    0 or 1; a string is interpreted as number; an XML argument causes an error.
+ ...
+\end{commandline}
+
+Seeing the above output, it should now be obvious what the \ttt{CATEGORY}
+and \ttt{DESCRIPTION} macro arguments are for. {\opp} uses the following
+category names: \ttt{"conversion"}, \ttt{"math"}, \ttt{"misc"},
+\ttt{"ned"}, \ttt{"random/continuous"}, \ttt{"random/discrete"},
+\ttt{"strings"}, \ttt{"units"}, \ttt{"xml"}. You can use these category names
+for your own functions as well, when appropriate.
+
+
+\subsubsection{The Signature}
+
+The signature string has the following syntax:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\textit{returntype functionname(argtype1 argname1, argtype2 argname2, ...)}
+\end{Verbatim}
+
+The \textit{functionname} part defines the name of the NED function, and it
+must meet the syntactical requirements for NED identifiers (start with a
+letter or underscore, not be a reserved NED keyword, etc.)
+
+The argument types and return type can be one of the following:
+\fkeyword{bool}, \fkeyword{int} (maps to C/C++ \ttt{long}),
+\fkeyword{double}, \fkeyword{quantity}, \fkeyword{string}, \fkeyword{xml}
+or \fkeyword{any}; that is, any NED parameter type plus \fkeyword{quantity}
+and \fkeyword{any}. \fkeyword{quantity} means \textit{double with an
+optional measurement unit} (\fkeyword{double} and \fkeyword{int} only
+accept dimensionless numbers), and \fkeyword{any} stands for any type. The
+argument names are presently ignored.
+
+To make arguments optional, append a question mark to the argument name.
+Like in C++, optional arguments may only occur at the end of the argument
+list, i.e. all arguments after an optional argument must also be optional.
+The signature string does not have syntax for supplying default values for
+optional arguments; that is, default values have to be built into the C++
+code that implements the NED function. To let the NED function accept any
+number of additional arguments of arbitrary types, add an ellipsis
+(\ttt{...}) to the signature as the last argument.
+
+Some examples:
+
+\begin{cpp}
+"int factorial(int n)"
+"bool isprime(int n)"
+"double sin(double x)"
+"string repeat(string what, int times)"
+"quantity uniform(quantity a, quantity b, long rng?)"
+"any choose(int index, ...)"
+\end{cpp}
+
+The first three examples define NED functions with the names \ttt{factorial},
+\ttt{isprime} and \ttt{sin}, with the obvious meanings. The fourth example
+can be the signature for a function that repeats a string $n$ times, and
+returns the concatenated result. The fifth example is the signature of the
+existing \ttt{uniform()} NED function; it accepts numbers both with and without
+measurement units (of course, when invoked with measurement units, both \ttt{a}
+and \ttt{b} must have one, and the two must be compatible -- this should be checked
+by the C++ implementation). \ttt{uniform()} also accepts an optional third argument,
+an RNG index. The sixth example can be the signature of a \ttt{choose()}
+NED function that accepts an integer plus any number of additional arguments
+of any type, and returns the \textit{index}th one among them.
+
+\subsubsection{Implementing the NED Function}
+
+The C++ function that implements the NED function must have the following
+signature, as defined by the \fdef{NEDFunction} typedef:
+
+\begin{cpp}
+cNEDValue function(cComponent *context, cNEDValue argv[], int argc);
+\end{cpp}
+
+As you can see, the function accepts an array of \cclass{cNEDValue}
+objects, and returns a \cclass{cNEDValue}; the \textit{argc-argv} style
+argument list should be familiar to you from the declaration of the C/C++
+\ttt{main()} function. \cclass{cNEDValue} is a class that is used during
+the evaluation of NED expressions, and represents a value together with its
+type.  The \ttt{context} argument contains the module or channel in the
+context of which the NED expression is being evaluated; it is useful for
+implementing NED functions like \ttt{getParentModuleIndex()}.
+
+The function implementation does not need to worry too much about checking
+the number and types of the incoming arguments, because the NED expression
+evaluator already does that: inside the function you can be sure that the
+number and types of arguments correspond to the function signature string.
+Thus, \ttt{argc} is mostly useful only if you have optional arguments or a
+variable argument list. The NED expression evaluator also checks that the
+value you return from the function corresponds to the signature.
+
+\cclass{cNEDValue} can store all the needed data types (\ttt{bool},
+\ttt{double}, \ttt{string}, etc.), and is equipped with the functions
+necessary to conveniently read and manipulate the stored value. The value can
+be read via functions like \ffunc{boolValue()}, \ffunc{longValue()},
+\ffunc{doubleValue()}, \ffunc{stringValue()} (returns \ttt{const char *}),
+\ffunc{stdstringValue()} (returns \ttt{const std::string\&}) and
+\ffunc{xmlValue()} (returns \ttt{cXMLElement*}), or by simply casting the
+object to the desired data type, making use of the provided typecast
+operators. Invoking a getter or typecast operator that does not match the
+stored data type will result in a runtime error. For setting the stored
+value, \cclass{cNEDValue} provides a number of overloaded \ffunc{set()}
+functions, assignment operators and constructors.
+
+Further \cclass{cNEDValue} member functions provide access to the stored
+data type; yet other functions are associated with handling quantities,
+i.e. doubles with measurement units. There are member functions for getting
+and setting the number part and the measurement unit part separately; for
+setting the two components together; and for performing unit conversion.
+
+Equipped with the above information, we can already write a simple NED function
+that returns the length of a string:
+
+\begin{cpp}
+static cNEDValue ned_strlen(cComponent *context, cNEDValue argv[], int argc)
+{
+    return (long)argv[0].stdstringValue().size();
+}
+
+Define_NED_Function(ned_strlen, "int length(string s)");
+\end{cpp}
+
+Note that since \fmac{Define\_NED\_Function()} expects the C++ function to
+be already declared, we place the function implementation in front of the
+\fmac{Define\_NED\_Function()} line. We also declare the function to be
+\ttt{static}, because its name doesn't need to be visible for the linker.
+In the function body, we use \ttt{std::string}'s \ttt{size()} method to
+obtain the length of the string, and cast the result to \ttt{long}; the C++
+compiler will convert that into a \ttt{cNEDValue} using \ttt{cNEDValue}'s
+\ttt{long} constructor. Note that the \fkeyword{int} keyword in the signature
+maps to the C++ type \ttt{long}.
+
+The following example defines a \ttt{choose()} NED function that returns
+its $k$th argument that follows the \ttt{index} ($k$) argument.
+
+\begin{cpp}
+static cNEDValue ned_choose(cComponent *context, cNEDValue argv[], int argc)
+{
+    int index = (int)argv[0];
+    if (index < 0 || index >= argc-1)
+        throw cRuntimeError("choose(): index %d is out of range", index);
+    return argv[index+1];
+}
+
+Define_NED_Function(ned_choose, "any choose(int index, ...)");
+\end{cpp}
+
+Here, the value of \ttt{argv[0]} is read using the typecast operator that
+maps to \ttt{longValue()}. (Note that if the value of the \ttt{index}
+argument does not fit into an \ttt{int}, the conversion will result
+in data loss!) The code also shows how to report errors (by throwing a
+\cclass{cRuntimeError}.)
+
+The third example shows how the built-in \ttt{uniform()} NED function could
+be reimplemented by the user:
+
+\begin{cpp}
+static cNEDValue ned_uniform(cComponent *context, cNEDValue argv[], int argc)
+{
+    int rng = argc==3 ? (int)argv[2] : 0;
+    double argv1converted = argv[1].doubleValueInUnit(argv[0].getUnit());
+    double result = uniform((double)argv[0], argv1converted, rng);
+    return cNEDValue(result, argv[0].getUnit());
+    // or: argv[0].setPreservingUnit(result); return argv[0];
+}
+
+Define_NED_Function(ned_uniform, "quantity uniform(quantity a, quantity b, int rng?)");
+\end{cpp}
+
+The first line of the function body shows how to supply default values for
+optional arguments; for the \ttt{rng} argument in this case. The next line
+deals with unit conversion. This is necessary because the \ttt{a} and
+\ttt{b} arguments are both quantities and may come in with different
+measurement units. We use the \ffunc{doubleValueInUnit()} function to
+obtain the numeric value of \ttt{b} in \ttt{a}'s measurement unit. If the
+two units are incompatible or only one of the parameters have a unit, an
+error will be raised. If neither parameters have a unit,
+\ffunc{doubleValueInUnit()} simply returns the stored \ttt{double}. Then we
+call the \ttt{uniform()} C++ function to actually generate a random number,
+and return it in a temporary object with \ttt{a}'s measurement unit.
+Alternatively, we could have overwritten the numeric part of \ttt{a} with
+the result using \ffunc{setPreservingUnit()}, and returned just that. If
+there is no measurement unit, \ffunc{getUnit()} will return \ttt{NULL},
+which is understood by both \ffunc{doubleValueInUnit()} and the
+\cclass{cNEDValue} constructor.
+
+\begin{note}
+Note that it is OK to change the elements of the \ttt{argv[]} vector: they
+will be discarded (popped off the evaluation stack) by the NED expression
+evaluator anyway when your function returns.
+\end{note}
+
+
+\subsubsection{cNEDValue In More Detail}
+
+In the previous section we have given an overview and demonstrated the basic
+use of the \cclass{cNEDValue} class; here we go into further details.
+
+The stored data type can be obtained with the \ffunc{getType()} function.
+It returns an enum (\ttt{cNEDValue::Type}) that has the following values:
+\ttt{UNDEF}, \ttt{BOOL}, \ttt{DBL}, \ttt{STR}, \ttt{XML}. \ttt{UNDEF} is
+synonymous with \textit{unset}; the others have the obvious meanings. There
+is no separate \ttt{QUANTITY} type: quantities are also represented with
+the \ttt{DBL} type, which has an optional associated measurement unit. Note
+that \ttt{LONG} is also missing; the reason is that the NED expression
+evaluator currently (as of {\opp} 4.2) stores all numbers as \ttt{double}s.
+  \footnote{The IEEE \textit{double}'s mantissa is 53 bits, so \ttt{double}
+  can accurately represent 32-bit integers, the usual size of \ttt{long} on
+  32-bit architectures. On 64-bit architectures the usual size of \ttt{long}
+  is 64 bits, so precision loss will occur when converting very large integers
+  to \ttt{double}. Note, however, that simulations that trigger this precision
+  loss would not be able to run on 32-bit architectures at all!}
+
+The \ffunc{getTypeName()} static function returns the string equivalent of
+a \ttt{cNEDValue::Type}. The utility functions \ffunc{isSet()} and
+\ffunc{isNumeric()} check that the type is (not) \ttt{UNDEF} and \ttt{DBL},
+respectively.
+
+\begin{cpp}
+cNEDValue value = 5.0;
+cNEDValue::Type type = value.getType(); // ==> DBL
+ev << cNEDValue::getTypeName(type) << endl; // ==> "double"
+\end{cpp}
+
+We have already seen that the \ttt{DBL} type serves both the
+\fkeyword{double} and \fkeyword{quantity} types of the NED function
+signature, by storing an optional measurement unit (a string)
+in addition to the \ttt{double} variable. A \cclass{cNEDValue} can be set
+to a quantity by creating it with a two-argument constructor that accepts
+a \ttt{double} and a \ttt{const char *} for unit, or by invoking a similar
+two-argument \ffunc{set()} function. The measurement unit can be read with
+\ffunc{getUnit()}, and overwritten with \ffunc{setUnit()}. If you assign a
+\ttt{double} to a \cclass{cNEDValue} or invoke the one-argument
+\ttt{set(double)} method on it, that will clear the measurement unit. If you
+want to overwrite the number part but preserve the original unit, you need
+to use the \ffunc{setPreservingUnit(double)} method.
+
+For unit conversion there are three functions. The
+\ffunc{doubleValueInUnit()} method accepts a measurement unit, and attempts
+to return the number in that unit. The \ffunc{convertTo()} method also
+accepts a measurement unit, and tries to permanantly convert the value to
+that unit; that is, if successful, it changes both the number and the
+measurement unit part of the object. The \ffunc{convertUnit()} static
+\cclass{cNEDValue} member accepts three arguments: a quantity as a
+\ttt{double} and a unit, and a target unit; and returns the number in the
+target unit. All three functions raise an error if the conversion is not
+possible.
+
+For performance reasons, \ttt{setUnit()}, \ttt{convertTo()} and all other
+functions that accept and store a measurement unit will only store the
+\ttt{const char*} pointer, but do \textit{not} copy the string itself.
+Consequently, the passed measurement unit pointers must stay valid for at
+least the lifetime of the \cclass{cNEDValue} object, or even longer if the
+same pointer propagates to other \cclass{cNEDValue} objects. It is
+recommended that you only pass pointers that stay valid during the entire
+simulation. It is safe to use: (1) string constants from the code; (2) unit
+strings from other \cclass{cNEDValue}s; and (3) pooled strings e.g. from a
+\cclass{cStringPool} or from \cclass{cNEDValue}'s static \ffunc{getPooled()}
+function.
+
+Example code:
+
+\begin{cpp}
+// manipulating the number and the measurement unit
+cNEDValue value(250,"ms");    // initialize to 250ms
+value = 300.0;                // ==> 300 (clears the unit!)
+value.set(500,"ms");          // ==> 500ms
+value.setUnit("s");           // ==> 500s (overwrites the unit)
+value.setPreservingUnit(180); // ==> 180s (overwrites the number)
+value.setUnit(NULL);          // ==> 180 (clears the unit)
+
+// unit conversion
+value.set(500,"ms");          // ==> 500ms
+value.convertTo("s");         // ==> 0.5s
+double us = value.doubleValueInUnit("us"); // ==> 500000 (value is unchanged)
+double bps = cNEDValue::convertUnit(128, "Kbps", "bps"); // ==> 128000
+
+// getting persistent measurement unit strings
+const char *unit = argv[0].stringValue(); // cannot be trusted to persist
+value.setUnit(cNEDValue::getPooled(unit)); // use a persistent copy for setUnit()
+\end{cpp}
+
+
+\subsection{Define\_Function()}
+
+The \fmac{Define\_Function()} macro lets you register a C/C++
+``mathematical'' function as a NED function. The registered C/C++ function
+may take up to three \ttt{double} arguments, and must return a \ttt{double};
+the NED signature will be the same. In other words, functions registered
+this way cannot accept any NED data type other than \ttt{double}; cannot
+return anything else than \ttt{double}; cannot accept or return values with
+measurement units; cannot have optional arguments or variable argument
+lists; and are restricted to three arguments at most. In exchange for these
+restrictions, the C++ implementation of the functions is a lot simpler.
+
+Accepted function signatures for \fmac{Define\_Function()}:
+
+\begin{cpp}
+double f();
+double f(double);
+double f(double, double);
+double f(double, double, double);
+\end{cpp}
+
+The simulation kernel uses \fmac{Define\_Function()} to expose commonly used
+\ttt{<math.h>} functions in the NED language. Most \ttt{<math.h>} functions
+(\ttt{sin()}, \ttt{cos()}, \ttt{fabs()}, \ttt{fmod()}, etc.)
+can be directly registered without any need for wrapper code, because their
+signatures is already one of the accepted ones listed above.
+
+The macro has the following variants:
+
+\begin{cpp}
+Define_Function(NAME,ARGCOUNT);
+Define_Function2(NAME,FUNCTION,ARGCOUNT);
+Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION);
+Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION);
+\end{cpp}
+
+All macros accept the \ttt{NAME} and \ttt{ARGCOUNT} parameters; they are
+the intended name of the NED function and the number of \ttt{double}
+arguments the function takes (0..3). \ttt{NAME} should be provided without
+quotation marks (they will be added inside the macro.) Two macros also
+accept a \ttt{FUNCTION} parameter, which is the name of (or pointer to) the
+implementation C/C++ function. The macros that don't have a \ttt{FUNCTION}
+parameter simply use the \ttt{NAME} parameter for that as well. The last
+two macros accept \ttt{CATEGORY} and \ttt{DESCRIPTION}, which have exactly
+the same role as with \fmac{Define\_NED\_Function()}.
+
+Examples:
+
+\begin{cpp}
+Define_Function3(sin, 1, "math", "Trigonometric function; see <math.h>");
+Define_Function3(cos, 1, "math", "Trigonometric function; see <math.h>");
+Define_Function3(pow, 2, "math", "Power-of function; see <math.h>");
+\end{cpp}
 
 
 \section{Deriving New Classes}
