@@ -32,41 +32,72 @@ NAMESPACE_BEGIN
  * Corresponding C/C++ typedefs: MathFuncNoArg, MathFunc1Arg, MathFunc2Args,
  * MathFunc3Args, MathFunc4Args.
  *
- * Commonly used \<math.h\> functions have Define_Function() lines in the \opp
+ * Commonly used \<math.h\> functions have Define_NED_Math_Function() lines in the \opp
  * simulation kernel.
  *
  * @see Define_NED_Function
  *
  * @hideinitializer
  */
-#define Define_Function(NAME,ARGCOUNT) \
+#define Define_NED_Math_Function(NAME,ARGCOUNT) \
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
- * Like Define_Function(), but takes three arguments, the second one being the
+ * Like Define_NED_Math_Function(), but takes three arguments, the second one being the
  * pointer to the function. This macro allows registering a function with a
  * different name from its implementation.
  *
  * @hideinitializer
  */
-#define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
+#define Define_NED_Math_Function2(NAME,FUNCTION,ARGCOUNT) \
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
- * Like Define_Function(), but takes category and description strings as well.
+ * Like Define_NED_Math_Function(), but takes category and description strings as well.
  *
  * @hideinitializer
  */
-#define Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
+#define Define_NED_Math_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
- * Like Define_Function2(), but takes category and description strings as well.
+ * Like Define_NED_Math_Function2(), but takes category and description strings as well.
  *
  * @hideinitializer
  */
-#define Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
+#define Define_NED_Math_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
   EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
+
+/**
+ * DEPRECATED MACRO. Use Define_NED_Math_Function() instead.
+ * @hideinitializer
+ */
+#define Define_Function(NAME,ARGCOUNT) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
+
+/**
+ * DEPRECATED MACRO. Use Define_NED_Math_Function2() instead.
+ * @hideinitializer
+ */
+#define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
+
+/**
+ * DEPRECATED MACRO. Use Define_NED_Math_Function3() instead.
+ * @hideinitializer
+ */
+#define Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
+
+/**
+ * DEPRECATED MACRO. Use Define_NED_Math_Function4() instead.
+ * @hideinitializer
+ */
+#define Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
+
+// only exists so that Define_FunctionX() macros issue a deprecation warning when used:
+_OPPDEPRECATED inline void Define_Function_macro() {}
 
 /**
  * Registers a C/C++ function for use in NED and ini files; see cNEDFunction.

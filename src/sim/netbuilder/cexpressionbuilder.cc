@@ -208,7 +208,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             elems[pos++].set(nedfunctype, argcount);
         }
         else
-            throw cRuntimeError("Function `%s()' (with %d args) not found (Define_NED_Function() or Define_Function() missing from C++ code?)", funcname, argcount);
+            throw cRuntimeError("Function `%s()' (with %d args) not found (Define_NED_Function() or Define_NED_Math_Function() missing from C++ code?)", funcname, argcount);
     }
 }
 

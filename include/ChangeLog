@@ -1,3 +1,11 @@
+2011-06-20  Andras Varga
+
+	* The Define_Function() macros have been renamed to Define_NED_Math_-
+	Function(). For backwards compatibility, the old macro definitions
+	remain, but issue a deprecation warning. Note that the preferred
+	way of defining new NED functions is now the Define_NED_Function()
+	macro.
+
 2011-06-14  Andras Varga
 
 	* cDynamicExpression::Value, also shared by cNEDFunction, has been

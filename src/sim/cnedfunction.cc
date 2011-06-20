@@ -26,8 +26,6 @@
 
 USING_NAMESPACE
 
-//XXX also: wrap invocation of function, so that cNEDFunction checks arg types etc
-//XXX also: old Define_Function be implemented with cNEDFunction (ie an adapter func)
 
 cNEDFunction::cNEDFunction(NEDFunction f, const char *signature,
                            const char *category, const char *description) :

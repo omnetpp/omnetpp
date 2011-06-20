@@ -41,26 +41,26 @@ void nedfunctions_dummy() {} //see util.cc
 // NED math.h functions
 //
 
-Define_Function3(acos, 1,  "math", "Trigonometric function; see standard C function of the same name")
-Define_Function3(asin, 1,  "math", "Trigonometric function; see standard C function of the same name")
-Define_Function3(atan, 1,  "math", "Trigonometric function; see standard C function of the same name")
-Define_Function3(atan2, 2, "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(acos, 1,  "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(asin, 1,  "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(atan, 1,  "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(atan2, 2, "math", "Trigonometric function; see standard C function of the same name")
 
-Define_Function3(sin, 1,   "math", "Trigonometric function; see standard C function of the same name")
-Define_Function3(cos, 1,   "math", "Trigonometric function; see standard C function of the same name")
-Define_Function3(tan, 1,   "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(sin, 1,   "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(cos, 1,   "math", "Trigonometric function; see standard C function of the same name")
+Define_NED_Math_Function3(tan, 1,   "math", "Trigonometric function; see standard C function of the same name")
 
-Define_Function3(ceil, 1,  "math", "Rounds down; see standard C function of the same name")
-Define_Function3(floor, 1, "math", "Rounds up; see standard C function of the same name")
+Define_NED_Math_Function3(ceil, 1,  "math", "Rounds down; see standard C function of the same name")
+Define_NED_Math_Function3(floor, 1, "math", "Rounds up; see standard C function of the same name")
 
-Define_Function3(exp, 1,   "math", "Exponential; see standard C function of the same name")
-Define_Function3(pow, 2,   "math", "Power; see standard C function of the same name")
-Define_Function3(sqrt, 1,  "math", "Square root; see standard C function of the same name")
+Define_NED_Math_Function3(exp, 1,   "math", "Exponential; see standard C function of the same name")
+Define_NED_Math_Function3(pow, 2,   "math", "Power; see standard C function of the same name")
+Define_NED_Math_Function3(sqrt, 1,  "math", "Square root; see standard C function of the same name")
 
-Define_Function3(hypot, 2, "math", "Length of the hypotenuse; see standard C function of the same name")
+Define_NED_Math_Function3(hypot, 2, "math", "Length of the hypotenuse; see standard C function of the same name")
 
-Define_Function3(log, 1,   "math", "Natural logarithm; see standard C function of the same name")
-Define_Function3(log10, 1, "math", "Base-10 logarithm; see standard C function of the same name")
+Define_NED_Math_Function3(log, 1,   "math", "Natural logarithm; see standard C function of the same name")
+Define_NED_Math_Function3(log10, 1, "math", "Base-10 logarithm; see standard C function of the same name")
 
 
 DEF(nedf_fabs,

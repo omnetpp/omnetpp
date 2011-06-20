@@ -2115,10 +2115,12 @@ the simulation model. When a simulation program starts up, the new
 functions are registered in the NED runtime, and become available for use
 in NED and ini files.
 
-There are two methods to define NED functions. The \fmac{Define\_NED\_Function()}
-macro is the more flexible, preferred method of the two. \fmac{Define\_Function()}
-is the older one, and it supports only certain cases. Both macros have
-several variants.
+There are two methods to define NED functions. The
+\fmac{Define\_NED\_Function()} macro is the more flexible, preferred method
+of the two. \fmac{Define\_NED\_Math\_Function()} is the older one, and it
+supports only certain cases. Both macros have several variants.
+  \footnote{Before {\opp} 4.2, \fmac{Define\_NED\_Math\_Function()} was
+  called \fmac{Define\_Function()}.}
 
 \subsection{Define\_NED\_Function()}
 
@@ -2441,40 +2443,41 @@ value.setUnit(cNEDValue::getPooled(unit)); // use a persistent copy for setUnit(
 \end{cpp}
 
 
-\subsection{Define\_Function()}
+\subsection{Define\_NED\_Math\_Function()}
 
-The \fmac{Define\_Function()} macro lets you register a C/C++
+The \fmac{Define\_NED\_Math\_Function()} macro lets you register a C/C++
 ``mathematical'' function as a NED function. The registered C/C++ function
-may take up to three \ttt{double} arguments, and must return a \ttt{double};
+may take up to four \ttt{double} arguments, and must return a \ttt{double};
 the NED signature will be the same. In other words, functions registered
 this way cannot accept any NED data type other than \ttt{double}; cannot
 return anything else than \ttt{double}; cannot accept or return values with
 measurement units; cannot have optional arguments or variable argument
-lists; and are restricted to three arguments at most. In exchange for these
+lists; and are restricted to four arguments at most. In exchange for these
 restrictions, the C++ implementation of the functions is a lot simpler.
 
-Accepted function signatures for \fmac{Define\_Function()}:
+Accepted function signatures for \fmac{Define\_NED\_Math\_Function()}:
 
 \begin{cpp}
 double f();
 double f(double);
 double f(double, double);
 double f(double, double, double);
+double f(double, double, double, double);
 \end{cpp}
 
-The simulation kernel uses \fmac{Define\_Function()} to expose commonly used
-\ttt{<math.h>} functions in the NED language. Most \ttt{<math.h>} functions
-(\ttt{sin()}, \ttt{cos()}, \ttt{fabs()}, \ttt{fmod()}, etc.)
+The simulation kernel uses \fmac{Define\_NED\_Math\_Function()} to expose
+commonly used \ttt{<math.h>} functions in the NED language. Most \ttt{<math.h>}
+functions (\ttt{sin()}, \ttt{cos()}, \ttt{fabs()}, \ttt{fmod()}, etc.)
 can be directly registered without any need for wrapper code, because their
 signatures is already one of the accepted ones listed above.
 
 The macro has the following variants:
 
 \begin{cpp}
-Define_Function(NAME,ARGCOUNT);
-Define_Function2(NAME,FUNCTION,ARGCOUNT);
-Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION);
-Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION);
+Define_NED_Math_Function(NAME,ARGCOUNT);
+Define_NED_Math_Function2(NAME,FUNCTION,ARGCOUNT);
+Define_NED_Math_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION);
+Define_NED_Math_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION);
 \end{cpp}
 
 All macros accept the \ttt{NAME} and \ttt{ARGCOUNT} parameters; they are
@@ -2490,10 +2493,11 @@ the same role as with \fmac{Define\_NED\_Function()}.
 Examples:
 
 \begin{cpp}
-Define_Function3(sin, 1, "math", "Trigonometric function; see <math.h>");
-Define_Function3(cos, 1, "math", "Trigonometric function; see <math.h>");
-Define_Function3(pow, 2, "math", "Power-of function; see <math.h>");
+Define_NED_Math_Function3(sin, 1, "math", "Trigonometric function; see <math.h>");
+Define_NED_Math_Function3(cos, 1, "math", "Trigonometric function; see <math.h>");
+Define_NED_Math_Function3(pow, 2, "math", "Power-of function; see <math.h>");
 \end{cpp}
+
 
 
 \section{Deriving New Classes}
