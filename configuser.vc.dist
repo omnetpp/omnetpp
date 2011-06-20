@@ -347,6 +347,7 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 #   /RTCs: stack frame runtime checking (Note: don't use /RTCu & /RTC1, as they cause a
 #          problem in bison's boilerplate code (bison.simple, "uninitialized var 'yyval'")
 #   /Zi: build program database (PDB file) which contains debug info
+#   /w14996: enable deprecation warnings (_OPPDEPRECATED) by moving C4996 to warning level 1
 #   /DNDEBUG: #defines NDEBUG (removes assert() from generated code)
 # Linker switches:
 #   /debug: build debug executable
@@ -354,10 +355,10 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=/nologo $(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB /D_DISABLE_DEPRECATE_STATIC_CPPLIB
+CFLAGS_DEBUG=/nologo $(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /w14996 /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB /D_DISABLE_DEPRECATE_STATIC_CPPLIB
 LDFLAGS_DEBUG=/nologo /subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/nologo $(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB /D_DISABLE_DEPRECATE_STATIC_CPPLIB
+CFLAGS_RELEASE=/nologo $(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /w14996 /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB /D_DISABLE_DEPRECATE_STATIC_CPPLIB
 LDFLAGS_RELEASE=/nologo /subsystem:console /opt:noref
 
 !if "$(LIB_SUFFIX)"==".dll"
