@@ -159,16 +159,6 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
   EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__,"module"));)
 
 /**
- * Announces the C++ simple module class to \opp, and couples it with the
- * NED simple module declaration of the given name.
- *
- * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
- *
- * @hideinitializer
- */
-#define Define_Module_Like(CLASSNAME,NEDNAME)  NOTE_the_deprecated_Define_Module_Like_macro_has_been_removed_in_version_4_0;
-
-/**
  * Announces the C++ channel class to \opp, and couples it with the
  * NED channel declaration of the same name.
  *
@@ -178,17 +168,6 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
 #define Define_Channel(CLASSNAME) \
   static cObject *__FILEUNIQUENAME__() {cChannel *ret = new CLASSNAME; return ret; } \
   EXECUTE_ON_STARTUP(classes.getInstance()->add(new cObjectFactory(opp_typename(typeid(CLASSNAME)),__FILEUNIQUENAME__, "channel"));)
-
-/**
- * Announces the C++ channel class to \opp, and couples it with the
- * NED channel declaration of the given name.
- *
- * This macro has been previously marked as deprecated, and was removed in \opp 4.0.
- *
- * @hideinitializer
- */
-// Implementation note: this is basically a Register_Class(), only we lie about the class name.
-#define Define_Channel_Like(CLASSNAME,NEDNAME) NOTE_the_deprecated_Define_Channel_Like_macro_has_been_removed_in_version_4_0;
 
 /**
  * Internal. Registers a class descriptor which provides reflection information.
