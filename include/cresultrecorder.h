@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTRECORDER.H - part of
+//  CRESULTRECORDER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,33 +15,43 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVIR_RESULTRECORDER_H
-#define __ENVIR_RESULTRECORDER_H
+#ifndef __CRESULTRECORDER_H
+#define __CRESULTRECORDER_H
 
-#include "envirdefs.h"
-#include "resultlistener.h"
+#include "cresultlistener.h"
 #include "ccomponent.h"
-#include "commonutil.h"
-#include "stringpool.h"
 #include "onstartup.h"
 #include "cregistrationlist.h"
 
-class ResultRecorder;
+NAMESPACE_BEGIN
 
+class cResultRecorder;
+
+/**
+ * Registers a result recorder. The class must be a subclass of cResultRecorder.
+ * Registered result recorders can be used in the <tt>record=</tt> attributes
+ * of <tt>\@statistic</tt> properties in NED files, and with the
+ * <tt>**.result-recording-modes=</tt> configuration option.
+ *
+ * @ingroup MacrosReg
+ * @hideinitializer
+ */
 #define Register_ResultRecorder(NAME, CLASSNAME) \
-  static ResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
-  EXECUTE_ON_STARTUP(resultRecorders.getInstance()->add(new ResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
+  static cResultRecorder *__FILEUNIQUENAME__() {return new CLASSNAME;} \
+  EXECUTE_ON_STARTUP(resultRecorders.getInstance()->add(new cResultRecorderDescriptor(NAME,__FILEUNIQUENAME__));)
 
-extern cGlobalRegistrationList resultRecorders;
+extern SIM_API cGlobalRegistrationList resultRecorders;
 
 
 /**
  * Abstract base class for result recorders.
+ *
+ * @see Register_ResultRecorder()
+ * @ingroup EnvirExtensions
  */
-class ENVIR_API ResultRecorder : public ResultListener
+class SIM_API cResultRecorder : public cResultListener
 {
     private:
-        static CommonStringPool namesPool;
         cComponent *component;
         const char *statisticName;
         const char *recordingMode;
@@ -60,52 +70,58 @@ class ENVIR_API ResultRecorder : public ResultListener
  * Abstract base class for numeric result recorders. Numeric result recorders
  * convert all numeric data types to double, and throw an error for non-numeric
  * types (const char *, cObject *).
+ *
+ * @ingroup EnvirExtensions
  */
-class ENVIR_API NumericResultRecorder : public ResultRecorder
+class SIM_API cNumericResultRecorder : public cResultRecorder
 {
     protected:
         // all receiveSignal() methods either throw error or delegate here.
         virtual void collect(simtime_t_cref t, double value) = 0;
     public:
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s);
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s);
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj);
 };
 
 /**
- * Registers a ResultRecorder.
+ * Registers a cResultRecorder.
+ *
+ * @ingroup Internals
  */
-class ENVIR_API ResultRecorderDescriptor : public cNoncopyableOwnedObject
+class SIM_API cResultRecorderDescriptor : public cNoncopyableOwnedObject
 {
   private:
-    ResultRecorder *(*creatorfunc)();
+    cResultRecorder *(*creatorfunc)();
 
   public:
     /**
      * Constructor.
      */
-    ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)());
+    cResultRecorderDescriptor(const char *name, cResultRecorder *(*f)());
 
     /**
      * Creates an instance of a particular class by calling the creator
      * function.
      */
-    ResultRecorder *create() const  {return creatorfunc();}
+    cResultRecorder *create() const  {return creatorfunc();}
 
     /**
      * Finds the factory object for the given name. The class must have been
      * registered previously with the Register_ResultRecorder() macro.
      */
-    static ResultRecorderDescriptor *find(const char *name);
+    static cResultRecorderDescriptor *find(const char *name);
 
     /**
      * Like find(), but throws an error if the object was not found.
      */
-    static ResultRecorderDescriptor *get(const char *name);
+    static cResultRecorderDescriptor *get(const char *name);
 };
+
+NAMESPACE_END
 
 #endif
 

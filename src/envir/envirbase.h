@@ -33,7 +33,7 @@
 #include "eventlogfilemgr.h"
 #include "cconfiguration.h"
 #include "timeutil.h"
-#include "resultlistener.h"
+#include "cresultlistener.h"
 
 NAMESPACE_BEGIN
 
@@ -48,7 +48,8 @@ class cParsimCommunications;
 class cParsimPartition;
 class cParsimSynchronizer;
 // endif
-class ResultRecorder;
+class cResultRecorder;
+class SignalSource;
 
 // assumed maximum length for getFullPath() string.
 // note: this maximum actually not enforced anywhere
@@ -287,7 +288,7 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     void doResultRecorder(const SignalSource& source, const char *mode, bool scalarsEnabled, bool vectorsEnabled, cComponent *component, const char *statisticName);
     // Utility function for addResultRecorders()
     void dumpResultRecorders(cComponent *component);
-    void dumpResultRecorderChain(ResultListener *listener, int depth);
+    void dumpResultRecorderChain(cResultListener *listener, int depth);
     // Utility function for getXMLDocument() and getParsedXMLString()
     cXMLElement *resolveXMLPath(cXMLElement *documentnode, const char *path);
 

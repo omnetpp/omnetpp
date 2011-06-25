@@ -19,6 +19,20 @@
 #include "resultfilters.h"    // WarmupFilter, ExpressionFilter
 #include "resultrecorders.h"  // ExpressionRecorder
 
+USING_NAMESPACE
+
+
+void SignalSource::subscribe(cResultListener *listener) const
+{
+    if (filter)
+        filter->addDelegate(listener);
+    else if (component && signalID!=SIMSIGNAL_NULL)
+        component->subscribe(signalID, listener);
+    else
+        throw opp_runtime_error("subscribe() called on blank SignalSource");
+}
+
+//---
 
 class SignalSourceReference : public Expression::Variable
 {
@@ -140,7 +154,7 @@ SignalSource StatisticSourceParser::parse(cComponent *component, const char *sta
        stack.push_back(e);
 
        // if TOS is a filter: create ExpressionFilter from top n items, install it
-       // as listener, create and chain the ResultFilter after it, and replace
+       // as listener, create and chain the cResultFilter after it, and replace
        // expression on the stack (top n items) with a SourceReference.
        if (e.getType()==Expression::Elem::FUNCTOR && dynamic_cast<FilterOrRecorderReference*>(e.getFunctor()))
        {
@@ -202,11 +216,11 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
     }
 
     // Note: filterRef==NULL is also valid input, need to be prepared for it!
-    ResultFilter *filter = NULL;
+    cResultFilter *filter = NULL;
     if (filterRef)
     {
         const char *filterName = filterRef->getName();
-        filter = ResultFilterDescriptor::get(filterName)->create();
+        filter = cResultFilterDescriptor::get(filterName)->create();
     }
 
     SignalSource result(NULL);
@@ -242,7 +256,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
             if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor())) {
                 signalSourceReference = (SignalSourceReference*)v[i].getFunctor();
                 const SignalSource &signalSource = signalSourceReference->getSignalSource();
-                ResultFilter *signalFilter = signalSource.getFilter();
+                cResultFilter *signalFilter = signalSource.getFilter();
                 if (signalFilter) {
                     signalSource.subscribe(exprFilter);
                     v[i] = exprFilter->makeValueVariable(index, signalFilter);
@@ -328,7 +342,7 @@ void StatisticRecorderParser::parse(const SignalSource& source, const char *reco
        stack.push_back(e);
 
        // if TOS is a filter: create ExpressionFilter from top n items, install it
-       // as listener, create and chain the ResultFilter after it, and replace
+       // as listener, create and chain the cResultFilter after it, and replace
        // expression on the stack (top n items) with a SourceReference.
        if (e.getType()==Expression::Elem::FUNCTOR && dynamic_cast<FilterOrRecorderReference*>(e.getFunctor()))
        {
@@ -406,17 +420,17 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
     }
 
     // Note: filterOrRecorderRef==NULL is also valid input, need to be prepared for it!
-    ResultListener *filterOrRecorder = NULL;
+    cResultListener *filterOrRecorder = NULL;
     if (filterOrRecorderRef)
     {
         const char *name = filterOrRecorderRef->getName();
         if (makeRecorder) {
-            ResultRecorder *recorder = ResultRecorderDescriptor::get(name)->create();
+            cResultRecorder *recorder = cResultRecorderDescriptor::get(name)->create();
             recorder->init(component, statisticName, recordingMode);
             filterOrRecorder = recorder;
         }
         else
-            filterOrRecorder = ResultFilterDescriptor::get(name)->create();
+            filterOrRecorder = cResultFilterDescriptor::get(name)->create();
     }
 
     SignalSource result(NULL);
@@ -432,14 +446,14 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
         else {
             signalSource.subscribe(filterOrRecorder);
             if (!makeRecorder)
-                result = SignalSource((ResultFilter*)filterOrRecorder);
+                result = SignalSource((cResultFilter*)filterOrRecorder);
         }
     }
     else // (argLen > 1)
     {
         // some expression -- add an ExpressionFilter or Recorder, and chain the
         // new filter (if exists) on top of it.
-        ResultListener *exprListener;
+        cResultListener *exprListener;
         if (!filterOrRecorder && makeRecorder)
         {
             // expression recorder
@@ -488,7 +502,7 @@ SignalSource StatisticRecorderParser::createFilterOrRecorder(FilterOrRecorderRef
             Assert(dynamic_cast<UnaryExpressionFilter*>(exprListener));
             ((UnaryExpressionFilter*)exprListener)->addDelegate(filterOrRecorder);
             if (!makeRecorder)
-                result = SignalSource((ResultFilter*)filterOrRecorder);
+                result = SignalSource((cResultFilter*)filterOrRecorder);
         }
     }
     return result; // if makeRecorder=true, we return a NULL SignalSource (no chaining possible)

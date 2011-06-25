@@ -49,7 +49,7 @@ typedef int simsignal_t;
 class SIM_API cIListener
 {
     friend class cComponent; // for subscribecount
-    friend class ResultFilter; // for subscribecount
+    friend class cResultFilter; // for subscribecount
   private:
     int subscribecount;
   public:
@@ -66,7 +66,7 @@ class SIM_API cIListener
      * (This is to prevent interesting cases when the listener list is being
      * modified while the component iterates on it. The alternative would be
      * to make a temporary copy of the listener list each time, but this is
-     * not done for performance reasons.)
+     * not desirable for performance reasons.)
      */
     virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l) = 0;
 

@@ -36,13 +36,14 @@ OBJS_STD=\
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o $O/ctimestampedvalue.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
     $O/cpar.o $O/cparimpl.o $O/cownedobject.o $O/cproperties.o $O/cproperty.o \
+    $O/cresultfilter.o $O/cresultlistener.o $O/cresultrecorder.o \
     $O/cpsquare.o $O/cqueue.o $O/cpacketqueue.o $O/cscheduler.o $O/csimplemodule.o \
     $O/csimulation.o $O/cstatistic.o $O/cstddev.o $O/cstlwatch.o $O/cstringparimpl.o \
     $O/cstringpool.o $O/cstringtokenizer.o $O/cclassdescriptor.o $O/ctopology.o $O/cvarhist.o \
     $O/cvisitor.o $O/cwatch.o $O/cxmlelement.o $O/cxmlparimpl.o $O/distrib.o $O/nedfunctions.o \
     $O/errmsg.o $O/globals.o $O/cregistrationlist.o $O/lex.expryy.o $O/minixpath.o $O/onstartup.o \
     $O/simtime.o $O/task.o $O/util.o $O/expr.tab.o $O/nedsupport.o $O/sim_std_m.o \
-    $O/ccommbuffer.o $O/cparsimcomm.o
+    $O/resultfilters.o $O/resultrecorders.o $O/ccommbuffer.o $O/cparsimcomm.o
 
 OBJS_NETBUILDER=\
     $O/netbuilder/cexpressionbuilder.o \
@@ -99,7 +100,7 @@ $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
 	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L 
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
@@ -112,7 +113,7 @@ $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
 	mkdir -p $L
 	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L 
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 expr.tab.hh expr.tab.cc : expr.y

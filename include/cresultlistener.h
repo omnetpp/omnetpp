@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTLISTENER.H - part of
+//  CRESULTLISTENER.H - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,35 +15,40 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __ENVIR_RESULTLISTENER_H
-#define __ENVIR_RESULTLISTENER_H
+#ifndef __CRESULTLISTENER_H
+#define __CRESULTLISTENER_H
 
-#include "envirdefs.h"
+#include "simkerneldefs.h"
 #include "clistener.h"
 
-class ResultFilter;
+NAMESPACE_BEGIN
+
+class cResultFilter;
 class cComponent;
 
 
 /**
  * Common abstract base class for result filters and result recorders.
+ *
+ * @ingroup EnvirExtensions
  */
-class ENVIR_API ResultListener : public cIListener
+class SIM_API cResultListener : public cIListener
 {
     public:
         virtual const char *getClassName() const {return opp_typename(typeid(*this));}
         virtual std::string str() const {return opp_typename(typeid(*this));}
+        static const char *getPooled(const char *s);
 
         // simplified API that better supports chaining:
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, long l) = 0;
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l) = 0;
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, double d) = 0;
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v) = 0;
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s) = 0;
-        virtual void receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj) = 0;
-        virtual void subscribedTo(ResultFilter *prev);
-        virtual void unsubscribedFrom(ResultFilter *prev);
-        virtual void finish(ResultFilter *prev) {}
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, long l) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, double d) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s) = 0;
+        virtual void receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj) = 0;
+        virtual void subscribedTo(cResultFilter *prev);
+        virtual void unsubscribedFrom(cResultFilter *prev);
+        virtual void finish(cResultFilter *prev) {}
 
         // original listener API delegates to simplified API:
         virtual void receiveSignal(cComponent *source, simsignal_t signalID, long l);
@@ -57,24 +62,7 @@ class ENVIR_API ResultListener : public cIListener
         virtual void finish(cComponent *component, simsignal_t signalID);
 };
 
-/**
- * Data structure used when setting up chains of ResultFilters and ResultRecorders
- */
-class SignalSource
-{
-  private:
-    ResultFilter *filter;
-    cComponent *component;
-    simsignal_t signalID;
-  public:
-    SignalSource(ResultFilter *prevFilter) {filter=prevFilter; component=NULL; signalID=-1;}
-    SignalSource(cComponent *comp, simsignal_t sigID) {filter=NULL; component=comp; signalID=sigID;}
-    bool isNull() const {return !filter && !component;}
-    void subscribe(ResultListener *listener) const;
-    ResultFilter *getFilter() const {return filter;}
-    cComponent *getComponent() const {return component;}
-    simsignal_t getSignalID() const {return signalID;}
-};
+NAMESPACE_END
 
 #endif
 

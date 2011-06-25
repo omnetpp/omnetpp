@@ -47,7 +47,7 @@
 #include "stringutil.h"
 #include "enumstr.h"
 #include "simtime.h"
-#include "resultrecorder.h"
+#include "cresultrecorder.h"
 #include "resultfilters.h"
 #include "statisticparser.h"
 
@@ -1025,7 +1025,7 @@ void EnvirBase::doResultRecorder(const SignalSource& source, const char *recordi
             if (recordsVector ? !vectorsEnabled : !scalarsEnabled)
                 return; // no point in creating if recording is disabled
 
-            ResultRecorder *recorder = ResultRecorderDescriptor::get(recordingMode)->create();
+            cResultRecorder *recorder = cResultRecorderDescriptor::get(recordingMode)->create();
             recorder->init(component, statisticName, recordingMode);
             source.subscribe(recorder);
         }
@@ -1053,7 +1053,7 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
         simsignal_t signalID = signals[i];
         std::vector<cIListener*> listeners = component->getLocalSignalListeners(signalID);
         for (unsigned int j = 0; j < listeners.size(); j++) {
-            if (dynamic_cast<ResultListener*>(listeners[j])) {
+            if (dynamic_cast<cResultListener*>(listeners[j])) {
                 if (!componentPathPrinted) {
                     ev << component->getFullPath() << " (" << component->getNedTypeName() << "):\n";
                     componentPathPrinted = true;
@@ -1062,24 +1062,24 @@ void EnvirBase::dumpResultRecorders(cComponent *component)
                     ev << "    \"" << cComponent::getSignalName(signalID) << "\" (signalID="  << signalID << "):\n";
                     signalNamePrinted = true;
                 }
-                dumpResultRecorderChain((ResultListener *)listeners[j], 0);
+                dumpResultRecorderChain((cResultListener *)listeners[j], 0);
             }
         }
     }
 }
 
-void EnvirBase::dumpResultRecorderChain(ResultListener *listener, int depth)
+void EnvirBase::dumpResultRecorderChain(cResultListener *listener, int depth)
 {
     for (int i = 0; i < depth+2; i++)
         ev << "    ";
     ev << listener->str();
-    if (dynamic_cast<ResultRecorder*>(listener))
-        ev << " ==> " << ((ResultRecorder*)listener)->getResultName();
+    if (dynamic_cast<cResultRecorder*>(listener))
+        ev << " ==> " << ((cResultRecorder*)listener)->getResultName();
     ev << "\n";
 
-    if (dynamic_cast<ResultFilter *>(listener))
+    if (dynamic_cast<cResultFilter *>(listener))
     {
-        std::vector<ResultListener *> delegates = ((ResultFilter*)listener)->getDelegates();
+        std::vector<cResultListener *> delegates = ((cResultFilter*)listener)->getDelegates();
         for (unsigned int i=0; i < delegates.size(); i++)
             dumpResultRecorderChain(delegates[i], depth+1);
     }

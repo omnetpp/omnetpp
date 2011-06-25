@@ -4,6 +4,10 @@
 	to follow similar renaming of corresponding registration macros 
 	(Define_Function --> Define_NED_Math_Function).
 
+	* Result filter/recorder stuff moved here from src/envir, so that
+	users can contribute their own result filters and recorders.
+	See include/ChangeLog for more info.
+
 2011-06-14  Andras Varga
 
 	* cDynamicExpression::Value, also shared by cNEDFunction, has been

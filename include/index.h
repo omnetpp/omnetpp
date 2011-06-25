@@ -253,7 +253,7 @@
  * To customize, subclass from the classes below, and select the new class
  * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>,
  * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>,
- * etc. config entries.
+ * etc. config options.
  */
 
 /**

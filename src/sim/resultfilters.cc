@@ -18,6 +18,8 @@
 #include "resultfilters.h"
 #include "cmessage.h"  // PacketBytesFilter
 
+USING_NAMESPACE
+
 
 // note: we don't register WarmupPeriodFilter and ExpressionFilter
 Register_ResultFilter("count", CountFilter);
@@ -34,37 +36,37 @@ Register_ResultFilter("packetBits", PacketBitsFilter);
 Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
 
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, l);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, l);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, d);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, v);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
 {
     if (t >= getEndWarmupPeriod())
         fire(this, t, s);
 }
 
-void WarmupPeriodFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj)
+void WarmupPeriodFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     if (t >= getEndWarmupPeriod())
@@ -101,7 +103,7 @@ bool UnaryExpressionFilter::process(simtime_t& t, double& value)
     return true;
 }
 
-void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     simtime_t tt = t;
     double d = l;
@@ -109,7 +111,7 @@ void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, l
         fire(this, tt, d);
 }
 
-void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
     simtime_t tt = t;
     double d = l;
@@ -117,14 +119,14 @@ void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, u
         fire(this, tt, d);
 }
 
-void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
 {
     simtime_t tt = t;
     if (process(prev, tt, d))
         fire(this, tt, d);
 }
 
-void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void NaryExpressionFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
     simtime_t tt = t;
     double d = v.dbl();
@@ -132,7 +134,7 @@ void NaryExpressionFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, c
         fire(this, tt, d);
 }
 
-bool NaryExpressionFilter::process(ResultFilter *prev, simtime_t& t, double& value)
+bool NaryExpressionFilter::process(cResultFilter *prev, simtime_t& t, double& value)
 {
     currentTime = t;
     for (int i = 0; i < signalCount; i++) {
@@ -145,7 +147,7 @@ bool NaryExpressionFilter::process(ResultFilter *prev, simtime_t& t, double& val
     throw cRuntimeError("unknown signal");
 }
 
-Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, ResultFilter *prevFilter)
+Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, cResultFilter *prevFilter)
 {
     Assert(0 <= index && index <= signalCount);
     prevFilters[index] = prevFilter;
@@ -155,7 +157,7 @@ Expression::Functor *NaryExpressionFilter::makeValueVariable(int index, ResultFi
 
 //---
 
-void PacketBytesFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object)
+void PacketBytesFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object)
 {
     if (dynamic_cast<cPacket *>(object))
     {
@@ -166,7 +168,7 @@ void PacketBytesFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObj
 
 //---
 
-void PacketBitsFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *object)
+void PacketBitsFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object)
 {
     if (dynamic_cast<cPacket *>(object))
     {

@@ -129,6 +129,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
   logbuffer.h \
+  ../../include/cresultfilter.h \
   ../../include/csimulation.h \
   ../../include/clcg32.h \
   tkutil.h \
@@ -200,6 +201,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
   ../../include/platdep/platmisc.h \
+  ../../include/cresultlistener.h \
   ../../include/chasher.h \
   ../../include/cdefaultlist.h \
   ../../include/index.h \
@@ -210,6 +212,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnedmathfunction.h \
+  ../../include/cresultrecorder.h \
   ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
@@ -231,6 +234,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
   logbuffer.h \
+  ../../include/cresultfilter.h \
   ../../include/csimulation.h \
   ../../include/clcg32.h \
   tkutil.h \
@@ -303,6 +307,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
   ../../include/platdep/platmisc.h \
+  ../../include/cresultlistener.h \
   ../../include/chasher.h \
   ../../include/cdefaultlist.h \
   ../../include/index.h \
@@ -313,6 +318,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnedmathfunction.h \
+  ../../include/cresultrecorder.h \
   ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
@@ -480,6 +486,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cclassdescriptor.h \
   ../../include/cmessage.h \
   logbuffer.h \
+  ../../include/cresultfilter.h \
   ../../include/csimulation.h \
   ../../include/clcg32.h \
   tkutil.h \
@@ -553,6 +560,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/globals.h \
   ../../include/cstringparimpl.h \
   ../../include/platdep/platmisc.h \
+  ../../include/cresultlistener.h \
   ../../include/chasher.h \
   ../../include/cdefaultlist.h \
   ../../include/index.h \
@@ -563,6 +571,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
   ../../include/cnedmathfunction.h \
+  ../../include/cresultrecorder.h \
   ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \

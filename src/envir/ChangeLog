@@ -1,3 +1,8 @@
+2011-06-25  Andras Varga
+
+	* Result filter/recorder stuff moved into the simkernel, so that
+	users can contribute their own result filters and recorders.
+
 2011-05-26  Levente Mészáros
 
 	* Implemented number filter expressions using multiple inputs for

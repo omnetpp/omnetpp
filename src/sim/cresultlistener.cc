@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTLISTENER.CC - part of
+//  CRESULTLISTENER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,21 +15,30 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "resultlistener.h"
-#include "resultfilters.h"
+#include "cresultlistener.h"
 #include "ccomponent.h"
 #include "ctimestampedvalue.h"
+#include "exception.h"
+#include "stringpool.h"
+
+USING_NAMESPACE
 
 
-void ResultListener::subscribedTo(ResultFilter *prev)
+void cResultListener::subscribedTo(cResultFilter *prev)
 {
     ASSERT(getSubscribeCount() == 1);  // except for multi-signal ExpressionRecorders
 }
 
-void ResultListener::unsubscribedFrom(ResultFilter *prev)
+void cResultListener::unsubscribedFrom(cResultFilter *prev)
 {
     if (getSubscribeCount() == 0)
         delete this;
+}
+
+const char *cResultListener::getPooled(const char *s)
+{
+    static CommonStringPool namesPool;
+    return namesPool.get(s);
 }
 
 // original cIListener API that delegates to the simplified API:
@@ -39,7 +48,7 @@ void ResultListener::unsubscribedFrom(ResultFilter *prev)
                         cComponent::getSignalName(signalID), (int)signalID, \
                         source->getClassName(), source->getFullPath().c_str(), datatype, e.what())
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, long l)
 {
     try
     {
@@ -51,7 +60,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, lon
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, unsigned long l)
 {
     try
     {
@@ -63,7 +72,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, uns
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, double d)
 {
     try
     {
@@ -75,7 +84,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, dou
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const SimTime& v)
 {
     try
     {
@@ -87,7 +96,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, con
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, const char *s)
 {
     try
     {
@@ -99,7 +108,7 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, con
     }
 }
 
-void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
+void cResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cObject *obj)
 {
     try
     {
@@ -129,30 +138,19 @@ void ResultListener::receiveSignal(cComponent *source, simsignal_t signalID, cOb
 
 #undef THROW
 
-void ResultListener::subscribedTo(cComponent *component, simsignal_t signalID)
+void cResultListener::subscribedTo(cComponent *component, simsignal_t signalID)
 {
     subscribedTo(NULL);
 }
 
-void ResultListener::unsubscribedFrom(cComponent *component, simsignal_t signalID)
+void cResultListener::unsubscribedFrom(cComponent *component, simsignal_t signalID)
 {
     unsubscribedFrom(NULL);
 }
 
-void ResultListener::finish(cComponent *component, simsignal_t signalID)
+void cResultListener::finish(cComponent *component, simsignal_t signalID)
 {
     finish(NULL);
 }
 
-//---
-
-void SignalSource::subscribe(ResultListener *listener) const
-{
-    if (filter)
-        filter->addDelegate(listener);
-    else if (component && signalID!=SIMSIGNAL_NULL)
-        component->subscribe(signalID, listener);
-    else
-        throw opp_runtime_error("subscribe() called on blank SignalSource");
-}
 

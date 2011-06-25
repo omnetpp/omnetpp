@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTRECORDER.CC - part of
+//  CRESULTRECORDER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -15,24 +15,24 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "resultrecorder.h"
+#include "cresultrecorder.h"
 #include "cproperty.h"
 #include "chistogram.h"
+
+USING_NAMESPACE
 
 
 cGlobalRegistrationList resultRecorders("resultRecorders");
 
-CommonStringPool ResultRecorder::namesPool;
 
-
-void ResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode)
+void cResultRecorder::init(cComponent *comp, const char *statsName, const char *recMode)
 {
     component = comp;
-    statisticName = namesPool.get(statsName);
-    recordingMode = namesPool.get(recMode);
+    statisticName = getPooled(statsName);
+    recordingMode = getPooled(recMode);
 }
 
-opp_string_map ResultRecorder::getStatisticAttributes()
+opp_string_map cResultRecorder::getStatisticAttributes()
 {
     opp_string_map result;
     cProperty *property = getComponent()->getProperties()->get("statistic", getStatisticName());
@@ -66,7 +66,7 @@ opp_string_map ResultRecorder::getStatisticAttributes()
     return result;
 }
 
-void ResultRecorder::tweakTitle(opp_string& title)
+void cResultRecorder::tweakTitle(opp_string& title)
 {
     //title = opp_string(getRecordingMode()) + " of " + title;
     title = title + ", " + getRecordingMode();
@@ -74,32 +74,32 @@ void ResultRecorder::tweakTitle(opp_string& title)
 
 //---
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     collect(t, l);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
     collect(t, l);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
 {
     collect(t, d);
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
     collect(t, v.dbl());
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
 {
     throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
-void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj)
+void cNumericResultRecorder::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());
@@ -107,20 +107,20 @@ void NumericResultRecorder::receiveSignal(ResultFilter *prev, simtime_t_cref t, 
 
 //----
 
-ResultRecorderDescriptor::ResultRecorderDescriptor(const char *name, ResultRecorder *(*f)())
+cResultRecorderDescriptor::cResultRecorderDescriptor(const char *name, cResultRecorder *(*f)())
   : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
 }
 
-ResultRecorderDescriptor *ResultRecorderDescriptor::find(const char *name)
+cResultRecorderDescriptor *cResultRecorderDescriptor::find(const char *name)
 {
-    return dynamic_cast<ResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
+    return dynamic_cast<cResultRecorderDescriptor *>(resultRecorders.getInstance()->lookup(name));
 }
 
-ResultRecorderDescriptor *ResultRecorderDescriptor::get(const char *name)
+cResultRecorderDescriptor *cResultRecorderDescriptor::get(const char *name)
 {
-    ResultRecorderDescriptor *p = find(name);
+    cResultRecorderDescriptor *p = find(name);
     if (!p)
         throw cRuntimeError("Result recorder \"%s\" not found -- perhaps the name is wrong, "
                             "or the recorder was not registered with Register_ResultRecorder()", name);

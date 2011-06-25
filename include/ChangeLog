@@ -4,6 +4,19 @@
 	to follow similar renaming of corresponding registration macros 
 	(Define_Function --> Define_NED_Math_Function).
 
+	* Result filter/recorder interfaces and registration macros made
+	public (moved here from src/envir), so that users can contribute
+	their own result filters and recorders. Files: cresultlistener.h,
+	cresultfilter.h  cresultrecorder.h. Result filters have to be
+	subclassed from cResultFilter or the more specific cNumericResultFilter
+	or cObjectResultFilter base classes and registered with the
+	Register_ResultFilter() macro; result recorders have to be subclassed
+	from cResultRecorder or the more specific cNumericResultRecorder,
+	and registered with the Register_ResultRecorder() macro. After that,
+	the new filter or recorder can be used in the source= and record=
+	attributes of @statistic, and with the **.result-recording-modes
+	configuration option.
+
 2011-06-20  Andras Varga
 
 	* The Define_Function() macros have been renamed to Define_NED_Math_-

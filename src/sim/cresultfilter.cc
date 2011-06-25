@@ -1,5 +1,5 @@
 //==========================================================================
-//  RESULTFILTER.CC - part of
+//  CRESULTFILTER.CC - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -16,24 +16,26 @@
 *--------------------------------------------------------------*/
 
 #include "commonutil.h"
-#include "resultfilter.h"
+#include "cresultfilter.h"
+
+USING_NAMESPACE
 
 cGlobalRegistrationList resultFilters("resultFilters");
 
 
-ResultFilter::ResultFilter()
+cResultFilter::cResultFilter()
 {
-    delegates = new ResultListener*[1];
+    delegates = new cResultListener*[1];
     delegates[0] = NULL;
 }
 
-void ResultFilter::addDelegate(ResultListener *delegate)
+void cResultFilter::addDelegate(cResultListener *delegate)
 {
     // reallocate each time
     Assert(delegates!=NULL);
     int n = getNumDelegates();
-    ResultListener **v = new ResultListener*[n+2];
-    memcpy(v, delegates, n*sizeof(ResultListener*));
+    cResultListener **v = new cResultListener*[n+2];
+    memcpy(v, delegates, n*sizeof(cResultListener*));
     v[n] = delegate;
     v[n+1] = NULL;
     delete [] delegates;
@@ -42,7 +44,7 @@ void ResultFilter::addDelegate(ResultListener *delegate)
     delegate->subscribedTo(this);
 }
 
-int ResultFilter::getNumDelegates() const
+int cResultFilter::getNumDelegates() const
 {
     int k = 0;
     while (delegates[k])
@@ -50,15 +52,15 @@ int ResultFilter::getNumDelegates() const
     return k;
 }
 
-std::vector<ResultListener*> ResultFilter::getDelegates() const
+std::vector<cResultListener*> cResultFilter::getDelegates() const
 {
-    std::vector<ResultListener*> result;
+    std::vector<cResultListener*> result;
     for (int i = 0; delegates[i]; i++)
         result.push_back(delegates[i]);
     return result;
 }
 
-ResultFilter::~ResultFilter()
+cResultFilter::~cResultFilter()
 {
     for (int i=0; delegates[i]; i++) {
         delegates[i]->subscribecount--;
@@ -67,43 +69,43 @@ ResultFilter::~ResultFilter()
     delete [] delegates;
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t_cref t, long l)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, long l)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, l);
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, l);
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t_cref t, double d)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, double d)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, d);
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, v);
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t_cref t, const char *s)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, const char *s)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, s);
 }
 
-void ResultFilter::fire(ResultFilter *prev, simtime_t_cref t, cObject *obj)
+void cResultFilter::fire(cResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->receiveSignal(this, t, obj);
 }
 
-void ResultFilter::finish(ResultFilter *prev)
+void cResultFilter::finish(cResultFilter *prev)
 {
     for (int i=0; delegates[i]; i++)
         delegates[i]->finish(this);
@@ -111,7 +113,7 @@ void ResultFilter::finish(ResultFilter *prev)
 
 //---
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     simtime_t tt = t;
     double d = l;
@@ -119,7 +121,7 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, lo
         fire(this, tt, d);
 }
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
     simtime_t tt = t;
     double d = l;
@@ -127,14 +129,14 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, un
         fire(this, tt, d);
 }
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
 {
     simtime_t tt = t;
     if (process(tt, d))
         fire(this, tt, d);
 }
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
     simtime_t tt = t;
     double d = v.dbl();
@@ -142,12 +144,12 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, co
         fire(this, tt, d);
 }
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
 {
     throw cRuntimeError("%s: Cannot convert const char * to double", getClassName());
 }
 
-void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cObject *obj)
+void cNumericResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *obj)
 {
     // note: cITimestampedValue stuff was already dispatched to (simtime_t,double) method in base class
     throw cRuntimeError("%s: Cannot convert cObject * to double", getClassName());
@@ -157,27 +159,27 @@ void NumericResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, cO
 
 #define THROW(t)  throw opp_runtime_error("%s: received data with wrong type (%s): object expected", getClassName(), t);
 
-void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, long l)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, long l)
 {
     THROW("long");
 }
 
-void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, unsigned long l)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, unsigned long l)
 {
     THROW("unsigned long");
 }
 
-void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, double d)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, double d)
 {
     THROW("double");
 }
 
-void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const SimTime& v)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const SimTime& v)
 {
     THROW("simtime_t");
 }
 
-void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, const char *s)
+void cObjectResultFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, const char *s)
 {
     THROW("const char *");
 }
@@ -186,20 +188,20 @@ void ObjectResultFilter::receiveSignal(ResultFilter *prev, simtime_t_cref t, con
 
 //---
 
-ResultFilterDescriptor::ResultFilterDescriptor(const char *name, ResultFilter *(*f)())
+cResultFilterDescriptor::cResultFilterDescriptor(const char *name, cResultFilter *(*f)())
   : cNoncopyableOwnedObject(name, false)
 {
     creatorfunc = f;
 }
 
-ResultFilterDescriptor *ResultFilterDescriptor::find(const char *name)
+cResultFilterDescriptor *cResultFilterDescriptor::find(const char *name)
 {
-    return dynamic_cast<ResultFilterDescriptor *>(resultFilters.getInstance()->lookup(name));
+    return dynamic_cast<cResultFilterDescriptor *>(resultFilters.getInstance()->lookup(name));
 }
 
-ResultFilterDescriptor *ResultFilterDescriptor::get(const char *name)
+cResultFilterDescriptor *cResultFilterDescriptor::get(const char *name)
 {
-    ResultFilterDescriptor *p = find(name);
+    cResultFilterDescriptor *p = find(name);
     if (!p)
         throw cRuntimeError("Result filter \"%s\" not found -- perhaps the name is wrong, "
                             "or the filter was not registered with Register_ResultFilter()", name);
