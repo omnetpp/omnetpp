@@ -31,7 +31,7 @@ OBJS_STD=\
     $O/cobjectfactory.o $O/ccomponent.o $O/ccomponenttype.o $O/cconfiguration.o $O/cconfigoption.o \
     $O/ccompoundmodule.o $O/ccoroutine.o $O/cdefaultlist.o $O/cdensityestbase.o \
     $O/cdetect.o $O/cdisplaystring.o $O/cdoubleparimpl.o $O/cdynamicexpression.o $O/cenvir.o \
-    $O/cenum.o $O/cexception.o $O/cfsm.o $O/cmathfunction.o $O/cgate.o $O/chistogram.o \
+    $O/cenum.o $O/cexception.o $O/cfsm.o $O/cnedmathfunction.o $O/cgate.o $O/chistogram.o \
     $O/cksplit.o $O/clcg32.o $O/clinkedlist.o $O/clistener.o $O/clongparimpl.o $O/cmersennetwister.o \
     $O/cmessage.o $O/cmsgpar.o $O/cmodule.o $O/cmessageheap.o $O/chasher.o $O/ctimestampedvalue.o \
     $O/cnedfunction.o $O/cnedvalue.o $O/cobject.o $O/coutvector.o $O/cnamedobject.o \
@@ -189,7 +189,7 @@ $O/cchannel.o: cchannel.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -270,7 +270,7 @@ $O/ccomponent.o: ccomponent.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
@@ -317,7 +317,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cdataratechannel.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
@@ -362,7 +362,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
 $O/ccompoundmodule.o: ccompoundmodule.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/simtime.h \
@@ -444,7 +444,7 @@ $O/cdataratechannel.o: cdataratechannel.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/distrib.h \
   ../../include/cdataratechannel.h \
   ../../include/cnamedobject.h \
@@ -515,7 +515,7 @@ $O/cdelaychannel.o: cdelaychannel.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/simtime.h \
@@ -600,7 +600,7 @@ $O/cdisplaystring.o: cdisplaystring.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -669,7 +669,7 @@ $O/cdynamicexpression.o: cdynamicexpression.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   expryydefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
@@ -805,7 +805,7 @@ $O/cgate.o: cgate.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cdataratechannel.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -991,7 +991,7 @@ $O/clistener.o: clistener.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
@@ -1054,10 +1054,10 @@ $O/clongparimpl.o: clongparimpl.cc \
   ../../include/simutil.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h
-$O/cmathfunction.o: cmathfunction.cc \
+$O/cnedmathfunction.o: cnedmathfunction.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -1093,7 +1093,7 @@ $O/cmathfunction.o: cmathfunction.cc \
 $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -1126,7 +1126,7 @@ $O/cmersennetwister.o: cmersennetwister.cc \
 $O/cmessage.o: cmessage.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -1163,7 +1163,7 @@ $O/cmessage.o: cmessage.cc \
 $O/cmessageheap.o: cmessageheap.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -1191,7 +1191,7 @@ $O/cmodule.o: cmodule.cc \
   ../../include/regmacros.h \
   ../../include/ctimestampedvalue.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -1232,7 +1232,7 @@ $O/cmodule.o: cmodule.cc \
 $O/cmsgpar.o: cmsgpar.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
@@ -1428,7 +1428,7 @@ $O/cpacketqueue.o: cpacketqueue.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -1679,7 +1679,7 @@ $O/cregistrationlist.o: cregistrationlist.cc \
 $O/cscheduler.o: cscheduler.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -1713,7 +1713,7 @@ $O/csimplemodule.o: csimplemodule.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cqueue.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/simtime.h \
@@ -1750,7 +1750,7 @@ $O/csimulation.o: csimulation.cc \
   ../../include/regmacros.h \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
   ../../include/cgate.h \
@@ -2143,7 +2143,7 @@ $O/cxmlparimpl.o: cxmlparimpl.cc \
 $O/distrib.o: distrib.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -2184,7 +2184,7 @@ $O/expr.tab.o: expr.tab.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
   expryydefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/simtime.h \
@@ -2281,7 +2281,7 @@ $O/minixpath.o: minixpath.cc \
 $O/nedfunctions.o: nedfunctions.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/distrib.h \
   ../../include/cexpression.h \
   ../../include/cnamedobject.h \
@@ -2320,7 +2320,7 @@ $O/nedfunctions.o: nedfunctions.cc \
 $O/nedsupport.o: nedsupport.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../../include/cgate.h \
@@ -2430,7 +2430,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/cqueue.h \
   sim_std_m.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/cmodelchange.h \
@@ -2525,7 +2525,7 @@ $O/util.o: util.cc \
   ../../include/cqueue.h \
   ../../include/cwatch.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -2575,7 +2575,7 @@ $O/netbuilder/cdynamicchanneltype.o: netbuilder/cdynamicchanneltype.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -2653,7 +2653,7 @@ $O/netbuilder/cexpressionbuilder.o: netbuilder/cexpressionbuilder.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/simtime_t.h \
   ../../include/opp_string.h \
@@ -2732,7 +2732,7 @@ $O/netbuilder/cnedloader.o: netbuilder/cnedloader.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
@@ -2782,7 +2782,7 @@ $O/netbuilder/cnednetworkbuilder.o: netbuilder/cnednetworkbuilder.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cdataratechannel.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -2833,7 +2833,7 @@ $O/parsim/cadvlinkdelaylookahead.o: parsim/cadvlinkdelaylookahead.cc \
   ../../include/ccomponenttype.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -2954,7 +2954,7 @@ $O/parsim/cidealsimulationprot.o: parsim/cidealsimulationprot.cc \
   ../../include/cparsimcomm.h \
   parsim/cidealsimulationprot.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
@@ -2999,7 +2999,7 @@ $O/parsim/cispeventlogger.o: parsim/cispeventlogger.cc \
   ../../include/cparsimcomm.h \
   parsim/cidealsimulationprot.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -3045,7 +3045,7 @@ $O/parsim/clinkdelaylookahead.o: parsim/clinkdelaylookahead.cc \
   ../../include/ccomponenttype.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cdataratechannel.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -3235,7 +3235,7 @@ $O/parsim/cnosynchronization.o: parsim/cnosynchronization.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
@@ -3284,7 +3284,7 @@ $O/parsim/cnullmessageprot.o: parsim/cnullmessageprot.cc \
   ../../include/ccomponenttype.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
@@ -3335,7 +3335,7 @@ $O/parsim/cparsimpartition.o: parsim/cparsimpartition.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \
@@ -3379,7 +3379,7 @@ $O/parsim/cparsimprotocolbase.o: parsim/cparsimprotocolbase.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
@@ -3425,7 +3425,7 @@ $O/parsim/cplaceholdermod.o: parsim/cplaceholdermod.cc \
   parsim/cidealsimulationprot.h \
   parsim/cfilecomm.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/carray.h \
@@ -3470,7 +3470,7 @@ $O/parsim/cproxygate.o: parsim/cproxygate.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/platdep/platdefs.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/carray.h \

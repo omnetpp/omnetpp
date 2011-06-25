@@ -184,7 +184,6 @@ $O/inspector.obj: inspector.cc \
   ../../include/cxmlelement.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -210,6 +209,7 @@ $O/inspector.obj: inspector.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
@@ -287,7 +287,6 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -313,6 +312,7 @@ $O/inspfactory.obj: inspfactory.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
@@ -354,7 +354,6 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -371,6 +370,7 @@ $O/layouterenv.obj: layouterenv.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   ../../include/regmacros.h
@@ -445,7 +445,6 @@ $O/modinsp.obj: modinsp.cc \
   inspfactory.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -462,6 +461,7 @@ $O/modinsp.obj: modinsp.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \
@@ -537,7 +537,6 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -563,6 +562,7 @@ $O/objinsp.obj: objinsp.cc \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodelchange.h \
   ../../include/cksplit.h \
   ../../include/platdep/platdefs.h \
@@ -602,7 +602,6 @@ $O/statinsp.obj: statinsp.cc \
   inspfactory.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -617,6 +616,7 @@ $O/statinsp.obj: statinsp.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \
@@ -660,7 +660,6 @@ $O/tkcmd.obj: tkcmd.cc \
   inspfactory.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -676,6 +675,7 @@ $O/tkcmd.obj: tkcmd.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \
@@ -721,7 +721,6 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
   inspector.h \
   tklib.h \
   ../../include/coutvector.h \
@@ -737,6 +736,7 @@ $O/tkenv.obj: tkenv.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \
@@ -768,7 +768,6 @@ $O/tklib.obj: tklib.cc \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
   tklib.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -780,6 +779,7 @@ $O/tklib.obj: tklib.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \
@@ -813,7 +813,6 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/cmessageheap.h \
@@ -824,6 +823,7 @@ $O/tkutil.obj: tkutil.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \
@@ -860,7 +860,6 @@ $O/visitor.obj: visitor.cc \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -872,6 +871,7 @@ $O/visitor.obj: visitor.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
   tkenv.h \

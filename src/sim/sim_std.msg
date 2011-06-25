@@ -356,7 +356,7 @@ class cFSM extends cOwnedObject
     string stateName @hint("Name of the current FSM state");
 }
 
-class cMathFunction extends cNoncopyableOwnedObject
+class cNEDMathFunction extends cNoncopyableOwnedObject
 {
     string category @hint("Function category");
     string description;

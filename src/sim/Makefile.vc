@@ -30,7 +30,7 @@ OBJS_STD=\
     $O/cobjectfactory.obj $O/ccomponent.obj $O/ccomponenttype.obj $O/cconfiguration.obj $O/cconfigoption.obj \
     $O/ccompoundmodule.obj $O/ccoroutine.obj $O/cdefaultlist.obj $O/cdensityestbase.obj \
     $O/cdetect.obj $O/cdisplaystring.obj $O/cdoubleparimpl.obj $O/cdynamicexpression.obj $O/cenvir.obj \
-    $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cmathfunction.obj $O/cgate.obj $O/chistogram.obj \
+    $O/cenum.obj $O/cexception.obj $O/cfsm.obj $O/cnedmathfunction.obj $O/cgate.obj $O/chistogram.obj \
     $O/cksplit.obj $O/clcg32.obj $O/clinkedlist.obj $O/clistener.obj $O/clongparimpl.obj $O/cmersennetwister.obj \
     $O/cmessage.obj $O/cmsgpar.obj $O/cmodule.obj $O/cmessageheap.obj $O/chasher.obj $O/ctimestampedvalue.obj \
     $O/cnedfunction.obj $O/cnedvalue.obj $O/cobject.obj $O/coutvector.obj $O/cnamedobject.obj \
@@ -207,7 +207,7 @@ $O/cchannel.obj: cchannel.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -287,7 +287,7 @@ $O/ccomponent.obj: ccomponent.cc \
   ../../include/cgate.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
   ../../include/cmodule.h \
@@ -338,7 +338,7 @@ $O/ccomponenttype.obj: ccomponenttype.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -380,7 +380,7 @@ $O/ccompoundmodule.obj: ccompoundmodule.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -463,7 +463,7 @@ $O/cdataratechannel.obj: cdataratechannel.cc \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -533,7 +533,7 @@ $O/cdelaychannel.obj: cdelaychannel.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
@@ -617,7 +617,7 @@ $O/cdisplaystring.obj: cdisplaystring.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -687,7 +687,7 @@ $O/cdynamicexpression.obj: cdynamicexpression.cc \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodule.h \
   expryydefs.h \
   ../../include/onstartup.h \
@@ -825,7 +825,7 @@ $O/cgate.obj: cgate.cc \
   ../../include/cvisitor.h \
   ../../include/cdataratechannel.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -1010,7 +1010,7 @@ $O/clistener.obj: clistener.cc \
   ../../include/cgate.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -1071,7 +1071,7 @@ $O/clongparimpl.obj: clongparimpl.cc \
   ../../include/ccomponent.h \
   ../../include/regmacros.h \
   ../../include/cstringtokenizer.h
-$O/cmathfunction.obj: cmathfunction.cc \
+$O/cnedmathfunction.obj: cnedmathfunction.cc \
   ../../include/cregistrationlist.h \
   parsim/cplaceholdermod.h \
   ../../include/ccommbuffer.h \
@@ -1079,7 +1079,7 @@ $O/cmathfunction.obj: cmathfunction.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cenvir.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodule.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
@@ -1113,7 +1113,7 @@ $O/cmersennetwister.obj: cmersennetwister.cc \
   ../../include/mersennetwister.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
   ../../include/cmessage.h \
@@ -1147,7 +1147,7 @@ $O/cmessage.obj: cmessage.cc \
   ../../include/cgate.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -1182,7 +1182,7 @@ $O/cmessageheap.obj: cmessageheap.cc \
   ../../include/carray.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
@@ -1211,7 +1211,7 @@ $O/cmodule.obj: cmodule.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -1254,7 +1254,7 @@ $O/cmsgpar.obj: cmsgpar.cc \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cnedvalue.h \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
@@ -1473,7 +1473,7 @@ $O/cpacketqueue.obj: cpacketqueue.cc \
   ../../include/carray.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmessage.h \
   ../../include/csimulation.h \
   ../../include/onstartup.h \
@@ -1726,7 +1726,7 @@ $O/cscheduler.obj: cscheduler.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
   ../../include/cmessage.h \
@@ -1757,7 +1757,7 @@ $O/csimplemodule.obj: csimplemodule.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cgate.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -1798,7 +1798,7 @@ $O/csimulation.obj: csimulation.cc \
   ../../include/cgate.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cconfiguration.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
@@ -2191,7 +2191,7 @@ $O/distrib.obj: distrib.cc \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodule.h \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
@@ -2231,7 +2231,7 @@ $O/expr.tab.obj: expr.tab.cc \
   ../../include/cstringpool.h \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   expryydefs.h \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
@@ -2332,7 +2332,7 @@ $O/nedfunctions.obj: nedfunctions.cc \
   ../../include/cstringpool.h \
   ../../include/cenvir.h \
   ../../include/cconfiguration.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodule.h \
   ../../include/cnedvalue.h \
   ../../include/onstartup.h \
@@ -2373,7 +2373,7 @@ $O/nedsupport.obj: nedsupport.cc \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
   ../../include/cenvir.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cmodule.h \
   ../../include/onstartup.h \
   ../../include/csimulation.h \
@@ -2488,7 +2488,7 @@ $O/sim_std_m.obj: sim_std_m.cc \
   ../../include/cxmlelement.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/cxmlparimpl.h \
@@ -2587,7 +2587,7 @@ $O/util.obj: util.cc \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
   ../../include/cxmlelement.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/coutvector.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -2636,7 +2636,7 @@ $O/netbuilder/cdynamicchanneltype.obj: netbuilder/cdynamicchanneltype.cc \
   ../../include/cregistrationlist.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
@@ -2706,7 +2706,7 @@ $O/netbuilder/cexpressionbuilder.obj: netbuilder/cexpressionbuilder.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/cnedvalue.h \
   ../../include/simtime_t.h \
@@ -2793,7 +2793,7 @@ $O/netbuilder/cnedloader.obj: netbuilder/cnedloader.cc \
   ../../include/clongparimpl.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/cnedvalue.h \
   ../../include/onstartup.h \
@@ -2848,7 +2848,7 @@ $O/netbuilder/cnednetworkbuilder.obj: netbuilder/cnednetworkbuilder.cc \
   ../../include/clongparimpl.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   netbuilder/cnednetworkbuilder.h \
   ../../include/cnedvalue.h \
   ../../include/onstartup.h \
@@ -2901,7 +2901,7 @@ $O/parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   parsim/cnmplookahead.h \
   ../../include/simtime_t.h \
@@ -3020,7 +3020,7 @@ $O/parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/platdep/intxtypes.h \
@@ -3064,7 +3064,7 @@ $O/parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/cmessageheap.h \
@@ -3114,7 +3114,7 @@ $O/parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   parsim/cnmplookahead.h \
   ../../include/simtime_t.h \
@@ -3301,7 +3301,7 @@ $O/parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/platdep/intxtypes.h \
@@ -3354,7 +3354,7 @@ $O/parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   parsim/cnmplookahead.h \
   ../../include/simtime_t.h \
@@ -3401,7 +3401,7 @@ $O/parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/platdep/intxtypes.h \
@@ -3445,7 +3445,7 @@ $O/parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/platdep/intxtypes.h \
@@ -3492,7 +3492,7 @@ $O/parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   ../../include/cscheduler.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   parsim/cnamedpipecomm.h \
   ../../include/onstartup.h \
   parsim/cnmplookahead.h \
@@ -3533,7 +3533,7 @@ $O/parsim/cproxygate.obj: parsim/cproxygate.cc \
   ../../include/cregistrationlist.h \
   ../../include/cvisitor.h \
   ../../include/cstringpool.h \
-  ../../include/cmathfunction.h \
+  ../../include/cnedmathfunction.h \
   ../../include/onstartup.h \
   ../../include/simtime_t.h \
   ../../include/cmessageheap.h \

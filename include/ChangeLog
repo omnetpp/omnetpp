@@ -1,3 +1,9 @@
+2011-06-25  Andras Varga
+
+	* The internal class cMathFunction was renamed to cNEDMathFunction, 
+	to follow similar renaming of corresponding registration macros 
+	(Define_Function --> Define_NED_Math_Function).
+
 2011-06-20  Andras Varga
 
 	* The Define_Function() macros have been renamed to Define_NED_Math_-

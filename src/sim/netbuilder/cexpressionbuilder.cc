@@ -23,7 +23,7 @@
 #include "nedelements.h"
 #include "nederror.h"
 #include "cexpressionbuilder.h"
-#include "cmathfunction.h"
+#include "cnedmathfunction.h"
 #include "cnedfunction.h"
 #include "cparimpl.h"
 #include "xmlgenerator.h"
@@ -198,7 +198,7 @@ void cExpressionBuilder::doFunction(FunctionElement *node)
             doNode(child);
 
         // normal function: find it and add to reverse Polish expression
-        cMathFunction *functype = cMathFunction::find(funcname,argcount);
+        cNEDMathFunction *functype = cNEDMathFunction::find(funcname,argcount);
         cNEDFunction *nedfunctype = cNEDFunction::find(funcname);
         if (functype)
             elems[pos++] = functype;

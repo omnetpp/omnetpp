@@ -17,7 +17,7 @@
 #define __CMSGPAR_H
 
 #include "cownedobject.h"
-#include "cmathfunction.h"
+#include "cnedmathfunction.h"
 
 NAMESPACE_BEGIN
 

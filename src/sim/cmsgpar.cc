@@ -26,7 +26,7 @@
 #include "cmsgpar.h"
 #include "cstatistic.h"
 #include "globals.h"
-#include "cmathfunction.h"
+#include "cnedmathfunction.h"
 #include "cnedfunction.h"
 #include "cxmlelement.h"
 #include "cconfiguration.h"
@@ -137,7 +137,7 @@ std::string cMsgPar::info() const
     std::stringstream out;
 
     // append useful info
-    cMathFunction *ff;
+    cNEDMathFunction *ff;
     const char *s;
     switch (typechar) {
         case 'S': s = ls.sht ? ss.str:ls.str;
@@ -149,7 +149,7 @@ std::string cMsgPar::info() const
         case 'T': out << (dtr.res ? dtr.res->getFullPath().c_str():"null") << " (T)"; break;
         case 'P': out << ptr.ptr << " (P)"; break;
         case 'O': out << (obj.obj ? obj.obj->getFullPath().c_str():"null") << " (O)"; break;
-        case 'F': ff = cMathFunction::findByPointer(func.f);
+        case 'F': ff = cNEDMathFunction::findByPointer(func.f);
                   out << (ff ? ff->getName() : "unknown") << "(";
                   switch(func.argc) {
                     case 0: out << ")"; break;
@@ -211,7 +211,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer)
     buffer->pack(typechar);
     buffer->pack(changedflag);
 
-    cMathFunction *ff;
+    cNEDMathFunction *ff;
     switch (typechar)
     {
     case 'S':
@@ -231,7 +231,7 @@ void cMsgPar::parsimPack(cCommBuffer *buffer)
         break;
 
     case 'F':
-        ff = cMathFunction::findByPointer(func.f);
+        ff = cNEDMathFunction::findByPointer(func.f);
         if (ff == NULL)
             throw cRuntimeError(this,"parsimPack(): cannot transmit unregistered function");
 
@@ -279,7 +279,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
     buffer->unpack(typechar);
     buffer->unpack(changedflag);
 
-    cMathFunction *ff;
+    cNEDMathFunction *ff;
     switch (typechar)
     {
     case 'S':
@@ -302,7 +302,7 @@ void cMsgPar::parsimUnpack(cCommBuffer *buffer)
     case 'F':
         buffer->unpack(funcname);
         buffer->unpack(argc);
-        ff = cMathFunction::find(funcname,argc);
+        ff = cNEDMathFunction::find(funcname,argc);
         if (ff == NULL)
         {
             delete [] funcname;
@@ -674,7 +674,7 @@ string cMsgPar::str() const
 {
     char bb[128];
     bb[0] = 0;
-    cMathFunction *ff;
+    cNEDMathFunction *ff;
     const char *fn;
     const char *s;
 
@@ -687,7 +687,7 @@ string cMsgPar::str() const
                  return string(bb);
        case 'D': sprintf(bb,"%g",dbl.val);
                  return string(bb);
-       case 'F': ff = cMathFunction::findByPointer(func.f);
+       case 'F': ff = cNEDMathFunction::findByPointer(func.f);
                  fn = ff ? ff->getName() : "unknown";
                  switch(func.argc) {
                  case 0: sprintf(bb,"()"); break;
@@ -876,7 +876,7 @@ bool cMsgPar::setfunction(char *text)
 
     // look up function name (temporarily overwriting '(' with a '\0')
     *args = '\0';
-    cMathFunction *ff = cMathFunction::find(text, argc);
+    cNEDMathFunction *ff = cNEDMathFunction::find(text, argc);
     *args = '(';
     if (ff==NULL) return false;
 

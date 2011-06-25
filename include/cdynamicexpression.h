@@ -26,7 +26,7 @@ NAMESPACE_BEGIN
 
 class cXMLElement;
 class cPar;
-class cMathFunction;
+class cNEDMathFunction;
 class cNEDFunction;
 
 /**
@@ -70,7 +70,7 @@ class SIM_API cDynamicExpression : public cExpression
         //  - double (there is no long -- we calculate everything in double)
         //  - string
         //  - pointer to an "external" cXMLElement
-        //  - cMathFunction: function with 0/1/2/3/4 double arguments
+        //  - cNEDMathFunction: function with 0/1/2/3/4 double arguments
         //  - cNEDFunction: function taking/returning cNEDValue (NEDFunction)
         //  - functor
         //  - math operator (+-*/%^...)
@@ -83,7 +83,7 @@ class SIM_API cDynamicExpression : public cExpression
             struct {double d; const char *unit;} d;
             const char *s; // points into stringPool
             cXMLElement *x;
-            cMathFunction *f;
+            cNEDMathFunction *f;
             struct {cNEDFunction *f; int argc;} nf;
             Functor *fu;
             OpType op;
@@ -155,7 +155,7 @@ class SIM_API cDynamicExpression : public cExpression
          * Effect during evaluation of the expression: Call a function
          * taking 0..4 doubles and returning a double.
          */
-        void operator=(cMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;}
+        void operator=(cNEDMathFunction *_f)  {type=MATHFUNC; ASSERT(_f); f=_f;}
 
         /**
          * Effect during evaluation of the expression: call a function

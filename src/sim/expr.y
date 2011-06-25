@@ -77,7 +77,7 @@ LineColumn xpos, xprevpos;
 #include "cxmlelement.h"
 #include "cexception.h"
 #include "globals.h"
-#include "cmathfunction.h"
+#include "cnedmathfunction.h"
 #include "cnedfunction.h"
 #include "nedsupport.h"
 #include "stringutil.h"
@@ -100,7 +100,7 @@ static char *expryyconcat(char *s1, char *s2, char *s3=NULL)
 
 static void addFunction(const char *funcname, int argc)
 {
-    cMathFunction *f = cMathFunction::find(funcname, argc);
+    cNEDMathFunction *f = cNEDMathFunction::find(funcname, argc);
     if (f) {
         *e++ = f;
         return;

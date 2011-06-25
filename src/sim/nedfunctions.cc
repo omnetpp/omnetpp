@@ -17,7 +17,7 @@
 #include <math.h>
 #include <string.h>
 #include "distrib.h"
-#include "cmathfunction.h"
+#include "cnedmathfunction.h"
 #include "cnedfunction.h"
 #include "cexception.h"
 #include "cstringtokenizer.h"

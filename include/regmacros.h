@@ -40,7 +40,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,NAME,ARGCOUNT));)
 
 /**
  * Like Define_NED_Math_Function(), but takes three arguments, the second one being the
@@ -50,7 +50,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT));)
 
 /**
  * Like Define_NED_Math_Function(), but takes category and description strings as well.
@@ -58,7 +58,7 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * Like Define_NED_Math_Function2(), but takes category and description strings as well.
@@ -66,35 +66,35 @@ NAMESPACE_BEGIN
  * @hideinitializer
  */
 #define Define_NED_Math_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION));)
 
 /**
  * DEPRECATED MACRO. Use Define_NED_Math_Function() instead.
  * @hideinitializer
  */
 #define Define_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,NAME,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
 
 /**
  * DEPRECATED MACRO. Use Define_NED_Math_Function2() instead.
  * @hideinitializer
  */
 #define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT)); Define_Function_macro(); /*issues deprecation warning*/)
 
 /**
  * DEPRECATED MACRO. Use Define_NED_Math_Function3() instead.
  * @hideinitializer
  */
 #define Define_Function3(NAME,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,NAME,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
 
 /**
  * DEPRECATED MACRO. Use Define_NED_Math_Function4() instead.
  * @hideinitializer
  */
 #define Define_Function4(NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION) \
-  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
+  EXECUTE_ON_STARTUP(nedFunctions.getInstance()->add(new cNEDMathFunction(#NAME,FUNCTION,ARGCOUNT,CATEGORY,DESCRIPTION)); Define_Function_macro(); /*issues deprecation warning*/)
 
 // only exists so that Define_FunctionX() macros issue a deprecation warning when used:
 _OPPDEPRECATED inline void Define_Function_macro() {}

@@ -30,7 +30,7 @@
 #include "csimulation.h"
 #include "globals.h"
 #include "cexception.h"
-#include "cmathfunction.h"
+#include "cnedmathfunction.h"
 #include "cscheduler.h" // dummy()
 #include "distrib.h" // dummy()
 

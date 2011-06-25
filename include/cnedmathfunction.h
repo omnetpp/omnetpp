@@ -27,7 +27,7 @@ NAMESPACE_BEGIN
 /**
  * Prototype for mathematical functions.
  *
- * @see cMathFunction, Define_NED_Math_Function().
+ * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc)(...);
@@ -35,7 +35,7 @@ typedef double (*MathFunc)(...);
 /**
  * Prototype for mathematical functions taking no arguments.
  *
- * @see cMathFunction, Define_NED_Math_Function().
+ * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
  */
 typedef double (*MathFuncNoArg)();
@@ -43,7 +43,7 @@ typedef double (*MathFuncNoArg)();
 /**
  * Prototype for mathematical functions taking one argument.
  *
- * @see cMathFunction, Define_NED_Math_Function().
+ * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc1Arg)(double);
@@ -51,7 +51,7 @@ typedef double (*MathFunc1Arg)(double);
 /**
  * Prototype for mathematical functions taking two arguments.
  *
- * @see cMathFunction, Define_NED_Math_Function().
+ * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc2Args)(double,double);
@@ -59,7 +59,7 @@ typedef double (*MathFunc2Args)(double,double);
 /**
  * Prototype for mathematical functions taking three arguments.
  *
- * @see cMathFunction, Define_NED_Math_Function().
+ * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc3Args)(double,double,double);
@@ -67,7 +67,7 @@ typedef double (*MathFunc3Args)(double,double,double);
 /**
  * Prototype for mathematical functions taking four arguments.
  *
- * @see cMathFunction, Define_NED_Math_Function().
+ * @see cNEDMathFunction, Define_NED_Math_Function().
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc4Args)(double,double,double,double);
@@ -81,7 +81,7 @@ typedef double (*MathFunc4Args)(double,double,double,double);
  *
  * @ingroup Internals
  */
-class SIM_API cMathFunction : public cNoncopyableOwnedObject
+class SIM_API cNEDMathFunction : public cNoncopyableOwnedObject
 {
   private:
     MathFunc f;            // pointer to the function
@@ -95,33 +95,33 @@ class SIM_API cMathFunction : public cNoncopyableOwnedObject
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFuncNoArg f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc1Arg f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
 
-    cMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc2Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc3Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Constructor.
      */
-    cMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
+    cNEDMathFunction(const char *name, MathFunc4Args f, int argc=-1, const char *category=NULL, const char *description=NULL);
 
     /**
      * Destructor.
      */
-    virtual ~cMathFunction() {}
+    virtual ~cNEDMathFunction() {}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -190,17 +190,17 @@ class SIM_API cMathFunction : public cNoncopyableOwnedObject
     /**
      * Finds a registered function by name. Returns NULL if not found.
      */
-    static cMathFunction *find(const char *name, int numArgs);
+    static cNEDMathFunction *find(const char *name, int numArgs);
 
     /**
      * Finds a registered function by name. Throws an error if not found.
      */
-    static cMathFunction *get(const char *name, int numArgs);
+    static cNEDMathFunction *get(const char *name, int numArgs);
 
     /**
      * Finds a registered function by function pointer.
      */
-    static cMathFunction *findByPointer(MathFunc f);
+    static cNEDMathFunction *findByPointer(MathFunc f);
 
 };
 
