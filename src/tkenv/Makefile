@@ -160,18 +160,21 @@ $O/inspector.o: inspector.cc \
   ../../include/clongparimpl.h \
   ../../include/onstartup.h \
   ../../include/cstlwatch.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
   ../../include/cvarhist.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  ../../include/cresultrecorder.h \
   ../../include/globals.h \
   ../../include/cfsm.h \
   ../../include/omnetpp.h \
   ../../include/cvisitor.h \
   ../../include/cmersennetwister.h \
   tkutil.h \
+  ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
   ../../include/compat.h \
   ../../include/cobjectfactory.h \
@@ -188,15 +191,14 @@ $O/inspector.o: inspector.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../envir/resultlistener.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
-  ../../include/cgate.h \
   ../../include/simtime.h \
+  ../../include/cgate.h \
   ../../include/cmodelchange.h \
   ../../include/carray.h \
   ../../include/cstringparimpl.h \
@@ -223,6 +225,7 @@ $O/inspector.o: inspector.cc \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
+  ../../include/cresultfilter.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cxmlparimpl.h \
@@ -268,18 +271,21 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/clongparimpl.h \
   ../../include/cstlwatch.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
   ../../include/cvarhist.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  ../../include/cresultrecorder.h \
   ../../include/globals.h \
   ../../include/cfsm.h \
   ../../include/omnetpp.h \
   ../../include/cvisitor.h \
   ../../include/cmersennetwister.h \
   tkutil.h \
+  ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
   ../../include/compat.h \
   ../../include/cobjectfactory.h \
@@ -296,18 +302,17 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/cmodelchange.h \
-  ../../include/cstringparimpl.h \
   ../../include/carray.h \
+  ../../include/cstringparimpl.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
@@ -332,6 +337,7 @@ $O/inspfactory.o: inspfactory.cc \
   ../../include/cnedfunction.h \
   inspfactory.h \
   ../../include/cstringpool.h \
+  ../../include/cresultfilter.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cxmlparimpl.h \
@@ -363,12 +369,14 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
@@ -383,8 +391,6 @@ $O/layouterenv.o: layouterenv.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
-  ../envir/resultlistener.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -462,12 +468,14 @@ $O/modinsp.o: modinsp.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
@@ -482,8 +490,6 @@ $O/modinsp.o: modinsp.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cdataratechannel.h \
-  ../../include/cmathfunction.h \
-  ../envir/resultlistener.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -542,18 +548,21 @@ $O/objinsp.o: objinsp.cc \
   ../../include/clongparimpl.h \
   ../../include/cstlwatch.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
   ../../include/cvarhist.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
+  ../../include/cresultrecorder.h \
   ../../include/globals.h \
   ../../include/cfsm.h \
   ../../include/omnetpp.h \
   ../../include/cvisitor.h \
   ../../include/cmersennetwister.h \
   tkutil.h \
+  ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
   ../../include/compat.h \
   ../../include/cobjectfactory.h \
@@ -570,18 +579,17 @@ $O/objinsp.o: objinsp.cc \
   ../../include/ccoroutine.h \
   ../../include/cdetect.h \
   ../../include/platdep/platdefs.h \
+  ../../include/cnedvalue.h \
   ../../include/cqueue.h \
   ../../include/coutvector.h \
   ../../include/cwatch.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../../include/cdataratechannel.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
   ../../include/cmodelchange.h \
-  ../../include/cstringparimpl.h \
   ../../include/carray.h \
+  ../../include/cstringparimpl.h \
   ../../include/simtime_t.h \
   ../../include/cenvir.h \
   ../../include/cmsgpar.h \
@@ -606,6 +614,7 @@ $O/objinsp.o: objinsp.cc \
   ../../include/cnedfunction.h \
   inspfactory.h \
   ../../include/cstringpool.h \
+  ../../include/cresultfilter.h \
   ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
   ../../include/cxmlparimpl.h \
@@ -636,6 +645,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
@@ -643,6 +653,7 @@ $O/statinsp.o: statinsp.cc \
   ../../include/globals.h \
   ../../include/cvisitor.h \
   tkutil.h \
+  ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   ../../include/platdep/platmisc.h \
   ../../include/cmodule.h \
@@ -652,8 +663,6 @@ $O/statinsp.o: statinsp.cc \
   tklib.h \
   ../../include/platdep/platdefs.h \
   ../../include/coutvector.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -679,7 +688,6 @@ $O/statinsp.o: statinsp.cc \
   ../../include/simutil.h \
   tkenv.h \
   statinsp.h
-$O/tclcode.o: tclcode.cc
 $O/tkcmd.o: tkcmd.cc \
   ../envir/args.h \
   ../../include/regmacros.h \
@@ -699,6 +707,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../envir/fsutils.h \
   ../../include/envirext.h \
@@ -706,6 +715,7 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
@@ -722,8 +732,6 @@ $O/tkcmd.o: tkcmd.cc \
   ../../include/cqueue.h \
   ../../include/cwatch.h \
   ../../include/cdataratechannel.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -770,16 +778,17 @@ $O/tkenv.o: tkenv.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
-  tclcode.cc \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cvisitor.h \
   tkutil.h \
+  ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
@@ -793,8 +802,6 @@ $O/tkenv.o: tkenv.cc \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
   ../../include/cdataratechannel.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -839,12 +846,14 @@ $O/tklib.o: tklib.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/clistener.h \
   ../../include/envirext.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \
@@ -854,8 +863,6 @@ $O/tklib.o: tklib.cc \
   ../../include/ccomponenttype.h \
   tklib.h \
   ../../include/platdep/platdefs.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -892,12 +899,14 @@ $O/tkutil.o: tkutil.cc \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
   ../../include/platdep/platmisc.h \
@@ -907,8 +916,6 @@ $O/tkutil.o: tkutil.cc \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h \
   ../../include/platdep/platdefs.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/cgate.h \
   ../../include/simtime.h \
@@ -946,6 +953,7 @@ $O/visitor.o: visitor.cc \
   ../../include/cownedobject.h \
   ../../include/cmessage.h \
   ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
   ../../include/envirext.h \
   ../../include/clistener.h \
@@ -953,6 +961,7 @@ $O/visitor.o: visitor.cc \
   ../../include/globals.h \
   ../../include/cfsm.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   tkutil.h \
   ../../include/cobjectfactory.h \
   ../../include/platdep/platmisc.h \
@@ -965,8 +974,6 @@ $O/visitor.o: visitor.cc \
   ../../include/cwatch.h \
   ../../include/coutvector.h \
   ../../include/cqueue.h \
-  ../envir/resultlistener.h \
-  ../../include/cmathfunction.h \
   ../envir/eventlogfilemgr.h \
   ../../include/simtime.h \
   ../../include/cgate.h \

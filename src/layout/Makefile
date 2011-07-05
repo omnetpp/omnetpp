@@ -145,6 +145,7 @@ $O/graphcomponent.o: graphcomponent.cc \
   graphcomponent.h
 $O/graphlayouter.o: graphlayouter.cc \
   graphlayouter.h \
+  ../common/commonutil.h \
   ../common/exception.h \
   layoutdefs.h \
   ../common/commondefs.h \

@@ -77,8 +77,6 @@ $O/cmdenv.o: cmdenv.cc \
   cmdenv.h \
   ../../include/platdep/platdefs.h \
   ../envir/envirdefs.h \
-  ../../include/cmathfunction.h \
-  ../envir/resultlistener.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
   ../envir/eventlogfilemgr.h \
@@ -103,17 +101,19 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/errmsg.h \
   ../../include/cmessage.h \
   ../../include/cownedobject.h \
-  ../../include/onstartup.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
+  ../../include/cresultlistener.h \
   ../envir/envirbase.h \
-  ../../include/envirext.h \
   ../../include/clistener.h \
+  ../../include/envirext.h \
   ../../include/cstringpool.h \
   ../../include/cpar.h \
   ../../include/globals.h \
   ../envir/appreg.h \
   ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
+  ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
   ../../include/cmodule.h \

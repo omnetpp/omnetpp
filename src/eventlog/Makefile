@@ -95,8 +95,8 @@ $O/event.o: event.cc \
   ../common/matchexpression.h \
   eventlogdefs.h \
   eventlogentries.h \
-  ../common/commonutil.h \
   ../common/exception.h \
+  ../common/commonutil.h \
   ../common/linetokenizer.h \
   event.h \
   ../common/bigdecimal.h \
@@ -147,8 +147,8 @@ $O/eventlogentry.o: eventlogentry.cc \
   ../common/matchexpression.h \
   eventlogdefs.h \
   eventlogentries.h \
-  ../common/commonutil.h \
   ../common/exception.h \
+  ../common/commonutil.h \
   ../common/linetokenizer.h \
   event.h \
   ../common/bigdecimal.h \
@@ -233,8 +233,8 @@ $O/eventlogtool.o: eventlogtool.cc \
   ../common/matchexpression.h \
   eventlogentries.h \
   eventlogdefs.h \
-  ../common/exception.h \
   ../common/commonutil.h \
+  ../common/exception.h \
   ../common/linetokenizer.h \
   event.h \
   ../common/ver.h \
@@ -305,8 +305,8 @@ $O/ieventlog.o: ieventlog.cc \
   ../common/matchexpression.h \
   eventlogdefs.h \
   eventlogentries.h \
-  ../common/commonutil.h \
   ../common/exception.h \
+  ../common/commonutil.h \
   ../common/linetokenizer.h \
   ../common/bigdecimal.h \
   ../common/filereader.h \

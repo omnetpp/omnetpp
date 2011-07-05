@@ -126,6 +126,8 @@ $O/expression.o: expression.cc \
   commonutil.h \
   commondefs.h \
   stringutil.h \
+  unitconversion.h \
+  stringpool.h \
   expressionyydefs.h \
   exception.h \
   expression.h
@@ -135,26 +137,27 @@ $O/expression.tab.o: expression.tab.cc \
   unitconversion.h \
   stringutil.h \
   expressionyydefs.h \
-  exception.h \
-  expression.h
+  expression.h \
+  stringpool.h \
+  exception.h
 $O/fileglobber.o: fileglobber.cc \
   commondefs.h \
   fileglobber.h
 $O/filereader.o: filereader.cc \
-  filereader.h \
   commonutil.h \
   commondefs.h \
+  filereader.h \
   exception.h
 $O/fileutil.o: fileutil.cc \
   commondefs.h \
-  stringtokenizer.h \
   fileutil.h \
   opp_ctype.h \
+  stringtokenizer.h \
   exception.h
 $O/fnamelisttokenizer.o: fnamelisttokenizer.cc \
-  fnamelisttokenizer.h \
   commonutil.h \
   commondefs.h \
+  fnamelisttokenizer.h \
   exception.h
 $O/lcgrandom.o: lcgrandom.cc \
   commondefs.h \
@@ -165,9 +168,10 @@ $O/lex.expressionyy.o: lex.expressionyy.cc \
   commondefs.h \
   stringutil.h \
   expressionyydefs.h \
+  expression.h \
+  stringpool.h \
   expression.tab.hh \
-  exception.h \
-  expression.h
+  exception.h
 $O/linetokenizer.o: linetokenizer.cc \
   commondefs.h \
   linetokenizer.h \
@@ -194,9 +198,9 @@ $O/matchexpressionlexer.o: matchexpressionlexer.cc \
 $O/patternmatcher.o: patternmatcher.cc \
   commonutil.h \
   commondefs.h \
-  patternmatcher.h \
   stringutil.h \
   opp_ctype.h \
+  patternmatcher.h \
   exception.h
 $O/rwlock.o: rwlock.cc \
   rwlock.h \
@@ -211,14 +215,14 @@ $O/stringtokenizer.o: stringtokenizer.cc \
 $O/stringtokenizer2.o: stringtokenizer2.cc \
   commonutil.h \
   commondefs.h \
-  exception.h \
-  stringtokenizer2.h
+  stringtokenizer2.h \
+  exception.h
 $O/stringutil.o: stringutil.cc \
   commonutil.h \
   commondefs.h \
   stringutil.h \
-  stringtokenizer.h \
   opp_ctype.h \
+  stringtokenizer.h \
   exception.h
 $O/unitconversion.o: unitconversion.cc \
   commonutil.h \

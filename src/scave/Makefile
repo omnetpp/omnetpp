@@ -162,6 +162,7 @@ $O/customfilter.o: customfilter.cc \
   ../common/progressmonitor.h \
   dataflowmanager.h \
   ../common/bigdecimal.h \
+  ../common/stringpool.h \
   ../common/filereader.h
 $O/dataflowmanager.o: dataflowmanager.cc \
   scavedefs.h \
@@ -424,6 +425,7 @@ $O/nodetyperegistry.o: nodetyperegistry.cc \
   indexedvectorfilereader.h \
   arraybuilder.h \
   ../common/rwlock.h \
+  ../common/stringpool.h \
   statistics.h \
   filternodes.h \
   xyplotnode.h \
@@ -504,6 +506,7 @@ $O/scavetool.o: scavetool.cc \
   scavedefs.h \
   nodetyperegistry.h \
   filewriter.h \
+  ../common/stringtokenizer.h \
   commonnodes.h \
   nodetype.h \
   ../common/exception.h \
