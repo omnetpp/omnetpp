@@ -6,6 +6,22 @@
 	<property name="buildDirectory" value="${env.BUILD_DIRECTORY}"/>
 	<property file="build.properties" />
 
+        <!-- This taget can be used to download the CDT repository which contains binaries for all platforms.
+             Required to build IDE for multiple platforms. Can be called maually only. Not called during the
+             build process. -->
+	<target name="sync-target-cdt">
+                <echo>Starting download of CDT repo into ${baseLocation}/target/cdt</echo>
+		<p2.mirror>
+			<repository location="${baseLocation}/target/cdt" name="Local CDT repo" append="false" />
+			<source>
+				<repository location="http://download.eclipse.org/eclipse/updates/3.7" />
+				<repository location="http://download.eclipse.org/releases/indigo" />
+			</source>
+			<iu id="org.eclipse.cdt.feature.group"/>
+			<slicingoptions followStrict="true" />
+		</p2.mirror>
+	</target>
+
 	<target name="clean">
 		<delete dir="${buildDirectory}" />
 	</target>
@@ -94,8 +110,8 @@
 		<!-- Check that we have a deltapack -->
 		<available property="haveDeltaPack" file="${deltapack}" />
 		<fail unless="haveDeltaPack" message="The deltapack is required to build this product.  Please edit buildProduct.xml or set the &quot;deltapack&quot; property." />
-		<available property="haveEmf" file="${emf}" />
-		<fail unless="haveEmf" message="EMF runtime is required in the ${eclipse_home}/target directory." />
+		<available property="haveCdt" file="${cdt}" />
+		<fail unless="haveCdt" message="CDT mirror repo is required in the ${eclipse_home}/target directory. Use the 'sync-target-cdt' target to download from eclipse.org" />
 		<available property="haveImageexport" file="${imageexport}" />
 		<fail unless="haveImageexport" message="Image export feature required in the ${eclipse_home}/target directory." />
 

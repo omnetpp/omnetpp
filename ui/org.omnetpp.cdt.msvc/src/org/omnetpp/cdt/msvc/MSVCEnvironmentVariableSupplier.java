@@ -20,11 +20,10 @@ import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.PluginVersionIdentifier;
-
 import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
+import org.osgi.framework.Version;
 
 /**
  * Visual C environment detector. Tries to detect Visual C and (optional) MS Windows SDK
@@ -36,7 +35,6 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * @author DSchaefer
  * @author rhornig
  */
-@SuppressWarnings("deprecation")
 public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmentVariableSupplier,
 	    IManagedIsToolChainSupported {
 
@@ -123,7 +121,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         return Activator.getDefault().getPreferenceStore().getBoolean(MSVCPreferencePage.PREFKEY_APPENDPATH);
     }
 
-    public boolean isSupported(IToolChain toolChain, PluginVersionIdentifier version, String instance) {
+    public boolean isSupported(IToolChain toolChain, Version version, String instance) {
         return getVCDir() != null;
     }
 
@@ -184,4 +182,5 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 
 		return vars;
 	}
+
 }

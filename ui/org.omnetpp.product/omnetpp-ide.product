@@ -280,7 +280,10 @@ POSSIBILITY OF SUCH DAMAGES.
       <feature id="org.omnetpp.ide.academic"/>
       <feature id="org.omnetpp.ide.source"/>
       <feature id="org.omnetpp.ide.linuxtools"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>
+      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
+      <feature id="org.eclipse.equinox.p2.extras.feature"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.gef"/>
