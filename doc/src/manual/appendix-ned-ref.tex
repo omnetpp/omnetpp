@@ -662,6 +662,8 @@ gates:
 
 Submodules are defined in the \fkeyword{submodules} section of the compound module.
 
+Submodules may also be conditional.
+
 Submodules may be scalar or vector, the vector size of the latter being
 specified with a numeric expression inside the square brackets (\ttt{[...]}).
 
@@ -692,6 +694,20 @@ exact syntax.
     provided with the \fconfig{type-name} configuration option:
     \ttt{**.host[0..3].\-type-name=\-"MobileHost"}.
 \end{note}
+
+\subsubsection{Conditional Submodules}
+
+Submodules may be made conditional using the \fkeyword{if} keyword. The
+condition expression must evaluate to a boolean; if the result is
+\ttt{false}, the submodule is not created, and trying to connect its gates
+or reference its parameters will be an error.
+
+An example:
+
+\begin{ned}
+submodules:
+  tcp : TCP if withTCP { ... }
+\end{ned}
 
 \subsubsection{Parameters, Gates}
 
