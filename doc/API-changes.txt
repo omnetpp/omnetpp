@@ -24,23 +24,46 @@ Legend:
 OMNeT++ 4.2
 ~~~~~~~~~~~
 
-(!)	The Register_PerObjectConfigOption() and Register_PerObjectConfigOptionU()
-	macros now take one more argument (inserted into the 3rd place), the
-	object kind.
+(+)     Users can now extend @statistic with new result filters and result
+        recorders. See the cResultFilter, cNumericResultFilter,
+        cObjectResultFilter, cResultRecorder, and cNumericResultRecorder
+        classes, and the Register_ResultFilter() and Register_ResultRecorder()
+        macros.
 
-(!)	cRegistrationList::get() was renamed to find(), for consistency with
-	similarly named methods in other classes
+(!)     The Define_Function() macros have been renamed to Define_NED_Math_-
+        Function(). For backwards compatibility, the old macro definitions
+        remain, but issue a deprecation warning. The underlying registration
+        class cMathFunction was also renamed to cNEDMathFunction.
+        Note that the recommended way of defining new NED functions is now
+        the Define_NED_Function() macro, which provides more functionality.
 
-(!)	Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
-	is that it conflicted with lwIP code recently integrated into INET.
-	<platdep/sockets.h> still includes <winsock.h>, but now
-	<platdep/sockets.h> MUST precede <omnetpp.h> in all source files.
+(!)     cDynamicExpression::Value, used by user-defined NED functions (see
+        Define_NED_Function() macro), has been factored out to a cNEDValue
+        class, and its external interface has changed. Data members are no
+        longer public, they can be manipulated via various methods.
+        Existing user-defined NED functions will need to be revised; you can
+        find code examples in src/sim/nedfunctions.cc.
 
-(i)	cChannel::MessageSentSignalValue: getMessage() return type fixed
-	(changed from cObject to cMessage)
+(+)     cPar: setExpression() now accepts an evaluationcontext parameter;
+        new methods: getEvaluationContext(), setEvaluationContext()
 
-(+)	New cEnvir methods: getParsedXMLString(), forgetParsedXMLString(),
-	flushXMLParsedContentCache().
+(!)     The Register_PerObjectConfigOption() and Register_PerObjectConfigOptionU()
+        macros now take one more argument (inserted into the 3rd place), the
+        object kind.
+
+(!)     cRegistrationList::get() was renamed to find(), for consistency with
+        similarly named methods in other classes
+
+(!)     Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
+        is that it conflicted with lwIP code recently integrated into INET.
+        <platdep/sockets.h> still includes <winsock.h>, but now
+        <platdep/sockets.h> MUST precede <omnetpp.h> in all source files.
+
+(i)     cChannel::MessageSentSignalValue: getMessage() return type fixed
+        (changed from cObject to cMessage)
+
+(+)     New cEnvir methods: getParsedXMLString(), forgetParsedXMLString(),
+        flushXMLParsedContentCache().
 
 
 OMNeT++ 4.1
