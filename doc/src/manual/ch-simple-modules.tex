@@ -2576,6 +2576,16 @@ Note that this works with wireless connections (\ffunc{sendDirect()})
 as well; there, the duration is an argument to the \ffunc{sendDirect()}
 call.
 
+\subsubsection{Aborting Transmissions}
+
+Sometimes you want the sender to abort transmission. The support {\opp}
+provides for this task is the \ffunc{forceTransmissionFinishTime()} method
+of channels. This method forcibly overwrites the \textit{transmissionFinishTime}
+member of the channel with the given value, allowing the sender to transmit
+another packet without raising the \textit{``channel is currently busy''}
+error. The receiving party needs to be notified about the aborted transmission
+by some user-defined means, for example by sending another packet
+or an out-of-band message.
 
 \subsubsection{Implementation of Message Sending}
 
