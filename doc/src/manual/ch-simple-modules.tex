@@ -1872,16 +1872,31 @@ None of these methods accept \ttt{"\$i"} / \ttt{"\$o"} suffix in gate names.
 \subsubsection{cGate Methods}
 
 The \ffunc{getName()} method of \cclass{cGate} returns the name of the
-gate or gate vector. If you need a string that contains the gate index
+gate or gate vector without the index. If you need a string that contains the gate index
 as well, \ffunc{getFullName()} is what you want. If you also want to
 include the hierarchical name of the owner module, call \ffunc{getFullPath()}.
 
 The \ffunc{getType()} method of \cclass{cGate} returns the gate type,
 either \ttt{cGate::INPUT} or \ttt{cGate::OUTPUT}. (It cannot return
 \ttt{cGate::INOUT}, because an inout gate is represented by a pair
-of \cclass{cGate}s.) The \ffunc{isVector()}, \ffunc{getIndex()},
-\ffunc{getVectorSize()}, \ffunc{getId()} method names speak for themselves.
-\ffunc{size()} is an alias to \ffunc{getVectorSize()}.
+of \cclass{cGate}s.)
+
+If you have a gate that represents half of an inout gate (that is,
+\ffunc{getName()} returns something like \ttt{"g\$i"} or \ttt{"g\$o"}), you
+can split the name with the \ffunc{getBaseName()} and
+\ffunc{getNameSuffix()} methods. \ffunc{getBaseName()} method returns the
+name without the \ttt{\$i}/\ttt{\$o} suffix; and \ffunc{getNameSuffix()}
+returns just the suffix (including the dollar sign). For normal gates,
+\ffunc{getBaseName()} is the same as \ffunc{getName()}, and
+\ffunc{getNameSuffix()} returns the empty string.
+
+The \ffunc{isVector()}, \ffunc{getIndex()}, \ffunc{getVectorSize()} speak
+for themselves; \ffunc{size()} is an alias to \ffunc{getVectorSize()}. For
+non-vector gates, \ffunc{getIndex()} returns 0 and \ffunc{getVectorSize()}
+returns 1.
+
+The \ffunc{getId()} method returns the gate ID (not to be confused
+with the gate index).
 
 The \ffunc{getOwnerModule()} method returns the module the gate object
 belongs to.
