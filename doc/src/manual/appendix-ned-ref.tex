@@ -102,41 +102,61 @@ package: channels \ttt{IdealChannel} \ttt{DelayChannel}, and \ttt{DatarateChanne
 module interfaces \ttt{IBidirectionalChannel}, and \ttt{IUnidirectionalChannel}.
 The latter two are reserved for future use.
 
-%%
-%% Note: the following code is from src/nedxml/nedparser.cc,
-%%       NEDParser::getBuiltInDeclarations()
-%%
+The bodies of \ttt{@statistic} properties have been omitted for brevity from
+the following listing.
+
+\begin{note}
+You can have the full definitions printed by running \ttt{opp\_run -h neddecls}.
+\end{note}
+
 \begin{ned}
 package ned;
-
 @namespace("");
 
-channel IdealChannel {
+channel IdealChannel
+{
     @class(cIdealChannel);
 }
 
-channel DelayChannel {
+channel DelayChannel
+{
     @class(cDelayChannel);
-    bool disabled = false;
-    double delay = 0s @unit(s);
+    @signal[messageSent](type=cMessage);
+    @signal[messageDiscarded](type=cMessage);
+    @statistic[messages](...);
+    @statistic[messagesDiscarded](...);
+    bool disabled = default(false);
+    double delay = default(0s) @unit(s); // propagation delay
 }
 
-channel DatarateChannel {
+channel DatarateChannel
+{
     @class(cDatarateChannel);
-    bool disabled = false;
-    double delay = 0s @unit(s);
-    double datarate = 0bps @unit(bps);
-    double ber = 0;
-    double per = 0;
+    @signal[channelBusy](type="int");
+    @signal[messageSent](type=cMessage);
+    @signal[messageDiscarded](type=cMessage);
+    @statistic[busy](...);
+    @statistic[utilization](...);
+    @statistic[packets](...);
+    @statistic[packetBytes](...);
+    @statistic[packetsDiscarded](...);
+    @statistic[throughput](...);
+    bool disabled = default(false);
+    double delay = default(0s) @unit(s); // propagation delay
+    double datarate = default(0bps) @unit(bps); // bits per second; 0=infinite
+    double ber = default(0); // bit error rate (BER)
+    double per = default(0); // packet error rate (PER)
 }
 
-moduleinterface IBidirectionalChannel {
+moduleinterface IBidirectionalChannel
+{
     gates:
         inout a;
         inout b;
 }
 
-moduleinterface IUnidirectionalChannel {
+moduleinterface IUnidirectionalChannel
+{
     gates:
         input i;
         output o;
