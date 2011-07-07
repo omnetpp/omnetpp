@@ -1666,21 +1666,25 @@ NED file, use the \ttt{sizeof(submoduleName.gateVectorName)} or
 \ttt{sizeof(submoduleName[index].gate\-Vector\-Name)} syntax.
 
 
-\subsection{The \fkeyword{xmldoc()} Operator}
+\subsection{Functions}
+\index{ned!functions}
 
-The \fkeyword{xmldoc()} operator can be used to assign XML-type parameters,
+The functions available in NED are listed in Appendix
+\ref{cha:ned-functions}.
+
+Selected functions are documented below.
+
+\subsubsection{The \fkeyword{xmldoc()} Function}
+
+The \fkeyword{xmldoc()} NED function can be used to assign \fkeyword{xml} parameters,
 that is, point them to XML files or to specific elements inside XML files.
 
-\fkeyword{xmldoc()} has two flavors: one accepts a file name, and the second accepts
-a file name plus an XPath-like expression which selects an element
-inside the XML file.
+\fkeyword{xmldoc()} accepts a file name as well as an optional second string argument
+that contains an XPath-like expression.
 
 %% TODO fname mihez kepest relative
 
-\fkeyword{xmldoc()} with two arguments accepts a path expression
-to select an element within the document. The expression syntax is
-similar to XPath.
-
+The XPath expression is used to select an element within the document.
 If the expression matches several elements, the first element
 (in preorder depth-first traversal) will be selected. (This is
 unlike XPath, which selects all matching nodes.)
@@ -1717,11 +1721,17 @@ The expression syntax is the following:
         \ttt{\$GRAND\-PARENT\-MODULE\_\-ID}.
 \end{itemize}
 
-\subsection{Functions}
-\index{ned!functions}
+\subsubsection{The \fkeyword{xml()} Function}
 
-The functions available in NED are listed in Appendix
-\ref{cha:ned-functions}.
+The \fkeyword{xml()} NED function can be used to parse a string as an
+XML document, and assign the result to an \fkeyword{xml} parameter.
+
+\fkeyword{xml()} accepts the string to be parsed as well as an optional
+second string argument that contains an XPath-like expression.
+
+The XPath expression is used in the same manner as with the
+\fkeyword{xmldoc()} function.
+
 
 \subsection{Units of Measurement}
 \label{ch-ned-ref:sec:units}
