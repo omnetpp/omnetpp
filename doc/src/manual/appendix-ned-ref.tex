@@ -585,6 +585,59 @@ simple B extends A {
 
 
 
+\subsection{Pattern Assignments}
+\label{ch-ned-ref:sec:pattern-assignments}
+
+Pattern assignments allow one to set more than one parameter using
+wildcards, and to assign parameters deeper down in a submodule tree.
+Pattern assignments may occur in the \fkeyword{parameters}
+section of component types, submodules and connections.
+
+The syntax of a pattern assignment is \textit{<pattern> = <value>}.
+
+A pattern consists of two or more pattern elements, separated by dots.
+The pattern element syntax is defined so that it can accomodate names of
+parameters, submodules (optionally with index), gates (optionally with the
+\ttt{\$i}/\ttt{\$o} suffix and/or index) and connections, and their
+wildcard forms. (The default name of connection channel objects is
+\fkeyword{channel}.)
+
+Wildcard forms may use:
+\begin{enumerate}
+  \item Asterisks: They match zero or more alphanumeric characters,
+    underscore or dollar signs but not other characters (most notably,
+    it does not match dots and square brackets).
+  \item Numeric ranges, \ttt{\{}\textit{<start>}..\textit{<end>}\ttt{\}}
+    e.g. \ttt{\{5..120\}} or \ttt{\{..10\}}. They match numbers embedded
+    in identifiers, that is, a sequence of decimal digit characters interpreted as a
+    nonnegative integer that is within the specified \textit{start..end}
+    range (both limits are inclusive). Both \textit{start} and \textit{end}
+    are optional.
+  \item Numeric index ranges,\ttt{[}\textit{<start>}..\textit{<end>}\ttt{]}.
+    e.g. \ttt{[5..120]} or \ttt{[..10]}. They are intended for selecting
+    submodule and gate index ranges. They match a nonnegative integer
+    enclosed in square brackets that is within the specified
+    \textit{start..end} range (both limits are inclusive).
+    Both \textit{start} and \textit{end} are optional.
+  \item Double asterisks: They match zero or more characters (including dots
+    and square brackets), and can be used to match more than one parameter
+    path elements.
+\end{enumerate}
+
+See the NED language grammar (Appendix \ref{cha:ned-language-grammar})
+for a more formal definition of the pattern syntax.
+
+Examples:
+\begin{ned}
+host1.tcp.mss = 512B;
+host*.tcp.mss = 512B; // matches host, host1, host2, hostileHost, ...
+host{9..11}.tcp.mss = 512B; // matches host9/host10/host11, but nothing else
+host[9..11].tcp.mss = 512B; // matches host[9]/host[10]/host[11], but nothing else
+**.mss = 512B; // matches foo.mss, host[1].transport.tcp[0].mss, ...
+\end{ned}
+
+
+
 \subsection{Gates}
 \label{ch-ned-ref:sec:gates}
 
@@ -943,6 +996,117 @@ Inner types are only visible inside the enclosing component type.
 Identifier names within a component must be unique. That is, a submodule
 or inner type cannot be named the same, or the same as a gate or
 parameter of the parent module.
+
+
+
+\subsection{Parameter Assignment Order}
+\label{ch-ned-ref:sec:param-assignment-order}
+
+A module or channel parameter may be assigned in \fkeyword{parameters}
+blocks (see \ref{ch-ned-ref:sec:parameters}) at various places in NED: in
+the module or channel type that defines it; in the type's subclasses; in
+the submodule or connection that instantiates the type. The parameter may
+also be assigned using pattern assignments (see
+\ref{ch-ned-ref:sec:pattern-assignments}) in any compound module that uses
+the given module or channel type directly or indirectly.
+
+Patterns are matched against the relative path of the parameter, which is
+the relative path of its submodule or connection, with a dot and the
+parameter name appended. The relative path is composed of a list of
+submodule names (name plus index) separated by dots; a connection is
+identified by the full name of its source gate plus the name of the channel
+object (which is currently always \ttt{channel}) separated by a dot.
+
+\begin{note}
+As bidirectional connections are a shorthand for two unidirectional
+connections, the source gate name is qualified with \ttt{$i} or
+\ttt{$o} in the relative path.
+\end{note}
+
+Note that the \fkeyword{parameters} keyword itself is optional,
+and is usually not written out in submodules and connections.
+
+This section describes the module and channel parameter assignments procedure.
+
+The general rules are the following:
+
+\begin{enumerate}
+  \item A (non-default) parameter assignment may not be overridden later;
+    that is, if there are assignments in multiple places, the assignment
+    ``closest'' to the parameter declaration will be effective; others
+    will be flagged as errors.
+  \item A default value is only used if a non-default value is not present
+    for the given parameter. A non-default value may also come from a source
+    external to NED, namely the simulation configuration (\ffilename{omnetpp.ini}).
+  \item Unlike non-default values, a default value \textit{may} be overridden;
+    that is, if there are default value assignments in multiple places,
+    the assignment ``farthest'' from the parameter declaration will win.
+  \item Among pattern assignments within the same \fkeyword{parameters}
+    block, the first match will win. Pattern assignments with default and
+    non-default values are considered to be two disjoint sets, only one of
+    which are searched at a time.
+\end{enumerate}
+
+This yields the following conceptual search order for non-default parameter
+assignments:
+
+\begin{enumerate}
+  \item First, the NED type that contains the parameter declaration is checked;
+  \item Then its subclasses are checked;
+  \item Then the submodule or connection that instantiates the type is checked;
+  \item Then the compound module that contains the submodule or connection is
+    checked for matching pattern assignments;
+  \item Then, assuming the compound module is part of a network, the search
+    for matching pattern assignments continues up on the module tree until the root
+    (the module that represents the network). At each level (compound module),
+    first the specific submodule definition is checked, then the (parent) compound module.
+    If a compound module is subclassed before instantiated, the base type is checked
+    first.
+\end{enumerate}
+
+When no (non-default) assignment is found, the same places are searched in the
+\textit{reverse order} for default value assignments. If no default value is
+found, an error may be raised or the user may be interactively prompted.
+
+To illustrate the above rules, consider the following example where we
+want to assign parameter \textit{p}:
+
+\begin{ned}
+simple A { double p; }
+simple A2 extends A {...}
+module B { submodules: a2: A2 {...} }
+module B2 extends B {...}
+network C { submodules: b2: B2 {...} }
+\end{ned}
+
+Here, the search order is: \textit{A, A2, a2, B, B2, b2, C}. NED
+conceptually searches the \fkeyword{parameters} blocks in that order for a
+(non-default) value, and then in reverse order for a default value.
+
+The full search order and the form of assignment expected on each level:
+
+\begin{enumerate}
+  \item \ttt{A  \{ p = ...; \}}
+  \item \ttt{A2 \{ p = ...; \}}
+  \item \ttt{a2 \{ p = ...; \}}
+  \item \ttt{B  \{ a2.p = ...; \}}
+  \item \ttt{B2 \{ a2.p = ...; \}}
+  \item \ttt{b2 \{ a2.p = ...; \}}
+  \item \ttt{C  \{ b2.a2.p = ...; \}}
+  \item \ttt{C  \{ b2.a2.p = default(...); \}}
+  \item \ttt{b2 \{ a2.p = default(...); \}}
+  \item \ttt{B2 \{ a2.p = default(...); \}}
+  \item \ttt{B  \{ a2.p = default(...); \}}
+  \item \ttt{a2 \{ p = default(...); \}}
+  \item \ttt{A2 \{ p = default(...); \}}
+  \item \ttt{A  \{ p = default(...); \}}
+\end{enumerate}
+
+If only a default value is found or not even that, external configuration
+has a say. The configuration may contain an assignment for \ttt{C.b2.a2.p};
+it may apply the default if there is one; it may ask the user interactively
+to enter a value; or if there is no default, it may raise an error
+\textit{``no value for parameter''}.
 
 
 
