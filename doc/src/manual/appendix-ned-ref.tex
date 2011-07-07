@@ -720,33 +720,62 @@ Submodules may also be conditional.
 Submodules may be scalar or vector, the vector size of the latter being
 specified with a numeric expression inside the square brackets (\ttt{[...]}).
 
+
 \subsubsection{Submodule Type}
 
 The simple or compound module type (\ref{ch-ned-ref:sec:simple-modules},
 \ref{ch-ned-ref:sec:compound-modules}) that will be instantiated as the
-submodule may be specified in several ways:
+submodule may be specified either statically (with a concrete module type
+name) or parametrically.
 
-\begin{itemize}
-  \item with a concrete module type name, or
-  \item by a string-valued expression that evaluates to the name of a
-        module type, or
-  \item the type name may come from the configuration.
-\end{itemize}
 
-In the latter two cases, the \fkeyword{like} keyword is used, and a
-module interface type (\ref{ch-ned-ref:sec:module-interfaces})
-needs to be specified as well, which the concrete module type must
-implement in order for it to be eligible to be chosen. In the second case, the
-string expression is specified in angle braces (\ttt{<...>}); in the
-third case, an empty pair of angle braces is used (\ttt{<>}).
+\subsubsection{Static Submodule Type}
+
+Submodules with a statically defined type are those that contain a concrete
+NED module type name. Example:
+
+\begin{ned}
+tcp : TCP;
+\end{ned}
+
+See section \ref{ch-ned-ref:sec:type-name-resolution} for the type resolution
+rules.
+
+
+\subsubsection{Parametric Submodule Type}
+
+Parametric submodule type means that the NED type name is given in a string
+expression. The string expression may be specified locally in the submodule
+declaration, or elsewhere using typename patterns (see later).
+
+Parametric submodule types are syntactically denoted by the presence of a
+pair of angle brackets and the \fkeyword{like} keyword. The angle brackets
+contain the string expression; or if the type is not specified locally,
+they may be empty or may contain a default value for the type name
+(\ttt{default(...)} syntax). The syntax mandates that you also specify a
+module interface type \ref{ch-ned-ref:sec:module-interfaces} (after the
+\fkeyword{like} keyword), which the concrete module type must implement in
+order for it to be eligible to be chosen.
+
+Examples:
+
+\begin{ned}
+tcp : <tcpType> like ITCP;        // type comes from parent module parameter
+tcp : <"TCP_"+suffix> like ITCP;  // expression using parent module parameter
+
+tcp : <> like ITCP;               // type must be specified elsewhere
+
+tcp : <default("TCP")> like ITCP; // type may be specified elsewhere;
+                                  // if not, the default is "TCP"
+tcp : <default("TCP_"+suffix)> like ITCP;
+                                  // type may be specified elsewhere;
+                                  // if not, the default is an expression
+\end{ned}
+
 See the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
-exact syntax.
+formal syntax, and section \ref{ch-ned-ref:sec:parameteric-type-resolution}
+for the type resolution rules.
 
-\begin{note}
-    When using the \ttt{<>} syntax, the actual NED type should be
-    provided with the \fconfig{type-name} configuration option:
-    \ttt{**.host[0..3].\-type-name=\-"MobileHost"}.
-\end{note}
 
 \subsubsection{Conditional Submodules}
 
@@ -915,38 +944,102 @@ add a gate pair, not just an input or an output gate.
 A channel specification associates a channel object with the connection.
 A channel object is an instance of a channel type (see \ref{ch-ned-ref:sec:channels}).
 
-The channel type that will be instantiated as the channel object may be specified
-in several ways:
-
-\begin{itemize}
-  \item with a concrete channel type name, or
-  \item may be implicitly determined from the set of parameters used (see later), or
-  \item by a string-valued expression that evaluates to the name of a
-        channel type, or
-  \item the type name may come from the configuration.
-\end{itemize}
-
-In the latter two cases, the \fkeyword{like} keyword is used, and a
-channel interface type (\ref{ch-ned-ref:sec:channel-interfaces})
-needs to be specified as well, which the concrete channel type needs
-to implement to be eligible to be chosen. In the second case, the
-string expression is specified in angle braces (\ttt{<...>}); in the
-third case, an empty pair of angle braces is used (\ttt{<>}).
-The syntax is similar to the submodule syntax (see \ref{ch-ned-ref:sec:submodules}).
-
 \begin{note}
-    When using the \ttt{<>} syntax, the actual NED type should be
-    provided with the \fconfig{type-name} configuration option,
-    where the object pattern should be the source gate plus \ttt{.channel}:
-    \ttt{**.host[*].g\$o.channel.\-type-name=\-"EthernetChannel"}.
+As bidirectional connections are a shorthand for a pair of uni-directional
+connections, they will actually create \textit{two} channel objects, one
+for each direction.
 \end{note}
 
-\begin{note}
-    As bidirectional connections (those using double arrows, \ttt{<-{}->})
-    are a shorthand for two uni-directional connections, bidirectional
-    connections with channels will actually create \textit{two} channel
-    objects, one for each direction!
-\end{note}
+The channel type to be instantiated may be implicit, or may be specified
+statically or parametrically.
+
+A connection may have a body (a curly brace delimited block) for setting
+properties and/or parameters of the channel.
+
+See subsequent sections for details.
+
+
+\subsubsection{Implicit Channel Type}
+
+If the connection syntax does not say anything about the channel type, it
+is implicitly determined from the set of connection parameters used.
+
+Syntax examples for connections with implicit channel types:
+
+\begin{ned}
+a.g <--> b.g; // no parameters
+a.g <--> {delay = 1ms;} <--> b.g;  // assigns delay
+a.g <--> {datarate = 100Mbps; delay = 50ns;} <--> b.g; // assigns delay and datarate
+\end{ned}
+
+For such connections, the actual NED type to be used will depend on the
+parameters set in the connection:
+
+\begin{enumerate}
+  \item When no parameters are set, \ttt{ned.IdealChannel} is chosen.
+  \item When only \ttt{ned.DelayChannel} parameters are used (\ttt{delay}
+        and \ttt{disabled}), \ttt{ned.DelayChannel} is chosen.
+  \item When only \ttt{ned.DatarateChannel} parameters are used
+        (\ttt{datarate}, \ttt{delay}, \ttt{ber}, \ttt{per}, \ttt{disabled}),
+        the chosen channel type will be \ttt{ned.DatarateChannel}.
+\end{enumerate}
+
+Connections with implicit channel types may not use any other parameter.
+
+\subsubsection{Static Channel Type}
+
+Connections with a statically defined channel type are those that
+contain a concrete NED channel type name.
+
+Examples:
+
+\begin{ned}
+a.g <--> FastEthernet <--> b.g;
+a.g <--> FastEthernet {per = 1e-6;} <--> b.g;
+\end{ned}
+
+See section \ref{ch-ned-ref:sec:type-name-resolution} for the type resolution
+rules.
+
+
+\subsubsection{Parametric Channel Type}
+
+Parametric channel types are similar to parametric submodule types,
+described in section \ref{ch-ned-ref:sec:submodules}.
+
+Parametric channel type means that the NED type name is given in a string
+expression. The string expression may be specified locally in the connection
+declaration, or elsewhere using typename patterns (see later).
+
+Parametric channel types are syntactically denoted by the presence of a
+pair of angle brackets and the \fkeyword{like} keyword. The angle brackets
+contain the string expression; or if the type is not specified locally,
+they may be empty or may contain a default value for the type name
+(\ttt{default(...)} syntax). The syntax mandates that you also specify a
+channel interface type \ref{ch-ned-ref:sec:module-interfaces} (after the
+\fkeyword{like} keyword), which the concrete channel type must implement in
+order for it to be eligible to be chosen.
+
+Examples:
+
+\begin{ned}
+a.g++ <--> <channelType> like IMyChannel <--> b.g++;
+                                  // type comes from parent module parameter
+a.g++ <--> <"Ch_"+suffix> like IMyChannel <--> b.g++;
+                                  // expression using parent module parameter
+a.g++ <--> <> like IMyChannel <--> b.g++;
+                                  // type must be specified elsewhere
+a.g++ <--> <default("MyChannel")> like IMyChannel <--> b.g++;
+                                  // type may be specified elsewhere;
+                                  // if not, the default is "MyChannel"
+a.g++ <--> <default("Ch_"+suffix)> like IMyChannel <--> b.g++;
+                                  // type may be specified elsewhere;
+                                  // if not, the default is an expression
+\end{ned}
+
+See the NED Grammar (Appendix \ref{cha:ned-language-grammar}) for the
+formal syntax, and section \ref{ch-ned-ref:sec:parameteric-type-resolution}
+for the type resolution rules.
 
 
 \subsubsection{Channel Parameters and Properties}
@@ -961,24 +1054,6 @@ A channel body cannot define new parameters. It is only
 allowed to assign existing parameters.
 
 It is also allowed to add or modify properties and parameter properties.
-
-
-\subsubsection{Implicit Channel Type}
-
-When a connection uses an unnamed channel type (\ttt{-{}->
-\{\ldots\} -{}->} syntax), the actual NED type to be used will depend on the
-parameters set in the connection.
-
-When no parameters are set, \ttt{ned.IdealChannel} is chosen.
-
-When only \ttt{ned.DelayChannel} parameters are used (\ttt{delay}
-and \ttt{disabled}), \ttt{ned.DelayChannel} is chosen.
-
-When only \ttt{ned.DatarateChannel} parameters are used
-(\ttt{datarate}, \ttt{delay}, \ttt{ber}, \ttt{per}, \ttt{disabled}),
-the chosen channel type will be \ttt{ned.DatarateChannel}.
-
-Unnamed channels connections cannot use any other parameters.
 
 
 
@@ -1154,19 +1229,6 @@ Fully qualified names and simple names are accepted. Simple names
 are looked up among the inner types of the enclosing type (compound
 module), then using imports, then in the same package.
 
-
-\subsubsection{Parametric Module Types ("like" Submodules)}
-
-Lookup of the actual module type for "like" submodules differs from normal
-lookups. This lookup ignores the imports in the file altogether.
-Instead, it collects all modules that support the given interface
-and match the given type name string (i.e. end in the same simple name,
-or have the same fully qualified name). The result must be exactly
-one module type.
-
-The algorithm for parametric channel types works in the same way.
-
-
 \subsubsection{Network Name in the Ini File}
 
 The network name in the ini file may be given as a fully qualified name
@@ -1174,6 +1236,147 @@ or as a simple (unqualified) name.
 
 Simple (unqualified) names are tried with the same package as the
 ini file is in (provided it is in a NED directory).
+
+
+\subsection{Resolution of Parametric Types}
+\label{ch-ned-ref:sec:parameteric-type-resolution}
+
+This section describes the type resolution for submodules and connections
+that are defined using the \fkeyword{like} keyword.
+
+Type resolution is done in two steps. In the first step, the type name
+string expression is found and evaluated. Then in the second step, the
+resulting type name string is resolved to an actual NED type.
+
+\tbf{Step 1.} The lookup of the type name string expression is similar to
+that of a parameter value lookup (\ref{ch-ned-ref:sec:param-assignment-order}).
+
+The expression may be specified locally (between the angle brackets), or
+using typename pattern assignments in any compound module that
+contains the submodule or connection directly or indirectly. A
+typename pattern is a pattern that ends in \ttt{.typename}.
+
+Patterns are matched against the relative path of the submodule or
+connection, with \ttt{.typename} appended. The relative path is
+composed of a list of submodule names (name plus index) separated
+by dots; a connection is identified by the full name of its source
+gate plus the name of the channel object (which is currently always
+\ttt{channel}) separated by a dot.
+
+\begin{note}
+As bidirectional connections are a shorthand for two unidirectional
+connections, the source gate name is qualified with \ttt{$i} or
+\ttt{$o} in the relative path.
+\end{note}
+
+An example that uses typename pattern assignment:
+
+\begin{ned}
+module Host {
+    submodules:
+        tcp: <> like ITCP;;
+        ...
+    connections:
+        tcp.ipOut --> <> like IMyChannel --> ip.tcpIn;
+}
+
+network Network {
+    parameters:
+        host[*].tcp.typename = "TCP_lwIP";
+        host[*].tcp.ipOut.channel.typename = "DebugChannel";
+    submodules:
+        host[10] : Host;
+        ...
+}
+\end{ned}
+
+The general rules are the following:
+
+\begin{enumerate}
+  \item A (non-default) parameter assignment may not be overridden later;
+    that is, if there are assignments in multiple places, the assignment
+    ``closest'' to the submodule or connection definition will be effective;
+    others will be flagged as errors.
+  \item A default value is only used if a non-default value is not present.
+    A non-default value may also come from a source external to NED, namely
+    the simulation configuration (\ffilename{omnetpp.ini}).
+  \item Unlike non-default values, a default value \textit{may} be overridden;
+    that is, if there are default value assignments in multiple places,
+    the assignment ``farthest'' from the submodule or connection definition will win.
+  \item Among pattern assignments within the same \fkeyword{parameters}
+    block, the first match will win. Patterns assignments with default and
+    non-default values are considered to be two disjoint sets, only one of
+    which are searched at a time.
+\end{enumerate}
+
+This yields the following conceptual search order for typename assignments:
+
+\begin{enumerate}
+   \item First, the submodule or connection definition is checked (angle brackets);
+   \item Then the compound module that contains the submodule or connection is
+     checked for matching pattern assignments;
+   \item Then, assuming the compound module is part of a network, the search
+     for matching pattern assignments continues up on the module tree until the root
+     (the module that represents the network). At each level (compound module),
+     first the specific submodule definition is checked, then the (parent) compound module.
+     If a compound module is subclassed before instantiated, the base type is checked
+     first.
+\end{enumerate}
+
+When no (non-default) assignment is found, the same places are searched in the
+\textit{reverse order} for default value assignments. If no default value is
+found, an error may be raised or the user may be interactively prompted.
+
+To illustrate the above rules, consider the following example:
+
+\begin{ned}
+module A { submodules: h: <> like IFoo; }
+module A2 extends A {...}
+module B { submodules: a2: A2 {...} }
+module B2 extends B {...}
+network C { submodules: b2: B2 {...} }
+\end{ned}
+
+Here, the search order is: \textit{h, A, A2, a2, B, B2, b2, C}. NED
+conceptually searches the \fkeyword{parameters} blocks in that order for a
+(non-default) value, and then in reverse order for a default value.
+
+The full search order and the form of assignment expected on each level:
+
+\begin{enumerate}
+  \item \ttt{h: <...> like IFoo;}
+  \item \ttt{A  \{ h.typename = ...; \}}
+  \item \ttt{A2 \{ h.typename = ...; \}}
+  \item \ttt{a2 \{ h.typename = ...; \}}
+  \item \ttt{B  \{ a2.h.typename = ...; \}}
+  \item \ttt{B2 \{ a2.h.typename = ...; \}}
+  \item \ttt{b2 \{ a2.h.typename = ...; \}}
+  \item \ttt{C  \{ b2.a2.h.typename = ...; \}}
+  \item \ttt{C  \{ b2.a2.h.typename = default(...); \}}
+  \item \ttt{b2 \{ a2.h.typename = default(...); \}}
+  \item \ttt{B2 \{ a2.h.typename = default(...); \}}
+  \item \ttt{B  \{ a2.h.typename = default(...); \}}
+  \item \ttt{a2 \{ h.typename = default(...); \}}
+  \item \ttt{A2 \{ h.typename = default(...); \}}
+  \item \ttt{A  \{ h.typename = default(...); \}}
+  \item \ttt{h: <default(...)> like IFoo;}
+\end{enumerate}
+
+If only a default value is found or not even that, external configuration
+has a say. The configuration may contain an assignment for
+\ttt{C.b2.a2.h.typename}; it may apply the default value if there is one;
+it may ask the user interactively to enter a value; or if there is no
+default value, it may raise an error \textit{``cannot determine submodule
+type''}.
+
+
+\tbf{Step 2.} The type name string is expected to hold the simple name or
+fully qualified name of the desired NED type. Resolving the type name
+string to an actual NED type differs from normal type name lookups in that
+it ignores the imports in the file altogether. Instead, a list of NED types
+that have the given simple name or fully qualified name \textit{and}
+implement the given interface is collected. The result must be exactly one
+module or channel type.
 
 
 \subsection{Implementing an Interface}
