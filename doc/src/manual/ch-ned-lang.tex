@@ -878,26 +878,39 @@ random number generator. In contrast, non-volatile parameters are evaluated
 only once. (This practically means that they are evaluated and replaced
 with the resulting constant at the start of the simulation.)
 
-To better understand \fkeyword{volatile}, let's suppose we have an
-\ttt{ActiveQueue} simple module that has a \ttt{volatile double} parameter
+To better understand \fkeyword{volatile}, let's suppose we have a
+\ttt{Queue} simple module that has a \ttt{volatile double} parameter
 named \ttt{serviceTime}.
 
-The queue module's C++ implementation would re-read the \ttt{serviceTime}
-parameter at runtime for every job serviced; so if \ttt{serviceTime} is
-assigned an expression like \ttt{uniform(0.5s, 1.5s)}, every job would have
-a different, random service time.
+\begin{ned}
+simple Queue
+{
+    parameters:
+        volatile double serviceTime;
+}
+\end{ned}
 
-In practice, a volatile parameter usually means that the underlying C++
-code will re-read the parameter every time a value is needed at runtime, so
-the parameter can be used a source of random numbers.
+Because of the \fkeyword{volatile} modifier, the queue module's C++
+implementation is expected to re-read the \ttt{serviceTime} parameter
+whenever a value is needed; that is, for every job serviced. Thus, if
+\ttt{serviceTime} is assigned an expression like \ttt{uniform(0.5s, 1.5s)},
+every job will have a different, random service time. To highlight this
+effect, here's how you can have a time-varying parameter by exploiting
+the \ttt{simTime()} NED function that returns the current simulation time:
+
+\begin{inifile}
+**.serviceTime = simTime()<1000s ? 1s : 2s  # queue that slows down after 1000s
+\end{inifile}
+
+In practice, a volatile parameters are typically used as a configurable
+source of random numbers for modules.
 
 \begin{note}
-    This does not mean that a non-volatile parameter cannot be assigned a value
-    like \ttt{uniform(0.5s, 1.5s)}. It can, but that has a totally different
-    effect. Had we omitted the \ttt{volatile} keyword from the
-    \ttt{serviceTime} parameter, for example, the effect would be that every
-    job had the \textit{same} constant service time, say \ttt{1.2975367s},
-    chosen randomly at the beginning of the simulation.
+    This does not mean that a non-volatile parameter could not be assigned a
+    random value like \ttt{uniform(0.5s, 1.5s)}. It can, but that would
+    have a totally different effect: the simulation would use a constant
+    service time, say \ttt{1.2975367s}, chosen randomly at the beginning
+    of the simulation.
 \end{note}
 
 \subsubsection{Units}
