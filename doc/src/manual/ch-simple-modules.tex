@@ -3398,7 +3398,7 @@ callee->doSomething();
 \end{cpp}
 
 The \ffunc{check\_and\_cast<>()} template function on the second line
-is part of {\opp}. It does a standard C++ \ttt{dynamic\_cast},
+is part of {\opp}. It performs a standard C++ \ttt{dynamic\_cast},
 and checks the result: if it is NULL, \ttt{check\_and\_cast} raises an {\opp} error.
 Using \ttt{check\_and\_cast} saves you from writing error checking
 code: if \ttt{calleeModule} from the first line is NULL because
@@ -3409,19 +3409,24 @@ from \ttt{check\_and\_cast}.
 The second issue is how to let the simulation kernel know that
 a method call across modules is taking place. Why is this necessary
 in the first place? First, the simulation kernel always has to know which
-module's code is currently executing, in order for several internal
-mechanisms to work correctly. (One such mechanism is ownership handling.)
-Second, the Tkenv simulation GUI can animate method calls,
-but to be able to do that, it has to know about them.
+module's code is currently executing, in order for ownership handling
+and other internal mechanisms to work correctly. Second, the Tkenv
+simulation GUI can animate method calls, but to be able to do that,
+it has to know about them. Third, method calls are also recorded
+in the event log.
 
 The solution is to add the \ttt{Enter\_Method()} or \ttt{Enter\_Method\_Silent()}
 macro at the top of the methods that may be invoked from other
 modules. These calls perform context switching, and, in case of
 \ttt{Enter\_Method()}, notify the simulation GUI so that animation
 of the method call can take place. \ttt{Enter\_Method\_Silent()}
-does not animate the call. \ttt{Enter\_Method()} expects a
-\ttt{printf()}-like argument list -- the resulting string will
-be displayed during animation.
+does not animate the method call, but otherwise it is equivalent
+\ttt{Enter\_Method()}. Both macros accept a \ttt{printf()}-like
+argument list (it is optional for \ttt{Enter\_Method\_Silent()}),
+which should produce a string with the method name and the
+actual arguments as much as practical. The string is displayed in
+the animation (\ttt{Enter\_Method()} only) and recorded into the event log.
+
 
 \begin{cpp}
 void Callee::doSomething()
