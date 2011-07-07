@@ -241,11 +241,9 @@ $tocxml = '<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <toc label="OMNeT++ Manual" topic="index.html">
 ';
 
+$level[$nheadings] = 1; #sentry
 for (my $i=0; $i<$nheadings; $i++)
 {
-      for (my $j=$level[$i-1]-1; $j>=$level[$i]; $j--) {
-          $tocxml .= spaces(2*$j) . "</topic>\n";
-      }
       my $link = $singlePage ? "usman.$ext#$label[$i]" : "chap$chapnum[$i].$ext#$label[$i]";
       my $title = $title[$i];
       $title =~ s|"|&quot;|g;
@@ -256,6 +254,10 @@ for (my $i=0; $i<$nheadings; $i++)
           $entry = spaces(2*$level[$i]) . "<topic label=\"$number[$i] $title\" href=\"$link\"";
           $entry .= ($i!=$nheadings-1 && $level[$i+1]>$level[$i]) ? ">" : "/>";
           $tocxml .= "$entry\n";
+      }
+
+      for (my $j=$level[$i]-1; $j>=$level[$i+1]; $j--) {
+          $tocxml .= spaces(2*$j) . "</topic>\n";
       }
 }
 $tocxml .= "</toc>";
