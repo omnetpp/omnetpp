@@ -2015,18 +2015,31 @@ connection. {\opp} sometimes transparently inserts a \cclass{cIdealChannel}
 into a channel-less connection, for example to hold the display string
 associated with the connection.
 
-Often you are not really interested in a specific connection's channel,
-but rather in the \textit{transmission channel} (see
-\ref{sec:simple-modules:packet-transmission}) of the connection path
-that starts at the given gate (typically, a simple module output gate).
-The transmission channel can be found by navigating the path until
-you find a channel whose \ffunc{isTransmissionChannel()} method returns
-\ttt{true}, but there is a convenience method for this, named
-\ffunc{getTransmissionChannel()}. An example:
+Often you are not really interested in a specific connection's channel, but
+rather in the \textit{transmission channel} (see
+\ref{sec:simple-modules:packet-transmission}) of the connection path that
+starts at a specific output gate. The transmission channel can be found by
+following the connection path until you find a channel whose
+\ffunc{isTransmissionChannel()} method returns \ttt{true}, but
+\cclass{cGate} has a convenience method for this, named
+\ffunc{getTransmissionChannel()}. An example usage:
 
 \begin{cpp}
-cChannel *txchan = gate("ppp$o")->getTransmissionChannel();
+cChannel *txChan = gate("ppp$o")->getTransmissionChannel();
 \end{cpp}
+
+A complementer method to \ffunc{getTransmissionChannel()} is
+\ffunc{getIncomingTransmissionChannel()}; it is usually invoked
+on input gates, and searches the connection path in reverse direction.
+
+\begin{cpp}
+cChannel *incomingTxChan = gate("ppp$i")->getIncomingTransmissionChannel();
+\end{cpp}
+
+Both methods throw an error if no transmission channel is found. If this
+is not suitable, use the similar \ffunc{findTransmissionChannel()} and
+\ffunc{findIncomingTransmissionChannel()} methods that simply return
+\ttt{NULL} in that case.
 
 Channels are covered in more detail in section \ref{sec:simple-modules:channels}.
 
