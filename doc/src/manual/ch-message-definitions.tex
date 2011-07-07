@@ -194,6 +194,7 @@ with its first letter converted to uppercase.\footnote{
   \ttt{@omitGetVerb(true)} property to the message. It is not recommended
   to use \ttt{@omitGetVerb(true)} though, because it goes against the
   accepted naming convention in {\opp} and models.}
+
 Thus, \ttt{FooPacket} will contain the following methods:
 
 \begin{cpp}
@@ -595,10 +596,59 @@ error in the generated header file.
 
 
 \section{Customizing the Generated Class}
-\label{sec:ch-messages:customizing-generated-class}
+\label{sec:messages:customizing-generated-class}
 
 
-\subsection{The Generation Gap Pattern}
+\subsection{Customizing Method Names}
+
+The names and some other properties of generated methods can be influenced
+with metadata annotations (properties).
+
+The names of the getter and setter methods can be changed with the
+\fprop{@getter} and \fprop{@setter} properties. For variable-size array
+fields, the names of array size getter and setter methods can be changed
+with \fprop{@sizeGetter} and \fprop{@sizeSetter}.
+
+In addition, the data type for the array size (by default \ttt{unsigned
+int}) can be changed with \fprop{@sizetype} property.
+
+Consider the following example:
+
+\begin{msg}
+packet IPPacket {
+    int ttl @getter(getTTL) @setter(setTTL);
+    Option options[] @sizeGetter(getNumOptions)
+                     @sizeSetter(setNumOptions)
+                     @sizetype(short);
+}
+\end{msg}
+
+The generated class would have the following methods (note the differences
+from the default names \ttt{getTtl()}, \ttt{setTtl()}, \ttt{getOptions()},
+\ttt{setOptions()}, \ttt{getOptionsArraySize()}, \ttt{getOptionsArraySize()};
+also note that indices and array sizes are now \ttt{short}):
+
+\begin{cpp}
+virtual int getTTL() const;
+virtual void setTTL(int ttl);
+virtual const Option& getOption(short k) const;
+virtual void setOption(short k, const Option& option);
+virtual short getNumOptions() const;
+virtual void setNumOptions(short n);
+\end{cpp}
+
+In some older simulation models you may also see the use of the
+\fprop{@omitGetVerb} class property. This property tells the message
+compiler to generate getter methods without the ``get'' prefix, e.g. for a
+\ttt{sourceAddress} field it would generate a \ttt{sourceAddress()} method
+instead of the default \ttt{getSourceAddress()}. It is not recommended to
+use \ttt{@omitGetVerb} in new models, because it is inconsistent with the
+accepted naming convention.
+
+%% TODO \fprop{nopack}  (also a field property)
+
+
+\subsection{Customizing the Class Via Inheritance}
 
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
