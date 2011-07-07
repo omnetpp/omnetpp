@@ -255,7 +255,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
             v[i] = stack[stackSize-len+i];
             if (v[i].getType()==Expression::Elem::FUNCTOR && dynamic_cast<SignalSourceReference*>(v[i].getFunctor())) {
                 signalSourceReference = (SignalSourceReference*)v[i].getFunctor();
-                const SignalSource &signalSource = signalSourceReference->getSignalSource();
+                const SignalSource& signalSource = signalSourceReference->getSignalSource();
                 cResultFilter *signalFilter = signalSource.getFilter();
                 if (signalFilter) {
                     signalSource.subscribe(exprFilter);
@@ -266,7 +266,7 @@ SignalSource StatisticSourceParser::createFilter(FilterOrRecorderReference *filt
                     v[i] = exprFilter->makeValueVariable(index, NULL);
                 }
                 else {
-                    LastValueFilter *identityFilter = new LastValueFilter();
+                    IdentityFilter *identityFilter = new IdentityFilter();
                     signalSource.subscribe(identityFilter);
                     identityFilter->addDelegate(exprFilter);
                     v[i] = exprFilter->makeValueVariable(index, identityFilter);

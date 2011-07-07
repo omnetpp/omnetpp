@@ -94,9 +94,9 @@ class SIM_API Constant1Filter : public ConstantFilter
 };
 
 /**
- * This class is actually a no-op; provided for symmetry with LastValueRecorder.
+ * This class is a no-op filter.
  */
-class SIM_API LastValueFilter : public cNumericResultFilter
+class SIM_API IdentityFilter : public cNumericResultFilter
 {
     protected:
         virtual bool process(simtime_t& t, double& value) {return true;}
