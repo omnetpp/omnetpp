@@ -3,25 +3,24 @@
 
 \section{Syntax}
 
-\subsection{NED File Extension}
+\subsection{NED File Name Extension}
 
 NED files have the \texttt{.ned} file name suffix. This is mandatory, and
 cannot be overridden.
 
 \subsection{NED File Encoding}
 
-NED files are read as 8-bit-clean ASCII. This permits NED files saved
-in UTF-8, or any character set compatible with ASCII (8859-1, etc).
+NED files are ASCII, but non-ASCII characters are permitted in comments
+and string literals. This allows for using encodings that are a superset
+of ASCII, for example ISO 8859-1 and UTF-8.
 
 \begin{note}
-    There is no official way to determine the encoding of a NED file. It is up
-    to the user to configure the correct encoding in text editors and other
-    tools that are used to edit or process NED files.
+    There is no standard way to specify or determine the encoding of a NED file.
+    It is up to the user to configure the desired encoding in text editors
+    and other tools that edit or process NED files.
 \end{note}
 
-Keywords and other syntactic elements in NED are ASCII, and identifiers must be
-ASCII as well. Comments and string literals may contain characters above
-127. String literals (e.g. in parameter values) will be passed to the C++ code
+String literals (e.g. in parameter values) will be passed to the C++ code
 as \ttt{const char *} without any conversion; it is up to the simulation model
 to interpret them using the desired encoding.
 
@@ -30,13 +29,13 @@ Line ending may be either CR or CRLF, regardless of the platform.
 
 \subsection{Reserved Words}
 
-Authors have to take care that no reserved words are used as identifiers.
+NED file authors have to take care that no reserved words are used as identifiers.
 The reserved words of the NED language are:
 
 \ttt{allowunconnected bool channel channelinterface connections const
 default double extends false for gates if import index inout input int like
 module moduleinterface network output package parameters property simple
-sizeof string submodules this true types volatile xml xmldoc}
+sizeof string submodules this true typename types volatile xml xmldoc}
 
 
 \subsection{Identifiers}
@@ -56,13 +55,15 @@ Keywords and identifiers in the NED language are case sensitive. For example,
 
 
 \subsection{Literals}
+\label{ch-ned-ref:sec:literals}
 
 \subsubsection{String Literals}
 
-String literals use double quotes. The following C-style backslash
-escapes are recognized: \ttt{{\textbackslash}b}, \ttt{{\textbackslash}f}, \ttt{{\textbackslash}n}, \ttt{{\textbackslash}r},
-\ttt{{\textbackslash}t}, \ttt{{\textbackslash}{\textbackslash}}, \ttt{{\textbackslash}"}, and \ttt{{\textbackslash}xhh} where \textit{h} is a
-hexadecimal digit.
+String literals use double quotes. The following C-style backslash escapes
+are recognized: \ttt{{\textbackslash}b}, \ttt{{\textbackslash}f},
+\ttt{{\textbackslash}n}, \ttt{{\textbackslash}r}, \ttt{{\textbackslash}t},
+\ttt{{\textbackslash}{\textbackslash}}, \ttt{{\textbackslash}"}, and
+\ttt{{\textbackslash}xhh} where \textit{h} is a hexadecimal digit.
 
 \subsubsection{Numeric Constants}
 
@@ -73,20 +74,21 @@ with the \ttt{0} digit are interpreted as decimal.)
 \subsubsection{Quantity Constants}
 
 A quantity constant has the form \textit{(<numeric-constant> <unit>)+}, for
-example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. When multiple measurement
-units are present, they have to be convertible into each other (i.e. refer
-to the same physical quantity).
+example \ttt{12.5mW} or \ttt{3h 15min 37.2s}. Whitespace is optional in front
+of a unit, but must be present after a unit if it is followed by a number.
+
+When multiple measurement units are present, they have to be convertible
+into each other (i.e. refer to the same physical quantity).
 
 Section \ref{ch-ned-ref:sec:units} lists the units recognized by {\opp}.
-Other units can be used as well; the only downside being that {\opp} will not be
-able to perform conversions on them.
+Other units can be used as well; the only downside being that {\opp} will
+not be able to perform conversions on them.
 
 
 \subsection{Comments}
 
-Comments can be placed anywhere in the NED file, with the usual C++
-syntax; comments begin with a double slash `//', and continue until
-the end of the line.
+Comments can be placed at the end of lines. Comments begin with a double
+slash \ttt{//}, and continue until the end of the line.
 
 
 \subsection{Grammar}
@@ -98,7 +100,7 @@ The grammar of the NED language can be found in Appendix
 \label{ch-ned-ref:sec:built-in-defs}
 
 The NED language has the following built-in definitions, all in the \ttt{ned}
-package: channels \ttt{IdealChannel} \ttt{DelayChannel}, and \ttt{DatarateChannel};
+package: channels \ttt{IdealChannel}, \ttt{DelayChannel}, and \ttt{DatarateChannel};
 module interfaces \ttt{IBidirectionalChannel}, and \ttt{IUnidirectionalChannel}.
 The latter two are reserved for future use.
 
@@ -106,7 +108,7 @@ The bodies of \ttt{@statistic} properties have been omitted for brevity from
 the following listing.
 
 \begin{note}
-You can have the full definitions printed by running \ttt{opp\_run -h neddecls}.
+You can print the full definitions by running \ttt{opp\_run -h neddecls}.
 \end{note}
 
 \begin{ned}
@@ -168,15 +170,15 @@ moduleinterface IUnidirectionalChannel
 \section{Packages}
 \label{ch-ned-ref:sec:packages}
 
-NED supports hierarchical namespaces called \textit{packages}. The implementation
-is roughly modelled after Java's packages, with minor changes.
+NED supports hierarchical namespaces called \textit{packages}. The model
+is similar to Java packages, with minor changes.
 
 
 \subsection{Package Declaration}
 
-The package containing the declarations in a NED file is specified by the package
-declaration (\fkeyword{package} keyword). A NED file may contain at
-most one package declaration. If there is no package declaration, the file's
+A NED file may contain a package declaration. The package declaration
+uses the \fkeyword{package} keyword, and specifies the package for the
+definitions in the NED file. If there is no package declaration, the file's
 contents are in the \textit{default package}.
 
 Component type names must be unique within their package.
@@ -190,7 +192,15 @@ not contain any NED files (like the typical \ttt{/org/\textit{<projectname>}}
 directories in Java).
 
 The top of a directory tree containing NED files is named a \textit{NED source
-folder}. The \ttt{package.ned} file at the top level of a NED source folder plays a
+folder}.
+
+\begin{note}
+The {\opp} runtime recognizes a \ttt{NEDPATH} environment variable, which
+contains a list of NED source folders, and is similar to the Java \ttt{CLASSPATH}
+variable. \ttt{NEDPATH} also has a command-line option equivalent.
+\end{note}
+
+The \ffilename{package.ned} file at the top level of a NED source folder plays a
 special role.
 
 If there is no toplevel \ttt{package.ned} or it contains no package declaration,
@@ -201,8 +211,9 @@ If there is a toplevel \ttt{package.ned} and it declares the package as
 \textit{must} have the declared package \ttt{a.b.x.y.z}.
 
 \begin{note}
-    \ttt{package.ned} files are allowed in other folders as well, but they
-    cannot be used to define the package they are in.
+    \ffilename{package.ned} files are allowed in other folders as well.
+    They may contain properties and/or documentation for their package,
+    but cannot be used to define the package they are in.
 \end{note}
 
 
@@ -252,7 +263,7 @@ and gates (\ref{ch-ned-ref:sec:gates}); its internal structure is defined by
 its submodules (\ref{ch-ned-ref:sec:submodules}) and
 connections (\ref{ch-ned-ref:sec:connections});
 and it may also have inner types (\ref{ch-ned-ref:sec:inner-types})
-that can be used for submodules and connections.
+that can be used for its submodules and connections.
 
 A compound module type may extend another compound module type, and
 may implement one or more module interfaces (\ref{ch-ned-ref:sec:module-interfaces}).
@@ -362,21 +373,20 @@ Inheritance rules are described in section \ref{ch-ned-ref:sec:inheritance}.
 
 
 
-\subsection{Resolving the Implementation C++ Class}
+\subsection{Resolving the C++ Implementation Class}
 \label{ch-ned-ref:sec:resolving-cpp-class}
 
 The procedure for determining the C++ implementation class for simple modules
 and for channels are identical. It goes as follows (we are going to say
 \textit{component} instead of \textit{``simple module or channel''}):
 
-If the component extends another component and has no
-\fprop{@class} property, the C++ implementation class is inherited from the base
-type.
+If the component extends another component and has no \fprop{@class}
+property, the C++ implementation class is inherited from the base type.
 
-If the component contains a \fprop{@class} property, the C++ class
-name will be composed of the \textit{current namespace} (see
-\ref{cha:ned-ref:current-namespace}) and the value of the \fprop{@class}
-property. The \fprop{@class} property should contain a single value.
+If the component contains a \fprop{@class} property, the C++ class name
+will be composed of the \textit{current namespace} (see below) and the
+value of the \fprop{@class} property. The \fprop{@class} property should
+contain a single value.
 
 \begin{note}
     The \fprop{@class} property may itself contain a namespace declaration (ie.
@@ -395,20 +405,21 @@ unqualified name of the component.
     super type.
 \end{important}
 
-For compound modules, the built-in default compound module C++ class will be
-used, unless the module contains the \fprop{@class} property. When \fprop{@class}
-is present, the resolution rules are the same as with simple modules.
+For compound modules, the built-in default compound module C++ class
+\cclass{cCompoundModule} will be used, unless the module contains the
+\fprop{@class} property. When \fprop{@class} is present, the resolution
+rules are the same as with simple modules.
 
 
 \subsubsection{Current Namespace}
-\label{cha:ned-ref:current-namespace}
+\label{ch:ned-ref:current-namespace}
 
 The \textit{current namespace} is the value of the first \fprop{@namespace}
 property found while searching the following order:
+
 \begin{enumerate}
   \item the current NED file
-  \item the \ttt{package.ned} file in the current package
-  \item the \ttt{package.ned} file of the parent package or the first ancestor
+  \item the \ttt{package.ned} file in the current package or the first ancestor
         package searching upwards
 \end{enumerate}
 
@@ -433,21 +444,21 @@ Properties are identified by name. It is possible to have several properties
 on the same object with the same name, as long as they have unique indices.
 An index is an identifier in square brackets after the property name.
 
-The following example shows a property without index, one with the index \ttt{foo},
-and a third with the index \ttt{bar}.
+The following example shows a property without index, one with the index \ttt{index1},
+and a third with the index \ttt{index2}.
 
 \begin{ned}
-@prop();
-@prop[foo]();
-@prop[bar]();
+@prop1();
+@prop2[index1]();
+@prop3[index2]();
 \end{ned}
 
 
 \subsubsection{Property Value}
 
-The value of the property is specified inside parentheses. The value consists of
-\textit{key=valuelist} pairs, separated by semicolons; values are separated with commas.
-Example:
+The value of the property is specified inside parentheses. The property value consists of
+\textit{key=valuelist} pairs, separated by semicolons; \textit{valuelist} elements
+are separated with commas. Example:
 
 \begin{ned}
 @prop(key1=value11,value12,value13;key2=value21,value22)
@@ -459,8 +470,16 @@ If the key+equal sign part (\ttt{key=}) is missing, the valuelist belongs
 to the \textit{default key}. Examples:
 
 \begin{ned}
-@prop(value1,value2)
-@prop(value1,value2;key1=value11,value12,value13)
+@prop1(value1,value2)
+@prop2(value1,value2;key1=value11,value12,value13)
+\end{ned}
+
+Most of the properties use the default key with one value. Examples:
+
+\begin{ned}
+@namespace(inet);
+@class(Foo);
+@unit(s);
 \end{ned}
 
 Property values have a liberal syntax (see Appendix \ref{cha:ned-language-grammar}).
@@ -468,14 +487,14 @@ Values that do not fit the grammar (notably, those containing a comma or
 a semicolon) need to be surrounded with double quotes.
 
 When interpreting a property value, one layer of quotes is removed
-automatically, that is, \ttt{foo} and \ttt{"foo"} are the same. To add a
-value with quotation marks included, enclose it in an extra layer of
-quotes: \ttt{"\textbackslash"foo\textbackslash""}.
+automatically, that is, \ttt{foo} and \ttt{"foo"} are the same.
+Within quotes, escaping works in the same way as within string literals
+(see \ref{ch-ned-ref:sec:literals}).
 
 Example:
 
 \begin{ned}
-@prop(marks=the ! mark, "the , mark", "the ; mark", other marks);
+@prop(marks=the ! mark, "the , mark", "the ; mark", other marks); // 4 items
 \end{ned}
 
 
@@ -507,6 +526,10 @@ but those places do not allow adding new parameters.
 
 The \fkeyword{parameters} keyword is optional, and can be omitted
 without change in the meaning.
+
+The \fkeyword{parameters} section may also hold pattern assignments
+(\ref{ch-ned-ref:sec:pattern-assignments}) and properties
+(\ref{ch-ned-ref:sec:properties}).
 
 A parameter is identified by a name, and has a data type. A parameter
 may have value or default value, and may also have properties
@@ -545,7 +568,7 @@ time the parameter value is accessed. Non-\fkeyword{volatile} parameters
 are evaluated only once.
 
 \begin{note}
-    The \fkeyword{const} keyword is reserved for use within expressions
+    The \fkeyword{const} keyword is reserved for future use within expressions
     to define constant subexpressions, i.e. to denote a part within
     an expression that should only be evaluated once. Constant subexpressions
     are not supported yet.
@@ -572,9 +595,7 @@ unit. The \fprop{@unit} property should contain one string value for the default
 key. Examples:
 
 \begin{ned}
-@unit("s")
 @unit(s)
-@unit("second")
 @unit(second)
 \end{ned}
 
@@ -583,15 +604,16 @@ same or in a compatible (that is, convertible) unit.
 Examples:
 
 \begin{ned}
-  double a @unit(s) = 5s;  // OK
-  double a @unit(s) = 5;   // error: should be 5s
-  double a @unit(s) = 5kg; // error: incompatible unit
+  double a @unit(s) = 5s;   // OK
+  double a @unit(s) = 10ms; // OK; will be converted to seconds
+  double a @unit(s) = 5;    // error: should be 5s
+  double a @unit(s) = 5kg;  // error: incompatible unit
 \end{ned}
 
-@unit behavior for non-numeric parameters (string, XML) is unspecified
-(may be ignored or may be an error).
+\fprop{@unit} behavior for non-numeric parameters (boolean, string, XML)
+is unspecified (may be ignored or may be an error).
 
-The @unit property of a parameter may not be modified via inheritance.
+The \fprop{@unit} property of a parameter may not be modified via inheritance.
 
 Example:
 \begin{ned}
@@ -673,10 +695,11 @@ vector size. Gates may also have properties (see
 \ref{ch-ned-ref:sec:properties}).
 
 Gates may be scalar or vector. The vector size is specified with a numeric
-expression inside the square brackets (\ttt{[...]}). The vector size may
-also be left open by specifying an empty pair of square brackets.
+expression inside square brackets. The vector size may also be left
+unspecified by writing an empty pair of square brackets.
 
-A gate vector size may not be overridden in subclasses or in a submodule.
+An already specified gate vector size may not be overridden in subclasses or
+in a submodule.
 
 The presence of a gate type keyword determines whether the given line defines
 a new gate or refers to an existing gate. One can specify the gate vector
@@ -733,12 +756,27 @@ gates:
 \subsection{Submodules}
 \label{ch-ned-ref:sec:submodules}
 
-Submodules are defined in the \fkeyword{submodules} section of the compound module.
+Submodules are defined in the \fkeyword{submodules} section of the compound
+module.
+
+The type of the submodule may be specified statically or parametrically.
+
+Submodules may be scalar or vector. The size of submodule vectors must be
+specified as a numeric expression inside square brackets.
 
 Submodules may also be conditional.
 
-Submodules may be scalar or vector, the vector size of the latter being
-specified with a numeric expression inside the square brackets (\ttt{[...]}).
+A submodule definition may or may not have a body (a curly brace
+delimited block). An empty submodule body is equivalent to a
+missing one.
+
+Syntax examples:
+\begin{ned}
+submodules:
+    ip : IP;         // scalar submodule without body
+    tcp : TCP {}     // scalar submodule with empty body
+    app[10] : App;   // submodule vector
+\end{ned}
 
 
 \subsubsection{Submodule Type}
@@ -811,11 +849,8 @@ submodules:
   tcp : TCP if withTCP { ... }
 \end{ned}
 
-\subsubsection{Parameters, Gates}
 
-A submodule definition may or may not have a body (a curly brace
-delimited block). An empty submodule body (\ttt{\{ \}}) is equivalent
-to a missing one.
+\subsubsection{Parameters, Gates}
 
 A submodule body may contain parameters (\ref{ch-ned-ref:sec:parameters})
 and gates (\ref{ch-ned-ref:sec:module-interfaces}).
@@ -824,7 +859,8 @@ A submodule body cannot define new parameters or gates. It is only
 allowed to assign existing parameters, and to set the vector
 size of existing gate vectors.
 
-It is also allowed to add or modify properties and parameter/gate properties.
+It is also allowed to add or modify submodule properties and
+parameter/gate properties.
 
 
 
@@ -832,6 +868,10 @@ It is also allowed to add or modify properties and parameter/gate properties.
 \label{ch-ned-ref:sec:connections}
 
 Connections are defined in the \fkeyword{connections} section of the compound module.
+
+Connections may not span multiple hierarchy levels, that is, a connection
+may be created between two submodules, a submodule and the compound module,
+or between two gates of the compound module.
 
 Normally, all gates must be connected, including submodule gates and the gates
 of the compound module. When the \fkeyword{allowunconnected} modifier is present
@@ -842,12 +882,15 @@ after \fkeyword{connections}, gates will be allowed to be left unconnected.
     \ttt{connections allow\-unconnected} syntax; see \ref{ch-ned-ref:sec:gates}.
 \end{note}
 
+Connections may be conditional, and may be created using loops (see
+\ref{ch-ned-ref:sec:connection-groups}).
+
 
 \subsubsection{Connection Syntax}
 
 The connection syntax uses arrows (\ttt{-{}->}, \ttt{<-{}-}) to connect
 \fkeyword{input} and \fkeyword{output} gates, and double arrows
-(\ttt{<-{}->}) to connect two \fkeyword{inout} gates. The latter is
+(\ttt{<-{}->}) to connect \fkeyword{inout} gates. The latter is
 also said to be a bidirectional connection.
 
 Arrows point from the source gate (a submodule output gate or a compound
@@ -855,18 +898,28 @@ module input gate) to the destination gate (a submodule input gate or a
 compound module output gate). Connections may be written either left to right
 or right to left, that is, \ttt{a-{}->b} is equivalent to \ttt{b<-{}-a}.
 
-Gates are specified as \textit{modulespec.gatespec} (to connect a submodule),
-or as \textit{gatespec} (to connect the compound module). \textit{modulespec}
+Gates are specified as \textit{<modulespec>.<gatespec>} (to connect a submodule),
+or as \textit{<gatespec>} (to connect the compound module). \textit{<modulespec>}
 is either a submodule name (for scalar submodules), or a submodule name plus
 an index in square brackets (for submodule vectors). For scalar gates,
-\textit{gatespec} is the gate name; for gate vectors it is either the gate name
-plus an index in square brackets, or \textit{gatename}\ttt{++}.
+\textit{<gatespec>} is the gate name; for gate vectors it is either
+the gate name plus a numeric index expression in square brackets,
+or \textit{<gatename>}\ttt{++}.
 
-The \textit{gatename}\ttt{++} notation causes the first unconnected gate index
+The \textit{<gatename>}\ttt{++} notation causes the first unconnected gate index
 to be used. If all gates of the given gate vector are connected, the behavior
 is different for submodules and for the enclosing compound module.
 For submodules, the gate vector expands by one. For the compound module,
 it is an error to use \ttt{++} on a gate vector with no unconnected gates.
+
+Syntax examples:
+
+\begin{ned}
+connections:
+   a.out --> b.in;   // unidirectional between two submodules
+   c.in[2] <-- in;   // parent-to-child; gate vector with index
+   d.g++ <--> e.g++; // bidirectional, auto-expanding gate vectors
+\end{ned}
 
 \begin{rationale}
     The reason it is not supported to expand the gate vector of the compound
@@ -1082,18 +1135,32 @@ for i=0..sizeof(e)-1, for j=0..sizeof(e)-1 {
 \subsection{Inner Types}
 \label{ch-ned-ref:sec:inner-types}
 
-Inner types are defined in the \fkeyword{types} section of the component type.
+Inner types can be defined in the \fkeyword{types} section of compound
+modules, with the same syntax as toplevel (i.e. non-inner) types.
 
-Inner types are only visible inside the enclosing component type.
+Inner types may not contain further inner types, that is, type nesting
+is limited to two levels.
+
+Inner types are only visible inside the enclosing component type
+and its subclasses.
 
 
 
 \subsection{Name Uniqueness}
 
-Identifier names within a component must be unique. That is, a submodule
-or inner type cannot be named the same, or the same as a gate or
-parameter of the parent module.
+Identifier names within a component must be unique. That is, the following
+items in a component are considered to be in the same name space and must
+not have colliding names:
 
+\begin{itemize}
+  \item parameters
+  \item gates
+  \item submodules
+  \item inner types
+  \item the above items of super type(s)
+\end{itemize}
+
+For example, a gate and a submodule cannot have the same name.
 
 
 \subsection{Parameter Assignment Order}
@@ -1116,8 +1183,8 @@ object (which is currently always \ttt{channel}) separated by a dot.
 
 \begin{note}
 As bidirectional connections are a shorthand for two unidirectional
-connections, the source gate name is qualified with \ttt{$i} or
-\ttt{$o} in the relative path.
+connections, the source gate name is qualified with \ttt{\$i} or
+\ttt{\$o} in the relative path.
 \end{note}
 
 Note that the \fkeyword{parameters} keyword itself is optional,
@@ -1217,7 +1284,7 @@ name (``\ttt{inet.network\-layer.ip.RoutingTable}''), or by short name
 Visible names are:
 
 \begin{itemize}
-  \item inner types;
+  \item inner types of the same type or its super types;
   \item anything from the same package;
   \item imported names.
 \end{itemize}
@@ -1228,22 +1295,23 @@ Imports have a similar syntax to Java, but they are more flexible with wildcards
 All of the following are legal:
 
 \begin{ned}
-import inet.protocols.network.ip.RoutingTable;
-import inet.protocols.network.ip.*;
-import inet.protocols.network.ip.Ro*Ta*;
-import inet.protocols.*.ip.*;
+import inet.networklayer.ipv4.RoutingTable;
+import inet.networklayer.ipv4.*;
+import inet.networklayer.ipv4.Ro*Ta*;
+import inet.*.ipv4.*;
 import inet.**.RoutingTable;
 \end{ned}
 
-One asterisk "*" stands for "any character sequence not containing
-period"; two asterisks mean "any character sequence which may
-contain period". No other wildcards are recognized.
+One asterisk stands for any character sequence not containing dots; and a
+double asterisk stands for any character sequence (which may contain dots).
+No other wildcards are recognized.
 
-An import not containing a wildcard MUST match an existing NED type.
+An import not containing a wildcard must match an existing NED type.
 However, it is legal for an import that does contain wildcards
 not to match any NED type (although that might generate a warning.)
 
-Inner types may not be referenced outside their enclosing types.
+Inner types may not be referenced outside their enclosing types and
+their subclasses.
 
 \subsubsection{Base Types and Submodules}
 
@@ -1287,8 +1355,8 @@ gate plus the name of the channel object (which is currently always
 
 \begin{note}
 As bidirectional connections are a shorthand for two unidirectional
-connections, the source gate name is qualified with \ttt{$i} or
-\ttt{$o} in the relative path.
+connections, the source gate name is qualified with \ttt{\$i} or
+\ttt{\$o} in the relative path.
 \end{note}
 
 An example that uses typename pattern assignment:
@@ -1413,8 +1481,9 @@ parameters and gates that the interface has.
 
 Regarding component properties, parameter properties and gate properties
 defined in the interface: the module or channel type is required to have at
-least those properties, with at least the same values. It may have
-additional properties, and properties may add more keys and values.
+least the properties of the interface, with at least the same values.
+The component may have additional properties, and properties may add more
+keys and values.
 
 \begin{note}
   Implementing an interface does not cause the properties, parameters and
@@ -1431,6 +1500,8 @@ additional properties, and properties may add more keys and values.
 
 \subsection{Inheritance}
 \label{ch-ned-ref:sec:inheritance}
+
+Component inheritance is governed by the following rules:
 
 \begin{itemize}
   \item A simple module may only extend a simple module.
@@ -1466,7 +1537,7 @@ Other inheritance rules:
        value may be redefined in subclasses or at place of usage
     \item  for gates:
        type cannot be redefined;
-       vector size may be redefined in subclasses or at place of usage
+       vector size may be specified in subclasses or at place of usage if it was unspecified
     \item  for gate/parameter properties:
        extra properties can be added;
        existing properties can be overridden/extended as for standalone properties
@@ -1476,7 +1547,7 @@ Other inheritance rules:
        new connections may be added, but inherited ones cannot be modified
 \end{itemize}
 
-See other rules for specifics.
+The following sections will elaborate on the above rules.
 
 \subsubsection{Property Inheritance}
 
@@ -1485,20 +1556,13 @@ Generally, properties may be modified via inheritance. Inheritance may:
 \begin{itemize}
     \item add new keys
     \item add/overwrite values for existing keys
-    \item remove a value from an existing key (by using the special value '-')
+    \item remove a value from an existing key by using hyphen as a special value
 \end{itemize}
 
 
 \subsubsection{Parameter Inheritance}
 
 Default values for parameters may be overridden in subclasses.
-
-Parameter (non-default) assignments may also be overridden in subclasses.
-
-\begin{rationale}
-    The latter is needed for ease of use of channels and their \ttt{delay},
-    \ttt{ber}, \ttt{per}, \ttt{datarate} parameters.
-\end{rationale}
 
 \subsubsection{Gate Inheritance}
 
@@ -1508,7 +1572,7 @@ Gate vector size may not be overridden in subclasses.
 \subsection{Network Build Order}
 \label{ch-ned-ref:sec:build-order}
 
-When a network in instantiated for simulation, the module tree is built in
+When a network is instantiated for simulation, the module tree is built in
 a top-down preorder fashion. This means that starting from an empty system
 module, all submodules are created, their parameters and vector sizes are
 assigned, and they get fully connected before proceeding to go into the
@@ -1522,6 +1586,7 @@ usage.
 The same rules apply to compound or simple modules created dynamically during
 runtime.
 
+
 \section{Expressions}
 \label{ch-ned-ref:sec:expressions}
 
@@ -1530,6 +1595,11 @@ some variations on operator names (see \ttt{\textasciicircum}, \ttt{\#}, \ttt{\#
 Expressions may refer to module parameters, loop variables (inside connection
 \fkeyword{for} loops), gate vector and module vector sizes, and other attributes
 of the model. Expressions can use built-in and user-defined functions as well.
+
+\begin{note}
+New NED functions can be defined in C++; see section \ref{sec:ch-sim-lib:defining-ned-functions}.
+\end{note}
+
 
 \subsection{Operators}
 \index{ned!expressions!operators}
@@ -1565,33 +1635,25 @@ The following operators are supported (in order of decreasing precedence):
 
 \subsubsection{Conversions}
 
-Values are of type boolean, long, double, string, or xml element.
-A long or double may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
+Values may have the same types as NED parameters: boolean, integer, double, string, or XML element.
+An integer or double value may have an associated measurement unit (\ttt{s}, \ttt{mW}, etc.)
 
-Long and double values are implicitly converted to one another where needed.
-Conversion is performed with the C++ language's built-in typecast operator.
+Integer and double values are implicitly converted to one another where needed.
 
-There is no implicit conversion between bool and numeric types, so \ttt{0}
+There is no implicit conversion between boolean and numeric types, so \ttt{0}
 is not a synonym for \fkeyword{false}, and nonzero numbers are not a synonym
 for \fkeyword{true}.
 
 There is also no conversion between string and numeric types, so e.g. \ttt{"foo"+5}
 is illegal. There are functions for converting a number to string and vice versa.
 
-\begin{note}
-Implementation note: Currently the stack-based evaluation engine
-represents all numbers in \ttt{double}, i.e. it does not use \ttt{long}
-on the stack. (This may change in future releases.)
-Details:
+For bitwise operators and modulo (\%), doubles are converted to integers.
 
-\begin{itemize}
-  \item Integers (integer constants, \ttt{long} parameters, etc) are
-        converted to \ttt{double}.
-  \item For bitwise operators, \ttt{double}s are converted to \ttt{unsigned long}
-        using the C/C++ built-in conversion (type cast), the operation is performed,
-        then the result is converted back to \ttt{double}.
-  \item For the modulo operator (\%), operands are converted to \ttt{long}.
-\end{itemize}
+\begin{note}
+Integers are represented with the C++ type \ttt{long}. \ttt{double}-to-\ttt{long}
+conversions are performed using the C++ language's built-in typecast operator.
+As \ttt{long} is 32 bits on most 32-bit architectures, for portability reasons
+it is not recommended to use integers that do not fit into 32 bits.
 \end{note}
 
 
@@ -1629,18 +1691,19 @@ a dimensionless number with a number with unit is not supported.
 \subsection{Referencing Parameters and Loop Variables}
 
 Identifiers in expressions occurring \textit{anywhere} in component definitions
-are interpreted as referring to parameters of the given component.
+are interpreted as referring to parameters of the given component. For example,
+identifiers inside submodule bodies refer to the parameters of the compound
+module.
+
+Expressions may also refer to parameters of submodules defined earlier
+in the NED file, using the \ttt{submoduleName.paramName} or the
+\ttt{submoduleName[index].paramName} syntax. To refer to parameters
+of the local submodule inside a submodule body, use the
+\fkeyword{this} qualifier: \ttt{this.destAddress}.
 
 Exception: if an identifier occurs in a connection \fkeyword{for} loop and names
 a previously defined loop variable, then it is understood as referring to
 the loop variable.
-
-In submodule bodies, parameters of the same submodule can be referred to
-with the \fkeyword{this} qualifier: \ttt{this.destAddress}.
-
-Expressions may also refer to parameters of submodules defined earlier
-in NED file, using the \ttt{submoduleName.paramName} or the
-\ttt{submoduleName[index].paramName} syntax.
 
 
 \subsection{The \fkeyword{index} Operator}
