@@ -16,6 +16,7 @@ TEXCHAPTERS = \
 	 ch-ned-lang.tex \
 	 ch-simple-modules.tex \
 	 ch-messages.tex \
+	 ch-message-definitions.tex \
 	 ch-sim-lib.tex \
 	 ch-build-sim-progs.tex \
 	 ch-config-sim.tex \
