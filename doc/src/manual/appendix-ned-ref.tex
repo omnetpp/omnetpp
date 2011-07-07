@@ -842,50 +842,6 @@ after \fkeyword{connections}, gates will be allowed to be left unconnected.
     \ttt{connections allow\-unconnected} syntax; see \ref{ch-ned-ref:sec:gates}.
 \end{note}
 
-\subsubsection{Connections and Connection Groups}
-
-The connections section may contain any number of connections and
-connection groups. A connection group is one or more connections
-grouped with curly braces.
-
-Both connections and connection groups may be conditional (\fkeyword{if}
-keyword) or may be multiple (\fkeyword{for} keyword).
-
-Any number of \fkeyword{for} and \fkeyword{if} clauses may be added to
-a connection or connection loop; they are interpreted as if they were
-nested in the given order. Loop variables of a \fkeyword{for} may be
-referenced from subsequent conditions and loops as well as in module and
-gate index expressions in the connections.
-
-See the NED Grammar (\ref{cha:ned-language-grammar}) for the exact syntax.
-
-Example connections:
-
-\begin{ned}
-a.out --> b.in;
-c.out --> d.in if p>0;
-e.out[i] --> f[i].in for i=0..sizeof(f)-1, if i%2==0;
-\end{ned}
-
-Example connection groups:
-
-\begin{ned}
-if p>0 {
-    a.out --> b.in;
-    a.in <-- b.out;
-}
-for i=0..sizeof(c)-1, if i%2==0 {
-    c[i].out --> out[i];
-    c[i].in <-- in[i];
-}
-for i=0..sizeof(d)-1, for j=0..sizeof(d)-1, if i!=j {
-    d[i].out[j] --> d[j].in[i];
-}
-for i=0..sizeof(e)-1, for j=0..sizeof(e)-1 {
-    e[i].out[j] --> e[j].in[i] if i!=j;
-}
-\end{ned}
-
 
 \subsubsection{Connection Syntax}
 
@@ -1074,6 +1030,52 @@ A channel body cannot define new parameters. It is only
 allowed to assign existing parameters.
 
 It is also allowed to add or modify properties and parameter properties.
+
+
+\subsection{Conditional and Loop Connections, Connection Groups}
+\label{ch-ned-ref:sec:connection-groups}
+
+The connections section may contain any number of connections and
+connection groups. A connection group is one or more connections
+grouped with curly braces.
+
+Both connections and connection groups may be conditional (\fkeyword{if}
+keyword) or may be multiple (\fkeyword{for} keyword).
+
+Any number of \fkeyword{for} and \fkeyword{if} clauses may be added to
+a connection or connection loop; they are interpreted as if they were
+nested in the given order. Loop variables of a \fkeyword{for} may be
+referenced from subsequent conditions and loops as well as in module and
+gate index expressions in the connections.
+
+See the NED Grammar (\ref{cha:ned-language-grammar}) for the exact syntax.
+
+Example connections:
+
+\begin{ned}
+a.out --> b.in;
+c.out --> d.in if p>0;
+e.out[i] --> f[i].in for i=0..sizeof(f)-1, if i%2==0;
+\end{ned}
+
+Example connection groups:
+
+\begin{ned}
+if p>0 {
+    a.out --> b.in;
+    a.in <-- b.out;
+}
+for i=0..sizeof(c)-1, if i%2==0 {
+    c[i].out --> out[i];
+    c[i].in <-- in[i];
+}
+for i=0..sizeof(d)-1, for j=0..sizeof(d)-1, if i!=j {
+    d[i].out[j] --> d[j].in[i];
+}
+for i=0..sizeof(e)-1, for j=0..sizeof(e)-1 {
+    e[i].out[j] --> e[j].in[i] if i!=j;
+}
+\end{ned}
 
 
 
