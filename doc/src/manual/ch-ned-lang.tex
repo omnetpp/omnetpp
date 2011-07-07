@@ -938,28 +938,26 @@ in subclasses or in submodule declarations.
 
 \subsubsection{XML Parameters}
 
-Sometimes modules need more complex input than simple module parameters
-can describe. In that case, you could put these parameters into an external config file,
-and let the modules read and process the file. The file name is passed
-to the modules in a string parameter.
+Sometimes modules need complex data structures as input, which is something
+that cannot be done well with module parameters. One solution is to place
+the input data into a custom configuration file, pass the file name to the
+module in a string parameter, and let the module read and parse the file.
 
-XML is increasingly becoming a standard format for configuration
-files, so it is possible to describe the configuration in XML.
-From the 3.0 version, {\opp} contains built-in support for XML config files.
+It is somewhat easier if the configuration uses XML syntax, because {\opp}
+contains built-in support for XML files. Using an XML parser (LibXML2 or
+Expat), {\opp} reads and DTD-validates the file (if the XML document
+contains a DOCTYPE), caches the file (so that references to it from several
+modules will result in the file being loaded only once), allows selection
+of parts of the document using an XPath-subset notation, and presents the
+contents in a DOM-like object tree.
 
-{\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
-the file (if the XML document contains a DOCTYPE), caches the file
-(so that references to it from several modules will result in the file being loaded
-only once), allows selection of parts of the document using an XPath-subset notation,
-and presents the contents in a DOM-like object tree.
+This capability can be accessed via the NED parameter type \fkeyword{xml},
+and the \fkeyword{xmldoc()} function. You can point \fkeyword{xml}-type
+module parameters to a specific XML file (or to an element inside an XML
+file) via the \fkeyword{xmldoc()} function. You can assign \fkeyword{xml}
+parameters both from NED and from \ffilename{omnetpp.ini}.
 
-This capability can be accessed via the NED parameter type \ttt{xml}, and the
-\ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
-to a specific XML file (or to an element inside an XML file) via the
-\ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
-and from \ffilename{omnetpp.ini}.
-
-The following example declares an \ttt{xml} parameter, and assigns an
+The following example declares an \fkeyword{xml} parameter, and assigns an
 XML file to it:
 
 \begin{ned}
@@ -979,7 +977,26 @@ module Node {
 }
 \end{ned}
 
-It is also possible to assign an XML element within a file to the parameter:
+It is also possible to assign an XML element within a file to the parameter,
+which is useful if you want to group the input of several modules into
+a single XML file. For example, the following XML file contains two profiles
+with the IDs \textit{gen1} and \textit{gen2}:
+
+\begin{filelisting}
+<?xml>
+<root>
+    <profile id="gen1">
+          <param>3</param>
+          <param>5</param>
+    </profile>
+    <profile id="gen2">
+          <param>9</param>
+    </profile>
+</root>
+\end{filelisting}
+
+And you can assign each profile to a corresponding submodule using an XPath-like
+expression:
 
 \begin{ned}
 module Node {
@@ -993,18 +1010,20 @@ module Node {
 }
 \end{ned}
 
-\begin{filelisting}
-<?xml>
-<root>
-  <profile id="gen1">
-    <param>3</param>
-    <param>5</param>
-  </profile>
-  <profile id="gen2">
-    <param>9</param>
-  </profile>
-</root>
-\end{filelisting}
+It is also possible to create an XML document from a string constant, using
+the \fkeyword{xml()} function. This is especially useful for creating a
+default value for \fkeyword{xml} parameters. An example:
+
+\begin{ned}
+simple TrafGen {
+    parameters:
+        xml profile = xml("<profile/>"); // empty document as default
+        ...
+}
+\end{ned}
+
+The \fkeyword{xml()} function, like \fkeyword{xmldoc()}, also supports an
+optional second XPath parameter for selecting a subtree.
 
 %% XXX other xmldoc syntax (=PARENTMODULEINDEX etc)
 
