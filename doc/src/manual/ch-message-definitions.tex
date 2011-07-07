@@ -138,35 +138,6 @@ There are questions you might ask:
 The following sections describe the message syntax and features in detail.
 
 
-\section{Declaring Enums}
-
-An enum (declared with the \fkeyword{enum} keyword) generates a normal C++
-enum, plus creates an object which stores text representations of the
-constants. The latter makes it possible to display symbolic names in Tkenv.
-An example:
-
-\begin{msg}
-enum ProtocolTypes
-{
-   IP = 1;
-   TCP = 2;
-};
-\end{msg}
-
-Enum values need to be unique.
-
-
-% It is possible to ``extend'' an enum with new values.
-%
-% begin{msg}
-% // add new values to ProtocolTypes
-% enum MoreProtocolTypes extends ProtocolTypes
-% {
-%   CLNP = 3;
-%   TP4 = 4;
-% };
-% end{msg}
-
 \section{Message Declarations}
 
 \subsection{Basic Use}
@@ -254,7 +225,7 @@ message FooPacket
 Initialization code will be placed in the constructor of the generated class.
 
 
-\subsection{Enum Declarations}
+\subsection{Enums}
 
 You can declare that an \fkeyword{int} (or other integral type) field
 takes values from an enum. The message compiler can then generate code
@@ -263,13 +234,48 @@ that allows Tkenv display the symbolic value of the field.
 Example:
 
 \begin{msg}
-message FooPacket
+packet FooPacket
 {
-    int payloadType enum(PayloadTypes);
+    int payloadType @enum(PayloadType);
 };
 \end{msg}
 
-The enum has to be declared separately in the message file.
+The enum itself has to be declared separately. An enum is declared with
+the \fkeyword{enum} keyword, using the following syntax:
+
+\begin{msg}
+enum PayloadType
+{
+   NONE = 0;
+   UDP = 1;
+   TCP = 2;
+   SCTP = 3;
+};
+\end{msg}
+
+Enum values need to be unique.
+
+The message compiler translates an enum into a normal C++ enum, plus
+creates an object which stores text representations of the constants. The
+latter makes it possible to display symbolic names in Tkenv.
+
+If the enum to be associated with a field comes from a different message file,
+then the enum must be announced and its generated header file be included.
+An example:
+
+\begin{msg}
+cplusplus {{
+#include "PayloadType_m.h"
+}}
+
+enum PayloadType;
+
+packet FooPacket
+{
+    int payloadType @enum(PayloadType);
+};
+\end{msg}
+
 
 
 \subsection{Fixed-Size Arrays}
