@@ -23,7 +23,11 @@ NAMESPACE_BEGIN
 
 
 /**
- * Declares a configuration option.
+ * Describes a configuration option.
+ *
+ * @see Register_GlobalConfigOption(), Register_PerRunConfigOption(),
+ *      Register_GlobalConfigOptionU(), Register_PerRunConfigOptionU(),
+ *      Register_PerObjectConfigOption(), Register_PerObjectConfigOptionU()
  *
  * @ingroup Internals
  */
@@ -42,6 +46,7 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
       CFG_CUSTOM
     };
 
+    /// Configuration option kinds.
     enum ObjectKind {
         KIND_NONE,
         KIND_MODULE,

@@ -58,15 +58,15 @@ class SIM_API cChannel : public cComponent //implies noncopyable
 
   public:
     /**
-     * Allows for returning multiple values from the processMessage() method.
+     * Allows returning multiple values from the processMessage() method.
      * The constructor initializes all fields to zero.
      */
     struct result_t
     {
         result_t() : delay(SIMTIME_ZERO), duration(SIMTIME_ZERO), discard(false) {}
-        simtime_t delay;     //< propagation delay
-        simtime_t duration;  //< transmission duration
-        bool discard;        //< whether the channel has lost the message
+        simtime_t delay;     ///< Propagation delay
+        simtime_t duration;  ///< Transmission duration
+        bool discard;        ///< Whether the channel has lost the message
     };
 
     /**

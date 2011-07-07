@@ -195,14 +195,6 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
  * @hideinitializer
  */
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK)  NOTE_the_deprecated_Module_Class_Members_macro_has_been_removed_in_version_4_0
-//@}
-
-
-/**
- * @ingroup Macros
- * @defgroup MacrosConfigReg Configuration entry declaration macros
- */
-//@{
 
 // internal
 #define __REGISTER_CONFIGOPTION(ID, ARGLIST) \
@@ -210,42 +202,51 @@ _OPPDEPRECATED inline void Define_Function_macro() {}
   EXECUTE_ON_STARTUP(configOptions.getInstance()->add(ID = new cConfigOption ARGLIST);)
 
 /**
- * Generic, with unit==NULL.
+ * Registers a global configuration option.
+ *
  * @hideinitializer
  */
 #define Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, true, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Generic, with unit==NULL.
+ * Registers a per-run configuration option.
+ *
  * @hideinitializer
  */
 #define Register_PerRunConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, false, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * For type==CFG_DOUBLE and a unit.
+ * Registers a global configuration option with type==CFG_DOUBLE and an
+ * expected unit of measurement.
+ *
  * @hideinitializer
  */
 #define Register_GlobalConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, true, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * For type==CFG_DOUBLE and a unit.
+ * Registers a per-run configuration option with type==CFG_DOUBLE and an
+ * expected unit of measurement.
+ *
  * @hideinitializer
  */
 #define Register_PerRunConfigOptionU(ID, NAME, UNIT, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, false, cConfigOption::CFG_DOUBLE, UNIT, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Per-object option (can be configured per run), with unit==NULL.
+ * Registers a per-object configuration option.
+ *
  * @hideinitializer
  */
 #define Register_PerObjectConfigOption(ID, NAME, KIND, TYPE, DEFAULTVALUE, DESCRIPTION) \
   __REGISTER_CONFIGOPTION(ID, (NAME, cConfigOption::KIND, cConfigOption::TYPE, NULL, DEFAULTVALUE, DESCRIPTION))
 
 /**
- * Per-object option (can be configured per run), for type==CFG_DOUBLE and a unit.
+ * Registers a per-object configuration option with type==CFG_DOUBLE and an
+ * expected unit of measurement.
+ *
  * @hideinitializer
  */
 #define Register_PerObjectConfigOptionU(ID, NAME, KIND, UNIT, DEFAULTVALUE, DESCRIPTION) \
