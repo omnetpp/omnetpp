@@ -1171,7 +1171,7 @@ sub generateClass
         print H " * class $exportdef$realmsgclass : public $msgclass\n";
         print H " * {\n";
         print H " *   public:\n";
-        if ($classtype eq "cownedobject") {
+        if ($classtype eq "cownedobject" || $classtype eq "cnamedobject") {
             if ($keyword eq "message" or $keyword eq "packet") {
                 print H " *     $realmsgclass(const char *name=NULL, int kind=0) : $msgclass(name,kind) {}\n";
             } else {
@@ -1231,7 +1231,7 @@ sub generateClass
         print H "\n";
         print H "  public:\n";
     }
-    if ($classtype eq "cownedobject") {
+    if ($classtype eq "cownedobject" || $classtype eq "cnamedobject") {
         if ($keyword eq "message" or $keyword eq "packet") {
             print H "    $msgclass(const char *name=NULL, int kind=0);\n";
         } else {
@@ -1296,7 +1296,7 @@ sub generateClass
         print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.parsimUnpack(b);}\n\n";
     }
 
-    if ($classtype eq "cownedobject") {
+    if ($classtype eq "cownedobject" || $classtype eq "cnamedobject") {
         if ($keyword eq "message" or $keyword eq "packet") {
             # CAREFUL when assigning values to existing members gets implemented!
             # The msg kind passed to the ctor should take priority!!!
@@ -1359,7 +1359,7 @@ sub generateClass
         print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass()\n";
     }
     print CC "{\n";
-    if ($classtype eq "cownedobject") {
+    if ($classtype eq "cownedobject" || $classtype eq "cnamedobject") {
         print CC "    setName(other.getName());\n";
     }
     foreach my $fieldname (@fieldlist)
@@ -1434,7 +1434,7 @@ sub generateClass
                 }
             } else {
                 print CC "    this->$var{$fieldname} = other.$var{$fieldname};\n";
-                if (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cownedobject') {
+                if (!$fisarray{$fieldname} && ($classtype{$ftype{$fieldname}} eq 'cownedobject' || $classtype{$ftype{$fieldname}} eq 'cnamedobject')) {
                     print CC "    this->$var{$fieldname}.setName(other.$var{$fieldname}.getName());\n";
                 }
             }
