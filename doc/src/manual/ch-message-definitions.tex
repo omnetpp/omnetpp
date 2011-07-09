@@ -458,69 +458,187 @@ But because a struct has no member functions, there are limitations:
 \end{itemize}
 
 
-\section{Using Existing C++ Types}
 
+\section{Literal C++ Blocks}
+\label{sec:ch-msg-defs:cplusplus-blocks}
 
-\subsection{Announcing C++ Types}
+It is possible to have C++ code placed directly into the generated code,
+more precisely, into the generated header file. This is done with the
+\fkeyword{cplusplus} keyword and a double curly braces. As we'll see in
+later sections, \fkeyword{cplusplus} blocks are customarily used to insert
+\ttt{\#include} directives, typedefs, \ttt{\#define} macros and other
+elements into the generated header.
 
-If you want to use one of your own types (a class, struct or typedef,
-declared in a C++ header) in a message definition, you have to
-announce those types to the message compiler. You also have to make sure
-that your header file gets included into the generated \ttt{\_m.h} file
-so that the C++ compiler can compile it.
-
-Suppose you have an \ttt{IPAddress} structure, defined in an \ttt{ipaddress.h}
-file:
-
-\begin{cpp}
-// ipaddress.h
-struct IPAddress {
-    int8_t byte0, byte1, byte2, byte3;
-};
-\end{cpp}
-
-To be able to use \ttt{IPAddress} in a message definition, the message
-file (say \ttt{foopacket.msg}) should contain the following lines:
+Example:
 
 \begin{msg}
 cplusplus {{
-#include "ipaddress.h"
+#include <vector>
+#include "foo.h"
+#define FOO_VERSION 4
+typedef std::vector<int> IntVector;
+}}
+\end{msg}
+
+The message compiler does not try to make sense of the text in the body of
+the \ttt{cplusplus} block, it just simply copies it into the generated
+header file.
+
+
+\section{Using C++ Types}
+\label{sec:ch-msg-defs:using-cpp-types}
+
+The message compile only knows about the types defined within the same msg
+file, and the built-in types. To be able to use other types, for example
+for fields or as base class, you need to do two things:
+
+\begin{enumerate}
+   \item Let the message compiler know about the type by announcing it; and
+   \item Make sure its C++ declaration will be available at compile time
+\end{enumerate}
+
+The next two sections describe how to do each.
+
+
+\subsection{Announcing Types to the Message Compiler}
+\label{sec:ch-msg-defs:announcing-types}
+
+If you want to use a C++ type (a class, struct or typedef) not
+declared with the message syntax in the same file, you have to
+announce those types to the message compiler.
+
+Type annoucements have a similar syntax to those in C++:
+
+\begin{msg}
+struct Point;
+class PrioQueue;  // implies it is derived from cOwnedObject! see below
+message TimeoutMessage;
+packet TCPSegment;
+\end{msg}
+
+However, with the \fkeyword{class} keyword, the message compiler needs to
+know the whether the class is derived (directly or indirectly) from
+\cclass{cOwnedObject}, \cclass{cNamedObject}, \cclass{cObject} or none of
+the above, because it affects code generation. The ancestor class can be
+declared with the \fkeyword{extends} keyword, like this:
+
+\begin{msg}
+class IPAddress extends void;  // does not extend any "interesting" class
+class ModulePtr extends void;  // ditto
+class IntVector extends void;  // ditto
+class IPCtlInfo extends cObject;
+class FooOption extends cNamedObject;
+class PrioQueue extends cOwnedObject;
+class IPAddrExt extends IPAddress;  // also OK: IPAddress has been announced
+\end{msg}
+
+An alternative to \ttt{extends void} is the \fkeyword{noncobject} modifier:
+
+\begin{msg}
+class noncobject IPAddress; // same as "extends void"
+\end{msg}
+
+By default, that is, when \fkeyword{extends} is missing, it is assumed
+that the class is derived from \cclass{cOwnedObject}. Thus, the following
+two announcements are equivalent:
+
+\begin{msg}
+class PrioQueue;
+class PrioQueue extends cOwnedObject;
+\end{msg}
+
+\begin{note}
+Notice that this default is inconsistent with the default base class for
+generating classes, which is \cclass{cObject} (see
+\ref{sec:ch-msg-defs:defining-classes}). The reason why type announcements
+assume \cclass{cOwnedObject} is that it is safer: a mistake will surface in
+the form of a compile error and will not remain hidden until it causes some
+obscure runtime error.
+\end{note}
+
+
+\subsection{Making the C++ Declarations Available}
+
+In addition to announcing types to the message compiler, you also have make
+sure their C++ declarations will be available at compile time so that the
+generated code will actually compile. This can be achieved with
+\fkeyword{cplusplus} blocks that let you inject includes, typedefs,
+class/struct declarations, etc. into the generated header file:
+
+\begin{msg}
+cplusplus {{
+#include "IPAddress.h"
+typedef std::vector<int> IntVector;
+}}
+\end{msg}
+
+You need a \fkeyword{cplusplus} block even if the desired types are defined
+in a (different) message file, to include the generated header file.
+It is currently not supported to import types from other message files directly.
+Example:
+
+\begin{msg}
+cplusplus {{
+#include "TCPSegment_m.h"  // make types defined in TCPSegment.msg available
+                           // for the C++ compiler
+}}
+\end{msg}
+
+
+\subsection{Putting it Together}
+
+Suppose you have header files and message files that define various types:
+
+\begin{cpp}
+// IPAddress.h
+class IPAddress {
+   ...
+};
+\end{cpp}
+
+\begin{cpp}
+// Location.h
+struct Location {
+    double lon;
+    double lat;
+};
+\end{cpp}
+
+\begin{msg}
+// AppPacket.msg
+packet AppPacket {
+   ...
+}
+\end{msg}
+
+To be able to use the above types in a message definition (and two more,
+an \ttt{IntVector} and a module pointer), the message file should contain
+the following lines:
+
+\begin{msg}
+cplusplus {{
+#include <vector>
+#include "IPAddress.h"
+#include "Location.h"
+#include "AppPacket_m.h"
+typedef std::vector<int> IntVector;
+typedef cModule *ModulePtr;
 }};
 
-struct IPAddress;
-\end{msg}
-
-The effect of the first three lines is simply that the \ttt{\#include}
-statement will be copied into the generated \ttt{foopacket\_m.h}
-file to let the C++ compiler know about the \ttt{IPAddress} class.
-The message compiler itself will not try to make sense of the
-text in the body of the \ttt{cplusplus \{\{ ... \}\}} directive.
-
-The next line, \ttt{struct IPAddress}, tells the message compiler that
-\ttt{IPAddress} is a C++ struct. This information will (among others)
-affect the generated code.
-
-Classes can be announced using the \fkeyword{class} keyword:
-
-\begin{msg}
-class cSubQueue;
-\end{msg}
-
-The above syntax assumes that the class is derived from \cclass{cOwnedObject}
-either directly or indirectly. If it is not, the \fkeyword{noncobject}
-keyword should be used:
-
-\begin{msg}
 class noncobject IPAddress;
+struct Location;
+packet AppPacket;
+class noncobject IntVector;
+class noncobject ModulePtr;
+
+packet AppPacketExt extends AppPacket {
+    IPAddress destAddress;
+    Location senderLocation;
+    IntVector data;
+    ModulePtr originatingModule;
+}
 \end{msg}
 
-The distinction between classes derived and not derived from \cclass{cOwnedObject}
-is important because the generated code differs at places.
-The generated code is set up so that if you incidentally
-forget the \fkeyword{noncobject} keyword (and thereby mislead the
-message compiler into thinking that your class is rooted in
-\cclass{cObject} when in fact it is not), you will get a C++ compiler
-error in the generated header file.
 
 
 \section{Customizing the Generated Class}
