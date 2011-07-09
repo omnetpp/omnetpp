@@ -910,97 +910,157 @@ supply your implementation.
 
 
 
-\section{Using STL in Message Classes}
+\section{Using Standard Container Classes for Fields}
+\label{sec:ch-msg-defs:using-stl}
 
+One often wants to use standard container classes (STL) as fields, such as
+\ttt{std::vector}, \ttt{std::stack} or \ttt{std::map}. The following sections
+describe two ways this can be done:
 
-%%FIXME ADD THIS SOLUTION:
-%%cplusplus {{
-%%#include <vector>
-%%typedef std::vector<int> IntVector;
-%%}}
-%%
-%%class noncobject IntVector;
-%%
-%%message X {
-%%  fields:
-%%    IntVector v;
-%%};
+\begin{enumerate}
+  \item via a typedef;
+  \item by defining the field as abstract, and customizing the generated class.
+\end{enumerate}
 
+\subsection{Typedefs}
 
-You may want to use STL \ttt{vector} or \ttt{stack} classes in your message classes.
-This is possible using abstract fields. After all, \ttt{vector} and \ttt{stack}
-are representations of a \textit{sequence} -- same abstraction as variable-size vectors.
-That is, you can declare the field as \ttt{abstract T fld[]}, and provide
-an underlying implementation using \ttt{vector<T>}. You can also add methods
-to the message class that invoke \ttt{push\_back()}, \ttt{push()}, \ttt{pop()}, etc.
-on the underlying STL object.
-
-See the following message declaration:
+The basic idea is that if we create a typedef for the desired type,
+we can use it for fields just as any other type. Example:
 
 \begin{msg}
-struct Item
-{
-    int a;
-    double b;
-}
+cplusplus {{
+#include <vector>
+typedef std::vector<int> IntVector;
+}}
 
-message STLMessage
+class noncobject IntVector;
+
+packet FooPacket {
+    IntVector addresses;
+};
+\end{msg}
+
+The generated class will have the following methods:
+
+\begin{cpp}
+virtual IntVector& getAddresses();
+virtual const IntVector& getAddresses() const;
+virtual void setAddresses(const IntVector& addresses);
+\end{cpp}
+
+Thus, the underlying \ttt{std::vector<int>} is exposed and you can directly
+manipulate it from C++ code, for example like this:
+
+\begin{cpp}
+FooPacket *pk = new FooPacket();
+pk->getAddresses().push_back(1);
+pk->getAddresses().push_back(5);
+pk->getAddresses().push_back(9);
+// or:
+IntVector& v = pk->getAddresses();
+v.push_back(1);
+v.push_back(5);
+v.push_back(9);
+\end{cpp}
+
+It is easy. However, there are also some drawbacks:
+
+\begin{enumerate}
+  \item The message compiler won't know that your field is actually
+      a data structure, so the generated reflection code won't be able
+      to look into it;
+  \item The fact that STL classes are directly exposed may be a mixed
+      blessing; on one hand this makes it easier to manipulate its
+      contents, but on the other hand it violates the encapsulation
+      principle. Container classes work best when they are used as
+      ``nuts and bolts'' for your C++ program, but they shouldn't really
+      be used as public API.
+\end{enumerate}
+
+\subsection{Abstract Fields}
+
+This approach uses abstract fields. We exploit the fact that
+\ttt{std::vector} and \ttt{std::stack} are representations of
+\textit{sequence}, which is the same abstraction as fields' variable-size
+array. That is, if you declare the field to be \ttt{abstract fieldname[]},
+the message compiler will only generate pure virtual functions and you can
+implement the underlying data storage using standard container classes. You
+can also write additional C++ methods that delegate to the container
+object's \ttt{push\_back()}, \ttt{push()}, \ttt{pop()}, etc. methods.
+
+Consider the following message declaration:
+
+\begin{msg}
+packet FooPacket
 {
-   @customize(true);
-   abstract Item foo[]; // will use vector<Item>
-   abstract Item bar[]; // will use stack<Item>
+    @customize(true);
+    abstract int foo[]; // will use std::vector<int>
+    abstract int bar[]; // will use std::stack<int>
 }
 \end{msg}
 
-If you compile the above, in the generated code you will only find a couple of
-abstract methods for \ttt{foo} and \ttt{bar}, no data members or anything concrete.
-You can implement everything as you like. You can write the following C++ file
-then to implement \ttt{foo} and \ttt{bar} with \ttt{std::vector} and \ttt{std::stack}:
+If you compile the above code, in the generated C++ code you will only find
+abstract methods for \ttt{foo} and \ttt{bar}, but no underlying data
+members or method impleementations. You can implement everything as you
+like. You can write the following C++ file then to implement \ttt{foo} and
+\ttt{bar} with \ttt{std::vector} and \ttt{std::stack} (some details omitted
+for brevity):
 
 \begin{cpp}
 #include <vector>
 #include <stack>
-#include "stlmessage_m.h"
+#include "FooPacket_m.h"
 
-
-class STLMessage : public STLMessage_Base
+class FooPacket : public FooPacket_Base
 {
   protected:
-    std::vector<Item> foo;
-    std::stack<Item> bar;
+    std::vector<int> foo;
+    std::stack<int> bar;
+
+    // helper method
+    void unsupported() {throw cRuntimeException("unsupported method called");}
 
   public:
-    STLMessage(const char *name=NULL, int kind=0) : STLMessage_Base(name,kind) {}
-    STLMessage(const STLMessage& other) : STLMessage_Base(other.getName())
-        { operator=(other); }
-    STLMessage& operator=(const STLMessage& other) {
+    ...
+    // foo methods
+    virtual int getFoo(unsigned int k) {return foo[k];}
+    virtual void setFoo(unsigned int k, int x) {foo[k]=x;}
+    virtual void addFoo(int x) {foo.push_back(x);}
+    virtual void setFooArraySize(unsigned int size) {foo.resize(size);}
+    virtual unsigned int getFooArraySize() const {return foo.size();}
+
+    // bar methods
+    virtual int getBar(unsigned int k) {...}
+    virtual void setBar(unsigned int k, int x) {unsupported();}
+    virtual void barPush(int x) {bar.push(x);}
+    virtual void barPop() {bar.pop();}
+    virtual int barTop() {return bar.top();}
+    virtual void setBarArraySize(unsigned int size) {unsupported();}
+    virtual unsigned int getBarArraySize() const {return bar.size();}
+};
+
+Register_Class(FooPacket);
+\end{cpp}
+
+Some additional boilerplate code is needed so that the class conforms
+to conventions, and duplication and copying works properly:
+
+\begin{cpp}
+    FooPacket(const char *name=NULL, int kind=0) : FooPacket_Base(name,kind) {
+    }
+    FooPacket(const FooPacket& other) : FooPacket_Base(other.getName()) {
+        operator=(other);
+    }
+    FooPacket& operator=(const FooPacket& other) {
         if (&other==this) return *this;
-        STLMessage_Base::operator=(other);
+        FooPacket_Base::operator=(other);
         foo = other.foo;
         bar = other.bar;
         return *this;
     }
-    virtual STLMessage *dup() {return new STLMessage(*this);}
-
-    // foo methods
-    virtual void setFooArraySize(unsigned int size) {}
-    virtual unsigned int getFooArraySize() const {return foo.size();}
-    virtual Item& getFoo(unsigned int k) {return foo[k];}
-    virtual void setFoo(unsigned int k, const Item& afoo) {foo[k]=afoo;}
-    virtual void addToFoo(const Item& afoo) {foo.push_back(afoo);}
-
-    // bar methods
-    virtual void setBarArraySize(unsigned int size) {}
-    virtual unsigned int getBarArraySize() const {return bar.size();}
-    virtual Item& getBar(unsigned int k) {throw cRuntimeException("sorry");}
-    virtual void setBar(unsigned int k, const Item& bar)
-        { throw cRuntimeException("sorry"); }
-    virtual void barPush(const Item& abar) {bar.push(abar);}
-    virtual void barPop() {bar.pop();}
-    virtual Item& barTop() {return bar.top();}
-};
-
-Register_Class(STLMessage);
+    virtual FooPacket *dup() {
+        return new FooPacket(*this);
+    }
 \end{cpp}
 
 Some additional notes:
@@ -1012,17 +1072,10 @@ Some additional notes:
      It could still be implemented in a less efficient way using STL iterators,
      and efficiency does not seem to be major problem because only Tkenv
      is going to invoke this function.}
-  \item{\ttt{setBar(int k, const Item\&)} could not be implemented, but this
+  \item{\ttt{setBar(int k, int x)} could not be implemented, but this
      is not particularly a problem. The exception will materialize in a
      Tkenv error dialog when you try to change the field value.}
 \end{enumerate}
-
-You may regret that the STL \ttt{vector}/\ttt{stack} are not directly exposed.
-Well, you could expose them (by adding a \ttt{vector<Item>\& getFoo() \{return foo;\}}
-method to the class) but this is probably not a good idea.
-STL itself was purposefully designed with a low-level approach, to provide
-``nuts and bolts'' for C++ programming, and STL is better used in other classes
-for internal representation of data.
 
 
 
