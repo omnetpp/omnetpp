@@ -73,53 +73,6 @@ class as well as ``reflection'' code that allows you to inspect these data
 structures in the Tkenv GUI. The \ttt{mypacket\_m.cc} file should be compiled and
 linked into your simulation; this is normally taken care of automatically.
 
-
-\subsection{What Is Message Subclassing \textit{Not?}}
-
-There can be some confusion about the purpose and
-concept of message definitions, so it might be a good idea
-to deal with that right here.
-
-It is \textit{\textbf{not:}}
-
-\begin{itemize}
-  \item{\textit{... an attempt to reproduce the functionality of C++ with another
-     syntax.} Do not look for complex C++ types, templates, conditional compilation, etc.
-     Also, it defines \textit{data} only (or rather: an interface to access
-     data) -- not any kind of active behaviour.}
-  \item{\textit{... a generic class generator.} This is meant for defining message
-     contents, and data structure you put in messages.
-     Defining methods is not supported on purpose.
-     Also, while you can probably (ab)use the syntax to
-     generate classes and structs used internally in simple modules,
-     this is probably not a good idea.}
-\end{itemize}
-
-The goal is to define the \textit{interface} (getter/setter methods) of messages
-rather than their implementations in C++. A simple and straightforward
-implementation of fields is provided -- if you'd like a different internal
-representation for some field, you can have it by customizing the class.
-
-There are questions you might ask:
-
-\begin{itemize}
-  \item{\textit{Why doesn't it support \ttt{std::vector} and other STL classes?}
-     Well, it does. Message definitions focus on the interface
-     (getter/setter methods) of the classes, optionally leaving the implementation
-     to you -- so you can implement array fields using \ttt{std::vector}.
-     (This aligns with the idea behind STL -- it was designed to be
-     \textit{nuts and bolts} for C++ programs).}
-  \item{\textit{Why does it support C++ data types and not octets,
-     bytes, bits, etc..?}
-     That would restrict the scope of message definitions to networking,
-     and {\opp} wants to support other application areas as well.
-     Furthermore, the set of necessary concepts to be supported is
-     probably not bounded, there would always be new data types to
-     be adopted.}
-  \item{\textit{Why no inner classes?} Good question. As it does not
-     conflict with the above principles, this feature might be added someday.}
-\end{itemize}
-
 The following sections describe the message syntax and features in detail.
 
 
