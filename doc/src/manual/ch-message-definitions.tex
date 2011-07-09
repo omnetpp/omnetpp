@@ -396,37 +396,61 @@ Only single inheritance is supported.
 
 
 
-\section{Defining Classes}
+\section{Classes}
+\label{sec:ch-msg-defs:defining-classes}
 
-Until now we have used the \fkeyword{message} keyword to define classes, which
-implies that the base class is \cclass{cMessage}, either directly or indirectly.
-
-But as part of complex messages, you will need structs and other classes
-(rooted or not rooted in \cclass{cObject}) as building blocks.
-Classes can be created with the \fkeyword{class} keyword;
-structs we'll cover in the next section.
+Until now we have only seen message and packet descriptions, which generate
+classes derived from \cclass{cMessage} or \cclass{cPacket}. However, it is
+also useful to be able to generate classes and structs, for building blocks
+for messages, as control info objects (see \cclass{cMessage}'s
+\ffunc{setControlInfo()} and for other purposes. This section covers
+classes; structs will be described in the next section.
 
 The syntax for defining classes is almost the same as defining messages,
-only the \fkeyword{class} keyword is used instead of \fkeyword{message}.
+only the \fkeyword{class} keyword is used instead of \fkeyword{message} /
+\fkeyword{packet}. The base class can be specified with the \fkeyword{extends}
+keyword, and defaults to \cclass{cObject}.
 
-Slightly different code is generated for classes that are rooted in
-\cclass{cObject} than for those which are not.
-If there is no \ttt{extends}, the generated class will not be
-derived from \cclass{cObject}, thus it will not have \ffunc{getName()},
-\ffunc{getClassName()}, etc. methods.
-To create a class with those methods, you have to explicitly write
-\ttt{extends cObject} or \ttt{extends cOwnedObject}.
+\begin{note}
+\cclass{cObject} has no data members. It only defines virtual methods so
+the only overhead would be the vtable, but the generated class already has
+a vtable because of generated methods are also virtual. In other words,
+\cclass{cObject} adds zero overhead to the generated class, and there is no
+reason not to always use it as base class.
+\end{note}
+
+Examples:
 
 \begin{msg}
-class MyClass extends cOwnedObject
+class TCPCommand  // same as "extends cObject"
+{
+    ...
+};
+
+class TCPOpenCommand extends TCPCommand
 {
     ...
 };
 \end{msg}
 
+The generated code:
+
+\begin{cpp}
+// generated C++
+class TCPCommand : public cObject
+{
+    ...
+};
+
+class TCPOpenCommand : public TCPCommand
+{
+    ...
+};
+\end{cpp}
 
 
-\section{Defining Plain C Structs}
+\section{Structs}
+\label{sec:ch-msg-defs:defining-structs}
 
 You can define C-style structs to be used as fields in message classes,
 ``C-style'' meaning ``containing only data and no methods'' (in contrast to
@@ -436,29 +460,35 @@ visibility.)
 The syntax is similar to that of defining messages:
 
 \begin{msg}
-struct MyStruct
+struct Place
 {
-    char array[10];
-    short version;
+    int type;
+    string description;
+    double coords[3];
 };
 \end{msg}
 
 However, the generated code is different. The generated struct has
 no getter or setter methods, instead the fields are represented
-by public data members. For the definition above, the
-following code is generated:
+by public data members. The following code is generated from
+the above definition:
 
 \begin{cpp}
 // generated C++
-struct MyStruct
+struct Place
 {
-    char array[10];
-    short version;
+    int type;
+    opp_string description; // minimal string class that wraps a const char*
+    double coords[3];
 };
 \end{cpp}
 
-A struct can have primitive types or other structs as fields, but it cannot
-have string or class fields.
+Note that \fkeyword{string} fields are generated with the \ttt{opp\_string}
+C++ type, which is a minimalistic string class that wraps \ttt{const char*}
+and takes care of allocation/deallocation. It was chosen instead of
+\ttt{std::string} because of its significantly smaller memory footprint
+(the sizeof of \ttt{opp\_string} is the same as that of a \ttt{const char*}
+pointer).
 
 Inheritance is supported for structs:
 
@@ -468,18 +498,21 @@ struct Base
     ...
 };
 
-struct MyStruct extends Base
+struct Extended extends Base
 {
     ...
 };
 \end{msg}
 
-But because a struct has no member functions, there are limitations:
+However, because a struct has no member functions, there are limitations:
 
 \begin{itemize}
-   \item variable-size arrays are not supported (no place for the array allocation code)
-   \item ``generation gap'' or abstract fields (see later) cannot be used,
-      because they build upon virtual functions.
+   \item variable-size arrays are not supported;
+   \item customization via inheritance and \fkeyword{abstract} fields
+      (see later in \ref{sec:ch-msg-defs:customizing-via-inheritance})
+      cannot be used;
+   \item cannot have classes subclassed from \cclass{cOwnedObject} as fields,
+      because structs cannot be owners.
 \end{itemize}
 
 
