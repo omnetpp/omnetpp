@@ -137,6 +137,29 @@ will contain the following methods:
 Note that the methods are all declared \fkeyword{virtual} to give you the possibility
 of overriding them in subclasses.
 
+String fields can also be declared:
+
+\begin{msg}
+packet HttpRequestMessage
+{
+    string method; // "GET", "POST", etc.
+    string resource;
+};
+\end{msg}
+
+The generated getter and setter methods will return and accept \ttt{const char*}
+pointers:
+
+\begin{cpp}
+virtual const char *getMethod() const;
+virtual void setMethod(const char *method);
+virtual const char *getResource() const;
+virtual void setResource(const char *resource);
+\end{cpp}
+
+The generated object will have its own copy of the string, so it not only stores
+the \ttt{const char*} pointer.
+
 
 \subsection{Field Data Types}
 
@@ -156,7 +179,9 @@ Data types for fields are not limited to \fkeyword{int} and
       but you are responsible to ensure that the generated code compiles, i.e. the
       shortened type names must be defined in a header file you include.}
    \item {\opp} simulation time: \fkeyword{simtime\_t}
-   \item \fkeyword{string}
+   \item \fkeyword{string}. Getters and setters use the \ttt{const char*} data type;
+      \ttt{NULL} is not allowed. The object will store a copy of the string,
+      not just the pointer.
    \item structs and classes, defined in message files or elsewhere
 \end{itemize}
 
@@ -284,31 +309,6 @@ values in the array will be preserved (copied over to the new array.)
 The default array size is zero. This means that you need to call
 \ffunc{set...ArraySize()} with a nonzero argument before you can
 start filling array elements.
-
-
-\subsection{String Members}
-
-You can declare string-valued fields with the following syntax:
-
-\begin{msg}
-packet HttpRequestMessage
-{
-    string method = "GET";
-    string resource;
-};
-\end{msg}
-
-The generated getter and setter methods will return and accept \ttt{const char*}
-pointers:
-
-\begin{cpp}
-virtual const char *getMethod() const;
-virtual void setMethod(const char *method);
-virtual const char *getResource() const;
-virtual void setResource(const char *resource);
-\end{cpp}
-
-The generated object will have its own copy of the string.
 
 
 \section{Inheritance, Composition}
