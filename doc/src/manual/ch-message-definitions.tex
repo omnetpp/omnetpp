@@ -2,6 +2,7 @@
 \label{cha:message-definitions}
 
 \section{Introduction}
+\label{sec:ch-msg-defs:intro}
 
 In practice, you will need to add various fields to \cclass{cMessage} or
 \cclass{cPacket} to make them useful. For example, if you are modelling
@@ -25,10 +26,11 @@ great deal of manual work.
 
 
 \subsection{The First Message Class}
+\label{sec:ch-msg-defs:first-msg-class}
 
 Let us begin with a simple example. Suppose that you need a packet class that
 carries source and destination addresses as well as a hop count. You may then
-write a \ttt{mypacket.msg} file with the following contents:
+write a \ttt{MyPacket.msg} file with the following contents:
 
 \begin{msg}
 packet MyPacket
@@ -43,9 +45,9 @@ It is the task of the \textit{message compiler} is to generate C++ classes
 you can use from your models. The message compiler is normally invoked
 automatically for your \ttt{.msg} files during build.
 
-When the message compiler processes \ttt{mypacket.msg}, it creates the
-following files: \ttt{mypacket\_m.h} and \ttt{mypacket\_m.cc}. The
-generated \ttt{mypacket\_m.h} will contain the following class declaration:
+When the message compiler processes \ttt{MyPacket.msg}, it creates the
+following files: \ttt{MyPacket\_m.h} and \ttt{MyPacket\_m.cc}. The
+generated \ttt{MyPacket\_m.h} will contain the following class declaration:
 
 \begin{cpp}
 class MyPacket : public cPacket {
@@ -60,7 +62,7 @@ In your C++ files, you can use the \ttt{MyPacket} class by including the
 generated header file:
 
 \begin{cpp}
-#include "mypacket_m.h"
+#include "MyPacket_m.h"
 
 ...
 MyPacket *pkt = new MyPacket("pkt");
@@ -68,9 +70,9 @@ pkt->setSrcAddress(localAddr);
 ...
 \end{cpp}
 
-The \ttt{mypacket\_m.cc} file will contain implementation of the generated \ttt{MyPacket}
+The \ttt{MyPacket\_m.cc} file will contain implementation of the generated \ttt{MyPacket}
 class as well as ``reflection'' code that allows you to inspect these data
-structures in the Tkenv GUI. The \ttt{mypacket\_m.cc} file should be compiled and
+structures in the Tkenv GUI. The \ttt{MyPacket\_m.cc} file should be compiled and
 linked into your simulation; this is normally taken care of automatically.
 
 The following sections describe the message syntax and features in detail.
@@ -78,12 +80,14 @@ The following sections describe the message syntax and features in detail.
 
 
 \section{Messages and Packets}
+\label{sec:ch-msg-defs:messages-and-packets}
 
 \subsection{Defining Messages and Packets}
+\label{sec:ch-msg-defs:defining-messages-and-packets}
 
 Message and packet contents can be defined in a syntax resembling C structs.
 The keyword can be \fkeyword{message} or \fkeyword{packet}; they cause
-cause the generated C++ class to be derived from \cclass{cMessage} and
+the generated C++ class to be derived from \cclass{cMessage} and
 \cclass{cPacket}, respectively. (Further keywords, \fkeyword{class} and
 \fkeyword{struct}, will be covered later.)
 
@@ -98,10 +102,10 @@ packet FooPacket
 };
 \end{msg}
 
-Saving the above code into a \ttt{foopacket.msg} file and processing it
-with the message compiler will produce the files \ttt{foopacket\_m.h}
-and \ttt{foopacket\_m.cc}. The header file will contain the declaration of
-the generated C++ class.
+Saving the above code into a \ttt{FooPacket.msg} file and processing it
+with the message compiler, \fprog{opp\_msgc}, will produce the files
+\ttt{FooPacket\_m.h} and \ttt{FooPacket\_m.cc}. The header file will
+contain the declaration of the generated C++ class.
 
 The generated class will have a constructor that optionally accepts object
 name and message kind, and also a copy constructor. An assignment operator
@@ -162,6 +166,7 @@ the \ttt{const char*} pointer.
 
 
 \subsection{Field Data Types}
+\label{sec:ch-msg-defs:field-data-types}
 
 Data types for fields are not limited to \fkeyword{int} and
 \fkeyword{bool}. You can use several C/C++ and other data types:
@@ -182,29 +187,43 @@ Data types for fields are not limited to \fkeyword{int} and
    \item \fkeyword{string}. Getters and setters use the \ttt{const char*} data type;
       \ttt{NULL} is not allowed. The object will store a copy of the string,
       not just the pointer.
-   \item structs and classes, defined in message files or elsewhere
+   \item structs and classes, defined in message files or elsewhere (see
+      in later sections \ref{sec:ch-msg-defs:other-types-as-fields}
+      and \ref{sec:ch-msg-defs:using-cpp-types})
+)
 \end{itemize}
 
-Numeric fields are initialized to zero, and string fields to empty string.
+Numeric fields are initialized to zero, booleans to \ttt{false}, and string
+fields to empty string.
 
 
 \subsection{Initial Values}
+\label{sec:ch-msg-defs:initial-values}
 
-You can initialize field values with the following syntax:
+You can specify initial values for fields. Examples:
 
 \begin{msg}
-packet FooPacket
+packet RequestPacket
 {
-    int sourceAddress = 0;
-    int destAddress = 0;
-    bool hasPayload = false;
+    int version = HTTP_VERSION;
+    string method = "GET";
+    string resource = "/";
+    int maxBytes = 100*1024*1024; // 100MB
+    bool keepAlive = true;
 };
 \end{msg}
 
-Initialization code will be placed in the constructor of the generated class.
+As you can see, macros and expressions are also accepted as initalizer
+values. The message compiler does not check the syntax of the values, it
+only copies them into the generated C++ file; so if there is an error in
+them, it will be reported by the C++ compiler.
+
+Field initialization statements will be placed into the constructor of the
+generated class.
 
 
 \subsection{Enums}
+\label{sec:ch-msg-defs:enums}
 
 You can declare that an \fkeyword{int} (or other integral type) field
 takes values from an enum. The message compiler can then generate code
@@ -258,6 +277,7 @@ packet FooPacket
 
 
 \subsection{Fixed-Size Arrays}
+\label{sec:ch-msg-defs:fixed-size-arrays}
 
 You can specify fixed size arrays:
 
@@ -281,6 +301,7 @@ will be thrown.
 
 
 \subsection{Variable-Size Arrays}
+\label{sec:ch-msg-defs:variable-size-arrays}
 
 If the array size is not known in advance, you can declare the field
 to have a variable size:
@@ -311,32 +332,38 @@ The default array size is zero. This means that you need to call
 start filling array elements.
 
 
-\subsection{Using Structs and Classes as Fields}
+\subsection{Classes and Structs as Fields}
+\label{sec:ch-msg-defs:other-types-as-fields}
 
-In addition to primitive types, you can also use another struct or object
-as a field. For example, if you have a struct named \ttt{IPAddress},
-you can write the following:
+In addition to primitive types, you can also use other types (classes,
+structs, typedefs, etc.) as fields. For example, if you have a C++ type
+called \ttt{IPAddress}, you can write the following:
 
 \begin{msg}
-packet FooPacket
+packet IPPacket
 {
+    int version = 4;
     IPAddress src;
+    IPAddress dest;
 };
 \end{msg}
 
-The \ttt{IPAddress} structure must be known in advance to the message compiler;
-that is, it must either be a struct or class defined earlier in the message
-description file, or it must be a C++ type with its header file
-included via \ttt{cplusplus \{\{...\}\}} and its type announced
-(see Announcing C++ types).
+The \ttt{IPAddress} type must be known to the message compiler, and
+also at compile time to the C++ compiler; section
+\ref{sec:ch-msg-defs:using-cpp-types} will describe how to achieve that.
 
-The generated class will contain an \ttt{IPAddress} data member
-(that is, \textbf{not} a pointer to an \ttt{IPAddress}).
-The following getter and setter methods will be generated:
+The generated class will contain \ttt{IPAddress} data members
+(that is, not pointers to \ttt{IPAddress} objects), and
+the following getter and setter methods will be generated for them:
 
 \begin{cpp}
+virtual IPAddress& getSrc();
 virtual const IPAddress& getSrc() const;
 virtual void setSrc(const IPAddress& src);
+
+virtual IPAddress& getDest();
+virtual const IPAddress& getDest() const;
+virtual void setDest(const IPAddress& dest);
 \end{cpp}
 
 
@@ -371,10 +398,11 @@ Customization via C++ inheritance will be described in section
 
 
 \subsection{Inheritance}
+\label{sec:ch-msg-defs:inheritance}
 
 By default, messages are subclassed from \cclass{cMessage} or
-\cclass{cPacket}. However, you can explicitly specify the base class
-using the \fkeyword{extends} keyword:
+\cclass{cPacket}. However, you can explicitly specify the base class using
+the \fkeyword{extends} keyword (only single inheritance is supported):
 
 \begin{msg}
 packet Ieee80211DataFrame extends Ieee80211Frame
@@ -383,16 +411,14 @@ packet Ieee80211DataFrame extends Ieee80211Frame
 };
 \end{msg}
 
-For the example above, the generated C++ code will look like:
+For the example above, the generated C++ code will look like this:
 
 \begin{cpp}
-class Ieee80211DataFrame : public Ieee80211Frame { ... };
+// generated C++
+class Ieee80211DataFrame : public Ieee80211Frame {
+    ...
+};
 \end{cpp}
-
-Inheritance also works for structs and classes (see next sections
-for details).
-
-Only single inheritance is supported.
 
 
 
@@ -698,12 +724,12 @@ packet AppPacketExt extends AppPacket {
 \end{msg}
 
 
-
 \section{Customizing the Generated Class}
-\label{sec:messages:customizing-generated-class}
+\label{sec:ch-msg-defs:customizing-generated-class}
 
 
 \subsection{Customizing Method Names}
+\label{sec:ch-msg-defs:customizing-method-names}
 
 The names and some other properties of generated methods can be influenced
 with metadata annotations (properties).
@@ -753,6 +779,7 @@ accepted naming convention.
 
 
 \subsection{Customizing the Class Via Inheritance}
+\label{sec:ch-msg-defs:customizing-via-inheritance}
 
 Sometimes you need the generated code to do something
 more or do something differently than the version generated
@@ -873,6 +900,7 @@ void FooPacket::setPayloadLength(int newlength)
 
 
 \subsection{Abstract Fields}
+\label{sec:ch-msg-defs:abstract-fields}
 
 The purpose of abstract fields is to let you to override
 the way the value is stored inside the class,
@@ -1001,7 +1029,7 @@ packet FooPacket
 
 If you compile the above code, in the generated C++ code you will only find
 abstract methods for \ttt{foo} and \ttt{bar}, but no underlying data
-members or method impleementations. You can implement everything as you
+members or method implementations. You can implement everything as you
 like. You can write the following C++ file then to implement \ttt{foo} and
 \ttt{bar} with \ttt{std::vector} and \ttt{std::stack} (some details omitted
 for brevity):
@@ -1080,6 +1108,7 @@ Some additional notes:
 
 
 \section{Descriptor Classes}
+\label{sec:ch-msg-defs:descriptor-classes}
 
 For each generated class and struct, the message compiler generates an
 associated descriptor class. The descriptor class carries ``reflection''
@@ -1100,21 +1129,22 @@ descriptor class to extract and display the field values.
 The \fprop{@descriptor} class property can be used to control the generation
 of the descriptor class. \ttt{@descriptor(readonly)} instructs the message
 compiler not to generate field setters for the descriptor, and
-\ttt{@descriptor(false)} instructs it not to generate a dscription class
+\ttt{@descriptor(false)} instructs it not to generate a description class
 for the class at all.
 
-It is also possible to the (or abuse) the message compiler for generating a
+It is also possible to use (or abuse) the message compiler for generating a
 descriptor class for an existing class. (This can be useful for making your
 class inspectable in Tkenv.) To do that, write a message definition for
 your existing class (for example, if it has \ttt{int getFoo()} and
 \ttt{setFoo(int)} methods, add an \ttt{int foo} field to the message
-definition), and mark it with \ttt{@existingClass(true)}. This will the
-message compiler that it should not generate the actual class it already
-exists), only the descriptor class.
+definition), and mark it with \ttt{@existingClass(true)}. This will tell the
+message compiler that it should not generate an actual class (as it already
+exists), only a descriptor class.
 
 
 
 \section{Summary}
+\label{sec:ch-msg-defs:summary}
 
 This section summarizes the possibilities offered by message definitions.
 
