@@ -340,9 +340,34 @@ virtual void setSrc(const IPAddress& src);
 \end{cpp}
 
 
-\subsection{Pointers}
+\subsection{Pointer Fields}
+\label{sec:ch-msg-defs:pointers-fields}
 
-Pointers are not supported yet.
+Pointer fields where the setters and the destructor would delete the
+previous value are not supported yet. However, there are workarounds, as
+described below.
+
+You can create a typedef for the pointer and use the typedef name as field
+type. Then you'll get a plain pointer field where neither the setter nor
+the destructor deletes the old value (which is a likely memory leak).
+
+Example (section \ref{sec:ch-msg-defs:using-cpp-types} will explain the
+details):
+
+\begin{msg}
+cplusplus {{ typedef Foo *FooPtr; }} // C++ typedef
+class noncobject FooPtr; // announcement for the message compiler
+
+packet Bar
+{
+    FooPtr fooPtr;  // leaky pointer field
+};
+\end{msg}
+
+Then you can customize the class via C++ inheritance and reimplement
+the setter methods in C++, inserting the missing \ttt{delete} statements.
+Customization via C++ inheritance will be described in section
+\ref{sec:ch-msg-defs:customizing-via-inheritance}.
 
 
 \subsection{Inheritance}
