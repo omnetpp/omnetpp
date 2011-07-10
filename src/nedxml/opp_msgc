@@ -941,7 +941,18 @@ sub processFile($)
 sub prepareForCodeGeneration()
 {
     $msgqname = prefixWithNamespace($namespacename, $msgname);
-    $msgbaseqname = lookupExistingClassName($namespacename, $msgbase);
+
+    # determine $msgbaseqname
+    my @found = lookupExistingClassName($namespacename, $msgbase);
+    if (@found == 1) {
+        $msgbaseqname = $found[0];
+    } elsif (@found == 0) {
+        print "$filename: Error: '$msgname': unknown base class '$msgbase'\n"; $ret=1;
+        $msgbaseqname = 'cMessage';
+    } else {
+        print "$filename: Error: '$msgname': ambiguous base class '$msgbase'; possibilities: " .join(', ',@found)."\n"; $ret=1;
+        $msgbaseqname = $found[0];
+    }
 
     # check base class and determine type of object
     if ($msgqname eq 'cObject' || $msgqname eq 'cNamedObject' || $msgqname eq 'cOwnedObject') {
@@ -1042,9 +1053,15 @@ sub prepareForCodeGeneration()
         # resolve enum namespace
         my $enumname = $fprops{$fieldname}->{"enum"};
         if (defined($enumname)) {
-            my $enumqname = lookupExistingEnumName($namespacename, $enumname);
-            if ($enumname ne '' && $enumqname eq '') {
-                print "$filename: Error: undeclared enum '$enumname' used in '$msgname'\n"; $ret=1;
+            my @found = lookupExistingEnumName($namespacename, $enumname);
+            if (@found == 1) {
+                $enumqname = $found[0];
+            } elsif (@found == 0) {
+                print "$filename: Error: undeclared enum '$enumname' in field '$fieldname' in '$msgname'\n"; $ret=1;
+                $enumqname = '';
+            } else {
+                print "$filename: Error: ambiguous enum '$enumname' in field '$fieldname' in '$msgname';  possibilities: ".join(', ',@found)."\n"; $ret=1;
+                $enumqname = $found[0];
             }
             $fprops{$fieldname}->{"enum"} = $enumqname; # need to modify the property in place
         }
@@ -1099,9 +1116,17 @@ sub prepareForCodeGeneration()
         }
         else {
             $fkind{$fieldname} = 'struct';
-            $ftypeqname = lookupExistingClassName($namespacename, $ftype);
-            if ($ftypeqname eq '') {
-                print "$filename: Error: unknown type $ftype for field '$fieldname' in '$msgname'\n"; $ret=1;
+
+            # $ftypeqname
+            my @found = lookupExistingClassName($namespacename, $ftype);
+            if (@found == 1) {
+                $ftypeqname = $found[0];
+            } elsif (@found == 0) {
+                print "$filename: Error: unknown type '$ftype' for field '$fieldname' in '$msgname'\n"; $ret=1;
+                $ftypeqname = 'cObject';
+            } else {
+                print "$filename: Error: unknown type '$ftype' for field '$fieldname' in '$msgname'; possibilities: " .join(', ',@found)."\n"; $ret=1;
+                $ftypeqname = $found[0];
             }
         }
         $ftypeqname{$fieldname} = $ftypeqname;
@@ -2154,26 +2179,23 @@ sub lookupExistingClassName($$)
 {
     my($namespacename, $name) = @_;
     if ($name eq '') {
-        return $name;
-    }
-    if ($name =~ /::/) {
-        # contains "::" -- user means explicitly qualified name
-        $name =~ s/^:://;  # remove leading "::"
-        if (grep(/^\Q$name\E$/,@classes)) {
-            return $name;
-        } else {
-            return '';  # "not found"
-        }
+        return ( $name );
     }
 
-    my $qname = prefixWithNamespace($namespacename, $name);
-    if (grep(/^\Q$qname\E$/,@classes)) {
-        return $qname; # found it in our namespace
+    #print("- lookup($name,$namespacename) among: " . join(' ', @classes) . "\n");
+
+    # if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
+    if ($name =~ /::/) {
+        $name =~ s/^:://;  # remove leading "::", because names in @classes don't have it either
+        return grep(/^\Q$name\E$/,@classes);
     }
-    elsif (grep(/^\Q$name\E$/,@classes)) {
-        return $name; # found it in the global namespace
+    else {
+        my $qname = $namespacename ? $namespacename.'::'.$name : $name; # prefer name from local namespace
+        if (grep(/^\Q$qname\E$/,@classes)) {
+            return $qname;
+        }
+        return grep(/\b\Q$name\E$/,@classes);
     }
-    return '';  # "not found"
 }
 
 #
@@ -2183,26 +2205,23 @@ sub lookupExistingEnumName($$)
 {
     my($namespacename, $name) = @_;
     if ($name eq '') {
-        return $name;
-    }
-    if ($name =~ /::/) {
-        # contains "::" -- user means explicitly qualified name
-        $name =~ s/^:://;  # remove leading "::"
-        if (grep(/^\Q$name\E$/,@enums)) {
-            return $name;
-        } else {
-            return '';  # "not found"
-        }
+        return ( $name );
     }
 
-    my $qname = prefixWithNamespace($namespacename, $name);
-    if (grep(/^\Q$qname\E$/,@enums)) {
-        return $qname; # found it in our namespace
+    #print("- lookup($name,$namespacename) among: " . join(' ', @enums) . "\n");
+
+    # if $name contains "::" then user means explicitly qualified name; otherwise he means 'in whichever namespace it is'
+    if ($name =~ /::/) {
+        $name =~ s/^:://;  # remove leading "::", because names in @enums don't have it either
+        return grep(/^\Q$name\E$/,@enums);
     }
-    elsif (grep(/^\Q$name\E$/,@enums)) {
-        return $name; # found it in the global namespace
+    else {
+        my $qname = $namespacename ? $namespacename.'::'.$name : $name; # prefer name from local namespace
+        if (grep(/^\Q$qname\E$/,@enums)) {
+            return $qname;
+        }
+        return grep(/\b\Q$name\E$/,@enums);
     }
-    return '';  # "not found"
 }
 
 sub propertyAsBool($)
