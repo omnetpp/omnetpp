@@ -903,6 +903,7 @@ sub processFile($)
 #  %argtype{fieldname}
 #  %rettype{fieldname}
 #  %var{fieldname}
+#  %argname{fieldname}
 #  %varsize{fieldname}
 #  %getter{fieldname}
 #  %setter{fieldname}
@@ -1028,7 +1029,8 @@ sub prepareForCodeGeneration()
         if ($classtype eq 'struct') {
             $var{$fieldname} = $fieldname;
         } else {
-            $var{$fieldname} = $fieldname."_var";
+            $var{$fieldname} = $fieldname . "_var";
+            $argname{$fieldname} = $fieldname;
         }
 
         $varsize{$fieldname} = $fieldname."_arraysize";
@@ -1273,17 +1275,17 @@ sub generateClass
             print H "    virtual $fsizetype{$fieldname} $getsize{$fieldname}() const$pure;\n";
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k)$constifprimitivetype$pure;\n";
             print H "    virtual const $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
-            print H "    virtual void $setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual void $setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $argname{$fieldname})$pure;\n";
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
             print H "    virtual void $alloc{$fieldname}($fsizetype{$fieldname} size)$pure;\n";
             print H "    virtual $fsizetype{$fieldname} $getsize{$fieldname}() const$pure;\n";
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k)$constifprimitivetype$pure;\n";
             print H "    virtual const $rettype{$fieldname} $getter{$fieldname}($fsizetype{$fieldname} k) const {return const_cast<$msgclass*>(this)->$getter{$fieldname}(k);}\n" if ($isstruct);
-            print H "    virtual void $setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual void $setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $argname{$fieldname})$pure;\n";
         } else {
             print H "    virtual $rettype{$fieldname} $getter{$fieldname}()$constifprimitivetype$pure;\n";
             print H "    virtual const $rettype{$fieldname} $getter{$fieldname}() const {return const_cast<$msgclass*>(this)->$getter{$fieldname}();}\n" if ($isstruct);
-            print H "    virtual void $setter{$fieldname}($argtype{$fieldname} $var{$fieldname})$pure;\n";
+            print H "    virtual void $setter{$fieldname}($argtype{$fieldname} $argname{$fieldname})$pure;\n";
         }
     }
     print H "};\n\n";
@@ -1525,10 +1527,10 @@ sub generateClass
                 print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%lu\", (unsigned long)k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $argname{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$farraysize{$fieldname}) throw cRuntimeError(\"Array of size $farraysize{$fieldname} indexed by \%lu\", (unsigned long)k);\n";
-                print CC "    this->$var{$fieldname}\[k\] = $var{$fieldname};\n";
+                print CC "    this->$var{$fieldname}\[k\] = $argname{$fieldname};\n";
                 print CC "}\n\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "void $msgclass\:\:$alloc{$fieldname}($fsizetype{$fieldname} size)\n";
@@ -1558,19 +1560,19 @@ sub generateClass
                 print CC "    if (k>=$varsize{$fieldname}) throw cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
                 print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}($fsizetype{$fieldname} k, $argtype{$fieldname} $argname{$fieldname})\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) throw cRuntimeError(\"Array of size \%d indexed by \%d\", $varsize{$fieldname}, k);\n";
-                print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
+                print CC "    this->$var{$fieldname}\[k\] = $argname{$fieldname};\n";
                 print CC "}\n\n";
             } else {
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}()$constifprimitivetype\n";
                 print CC "{\n";
                 print CC "    return $var{$fieldname}$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "void $msgclass\:\:$setter{$fieldname}($argtype{$fieldname} $var{$fieldname})\n";
+                print CC "void $msgclass\:\:$setter{$fieldname}($argtype{$fieldname} $argname{$fieldname})\n";
                 print CC "{\n";
-                print CC "    this->$var{$fieldname} = $var{$fieldname};\n";
+                print CC "    this->$var{$fieldname} = $argname{$fieldname};\n";
                 print CC "}\n\n";
             }
         }

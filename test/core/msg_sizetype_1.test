@@ -41,5 +41,5 @@ x.getFoo(2):99
     virtual void setFooArraySize(unsigned char size);
     virtual unsigned char getFooArraySize() const;
     virtual int getFoo(unsigned char k) const;
-    virtual void setFoo(unsigned char k, int foo_var);
+    virtual void setFoo(unsigned char k, int foo);
 
