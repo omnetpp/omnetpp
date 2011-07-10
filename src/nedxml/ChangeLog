@@ -1,6 +1,37 @@
+2011-07-10  Andras Varga
+
+	* opp_msgc: fixes for cNamedObject
+
+	* opp_msgc: fix: setter method argument names no longer end in "_var"
+
+	* opp_msgc: fix: use fully qualified type names for fields in the
+	generated code
+
+	* opp_msgc: improvement: announcements and type definitions to observe
+	whether they are above the namespace declaration  (=outside the
+	namespace) or below it (=inside the namespace). This changes makes it
+	consistent with cplusplus blocks that had this behavior for quite some
+	time. Details:
+	  - treat announcements above namespace decls as being outside the
+	    namespace (i.e. unqualified names will be understood as belonging
+	    to the global namespace)
+	  - do not allow type definitions above the namespace decl (because we
+	    always want to generate them into the C++ namespace)
+
+	* opp_msgc: improvement: modified type lookup in namespaces, to make it
+	possible to use unqualified names when declaring fields.
+	The rules:
+	  - if type contains '::', we regard it as being fully qualified
+	  - if type is simplename, and there is such name in the file's namespace,
+	    that's it
+	  - otherwise, the simplename must be unambiguous when looking at names
+	    in all other namespaces (including the global namespace); e.g. if
+	    there's both a foo::A and an ::A (or a bar::A), we report it as
+	    ambiguous.
+
 2011-05-17  Andras Varga
 
-	* saxparser_expat.cc: fix #300: wrong printf() format used for 
+	* saxparser_expat.cc: fix #300: wrong printf() format used for
 	XML_GetCurrentLineNumber().
 
 2011-05-05  ------ omnetpp-4.2b2 released ------
@@ -8,7 +39,7 @@
 2011-04-19  Andras Varga
 
 	* minor grammar change (ned2.y, ned2.lex): made "typename" a keyword,
-	and allow it as the last component in pattern assignments. 
+	and allow it as the last component in pattern assignments.
 	Example:
 	  *.host[*].tcp.typename = "TCP_lwIP";
 	Note that a 'typename=...' assignment cannot occur in the body of the
