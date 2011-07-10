@@ -343,8 +343,9 @@ sub processFile($)
     print H "\n";
 
     # parse namespace decl
+    # note: we remove the decl from the source, and mark its place with a '<namespace>' marker string
     $namespacename = "";
-    while ($msg =~ s/$NAMESPACE_DECL//s)
+    while ($msg =~ s/$NAMESPACE_DECL/<namespace>/s)
     {
         if ($namespacename ne "") {
             print "$filename: Error: multiple namespace declarations\n"; $ret=1;
@@ -385,13 +386,16 @@ sub processFile($)
     }
 
     # parse type announcements
-    while ($msg =~ s/(struct|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+$QNAME(\s+extends\s+$QNAME)?\s*;//s)
+    while ($msg =~ s/(struct|class|class\s+noncobject|class\s+cpolymorphic|message|packet)\s+$QNAME(\s+extends\s+$QNAME)?\s*;/<class>/s)
     {
         my $type0 = $1;
         my $class = $2;
         my $baseclass = $8;
 
-        my $classqname = canonicalizeQName($namespacename, $class);
+        my $precedesnamespacedecl = ($msg =~ /<class>.*<namespace>/s);
+        $msg =~ s/<class>//s; # remove the marker inserted above
+
+        my $classqname = canonicalizeQName($precedesnamespacedecl ? "" : $namespacename, $class);
 
         if ($type0 eq 'struct') {
             $type = 'struct';
@@ -403,12 +407,15 @@ sub processFile($)
             } elsif ($baseclass eq 'void') {
                 $type = 'foreign';
             } else {
-                $baseclassqname = lookupExistingClassName($namespacename, $baseclass);
-                if ($baseclassqname eq '') {
+                my @found = lookupExistingClassName($namespacename, $baseclass);
+                if (@found == 1) {
+                    $type = $classtype{$found[0]};
+                } elsif (@found == 0) {
                     print "$filename: Error: '$class': unknown ancestor class '$baseclass'\n"; $ret=1;
                     $type = 'cobject';
                 } else {
-                    $type = $classtype{$baseclassqname};
+                    print "$filename: Error: '$class': ambiguous ancestor class '$baseclass'; possibilities: " .join(', ',@found)."\n"; $ret=1;
+                    $type = $classtype{$found[0]};
                 }
             }
         } elsif ($type0 =~ /class\s+noncobject/) {
@@ -440,10 +447,14 @@ sub processFile($)
     }
 
     # parse enum announcements
-    while ($msg =~ s/enum\s+$QNAME\s*;//s)
+    while ($msg =~ s/enum\s+$QNAME\s*;/<enum>/s)
     {
         $enumname = $1;
-        $enumqname = canonicalizeQName($namespacename, $enumname);
+
+        my $precedesnamespacedecl = ($msg =~ /<enum>.*<namespace>/s);
+        $msg =~ s/<enum>//s;  # remove the marker inserted above
+
+        $enumqname = canonicalizeQName($precedesnamespacedecl ? "" : $namespacename, $enumname);
 
         if ($enumname =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: enum name '$enumname' is a reserved word\n"; $ret=1;
@@ -457,7 +468,7 @@ sub processFile($)
     }
 
     # parse enums
-    while ($msg =~ s/enum\s+([A-Za-z0-9_: \t]+?)\s*{(.*?)};?//s)
+    while ($msg =~ s/enum\s+([A-Za-z0-9_: \t]+?)\s*{(.*?)};?/<enum>/s)
     {
         $source = $&;
         $enumhdr = $1;
@@ -485,6 +496,11 @@ sub processFile($)
         if ($enumname =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: enum name '$enumname' is a reserved word\n"; $ret=1;
         }
+
+        if ($msg =~ /<enum>.*<namespace>/s) {
+            print "$filename: Error: enum definition '$enumname' cannot precede namespace declaration\n"; $ret=1;
+        }
+        $msg =~ s/<enum>//s; # remove the marker inserted above
 
         @fieldlist = ();
         undef %fval;
@@ -566,7 +582,7 @@ sub processFile($)
     }
 
     # parse message/packet/class/struct definitions
-    while ($msg =~ s/(message|packet|class|struct)\s+(.+?)\s*{(.*?)};?//s)
+    while ($msg =~ s/(message|packet|class|struct)\s+(.+?)\s*{(.*?)};?/<class>/s)
     {
         #
         # parse message { ... } syntax
@@ -603,6 +619,11 @@ sub processFile($)
         if ($msgname =~ /^($RESERVED_WORDS)$/) {
             print "$filename: Error: type name '$msgname' is a reserved word\n"; $ret=1;
         }
+
+        if ($msg =~ /<class>.*<namespace>/s) {
+            print "$filename: Error: $keyword definition '$msgname' cannot precede namespace declaration\n"; $ret=1;
+        }
+        $msg =~ s/<class>//s;  # remove the marker inserted above
 
         $oldstyleproperties = "";
         $fieldsandproperties= "";
@@ -838,6 +859,9 @@ sub processFile($)
     {
         print "$filename: Warning: obsolete syntax: convert properties to the '\@' syntax (for example, change customize=true to \@customize(true)), and remove 'properties:' and 'fields:' keywords\n";
     }
+
+    # remove marker
+    $msg =~ s/<namespace>//s;
 
     $scrap = $msg;
     if ($scrap =~ /[^ \t\n]/s)
