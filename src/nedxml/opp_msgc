@@ -1071,7 +1071,7 @@ sub prepareForCodeGeneration()
         # determine field data type
         if ($ftype =~ /^($PRIMITIVE_TYPES)$/) {
             $fkind{$fieldname} = 'basic';
-            $ftypeqname = '';
+            $ftypeqname = '';  #unused
         }
         else {
             $fkind{$fieldname} = 'struct';
@@ -1085,9 +1085,9 @@ sub prepareForCodeGeneration()
         # data type, argument type, conversion to/from string...
         $maybe_c_str{$fieldname} = "";
         if ($fkind{$fieldname} eq 'struct') {
-            $datatype{$fieldname} = "\:\:$ftypeqname"; # fully qualified absolute namespace, to remove ambiguity of how we understood the type
-            $argtype{$fieldname} = "const $ftype&";
-            $rettype{$fieldname} = "$ftype&";
+            $datatype{$fieldname} = "$ftypeqname";
+            $argtype{$fieldname} = "const $ftypeqname&";
+            $rettype{$fieldname} = "$ftypeqname&";
             $tostring{$fieldname} = "";
             $fromstring{$fieldname} = "";
             #$fval{$fieldname} = '' unless ($fval{$fieldname} ne '');
