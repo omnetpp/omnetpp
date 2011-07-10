@@ -1107,6 +1107,184 @@ Some additional notes:
 
 
 
+\section{Namespaces}
+\label{sec:ch-msg-defs:namespaces}
+
+It is possible to place the generated classes into a C++ namespace,
+and also to use types from other namespaces.
+
+\subsection{Declaring a Namespace}
+\label{sec:ch-msg-defs:declaring-a-namespace}
+
+To place the generated types into a namespace, add a namespace declaration
+near the top of the message file:
+
+\begin{msg}
+namespace inet;
+\end{msg}
+
+If you are fond of hierarchical (nested) namespaces, you can declare one
+with a straightforward syntax, using double colons in the namespace
+declaration. There is no need for multiple nested \ttt{namespace}
+declarations as in C++:
+
+\begin{msg}
+namespace org::omnetpp::inet::ieee80211;
+\end{msg}
+
+The above code will be translated into nested namespaces in the C++ code:
+
+\begin{cpp}
+namespace org { namespace omnetpp { namespace inet { namespace ieee80211 {
+...
+}}}}
+\end{cpp}
+
+Conceptually, the namespace extends from the place of the namespace
+declaration to the end of the message file. (A message file may contain
+only one namespace declaration.) In other words, it \textit{does} matter
+whether you put something above the namespace declaration line or below it:
+
+\begin{enumerate}
+\item The contents of \fkeyword{cplusplus} blocks above the namespace
+      declaration will be placed outside (i.e. above) the namespace block
+      in the generated C++ header; blocks below the namespace declaration
+      will placed inside the C++ namespace block.
+\item Type announcements are interpreted differently depending on whether
+      they occur above or below the namespace declaration (this will be
+      detailed later).
+\item Types defined with the message syntax are placed into the namespace
+      of the message file; thus, definitions must always be \textit{after}
+      the namespace declaration. Type definitions above the namespace line
+      will be rejected with an error message.
+\end{enumerate}
+
+\subsection{C++ Blocks and Namespace}
+
+As described above, the contents of a \fkeyword{cplusplus} block will be
+copied above or into the C++ namespace block in the generated header
+depending on whether it occurs above or below the namespace declaration in
+the message file.
+
+The placement of \fkeyword{cplusplus} blocks relative to the namespace
+declaration is important because you don't want \ttt{\#include} directives
+to be placed inside the C++ namespace block. That would cause the
+declarations in the header file to be interpreted as being part of the
+namespace, which they are not. Includes should always be put into
+\ttt{cplusplus} blocks \textit{above} the namespace declaration. This is so
+important that I repeat it:
+
+\begin{important}
+Includes should always be placed into a \fkeyword{cplusplus} block \tbf{above}
+the namespace declaration.
+\end{important}
+
+As for typedefs and other C++ code, you need to place them above or below
+the namespace declaration based on whether you want them to be in the C++
+namespace or not.
+
+\subsection{Type Announcements and Namespace}
+
+The type announcement syntax allows one to specify the namespace of the type
+as well, so the following lines are syntactically correct:
+
+\begin{msg}
+packet foo::FooPacket;
+packet nes::ted::name::space::BarPacket;
+packet ::BazPacket;
+\end{msg}
+
+Announced type names are interpreted in the following way:
+
+\begin{enumerate}
+\item If the type name contains a double colon (\ttt{::}), it is interpreted
+      as being fully qualified with an absolute namespace.
+\item If the name is just an identifier (no double colon), the interpretation
+      depends on whether it is above or below the namespace declaration.
+      If it is above, the name is interpreted as a global type; otherwise
+      it is interpreted as part of the package file's namespace.
+\end{enumerate}
+
+This also means that if you want to announce a global type, you either
+have to put the announcement above the namespace declaration, or prefix
+the type with ``\ttt{::}'' to declare that it is not part of a namespace.
+
+When the announced types are used later (as field type, base class, etc.),
+they can be referred to just with their simple names (without namespace);
+or alternatively with their fully qualified names. When a message compiler
+encounters type name as field type or base class, it interprets the type
+name in the following way:
+
+\begin{enumerate}
+\item If the type name contains a double colon (\ttt{::}), it is interpreted
+      as being fully qualified with an absolute namespace.
+\item If the name is just an identifier (no double colon), and the message
+      file's namespace contains that name, it is chosen; otherwise:
+\item It is looked up among all announced types in all namespaces (including
+      the global namespace), and there must be exactly one match. That is,
+      if the same name exists in multiple namespaces, it may only be
+      referenced with fully qualified name.
+\end{enumerate}
+
+The following code illustrates the above rules:
+
+\begin{msg}
+cplusplus {{
+// includes go above the namespace line
+#include <vector>
+#include "IPAddress.h"
+}}
+
+// the IPAddress type is in the global namespace
+class noncobject IPAddress;
+
+namespace foo;  // namespace begins with this line
+
+// we could also have announced IPAddress here as "::IPAddress":
+//class noncobject ::IPAddress;
+
+cplusplus {{
+// we want IPAddressVector to be part of the namespace
+typedef std::vector<IPAddress> IPAddressVector;
+}}
+
+// type will be understood as foo::IPAddressVector
+class noncobject IPAddressVector;
+
+packet FooPacket {
+    IPAddress source;
+    IPAddressVector neighbors;
+};
+\end{msg}
+
+Another example that uses a \ttt{PacketData} class and a \ttt{NetworkPacket} type
+from a \ttt{net} namespace:
+
+\begin{msg}
+// NetworkPacket.msg
+namespace net;
+class PacketData { }
+packet NetworkPacket { }
+\end{msg}
+
+\begin{msg}
+// FooPacket.msg
+cplusplus {{
+#include "NetworkPacket_m.h"
+}}
+class net::PacketData;
+packet net::NetworkPacket;
+
+namespace foo;
+
+packet FooPacket extends NetworkPacket
+{
+    PacketData data;
+}
+\end{msg}
+
+
+
 \section{Descriptor Classes}
 \label{sec:ch-msg-defs:descriptor-classes}
 
