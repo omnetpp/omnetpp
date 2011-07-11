@@ -643,7 +643,7 @@ obscure runtime error.
 
 \subsection{Making the C++ Declarations Available}
 
-In addition to announcing types to the message compiler, you also have make
+In addition to announcing types to the message compiler, you also have to make
 sure their C++ declarations will be available at compile time so that the
 generated code will actually compile. This can be achieved with
 \fkeyword{cplusplus} blocks that let you inject includes, typedefs,
@@ -778,7 +778,7 @@ accepted naming convention.
 %% TODO \fprop{nopack}  (also a field property)
 
 
-\subsection{Customizing the Class Via Inheritance}
+\subsection{Customizing the Class via Inheritance}
 \label{sec:ch-msg-defs:customizing-via-inheritance}
 
 Sometimes you need the generated code to do something
@@ -801,9 +801,8 @@ Instead, it should look something like this:
 \begin{cpp}
 void FooPacket::setPayloadLength(int payloadLength)
 {
-    int delta = payloadLength - this->payloadLength;
+    addByteLength(payloadLength - this->payloadLength);
     this->payloadLength = payloadLength;
-    setByteLength(getByteLength() + delta);
 }
 \end{cpp}
 
@@ -890,7 +889,7 @@ class FooPacket : public FooPacket_Base
 void FooPacket::setPayloadLength(int newlength)
 {
     // adjust message length
-    setBitLength(length()-getPayloadLength()+newlength);
+    addByteLength(newlength - getPayloadLength());
 
     // set the new length
     FooPacket_Base::setPayloadLength(newlength);
@@ -1350,6 +1349,7 @@ The following data types are supported for fields:
   \item  fixed-size arrays of the above types
   \item  variable-size arrays of the above types (stored as a dynamically
     allocated array plus an integer for the array size)
+  \item  any other types defined by typedef
 \end{itemize}
 
 Further features:
