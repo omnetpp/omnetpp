@@ -421,6 +421,59 @@ class Ieee80211DataFrame : public Ieee80211Frame {
 \end{cpp}
 
 
+\subsection{Assignment of Inherited Fields}
+\label{sec:ch-msg-defs:assignment-of-inherited-fields}
+
+Message definitions allow you to change the initial value of a field
+defined in an ancestor type. The syntax is similar to that of a field
+definition with initial value, only the data type is missing.
+
+An example:
+
+\begin{msg}
+packet Ieee80211Frame
+{
+    int frameType;
+    ...
+};
+
+packet Ieee80211DataFrame extends Ieee80211Frame
+{
+    frameType = DATA_FRAME;  // assignment of inherited field
+    ...
+};
+\end{msg}
+
+It may seem like the message compiler would need the definition of the base
+class to check the definition of the field being assigned. However, it is
+not the case. The message compiler trusts that such field exists; or
+rather, it leaves the check to the C++ compiler.
+
+What the message compiler actually does is derives a setter method name
+from the field name, and generates a call to it into the constructor.
+Thus, the generated constructor for the above packet type would be
+something like this:
+
+\begin{cpp}
+Ieee80211DataFrame::Ieee80211DataFrame(const char *name, int kind) :
+    Ieee80211Frame(name, kind)
+{
+    this->setFrameType(DATA_FRAME);
+    ...
+}
+\end{cpp}
+
+This implementation also lets you initialize \cclass{cMessage} /
+\cclass{cPacket} fields such as message kind or packet length:
+
+\begin{msg}
+packet UDPPacket
+{
+    byteLength = 16;  // results in 'setByteLength(16);' being placed into ctor
+};
+\end{msg}
+
+
 
 \section{Classes}
 \label{sec:ch-msg-defs:defining-classes}
@@ -438,9 +491,9 @@ only the \fkeyword{class} keyword is used instead of \fkeyword{message} /
 keyword, and defaults to \cclass{cObject}.
 
 \begin{note}
-\cclass{cObject} has no data members. It only defines virtual methods so
-the only overhead would be the vtable, but the generated class already has
-a vtable because of generated methods are also virtual. In other words,
+\cclass{cObject} has no data members. It only defines virtual methods, so
+the only overhead would be the \textit{vptr}; however, the generated class already has
+a vptr because the generated methods are also virtual. In other words,
 \cclass{cObject} adds zero overhead to the generated class, and there is no
 reason not to always use it as base class.
 \end{note}
