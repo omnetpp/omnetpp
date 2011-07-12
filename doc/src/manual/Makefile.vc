@@ -61,7 +61,12 @@ SVGPICS = \
         figures\simlib-histogramsetup.svg
 
 
-DOTPICS = figures\build-workflow.dot figures\ned-net6-topology.dot figures\component-inheritance.dot
+DOTPICS = \
+	figures\build-workflow.dot \
+	figures\ned-net6-topology.dot \
+	figures\component-inheritance.dot \
+	figures\resultlistener-inheritance.dot \
+	figures\statisticrecording.dot
 
 PDFPICS = $(SVGPICS:.svg=.pdf) $(DOTPICS:.dot=.pdf)
 

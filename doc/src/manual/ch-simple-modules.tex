@@ -4247,10 +4247,10 @@ simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, listener);
 \end{note}
 
 
-\subsection{Exposing Statistics as Signals}
+\section{Signal-Based Statistics Recording}
 \label{sec:ch-simple-modules:statistic-signals}
 
-\subsubsection{Motivation}
+\subsection{Motivation}
 
 One use of signals is to expose variables for result collection without
 telling where, how, and whether to record them. With this approach,
@@ -4282,7 +4282,316 @@ The signals approach allows for several possibilities:
 With the signals approach the above goals can be fulfilled.
 
 
-\subsubsection{Emitting Signals}
+\subsection{Declaring Statistics}
+\label{sec:ch-simple-modules:declaring-statistics}
+
+\subsubsection{Introduction}
+
+In order to record simulation results based on signals, one must add
+\fprop{@statistic} properties to the simple module's (or channel's) NED
+definition. A \fprop{@statistic} property defines the name of the
+statistic, which signal(s) are used as input, what processing steps are to
+be applied to them (e.g. smoothing, filtering, summing, differential
+quotient), and what properties are to be recorded (minimum, maximum,
+average, etc.) and in which form (vector, scalar, histogram). Record items
+can be marked optional, which lets you denote a \textit{``default''} and a
+more comprehensive \textit{``all''} result set to be recorded; the list of
+record items can be further tweaked from the configuration. One can also
+specify a descriptive name (``title'') for the statistic, and also a
+measurement unit.
+
+The following example declares a queue module with a queue length statistic:
+
+\begin{ned}
+simple Queue
+{
+    parameters:
+        @statistic[queueLength](record=max,timeavg,vector?);
+    gates:
+        input in;
+        output out;
+}
+\end{ned}
+
+As you can see, statistics are represented with indexed NED properties (see
+\ref{sec:ch-ned-lang:properties}). The property name is always
+\ttt{statistic}, and the index (here, \ttt{queueLength}) is the
+name of the statistic. The property value, that is, everything inside the
+parentheses, carries hints and extra information for recording.
+
+The above \ttt{@statistic} declaration assumes that module's C++ code
+emits the queue's updated length as signal \ttt{queueLength} whenever
+elements are inserted into the queue or are removed from it.
+By default, the maximum and the time average of the queue length will
+be recorded as scalars. One can also instruct the simulation (or parts
+of it) to record ``all'' results; this will turn on optional record items,
+those marked with a question mark, and then the queue lengths will also be
+recorded into an output vector.
+
+\begin{note}
+The configuration lets you fine-tune the list of result items even
+beyond the \ttt{default} and \ttt{all} settings; see section
+\ref{sec:ana-sim:scalar-results}.
+\end{note}
+
+In the above example, the signal to be recorded was taken from the
+statistic name. When that is not suitable, the \ttt{source} property key
+lets you specify a different signal as input for the statistic. The
+following example assumes that the C++ code emits a \ttt{qlen} signal, and
+declares a \ttt{queueLength} statistic based on that:
+
+\begin{ned}
+simple Queue
+{
+    parameters:
+        @signal[qlen](type=int); // optional
+        @statistic[queueLength](source=qlen; record=max,timeavg,vector?);
+        ...
+}
+\end{ned}
+
+Note that beyond the \ttt{source=qlen} property key we have also added
+a signal declaration (\fprop{@signal} property) for the \ttt{qlen} signal.
+Declaring signals is currently optional and in fact \ttt{@signal} properties
+are currently ignored by the system, but it is a good practice nevertheless.
+
+It is also possible to apply processing to a signal before recording it.
+Consider the following example:
+
+\begin{ned}
+@statistic[dropCount](source="count(drop)"; record=last,vector?);
+\end{ned}
+
+This records the total number of packet drops as a scalar, and
+optionally the number of packets dropped in the function of time as a
+vector, provided the C++ code emits a \ttt{drop} signal every time a packet
+is dropped. The value and even the data type of the \ttt{drop} signal is
+indifferent, because only the number of emits will be counted.
+Here, \ttt{count()} is a \textit{result filter}.
+
+\begin{note}
+The quotation marks around \ttt{"count(drop)"} are there because the NED
+language parser does not allow parentheses in property values; otherwise
+they have no significance.
+\end{note}
+
+Another example:
+
+\begin{ned}
+@statistic[droppedBytes](source="sum(packetBytes(pkdrop))"; record=last,
+vector?);
+\end{ned}
+
+This example assumes that the C++ code emits a \ttt{pkdrop} signal with a
+packet (\ttt{cPacket*} pointer) as a value. Based on that signal, it
+records the total number of bytes dropped (as a scalar, and optionally as a
+vector too). The \ttt{packetBytes()} filter extracts the number of bytes
+from each packet using \cclass{cPacket}'s \ffunc{getByteLength()} method,
+and the \ttt{sum()} filter, well, sums them up.
+
+Arithmetic expressions can also be used. For example, the following line
+computes the number of dropped bytes using the \ttt{packetBits()} filter.
+
+\begin{ned}
+@statistic[droppedBytes](source="sum(8*packetBits(pkdrop))"; record=last,
+vector?);
+\end{ned}
+
+The source can also combine multiple signals in an arithmetic expression:
+
+\begin{ned}
+@statistic[dropRate](source="count(drop)/count(pk)"; record=last,vector?);
+\end{ned}
+
+When multiple signals are used, a value arriving on either signal will
+result in one output value. The computation will use the last values of the
+other signals (sample-hold interpolation). One limitation regarding
+multiple signals is that the same signal cannot occur twice, because it
+would cause glitches in the output.
+
+Record items may also be expressions and contain filters. For example, the
+statistic below is functionally equivalent to one of the above examples: it
+also computes and records as scalar and as vector the total number of bytes
+dropped, using a \ttt{cPacket*}-valued signal as input; however, some of
+the computations have been shifted into the recorder part.
+
+\begin{ned}
+@statistic[droppedBytes](source="packetBits(pkdrop)"; record="last(8*sum)",
+"vector(8*sum)?");
+\end{ned}
+
+
+\subsubsection{Property Keys}
+
+The following keys are understood in \fprop{@statistic} properties:
+
+\begin{description}
+  \item[source]: Defines the input for the recorders (see \ttt{record=} key).
+     When missing, the statistic name is taken as the signal name;
+  \item[record]: Contains a list of recording modes, separated by comma.
+     Recording modes define how to record the source (see \ttt{source=} key).
+  \item[title]: A longer, descriptive name for the statistic signal; result
+      visualization tools may use it as chart label, e.g. in the legend.
+  \item[unit]: Measurement unit of the values. This may also appear in charts.
+  \item[interpolationmode]: Defines how to interpolate signal values where
+      needed (e.g. for drawing); possible values are \ttt{none},
+      \ttt{sample-hold}, \ttt{backward-sample-hold}, \ttt{linear}.
+%XXX clarify whether needed/used:  \item[type]: XXX int, double, enum
+  \item[enum]: Defines symbolic names for various integer signal values.
+      The property value must be a string, containing \textit{name=value} pairs
+      separated by comma. Example: \ttt{"IDLE=1,BUSY=2,DOWN=3"}.
+%XXX TODO implement:  \item[enumName]: xxx
+\end{description}
+
+
+\subsubsection{Available Filters and Recorders}
+
+The following table contains the list of predefined result filters.
+All filters in the table output a value for each input value.
+
+\begin{longtable}{|l|p{10cm}|}
+  \hline
+  \tabheadcol
+  \tbf{Filter} & \tbf{Description} \\\hline
+  \ttt{count} & Computes and outputs the count of values received so far. \\\hline
+  \ttt{sum} & Computes and outputs the sum of values received so far. \\\hline
+  \ttt{min} & Computes and outputs the minimum of values received so far. \\\hline
+  \ttt{max} & Computes and outputs the maximum of values received so far. \\\hline
+  \ttt{mean} & Computes and outputs the average (sum / count) of values received so far. \\\hline
+  \ttt{timeavg} & Regards the input values and their timestamps as a step function (sample-hold style), and
+                  computes and outputs its time average (integral divided by duration). \\\hline
+  \ttt{constant0} & Outputs a constant 0 for each received value (independent of the value). \\\hline
+  \ttt{constant1} & Outputs a constant 1 for each received value (independent of the value). \\\hline
+  \ttt{packetBits} & Expects \ttt{cPacket} pointers as value, and outputs the bit length
+                     for each received one. Non-\ttt{cPacket} values are ignored. \\\hline
+  \ttt{packetBytes} & Expects \ttt{cPacket} pointers as value, and outputs the byte length
+                      for each received one. Non-\ttt{cPacket} values are ignored. \\\hline
+  \ttt{sumPerDuration} & For each value, computes the sum of values received so far,
+                         divides it by the duration, and outputs the result. \\\hline
+\end{longtable}
+
+The list of predefined result recorders:
+
+\begin{longtable}{|l|p{10cm}|}
+  \hline
+  \tabheadcol
+  \tbf{Recorder} & \tbf{Description} \\\hline
+  \ttt{last} & Records the last value into an output scalar. \\\hline
+  \ttt{count} & Records the count of the input values into an output scalar;
+                functionally equivalent to \ttt{last(count)} \\\hline
+  \ttt{sum} & Records the sum of the input values into an output scalar
+              (or zero if there was none);
+              functionally equivalent to \ttt{last(sum)} \\\hline
+  \ttt{min} & Records the minimum of the input values into an output scalar
+              (or positive infinity if there was none);
+              functionally equivalent to \ttt{last(min)} \\\hline
+  \ttt{max} & Records the maximum of the input values into an output scalar
+              (or negative infinity if there was none);
+              functionally equivalent to \ttt{last(max)} \\\hline
+  \ttt{mean} & Records the mean of the input values into an output scalar
+               (or NaN if there was none);
+               functionally equivalent to \ttt{last(mean)} \\\hline
+  \ttt{timeavg} & Regards the input values with their timestamps as a step
+               function (sample-hold style), and records the time average of the
+               input values into an output scalar;
+               functionally equivalent to \ttt{last(timeavg)} \\\hline
+  \ttt{stats} & Computes basic statistics (count, mean, std.dev, min, max) from the input values,
+                and records them into the output scalar file as a statistic object. \\\hline
+  \ttt{histogram} & Computes a histogram and basic statistics (count, mean, std.dev, min, max)
+                from the input values, and records the reslut into the output scalar file
+                as a histogram object. \\\hline
+  \ttt{vector} & Records the input values with their timestamps into an output vector. \\\hline
+\end{longtable}
+
+\begin{note}
+You can have the list of available result filters and result recorders
+printed by executing the \ttt{opp\_run -h resultfilters} and \ttt{opp\_run
+-h resultrecorders} commands.
+\end{note}
+
+
+\subsubsection{Naming and Attributes of Recorded Results}
+
+The names of recorded result items will be formed by concatenating the
+statistic name and the recording mode with a colon between them:
+\ttt{"\textit{<statisticName>}:\textit{<recordingMode>}"}.
+
+Thus, the following statistics
+
+\begin{ned}
+@statistic[dropRate](source="count(drop)/count(pk)"; record=last,vector?);
+@statistic[droppedBytes](source="packetBytes(pkdrop)"; record=sum,"vector(sum)?");
+\end{ned}
+
+will produce the following scalars: \ttt{dropRate:last}, \ttt{droppedBytes:sum},
+and the following vectors: \ttt{dropRate:vector}, \ttt{droppedBytes:vector(sum)}.
+
+All property keys (except for \ttt{record}) are recorded as result
+attributes into the vector file or scalar file. The \ttt{title} property
+will be tweaked a little before recording: the recording mode will be added
+after a comma, otherwise all result items saved from the same statistic
+would have exactly the same name.
+
+Example: "Dropped Bytes, sum", "Dropped Bytes, vector(sum)"
+
+%TODO: it produces silly names...
+
+It is allowed to use other property keys as well, but they won't be
+interpreted by the {\opp} runtime or the result analysis tool.
+
+
+\subsubsection{Source and Record Expressions in Detail}
+
+To fully understand \ttt{source} and \ttt{record}, it will be useful to see
+how result recording is set up.
+
+When a module or channel is created in the simulation, the {\opp} runtime
+examines the \ttt{@statistic} properties on its NED declaration, and adds
+listeners on the signals they mention as input. There are two kinds of
+listeners associated with result recording: \textit{result filters} and
+\textit{result recorders}. Result filters can be chained, and at the end of
+the chain there is always a recorder. So, there may be a recorder directly
+subscribed to a signal, or there may be a chain of one or more filters plus
+a recorder. Imagine it as a pipeline, or rather a ``pipe tree'', where the
+tree roots are signals, the leaves are result recorders, and the
+intermediate nodes are result filters.
+
+Result filters typically perform some processing on the values they receive
+on their inputs (the previous filter in the chain or directly a signal),
+and propagate them to their output (chained filters and recorders). A
+filter may also swallow (i.e. not propagate) values. Recorders may write
+the received values into an output vector, or record output scalar(s)
+at the end of the simulation.
+
+Many operations exist both in filter and recorder form. For example, the
+\ttt{sum} \textit{filter} propagates the sum of values received on its
+input to its output; and the \ttt{sum} \textit{recorder} only computes the
+the sum of received values in order to record it as an output scalar on
+simulation completion.
+
+The next figure illustrates which filters and recorders are created and how
+they are connected for the following statistics:
+
+\begin{ned}
+@statistic[droppedBytes](source="8*packetBits(pkdrop)"; record="sum,vector(sum)");
+\end{ned}
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/statisticrecording}
+    \caption{Result filters and recorders chained}
+  \end{center}
+\end{figure}
+
+\begin{hint}
+To see how result filters and recorders have been set up for a particular
+simulation, run the simulation with the \fconfig{debug-statistics-recording}
+configuration option, e.g. specify \ttt{--debug-statistics-recording=true}
+on the command line.
+\end{hint}
+
+
+\subsection{Emitting Signals}
 
 Emitting signals for statistical purposes does not differ much from
 emitting signals for any other purpose. Statistic signals are primarily
@@ -4331,7 +4640,7 @@ variable here because the simulation program is single-threaded,
 but ensure that there isn't a listener somewhere that would modify
 the same static variable during firing.}
 
-Timestamps need to be monotonically increasing.
+Timestamps must be monotonically increasing.
 
 \textbf{Emitting non-numeric values.} Sometimes it is practical to have
 multi-purpose signals, or to retrofit an existing non-statistical signal so
@@ -4369,88 +4678,60 @@ that allows the same class to serve multiple signals (i.e. to return
 different values for each).
 
 
-\subsubsection{Declaring Signals}
-\label{sec:ch-simple-modules:statistic-signal-decl}
+\subsection{Writing Result Filters and Recorders}
 
-For signals to be automatically recorded as results, they need to be
-declared in the simple module's (or channel type's) NED file.
+You can define your own result filters and recorders in addition to the
+built-in ones. Similar to defining modules and new NED functions, you have
+to write the implementation in C++, and then register it with a
+registration macro to let {\opp} know about it. The new result filter or
+recorder can then be used in the \ttt{source=} and \ttt{record=} attributes
+of \fprop{@statistic} properties just like the built-in ones.
 
-An example NED file that declares signals on a queue module:
+Result filters must be subclassed from \cclass{cResultFilter} or from one
+of its more specific subclasses \cclass{cNumericResultFilter} and
+\cclass{cObjectResultFilter}. The new result filter class needs to be
+registered using the \fmac{Register\_ResultFilter(NAME, CLASSNAME)} macro.
 
-\begin{ned}
-simple Fifo
+Similarly, a result recorder must subclass from the
+\cclass{cResultRecorder} or the more specific
+\cclass{cNumericResultRecorder} class, and be registered using the
+\fmac{Register\_ResultRecorder(NAME, CLASSNAME)} macro.
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics{figures/resultlistener-inheritance}
+    \caption{Inheritance of result filter and recorder classes}
+  \end{center}
+\end{figure}
+
+An example result filter implementation from the simulation runtime:
+
+%TODO explain warmup period; chaining...
+
+\begin{cpp}
+/**
+ * Filter that outputs the sum of signal values divided by the measurement
+ * interval (simtime minus warmup period).
+ */
+class SumPerDurationFilter : public cNumericResultFilter
 {
-    parameters:
-        volatile double serviceTime @unit(s);
-        @statistic[qlen](title="queue length";record=timeavg,max);
-        @statistic[busy](title="server busy state";record=timeavg);
-        @statistic[queueingTime](title="queueing time at dequeue";unit=s);
-    gates:
-        input in;
-        output out;
+    protected:
+        double sum;
+    protected:
+        virtual bool process(simtime_t& t, double& value);
+    public:
+        SumPerDurationFilter() {sum = 0;}
+};
+
+Register_ResultFilter("sumPerDuration", SumPerDurationFilter);
+
+bool SumPerDurationFilter::process(simtime_t& t, double& value)
+{
+    sum += value;
+    value = sum / (simTime() - simulation.getWarmupPeriod());
+    return true;
 }
-\end{ned}
-
-This example declares three signals. The \ttt{"qlen"} signal is emitted
-whenever the queue length changes, and carries the new length of the queue.
-The \ttt{"busy"} signal emits a value of one whenever the queue server
-becomes busy (starts processing after an idle period), and emits zero when
-it becomes idle. The third signal, \ttt{"queueingTime"} is emitted whenever a
-job is dequeued, with the amount of time the job has spent in the queue; it
-is also emitted with a zero value when a job arrives when the queue is
-empty.
-
-As you can see, signal declarations have been added as indexed NED
-properties, see \ref{sec:ch-ned-lang:properties}. The property name is
-always \ttt{signal}, and the indices are the signal names. Property values
-(everything inside the parentheses) may carry hints and extra information
-for recording, and for result processing applications.
-
-\textbf{Recording.} Recording works in the following way. When a module or
-channel is created in the simulation, the {\opp} runtime examines the
-\ttt{@statistic} properties on its NED declaration. The runtime iterates on
-the property indices, and, interpreting them as signal names, adds one or
-more listeners for each.
-
-FIXME: to enable vector, also list it in record!
-
-The types of listeners added depend on the configuration. If output vector
-recording is enabled for the given signal, a listener is added which
-records emitted values to an output vector. If scalar recording is enabled,
-the runtime adds appropriate listeners that compute a single value from the
-emitted ones and record it in the \ffunc{finish()} phase. There are various
-listeners that compute and record the count, the sum of values, their mean,
-their time average, minimum, maximum, a histogram, etc. The list of
-listeners are added depends on the configuration; or if the configuration
-does not specify it, the \ttt{record=} property key will be used.
-
-The keys and values in the property will be recorded into the output files
-as result attributes, and will be available for result processing.
-
-The following property keys (result attributes) are supported:
-
-\begin{description}
-  \item[title]: A longer, descriptive name for the statistic signal; result
-      visualization tools may use it as chart label, e.g. in the legend.
-  \item[unit]: Measurement unit of the values. This may also appear in charts.
-  \item[interpolationmode]: Defines how to interpolate signal values where
-      needed (e.g. for drawing); possible values are \ttt{none},
-      \ttt{sample-hold}, \ttt{backward-sample-hold}, \ttt{linear}.
-%XXX clarify whether needed/used:  \item[type]: XXX int, double, enum
-  \item[enum]: Defines symbolic names for various integer signal values.
-      The property value must be a string, containing \textit{name=value} pairs
-      separated by comma. Example: \ttt{"IDLE=1,BUSY=2,DOWN=3"}.
-%XXX TODO implement:  \item[enumName]: xxx
-  \item[record]: Defines how to derive scalar values from the signal;
-     see values below. Several modes can be listed, separated by comma.
-\end{description}
-
-It is allowed to use other keys/attributes, but they won't be interpreted
-by the {\opp} runtime or tools.
-
-Possible values for \ttt{record} include \ttt{vector}, \ttt{count}, \ttt{last},
-\ttt{sum}, \ttt{mean}, \ttt{min}, \ttt{max}, \ttt{timeavg}, \ttt{stats},
-\ttt{histogram}; the complete list is given in \ref{sec:ana-sim:scalar-results}.
+\end{cpp}
 
 
 %

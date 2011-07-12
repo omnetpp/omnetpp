@@ -1,0 +1,19 @@
+digraph g {
+        fontsize=12; size="5,5";
+
+        node [shape = "rectangle"];
+        edge [dir = "back"];
+
+        cIListener -> cResultListener;
+        cResultListener -> cResultFilter;
+        cResultListener -> cResultRecorder;
+        cResultFilter -> cNumericResultFilter;
+        cResultFilter -> cObjectResultFilter;
+        cResultRecorder -> cNumericResultRecorder;
+
+        cResultFilter -> "CountFilter,\n...";
+        cNumericResultFilter -> "SumFilter,\nMinFilter,\nMaxFilter,\nTimeAverageFilter,\n...";
+        cObjectResultFilter -> "PacketBitsFilter,\nPacketBytesFilter,\n...";
+        cResultRecorder -> "CountRecorder,\n...";
+        cNumericResultRecorder -> "VectorRecorder,\nLastValueRecorder,\nHistogramRecorder,\nSumRecorder,\nMinRecorder,\nMaxRecorder,\nTimeAverageRecorder,\n...";
+};

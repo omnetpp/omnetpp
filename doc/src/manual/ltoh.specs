@@ -161,6 +161,7 @@ htmlfile_spec := $BASE.htm
 :b/e	:\begin{sloppypar}:<p>:</p>:
 :b/e	:\begin{thebibliography}(\{.*?\})?:<H1>References</H1>::
 :b/e	:\begin{note}:<ul class="note"><b>NOTE</b><br>:</ul>:
+:b/e	:\begin{hint}:<ul class="hint"><b>HINT</b><br>:</ul>:
 :b/e	:\begin{warning}:<ul class="warning"><b>WARNING</b><br>:</ul>:
 :b/e	:\begin{caution}:<ul class="caution"><b>CAUTION</b><br>:</ul>:
 :b/e	:\begin{rationale}:<ul class="rationale"><b>Rationale</b><br>:</ul>:

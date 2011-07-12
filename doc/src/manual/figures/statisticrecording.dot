@@ -1,0 +1,34 @@
+/*
+ * @statistic[result1](record=last,vector);
+ * @statistic[result2](record=vector(timeavg));
+ * @statistic[droppedBytes](source="8*packetBits(pkdrop)"; record="sum,vector(sum)");
+ */
+digraph g {
+
+        fontsize=12; size="5,5";
+        rankdir=LR;
+
+        node [width=1, height=1];
+
+        /* signals */
+        pkdrop [shape=rectangle, height=0.7];
+
+        /* filters */
+        packetBits [shape=circle];
+        expr1 [shape=circle, label="f(x) = x*8"];
+        sum [shape=circle];
+
+        /* recorders */
+        sumrec [shape=doublecircle, label="sum"];
+        vector [shape=doublecircle];
+
+        /* statistic */
+        /* result1_1 [shape=plaintext, label="result1: record=vector"]; */
+
+        /* edges */
+        pkdrop -> packetBits;
+        packetBits -> expr1;
+        expr1 -> sumrec;
+        expr1 -> sum;
+        sum -> vector;
+};
