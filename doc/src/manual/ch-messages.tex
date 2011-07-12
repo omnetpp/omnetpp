@@ -1,7 +1,8 @@
 \chapter{Messages and Packets}
 \label{cha:messages}
 
-\section{The cMessage and cPacket Classes}
+\section{Overview}
+\label{sec:ch-msgs:overview}
 
 Messages are a central concept in {\opp}. In the model, message objects
 represent events, packets, commands, jobs, customers or other kinds of
@@ -72,71 +73,58 @@ useful for representing network packets:
 \end{itemize}
 
 
+\section{The cMessage Class}
+\label{sec:ch-msgs:cmessage}
+
 \subsection{Basic Usage}
 
-
-The \cclass{cMessage} constructor accepts several arguments.
-Most commonly, you would create a message using an \textit{object name}
-(a \ttt{const char *} string) and a \textit{message kind} (\ttt{int}):
+The \cclass{cMessage} constructor accepts an \textit{object name}
+and a \textit{message kind}, both optional:
 
 \begin{cpp}
-cMessage *msg = new cMessage("timer", kind);
-\end{cpp}
-
-Both arguments are optional and initialize to the null string (\ttt{""})
-and 0, so the following statements are also valid:
-
-\begin{cpp}
-cMessage *msg = new cMessage();
-cMessage *msg = new cMessage("timer");
+cMessage(const char *name=NULL, short kind=0);
 \end{cpp}
 
 Descriptive message names can be very useful when tracing, debugging or
 demonstrating the simulation, so it is recommended to use them.
-
 Message kind is usually initialized with a symbolic constant
 (e.g. an \textit{enum} value) which signals what the message object
 represents. Only positive values and zero can be used --
 negative values are reserved for use by the simulation kernel.
 
-The \cclass{cPacket} constructor accepts a further \textit{bit length} argument.
-
-\index{message!data members}
-
-Once a message has been created, its data members can be changed by the following functions:
+The following lines show some examples of message creation:
 
 \begin{cpp}
-msg->setKind( kind );
-msg->setBitLength( length );
-msg->setByteLength( lengthInBytes );
-msg->setSchedulingPriority( priority );
-msg->setBitError( err );
-msg->setTimestamp();
-msg->setTimestamp( simtime );
+cMessage *msg1 = new cMessage();
+cMessage *msg2 = new cMessage("timeout");
+cMessage *msg3 = new cMessage("timeout", KIND_TIMEOUT);
 \end{cpp}
 
-With these functions the user can set the message
-kind\index{message!kind}, the message length\index{message@length},
-the priority\index{message!priority}, the error
-flag\index{message!error flag} and the time stamp\index{message!time
-  stamp}. The \ffunc{setTimeStamp()} function without any argument
-sets the time stamp to the current simulation time.
-\ffunc{setByteLength()} sets the same field as \ffunc{setBitLength()},
-except that the parameter is internally multiplied by 8.
-
-The values can be obtained by the following functions:
+Once a message has been created, its basic data members can be set
+with the following methods:
 
 \begin{cpp}
-int k       = msg->getKind();
-int p       = msg->getSchedulingPriority();
-int l       = msg->getBitLength();
-int lb      = msg->getByteLength();
-bool b      = msg->hasBitError();
-simtime_t t = msg->getTimestamp();
+void setName(const char *name);
+void setKind(short k);
+void setTimestamp();
+void setTimestamp(simtime_t t);
+void setSchedulingPriority(short p);
 \end{cpp}
 
-\ffunc{getBitLength()} and \ffunc{getByteLength()} both read the same
-field, but the latter divides by 8 and rounds up the result.
+The argument-less \ffunc{setTimeStamp()} method is equivalent to
+\ttt{setTimeStamp(simTime())}.
+
+The corresponding getter methods are:
+
+\begin{cpp}
+const char *getName() const;
+short getKind() const;
+simtime_t getTimestamp() const;
+short getSchedulingPriority() const;
+\end{cpp}
+
+The \ffunc{getName()}/\ffunc{setName()} methods are inherited from
+a generic base class in the simulation library, \cclass{cNamedObject}.
 
 
 \subsection{Duplicating Messages}
@@ -156,8 +144,139 @@ including message parameters and encapsulated messages.
   duplication of the encapsulated message until it is really needed;
   see section \ref{sec:messages:reference-counting}.}
 
+If you subclass from \cclass{cMessage} or \cclass{cPacket}, you need
+to reimplement \ffunc{dup()}; the recommended implementation is to delegate
+to the copy constructor of the new class:
+
+\begin{cpp}
+class FooMessage : public cMessage {
+  public:
+    FooMessage(const FooMessage& other) {...}
+    virtual FooMessage *dup() const {return new FooMessage(*this);}
+    ...
+};
+\end{cpp}
+
+For generated classes (chapter \ref{cha:message-definitions}), this is
+taken care of automatically.
+
+
+\subsection{Message IDs}
+\index{message!IDs}
+
+Every message object has a unique numeric \textit{message ID}. It is normally
+used for identifying the message in a recorded event log file, but may occasionally
+be useful for other purposes as well. If you clone a message (\ttt{msg->dup()}),
+the clone will have a different ID.
+
+There is also another ID called \textit{tree ID}. A tree ID starts out with
+the value of the message ID; however, if you clone a message, the clone
+will retain the tree ID of the original. Thus, messages that have the same
+tree ID have been created by cloning the same original message or its
+clones (with one exception, the original message).  The size of \ttt{long}
+is usually enough so that IDs remain unique during a single simulation run
+(i.e. the counter does not wrap).
+
+The methods for obtaining message IDs:
+
+\begin{cpp}
+long getId() const;
+long getTreeId() const;
+\end{cpp}
+
+
+\subsection{Control Info}
+
+One of the main application areas of {\opp} is the simulation of
+telecommunication networks. Here, protocol layers are usually
+implemented as modules which exchange packets. Packets themselves
+are represented by messages subclassed from \cclass{cPacket}.
+
+However, communication between protocol layers requires sending
+additional information to be attached to packets. For example,
+a TCP implementation sending down a TCP packet to IP will want
+to specify the destination IP address and possibly
+other parameters. When IP passes up a packet to TCP after
+decapsulation from the IP header, it will want to let TCP know
+at least the source IP address.
+
+This additional information is represented by \textit{control info} objects
+in {\opp}. Control info objects have to be subclassed from \cclass{cObject}
+(a small footprint base class with no data members), and can be attached to
+any message. \cclass{cMessage} has the following methods for this purpose:
+
+\begin{cpp}
+void setControlInfo(cObject *controlInfo);
+cObject *getControlInfo() const;
+cObject *removeControlInfo();
+\end{cpp}
+
+When a "command" is associated with the message sending (such as
+TCP OPEN, SEND, CLOSE, etc), the message kind field (\ttt{getKind()},
+\ttt{setKind()} methods of \ttt{cMessage}) should carry the command code.
+When the command doesn't involve a data packet (e.g.
+TCP CLOSE command), a dummy packet (empty \ttt{cMessage}) can be sent.
+
+An object set as control info via \ffunc{setControlInfo()} will be owned
+by the message object. When the message is deallocated, the control
+info object is deleted as well.
+
+
+\subsection{Information About the Last Arrival}
+
+The following methods return the creation time of the message, and the
+sending and arrival times that correspond to the last sending
+of the message.
+
+\begin{cpp}
+simtime_t getCreationTime() const;
+simtime_t getSendingTime() const;
+simtime_t getArrivalTime() const;
+\end{cpp}
+
+The following methods can be used to determine where the message came from
+and which gate it arrived on (or will arrive if it is currently scheduled
+or under way.) There are two sets of methods, one returning module/gate Ids,
+and the other returning pointers.
+
+\begin{cpp}
+int getSenderModuleId() const;
+int getSenderGateId() const;
+int getArrivalModuleId() const;
+int getArrivalGateId() const;
+cModule *getSenderModule() const;
+cGate *getSenderGate() const;
+cModule *getArrivalModule() const;
+cGate *getArrivalGate() const;
+\end{cpp}
+
+There are further convenience functions to tell whether
+the message arrived on a specific gate given with id or
+with name and index.
+
+\begin{cpp}
+bool arrivedOn(int gateId) const;
+bool arrivedOn(const char *gatename) const;
+bool arrivedOn(const char *gatename, int gateindex) const;
+\end{cpp}
+
+
+\subsection{Display String}
+
+\textit{Display strings} affect the message's visualization on animating user interfaces, e.g. Tkenv.
+Message objects do not store a display string by default, but contain a \ffunc{getDisplayString()}
+method that can be overridden in subclasses to return a desired string.  The method:
+
+\begin{cpp}
+const char *getDisplayString() const;
+\end{cpp}
+
+See chapter \ref{cha:graphics} for more information on display strings.
+
+
 
 \section{Self-Messages}
+\label{sec:ch-msgs:self-messages}
 
 \subsection{Using a Message as Self-Message}
 
@@ -176,133 +295,82 @@ returns true if the message is currently scheduled. A scheduled
 message can also be cancelled (\ffunc{cancelEvent()}).
 
 \begin{cpp}
-bool isSelfMessage();
-bool isScheduled();
+bool isSelfMessage() const;
+bool isScheduled() const;
 \end{cpp}
 
-The following methods return the time of creating and scheduling the message
-as well as its arrival time. While the message is scheduled, arrival
-time is the time it will be delivered to the module.
+The methods \ffunc{getSendingTime()} / \cclass{getArrivalTime()} are also
+useful with self-messages: they return the time the message was scheduled
+and arrived (or will arrive; while the message is scheduled, arrival time
+is the time it will be delivered to the module).
 
-\begin{cpp}
-simtime_t getCreationTime();
-simtime_t getSendingTime();
-simtime_t getArrivalTime();
-\end{cpp}
 
 \subsection{Context Pointer}
 
-\cclass{cMessage} contains a \ttt{void*} pointer which is
-set/returned by the \ffunc{setContextPointer()} and
-\ffunc{getContextPointer()} functions:
+\cclass{cMessage} contains a \textit{context pointer} of type \ttt{void*},
+which can be accessed by the following functions:
 
 \begin{cpp}
-void *context =...;
-msg->setContextPointer(context);
-void *context2 = msg->getContextPointer();
+void setContextPointer(void *p);
+void *getContextPointer() const;
 \end{cpp}
 
-
-It can be used for any purpose by the simulation programmer.
+The context pointer can be used for any purpose by the simulation programmer.
 It is not used by the simulation kernel, and it is treated as
 a mere pointer (no memory management is done on it).
 
-Intended purpose: a module which schedules several self-messages
-(timers) will need to identify a self-message when it arrives back to
-the module, ie. the module will have to determine which timer went off
-and what to do then. The context pointer\index{context pointer} can be
-made to point at a data structure kept by the module which can carry
-enough ``context'' information about the event.
+Intended purpose: a module which schedules several self-messages (timers)
+will need to identify a self-message when it arrives back to the module,
+ie. the module will have to determine which timer went off and what to do
+then. The context pointer can be made to point at a data structure kept by
+the module which can carry enough ``context'' information about the event.
 
 
 
-\section{Modelling Packets}
+\section{The cPacket Class}
+\label{sec:ch-msgs:cpacket}
 
-\subsection{Arrival Gate and Time}
+\subsection{Basic Usage}
 
-The following methods can tell where the message came from and
-where it arrived (or will arrive if it is currently scheduled or under way.)
-
-\begin{cpp}
-int getSenderModuleId();
-int getSenderGateId();
-int getArrivalModuleId();
-int getArrivalGateId();
-\end{cpp}
-
-The following methods are just convenience functions which build
-on the ones above.
+The \cclass{cPacket} constructor is similar to the \cclass{cMessage}
+constructor, but it accepts an additional \textit{bit length} argument:
 
 \begin{cpp}
-cModule *getSenderModule();
-cGate *getSenderGate();
-cGate *getArrivalGate();
+cPacket(const char *name=NULL, short kind=0, int64 bitLength=0);
 \end{cpp}
 
-And there are further convenience functions to tell whether
-the message arrived on a specific gate given with id or
-name+index.
+The most important field \cclass{cPacket} has over \cclass{cMessage} is
+the message length. This field is kept in bits, but it can also be
+set/get in bytes. If the bit length is not a multiple of eight, the
+\ffunc{getByteLength()} method will round it up.
 
 \begin{cpp}
-bool arrivedOn(int id);
-bool arrivedOn(const char *gname, int gindex=0);
+void setBitLength(int64 l);
+void setByteLength(int64 l);
+void addBitLength(int64 delta);
+void addByteLength(int64 delta);
+int64 getBitLength() const;
+int64 getByteLength() const;
 \end{cpp}
 
-The following methods return message creation time and the last sending
-and arrival times.
+Another extra field is the bit error flag. It can be accessed with the
+following methods:
 
 \begin{cpp}
-simtime_t getCreationTime();
-simtime_t getSendingTime();
-simtime_t getArrivalTime();
+void setBitError(bool e);
+bool hasBitError() const;
 \end{cpp}
-
-\subsection{Control Info}
-
-One of the main application areas of {\opp} is the simulation of
-telecommunication networks. Here, protocol layers are usually
-implemented as modules which exchange packets. Packets themselves
-are represented by messages subclassed from \cclass{cMessage}.
-
-However, communication between protocol layers requires sending
-additional information to be attached to packets. For example,
-a TCP implementation sending down a TCP packet to IP will want
-to specify the destination IP address and possibly
-other parameters. When IP passes up a packet to TCP after
-decapsulation from the IP header, it will want to let TCP know
-at least the source IP address.
-
-This additional information is represented by \textit{control info}
-objects in {\opp}. Control info objects have to be subclassed from
-\cclass{cObject} (a small footprint base class with
-no data members), and attached to the messages representing
-packets. \cclass{cMessage} has the following methods for this
-purpose:
-
-\begin{cpp}
-void setControlInfo(cObject *controlInfo);
-cObject *getControlInfo();
-cObject *removeControlInfo();
-\end{cpp}
-
-When a "command" is associated with the message sending (such as
-TCP OPEN, SEND, CLOSE, etc), the message kind field (\ttt{getKind()},
-\ttt{setKind()} methods of \ttt{cMessage}) should carry the command code.
-When the command doesn't involve a data packet (e.g.
-TCP CLOSE command), a dummy packet (empty \ttt{cMessage}) can be sent.
-
 
 
 \subsection{Identifying the Protocol}
 
-In {\opp} protocol models, the protocol type is usually represented
-in the message subclass. For example, instances of class
-\ttt{IPv6Datagram} represent IPv6 datagrams and \ttt{EthernetFrame}
-represents Ethernet frames) and/or in the message kind value.
-The PDU type is usually represented as a field inside the message class.
+In {\opp} protocol models, the protocol type is usually represented in the
+message subclass. For example, instances of class \ttt{IPv6Datagram}
+represent IPv6 datagrams and \ttt{EthernetFrame} represents Ethernet
+frames. The C++ \ttt{dynamic\_cast} operator can be used to determine if a
+message object is of a specific protocol.
 
-The C++ \ttt{dynamic\_cast} operator can be used to determine
-if a message object is of a specific protocol.
+An example:
 
 \begin{cpp}
 cMessage *msg = receive();
@@ -314,47 +382,69 @@ if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
 \end{cpp}
 
 
-\section{Encapsulation}
+\subsection{Information About the Last Transmission}
+
+When a packet has been received, some information can be obtained
+about the transmission, namely the \textit{transmission duration}
+and the \textit{is-reception-start} flag. They are returned by
+the following methods:
+
+\begin{cpp}
+simtime_t getDuration() const;
+bool isReceptionStart() const;
+\end{cpp}
+
 
 \subsection{Encapsulating Packets}
 
 It is often necessary to encapsulate a packet\index{packet!encapsulation}
 into another when you are modeling layered protocols of computer networks.
 
-The \ffunc{encapsulate()} function encapsulates a packet
-into another one. The length of the packet will grow by the length of
-the encapsulated packet. An exception: when the encapsulating (outer)
-packet has zero length, {\opp} assumes it is not a real packet but
-some out-of-band signal, so its length is left at zero.
+The following \cclass{cPacket} methods are associated with encapsulation:
+
+\begin{cpp}
+void encapsulate(cPacket *packet);
+cPacket *decapsulate();
+cPacket *getEncapsulatedPacket() const;
+\end{cpp}
+
+The \ffunc{encapsulate()} function encapsulates a packet into another one.
+The length of the packet will grow by the length of the encapsulated
+packet. An exception: when the encapsulating (outer) packet has zero
+length, {\opp} assumes it is not a real packet but some out-of-band signal,
+so its length is left at zero.
+
+A packet can only hold one encapsulated packet at a time; the second
+\ffunc{encapsulate()} call will result in an error. It is also an error if
+the packet to be encapsulated is not owned by the module.
+
+You can get back the encapsulated packet by calling \ffunc{decapsulate()}.
+\ffunc{decapsulate()} will decrease the length of the packet accordingly,
+except if it was zero. If the length would become negative, an error
+occurs.
+
+The \ffunc{getEncapsulatedPacket()} function returns a pointer to the
+encapsulated packet, or \ttt{NULL} if no packet is encapsulated.
+
+Example usage:
 
 \begin{cpp}
 cPacket *data = new cPacket("data");
 data->setByteLength(1024);
 
-TCPSegment *tcpseg = new TCPSegment("tcp"); // subclassed from cPacket
-tcpseg->setByteLength(24);
+UDPPacket *udp = new UDPPacket("udp"); // subclassed from cPacket
+udp->setByteLength(8);
 
-tcpseg->encapsulate(data);
-ev << tcpseg->getByteLength() << endl; // --> 1024+24 = 1048
+udp->encapsulate(data);
+ev << udp->getByteLength() << endl; // --> 8+1024 = 1032
 \end{cpp}
 
-A packet can only hold one encapsulated packet at a time; the
-second \ffunc{encapsulate()} call will result in an error. It is also
-an error if the packet to be encapsulated is not owned by the
-module.
-
-You can get back the encapsulated packet by calling \ffunc{decapsulate()}:
+And the corresponding decapsulation code:
 
 \begin{cpp}
-cPacket *userdata = tcpseg->decapsulate();
+cPacket *payload = udp->decapsulate();
 \end{cpp}
 
-\ffunc{decapsulate()} will decrease the length of the packet accordingly,
-except if it was zero. If the length would become negative, an
-error occurs.
-
-The \ffunc{getEncapsulatedPacket()} function returns a pointer to the encapsulated
-packet, or \ttt{NULL} if no packet is encapsulated.
 
 
 \subsection{Reference Counting}
@@ -406,13 +496,13 @@ an example which assumes you have added to the class an \ttt{std::list} member
 called \ttt{messages} that stores message pointers:
 
 \begin{cpp}
-void MessageBundleMessage::insertMessage(cMessage *msg)
+void MultiMessage::insertMessage(cMessage *msg)
 {
     take(msg);  // take ownership
     messages.push_back(msg);  // store pointer
 }
 
-void MessageBundleMessage::removeMessage(cMessage *msg)
+void MultiMessage::removeMessage(cMessage *msg)
 {
     messages.remove(msg);  // remove pointer
     drop(msg);  // release ownership
@@ -429,10 +519,11 @@ about the things you need to take care of when deriving new classes.
 
 
 \section{Attaching Parameters and Objects}
+\label{sec:ch-msgs:attaching-objects}
 
 If you want to add parameters or objects to a message, the preferred
 way to do that is via message definitions, described in chapter
-\ref{ch:messages:message-definitions}.
+\ref{cha:message-definitions}.
 
 
 \subsection{Attaching Objects}
@@ -473,8 +564,6 @@ struct conn_t *conn = new conn_t; // conn_t is a C struct
 msg->addPar("conn") = (void *) conn;
 msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
 \end{cpp}
-
-
 
 
 \subsection{Attaching Parameters}
@@ -528,5 +617,4 @@ msg->par("destAddr") = 168;
 ...
 long destAddr = msg->par("destAddr");
 \end{cpp}
-
 
