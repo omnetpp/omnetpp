@@ -881,9 +881,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             case BuildSpecification.NONE: overlayImagePath = null; break;
         }
         info.image = Activator.getCachedDecoratedImage(imagePath,
-                new String[] {overlayImagePath, hasWarning ? OVR_WARNING_IMG : null, isBuildRoot ? OVR_BUILDROOT_IMG : null},
-                new int[]{SWT.END, SWT.BEGINNING, SWT.BEGINNING},
-                new int[]{SWT.END, SWT.END, SWT.BEGINNING});
+                new String[] {isBuildRoot ? OVR_BUILDROOT_IMG : null, // TOP_LEFT 
+                              null,                                   // TOP_RIGHT
+                              hasWarning ? OVR_WARNING_IMG : null,    // BOTTOM_LEFT
+                              overlayImagePath});                     // BOTTOM_RIGHT
 
         return info;
     }

@@ -13,13 +13,14 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.DecorationOverlayIcon;
+import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
-import org.omnetpp.common.image.ImageFactory;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -144,52 +145,29 @@ public class Activator extends AbstractUIPlugin {
     }
 
     /**
-     * Decorates the given image with the overlay image (may be null), and returns
-     * the result as a new image. For positioning, use SWT.BEGIN, SWT.CENTER, SWT.END.
+     * Decorates the given image with the overlay images (any element may be null),
+     * and returns the result as a new image. The index of images in the overlayImagePath
+     * array is determined by the {@link IDecoration#TOP_LEFT}, {@link IDecoration#TOP_RIGHT},
+     * {@link IDecoration#BOTTOM_LEFT} and {@link IDecoration#BOTTOM_RIGHT} and 
+     * {@link IDecoration#UNDERLAY} constant values.  
      * The result image gets cached in an internal image registry,
      * so clients do not need to (moreover, must not) dispose of the image.
      */
-    public static Image getCachedDecoratedImage(String imagePath, String overlayImagePath, int hpos, int vpos) {
-        if (overlayImagePath==null)
-            return getCachedImage(imagePath);
-        String key = imagePath+":"+overlayImagePath+":"+hpos+":"+vpos;
-        ImageRegistry imageRegistry = getDefault().getImageRegistry();
-        Image result = imageRegistry.get(key);
-        if (result == null) {
-            Image image = getCachedImage(imagePath);
-            Image overlayImage = getCachedImage(overlayImagePath);
-            result = ImageFactory.decorateImage(image, overlayImage, hpos, vpos);
-            imageRegistry.put(key, result);
-        }
-        return result;
-    }
-
-    /**
-     * Decorates the given image with the overlay images (any element may be null),
-     * and returns the result as a new image. For positioning, use SWT.BEGIN,
-     * SWT.CENTER, SWT.END. The result image gets cached in an internal image registry,
-     * so clients do not need to (moreover, must not) dispose of the image.
-     */
-    public static Image getCachedDecoratedImage(String imagePath, String overlayImagePath[], int hpos[], int vpos[]) {
-        String key = imagePath;
+    public static Image getCachedDecoratedImage(String baseImagePath, String overlayImagePath[]) {
+        Image baseImage = getCachedImage(baseImagePath);
+        ImageDescriptor[] overlayDescs = new ImageDescriptor[overlayImagePath.length];
+        String key = baseImagePath;
+        // Calculate a unique key for the decorated image. If all decoration is null
+        // the base image key is used and the base image will be returned from the registry.
         for (int i=0; i<overlayImagePath.length; i++)
-            key += ":"+overlayImagePath[i]+":"+hpos[i]+":"+vpos[i];
-        ImageRegistry imageRegistry = getDefault().getImageRegistry();
-        Image result = imageRegistry.get(key);
-        if (result == null) {
-            Image baseImage = getCachedImage(imagePath);
-            Image image = baseImage;
-            for (int i=0; i<overlayImagePath.length; i++) {
-                if (overlayImagePath[i] != null) {
-                    Image overlayImage = getCachedImage(overlayImagePath[i]);
-                    Image newImage = ImageFactory.decorateImage(image, overlayImage, hpos[i], vpos[i]);
-                    if (image != baseImage)
-                        image.dispose();
-                    image = newImage;
-                }
+            if (overlayImagePath[i] != null) {
+                overlayDescs[i] = getImageDescriptor(overlayImagePath[i]);
+                key += ":"+i+"="+overlayImagePath[i];
             }
-            result = image;
-            imageRegistry.put(key, result);
+        Image result = getDefault().getImageRegistry().get(key);
+        if (result == null) {
+            result = new DecorationOverlayIcon(baseImage, overlayDescs).createImage();
+            getDefault().getImageRegistry().put(key, result);
         }
         return result;
     }
