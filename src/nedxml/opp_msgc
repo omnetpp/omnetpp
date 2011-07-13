@@ -943,15 +943,17 @@ sub prepareForCodeGeneration()
     $msgqname = prefixWithNamespace($namespacename, $msgname);
 
     # determine $msgbaseqname
-    my @found = lookupExistingClassName($namespacename, $msgbase);
-    if (@found == 1) {
-        $msgbaseqname = $found[0];
-    } elsif (@found == 0) {
-        print "$filename: Error: '$msgname': unknown base class '$msgbase'\n"; $ret=1;
-        $msgbaseqname = 'cMessage';
-    } else {
-        print "$filename: Error: '$msgname': ambiguous base class '$msgbase'; possibilities: " .join(', ',@found)."\n"; $ret=1;
-        $msgbaseqname = $found[0];
+    if ($msgbase ne 'void') {
+        my @found = lookupExistingClassName($namespacename, $msgbase);
+        if (@found == 1) {
+            $msgbaseqname = $found[0];
+        } elsif (@found == 0) {
+            print "$filename: Error: '$msgname': unknown base class '$msgbase'\n"; $ret=1;
+            $msgbaseqname = 'cMessage';
+        } else {
+            print "$filename: Error: '$msgname': ambiguous base class '$msgbase'; possibilities: " .join(', ',@found)."\n"; $ret=1;
+            $msgbaseqname = $found[0];
+        }
     }
 
     # check base class and determine type of object
