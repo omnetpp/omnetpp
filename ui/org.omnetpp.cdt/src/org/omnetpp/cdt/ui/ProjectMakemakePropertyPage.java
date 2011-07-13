@@ -166,22 +166,20 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         buttons.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
         buttons.setLayout(new GridLayout(1,false));
 
-        makemakeButton = createButton(buttons, SWT.PUSH, "&Makemake", "Enable makefile generation in this folder");
-        customMakeButton = createButton(buttons, SWT.PUSH, "&Custom Make", "Declare that folder contains custom makefile");
-        noMakeButton = createButton(buttons, SWT.PUSH, "&No Make", "No makefile in this folder");
+        Composite buildGroup = createGroup(buttons, "Build", 1);
+        makemakeButton = createButton(buildGroup, SWT.RADIO, "&Makemake", "Automatic makefile generation enabled for the selected folder");
+        optionsButton = createButton(buildGroup, SWT.PUSH, "&Options...", "Edit makefile generation options");
+        ((GridData)(optionsButton.getLayoutData())).horizontalIndent = 20;
+        customMakeButton = createButton(buildGroup, SWT.RADIO, "&Custom Makefile", "Selected folder contains a custom makefile");
+        noMakeButton = createButton(buildGroup, SWT.RADIO, "&No Makefile", "Selected folder contains no makefile");
         createLabel(buttons, "", 1);
-        optionsButton = createButton(buttons, SWT.PUSH, "&Options...", "Edit makefile generation options");
+
+        Composite sourceGroup = createGroup(buttons, "Source", 1);
+        sourceLocationButton = createButton(sourceGroup, SWT.RADIO, "&Source Location", "Selected folder is a source location");
+        excludeButton = createButton(sourceGroup, SWT.RADIO, "&Excluded", "Selected folder is excluded from sources");
+        includeButton = createButton(sourceGroup, SWT.RADIO, "&Included", "Selected folder is included in sources");
         createLabel(buttons, "", 1);
-        Label sep = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
-        sep.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-        createLabel(buttons, "", 1);
-        sourceLocationButton = createButton(buttons, SWT.PUSH, "&Source Location", "Mark folder as source location");
-        excludeButton = createButton(buttons, SWT.PUSH, "&Exclude", "Exclude from build");
-        includeButton = createButton(buttons, SWT.PUSH, "&Include", "Include into build");
-        createLabel(buttons, "", 1);
-        Label sep2 = new Label(buttons, SWT.SEPARATOR | SWT.HORIZONTAL);
-        sep2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
-        createLabel(buttons, "", 1);
+        
         exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export settings to \"makemakefiles\" file");
 
 //        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
@@ -204,19 +202,22 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         makemakeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setFolderMakeType(getTreeSelection(), BuildSpecification.MAKEMAKE);
+                if (makemakeButton.getSelection()) // filter out deselection events
+                    setFolderMakeType(getTreeSelection(), BuildSpecification.MAKEMAKE);
             }
         });
         customMakeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setFolderMakeType(getTreeSelection(), BuildSpecification.CUSTOM);
+                if (customMakeButton.getSelection()) // filter out deselection events
+                    setFolderMakeType(getTreeSelection(), BuildSpecification.CUSTOM);
             }
         });
         noMakeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                setFolderMakeType(getTreeSelection(), BuildSpecification.NONE);
+                if (noMakeButton.getSelection()) // filter out deselection events
+                    setFolderMakeType(getTreeSelection(), BuildSpecification.NONE);
             }
         });
         optionsButton.addSelectionListener(new SelectionAdapter() {
@@ -228,19 +229,22 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         sourceLocationButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                markAsSourceLocation(getTreeSelection());
+                if (sourceLocationButton.getSelection()) // filter out deselection events
+                    markAsSourceLocation(getTreeSelection());
             }
         });
         excludeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                excludeFolder(getTreeSelection());
+                if (excludeButton.getSelection()) // filter out deselection events
+                    excludeFolder(getTreeSelection());
             }
         });
         includeButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                includeFolder(getTreeSelection());
+                if (includeButton.getSelection()) // filter out deselection events
+                    includeFolder(getTreeSelection());
             }
         });
         exportButton.addSelectionListener(new SelectionAdapter() {
@@ -365,7 +369,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         }
         updatePageState();
 
-        if (makeType!=BuildSpecification.NONE)
+        if (!folder.equals(getProject()) && makeType!=BuildSpecification.NONE)
             maybeOfferToExcludeProjectRoot(folder);
     }
 
@@ -423,8 +427,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             boolean isRootExcluded = CDTUtils.isExcluded(project, sourceEntries);
             if (!isRootExcluded) {
                 MessageDialogWithToggle dialog = MessageDialogWithToggle.openYesNoQuestion(this.getShell(),
-                        "Exclude Root",
-                        "Do you want to exclude the project root folder from build? (recommended for projects that have all source files in subdirectories)",
+                        "Recommendation: Exclude Root",
+                        "If you have all source files in subdirectories (e.g under src/), " +
+                        "you don't need the root folder to be a source folder.\n\n" +
+                        "Do you want to exclude the root?",
                         "Do not ask this question again in this session", false, null, null);
                 if (dialog.getReturnCode() == IDialogConstants.YES_ID) {
                     try {
@@ -616,6 +622,10 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             makemakeButton.setEnabled(false);
             customMakeButton.setEnabled(false);
             noMakeButton.setEnabled(false);
+            makemakeButton.setSelection(false);
+            customMakeButton.setSelection(false);
+            noMakeButton.setSelection(false);
+            
             optionsButton.setEnabled(false);
             sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
@@ -625,20 +635,28 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         else {
             // enable/disable buttons
             int makeType = buildSpec.getFolderMakeType(folder);
-            makemakeButton.setEnabled(makeType!=BuildSpecification.MAKEMAKE);
-            customMakeButton.setEnabled(makeType!=BuildSpecification.CUSTOM);
-            noMakeButton.setEnabled(makeType!=BuildSpecification.NONE);
+            makemakeButton.setEnabled(true);
+            customMakeButton.setEnabled(true);
+            noMakeButton.setEnabled(true);
+            makemakeButton.setSelection(makeType==BuildSpecification.MAKEMAKE);
+            customMakeButton.setSelection(makeType==BuildSpecification.CUSTOM);
+            noMakeButton.setSelection(makeType==BuildSpecification.NONE);
 
             optionsButton.setEnabled(makeType==BuildSpecification.MAKEMAKE);
 
             ICSourceEntry[] sourceEntries = configuration.getSourceEntries();
             boolean isExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+            boolean isParentExcluded = (folder instanceof IProject) || CDTUtils.isExcluded(folder.getParent(), sourceEntries);
             boolean isSourceLocation = CDTUtils.getSourceLocations(project, sourceEntries).contains(folder);
             boolean isUnderSourceLocation = CDTUtils.getSourceEntryThatCovers(folder, sourceEntries) != null;
 
-            sourceLocationButton.setEnabled(!isSourceLocation);
-            excludeButton.setEnabled(!isExcluded && !(folder instanceof IProject && sourceEntries.length==1));
-            includeButton.setEnabled(isUnderSourceLocation && isExcluded);
+            sourceLocationButton.setSelection(isSourceLocation);
+            excludeButton.setSelection(isExcluded);
+            includeButton.setSelection(!isSourceLocation && !isExcluded);
+
+            sourceLocationButton.setEnabled(!isSourceLocation || sourceLocationButton.getSelection());
+            excludeButton.setEnabled((!isExcluded && !(folder instanceof IProject && sourceEntries.length==1)) || excludeButton.getSelection());
+            includeButton.setEnabled((isUnderSourceLocation && isExcluded && !isParentExcluded) || includeButton.getSelection());
             exportButton.setEnabled(true);
         }
     }

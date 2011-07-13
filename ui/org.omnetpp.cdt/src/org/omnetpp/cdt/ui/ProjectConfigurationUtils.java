@@ -120,7 +120,7 @@ public class ProjectConfigurationUtils {
         for (IContainer folder : buildSpec.getMakeFolders())
             if (buildSpec.getFolderMakeType(folder) == BuildSpecification.CUSTOM)
                 if (!folder.getFile(new Path("Makefile")).exists())  //XXX or Makefile.vc 
-                    return "Custom Make folder " + buildFolder.getFullPath().toString() + " contains no Makefile";
+                    return "Custom Makefile folder " + folder.getFullPath().toString() + " contains no Makefile";
     
         return null;
     }
