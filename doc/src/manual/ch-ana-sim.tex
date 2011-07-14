@@ -723,24 +723,15 @@ scavetool summary Aloha-1.vec
 \section{Alternative Statistical Analysis and Plotting Tools}
 \label{sec:ana-sim:alt-tools}
 
-There are several programs and packages that can also be used to analyze
-result files, and create various plots and charts from them.
+There are several programs and packages in addition to the {\opp} IDE
+and \fprog{scavetool} that can also be used to analyze
+simulation results, and create various plots and charts from them.
 
-
-\subsection{Spreadsheet Programs}
-\index{Spreadsheets}
-
-One straightforward solution is to use spreadsheets such as OpenOffice
-Calc, Microsoft Excel, Gnumeric or KSpread. Data can be imported from csv
-or other formats, exported with \fprog{scavetool} (see
-\ref{sec:ana-sim:scavetool}).
-
-Spreadsheets have good charting and statistical features. A useful
-functionality spreadsheets offer for analyzing scalar files is
-\textit{PivotTable} (Excel) or \textit{DataPilot} (OpenOffice). The
-drawback of using spreadsheets is limited automation, leading to tedious
-and repetitive tasks; also, the number of rows is usually limited to about
-32,000..64,000, that can be painful when working with large vector files.
+\begin{hint}
+Our recommendation is GNU R because of its features, its popularity, and
+the existence of an extension package written specifically for {\opp}
+result processing.
+\end{hint}
 
 
 \subsection{GNU R}
@@ -754,9 +745,29 @@ R is widely used for statistical software development and data analysis.
 The program uses a command line interface, though several graphical user
 interfaces are available.
 
-Several {\opp}-related packages such as SimProcTC and Syntony already
-use R for data analysis and plotting. In the future, {\opp} will
-be extended with features that further facilitate using it with R.
+\begin{hint}
+An R package for {\opp} result processing is available from
+\url{https://github.com/omnetpp/omnetpp-resultfiles/wiki}.
+The package supports loading the contents of {\opp} result files into R,
+organizing the data and creating various plots and charts.
+The package is well documented, and the web site offers a Tutorial, a Tips
+page, a tutorial for the Scalar Lattice GUI package, and other information.
+\end{hint}
+
+Several other {\opp}-related packages such as SimProcTC and Syntony already
+use R for data analysis and plotting.
+
+
+\subsection{NumPy, SciPy and MatPlotLib}
+\index{NumPy}\index{SciPy}\index{MatPlotLib}
+
+NumPy and SciPy are numerical and scientific computing packages for the
+Python programming language, and MatPlotlib is a plotting library (also for
+Python).
+
+MatPlotlib provides a ``pylab'' API designed to closely resemble that of
+MATLAB, thereby making it easy to learn for experienced MATLAB users.
+Matplotlib is distributed under a BSD-style license.
 
 
 \subsection{MATLAB or Octave}
@@ -770,32 +781,6 @@ with programs in other languages.
 Octave is an open-source Matlab-like package, available on nearly all platforms.
 Currently Octave relies on Gnuplot for plotting, and has more limited
 graphics capabilities than GNU R or MATLAB.
-
-\subsection{NumPy and MatPlotLib}
-\index{NumPy}\index{MatPlotLib}
-
-MatPlotlib is a plotting library for the Python programming language and
-its NumPy numerical mathematics extension. It provides a "pylab" API designed
-to closely resemble that of MATLAB, thereby making it easy to learn
-for experienced MATLAB users. Matplotlib is distributed under a BSD-style
-license.
-
-
-\subsection{ROOT}
-\index{ROOT}
-
-\textit{ROOT} is a powerful object-oriented data analysis framework,
-with strong support for plotting and graphics in general.
-ROOT was developed at CERN, and is distributed under a BSD-like license.
-
-ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
-aimed at processing C/C++ scripts. It is probably harder to get started
-using ROOT than with either Gnuplot or Grace, but if you are serious
-about analyzing simulation results, you will find that ROOT provides
-power and flexibility that would be unattainable with the other two programs.
-
-Curt Brune's page at Stanford (http://www.slac.stanford.edu/\~curt/omnet++/)
-shows examples of what you can achieve using ROOT with {\opp}.
 
 
 \subsection{Gnuplot}
@@ -828,18 +813,51 @@ the Gnuplot window's system menu, then insert it into the application you
 are working with.
 
 
+\subsection{ROOT}
+\index{ROOT}
+
+\textit{ROOT} is a powerful object-oriented data analysis framework,
+with strong support for plotting and graphics in general.
+ROOT was developed at CERN, and is distributed under a BSD-like license.
+
+ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
+aimed at processing C/C++ scripts. It is probably harder to get started
+using ROOT than with either Gnuplot or Grace, but if you are serious
+about analyzing simulation results, you will find that ROOT provides
+power and flexibility that would be unattainable with the other two programs.
+
+Curt Brune's page at Stanford (http://www.slac.stanford.edu/\~curt/omnet++/)
+shows examples of what you can achieve using ROOT with {\opp}.
+
+
 \subsection{Grace}
 \index{Grace}
 
-\textit{Grace} (also known as \textit{xmgrace}, a successor of
-\textit{ACE/gr} or \textit{Xmgr}) is a powerful GPL data visualization
+An ``honorable mention,'' \textit{Grace} is a powerful GPL data visualization
 program with a menu-and-dialog graphical user interface for X and Motif. It
-has also been ported to Windows.
+has also been ported to Windows. Grace is also known as \textit{xmgrace},
+and it is a successor of \textit{ACE/gr} or \textit{Xmgr}.
 
 Grace can export graphics in various raster and vector formats, and has
 many useful features like built-in statistics and analysis functions (e.g.
 correlation, histogram), fitting, splines, etc., and it also has a built-in
 programming language.
+
+
+\subsection{Spreadsheet Programs}
+\index{Spreadsheets}
+
+One straightforward solution is to use spreadsheets such as OpenOffice
+Calc, Microsoft Excel, Gnumeric or Calligra Tables (formerly KSpread).
+Data can be imported from CSV or other formats, exported with \fprog{scavetool}
+(see \ref{sec:ana-sim:scavetool}).
+
+Spreadsheets have good charting and statistical features. A useful
+functionality spreadsheets offer for analyzing scalar files is
+\textit{PivotTable} (Excel) or \textit{DataPilot} (OpenOffice). The
+drawback of using spreadsheets is limited automation, leading to tedious
+and repetitive tasks; also, the number of rows is usually limited to about
+32,000..64,000, which can be painful when working with large vector files.
 
 
 %%% Local Variables:
