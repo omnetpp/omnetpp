@@ -1701,7 +1701,9 @@ would do it in most existing simulators.
 
 
 
-\section{Submodule Type as Parameter}
+\section{Parametric Submodule and Connection Types}
+
+\subsection{Parametric Submodule Types}
 \label{sec:ch-ned-lang:submodule-like}
 
 A submodule type may be specified with a module parameter of the type
@@ -1725,11 +1727,28 @@ network Net6
 \end{ned}
 
 It creates a submodule vector whose module type will come from the
-\ttt{nodeType} parameter. For example, if \ttt{nodeType="SensorNode"},
+\ttt{nodeType} parameter. For example, if \ttt{nodeType} is set to \ttt{"SensorNode"},
 then the module vector will consist of sensor nodes, provided such module
 type exists and it qualifies. What this means is that the \ttt{INode} must be
 an existing \textit{module interface}, which the \ttt{SensorNode}
 module type must implement (more about this later).
+
+As already mentioned, one can write an expression between the angle
+brackets. The expression may use the parameters of the parent module and of
+previously defined submodules, and has to yield a string value. For
+example, the following code is also valid:
+
+\begin{ned}
+network Net6
+{
+    parameters:
+        string nodeTypePrefix;
+        int variant;
+    submodules:
+        node[6]: <nodeTypePrefix + "Node" + string(variant)> like INode {
+           ...
+}
+\end{ned}
 
 The corresponding NED declarations:
 
@@ -1741,9 +1760,7 @@ moduleinterface INode
     gates:
         inout port[];
 }
-\end{ned}
 
-\begin{ned}
 module SensorNode like INode
 {
     parameters:
@@ -1755,8 +1772,90 @@ module SensorNode like INode
 }
 \end{ned}
 
-%% XXX expressions accepted; show a some examples
-%% XXX Note: parser may get confused around <>; you may help it by adding parens, i.e. <(typeName+"Module")>
+The ``\ttt{<nodeType> like INode}'' syntax has an issue when used
+with submodule vectors: does not allow you to specify different types
+for different indices. The following syntax is better suited for
+submodule vectors:
+
+The expression between the angle brackets may be left out altogether,
+leaving you with a pair of empty angle brackets, \ttt{<>}:
+
+\begin{ned}
+module Node
+{
+    submodules:
+        nic: <> like INic;  // type name expression left unspecified
+        ...
+}
+\end{ned}
+
+Now the submodule type name is expected to be defined via typename pattern
+assignments. Typename pattern assignments look like pattern assignments for
+the submodule's parameters, only the parameter name is replaced by the
+\fkeyword{typename} keyword. Typename pattern assignments may also be
+written in the configuration file. In a network that uses the above
+\ttt{Node} NED type, typename pattern assignments would look like this:
+
+\begin{ned}
+network Network
+{
+    parameters:
+        node[*].nic.typename = "Ieee80211g";
+    submodules:
+        node: Node[100];
+}
+\end{ned}
+
+A default value may also be specified between the angle brackets;
+it will be used if there is no typename assignment for the
+module:
+
+\begin{ned}
+module Node
+{
+    submodules:
+        nic: <default("Ieee80211b")> like INic;
+        ...
+}
+\end{ned}
+
+
+\subsection{Parametric Connection Types}
+\label{sec:ch-ned-lang:connection-like}
+
+Parametric connection types work similarly to parametric submodule types,
+and the syntax is similar as well. A basic example that uses a parameter of
+the parent module:
+
+\begin{ned}
+a.g++ <--> <channelType> like IMyChannel <--> b.g++;
+a.g++ <--> <channelType> like IMyChannel {@display("ls=red");} <--> b.g++;
+\end{ned}
+
+The expression may use loop variables, parameters of the parent module
+and also parameters of submodules (e.g. \ttt{host[2].channelType}).
+
+The type expression may also be absent, and then the type is expected to be
+specified using typename pattern assignments:
+
+\begin{ned}
+a.g++ <--> <> like IMyChannel <--> b.g++;
+a.g++ <--> <> like IMyChannel {@display("ls=red");} <--> b.g++;
+\end{ned}
+
+A default value may also be given:
+
+\begin{ned}
+a.g++ <--> <default("Ethernet100")> like IMyChannel <--> b.g++;
+a.g++ <--> <default(channelType)> like IMyChannel <--> b.g++;
+\end{ned}
+
+The corresponding type pattern assignments:
+
+\begin{ned}
+a.g$o[0].channel.typename = "Ethernet1000";  // A -> B channel
+b.g$o[0].channel.typename = "Ethernet1000";  // B -> A channel
+\end{ned}
 
 
 \section{Properties (Metadata Annotations)}
