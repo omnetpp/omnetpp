@@ -106,11 +106,11 @@ description=<string>; per-run setting
     displayed in the run selection dialog.
 
 eventlog-file=<filename>, default:${resultdir}/${configname}-${runnumber}.elog; per-run setting
-    Name of the event log file to generate.
+    Name of the eventlog file to generate.
 
 eventlog-message-detail-pattern=<custom>; per-run setting
     A list of patterns separated by '|' character which will be used to write
-    message detail information into the event log for each message sent during
+    message detail information into the eventlog for each message sent during
     the simulation. The message detail will be presented in the sequence chart
     tool. Each pattern starts with an object pattern optionally followed by ':'
     character and a comma separated list of field patterns. In both patterns
@@ -429,7 +429,7 @@ total-stack=<double>, unit="B"; global setting
     to increase this value if you get a ``Cannot allocate coroutine stack''
     error.
 
-<object-full-path>.type-name=<string>; per-object setting
+<object-full-path>.typename=<string>; per-object setting
     Specifies type for submodules and channels declared with 'like <>'.
 
 user-interface=<string>; global setting

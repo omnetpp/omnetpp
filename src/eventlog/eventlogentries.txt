@@ -113,7 +113,7 @@ KF KeyframeEntry
 
 abstract MessageEntry // base class for entries referring to a message
 {
-   id long messageId                          // life time unique id of the message
+   id long messageId                          // lifetime-unique id of the message
    tid long messageTreeId                     // id of the message inherited by dup
    eid long messageEncapsulationId            // id of the message inherited by encapsulation
    etid long messageEncapsulationTreeId       // id of the message inherited by both dup and encapsulation
@@ -165,7 +165,7 @@ CM CreateMessageEntry : MessageEntry // creating a message
 
 CL CloneMessageEntry : MessageEntry // cloning a message either via the copy constructor or dup
 {
-   cid long cloneId // life time unique id of the clone
+   cid long cloneId // lifetime-unique id of the clone
 }
 
 DM DeleteMessageEntry : MessageEntry // deleting a message

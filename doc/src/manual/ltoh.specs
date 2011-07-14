@@ -117,6 +117,7 @@ htmlfile_spec := $BASE.htm
 @{}     @\caption@<center><i>Figure: @</i></center>@
 :comm   :\textbar:|::
 :comm   :\textasciicircum:^::
+:comm   :\textasciitilde:~::
 :comm   :\textbackslash:\::
 :comm   :\sim:~::
 :comm   :\dots:...::

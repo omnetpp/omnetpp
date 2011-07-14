@@ -13,8 +13,8 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \begin{description}
 \item[double]: \ttt{double double(any x)} \\
     Converts x to double, and returns the result. A boolean argument becomes 0 or 1; a string is interpreted as number; an XML argument causes an error.
-\item[int]: \ttt{long int(any x)} \\
-    Converts x to long, and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error.
+\item[int]: \ttt{int int(any x)} \\
+    Converts x to an integer (C++ long), and returns the result. A boolean argument becomes 0 or 1; a double is converted using floor(); a string is interpreted as number; an XML argument causes an error.
 \item[string]: \ttt{string string(any x)} \\
     Converts x to string, and returns the result.
 
@@ -64,16 +64,26 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 
 \end{description}
 
+\subsubsection{Category "misc":}
+
+\begin{description}
+\item[firstAvailable]: \ttt{string firstAvailable(...)} \\
+    Accepts any number of strings, interprets them as NED type names (qualified or unqualified), and returns the first one that exists and its C++ implementation class is also available. Throws an error if none of the types are available.
+\item[simTime]: \ttt{quantity simTime()} \\
+    Returns the current simulation time.
+
+\end{description}
+
 \subsubsection{Category "ned":}
 
 \begin{description}
-\item[ancestorIndex]: \ttt{long ancestorIndex(long numLevels)} \\
+\item[ancestorIndex]: \ttt{int ancestorIndex(int numLevels)} \\
     Returns the index of the ancestor module numLevels levels above the module or channel in context.
 \item[fullName]: \ttt{string fullName()} \\
     Returns the full name of the module or channel in context.
 \item[fullPath]: \ttt{string fullPath()} \\
     Returns the full path of the module or channel in context.
-\item[parentIndex]: \ttt{long parentIndex()} \\
+\item[parentIndex]: \ttt{int parentIndex()} \\
     Returns the index of the parent module, which has to be part of module vector.
 
 \end{description}
@@ -81,33 +91,33 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \subsubsection{Category "random/continuous":}
 
 \begin{description}
-\item[beta]: \ttt{double beta(double alpha1, double alpha2, long rng?)} \\
+\item[beta]: \ttt{double beta(double alpha1, double alpha2, int rng?)} \\
     Returns a random number from the Beta distribution
-\item[cauchy]: \ttt{quantity cauchy(quantity a, quantity b, long rng?)} \\
+\item[cauchy]: \ttt{quantity cauchy(quantity a, quantity b, int rng?)} \\
     Returns a random number from the Cauchy distribution
-\item[chi\_square]: \ttt{double chi\_square(long k, long rng?)} \\
+\item[chi\_square]: \ttt{double chi\_square(int k, int rng?)} \\
     Returns a random number from the Chi-square distribution
-\item[erlang\_k]: \ttt{quantity erlang\_k(long k, quantity mean, long rng?)} \\
+\item[erlang\_k]: \ttt{quantity erlang\_k(int k, quantity mean, int rng?)} \\
     Returns a random number from the Erlang distribution
-\item[exponential]: \ttt{quantity exponential(quantity mean, long rng?)} \\
+\item[exponential]: \ttt{quantity exponential(quantity mean, int rng?)} \\
     Returns a random number from the Exponential distribution
-\item[gamma\_d]: \ttt{quantity gamma\_d(double alpha, quantity theta, long rng?)} \\
+\item[gamma\_d]: \ttt{quantity gamma\_d(double alpha, quantity theta, int rng?)} \\
     Returns a random number from the Gamma distribution
-\item[lognormal]: \ttt{double lognormal(double m, double w, long rng?)} \\
+\item[lognormal]: \ttt{double lognormal(double m, double w, int rng?)} \\
     Returns a random number from the Lognormal distribution
-\item[normal]: \ttt{quantity normal(quantity mean, quantity stddev, long rng?)} \\
+\item[normal]: \ttt{quantity normal(quantity mean, quantity stddev, int rng?)} \\
     Returns a random number from the Normal distribution
-\item[pareto\_shifted]: \ttt{quantity pareto\_shifted(double a, quantity b, quantity c, long rng?)} \\
+\item[pareto\_shifted]: \ttt{quantity pareto\_shifted(double a, quantity b, quantity c, int rng?)} \\
     Returns a random number from the Pareto-shifted distribution
-\item[student\_t]: \ttt{double student\_t(long i, long rng?)} \\
+\item[student\_t]: \ttt{double student\_t(int i, int rng?)} \\
     Returns a random number from the Student-t distribution
-\item[triang]: \ttt{quantity triang(quantity a, quantity b, quantity c, long rng?)} \\
+\item[triang]: \ttt{quantity triang(quantity a, quantity b, quantity c, int rng?)} \\
     Returns a random number from the Triangular distribution
-\item[truncnormal]: \ttt{quantity truncnormal(quantity mean, quantity stddev, long rng?)} \\
+\item[truncnormal]: \ttt{quantity truncnormal(quantity mean, quantity stddev, int rng?)} \\
     Returns a random number from the truncated Normal distribution
-\item[uniform]: \ttt{quantity uniform(quantity a, quantity b, long rng?)} \\
+\item[uniform]: \ttt{quantity uniform(quantity a, quantity b, int rng?)} \\
     Returns a random number from the Uniform distribution
-\item[weibull]: \ttt{quantity weibull(quantity a, quantity b, long rng?)} \\
+\item[weibull]: \ttt{quantity weibull(quantity a, quantity b, int rng?)} \\
     Returns a random number from the Weibull distribution
 
 \end{description}
@@ -115,17 +125,17 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \subsubsection{Category "random/discrete":}
 
 \begin{description}
-\item[bernoulli]: \ttt{long bernoulli(double p, long rng?)} \\
+\item[bernoulli]: \ttt{int bernoulli(double p, int rng?)} \\
     Returns a random number from the Bernoulli distribution
-\item[binomial]: \ttt{long binomial(long n, double p, long rng?)} \\
+\item[binomial]: \ttt{int binomial(int n, double p, int rng?)} \\
     Returns a random number from the Binomial distribution
-\item[geometric]: \ttt{long geometric(double p, long rng?)} \\
+\item[geometric]: \ttt{int geometric(double p, int rng?)} \\
     Returns a random number from the Geometric distribution
-\item[intuniform]: \ttt{long intuniform(long a, long b, long rng?)} \\
+\item[intuniform]: \ttt{int intuniform(int a, int b, int rng?)} \\
     Returns a random number from the Intuniform distribution
-\item[negbinomial]: \ttt{long negbinomial(long n, double p, long rng?)} \\
+\item[negbinomial]: \ttt{int negbinomial(int n, double p, int rng?)} \\
     Returns a random number from the Negbinomial distribution
-\item[poisson]: \ttt{long poisson(double lambda, long rng?)} \\
+\item[poisson]: \ttt{int poisson(double lambda, int rng?)} \\
     Returns a random number from the Poisson distribution
 
 \end{description}
@@ -133,25 +143,25 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
 \subsubsection{Category "strings":}
 
 \begin{description}
-\item[choose]: \ttt{string choose(long index, string list)} \\
+\item[choose]: \ttt{string choose(int index, string list)} \\
     Interprets list as a space-separated list, and returns the item at the given index. Negative and out-of-bounds indices cause an error.
 \item[contains]: \ttt{bool contains(string s, string substr)} \\
     Returns true if string s contains substr as substring
 \item[endsWith]: \ttt{bool endsWith(string s, string substr)} \\
     Returns true if s ends with the substring substr.
-\item[expand] : \ttt{string expand(string s)} \\
-    Expands \$\{\} variables (\$\{configname\}, \$\{runnumber\}, etc.) in the given string, and returns the result.
-\item[indexOf]: \ttt{long indexOf(string s, string substr)} \\
+\item[expand]: \ttt{string expand(string s)} \\
+    Expands \${} variables (\${configname}, \${runnumber}, etc.) in the given string, and returns the result.
+\item[indexOf]: \ttt{int indexOf(string s, string substr)} \\
     Returns the position of the first occurrence of substring substr in s, or -1 if s does not contain substr.
-\item[length]: \ttt{long length(string s)} \\
+\item[length]: \ttt{int length(string s)} \\
     Returns the length of the string
-\item[replace]: \ttt{string replace(string s, string substr, string repl, long startPos?)} \\
+\item[replace]: \ttt{string replace(string s, string substr, string repl, int startPos?)} \\
     Replaces all occurrences of substr in s with the string repl. If startPos is given, search begins from position startPos in s.
-\item[replaceFirst]: \ttt{string replaceFirst(string s, string substr, string repl, long startPos?)} \\
+\item[replaceFirst]: \ttt{string replaceFirst(string s, string substr, string repl, int startPos?)} \\
     Replaces the first occurrence of substr in s with the string repl. If startPos is given, search begins from position startPos in s.
 \item[startsWith]: \ttt{bool startsWith(string s, string substr)} \\
     Returns true if s begins with the substring substr.
-\item[substring]: \ttt{string substring(string s, long pos, long len?)} \\
+\item[substring]: \ttt{string substring(string s, int pos, int len?)} \\
     Return the substring of s starting at the given position, either to the end of the string or maximum len characters
 \item[substringAfter]: \ttt{string substringAfter(string s, string substr)} \\
     Returns the substring of s after the first occurrence of substr, or the empty string if s does not contain substr.
@@ -161,7 +171,7 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
     Returns the substring of s before the first occurrence of substr, or the empty string if s does not contain substr.
 \item[substringBeforeLast]: \ttt{string substringBeforeLast(string s, string substr)} \\
     Returns the substring of s before the last occurrence of substr, or the empty string if s does not contain substr.
-\item[tail]: \ttt{string tail(string s, long len)} \\
+\item[tail]: \ttt{string tail(string s, int len)} \\
     Returns the last len character of s, or the full s if it is shorter than len characters.
 \item[toLower]: \ttt{string toLower(string s)} \\
     Converts s to all lowercase, and returns the result.
@@ -183,6 +193,16 @@ following. The question mark (as in ``\ttt{rng?}'') marks optional arguments.
     Replaces the unit of x with the given unit.
 \item[unitOf]: \ttt{string unitOf(quantity x)} \\
     Returns the unit of the given quantity.
+
+\end{description}
+
+\subsubsection{Category "xml":}
+
+\begin{description}
+\item[xml]: \ttt{xml xml(string xmlstring, string xpath?)} \\
+    Parses the given XML string into a cXMLElement tree, and returns the root element. When called with two arguments, it returns the first element from the tree that matches the expression given in simplified XPath syntax.
+\item[xmldoc]: \ttt{xml xmldoc(string filename, string xpath?)} \\
+    Parses the given XML file into a cXMLElement tree, and returns the root element. When called with two arguments, it returns the first element from the tree that matches the expression given in simplified XPath syntax.
 \end{description}
 
 %%% Local Variables:

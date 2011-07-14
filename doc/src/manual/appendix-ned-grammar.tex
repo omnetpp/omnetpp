@@ -295,6 +295,7 @@ inline\_properties
 
 pattern
         : pattern2 '.' pattern\_elem
+        | pattern2 '.' TYPENAME
         ;
 
 pattern2
@@ -478,8 +479,8 @@ submodule
         ;
 
 submoduleheader
-        : submodulename ':' dottedname
-        | submodulename ':' likeparam LIKE dottedname
+        : submodulename ':' dottedname opt\_condition
+        | submodulename ':' likeexpr LIKE dottedname opt\_condition
         ;
 
 submodulename
@@ -487,9 +488,15 @@ submodulename
         |  NAME vector
         ;
 
-likeparam
+likeexpr
         : '<' '>'
         | '<' expression '>'
+        | '<' DEFAULT '(' expression ')' '>'
+        ;
+
+opt\_condition
+        : condition
+        |
         ;
 
 opt\_connblock
@@ -611,7 +618,7 @@ channelspec
 channelspec\_header
         :
         | dottedname
-        | likeparam LIKE dottedname
+        | likeexpr LIKE dottedname
         ;
 
 condition
@@ -625,12 +632,6 @@ vector
 expression
         :
           expr
-        | xmldocvalue
-        ;
-
-xmldocvalue
-        : XMLDOC '(' stringliteral ',' stringliteral ')'
-        | XMLDOC '(' stringliteral ')'
         ;
 
 expr
@@ -664,23 +665,29 @@ expr
         | INT '(' expr ')'
         | DOUBLE '(' expr ')'
         | STRING '(' expr ')'
-        | NAME '(' ')'
-        | NAME '(' expr ')'
-        | NAME '(' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
-        | NAME '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' ')'
+        | funcname '(' expr ')'
+        | funcname '(' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
+        | funcname '(' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ',' expr ')'
         ;
 
 simple\_expr
         : identifier
         | special\_expr
         | literal
+        ;
+
+funcname
+        : NAME
+        | XMLDOC
+        | XML
         ;
 
 identifier

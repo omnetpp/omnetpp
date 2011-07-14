@@ -15,11 +15,12 @@ while (<>)
    {
       # comment
    }
-   elsif ($_ =~ /^([\w]+) +([\w]+) *(\/\/ *(.*))?$/)
+   elsif ($_ =~ /^([\w]+) +([\w]+) *(: *([\w]+))? *(\/\/ *(.*))?$/)
    {
       $classCode = $1;
       $className = $2;
-      $classComment = $4;
+      $classBase = $4;
+      $classComment = $6;
       $classHasOptField = 0;
 
       $classDesc = $className;

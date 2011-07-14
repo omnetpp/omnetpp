@@ -65,17 +65,20 @@ The following entries and attributes are supported in the eventlog file:
 %% generated with tools/stripeventlog.pl from src/eventlog/eventlogentries.txt
 %%
 
-\tbf{SB} \textit{(SimulationBegin)}: recorded at the first event
+\tbf{SB} \textit{(SimulationBegin)}: mandatory first line of an eventlog file
 
 \begin{itemize}
   \item \tbf{v} (\textit{version}, int): OMNeT++ version, e.g. 0x401 (=1025) is release 4.1
   \item \tbf{rid} (\textit{runId}, string): identifies the simulation run
+  \item \tbf{b} (\textit{keyframeBlockSize}, int): the distance between keyframes in event numbers
 \end{itemize}
 
-\tbf{SE} \textit{(SimulationEnd)}: optional last line of an event log file
+\tbf{SE} \textit{(SimulationEnd)}: optional last line of an eventlog file
 
 \begin{itemize}
-  \item no parameters
+  \item \tbf{e} (\textit{isError}, bool): specifies if the simulation terminated due to an error
+  \item \tbf{c} (\textit{resultCode}, int): the error code in case of an error, otherwise the normal result code
+  \item \tbf{m} (\textit{message}, string): human readable description
 \end{itemize}
 
 \tbf{BU} \textit{(Bubble)}: display a bubble message
@@ -171,7 +174,7 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{d} (\textit{displayString}, string): the new display string
 \end{itemize}
 
-\tbf{E} \textit{(Event)}: an event that is processing of a message
+\tbf{E} \textit{(Event)}: an event that is processing a message
 
 \begin{itemize}
   \item \tbf{\#} (\textit{eventNumber}, eventnumber\_t): unique event number
@@ -181,28 +184,41 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{msg} (\textit{messageId}, long): lifetime-unique id of the message being processed
 \end{itemize}
 
-\tbf{CE} \textit{(CancelEvent)}: canceling an event caused by self message
+\tbf{KF} \textit{(Keyframe)}:
 
 \begin{itemize}
-  \item \tbf{id} (\textit{messageId}, long): id of the message being removed from the FES
-  \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being cancelled was sent, or -1 if the message was sent from initialize
+  \item \tbf{p} (\textit{previousKeyframeFileOffset}, int64): file offset of the previous keyframe entry
+  \item \tbf{c} (\textit{consequenceLookaheadLimits}, string): consequence lookahead data
+  \item \tbf{s} (\textit{simulationStateEntries}, string): simulation state data
 \end{itemize}
 
-\tbf{BS} \textit{(BeginSend)}: beginning to send a message
+\tbf{abstract} \textit{(Message)}: base class for entries referring to a message
 
 \begin{itemize}
-  \item \tbf{id} (\textit{messageId}, long): life time unique id of the message being sent
+  \item \tbf{id} (\textit{messageId}, long): lifetime-unique id of the message
   \item \tbf{tid} (\textit{messageTreeId}, long): id of the message inherited by dup
   \item \tbf{eid} (\textit{messageEncapsulationId}, long): id of the message inherited by encapsulation
   \item \tbf{etid} (\textit{messageEncapsulationTreeId}, long): id of the message inherited by both dup and encapsulation
   \item \tbf{c} (\textit{messageClassName}, string): C++ class name of the message
-  \item \tbf{n} (\textit{messageFullName}, string): message name
-  \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being sent was processed, or -1 if the message has not yet been processed before
+  \item \tbf{n} (\textit{messageName}, string): message name
   \item \tbf{k} (\textit{messageKind}, short): message kind
   \item \tbf{p} (\textit{messagePriority}, short): message priority
   \item \tbf{l} (\textit{messageLength}, int64): message length in bits
   \item \tbf{er} (\textit{hasBitError}, bool): true indicates that the message has bit errors
   \item \tbf{d} (\textit{detail}, string): detailed information of message content when recording message data is turned on
+  \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being cloned was sent, or -1 if the message was sent from initialize
+\end{itemize}
+
+\tbf{CE} \textit{(CancelEvent)}: canceling an event caused by a self message
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{BS} \textit{(BeginSend)}: beginning to send a message
+
+\begin{itemize}
+  \item no parameters
 \end{itemize}
 
 \tbf{ES} \textit{(EndSend)}: prediction of the arrival of a message
@@ -231,11 +247,22 @@ The following entries and attributes are supported in the eventlog file:
   \item \tbf{td} (\textit{transmissionDelay}, simtime\_t): transmission duration as the whole message is sent from the source gate
 \end{itemize}
 
+\tbf{CM} \textit{(CreateMessage)}: creating a message
+
+\begin{itemize}
+  \item no parameters
+\end{itemize}
+
+\tbf{CL} \textit{(CloneMessage)}: cloning a message either via the copy constructor or dup
+
+\begin{itemize}
+  \item \tbf{cid} (\textit{cloneId}, long): lifetime-unique id of the clone
+\end{itemize}
+
 \tbf{DM} \textit{(DeleteMessage)}: deleting a message
 
 \begin{itemize}
-  \item \tbf{id} (\textit{messageId}, int): id of the message being deleted
-  \item \tbf{pe} (\textit{previousEventNumber}, eventnumber\_t): event number from which the message being deleted was sent, or -1 if the message was sent from initialize
+  \item no parameters
 \end{itemize}
 
 %%% Local Variables:
