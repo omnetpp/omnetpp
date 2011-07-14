@@ -152,10 +152,11 @@ errors/warnings disappear when the file is viewed as part of its main file.
 \end{note}
 
 
-
 \section{Sections}
 \label{sec:ch-config-sim:general-section}
 
+An ini file may contain a \ttt{[General]} section and several \ttt{[Config <configname>]}
+sections. The order of the sections doesn't matter.
 
 \subsection{The [General] Section}
 
@@ -192,8 +193,8 @@ Named configurations are sections of the form \ttt{[Config <configname>]}, where
 ...
 \end{inifile}
 
-Some configuration keys (such as user interface selection) are only
-accepted in the \ttt{[General]} section, but most of them can go into Config
+Some configuration options (such as user interface selection) are only
+accepted in the \ttt{[General]} section, but most of them can go into \ttt{Config}
 sections as well.
 
 When you run a simulation, you need to select one of the configurations
@@ -212,16 +213,16 @@ the configuration from a dialog.)
 
 Actually, when you activate the PureAloha configuration, the contents of
 the \ttt{[General]} section will also be taken into account: if some
-configuration key or parameter value is not found in \ttt{[Config PureAloha]},
+configuration option or parameter value is not found in \ttt{[Config PureAloha]},
 then the search will continue in the \ttt{[General]} section. In
 other words, lookups in \ttt{[Config PureAloha]} will fall back to \ttt{[General]}.
 The \ttt{[General]} section itself is optional; when it is absent, it is
 treated like an empty \ttt{[General]} section.
 
 All named configurations fall back to \ttt{[General]} by default. However, for
-each configuration it is possible to specify the fall-back sections
-explicitly, using the \fconfig{extends} key. Consider the following ini file
-skeleton:
+each configuration it is possible to specify the fall-back section or a list of
+fallback sections explicitly, using the \fconfig{extends} key. Consider the
+following ini file skeleton:
 
 \begin{inifile}
 [General]
@@ -290,16 +291,13 @@ Config HighTrafficSettings
 General
 \end{commandline}
 
-
-The \textit{section fallback} concept is similar to multiple inheritance
-in object-oriented languages,
-and benefits are similar too; you can factor out the common parts of
-several configurations into a "base"
-configuration, and additionally you can reuse existing
-configurations (as opposed to copying them) by using them as a base. In
-practice you will often have "abstract"
-configurations too (in the C++/Java sense), which assign only a subset
-of parameters and leave the others open, to be assigned in derived
+The \textit{section fallback} concept is similar to multiple inheritance in
+object-oriented languages, and benefits are similar too; you can factor out
+the common parts of several configurations into a ``base'' configuration,
+and additionally you can reuse existing configurations (as opposed to
+copying them) by using them as a base. In practice you will often have
+``abstract'' configurations too (in the C++/Java sense), which assign only
+a subset of parameters and leave the others open, to be assigned in derived
 configurations.
 
 If you are experimenting a lot with different parameter settings of a
@@ -316,7 +314,7 @@ think about them as being ``hardcoded''. In contrast, it is easier
 and more flexible to maintain module parameter settings in \ffilename{omnetpp.ini}.
 
 In \ffilename{omnetpp.ini}, module parameters are referred to by their full paths
-or hierarchical names. This name consists of the dot-separated list of
+(hierarchical names). This name consists of the dot-separated list of
 the module names (from the top-level module down to the module containing
 the parameter), plus the parameter name
 (see section \ref{sec:sim-lib:fullname-and-fullpath}).
@@ -327,8 +325,15 @@ the toplevel module and the \ttt{transactionsPerSecond} parameter of the
 
 \begin{inifile}
 [General]
-net.numHosts = 15
-net.server.transactionsPerSecond = 100
+Network.numHosts = 15
+Network.server.transactionsPerSecond = 100
+\end{inifile}
+
+Typename pattern assignments are also accepted:
+
+\begin{inifile}
+[General]
+Network.host[*].app.typename = "PingApp"
 \end{inifile}
 
 
@@ -341,13 +346,13 @@ be tedious to set them one-by-one in \ffilename{omnetpp.ini}. {\opp} supports
 at once. The same pattern syntax is used for per-object configuration options;
 for example \ttt{<object-path-pattern>.record-scalar}, or \ttt{<module-path-pattern>.rng-<N>}.
 
-The pattern syntax is a variation on the usual \textit{glob}-style
-patterns. The most apparent differences to the \textit{glob} rules are the
+The pattern syntax is a variation on Unix \textit{glob}-style
+patterns. The most apparent differences to globbing rules are the
 distinction between \ttt{*} and \ttt{**}, and that character ranges should
-be written with curly braces instead of square brackets (that is,
+be written with curly braces instead of square brackets; that is,
 \textit{any-letter} is expressed as \ttt{\{a-zA-Z\}} and not as
 \ttt{[a-zA-Z]}, because square brackets are reserved for the notation of
-module vector indices).
+module vector indices.
 
 Pattern syntax:
 
@@ -359,9 +364,9 @@ Pattern syntax:
   \item \ttt{\{{\textasciicircum}a-f\}}: \textit{negated set}: matches a character
     NOT in the range a-f
   \item \ttt{\{38..150\}} : \textit{numeric range}: any number (i.e. sequence of digits)
-    in the range 38..150  (e.g. \ttt{99})
+    in the range 38..150, inclusive; both limits are optional
   \item \ttt{[38..150]} : \textit{index range}: any number in square brackets in the
-    range 38..150 (e.g. \ttt{[99]})
+    range 38..150, inclusive; both limits are optional
   \item backslash ({\textbackslash}) : takes away the special meaning of the
     subsequent character
 \end{itemize}
@@ -471,9 +476,6 @@ More precisely, parameter resolution takes place as follows:
 
 \section{Parameter Studies}
 
-\subsection{Basic Use}
-
-
 It is quite common in simulation studies that the simulation model is
 run several times with different parameter settings, and the results
 are analyzed in relation to the input parameters. {\opp} 3.x had no
@@ -482,7 +484,7 @@ direct support for batch runs, and users had to resort to writing shell
 parameter space, to generate a (partial) ini file and run the
 simulation program in each iteration.
 
-{\opp} 4.0 largely automates this process, and eliminates the need for
+{\opp} 4.x largely automates this process, and eliminates the need for
 writing batch execution scripts. It is the ini file where the user can
 specify iterations over various parameter settings.
 Here is an example:
@@ -493,14 +495,13 @@ Here is an example:
 **.host[*].generationInterval = exponential(${0.2, 0.4, 0.6}s)
 \end{inifile}
 
-
 This parameter study expands to 8*3 = 24 simulation runs, where the number of
 hosts iterates over the numbers 1, 2, 5, 10, 20, 30, 40, 50, and for
 each host count three simulation runs will be done, with the generation
 interval being exponential(0.2), exponential(0.4), and
 exponential(0.6).
 
-How does it work? First of all, Cmdenv with the '-x' option will tell you how many
+How does it work? First of all, Cmdenv with the \ttt{-x} option will tell you how many
 simulation runs a given section expands to. (You will of course use Cmdenv for batch runs,
 not Tkenv.)
 
@@ -513,17 +514,13 @@ Config: AlohaStudy
 Number of runs: 24
 \end{commandline}
 
-
-If you add the '-g' option, the program will also print out the
-values of the iteration variables for each run. (Use '-G' for even more info)
-Note that the parameter study actually maps to nested
-loops, with the last "\$\{..\}" becoming
-the innermost loop. The iteration variables are just named \ttt{\$0} and \ttt{\$1}
--- we'll see that it is possible to give
-meaningful names to them. Please ignore the
-\ttt{\$repetition=0} part in the printout
-for now.
-
+If you add the \ttt{-g} option, the program will also print out the values
+of the iteration variables for each run. (Use \ttt{-G} for even more info.)
+Note that the parameter study actually maps to nested loops, with the last
+\ttt{\$\{...\}} becoming the innermost loop. The iteration variables are
+just named \ttt{\$0} and \ttt{\$1} -- we'll see that it is possible to give
+meaningful names to them. Please ignore the \ttt{\$repetition=0} part in
+the printout for now.
 
 \begin{commandline}
 $ aloha -u Cmdenv -x AlohaStudy -g
@@ -547,11 +544,9 @@ Run 22: $0=50, $1=0.4, $repetition=0
 Run 23: $0=50, $1=0.6, $repetition=0
 \end{commandline}
 
-
-Any of these runs can be executed by passing the '-r
-<runnumber>' option to Cmdenv.
-So, the task is now to run the simulation program 24 times, with
-'-r' running from 0 through 23:
+Any of these runs can be executed by passing the \ttt{-r <runnumber>}
+option to Cmdenv. So, the task is now to run the simulation program 24
+times, with \ttt{-r} running from 0 through 23:
 
 \begin{commandline}
 $ aloha -u Cmdenv -c AlohaStudy -r 0
@@ -561,15 +556,13 @@ $ aloha -u Cmdenv -c AlohaStudy -r 2
 $ aloha -u Cmdenv -c AlohaStudy -r 23
 \end{commandline}
 
-
 This batch can be executed either from the {\opp} IDE (where you are
 prompted to pick an executable and an ini file, choose the configuration
 from a list, and just click Run), or using a little command-line
 batch execution tool (\fprog{opp\_runall}) supplied with {\opp}.
 
 Actually, it is also possible to get Cmdenv execute all runs in one go,
-by simply omitting the '-r' option.
-
+by simply omitting the \ttt{-r} option.
 
 \begin{commandline}
 $ aloha -u Cmdenv -c AlohaStudy
@@ -587,9 +580,12 @@ Preparing for running configuration AlohaStudy, run #23...
 However, this approach is not recommended, because it is more
 susceptible to C++ programming errors in the model. (For example, if
 any of the runs crashes, the whole batch is terminated -- which may
-not be what the user wants).
+not be what the user wants.)
 
-Let us get back to the ini file. We had:
+
+\subsection{Iterations}
+
+Let us have a look at the example ini file in the previous section again:
 
 \begin{inifile}
 [Config AlohaStudy]
@@ -597,9 +593,8 @@ Let us get back to the ini file. We had:
 **.host[*].generationInterval = exponential( ${0.2, 0.4, 0.6}s )
 \end{inifile}
 
-
 The \ttt{\$\{...\}} syntax specifies an iteration. It is sort of a macro: at
-each run, the whole \ttt{\$\{...\}} string gets textually replaced with the
+each run, the whole \ttt{\$\{...\}} string is textually replaced with the
 current iteration value. The values to iterate over do not need to be
 numbers (unless you want to use the \textit{"a..b"} or
 \textit{"a..b step c"} syntax), and the
@@ -658,7 +653,6 @@ more than one place in the ini file. The syntax is
 
 The scope of the variable name is the section that defines it, plus
 sections based on that section (via \fconfig{extends}).
-
 
 \subsubsection{Referencing Other Iteration Variables}
 
@@ -777,25 +771,28 @@ for the first value of \ttt{plan} the first values of \ttt{host} and \ttt{load}
 are selected, and so on.
 
 
+
 \subsection{Predefined Variables, Run ID}
 
-There are also a number of predefined variables: \ttt{\$\{configname\}} and
-\ttt{\$\{runnumber\}} with the obvious meanings; \ttt{\$\{network\}} is the name of
-the network that is simulated; \ttt{\$\{processid\}} and \ttt{\$\{datetime\}}
-expand to the OS process id of the simulation and the time it was
-started; and there are some more: \ttt{\$\{runid\},} \ttt{\$\{iterationvars\}} and
-\ttt{\$\{repetition\}.}
+There are a number of predefined variables: \ttt{\$\{configname\}} and
+\ttt{\$\{runnumber\}} with the obvious meanings; \ttt{\$\{network\}} is the
+name of the network that is simulated; \ttt{\$\{processid\}} and
+\ttt{\$\{datetime\}} expand to the OS process id of the simulation and the
+time it was started; and there are some more: \ttt{\$\{runid\},}
+\ttt{\$\{iterationvars\}} and \ttt{\$\{repetition\}.}
 
-\ttt{\$\{runid\}} holds the Run ID. When a simulation is run, it gets assigned
-a Run ID, which uniquely identifies that instance of running the
-simulation: if you run the same thing again, it will get a different
-Run ID. Run ID is a concatenation of several variables like
-\ttt{\$\{configname\},} \ttt{\$\{runnumber\},} \ttt{\$\{datetime\}} and \ttt{\$\{processid\}.}
-This yields an identifier that is unique
-"enough" for all practical purposes, yet it
-is meaningful for humans. The Run ID is recorded into result files
-written during the simulation, and can be used to match vectors and
-scalars written by the same simulation run.
+\ttt{\$\{runid\}} holds the \textit{run ID}. When a simulation is run, a a
+run ID is generated that uniquely identifies that instance of the
+simulation: if you run the same thing again, it will get a different run
+ID. Run ID is a concatenation of several variables like
+\ttt{\$\{configname\},} \ttt{\$\{runnumber\},} \ttt{\$\{datetime\}} and
+\ttt{\$\{processid\}.} This yields an identifier that is unique ``enough''
+for all practical purposes, yet it is meaningful for humans. The run ID is
+recorded into result files written during the simulation, and can be used
+to match vectors and scalars written by the same simulation run.
+
+
+\subsection{Constraint Expression}
 
 In cases when not all combinations of the iteration variables make sense
 or need to be simulated, it is possible to specify an additional
@@ -808,20 +805,19 @@ given with the \fconfig{constraint} configuration option. An example:
 \begin{inifile}
 *.numNodes = ${n=10..100 step 10}
 **.numNeighbors = ${m=2..10 step 2}
-constraint = $m <= sqrt($n)
+constraint = ($m) <= sqrt($n)  # note: parens needed due to textual substitution
 \end{inifile}
 
-The expression syntax supports most C language operators (including
-boolean, conditional and binary shift operations) and most
-\textit{<math.h>} functions; data types are boolean,
-double and string. The expression must evaluate to a boolean.
+The expression syntax supports most C language operators including boolean,
+conditional and binary shift operations, and most \ttt{<math.h>} functions;
+data types are boolean, double and string. The expression must evaluate to
+a boolean.
 
 \begin{note}
-    It is not supported to refer to other iteration variables
-    in the definition of an iteration variable (i.e. you cannot write
-    things like \ttt{\$\{j=\$i..10\}}), although it might be implemented in
-    future {\opp} releases.
+Remember that variables are substituted textually into the expresssion, so
+they must be protected with parentheses to preserve evaluation order.
 \end{note}
+
 
 \subsection{Repeating Runs with Different Seeds}
 
@@ -888,8 +884,7 @@ In this case, the \fconfig{repeat} key should be left out, as \fconfig{seed-set}
 already defines an iteration and there is no need for an extra loop.
 
 It is of course also possible to manually specify individual seeds for
-simulations. This is rarely necessary, but we can use it here to
-demonstrate another feature, parallel iterators:
+simulations. The parallel iteration feature is very convenient here:
 
 \begin{inifile}
 repeat = 4
@@ -903,8 +898,7 @@ column of seeds is chosen, for the second repetition, the second
 column, etc. The "!" syntax chooses the
 \textit{kth} value from the iteration, where \textit{k} is the position
 (iteration count) of the iteration variable after the
-"!". Thus, the above example is equivalent
-to the following:
+"!". Thus, the above example is equivalent to the following:
 
 \begin{inifile}
 # no repeat= line!
