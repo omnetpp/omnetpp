@@ -753,6 +753,30 @@ arithmetic expressions.
 \end{rationale}
 
 
+\subsection{Parallel Iteration}
+
+The body of an iteration may end in an exclamation mark followed by the
+name of another iteration variable. This syntax denotes a \textit{parallel
+iteration}. A parallel iteration does not define a loop of its own, but
+rather, the sequence is advanced in lockstep with the variable after the
+``!''. In other words, the ``!'' syntax chooses the \textit{kth} value from
+the iteration, where \textit{k} is the position (iteration count) of the
+iteration variable after the ``!''.
+
+An example:
+
+\begin{inifile}
+**.plan =     ${plan= "A", "B", "C", "D"}
+**.numHosts = ${hosts= 10,  20,  50, 100 ! plan}
+**.load =     ${load= 0.2, 0.3, 0.3, 0.4 ! plan}
+\end{inifile}
+
+In the above example, the only loop is defined by the first line, the \ttt{plan}
+variable. The other two iterations, \ttt{hosts} and \ttt{load} just follow it;
+for the first value of \ttt{plan} the first values of \ttt{host} and \ttt{load}
+are selected, and so on.
+
+
 \subsection{Predefined Variables, Run ID}
 
 There are also a number of predefined variables: \ttt{\$\{configname\}} and
