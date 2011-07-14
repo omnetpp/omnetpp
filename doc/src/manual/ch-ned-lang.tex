@@ -736,84 +736,220 @@ Parameters can get their value from NED files or from the configuration
 (\ffilename{omnetpp.ini}). A default value can also be given (\ttt{default(}...\ttt{)}),
 which is used if the parameter is not assigned otherwise.
 
-Let us see an example before we go into details:
+The following example shows a simple module that has five parameters, three
+of which have default values:
 
 \begin{ned}
 simple App
 {
     parameters:
-        int address;  // local node address
-        string destAddresses;  // destination addresses
-        volatile double sendIaTime @unit(s) = default(exponential(1s));
+        string protocol;       // protocol to use: "UDP" / "IP" / "ICMP" / ...
+        int destAddress;       // destination address
+        volatile double sendInterval @unit(s) = default(exponential(1s));
                                // time between generating packets
-        volatile int packetLength @unit(byte);  // length of one packet
-    ...
+        volatile int packetLength @unit(byte) = default(100B);
+                               // length of one packet
+        volatile int timeToLive = default(32);
+                               // maximum number of network hops to survive
+    gates:
+        input in;
+        output out;
 }
 \end{ned}
 
-%% XXX explain the example
 
+\subsubsection{Assigning a Value}
 
-\subsubsection{Values}
+Parameters may get their values in several ways: from NED code, from the
+configuration (\ffilename{omnetpp.ini}), or even, interactively from the
+user. NED lets you assign parameters at several places: in subclasses via
+inheritance; in submodule and connection definitions where the NED type is
+instantiated; and in networks and compound modules that directly or
+indirectly contain the corresponding submodule or connection.
 
-Parameters may get their values from several places: from NED code, from
-the configuration (\ffilename{omnetpp.ini}), or even, interactively from the
-user.
-
-The following example shows how parameters of an \ttt{App} module (from the
-previous example) may be assigned when \ttt{App} gets used as a submodule:
+For instance, one could specialize the above \ttt{App} module type via
+inheritance with the following definition:
 
 \begin{ned}
-module Node
+simple PingApp extends App
+{
+    parameters:
+        protocol = "ICMP/ECHO"
+        sendInterval = default(1s);
+        packetLength = default(64byte);
+}
+\end{ned}
+
+This definition sets the \ttt{protocol} parameter to a fixed value
+(\ttt{"ICMP/ECHO"}), and changes the default values of the
+\ttt{sendInterval} and \ttt{packetLength} parameters. \ttt{protocol} is now
+locked down in \ttt{PingApp}, its value cannot be modified via further subclassing
+or other ways. \ttt{sendInterval} and \ttt{packetLength} are still unassigned
+here, only their default values have been overwritten.
+
+Now, let us see the definition of a \ttt{Host} compound module that uses
+\ttt{PingApp} as submodule:
+
+\begin{ned}
+module Host
 {
     submodules:
-        app : App {
-            sendIaTime = 3s;
-            packetLength = 1024B; // B=byte
+        ping : PingApp {
+            packetLength = 128B; // always ping with 128-byte packets
         }
         ...
 }
 \end{ned}
 
-After the above definition, the \ttt{app} submodule's parameters cannot
-be changed from \ffilename{omnetpp.ini}.
+This definition sets the \ttt{packetLength} parameter to a fixed value. It
+is now hardcoded that \ttt{Host}s send 128-byte ping packets; this
+setting cannot be changed from NED or the configuration.
+
+It is not only possible to set a parameter from the compound module that
+contains the submodule, but also from modules higher up in the module tree.
+If you had a network that employed several \ttt{Host} modules, it could be
+defined like this:
+
+\begin{ned}
+network Network
+{
+    submodules:
+        host[100]: Host {
+            ping.timeToLive = default(3);
+            ping.destAddress = default(0);
+        }
+        ...
+}
+\end{ned}
+
+Parameter assignment can also be placed into the \ttt{parameters} block of
+the parent compound module, which provides additional flexibility. The
+following definition sets up the hosts so that half of them pings host \#50,
+and the other half pings host \#0:
+
+\begin{ned}
+network Network
+{
+    parameters:
+        host[*].ping.timeToLive = default(3);
+        host[0..49].ping.destAddress = default(50);
+        host[50..].ping.destAddress = default(0);
+
+    submodules:
+        host[100]: Host;
+        ...
+}
+\end{ned}
+
+Note the use of asterisk to match any index, and `\ttt{..}' to match index ranges.
+
+If you had a number of individual hosts instead of a submodule vector,
+the network definition could look like this:
+
+\begin{ned}
+network Network
+{
+    parameters:
+        host*.ping.timeToLive = default(3);
+        host{0..49}.ping.destAddress = default(50);
+        host{50..}.ping.destAddress = default(0);
+
+    submodules:
+        host0: Host;
+        host1: Host;
+        host2: Host;
+        ...
+        host99: Host;
+}
+\end{ned}
+
+An asterisk matches any substring not containing a dot, and a `\ttt{..}'
+within a pair of curly braces matches a natural number embedded in a
+string.
+
+In most assigments we have seen above, the left hand side of the equal sign
+contained a dot and often a wildcard as well (asterisk or numeric range);
+we call these assignments \textit{pattern assignments} or \textit{deep
+assignments}.
+
+There is one more wildcard that can be used in pattern assignments, and
+this is the double asterisk; it matches any sequence of characters
+including dots, so it can match multiple path elements. An example:
+
+\begin{ned}
+network Network
+{
+    parameters:
+        **.timeToLive = default(3);
+        **.destAddress = default(0);
+    submodules:
+        host0: Host;
+        host1: Host;
+        ...
+}
+\end{ned}
+
+Note that some assignments in the above examples changed default values,
+while others set parameters to fixed values. Parameters that received no
+fixed value in the NED files can be assigned from the configuration
+(\ffilename{omnetpp.ini}).
 
 \begin{important}
-    A value assigned in NED cannot be overwritten from ini files; they
-    become "hardcoded" as far as ini files are concerned.
+    A non-default value assigned from NED cannot be overwritten later in
+    NED or from ini files; it becomes ``hardcoded'' as far as ini files
+    and NED usage are concerned. In contrast, default values are possible
+    to overwrite.
 \end{important}
 
-Provided that the value isn't set in the NED file, a parameter can be assigned
-in the configuration in the following way:
+A parameter can be assigned in the configuration using a similar syntax as
+NED pattern assignments (actually, it would be more historically accurate
+to say it the other way round, that NED pattern assignments use a similar
+syntax to ini files):
+
+%% FIXME show patterns for channel parameters too!
 
 \begin{inifile}
-**.sendIaTime = 100ms
+Network.host[*].ping.sendInterval = 500ms  # for the host[100] example
+Network.host*.ping.sendInterval = 500ms    # for the host0,host1,... example
+**.sendInterval = 500ms
 \end{inifile}
 
-The above line applies to all parameters called \ttt{sendIaTime}, whichever
-module they belong to; it is possible to write more selective assignments
-by replacing \ttt{**} with more specific patterns. Parameter assignments in
-the configuration are described in section
+One often uses the double asterisk to save typing. You can write
+
+\begin{inifile}
+**.ping.sendInterval = 500ms
+\end{inifile}
+
+Or if you are sure that you don't accidentally assign some other
+\ttt{sendInterval} parameter, you can just write
+
+\begin{inifile}
+**.sendInterval = 500ms
+\end{inifile}
+
+Parameter assignments in the configuration are described in section
 \ref{sec:ch-config-sim:parameter-settings}.
 
-One can also write expressions, including stochastic expressions, in the ini file:
+One can also write expressions, including stochastic expressions, in
+NED files and in ini files as well. For example, here's how you can
+add jitter to the sending of ping packets:
 
 \begin{inifile}
-**.sendIaTime = 2s + exponential(100ms)
+**.sendInterval = 1s + normal(0s, 0.001s)  # or just: normal(1s, 0.001s)
 \end{inifile}
 
-If there is no assignment in the ini file, the default value (given with
-\ttt{=default(...)} in NED) is applied implicitly. If there is no default
-value, the user will be asked, provided the simulation program is allowed
-to do that; otherwise there will be an error. (Interactive mode is
-typically disabled for batch executions where it would do more harm than
-good.)
+If there is no assignment for a parameter in NED or in the ini file, the
+default value (given with \ttt{=default(...)} in NED) will be applied
+implicitly. If there is no default value, the user will be asked, provided
+the simulation program is allowed to do that; otherwise there will be an
+error. (Interactive mode is typically disabled for batch executions where
+it would do more harm than good.)
 
 It is also possible to explicitly apply the default (this can sometimes
 be useful):
 
 \begin{inifile}
-**.sendIaTime = default
+**.sendInterval = default
 \end{inifile}
 
 Finally, one can explicitly ask the simulator to prompt the user interactively
@@ -821,7 +957,7 @@ for the value (again, provided that interactivity is enabled; otherwise
 this will result in an error):
 
 \begin{inifile}
-**.sendIaTime = ask
+**.sendInterval = ask
 \end{inifile}
 
 \begin{note}
@@ -922,7 +1058,7 @@ by adding the \fprop{@unit} property. An example:
 simple App
 {
     parameters:
-        volatile double sendIaTime @unit(s) = default(exponential(350ms));
+        volatile double sendInterval @unit(s) = default(exponential(350ms));
         volatile int packetLength @unit(byte) = default(4KB);
     ...
 }
