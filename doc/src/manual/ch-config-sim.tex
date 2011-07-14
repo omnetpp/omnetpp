@@ -35,54 +35,122 @@ description = "high job arrival rate"
 The file is grouped into \textit{sections} named \ttt{[General]}, \ttt{[Config Fifo1]}
 and \ttt{[Config Fifo2]}, each one containing several \textit{entries}.
 
-Lines that start with ``\#'' are comments.
-
 
 \subsection{File Syntax}
 
-The ini file is a text file consisting of entries grouped into different sections.
-The order of the sections doesn't matter.
+An {\opp} configuration file is an ASCII text file, but non-ASCII
+characters are permitted in comments and string literals. This allows for
+using encodings that are a superset of ASCII, for example ISO 8859-1 and
+UTF-8. There is no limit on the file size or on the line length.
 
-Lines that start with "\#" are comments, and will be ignored during processing.
+Comments may be placed at the end of any line after a hash mark, ``\#''.
+Comments extend to the end of the line, and are ignored during processing.
+Blank lines are also allowed and ignored.
 
-Long lines can be broken up using the backslash notation: if the last character
-of a line is "\textbackslash", it will be merged with the next line.
+The file is line oriented, and consists of \textit{section heading lines},
+\textit{key-value lines}, and \textit{directive lines}:
 
-There is no limit on the file size or the maximum line length.
+\begin{enumerate}
+\item \textit{Section heading lines} contain a section name enclosed in square brackets.
+\item \textit{Key-value lines} have the \textit{<key>=<value>} syntax; spaces
+      are allowed (but not required) on both sides of the equal sign.
+      If a line contains more than one equal sign, the leftmost one is taken
+      as the key-value separator.
+\item Currently there is only one kind of directive line, \textit{include}. An
+      include line starts with the \ttt{include} word, followed by the name of
+      the file to be included.
+\end{enumerate}
 
-Example:
+Key-value lines may not occur above the first section heading line (except
+in included files, see later).
+
+Keys may be further classified based on syntax alone:
+
+\begin{enumerate}
+\item Keys that do not contain dots represent global or per-run \textit{configuration options}.
+\item If a key contains a dot, its last component (substring after the last dot)
+      is considered. If the last component contains a hyphen or is equal to
+      \ttt{typename}, the key represents a \textit{per-object configuration option}.
+\item Otherwise, the key represents a \textit{parameter assignment}. Thus, parameter
+      assignment keys contain a dot, and no hyphen after the last dot.
+\end{enumerate}
+
+Long lines can be broken up using the backslash notation: if the last
+character of a line is ``\textbackslash'', it will be merged with the next
+line.
+
+An example:
 
 \begin{inifile}
-[General]
-# this is a comment
-**.foo = "this is a single value \
-for the foo parameter"
+# This is a comment line
+[General]                       # section heading
+network = Foo                   # configuration option
+debug-on-errors = false         # another configuration option
+
+**.vector-recording = false     # per-object configuration option
+**.app*.typename = "HttpClient" # per-object configuration option
+
+**.app*.interval = 3s           # parameter value
+**.app*.requestURL = "http://www.example.com/this-is-a-very-very-very-very\
+-very-long-url?q=123456789"     # a two-line parameter value
 \end{inifile}
 
 \subsection{File Inclusion}
 
 {\opp} supports including an ini file in another\index{ini file!file inclusion},
 via the \ttt{include} keyword. This feature allows you to partition large ini
-files into logical units, fixed and varying part etc.
+files into logical units, fixed and varying part, etc.
 
 An example:
 
 \begin{inifile}
 # omnetpp.ini
 ...
-include parameters.ini
-include per-run-pars.ini
+include params1.ini
+include params2.ini
+include ../common/config.ini
 ...
 \end{inifile}
 
 You can also include files from other directories. If the included ini file
-further includes others, their path names will be understood as relative
-to the location of the file which contains the reference,
-rather than relative to the current working directory of the simulation.
+further includes others, their path names will be understood as relative to
+the location of the file which contains the reference, rather than relative
+to the current working directory of the simulation.
 
-This rule also applies to other file names occurring in ini files
-(such as the \fconfig{load-libs}, \fconfig{output-vector-file}, \fconfig{output-scalar-file}
-etc. options, and \ttt{xmldoc()} module parameter values.)
+This rule also applies to other file names occurring in ini files (such as
+the \fconfig{load-libs}, \fconfig{output-vector-file},
+\fconfig{output-scalar-file}, etc. options, and \ttt{xmldoc()} module
+parameter values.)
+
+In included files, it is allowed to have key-value lines without first having a
+section heading line. File inclusion is conceptually handled as text
+substitution, except that a section heading in an included file will not
+change the current section the main file. The following example illustrates
+the rules:
+
+\begin{inifile}
+# incl.ini
+foo1 = 1          # no preceding section heading: these lines will go into
+foo2 = 2          # whichever section the file is included into
+[Config Bar]
+bar = 3           # this will always go to into [Config Bar]
+\end{inifile}
+
+\begin{inifile}
+# omnetpp.ini
+[General]
+include incl.ini  # adds foo1/foo2 to [General], and defines [Config Bar] w/ bar
+baz1 = 4          # include files don't change the current section, so these
+baz2 = 4          # lines still belong to [General]
+\end{inifile}
+
+\begin{note}
+The concept of file inclusion implies that include files may not make sense
+on their own. Thus, when you open an included ini file in an specialized ini file
+editor, the file contents may be flagged with errors and warnings. These
+errors/warnings disappear when the file is viewed as part of its main file.
+\end{note}
+
 
 
 \section{Sections}
