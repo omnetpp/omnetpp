@@ -88,48 +88,82 @@ in the modules.
 \subsection{Configuring Signal-Based Statistics Recording}
 \label{sec:ana-sim:signal-based-recording}
 
-When recording signals as scalars, one has to define how to derive the
-scalar value from the sequence of values emitted. One may be interested
-in the final value, in the count of the values, in their mean, the minimum
-or maximum value or other properties. This can be configured using the
-\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-modes=}
-configuration option. If \ttt{result-recording-modes=} is not defined
-in the configuration or it is set to \ttt{auto}, the \ttt{record} key
-from the \ttt{@statistic} property is used.
+Signal-based statistics recording has been designed so that it can be
+easily configured to record a ``default minimal'' set of results, a
+``detailed'' set of results, and a custom set of results (by modifying
+the previous ones, or defined from scratch).
 
-Several recording modes can be specified, separated by comma.
-Currently the following modes are supported:
+Recording can be tuned with the \fconfig{result-recording-modes}
+per-object configuration option. The ``object'' here is the statistic,
+which is identified by the full path (hierarchical name) of the module or
+connection channel object in question, plus the name of the statistic
+(which is the ``index'' of \fprop{@statistic} property, i.e. the name in
+the square brackets). Thus, configuration keys have the syntax
+\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-modes=}.
+
+The \fconfig{result-recording-modes} option accepts one or more items as value,
+separated by comma. An item may be a result recording mode (surprise!), and
+two words with a special meaning, \ttt{default} and \ttt{all}:
 
 \begin{itemize}
-  \item\tbf{auto}: automatically select the best mode(s) for a signal. This mode
-      currently selects \ttt{histogram} mode (because it records the most
-      information), but this may change in future versions.
-  \item\tbf{vector}: record all values into an output vector
-  \item\tbf{count}: record the number of values emitted; values are ignored
-  \item\tbf{last}: record the last value
-  \item\tbf{sum}: record the sum of the values
-  \item\tbf{mean}: record the mean of the values
-  \item\tbf{min}: record the minimum value
-  \item\tbf{max}: record the maximum value
-  \item\tbf{timeavg}: this one makes use of timestamps as well, and computes the
-      time average, interpreting the signal as a step function (sample-hold)
-  \item\tbf{stats}: record the count, sum, mean, standard deviation, minimum
-      and maximum of the values
-  \item\tbf{histogram}: record everything \ttt{stats} records, plus a histogram
-      of the values (bins are set up automatically)
+\item A \textit{result recording mode} means any item that may occur in the
+      \ttt{record} key of the \fprop{@statistic} property; for example,
+      \ttt{count}, \ttt{sum}, \ttt{mean}, \ttt{vector((count-1)/2)}.
+\item \tbf{\ttt{default}} stands for the set of non-optional items from
+      the \fprop{@statistic} property's \ttt{record} list, that is, those
+      without question marks.
+\item \tbf{\ttt{all}} means all items from the \fprop{@statistic} property's
+      \ttt{record} list, including the ones with question marks.
 \end{itemize}
 
-New modes cannot be defined at this time; this feature is planned for future versions.
+The default value is \ttt{default}.
 
-An example:
+A lone ``-'' as option value disables all recording modes.
+
+\textit{Recording mode} items in the list may be prefixed with ``+'' or
+``-'' to add/remove them from the set of result recording modes. The
+initial set of result recording modes is \ttt{default}; if the first item
+is prefixed with ``+'' or ``-'', then that and all subsequent items are
+understood as modifying the set; if the first item does not start with with
+``+'' or ``-'', then it replaces the set, and further items are understood
+as modifying the set.
+
+This sounds more complicated than it is; an example will make it clear.
+Suppose we are configuring the following statistic:
+
+\begin{ned}
+@statistic[foo](record=count,mean,max?,vector?);
+\end{ned}
+
+With the following the ini file lines (see results in comments):
 
 \begin{inifile}
-**.queueLength.result-recording-modes = timeavg,max
+**.result-recording-modes = default  # --> count, mean
+**.result-recording-modes = all      # --> count, mean, max
+**.result-recording-modes = -        # --> none
+**.result-recording-modes = mean     # --> only mean (disables 'default')
+**.result-recording-modes = default,-vector,+histogram # --> count,mean,histogram
+**.result-recording-modes = -vector,+histogram      # --> same as above
+**.result-recording-modes = all,-vector,+histogram  # --> count,mean,max,histogram
 \end{inifile}
 
-In the result file, the recorded scalars will be suffixed with the name
-of the operation, e.g. the mean of a \ttt{queueingTime} signal will
-be recorded as \ttt{queueingTime:mean}.
+Here is another example which shows how to write a more specific option
+key. The following line applies to \ttt{queueLength} statistics of
+\ttt{fifo[]} submodule vectors anywhere in the network:
+
+\begin{inifile}
+**.fifo[*].queueLength.result-recording-modes = +vector  # default modes plus vector
+\end{inifile}
+
+In the result file, the recorded scalars will be suffixed with the recording mode,
+i.e. the mean of \ttt{queueingTime} will be recorded as \ttt{queueingTime:mean}.
+
+\begin{note}
+Signal-based statistics recording forms a layer above the normal scalar and
+vector recording infrastructure, so options like \fconfig{scalar-recording},
+\fconfig{vector-recording}, \fconfig{vector-recording-intervals} also affect it.
+These options are described in the following sections.
+\end{note}
 
 
 \subsection{Warm-up Period}
