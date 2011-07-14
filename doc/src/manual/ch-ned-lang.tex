@@ -1447,32 +1447,82 @@ directions.
 \subsubsection{Channel Specification}
 
 Channel specifications (\ttt{-{}->$channelspec$-{}->} inside a connection)
-are similar to submodules in many respect.
+are similar to submodules in many respect. Let's see some examples!
 
-Let's see some examples:
+The following connections use two user-defined channel types,
+\ttt{Ethernet100} and \ttt{Backbone}. The code shows the syntax
+for assigning parameters (\ttt{cost} and \ttt{length}) and specifying
+a display string (and NED properties in general):
 
 \begin{ned}
-... <--> {delay=10ms;} <--> ...
-... <--> {delay=10ms; ber=1e-8;} <--> ...
-... <--> C <--> ...
-... <--> BBone {cost=100; length=52km; ber=1e-8;} <--> ...
-... <--> {@display("ls=red");} <--> ...
-... <--> BBone {@display("ls=green,2");} <--> ...
+a.g++ <--> Ethernet100 <--> b.g++;
+a.g++ <--> Backbone {cost=100; length=52km; ber=1e-8;} <--> b.g++;
+a.g++ <--> Backbone {@display("ls=green,2");} <--> b.g++;
 \end{ned}
 
+When using built-in channel types, the type name can be omitted; it
+will be inferred from the parameters you assign.
 
-When a channel type is missing, one of the built-in channel types will be
-used, based on the parameters assigned in the connection. If
-\ttt{datarate}, \ttt{ber} or \ttt{per} is assigned,
+\begin{ned}
+a.g++ <--> {delay=10ms;} <--> b.g++;
+a.g++ <--> {delay=10ms; ber=1e-8;} <--> b.g++;
+a.g++ <--> {@display("ls=red");} <--> b.g++;
+\end{ned}
+
+If \ttt{datarate}, \ttt{ber} or \ttt{per} is assigned,
 \ttt{ned.DatarateChannel} will be chosen. Otherwise, if \ttt{delay} or
 \ttt{disabled} is present, it will be \ttt{ned.DelayChannel}; otherwise it
-is \ttt{ned.IdealChannel}. Naturally, if other parameter names are
-assigned in a connection without an explicit channel type, it will be an error
-(with \textit{``ned.DelayChannel has no such parameter''} or similar message).
+is \ttt{ned.IdealChannel}. Naturally, if other parameter names are assigned
+in a connection without an explicit channel type, it will be an error (with
+\textit{``ned.DelayChannel has no such parameter''} or similar message).
 
-%% XXX channel type as parameter; here or later?
+Connection parameters, similarly to submodule parameters, can also
+be assigned using pattern assignments, albeit the channel names
+to be matched with patterns are a little more complicated and less
+convenient to use. A channel can be identified with the name of its
+source gate plus the channel name; the channel name is currently always
+\ttt{channel}. It is illustrated by the following example:
 
-%% XXX example: how to set channel parameters from the ini file?
+\begin{ned}
+module Queueing
+{
+    parameters:
+        source.out.channel.delay = 10ms;
+        queue.out.channel.delay = 20ms;
+    submodules:
+        source: Source;
+        queue: Queue;
+        sink: Sink;
+    connections:
+        source.out --> ned.DelayChannel --> queue.in;
+        queue.out --> ned.DelayChannel <--> sink.in;
+\end{ned}
+
+Using bidirectional connections is a bit trickier, because both
+directions must be covered separately:
+
+\begin{ned}
+network Network
+{
+    parameters:
+        hostA.g$o[0].channel.datarate = 100Mbps; // the A -> B connection
+        hostB.g$o[0].channel.datarate = 100Mbps; // the B -> A connection
+        hostA.g$o[1].channel.datarate = 1Gbps;   // the A -> C connection
+        hostC.g$o[0].channel.datarate = 1Gbps;   // the C -> A connection
+    submodules:
+        hostA: Host;
+        hostB: Host;
+        hostC: Host;
+    connections:
+        hostA.g++ <--> ned.DatarateChannel <--> hostB.g++;
+        hostA.g++ <--> ned.DatarateChannel <--> hostC.g++;
+\end{ned}
+
+Also, it is not always easy to figure out which gate indices map to the
+connections you want to configure. If connection objects could be given
+names to override the default name ``\ttt{channel}'', that would make it
+easier to identify connections in patterns. This feature is planned for
+future {\opp} releases.
 
 
 \section{Multiple Connections}
