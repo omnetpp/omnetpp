@@ -36,7 +36,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
     protected int runIndex = 0;
     protected int maxParalelJobs;
     protected int finishedJobs = 0;
-    protected IProgressMonitor monitor;
+    protected IProgressMonitor groupMonitor;
     // dummy job to fix grouped progress monitor bug
     protected Job finishJob = new Job ("Finishing batch") {
         @Override
@@ -72,8 +72,8 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
     @Override
     protected IStatus run(IProgressMonitor mon) {
 
-        monitor = Job.getJobManager().createProgressGroup();
-        monitor.beginTask("Running simulations ("+runs.length+" runs)", runs.length);
+        groupMonitor = Job.getJobManager().createProgressGroup();
+        groupMonitor.beginTask("Running simulations ("+runs.length+" runs)", runs.length);
         runIndex = finishedJobs = 0;
 
         // create a list of jobs that later can be scheduled
@@ -81,19 +81,8 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
             SimulationLauncherJob launchJob = new SimulationLauncherJob(configuration, launch, run, true);
             launchJob.addJobChangeListener(this);
             launchJob.setPriority(Job.LONG);
-            launchJob.setProgressGroup(monitor, 1);
             runJobs.add(launchJob);
         }
-        // HACK
-        // this is a hack, because the progress group monitor reports the last running job differently
-        // ie, the last job starts the progress bar from 0% again. Inserting an empty job at the end of the
-        // queue we ensure that the progress group always contains more than on job (so it reports correctly)
-//        finishJob.addJobChangeListener(this);
-        finishJob.setProgressGroup(monitor, 0);
-//        finishJob.schedule();
-//        finishJob.sleep();
-//        runJobs.add(finishJob);
-        // end HACK
 
         // schedule some of them
         try {
@@ -101,6 +90,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
                 scheduleJobs();
                 Job.getJobManager().join(launch, null);
             }
+            finishJob.setProgressGroup(groupMonitor, 0);
             finishJob.schedule();
         } catch (OperationCanceledException e) {
             Job.getJobManager().cancel(launch);
@@ -108,7 +98,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
         } catch (InterruptedException e) {
             return Status.CANCEL_STATUS;
         } finally {
-            monitor.done();
+            groupMonitor.done();
         }
         return Status.OK_STATUS;
     }
@@ -117,9 +107,11 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
      * Schedules as many jobs for execution as possible
      */
     protected synchronized void scheduleJobs() {
-        while (isSchedulable())
-            runJobs.get(runIndex++).schedule();
-
+        while (isSchedulable()) {
+            Job job = runJobs.get(runIndex++);
+            job.setProgressGroup(groupMonitor, 1); // assign it to the group monitor so it will be displayed under it
+            job.schedule();
+        }
     }
 
     /**

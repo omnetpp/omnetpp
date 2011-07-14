@@ -54,7 +54,7 @@ public class SimulationLauncherJob extends Job {
     boolean reportProgress;
 
     public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean reportProgress) {
-        super("Running simulation");
+        super("run #"+runNo+" - Scheduled");
         this.configuration = configuration;
         this.launch = launch;
         this.runNo = runNo;
@@ -73,34 +73,34 @@ public class SimulationLauncherJob extends Job {
 
     @Override
     protected IStatus run(IProgressMonitor monitor) {
-        SubMonitor smon;
+        IStatus status;
         try {
-        	smon = SubMonitor.convert(monitor, "", 1);
-        	launchSimulation(configuration, launch, smon.newChild(1), runNo);
+		SubMonitor smon = SubMonitor.convert(monitor, "", 1);
+		status = launchSimulation(configuration, launch, smon.newChild(1), runNo);
         }
         catch (CoreException e) {
             return e.getStatus();
         } finally {
             monitor.done();
         }
-        return Status.OK_STATUS;
+        return status;
     }
 
     /**
      * Launches a single instance of the simulation process
      */
-    private void launchSimulation(ILaunchConfiguration configuration, ILaunch launch, final SubMonitor monitor, final Integer runNo)
+    private IStatus launchSimulation(ILaunchConfiguration configuration, ILaunch launch, final SubMonitor monitor, final Integer runNo)
             throws CoreException {
         // check for cancellation
         if (monitor.isCanceled())
-            return;
+            return new Status(IStatus.CANCEL, LaunchPlugin.PLUGIN_ID, IStatus.CANCEL, "run #"+runNo+" - Cancelled", null);
 
         if (reportProgress)
-        	monitor.subTask("run #"+runNo+" - Initializing...");
+		monitor.subTask("run #"+runNo+" - Initializing");
 
         monitor.setWorkRemaining(100);
         
-        String additionalArgs = runNo != 0 ? " -r "+runNo : "";  // set the run number if not default
+        String additionalArgs = " -r "+runNo;
         
         // calculate the command-line for display purposes (dump to the console before start)
         String[] cmdLineArgs = OmnetppLaunchUtils.createCommandLine(configuration, additionalArgs);
@@ -109,6 +109,8 @@ public class SimulationLauncherJob extends Job {
         // if opp_run is used, do not display any path info
         if (commandLine.endsWith("/opp_run"))
             commandLine = "opp_run";
+        if (commandLine.endsWith("/opp_run_release"))
+            commandLine = "opp_run_release";
         for (int i=1; i<cmdLineArgs.length; ++i)
             commandLine += " " + cmdLineArgs[i];
 
@@ -132,15 +134,14 @@ public class SimulationLauncherJob extends Job {
         			}
 
         			if (OmnetppLaunchUtils.isWaitingForUserInput(text))
-        				monitor.subTask("run #"+runNo+" - Waiting for user input... (Switch to console)");
+					monitor.setTaskName("run #"+runNo+" - Waiting for user input... (Switch to console)");
         			else
-        				monitor.subTask("run #"+runNo+" - Executing ("+prevPct+"%)");
+					monitor.setTaskName("run #"+runNo+" - Executing ("+prevPct+"%)");
         		}
         	});
         else
         	monitor.worked(50);
 
-        refreshDebugView();
         // poll the state of the monitor and terminate the process if cancel was requested
         while (!iprocess.isTerminated()) {
             synchronized (iprocess) {
@@ -154,7 +155,6 @@ public class SimulationLauncherJob extends Job {
                 }
             }
         }
-        refreshDebugView();
 
         // do some error reporting if the process finished with error
         if (iprocess.isTerminated() && iprocess.getExitValue() != 0 )
@@ -179,6 +179,7 @@ public class SimulationLauncherJob extends Job {
         	} catch (DebugException e) {
         		LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
         	}
+        return new Status(IStatus.OK, LaunchPlugin.PLUGIN_ID, IStatus.OK, "run #"+runNo+" - Finished", null);
     }
 
     /**
@@ -220,18 +221,4 @@ public class SimulationLauncherJob extends Job {
         return MessageFormat.format(format, new Object[] {expandedProg, timestamp});
     }
 
-    /**
-     * Forces a refresh of the debug view - for some reason adding/removing processes to the Launch
-     * does not correctly refreshes the tree
-     */
-    private void refreshDebugView() {
-        Display.getDefault().asyncExec(new Runnable() {
-            public void run() {
-                IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                IViewPart wp = workbenchPage.findView(IDebugUIConstants.ID_DEBUG_VIEW);
-                if (wp instanceof LaunchView)
-                    ((LaunchView)wp).getViewer().refresh();
-            }
-        });
-    }
 }
