@@ -199,8 +199,10 @@ class SIM_API cMessage : public cOwnedObject
     virtual ~cMessage();
 
     /**
-     * Assignment operator. Duplication and the assignment operator work all right with cMessage.
-     * The name member is not copied; see cNamedObject's operator=() for more details.
+     * Assignment operator. The data members NOT copied are: object name
+     * (see cNamedObject's operator=() for more details) and message ID.
+     * All other members, including creation time and message tree ID,
+     * are copied.
      */
     cMessage& operator=(const cMessage& msg);
     //@}
@@ -215,8 +217,10 @@ class SIM_API cMessage : public cOwnedObject
     //@{
 
     /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * Creates and returns an exact copy of this object, except for the
+     * message ID (the clone is assigned a new ID). Note that the message
+     * creation time is also copied, so clones of the same message object
+     * have the same creation time. See cObject for more details.
      */
     virtual cMessage *dup() const  {return new cMessage(*this);}
 
@@ -572,7 +576,9 @@ class SIM_API cMessage : public cOwnedObject
     int getArrivalGateId() const  {return togate;}
 
     /**
-     * Returns time when the message was created.
+     * Returns time when the message was created; for cloned messages, it
+     * returns the creation time of the original message, not the time of the
+     * dup() call.
      */
     simtime_t_cref getCreationTime() const {return created;}
 
