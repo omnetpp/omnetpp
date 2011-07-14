@@ -185,12 +185,19 @@ warmup-period = 20s
 \end{inifile}
 
 Results recorded via signal-based statistics automatically obey the warm-up
-period setting. However, modules that compute and record scalar results
+period setting, but modules that compute and record scalar results
 manually (via \ffunc{recordScalar()}) need to be modified so that they take
-the warm-up period into account. The warm-up period is available via the
-\ffunc{getWarmupPeriod()} method of the \ttt{simulation} object, so the C++
-code that updates the corresponding state variables needs to be surrounded
-with an \textit{if} statement:
+the warm-up period into account.
+
+\begin{note}
+When configuring a warm-up period, make sure that modules that compute and
+record scalar results manually via \ffunc{recordScalar()} actually obey the
+warm-up period in the C++ code.
+\end{note}
+
+The warm-up period is available via the \ffunc{getWarmupPeriod()} method of
+the \ttt{simulation} object, so the C++ code that updates the corresponding
+state variables needs to be surrounded with an \textit{if} statement:
 
 Old:
 
