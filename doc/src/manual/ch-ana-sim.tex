@@ -20,39 +20,16 @@ maximum, etc., and optionally histogram data.
 Results may be collected and recorded in two ways:
 
 \begin{enumerate}
-  \item Explicitly from simple modules and channels, using the C++ API
-    provided by the simulation library;
   \item By means of configuration, using declared statistics and the
     signal mechanism.
+  \item Explicitly from simple modules and channels, using the C++ API
+    provided by the simulation library;
 \end{enumerate}
 
-The first method is the traditional way of recording results. The second method
+The second method is the traditional way of recording results. The first method
 was introduced in {\opp} 4.1, and it is preferable because it allows you
 to always record the results in the form you need, without requiring heavy
 instrumentation or continuous tweaking of the simulation model.
-
-\subsection{Using the C++ API}
-
-With this approach, scalar and statistics results are collected in class
-variables inside modules, then recorded in the finalization phase via
-\ffunc{recordScalar()} calls. Simple statistics may be collected in
-\ttt{double} and \ttt{long} variables. To record more details, like the
-minimum/maximum value or the standard deviation, \cclass{cStdDev} and
-\cclass{cWeightedStdDev} can be used, and for recording the distribution
-there are several histogram classes and other distribution estimation
-classes (\cclass{cDoubleHistogram}, \cclass{cLongHistogram},
-\cclass{cPSquare}, \cclass{cKSplit}, and others). Vectors are recorded
-using \cclass{cOutVector} objects. These classes are described in sections
-\ref{sec:ch-sim-lib:statistics} and \ref{sec:ch-sim-lib:result-recording}.
-Recording of individual vectors, scalars and statistics can be enabled or
-disabled via the configuration (ini file), and it is also the place to set
-up recording intervals for vectors.
-
-The drawback of recording results directly from modules is that result
-recording is hardcoded in modules, and even simple requirement changes
-(e.g. record the average delay instead of each delay value, or vice versa)
-requires code change or an excessive amount of result collection code
-in the modules.
 
 \subsection{Using Declared Statistics and Signals}
 
@@ -81,9 +58,117 @@ with \cclass{cOutVector} and \ffunc{recordScalar()} also work when utilizing
 the signals approach, and there are extra configuration options to make
 the additional possibilities accessible.
 
+\subsection{Using the C++ API}
+
+With this approach, scalar and statistics results are collected in class
+variables inside modules, then recorded in the finalization phase via
+\ffunc{recordScalar()} calls. Simple statistics may be collected in
+\ttt{double} and \ttt{long} variables. To record more details, like the
+minimum/maximum value or the standard deviation, \cclass{cStdDev} and
+\cclass{cWeightedStdDev} can be used, and for recording the distribution
+there are several histogram classes and other distribution estimation
+classes (\cclass{cDoubleHistogram}, \cclass{cLongHistogram},
+\cclass{cPSquare}, \cclass{cKSplit}, and others). Vectors are recorded
+using \cclass{cOutVector} objects. These classes are described in sections
+\ref{sec:ch-sim-lib:statistics} and \ref{sec:ch-sim-lib:result-recording}.
+Recording of individual vectors, scalars and statistics can be enabled or
+disabled via the configuration (ini file), and it is also the place to set
+up recording intervals for vectors.
+
+The drawback of recording results directly from modules is that result
+recording is hardcoded in modules, and even simple requirement changes
+(e.g. record the average delay instead of each delay value, or vice versa)
+requires code change or an excessive amount of result collection code
+in the modules.
+
 
 \section{Configuring Result Collection}
 \label{sec:ana-sim:config-results}
+
+\subsection{Configuring Signal-Based Statistics Recording}
+\label{sec:ana-sim:signal-based-recording}
+
+When recording signals as scalars, one has to define how to derive the
+scalar value from the sequence of values emitted. One may be interested
+in the final value, in the count of the values, in their mean, the minimum
+or maximum value or other properties. This can be configured using the
+\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-modes=}
+configuration option. If \ttt{result-recording-modes=} is not defined
+in the configuration or it is set to \ttt{auto}, the \ttt{record} key
+from the \ttt{@statistic} property is used.
+
+Several recording modes can be specified, separated by comma.
+Currently the following modes are supported:
+
+\begin{itemize}
+  \item\tbf{auto}: automatically select the best mode(s) for a signal. This mode
+      currently selects \ttt{histogram} mode (because it records the most
+      information), but this may change in future versions.
+  \item\tbf{vector}: record all values into an output vector
+  \item\tbf{count}: record the number of values emitted; values are ignored
+  \item\tbf{last}: record the last value
+  \item\tbf{sum}: record the sum of the values
+  \item\tbf{mean}: record the mean of the values
+  \item\tbf{min}: record the minimum value
+  \item\tbf{max}: record the maximum value
+  \item\tbf{timeavg}: this one makes use of timestamps as well, and computes the
+      time average, interpreting the signal as a step function (sample-hold)
+  \item\tbf{stats}: record the count, sum, mean, standard deviation, minimum
+      and maximum of the values
+  \item\tbf{histogram}: record everything \ttt{stats} records, plus a histogram
+      of the values (bins are set up automatically)
+\end{itemize}
+
+New modes cannot be defined at this time; this feature is planned for future versions.
+
+An example:
+
+\begin{inifile}
+**.queueLength.result-recording-modes = timeavg,max
+\end{inifile}
+
+In the result file, the recorded scalars will be suffixed with the name
+of the operation, e.g. the mean of a \ttt{queueingTime} signal will
+be recorded as \ttt{queueingTime:mean}.
+
+
+\subsection{Warm-up Period}
+\label{sec:ana-sim:warmup-period}
+
+The \fconfig{warmup-period} option specifies the length of the initial
+warm-up period. When set, results belonging to the first $x$ seconds
+of the simulation will not be recorded into output vectors, and will
+not be counted into the calculation of output scalars.
+This option is useful for steady-state simulations. The default is 0s
+(no warmup period).
+
+Example:
+
+\begin{inifile}
+warmup-period = 20s
+\end{inifile}
+
+Note that modules that compute and record scalar results manually
+(via \ffunc{recordScalar()}) will not automatically obey this setting.
+These modules need to be modified so that they take the warm-up period
+into account. The warm-up period is available via the
+\ffunc{getWarmupPeriod()} method of the \ttt{simulation} object,
+so the code that updates the corresponding state variables needs
+to be surrounded with an \textit{if} statement.
+
+Old:
+
+\begin{cpp}
+dropCount++;
+\end{cpp}
+
+New:
+
+\begin{cpp}
+if (simTime() >= simulation.getWarmupPeriod())
+    dropCount++;
+\end{cpp}
+
 
 \subsection{Result File Names}
 
@@ -134,44 +219,6 @@ will still be removed before the simulation starts.
 \end{inifile}
 
 
-\subsection{Warm-up Period}
-\label{sec:ana-sim:warmup-period}
-
-The \fconfig{warmup-period} option specifies the length of the initial
-warm-up period. When set, results belonging to the first $x$ seconds
-of the simulation will not be recorded into output vectors, and will
-not be counted into the calculation of output scalars.
-This option is useful for steady-state simulations. The default is 0s
-(no warmup period).
-
-Example:
-
-\begin{inifile}
-warmup-period = 20s
-\end{inifile}
-
-Note that modules that compute and record scalar results manually
-(via \ffunc{recordScalar()}) will not automatically obey this setting.
-These modules need to be modified so that they take the warm-up period
-into account. The warm-up period is available via the
-\ffunc{getWarmupPeriod()} method of the \ttt{simulation} object,
-so the code that updates the corresponding state variables needs
-to be surrounded with an \textit{if} statement.
-
-Old:
-
-\begin{cpp}
-dropCount++;
-\end{cpp}
-
-New:
-
-\begin{cpp}
-if (simTime() >= simulation.getWarmupPeriod())
-    dropCount++;
-\end{cpp}
-
-
 \subsection{Configuring Scalar Results}
 \label{sec:ana-sim:scalar-results}
 
@@ -194,49 +241,6 @@ end-to-end delays and those produced by TCP modules:
 \end{inifile}
 
 %% **.eed:histogram.scalar-recording=false    disables histogram
-
-When recording signals as scalars, one has to define how to derive the
-scalar value from the sequence of values emitted. One may be interested
-in the final value, in the count of the values, in their mean, the minimum
-or maximum value or other properties. This can be configured using the
-\textit{<module-full-path>.<statistic-name>.}\ttt{result-recording-modes=}
-configuration option. If \ttt{result-recording-modes=} is not defined
-in the configuration or it is set to \ttt{auto}, the \ttt{record} key
-from the \ttt{@statistic} property is used.
-
-Several recording modes can be specified, separated by comma.
-Currently the following modes are supported:
-
-\begin{itemize}
-  \item\tbf{auto}: automatically select the best mode(s) for a signal. This mode
-      currently selects \ttt{histogram} mode (because it records the most
-      information), but this may change in future versions.
-  \item\tbf{vector}: record all values into an output vector
-  \item\tbf{count}: record the number of values emitted; values are ignored
-  \item\tbf{last}: record the last value
-  \item\tbf{sum}: record the sum of the values
-  \item\tbf{mean}: record the mean of the values
-  \item\tbf{min}: record the minimum value
-  \item\tbf{max}: record the maximum value
-  \item\tbf{timeavg}: this one makes use of timestamps as well, and computes the
-      time average, interpreting the signal as a step function (sample-hold)
-  \item\tbf{stats}: record the count, sum, mean, standard deviation, minimum
-      and maximum of the values
-  \item\tbf{histogram}: record everything \ttt{stats} records, plus a histogram
-      of the values (bins are set up automatically)
-\end{itemize}
-
-New modes cannot be defined at this time; this feature is planned for future versions.
-
-An example:
-
-\begin{inifile}
-**.queueLength.result-recording-modes = timeavg,max
-\end{inifile}
-
-In the result file, the recorded scalars will be suffixed with the name
-of the operation, e.g. the mean of a \ttt{queueingTime} signal will
-be recorded as \ttt{queueingTime:mean}.
 
 %% TODO output-scalar-precision, output-vector-precision (already described somewhere else?)
 %% ", CFG_INT, DEFAULT_PRECISION, "The number of significant digits for recording data into the output scalar file. The maximum value is ~15 (IEEE double precision).");
