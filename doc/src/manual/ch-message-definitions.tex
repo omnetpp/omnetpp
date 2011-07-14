@@ -190,6 +190,7 @@ Data types for fields are not limited to \fkeyword{int} and
    \item structs and classes, defined in message files or elsewhere (see
       in later sections \ref{sec:ch-msg-defs:other-types-as-fields}
       and \ref{sec:ch-msg-defs:using-cpp-types})
+   \item typedef'd names declared in C++ and announced to the message compiler
 )
 \end{itemize}
 
@@ -1399,10 +1400,10 @@ The following data types are supported for fields:
     \ttt{float}, \ttt{double}; \ttt{simtime\_t}
   \item  \ttt{string}, a dynamically allocated string, presented as \ttt{const char *}
   \item  structs and classes, declared with the message syntax or in C++ code
+  \item  typedef'd names declared in C++ and announced to the message compiler
   \item  fixed-size arrays of the above types
   \item  variable-size arrays of the above types (stored as a dynamically
     allocated array plus an integer for the array size)
-  \item  any other types defined by typedef
 \end{itemize}
 
 Further features:

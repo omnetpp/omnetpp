@@ -196,24 +196,23 @@ There are several useful configuration options that control how a simulation is 
 
 \begin{itemize}
   \item \fconfig{cmdenv-express-mode} -- Provides only minimal status updates on the console.
-  \item \fconfig{cmdenv-interactive} -- Allows asking interactively for missing
-        parameter values.
-  \item \fconfig{cmdenv-status-frequency} -- How often the status is written to the console.
-  \item \fconfig{cpu-time-limit} -- Limit how long the simulation should run (in wall clock time)
-  \item \fconfig{sim-time-limit} -- Limit how long the simulation should run (in simulation time)
-  \item \fconfig{debug-on-errors} -- If the runtime detects any error it will generate a breakpoint
-        so you will be able to check the location and the context of the problem in your debugger.
+  \item \fconfig{cmdenv-interactive} -- Allows the simulation to ask missing parameter values interactively
+  \item \fconfig{cmdenv-status-frequency} -- Controls how often the status is written to the console.
+  \item \fconfig{cpu-time-limit} -- Limits how long the simulation should run (in wall clock time)
+  \item \fconfig{sim-time-limit} -- Limits how long the simulation should run (in simulation time)
+  \item \fconfig{debug-on-errors} -- If the runtime detects any error, it will generate a breakpoint
+          so you will be able to check the location and the context of the problem in your debugger.
   \item \fconfig{fingerprint} -- The simulation kernel computes a checksum while running the simulation.
           It is calculated from the module id and from the current simulation time of each event.
           If you specify the \fconfig{fingerprint} option in the config file, the simulation runtime will
           compare the computed checksum with the provided one. If there is a difference it will
           generate an error. This feature is very useful if you make some cosmetic changes to your
-          source and want to be reasonable sure that your changes did not altered the behaviour
-          f the model.
+          source and want to be reasonable sure that your changes did not alter the behaviour
+          of the model.
           \begin{warning}
           The value of the calculated fingerprint is heavily dependent on the accuracy of the floating
           point arithmetic. There are differences between the floating point handling of AMD and Intel CPUs.
-          Running under a processor emulator software like \fconfig{valgrind} may also produce
+          Running under a processor emulator software like \fprog{valgrind} may also produce
           a different fingerprint. This is normal. Hint: see gcc options \ttt{-mfpmath=sse -msse2}.
           \end{warning}
   \item \fconfig{record-eventlog} -- You can turn on the recording of the simulator events. The
@@ -221,13 +220,13 @@ There are several useful configuration options that control how a simulation is 
 \end{itemize}
 
 \begin{note}
-  It is possible to specify a configuration option also on the command line (in which case the
-  command line takes precedence). You should prefix the option name with a double
-  dash (-{}-) and should not put any spaces around the equal sign
-  (e.g. \ttt{-{}-debug-on-errors=true})
+  It is also possible to specify a configuration option on the command line (in which case the
+  command line takes precedence). To do so, prefix the option name with a double
+  dash (-{}-), and be sure not to have spaces around the equal sign. Example:
+  \ttt{-{}-debug-on-errors=true}
 \end{note}
 
-To get the list of all possible configuration options type:
+To get the list of all possible configuration options, type:
 
 \begin{commandline}
 opp_run -h config
@@ -502,12 +501,12 @@ and specify the runs in a comma separated format \ttt{1,2,4,9..11}, or you may l
 out the \ttt{-r} option to execute all runs in the experiment.
 
 \begin{warning}
-  Although it is very convenient, we do not recommend thay you use this method for
+  Although it is very convenient, we do not recommend that you use this method for
   running simulation batches. Specifying more than one run number
   would run those simulations in the same process. This method is more prone to C++ programming
-  errors. A failure in a single run may stop and kill all the runs following it. If you want
-  to execute more than one run, we recommend to run each of them in a separate process.
-  Use the \fprog{opp\_runall} for this purpose.
+  errors. A failure in a single run may abort execution (segfault) or invalidate the results of subsequent runs. If you want
+  to execute more than one run, we recommend that you run each of them in a separate process;
+  you can use the \fprog{opp\_runall} program for this purpose.
 \end{warning}
 
 

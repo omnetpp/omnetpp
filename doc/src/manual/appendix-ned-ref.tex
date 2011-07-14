@@ -646,9 +646,7 @@ wildcard forms. (The default name of connection channel objects is
 
 Wildcard forms may use:
 \begin{enumerate}
-  \item Asterisks: They match zero or more alphanumeric characters,
-    underscore or dollar signs but not other characters (most notably,
-    it does not match dots and square brackets).
+  \item Asterisks: They match zero or more characters except dots.
   \item Numeric ranges, \ttt{\{}\textit{<start>}..\textit{<end>}\ttt{\}}
     e.g. \ttt{\{5..120\}} or \ttt{\{..10\}}. They match numbers embedded
     in identifiers, that is, a sequence of decimal digit characters interpreted as a
@@ -661,9 +659,8 @@ Wildcard forms may use:
     enclosed in square brackets that is within the specified
     \textit{start..end} range (both limits are inclusive).
     Both \textit{start} and \textit{end} are optional.
-  \item Double asterisks: They match zero or more characters (including dots
-    and square brackets), and can be used to match more than one parameter
-    path elements.
+  \item Double asterisks: They match zero or more characters (including dots),
+    and can be used to match more than one parameter path elements.
 \end{enumerate}
 
 See the NED language grammar (Appendix \ref{cha:ned-language-grammar})

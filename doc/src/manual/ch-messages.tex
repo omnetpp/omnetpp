@@ -126,6 +126,27 @@ short getSchedulingPriority() const;
 The \ffunc{getName()}/\ffunc{setName()} methods are inherited from
 a generic base class in the simulation library, \cclass{cNamedObject}.
 
+Two more interesting methods:
+
+\begin{cpp}
+bool isPacket() const;
+simtime_t getCreationTime() const;
+\end{cpp}
+
+The \ffunc{isPacket()} method returns \ttt{true} if the particular message
+object is a subclass of \cclass{cPacket}, and \ttt{false} otherwise. As
+\ffunc{isPacket()} is implemented as a virtual function that just contains
+a \ttt{return false} or a \ttt{return true} statement, it might be faster
+than calling \ttt{dynamic\_cast<cPacket*>}.
+
+The \ffunc{getCreationTime()} method returns the creation time of the
+message. It is worthwhile to mention that with cloned messages (see
+\ffunc{dup()} later), the creation time of the original message is returned
+and not the time of the cloning operation. This is particularly useful when
+modeling communication protocols, because many protocols clone the
+transmitted packages to be able to do retransmissions and/or
+segmentation/reassembly.
+
 
 \subsection{Duplicating Messages}
 \index{message!duplication}
@@ -138,8 +159,11 @@ for any other {\opp} object:
 cMessage *copy = msg->dup();
 \end{cpp}
 
-The resulting message (or packet) will be an exact copy of the original,
-including message parameters and encapsulated messages.
+The resulting message (or packet) will be an exact copy of the original
+including message parameters and encapsulated messages, except for the
+message ID field. The creation time field is also copied, so
+for cloned messages \ffunc{getCreationTime()} will return the creation
+time of the original, not the time of the cloning operation.
   \footnote{Note, however, that the simulation library may delay the
   duplication of the encapsulated message until it is really needed;
   see section \ref{sec:messages:reference-counting}.}
@@ -224,12 +248,10 @@ info object is deleted as well.
 
 \subsection{Information About the Last Arrival}
 
-The following methods return the creation time of the message, and the
-sending and arrival times that correspond to the last sending
-of the message.
+The following methods return the sending and arrival times that correspond
+to the last sending of the message.
 
 \begin{cpp}
-simtime_t getCreationTime() const;
 simtime_t getSendingTime() const;
 simtime_t getArrivalTime() const;
 \end{cpp}

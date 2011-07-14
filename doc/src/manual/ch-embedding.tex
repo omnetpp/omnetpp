@@ -32,7 +32,7 @@ The rectangles in the picture represent the following components:
     \ref{sec:ch-embedding:embedding}.)}
   \item{\textbf{Cmdenv and Tkenv} are specific user interface
     implementations. The simulation is linked either to the  Cmdenv or Tkenv user interfaces, or to both.}
-  \item{The \textbf{Model Component Library} includes simple module definitions and 
+  \item{The \textbf{Model Component Library} includes simple module definitions and
     their C++ implementations, compound module types, channels, networks,
     message types, and everything belonging to models that
     have been linked to the simulation program. A simulation program can
@@ -251,12 +251,12 @@ various errors.
 
 If the simulation has completed successfully (\ttt{ok==true}), the code
 goes on to call the \ffunc{finish()} methods of modules and channels. Then,
-regardless of whether there was an error, \ttt{sim->}\ffunc{endRun()} is 
+regardless of whether there was an error, \ttt{sim->}\ffunc{endRun()} is
 called, and the network is shut down using
 \ttt{sim->}\ffunc{deleteNetwork()}.
 
 Finally, the simulation manager object is deallocated, but the active
-simulation manager is not allowed to be deleted; therefore it is deactivated 
+simulation manager is not allowed to be deleted; therefore it is deactivated
 using \ffunc{setActiveSimulation(NULL)}.
 
 
@@ -269,7 +269,7 @@ pure virtual methods with either an empty body or with a body that throws
 an \ttt{"unsupported method called"} exception. You can redefine methods
 to be more sophisticated later on, as you progress with the development.
 
-You must redefine the \ffunc{readParameter()} method. This enables 
+You must redefine the \ffunc{readParameter()} method. This enables
 module parameters to obtain their values. For debugging purposes, you can also
 redefine \ffunc{sputn()} where module log messages are written to.
 \cclass{cNullEnvir} only provides one random number generator, so if your
@@ -510,7 +510,7 @@ while (sim->getSimTime() < limit)
 }
 \end{cpp}
 
-Depending on the concrete scheduler class, the 
+Depending on the concrete scheduler class, the
 \ffunc{selectNextModule()} may return \ttt{NULL}. The default
 \cclass{cSequentialScheduler} never returns \ttt{NULL}.
 
@@ -639,7 +639,7 @@ against concurrent access.
 %
 % \ttt{simulation} has two basic roles:
 %
-% \begin{itemize}
+% \ b e g i n{itemize}
 %   \item{it stores modules of the executing model}
 %   \item{it holds the future event set (FES\index{FES}) object}
 % \end{itemize}
@@ -649,7 +649,7 @@ against concurrent access.
 % The coroutine package is in fact made up of two coroutine
 % packages\index{coroutine}:
 %
-% \begin{itemize}
+% \ b e g i n{itemize}
 %   \item A portable coroutine package creates all coroutine stacks
 %      inside the main stack. It is based on Kofoed's solution\cite{Kofoed95}.
 %      It allocates stack by deep-deep recursions and then plays with
@@ -678,7 +678,7 @@ against concurrent access.
 % you can have the contents of its component library printed,
 % using the -h switch.
 %
-% \begin{commandline}
+% \ b e g i n {commandline}
 % $ ./fddi -h
 %
 % {\opp} Discrete Event Simulation  (C) 1992-2004 Andras Varga
@@ -710,13 +710,13 @@ against concurrent access.
 %
 % Let us see the module registrations as an example. The
 %
-% \begin{verbatim}
+% \ b e g i n{verbatim}
 % Define_Module(FIFO);
 % \end{verbatim}
 %
 % macro expands to the following code:
 %
-% \begin{cpp}
+% \ b e g i n{cpp}
 % static cModule *FIFO__create(const char *name, cModule *parentmod)
 % {
 %     return new FIFO(name, parentmod);
@@ -745,7 +745,7 @@ against concurrent access.
 %
 % The registration lists are:
 %
-% \begin{longtable}{|p{2cm}|p{4,3cm}|p{7.3cm}|}
+% \ b e g i n{longtable}{|p{2cm}|p{4,3cm}|p{7.3cm}|}
 % \hline
 % %% ROW 1
 % \tabheadcol
@@ -842,7 +842,7 @@ against concurrent access.
 % The \cclass{cEnvir} class has only one instance, a global object
 % called \fvar{ev}:
 %
-% \begin{cpp}
+% \ b e g i n{cpp}
 % cEnvir ev;
 % \end{cpp}
 %
@@ -853,7 +853,7 @@ against concurrent access.
 %
 %
 % \cclass{cEnvir} member functions perform the following groups of tasks:
-% \begin{itemize}
+% \ b e g i n{itemize}
 %   \item I/O for module activities; the actual implementation is different
 %     for each user interface (e.g. stdin/stdout for Cmdenv, windowing
 %     in Tkenv)

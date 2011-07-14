@@ -46,7 +46,7 @@ connecting it to the inherited \ttt{TCP} submodule.
 
 \item[Packages.] The NED language features a Java-like package structure,
 to reduce the risk of name clashes between different models. \ttt{NEDPATH}
-(similar to Java's \ttt{CLASSPATH}) was also introduced to make it easier
+(similar to Java's \ttt{CLASSPATH}) has also been introduced to make it easier
 to specify dependencies among simulation models.
 
 \item[Inner types.] Channel types and module types used locally by a
@@ -219,6 +219,7 @@ Later sections will cover the concepts used (inner types, channels, the
 
 
 \subsection{The App, Routing, and Queue Simple Modules}
+
 Simple modules are the basic building blocks for other (compound) modules,
 denoted by the \fkeyword{simple} keyword.
 All active behavior in the model is encapsulated in \fkeyword{simple} modules.
@@ -284,7 +285,7 @@ syntax.
 
 \subsection{The Node Compound Module}
 
-Now we can assemble \ttt{App}, \ttt{Routing} and {Queue} into the
+Now we can assemble \ttt{App}, \ttt{Routing} and \ttt{Queue} into the
 compound module \ttt{Node}. A compound module can be thought of as
 a ``cardboard box'' that groups other modules into a larger unit,
 which can further be used as a building block for other modules;
@@ -301,6 +302,7 @@ networks are also a kind of compound module.
 module Node
 {
     parameters:
+        int address;
         @display("i=misc/node_vs,gold");
     gates:
         inout port[];
@@ -570,7 +572,7 @@ module WirelessHostBase
        wlan.radioIn <-- radioIn;
 }
 
-module WirelessUser extends WirelessHostBase
+module WirelessHost extends WirelessHostBase
 {
    submodules:
        webAgent: WebAgent;
@@ -580,11 +582,11 @@ module WirelessUser extends WirelessHostBase
 }
 \end{ned}
 
-The \ttt{WirelessUser} compound module can further be extended,
+The \ttt{WirelessHost} compound module can further be extended,
 for example with an Ethernet port:
 
 \begin{ned}
-module DesktopUser extends WirelessUser
+module DesktopHost extends WirelessHost
 {
    gates:
        inout ethg;
@@ -613,7 +615,7 @@ Thus, the following channel type would expect a \ttt{CustomChannel} C++ class
 to be present:
 
 \begin{ned}
-channel CustomChannel  // needs a CustomChannel C++ class
+channel CustomChannel  // requires a CustomChannel C++ class
 {
 }
 \end{ned}
@@ -676,7 +678,7 @@ The following example shows how to create a new channel type by
 specializing \ttt{DatarateChannel}:
 
 \begin{ned}
-channel C extends ned.DatarateChannel
+channel Ethernet100 extends ned.DatarateChannel
 {
     datarate = 100Mbps;
     delay = 100us;
@@ -1107,7 +1109,8 @@ file) via the \fkeyword{xmldoc()} function. You can assign \fkeyword{xml}
 parameters both from NED and from \ffilename{omnetpp.ini}.
 
 The following example declares an \fkeyword{xml} parameter, and assigns an
-XML file to it:
+XML file to it. The file name is understood as being relative to the working
+directory.
 
 \begin{ned}
 simple TrafGen {
@@ -1186,13 +1189,14 @@ gates: \textit{input}, \textit{output} and \textit{inout}, the latter being
 essentially an input and an output gate glued together.
 
 A gate, whether input or output, can only be connected to one other
-gate. (For compound module gates, this means one connection "outside" and
-one "inside".)  It is possible, though generally not recommended, to
-connect the input and output sides of an inout gate separately.
+gate. (For compound module gates, this means one connection ``outside'' and
+one ``inside''.)  It is possible, though generally not recommended, to
+connect the input and output sides of an inout gate separately (see section
+\ref{sec:ch-ned-lang:connections}).
 
 One can create single gates and gate vectors. The size of a gate vector
-can be given inside square brackets in the declaration, but it also possible
-to leave it open by just writing a pair of empty brackets ("\ttt{[]}").
+can be given inside square brackets in the declaration, but it is also possible
+to leave it open by just writing a pair of empty brackets (``\ttt{[]}'').
 
 When the gate vector size is left open, one can still specify it later,
 when subclassing the module, or when using the module for a submodule in a
@@ -1238,8 +1242,9 @@ simple Sink {
 }
 \end{ned}
 
-The following defines a node for building a square grid. Gates around the edges of the grid are
-expected to remain unconnected, hence the \fprop{@loose} annotation:
+The following lines define a node for building a square grid. Gates around
+the edges of the grid are expected to remain unconnected, hence the
+\fprop{@loose} annotation:
 
 \begin{ned}
 simple GridNode {
@@ -1298,9 +1303,9 @@ module BinaryTree {
 Modules that a compound module is composed of are called its submodules.
 A submodule has a name, and it is an instance of a compound or simple
 module type. In the NED definition of a submodule, this module type
-may be given explicitly, but, as we'll see later, it is also possible
-to specify the type with a string expression (see section
-\ref{sec:ch-ned-lang:submodule-like}.)
+is usually given statically, but it is also possible to specify the type
+with a string expression. (The latter feature, \textit{parametric submodule
+types}, will be discussed in section \ref{sec:ch-ned-lang:submodule-like}.)
 
 NED supports submodule arrays (vectors) and conditional submodules as well.
 Submodule vector size, unlike gate vector size, must always be specified
@@ -1323,13 +1328,13 @@ module Node
 \end{ned}
 
 As already seen in previous code examples, a submodule may also have a
-curly brace block as body, where one can assign parameters, set the size of gate vectors, and add/modify
-properties like the display string (\fprop{@display}). It is not possible to
-add new parameters and gates.
+curly brace block as body, where one can assign parameters, set the size of
+gate vectors, and add/modify properties like the display string
+(\fprop{@display}). It is not possible to add new parameters and gates.
 
 Display strings specified here will be merged with the display string
-from the type to get the effective display string. This is described
-in chapter \ref{cha:graphics}.
+from the type to get the effective display string. The merge algorithm is
+described in chapter \ref{cha:graphics}.
 
 \begin{ned}
 module Node
@@ -1346,7 +1351,7 @@ module Node
         }
         queue[sizeof(port)]: Queue {
             @display("t=queue id $id"); // modify display string
-            id = 1000+index;  // different "id" parameter for each element
+            id = 1000+index;  // use submodule index to generate different IDs
         }
     connections:
         ...
@@ -1858,15 +1863,15 @@ b.g$o[0].channel.typename = "Ethernet1000";  // B -> A channel
 \end{ned}
 
 
-\section{Properties (Metadata Annotations)}
+\section{Metadata Annotations (Properties)}
 \label{sec:ch-ned-lang:properties}
 
-Properties allow adding metadata annotations to modules, parameters, gates,
-connections, NED files, packages, and virtually anything in NED.
+NED properties are metadata annotations that can be added to modules, parameters,
+gates, connections, NED files, packages, and virtually anything in NED.
 \ttt{@display}, \ttt{@class}, \ttt{@namespace}, \ttt{@unit}, \ttt{@prompt},
 \ttt{@loose}, \ttt{@directIn} are all properties that have been mentioned in
-previous sections, but those examples only scratch the surface of what can
-be done with properties.
+previous sections, but those examples only scratch the surface of what
+properties are used for.
 
 %% XXX @isNetwork (valahol leirni azt is; BTW "network" nincs leirva sectionben)
 
@@ -1985,15 +1990,14 @@ They may contain key-value pairs, separated by semicolons:
 In key-value pairs, each value can be a (comma-separated) list:
 
 \begin{ned}
-@foo(id=742;labels=swregion,routers,critical);
+@foo(coords=47.549,19.034;labels=vehicle,router,critical);
 \end{ned}
 
 The above examples are special cases of the general data model. According
 to the data model, properties contain \textit{key-valuelist} pairs,
 separated by semicolons. Items in \textit{valuelist} are separated by
 commas. Wherever \textit{key} is missing, values go on the valuelist of the
-\textit{default key}, the empty string. \ttt{@prop} is the same
-as \ttt{@prop()}.
+\textit{default key}, the empty string.
 
 Value items may contain words, numbers, string constants and some other
 characters, but not arbitrary strings.
@@ -2004,15 +2008,16 @@ and \ttt{@class("TCP")} are exactly the same. If you want the quotes
 to be part of the value, use escaped quotes:
 \ttt{@foo("{\textbackslash}"some string{\textbackslash}"")}.
 
-There are also some conventions. One can use properties to tag some NED element
-with a label; for example, a \fprop{@host} property could be used to mark
-all module types that represent various hosts. This property could be used
-e.g. by editing tools, by topology discovery code inside the simulation model, etc.
+There are also some conventions. One can use properties to tag NED
+elements; for example, a \fprop{@host} property could be used to mark all
+module types that represent various hosts. This property could be
+recognized e.g. by editing tools, by topology discovery code inside the
+simulation model, etc.
 
-The convention for such a "label" property is that any extra data in it
-(i.e. within parens) is ignored, except a single word \ttt{false}, which is
-reserved to "remove" the property. Thus, simulation model or tool source
-code that interprets properties should handle all the following forms as
+The convention for such a ``marker'' property is that any extra data in it
+(i.e. within parens) is ignored, except a single word \ttt{false}, which has
+the special meaning of ``turning off'' the property. Thus, any simulation model
+or tool that interprets properties should handle all the following forms as
 equivalent to \ttt{@host}: \ttt{@host()}, \ttt{@host(true)},
 \ttt{@host(anything-but-false)}, \ttt{@host(a=1;b=2)}; and
 \ttt{@host(false)} should be interpreted as the lack of the \ttt{@host}
@@ -2138,7 +2143,7 @@ You can have several NED directory trees, and their roots (the NED source
 folders) should be given to the simulation kernel in the NEDPATH
 variable. NEDPATH can be specified in several ways: as an environment
 variable (\ttt{NEDPATH}), as a configuration option (\fconfig{ned-path}),
-or as a command-line option to the simulation runtime. NEDPATH is
+or as a command-line option to the simulation runtime (\ttt{-n}). NEDPATH is
 described in detail in chapter \ref{cha:run-sim}.
 
 Directories in a NED source tree correspond to packages. If you have

@@ -1,14 +1,15 @@
 digraph g {
         fontsize=12; size="5,5";
 
-	node [shape = "rectangle"];
+        node [shape = "rectangle"];
+        edge [dir = "back"];
 
-	cComponent -> cObject [label="..."];
-	cModule -> cComponent;
-	cChannel -> cComponent;
-	cSimpleModule -> cModule;
-	cCompoundModule -> cModule;
-	cIdealChannel -> cChannel;
-	cDelayChannel -> cChannel;
-	cDatarateChannel -> cChannel;
+        cObject -> cComponent [label="..."];
+        cComponent -> cModule;
+        cComponent -> cChannel;
+        cModule -> cSimpleModule;
+        cModule -> cCompoundModule;
+        cChannel -> cIdealChannel;
+        cChannel -> cDelayChannel;
+        cChannel -> cDatarateChannel;
 };

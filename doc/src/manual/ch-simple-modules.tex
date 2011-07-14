@@ -3078,7 +3078,7 @@ State transitions\index{state transition} are done via calls to
 \cclass{cFSM} object:
 
 \begin{cpp}
-FSM_Goto(fsm,\textit{newState});
+FSM_Goto(fsm, newState);
 \end{cpp}
 
 The FSM starts from the state with the numeric code 0; this state
@@ -3263,7 +3263,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 If a module is part of a module vector\index{module!vector}, the
-\ffunc{getIndex()} and \ffunc{size()} member functions can be used to
+\ffunc{getIndex()} and \ffunc{getVectorSize()} member functions can be used to
 query its index and the vector size:
 
 \begin{cpp}
@@ -3292,10 +3292,10 @@ cModule *mod = simulation.getModule( id );
 \end{cpp}
 
 
-Module IDs are guaranteed to be unique, even when modules are
-created and destroyed dynamically. That is, an ID which once
-belonged to a module which was deleted is never issued to another
-module later.
+Module IDs are guaranteed to be unique for the duration of the whole
+simulation, even when modules are created and destroyed dynamically;
+that is, IDs of deleted modules are not reused for newly created
+modules.
 
 
 \subsubsection{Walking Up and Down the Module Hierarchy}
@@ -4138,7 +4138,7 @@ module is deleted, it first unsubscribes all listeners from all
 modules and channels in its submodule tree before starting
 to recursively delete the modules and channels themselves.
 
-If a listener is deleted, it must already be unsubscribed from all
+When a listener is deleted, it must already be unsubscribed from all
 components at that point. If it is not unsubscribed, pointers to the dead
 listener object will be left in the components' listener lists, and the
 components will crash inside an \ffunc{emit()} call, or when they
