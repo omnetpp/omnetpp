@@ -659,6 +659,102 @@ more than one place in the ini file. The syntax is
 The scope of the variable name is the section that defines it, plus
 sections based on that section (via \fconfig{extends}).
 
+
+\subsubsection{Referencing Other Iteration Variables}
+
+Iterations may refer to other iteration variables, using the dollar syntax
+(\ttt{\$var}) or the dollar-brace syntax (\ttt{\$\{var\}}).
+
+This feature makes it possible to have loops where the inner iteration range
+depends on the outer one. An example:
+
+\begin{inifile}
+**.foo = ${i=1..10}  # outer loop
+**.bar = ${j=1..$i}  # inner loop depends on $i
+\end{inifile}
+
+When needed, the default top-down nesting order of iteration loops is
+modified (loops are reordered) to ensure that expressions only refer to
+more outer loop variables, but not to inner ones. When this is not
+possible, an error is generated with the ``circular dependency'' message.
+
+For instance, in the following example the loops will be nested in
+\textit{k - i - j} order, \textit{k} being the outermost and \textit{j}
+the innermost loop:
+
+\begin{inifile}
+**.foo = ${i=0..$k}   # must be inner to $k
+**.bar = ${j=$i..$k}  # must be inner to both $i and $k
+**.baz = ${k=1..10}   # may be the outermost loop
+\end{inifile}
+
+And the next example will stop with an error because there is no ``good''
+ordering:
+
+\begin{inifile}
+**.foo = ${i=0..$j}
+**.bar = ${j=0..$k}
+**.baz = ${k=0..$i} # --> error: circular references
+\end{inifile}
+
+Variables are substituted \textit{textually}, and the result is normally
+\textit{not} evaluated as an arithmetic expression.  The result of the
+substitution is only evaluated where needed, namely in the three arguments
+of iteration ranges (\textit{from}, \textit{to}, \textit{step}), and in the
+value of the \fconfig{constraint} configuration option.
+
+To illustrate textual substitution, consider the following contorted example:
+
+\begin{inifile}
+**.foo = ${i=1..3, 1s+, -}001s
+\end{inifile}
+
+Here, the \ttt{foo} NED parameter will receiving the following values in subsequent runs:
+\ttt{1001s}, \ttt{2001s}, \ttt{3001s}, \ttt{1s+001s}, \ttt{-001s}.
+
+\begin{caution}
+Due to textual substitution, variables in arithmetic expressions should be
+protected with parentheses -- just like in C/C++ function-style macros.
+Consider the following example:
+
+\begin{inifile}
+**.foo = ${i=10}
+**.bar = ${j=$i+5}
+**.baz = ${k=2*$j}   # bogus! $j should be written as ($j)
+constraint = $i+50 < 2*$j  # ditto: should use ($i) and ($j)
+\end{inifile}
+
+Here, the \ttt{baz} parameter will receive the string \ttt{2*10+5} after
+the substitutions and hence evaluate to $25$ instead of the correct
+$2*(10+5)=30$; the constraint expression is similarly wrong. Mind the parens!
+\end{caution}
+
+Substitution also works inside string constants within iterations (\ttt{\$\{..\}}).
+
+\begin{inifile}
+**.foo = "${i=Jo}"  # -> Jo
+**.bar = ${"Hi $i", "Hi ${i}hn"}  # -> Hi Jo /John
+\end{inifile}
+
+However, outside iterations the plain dollar syntax is not understood, only
+the dollar-brace syntax is:
+
+\begin{inifile}
+**.foo = "${i=Day}"
+**.baz = "Good $i"     # -> remains "Good $i"
+**.baz = "Good ${i}"   # -> becomes "Good Day"
+\end{inifile}
+
+\begin{rationale}
+The text substitution model was chosen for greater flexibility as well as
+the ability to produce more consistent semantics. The advantages outweigh
+the inconvenience of having to parenthesize variable references in
+arithmetic expressions.
+\end{rationale}
+
+
+\subsection{Predefined Variables, Run ID}
+
 There are also a number of predefined variables: \ttt{\$\{configname\}} and
 \ttt{\$\{runnumber\}} with the obvious meanings; \ttt{\$\{network\}} is the name of
 the network that is simulated; \ttt{\$\{processid\}} and \ttt{\$\{datetime\}}
