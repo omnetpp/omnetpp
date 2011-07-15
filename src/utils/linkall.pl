@@ -97,7 +97,7 @@ foreach $arg (@ARGV2) {
 
         # invoke dumpbin and redirect output into file
         unlink($DUMPFILE) || error("cannot remove existing $DUMPFILE") if -r $DUMPFILE;
-        $prog = "$DUMPBIN /linkermember:1 $lib >$DUMPFILE";
+        $prog = "$DUMPBIN /linkermember:1 \"$lib\" >$DUMPFILE";
         system($ENV{COMSPEC}, "/c", $prog)==0 || error("error invoking dumpbin (check contents of $DUMPFILE)");
 
         # read dumpbin output
