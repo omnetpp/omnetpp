@@ -81,6 +81,7 @@ systemc: sim
 # Group targets.
 #
 base: $(BASE)
+	@echo ===== Compiling opp_run_executable ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) opp_run_executable
 
 samples: $(SAMPLES)
@@ -130,16 +131,18 @@ $(SAMPLES):
 # Documentation
 #
 apis:
+	@echo ===== Building $@ ====
 	cd /d $(OMNETPP_DOC_DIR:/=\)\src && $(MAKE) $(MOPTS) $(MAKEFILE) apis
 
 docu:
+	@echo ===== Building $@ ====
 	cd /d $(OMNETPP_DOC_DIR:/=\)\src && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Tests
 #
 tests: base
-	@echo ===== Running tests ====
+	@echo ===== Running $@ ====
         @cd /d $(OMNETPP_TEST_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #=====================================================================

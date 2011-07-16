@@ -114,15 +114,18 @@ $(SAMPLES):
 # Documentation
 #
 apis:
+	@echo ===== Building $@ ====
 	cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis
 
 docu:
+	@echo ===== Building $@ ====
 	cd $(OMNETPP_DOC_DIR)/src && $(MAKE)
 
 #
 # Test
 #
 tests: base
+	@echo ===== Running $@ ====
 	cd $(OMNETPP_TEST_DIR) && $(MAKE)
 
 #=====================================================================
