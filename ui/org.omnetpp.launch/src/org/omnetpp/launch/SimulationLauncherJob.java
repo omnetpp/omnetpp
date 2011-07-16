@@ -31,13 +31,8 @@ import org.eclipse.debug.core.model.IStreamMonitor;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
 import org.eclipse.debug.internal.ui.views.console.ProcessConsole;
-import org.eclipse.debug.internal.ui.views.launch.LaunchView;
 import org.eclipse.debug.ui.DebugUITools;
-import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.IOConsoleOutputStream;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
@@ -117,7 +112,7 @@ public class SimulationLauncherJob extends Job {
         // launch the process
         Process process = OmnetppLaunchUtils.startSimulationProcess(configuration, cmdLineArgs, false);
         IProcess iprocess = DebugPlugin.newProcess(launch, process, renderProcessLabel(runNo));
-        printToConsole(iprocess, "Starting...\n\n$ "+workingDir+"\n$ "+commandLine+"\n\n", false);
+        printToConsole(iprocess, "Starting...\n\n$ cd "+workingDir+"\n$ "+commandLine+"\n\n", false);
 
         // command line will be visible in the debug view's property dialog
         iprocess.setAttribute(IProcess.ATTR_CMDLINE, commandLine);
@@ -157,28 +152,30 @@ public class SimulationLauncherJob extends Job {
         }
 
         // do some error reporting if the process finished with error
-        if (iprocess.isTerminated() && iprocess.getExitValue() != 0 )
-        	try {
-        	    String errorMsg = "\nSimulation terminated with exit code: "+iprocess.getExitValue();
-        	    errorMsg += "\nWorking directory: "+workingDir;
-        	    errorMsg += "\nStarted with: "+commandLine;
+        if (iprocess.isTerminated() && iprocess.getExitValue() != 0) {
+            try {
+                String errorMsg = "\nSimulation terminated with exit code: " + iprocess.getExitValue() + "\n";
+                errorMsg += "Working directory: " + workingDir + "\n";
+                errorMsg += "Command line: " + commandLine + "\n";
 
-        	    String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
-        	    errorMsg += "\nEnvironment: ";
+                // add the environment variables we are interested in
+                String environment[] = DebugPlugin.getDefault().getLaunchManager().getEnvironment(configuration);
+                errorMsg += "\nEnvironment variables:\n";
                 for (String env : environment) {
-                    // on windows the environment is case insensitive, so we convert it to upper case
+                    // on Windows, environment variable names are case insensitive, so we convert the name to upper case
                     if (Platform.getOS().equals(Platform.OS_WIN32))
-                        env = env.toUpperCase();
-                    // print the env vars we are interested in
+                        env = StringUtils.substringBefore(env, "=").toUpperCase() + "=" + StringUtils.substringAfter(env, "=");
                     if (env.startsWith("PATH=") || env.startsWith("LD_LIBRARY_PATH=") || env.startsWith("DYLD_LIBRARY_PATH=")
-                             || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH=")  )
-                        errorMsg += "\n"+env;
+                            || env.startsWith("OMNETPP_") || env.startsWith("NEDPATH="))
+                        errorMsg += env  + "\n";
                 }
-        	    
-        	    printToConsole(iprocess, errorMsg, true);
-        	} catch (DebugException e) {
-        		LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
-        	}
+
+                printToConsole(iprocess, errorMsg, true);
+            }
+            catch (DebugException e) {
+                LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
+            }
+        }
         return new Status(IStatus.OK, LaunchPlugin.PLUGIN_ID, IStatus.OK, "run #"+runNo+" - Finished", null);
     }
 
