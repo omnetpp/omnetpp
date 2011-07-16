@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -66,13 +67,13 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 
 /**
- * Start or (create and start) a LaunchCofiguration associated with a selected NED file
+ * Start or (create and start) a LaunchConfiguration associated with a selected NED file
  * (NED file can be selected by clicking in the explorer or can be the active editor input)
  *
  * Steps:
@@ -111,6 +112,8 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
     public void launch(ISelection selection, String mode) {
         if (selection instanceof IStructuredSelection) {
             Object obj =((IStructuredSelection)selection).getFirstElement();
+            if (obj instanceof ICElement)
+                obj = ((ICElement)obj).getResource();
             if (obj instanceof IResource) {
                 IResource resource = (IResource)obj;
                 doLaunch(resource, mode);

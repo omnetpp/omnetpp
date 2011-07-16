@@ -55,12 +55,8 @@
         <or>
         <test property="org.eclipse.debug.ui.matchesPattern" value="*.ini"/>
         <test property="org.eclipse.debug.ui.matchesPattern" value="*.ned"/>
-        <instanceof
-              value="org.eclipse.core.resources.IFolder">
-        </instanceof>
-        <instanceof
-              value="org.eclipse.core.resources.IProject">
-        </instanceof>
+        <instanceof value="org.eclipse.core.resources.IContainer"/>
+        <instanceof value="org.eclipse.cdt.core.model.ICContainer"/>
         </or>
       </iterate>
     </with>
