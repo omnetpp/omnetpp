@@ -18,15 +18,20 @@ endif
 #
 # Local definitions
 #
+MAINLIBNAME=liboppmain$D
 LIBNAME=liboppenvir$D
 O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/envir
 L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+
+ifeq ("$(PLATFORM)","win32.x86")
+PSAPI_LIB=-lpsapi
+endif
 
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I$(OMNETPP_INCL_DIR)/platdep -I../sim -I../common -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN) -DSHARED_LIB_SUFFIX="\"$(SHARED_LIB_SUFFIX)\""
 
 IMPLIBS= -L$L -loppsim$D -loppnedxml$D -loppcommon$D $(XML_LIBS)
 
-OBJS= $O/appreg.o $O/args.o $O/startup.o $O/main.o $O/envirbase.o $O/fsutils.o \
+OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/envirbase.o $O/fsutils.o \
       $O/sectionbasedconfig.o $O/inifilereader.o $O/scenario.o $O/valueiterator.o \
       $O/fileoutvectormgr.o $O/fileoutscalarmgr.o $O/filesnapshotmgr.o \
       $O/indexedfileoutvectormgr.o $O/akoutvectormgr.o \
@@ -51,13 +56,13 @@ $O/%.o: %.cc
 all : $L/$(LIBNAME)$(LIB_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
-$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
+$L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS) $L/$(MAINLIBNAME)$(A_LIB_SUFFIX)
 	@mkdir -p $L
 	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
-$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
+$L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS) $L/$(MAINLIBNAME)$(A_LIB_SUFFIX)
 	@mkdir -p $L
 	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
 	$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
@@ -82,21 +87,42 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 
 $O/envirbase.o: eventlogwriter.h
 
-# default opp_run target - called only at the end once tkenv and cmdenv is done
-opp_run_executable: $O/opp_run$(EXE_SUFFIX)
+# Build a static lib that contains the main() function used with executable or dynamically linked models
+$L/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
+	@mkdir -p $L
+	$(AR) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX) $O/main.o
+	$(RANLIB) $O/$(MAINLIBNAME)$(A_LIB_SUFFIX)
+	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(MAINLIBNAME)$(A_LIB_SUFFIX) $L
+	rm -f $(OMNETPP_LIB_DIR)/$(MAINLIBNAME)$(A_LIB_SUFFIX) && $(LN) $L/$(MAINLIBNAME)$(A_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
 
+# default opp_run target - called only at the end once tkenv and cmdenv is done
 # opp_run is useless with static libs
 ifeq ("$(LIB_SUFFIX)","$(SHARED_LIB_SUFFIX)")
+ifeq ("$(MODE)","debug")
+opp_run_executable: $O/opp_run$(EXE_SUFFIX)
 $O/opp_run$(EXE_SUFFIX) : $O/opp_run.o $L/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
+	$(CXX) $(LDFLAGS) -o "$@" $O/opp_run.o $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS) $(PSAPI_LIB)
 	cp $O/opp_run$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+else
+opp_run_executable: $O/opp_run_release$(EXE_SUFFIX)
+$O/opp_run_release$(EXE_SUFFIX) : $O/main.o $L/$(LIBNAME)$(LIB_SUFFIX)
+	$(CXX) $(LDFLAGS) -o "$@" $O/main.o $(ALL_ENV_LIBS) $(IMPLIBS) $(SYS_LIBS)
+	cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+	cp $O/opp_run_release$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)/opp_run$(EXE_SUFFIX)
+endif
 
 $O/opp_run.o : opp_run.cc
-	@# Note: not in OBJS because opp_run.cc must be compiled *without* -DENVIR_EXPORT
+	@# Note: not in OBJS because main.cc must be compiled *without* -DENVIR_EXPORT
 	@mkdir -p $O
-	$(CXX) $(CFLAGS) -c -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -o$O/opp_run.o opp_run.cc
+	$(CXX) $(COPTS) -c -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -o$O/opp_run.o opp_run.cc
+
+$O/main.o : main.cc
+	@# Note: not in OBJS because main.cc must be compiled *without* -DENVIR_EXPORT
+	@mkdir -p $O
+	$(CXX) $(COPTS) -c -I"$(OMNETPP_INCL_DIR)" -I"$(OMNETPP_INCL_DIR)/platdep" -I../sim  -I../common -o$O/main.o main.cc
+
 else
-$O/opp_run$(EXE_SUFFIX):
+opp_run_executable:
 	@echo "Note: We don't create opp_run.exe when building static libs"
 endif
 

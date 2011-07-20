@@ -1,9 +1,8 @@
 //==========================================================================
-//  MAIN.CC - part of
+//  main.cc - part of
+//
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
-//
-//  Function main()
 //
 //  Author: Andras Varga
 //
@@ -17,30 +16,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
-#include "cownedobject.h"
+#include <stdlib.h>
 #include "envirdefs.h"
-#include "startup.h"
-#include "../common/ver.h"
 
-USING_NAMESPACE
+extern "C" ENVIR_API int evMain(int argc, char *argv[]);
 
-//
-// The main() function
-//
-ENVIR_API int main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-    cStaticFlag dummy;
-
-    printf(OMNETPP_PRODUCT " Discrete Event Simulation  (C) 1992-2011 Andras Varga, OpenSim Ltd.\n");
-    printf("Version: " OMNETPP_VERSION_STR ", build: " OMNETPP_BUILDID ", edition: " OMNETPP_EDITION "\n");
-    printf("See the license for distribution terms and warranty disclaimer\n");
-
-    int exitcode = setupUserInterface(argc, argv);
-
-    printf("\nEnd.\n");
-
-    return exitcode;
+    // call the main function and start the simulation
+    return evMain(argc, argv);
 }
-
-

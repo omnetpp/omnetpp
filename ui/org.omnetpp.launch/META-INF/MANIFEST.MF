@@ -16,7 +16,9 @@ Require-Bundle: org.eclipse.core.runtime,
  org.omnetpp.main,
  org.omnetpp.ned.core,
  org.omnetpp.ned.model,
- org.omnetpp.inifile.editor
+ org.omnetpp.inifile.editor,
+ org.eclipse.cdt.core,
+ org.eclipse.cdt.managedbuilder.core
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.launch,
  org.omnetpp.launch.tabs

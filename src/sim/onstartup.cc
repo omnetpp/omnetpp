@@ -21,19 +21,25 @@
 
 USING_NAMESPACE
 
-// Checks whether an other instance of the shared library has already loaded
-// this can happen if som eparts of the simulation are linked with debug
-// while others are linked with the release version of the oppsim shared library
-// This is an error and we must warn the user about it.
+#if NDEBUG
+extern "C" SIM_API bool __is_release_oppsim__;
+bool __is_release_oppsim__ = true;
+#endif
+
+// Checks whether an other instance of the shared library has already been loaded.
+// This can happen when some parts of the simulation are linked with debug
+// while others are linked with the release version of the oppsim shared library.
+// This is an error: we must tell the user about it, and abort.
 class StartupChecker
 {
     public:
         StartupChecker()
         {
-            if (getenv("__OPPSIM_LOADED__") != NULL) {
+            char *loaded = getenv("__OPPSIM_LOADED__");
+            if (loaded != NULL && strcmp(loaded, "yes") == 0 ) {
                 fprintf(stderr,
-                       "\n<!> Attempt to load the oppsim shared library more than once. "
-                       "This usually happens if part of your simulation is using release libraries "
+                       "\n<!> Error: Attempt to load the oppsim shared library more than once. "
+                       "This usually happens when part of your simulation is using release libraries "
                        "while other parts are using the debug version. Make sure to rebuild all parts "
                        "of your model in either release or debug mode!\n");
                 exit(1);

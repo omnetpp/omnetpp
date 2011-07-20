@@ -18,6 +18,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.eclipse.cdt.managedbuilder.core.IConfiguration;
+import org.eclipse.cdt.managedbuilder.core.ManagedBuildManager;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
@@ -224,34 +226,37 @@ public class OmnetppLaunchUtils {
 		newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied
 
 		// working directory (converted from path to location)
-		String wdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
-		if (StringUtils.isEmpty(wdirStr))
+		String workingdirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "");
+		if (StringUtils.isEmpty(workingdirStr))
             throw new CoreException(new Status(Status.ERROR, LaunchPlugin.PLUGIN_ID, "Working directory must be set"));
-		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getLocationForWorkspacePath(wdirStr, "/", false).toString());
+		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_WORKING_DIRECTORY, getLocationForWorkspacePath(workingdirStr, "/", false).toString());
 
 		// absolute filesystem location of the working directory
-		IPath wdirLocation = getLocationForWorkspacePath(StringUtils.substituteVariables(wdirStr),"/",false);
+		IPath workingdirLocation = getLocationForWorkspacePath(StringUtils.substituteVariables(workingdirStr),"/",false);
 		
 		// executable name
 		String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
 
-		String projectName = null;
 		if (StringUtils.isEmpty(exeName)) {  // this means opp_run
-		    projectName = findRelatedCDTProject(wdirStr);
 		    exeName = OmnetppMainPlugin.getOmnetppBinDir()+"/opp_run";
-		    if (mode.equals(ILaunchManager.DEBUG_MODE) && projectName == null)
+		    // detect if the current executable is release or debug
+		    // if we run a release executable we have to use opp_run_release (instead of opp_run)
+		    if (isOppRunReleaseRequired(workingdirStr))
+		        exeName += "_release";
+            // A CDT project is required for the launcher in debug mode to start the application (using gdb).
+            IProject project = findFirstRelatedCDTProject(workingdirStr);
+            newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, project != null ? project.getName() : null);
+		    if (mode.equals(ILaunchManager.DEBUG_MODE) && project == null)
 		        throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: no related open C++ project"));
 		}
 		else {
-            projectName = new Path(exeName).segment(0);
+            String projectName = new Path(exeName).segment(0);
+            newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
 			exeName = new Path(exeName).removeFirstSegments(1).toString(); // project-relative path
-
 		    IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
 		    if (mode.equals(ILaunchManager.DEBUG_MODE) && (!project.exists() || !project.hasNature(CDT_CC_NATURE_ID)))
                 throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation in debug mode: the executable's project ("+projectName+") is not an open C++ project"));
 		}
-
-		newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROJECT_NAME, projectName);
 
 		if (Platform.getOS().equals(Platform.OS_WIN32) && !exeName.matches("(?i).*\\.(exe|cmd|bat)$"))
 			exeName += ".exe";
@@ -280,7 +285,7 @@ public class OmnetppLaunchUtils {
 		if (StringUtils.isNotBlank(nedpathStr)) {
 			String[] nedPaths = StringUtils.split(nedpathStr, pathSep);
 			for (int i = 0 ; i< nedPaths.length; i++)
-				nedPaths[i] = makeRelativePathTo(getLocationForWorkspacePath(nedPaths[i], wdirStr, false), wdirLocation).toString();
+				nedPaths[i] = makeRelativePathTo(getLocationForWorkspacePath(nedPaths[i], workingdirStr, false), workingdirLocation).toString();
 			// always create ned path option if more than one path element is present. Do not create if it contains a single . only (that's the default)
 			if (nedPaths.length>1 || !".".equals(nedPaths[0]))
 			    args += " -n " + StringUtils.join(nedPaths, pathSep)+" ";
@@ -293,7 +298,7 @@ public class OmnetppLaunchUtils {
 			String[] libs = StringUtils.split(shLibStr);
 			// convert to file system location
 			for (int i = 0 ; i< libs.length; i++)
-				libs[i] = makeRelativePathTo(getLocationForWorkspacePath(libs[i], wdirStr, true), wdirLocation).toString();
+				libs[i] = makeRelativePathTo(getLocationForWorkspacePath(libs[i], workingdirStr, true), workingdirLocation).toString();
 			args += " -l " + StringUtils.join(libs," -l ")+" ";
 		}
 
@@ -312,7 +317,7 @@ public class OmnetppLaunchUtils {
 			String[] inifiles = StringUtils.split(iniStr);
 			// convert to file system location
 			for (int i = 0 ; i< inifiles.length; i++)
-				inifiles[i] = makeRelativePathTo(getLocationForWorkspacePath(inifiles[i], wdirStr, true), wdirLocation).toString();
+				inifiles[i] = makeRelativePathTo(getLocationForWorkspacePath(inifiles[i], workingdirStr, true), workingdirLocation).toString();
 			args += " " + StringUtils.join(inifiles," ")+" ";
 		}
 
@@ -325,7 +330,7 @@ public class OmnetppLaunchUtils {
         String path = envir.get("PATH");
         // if the path was not set by hand, generate automatically
         if (StringUtils.isBlank(path)) {
-        	String win32_ld_library_path = Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}" + pathSep) : "";
+		String win32_ld_library_path = Platform.getOS().equals(Platform.OS_WIN32) ? StringUtils.substituteVariables("${opp_ld_library_path_loc:"+workingdirStr+"}" + pathSep) : "";
             envir.put("PATH",win32_ld_library_path +
         			         StringUtils.substituteVariables("${opp_bin_dir}" + pathSep) +
         			         StringUtils.substituteVariables("${opp_additional_path}" + pathSep) +  // msys/bin, mingw/bin, etc
@@ -338,7 +343,7 @@ public class OmnetppLaunchUtils {
         	// if the path was not set by hand, generate automatically
         	if (StringUtils.isBlank(ldLibPath))
         		envir.put(ldLibPathVar, StringUtils.substituteVariables("${opp_lib_dir}"+pathSep) +
-        				StringUtils.substituteVariables("${opp_ld_library_path_loc:"+wdirStr+"}"+pathSep) +
+					StringUtils.substituteVariables("${opp_ld_library_path_loc:"+workingdirStr+"}"+pathSep) +
         				StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
         }
 
@@ -365,15 +370,65 @@ public class OmnetppLaunchUtils {
 		return newCfg;
 	}
 
-	private static String findRelatedCDTProject(String workspacePath) throws CoreException {
-	    String resolvedWDir = StringUtils.substituteVariables(workspacePath);
-	    IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(resolvedWDir);
+    /**
+     * Detect if the active configuration of the CDT project is built with release mode omnetpp toolchain.
+     * Returns null if the detection was unsuccessful.
+     * @throws CoreException
+     */
+    private static Boolean isReleaseModeCDTProject(IProject project) throws CoreException {
+        Assert.isTrue(project.hasNature(CDT_CC_NATURE_ID));
+
+        IConfiguration cfg = ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration();
+        while (cfg != null) {
+            // compare with the release toolchain names. (they must match with the IDs defined in the plugin.xml)
+            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.release") || cfg.getId().equals("org.omnetpp.cdt.msvc.config.release"))
+                return Boolean.TRUE;
+            // for a debug toolchain we must use opp_run (which is also built in debug mode)
+            if (cfg.getId().equals("org.omnetpp.cdt.gnu.config.debug") || cfg.getId().equals("org.omnetpp.cdt.msvc.config.debug"))
+                return Boolean.FALSE;
+            cfg = cfg.getParent();
+        }
+        // we cannot detect our own toolchain
+        return null;
+    }
+
+    /**
+     * Check if we have to use opp_run_release for the project specified by the path.
+     * Checks all dependent CDT projects and throws an exception if either of them use different
+     * build modes. (i.e. all of the CDT projects must be built as debug OR release)
+     */
+    private static boolean isOppRunReleaseRequired(String workingDirPath) throws CoreException {
+        String resolvedWorkingDir = StringUtils.substituteVariables(workingDirPath);
+        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(resolvedWorkingDir);
+        if (resource == null)
+            throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation: the working directory path is not accessible."));
+
+        IProject[] projects = ProjectUtils.getAllReferencedProjects(resource.getProject(), false, true);
+        Boolean commonReleaseMode = null;
+        for (IProject project : projects)
+            if (project.hasNature(CDT_CC_NATURE_ID)) {
+                Boolean projectReleaseMode = isReleaseModeCDTProject(project);
+                if (projectReleaseMode != null && commonReleaseMode != null && projectReleaseMode != commonReleaseMode)
+                    throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot launch simulation: all of the projects must be compiled either in debug or relase mode."));
+
+                if (projectReleaseMode != null)
+                    commonReleaseMode = projectReleaseMode;
+            }
+        return commonReleaseMode == null ? false : commonReleaseMode;  // if mode nt detected, use debug mode
+    }
+
+    /**
+     * Returns a related CDT project or null if there is no open and related CDT project.
+     */
+    private static IProject findFirstRelatedCDTProject(String workspacePath) throws CoreException {
+	    String resolvedWorkingDir = StringUtils.substituteVariables(workspacePath);
+	    IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(resolvedWorkingDir);
 	    if (resource == null)
 	        return null;
 	    IProject[] projects = ProjectUtils.getAllReferencedProjects(resource.getProject(), false, true);
 	    for (IProject project : projects)
 	        if (project.hasNature(CDT_CC_NATURE_ID))
-	            return project.getName();
+	            return project;
 	    return null;
 	}
 
