@@ -32,6 +32,7 @@ import org.eclipse.gef.requests.CreateRequest;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.layout.ISubmoduleConstraint;
 import org.omnetpp.ned.editor.graph.GraphicalNedEditor;
 import org.omnetpp.ned.editor.graph.commands.ChangeDisplayPropertyCommand;
 import org.omnetpp.ned.editor.graph.commands.CloneSubmoduleCommand;
@@ -333,7 +334,9 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
 
     protected Rectangle getConstraintForClone(GraphicalEditPart part, ChangeBoundsRequest request) {
         IFigure figure = part.getFigure();
-        Rectangle bounds = new PrecisionRectangle(((SubmoduleFigure)figure).getShapeBounds());
+        Rectangle bounds = new PrecisionRectangle(
+                          figure instanceof ISubmoduleConstraint ? ((ISubmoduleConstraint)figure).getShapeBounds() 
+                                                                   : figure.getBounds());
 
         figure.translateToAbsolute(bounds);
         bounds = request.getTransformedRectangle(bounds);
@@ -354,7 +357,10 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * @see ConstrainedLayoutEditPolicy#getConstraintFor(ChangeBoundsRequest, GraphicalEditPart)
      */
     protected Rectangle getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
-    	Rectangle rect = new PrecisionRectangle(((SubmoduleFigure)child.getFigure()).getShapeBounds());
+        IFigure childFig = child.getFigure();
+    	Rectangle rect = new PrecisionRectangle(
+    	                  childFig instanceof ISubmoduleConstraint ? ((ISubmoduleConstraint)childFig).getShapeBounds() 
+    	                                                           : childFig.getBounds());
     	Rectangle original = rect.getCopy();
     	child.getFigure().translateToAbsolute(rect);
     	rect = request.getTransformedRectangle(rect);
@@ -398,8 +404,11 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * @return the current constraint
      */
     protected Rectangle getCurrentConstraintFor(GraphicalEditPart child) {
-    	SubmoduleFigure fig = (SubmoduleFigure)child.getFigure();
-    	return fig.getShapeBounds();
+        IFigure childFig = child.getFigure();
+        if (childFig instanceof ISubmoduleConstraint) 
+            return ((ISubmoduleConstraint)childFig).getShapeBounds();
+        else
+            return childFig.getBounds();
     }
 
     /**
