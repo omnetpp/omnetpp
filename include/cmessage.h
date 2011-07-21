@@ -314,7 +314,7 @@ class SIM_API cMessage : public cOwnedObject
     /**
      * Removes the "control info" structure (object) from the message
      * and returns its pointer. Returns NULL if there was no control info
-     * in the message
+     * in the message.
      */
     cObject *removeControlInfo();
 
