@@ -221,6 +221,11 @@ void Tkenv::run()
         Tcl_SetVar(interp, "OMNETPP_EDITION", OMNETPP_EDITION, TCL_GLOBAL_ONLY);
         Tcl_SetVar(interp, "OMNETPP_BUILDID", OMNETPP_BUILDID, TCL_GLOBAL_ONLY);
 
+        // we need to flush streams, otherwise output written from Tcl tends to overtake
+        // output written from C++ so far, at least in the IDE's console view
+        fflush(stdout);
+        fflush(stderr);
+
         // eval Tcl sources: either from .tcl files or from compiled-in string
         // literal (tclcode.cc)...
 
