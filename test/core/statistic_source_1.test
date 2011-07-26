@@ -39,14 +39,14 @@ debug-statistics-recording = true
 %contains: stdout
 Test.node (Node):
     "bar" (signalID=4):
-        LastValueFilter
+        IdentityFilter
             <signalvalue> + <signalvalue> (NaryExpressionFilter)
                 VectorRecorder ==> src10:vector
-        LastValueFilter
+        IdentityFilter
             <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
                 MaxFilter
                     VectorRecorder ==> src11:vector
-        LastValueFilter
+        IdentityFilter
             <signalvalue> + sin(<signalvalue>) (NaryExpressionFilter)
                 VectorRecorder ==> src12:vector
         MinFilter
@@ -90,10 +90,10 @@ Test.node (Node):
                             MaxFilter
                                 VectorRecorder ==> src9:vector
                                 HistogramRecorder ==> src9:histogram
-        LastValueFilter
+        IdentityFilter
             <signalvalue> + <signalvalue> (NaryExpressionFilter)
                 VectorRecorder ==> src10:vector
-        LastValueFilter
+        IdentityFilter
             <signalvalue> + 3 * <signalvalue> (NaryExpressionFilter)
                 MaxFilter
                     VectorRecorder ==> src11:vector

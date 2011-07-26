@@ -23,7 +23,7 @@ namespace @TESTNAME@ {
 
 cNEDValue nedf_haveClass(cComponent *context, cNEDValue argv[], int argc)
 {
-    return classes.getInstance()->lookup(argv[0].s.c_str()) != NULL;
+    return classes.getInstance()->lookup(argv[0].stringValue()) != NULL;
 }
 
 Define_NED_Function2(nedf_haveClass,
@@ -34,7 +34,7 @@ Define_NED_Function2(nedf_haveClass,
 
 cNEDValue nedf_lindex(cComponent *context, cNEDValue argv[], int argc)
 {
-    int index = (int)argv[0].dbl;
+    int index = (int)argv[0].doubleValue();
     if (index < 0)
         throw cRuntimeError("lindex(): negative index");
     if (index > argc)

@@ -17,5 +17,5 @@ network = Test
 End\.$
 
 %contains-regex: stderr
-<!> Error during startup: Unknown configuration key: some-unknown-key\.$
+<!> Error during startup: Unknown configuration option: some-unknown-key\.$
 
