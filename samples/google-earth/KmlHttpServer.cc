@@ -138,7 +138,7 @@ const char *INDEX_HTML =
     "<html>\n"
     "<head>\n"
     "   <title>OMNeT++ Google Earth Demo</title>\n"
-    "   <script src=\"http://maps.google.com/jsapi?key=ABQIAAAAChcjJ7DNhuYTdo9QvbdTzhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxR5YFOIwZIVqRr1oDD2rWLRoBQfuw\" type=\"text/javascript\"></script>\n" // ID registered to localhost:4242
+    "   <script src=\"http://www.google.com/jsapi?key=ABQIAAAAhaIVVNK7shon8s61HoJP3hTWQ61sd-CgFDCq8tRqXSWpKVHs8RQiqzV8RfPWPm7pTTJyU_gk6LVxAg\"></script>\n" // ID registered for omnetpp.org
     "   <script type=\"text/javascript\">\n"
     "      var ge;\n"
     "      var networkLink;  // for setTimeout()\n"
