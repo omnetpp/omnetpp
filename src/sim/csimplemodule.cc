@@ -374,7 +374,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, simtime_t delay, cGate *outgate)
         throw cRuntimeError("send()/sendDelayed(): message pointer is NULL");
     if (msg->getOwner()!=this)
     {
-        if (this!=simulation.getContextModule())
+        if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
             throw cRuntimeError("send()/sendDelayed() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()? "
@@ -475,7 +475,7 @@ int cSimpleModule::sendDirect(cMessage *msg, simtime_t propdelay, simtime_t dura
     if (msg->getOwner()!=this)
     {
         // try to give a meaningful error message
-        if (this!=simulation.getContextModule())
+        if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
             throw cRuntimeError("sendDirect() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()? "
@@ -534,7 +534,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         throw cRuntimeError(eBACKSCHED, msg->getClassName(), msg->getName(), SIMTIME_DBL(t));
     if (msg->getOwner()!=this)
     {
-        if (this!=simulation.getContextModule())
+        if (this!=simulation.getContextModule() && simulation.getContextModule()!=NULL)
             throw cRuntimeError("scheduleAt() of module (%s)%s called in the context of "
                                 "module (%s)%s: method called from the latter module "
                                 "lacks Enter_Method() or Enter_Method_Silent()?",

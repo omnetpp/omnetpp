@@ -1,3 +1,9 @@
+2011-07-28  Andras Varga
+
+	* csimplemodule.cc: fix: throwing "not owner of message" from send()/
+	sendDirect()/scheduleAt() crashed if simulation.getContextModule() 
+	returned NULL (does not occur in event handling code).
+
 2011-06-25  Andras Varga
 
 	* The internal class cMathFunction was renamed to cNEDMathFunction, 
