@@ -49,7 +49,7 @@ public class SimulationLauncherJob extends Job {
     boolean reportProgress;
 
     public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean reportProgress) {
-        super("run #"+runNo+" - Scheduled");
+        super("Run #"+runNo+" - Scheduled");
         this.configuration = configuration;
         this.launch = launch;
         this.runNo = runNo;
@@ -88,10 +88,10 @@ public class SimulationLauncherJob extends Job {
             throws CoreException {
         // check for cancellation
         if (monitor.isCanceled())
-            return new Status(IStatus.CANCEL, LaunchPlugin.PLUGIN_ID, IStatus.CANCEL, "run #"+runNo+" - Cancelled", null);
+            return new Status(IStatus.CANCEL, LaunchPlugin.PLUGIN_ID, IStatus.CANCEL, "Run #"+runNo+" - Cancelled", null);
 
         if (reportProgress)
-		monitor.subTask("run #"+runNo+" - Initializing");
+            monitor.subTask("Run #"+runNo+" - Initializing");
 
         monitor.setWorkRemaining(100);
         
@@ -129,9 +129,9 @@ public class SimulationLauncherJob extends Job {
         			}
 
         			if (OmnetppLaunchUtils.isWaitingForUserInput(text))
-					monitor.setTaskName("run #"+runNo+" - Waiting for user input... (Switch to console)");
+        			    monitor.setTaskName("Run #"+runNo+" - Waiting for user input... (Switch to console)");
         			else
-					monitor.setTaskName("run #"+runNo+" - Executing ("+prevPct+"%)");
+        			    monitor.setTaskName("Run #"+runNo+" - Executing ("+prevPct+"%)");
         		}
         	});
         else
@@ -176,7 +176,7 @@ public class SimulationLauncherJob extends Job {
                 LaunchPlugin.logError("Process is not yet terminated (should not happen)", e);
             }
         }
-        return new Status(IStatus.OK, LaunchPlugin.PLUGIN_ID, IStatus.OK, "run #"+runNo+" - Finished", null);
+        return new Status(IStatus.OK, LaunchPlugin.PLUGIN_ID, IStatus.OK, "Run #"+runNo+" - Finished", null);
     }
 
     /**
