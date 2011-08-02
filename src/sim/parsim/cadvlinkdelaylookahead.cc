@@ -57,9 +57,6 @@ void cAdvancedLinkDelayLookahead::startRun()
 
     numSeg = comm->getNumPartitions();
     segInfo = new PartitionInfo[numSeg];
-    int myProcId = comm->getProcId();
-
-    char buf[30];
 
     // temporarily initialize everything to zero.
     for (int i=0; i<numSeg; i++)

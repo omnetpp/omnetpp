@@ -33,7 +33,7 @@ WindowAverageNode::WindowAverageNode(int windowSize)
 
 WindowAverageNode::~WindowAverageNode()
 {
-    delete array;
+    delete [] array;
 }
 
 bool WindowAverageNode::isReady() const
