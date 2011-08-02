@@ -216,6 +216,7 @@ cSimpleModule::cSimpleModule(unsigned stksize)
 cSimpleModule::~cSimpleModule()
 {
     if (simulation.getContext()==this)
+        // NOTE: subclass destructors will not be called, but the simulation will stop anyway
         throw cRuntimeError(this, "cannot delete itself, only via deleteModule()");
 
     if (usesActivity())

@@ -393,14 +393,13 @@ void TOutVectorWindow::update()
    int y_zero = Y(0);   // so that we don't have to calculate it each time
    int next_x=-1;
    int next_y1=0, next_y2=0; // values won't be used (they're there just to prevent warning)
-   int x, y1, y2;
+   int x, y1;
    int pos;
    int next_pos = (circbuf.headPos()-circbuf.items()+circbuf.size())%circbuf.size();
    for (int i=0;i<=circbuf.items();i++)
    {
        x  = next_x;
        y1 = next_y1;
-       y2 = next_y2;
        pos = next_pos;
 
        if (i==circbuf.items())

@@ -105,8 +105,10 @@ void cFileCommunications::send(cCommBuffer *buffer, int tag, int destination)
     FILE *f = fopen(fname,"wb");
     if (!f)
         throw cRuntimeError("cFileCommunications: cannot open %s for write: %s", fname, strerror(errno));
-    if (fwrite(b->getBuffer(), b->getMessageSize(), 1, f)<1)
+    if (fwrite(b->getBuffer(), b->getMessageSize(), 1, f)<1) {
+        fclose(f);
         throw cRuntimeError("cFileCommunications: cannot write %s: %s", fname, strerror(errno));
+    }
     if (fclose(f)!=0)
         throw cRuntimeError("cFileCommunications: cannot close %s after writing: %s", fname, strerror(errno));
 

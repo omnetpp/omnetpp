@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
     {
         fprintf(stderr, "Can't open output file: '%s': %s\n", outputFn,
                 strerror(errno) );
+        fclose(protoFp);
         return 1;
     }
 

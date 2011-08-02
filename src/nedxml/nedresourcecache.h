@@ -190,8 +190,8 @@ class NEDXML_API NEDResourceCache
 
     /** Resolves NED type name, based on the NED files loaded */
     virtual std::string resolveNedType(const NEDLookupContext& context, const char *nedtypename) {
-        NEDResourceCache::CachedTypeNames names(this);
-        return NEDResourceCache::resolveNedType(context, nedtypename, &names);
+        CachedTypeNames names(this);
+        return resolveNedType(context, nedtypename, &names);
     }
 
     /** Available NED type names */

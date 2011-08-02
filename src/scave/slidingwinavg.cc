@@ -35,7 +35,7 @@ SlidingWindowAverageNode::SlidingWindowAverageNode(int windowSize)
 
 SlidingWindowAverageNode::~SlidingWindowAverageNode()
 {
-    delete array;
+    delete [] array;
 }
 
 bool SlidingWindowAverageNode::isReady() const
