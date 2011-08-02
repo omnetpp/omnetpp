@@ -186,7 +186,7 @@ const ResultItem& ResultFileManager::getItem(ID id) const
             default: throw opp_runtime_error("ResultFileManager: invalid ID: wrong type");
         }
     }
-    catch (std::out_of_range e)
+    catch (std::out_of_range& e)
     {
         throw opp_runtime_error("ResultFileManager::getItem(id): invalid ID");
     }

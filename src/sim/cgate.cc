@@ -156,13 +156,12 @@ std::string cGate::info() const
 {
     const char *arrow;
     cGate const *g;
-    cGate const *conng;
     cChannel const *chan;
 
     if (getType()==OUTPUT)
-        {arrow = "--> "; g = nextgatep; conng = this; chan = channelp; }
+        {arrow = "--> "; g = nextgatep; chan = channelp; }
     else if (getType()==INPUT)
-        {arrow = "<-- "; g = prevgatep; conng = prevgatep; chan = prevgatep ? prevgatep->channelp : NULL;}
+        {arrow = "<-- "; g = prevgatep; chan = prevgatep ? prevgatep->channelp : NULL;}
     else
         ASSERT(0);  // a cGate is never INOUT
 

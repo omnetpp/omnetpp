@@ -77,6 +77,7 @@ cModule::~cModule()
     {
         if (submod() == (cModule *)simulation.getContextModule())
         {
+            // NOTE: subclass destructors will not be called, but the simulation will stop anyway
             throw cRuntimeError("Cannot delete a compound module from one of its submodules!");
             // The reason is that deleteModule() of the currently executing
             // module does not return -- for obvious reasons (we would
