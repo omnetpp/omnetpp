@@ -123,7 +123,7 @@ void GraphComponent::calculateSpanningTree() {
             rootVertex = vertex;
     }
 
-    if (vertices.size() != 0)
+    if (!vertices.empty())
         calculateSpanningTree(rootVertex);
 }
 
@@ -142,7 +142,7 @@ void GraphComponent::calculateSpanningTree(Vertex *rootVertex) {
     vertices.push_back(rootVertex);
     spanningTreeVertices.push_back(rootVertex);
 
-    while (vertices.size() != 0) {
+    while (!vertices.empty()) {
         Vertex *vertex = vertices[0];
         vertices.pop_front();
 

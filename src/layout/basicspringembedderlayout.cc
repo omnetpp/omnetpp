@@ -395,7 +395,7 @@ int BasicSpringEmbedderLayout::doColoring()
         if (n->color!=-1) continue;  // already assigned
 
         // breadth-width search to color all connected nodes (transitive closure)
-        Assert(todoList.size()==0);
+        Assert(todoList.empty());
         todoList.push_back(n); // start at this node
         while (!todoList.empty())
         {

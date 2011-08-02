@@ -106,7 +106,7 @@ struct ValueAndIndex
 
 void XYDataset::sortColumnsAccordingToFirstRowMean()
 {
-    if (values.size() > 0)
+    if (!values.empty())
     {
         vector<ValueAndIndex> vals;
         int firstRow = rowOrder[0];
@@ -336,7 +336,7 @@ IDVectorVector DataSorter::prepareScatterPlot(const IDList& scalars, const char 
 
     // form groups (IDVectors) by moduleName+scalarName
     IDVectorVector vv = doGrouping(scalars, sameGroupModuleScalar);
-    if (vv.size()==0)
+    if (vv.empty())
         return vv;
 
     // order each group by fileRef+runNumber, and insert "null" elements (id=-1) so that

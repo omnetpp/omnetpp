@@ -38,7 +38,7 @@ void StarTreeEmbedding::calculateCenter()
 
 void StarTreeEmbedding::calculateCenterRecursive(Vertex *vertex)
 {
-    if (vertex->spanningTreeChildren.size() == 0)
+    if (vertex->spanningTreeChildren.empty())
     {
         // position a vertex without children
         vertex->starTreeRadius = vertex->rc.rs.getDiagonalLength() / 2;
@@ -145,7 +145,7 @@ void StarTreeEmbedding::rotateCenter()
 
 void StarTreeEmbedding::rotateCenterRecursive(Vertex *vertex)
 {
-    if (vertex->spanningTreeChildren.size() != 0)
+    if (!vertex->spanningTreeChildren.empty())
     {
         if (vertex->spanningTreeParent)
         {

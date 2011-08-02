@@ -73,7 +73,7 @@ void DataflowManager::connect(Port *src, Port *dest)
 
 void DataflowManager::execute(IProgressMonitor *monitor)
 {
-    if (nodes.size()==0)
+    if (nodes.empty())
         return;
 
     //

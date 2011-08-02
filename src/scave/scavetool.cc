@@ -353,7 +353,7 @@ int vectorCommand(int argc, char **argv)
                         for (int i=0; i<vectorIDList.size(); i++)
                         {
                             ID vectorID = vectorIDList.get(i);
-                            bool computed = opt_filterList.size() > 0;
+                            bool computed = !opt_filterList.empty();
                             const VectorResult& vector = resultFileManager.getVector(vectorID);
                             string name = *vector.nameRef;
                             string descr = *vector.nameRef + "; "

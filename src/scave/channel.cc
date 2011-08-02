@@ -28,7 +28,7 @@ Channel::Channel()
 
 const Datum *Channel::peek() const
 {
-    if (buffer.size()==0)
+    if (buffer.empty())
         return NULL;
     return &(buffer.front());
 }

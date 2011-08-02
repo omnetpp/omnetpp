@@ -1579,7 +1579,7 @@ void EnvirBase::getRNGMappingFor(cComponent *component)
     cConfigurationEx *cfg = getConfigEx();
     std::string componentFullPath = component->getFullPath();
     std::vector<const char *> suffixes = cfg->getMatchingPerObjectConfigKeySuffixes(componentFullPath.c_str(), "rng-*"); // CFGID_RNG_K
-    if (suffixes.size()==0)
+    if (suffixes.empty())
         return;
 
     // extract into tmpmap[]

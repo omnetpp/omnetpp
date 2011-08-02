@@ -572,7 +572,7 @@ bool FilteredEventLog::isCauseOfTracedEvent(IEvent *causeEvent)
     //printf("Checking if %ld is cause of %ld\n", causeEvent->getEventNumber(), tracedEventNumber);
 
     eventnumber_t causeEventNumber = causeEvent->getEventNumber();
-    while (unseenTracedEventCauseEventNumbers.size() > 0 && unseenTracedEventCauseEventNumbers.front() >= causeEventNumber) {
+    while (!unseenTracedEventCauseEventNumbers.empty() && unseenTracedEventCauseEventNumbers.front() >= causeEventNumber) {
         eventnumber_t unseenTracedEventCauseEventNumber = unseenTracedEventCauseEventNumbers.front();
         unseenTracedEventCauseEventNumbers.pop_front();
         IEvent *unseenTracedEventCauseEvent = eventLog->getEventForEventNumber(unseenTracedEventCauseEventNumber);
@@ -614,7 +614,7 @@ bool FilteredEventLog::isConsequenceOfTracedEvent(IEvent *consequenceEvent)
 
     // like isCauseOfTracedEvent(), but searching from the opposite direction
     eventnumber_t consequenceEventNumber = consequenceEvent->getEventNumber();
-    while (unseenTracedEventConsequenceEventNumbers.size() > 0 && unseenTracedEventConsequenceEventNumbers.front() <= consequenceEventNumber) {
+    while (!unseenTracedEventConsequenceEventNumbers.empty() && unseenTracedEventConsequenceEventNumbers.front() <= consequenceEventNumber) {
         eventnumber_t unseenTracedEventConsequenceEventNumber = unseenTracedEventConsequenceEventNumbers.front();
         unseenTracedEventConsequenceEventNumbers.pop_front();
         IEvent *unseenTracedEventConsequenceEvent = eventLog->getEventForEventNumber(unseenTracedEventConsequenceEventNumber);

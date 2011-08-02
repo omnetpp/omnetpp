@@ -191,7 +191,7 @@ class GraphComponent {
         void calculateConnectedSubComponents();
 
         bool isEmpty() {
-            return vertices.size() == 0;
+            return vertices.empty();
         }
 
         int getVertexCount() {
