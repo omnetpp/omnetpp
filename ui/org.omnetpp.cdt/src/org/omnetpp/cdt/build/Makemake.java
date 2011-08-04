@@ -318,8 +318,8 @@ public class Makemake {
         if ((options.compileForDll || options.type == Type.SHAREDLIB) && !StringUtils.isEmpty(options.dllSymbol))
             defines.add(options.dllSymbol+"_EXPORT");
 
-        // XP has 8K limit on line length, so we may have to use the inline file feature of nmake
-        int approximateLinkerLineLength = 500 + quoteJoin(objs).length() + quoteJoin(extraObjs).length() + 2*quoteJoin(options.libs).length() + 2*quoteJoin(libDirs).length();
+        // Windows (cmd.exe) has 8K limit on line length, so we may have to use the inline file feature of nmake
+        int approximateLinkerLineLength = 500 + estimateLength(objs) + estimateLength(extraObjs) + estimateLength(options.libs) + estimateLength(libDirs);
         boolean isLongLinkerLine = approximateLinkerLineLength > 8000;
 
         // write dependencies
@@ -468,6 +468,16 @@ public class Makemake {
                 if (MakefileTools.isGoodFolder(member))
                     collectDirs((IContainer)member, dirPath.equals(".") ? member.getName() : dirPath + "/" + member.getName(), exceptSubdirs, result);
         }
+    }
+
+    protected int estimateLength(List<String> list) {
+        int sum = 0;
+        for (String i : list) {
+            sum += i.length() + 10; // assume 10 chars for item separator and possible quoting
+            if (i.contains("$"))
+                sum += 80;  // assume expanded variables are at most 80 chars 
+        }
+        return sum;
     }
 
     protected String quoteJoin(List<String> list) {
