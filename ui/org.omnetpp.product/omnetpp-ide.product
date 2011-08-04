@@ -284,6 +284,7 @@ POSSIBILITY OF SUCH DAMAGES.
       <feature id="org.eclipse.equinox.p2.user.ui"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature"/>
       <feature id="org.eclipse.equinox.p2.extras.feature"/>
+      <feature id="org.eclipse.epp.mpc"/>
       <feature id="org.eclipse.platform"/>
       <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.gef"/>
@@ -296,10 +297,6 @@ POSSIBILITY OF SUCH DAMAGES.
       <feature id="org.eclipse.emf.edit.ui"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.jgit"/>
-      <feature id="org.eclipse.team.svn"/>
-      <feature id="org.polarion.eclipse.team.svn.connector"/>
-      <feature id="org.polarion.eclipse.team.svn.connector.svnkit15"/>
-      <feature id="org.polarion.eclipse.team.svn.connector.svnkit16"/>
    </features>
 
 
