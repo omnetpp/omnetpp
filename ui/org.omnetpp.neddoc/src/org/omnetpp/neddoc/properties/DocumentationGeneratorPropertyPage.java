@@ -283,6 +283,7 @@ public class DocumentationGeneratorPropertyPage
             content = replaceDoxygenConfigurationEntry(content, "OUTPUT_DIRECTORY", "AUTO");
             content = replaceDoxygenConfigurationEntry(content, "FULL_PATH_NAMES", "NO");
             content = replaceDoxygenConfigurationEntry(content, "DETAILS_AT_TOP", "YES");
+            content = replaceDoxygenConfigurationEntry(content, "JAVADOC_AUTOBRIEF", "YES");
             content = replaceDoxygenConfigurationEntry(content, "EXTRACT_ALL", "YES");
             content = replaceDoxygenConfigurationEntry(content, "EXTRACT_PRIVATE", "YES");
             content = replaceDoxygenConfigurationEntry(content, "QUIET", "YES");
