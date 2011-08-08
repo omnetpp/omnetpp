@@ -32,7 +32,7 @@
 NAMESPACE_BEGIN
 
 #define MIN_BUFFER_MEMORY    (1024*1024)
-#define DEFAULT_MEMORY_LIMIT "16MB"
+#define DEFAULT_MEMORY_LIMIT "16MiB"
 
 /**
  * cFileOutputManager that writes vector data in chunks and

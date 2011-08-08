@@ -36,15 +36,21 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial unit
     { "ns",   1e-9, "s",    "nanosecond" },
     { "ps",  1e-12, "s",    "picosecond" },
     { "bps",     1, "bps",  "bit/sec" },
-    { "Kbps",  1e3, "bps",  "kilobit/sec" },
+    { "kbps",  1e3, "bps",  "kilobit/sec" },
     { "Mbps",  1e6, "bps",  "megabit/sec" },
     { "Gbps",  1e9, "bps",  "gigabit/sec" },
     { "Tbps", 1e12, "bps",  "terabit/sec" },
     { "B",       1, "B",    "byte" },
-    { "KB",      K, "B",    "kilobyte" },
-    { "MB",    K*K, "B",    "megabyte" },
-    { "GB",  K*K*K, "B",    "gigabyte" },
-    { "TB",K*K*K*K, "B",    "terabyte" },
+    { "KiB",     K, "B",    "kibibyte" },
+    { "MiB",   K*K, "B",    "mebibyte" },
+    { "GiB", K*K*K, "B",    "gibibyte" },
+    { "TiB",K*K*K*K,"B",    "tebibyte" },
+/* TODO Decimal units to be added in 5.0; also update convertUnit() then:
+    { "kB"     1e3, "B",    "kilobyte" },
+    { "MB",    1e6, "B",    "megabyte" },
+    { "GB",    1e9, "B",    "gigabyte" },
+    { "TB",   1e12, "B",    "terabyte" },
+*/
     { "b",       1, "b",    "bit" },
     { "m",       1, "m",    "meter" },
     { "km",    1e3, "m",    "kilometer" },
@@ -223,9 +229,23 @@ double UnitConversion::convertUnit(double d, const char *unit, const char *targe
 
     double factor = getConversionFactor(unit, targetUnit);
     if (factor == 0)
-        throw opp_runtime_error("Cannot convert unit %s to %s",
+    {
+        // could not convert: issue appropriate message
+        const char *explanation = "";
+
+        // Kbps -> kbps (renamed in OMNeT++ 4.2)
+        if (unit && strcmp(unit, "Kbps")==0)
+            explanation = ": please use kbps instead of Kbps";
+
+        // KB -> KiB, MB -> MiB, GB -> GiB, TB -> TiB (renamed in OMNeT++ 4.2)
+        if (unit && strlen(unit)==2 && unit[1]=='B' && strstr("kB KB MB GB TB", unit)!=NULL)
+            explanation = ": please use IEC binary prefixes for byte multiples: KiB, MiB, GiB, TiB";
+
+        throw opp_runtime_error("Cannot convert unit %s to %s%s",
                 (opp_isempty(unit) ? "none" : getUnitDescription(unit).c_str()),
-                (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()));
+                (opp_isempty(targetUnit) ? "none" : getUnitDescription(targetUnit).c_str()),
+                explanation);
+    }
     return factor * d;
 }
 

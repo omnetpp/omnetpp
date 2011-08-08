@@ -1,7 +1,11 @@
 2011-05-06  Andras Varga
 
-	* unitconversion.cc: added "mps" (m/s) and "kmph" (km/h) as recognized
-	units.
+	* unitconversion.cc: addressed bug #369:
+	- added "mps" (m/s) and "kmph" (km/h) as recognized units.
+	- several units have been renamed to be more standards compliant:
+	  Kbps -> kbps, KB -> KiB, MB -> MiB, GB -> GiB, TB -> TiB;
+	- added explanations to "Cannot convert" error messages about the
+	renamed units
 
 2011-05-06  Andras Varga
 
