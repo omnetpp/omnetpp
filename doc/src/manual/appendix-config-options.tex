@@ -38,7 +38,7 @@ cmdenv-event-banners=<bool>, default:true; per-run setting
 cmdenv-express-mode=<bool>, default:true; per-run setting
     Selects ``normal'' (debug/trace) or ``express'' mode.
 
-cmdenv-extra-stack=<double>, unit="B", default:8KB; global setting
+cmdenv-extra-stack=<double>, unit="B", default:8KiB; global setting
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Cmdenv.
 
@@ -219,7 +219,7 @@ output-vector-precision=<int>, default:14; per-run setting
     effect on the "time" column of output vectors, which are represented as
     fixed-point numbers and always get recorded precisely.
 
-output-vectors-memory-limit=<double>, unit="B", default:16MB; per-run setting
+output-vectors-memory-limit=<double>, unit="B", default:16MiB; per-run setting
     Total memory that can be used for buffering output vectors. Larger values
     produce less fragmented vector files (i.e. cause vector data to be grouped
     into larger chunks), and therefore allow more efficient processing later.
@@ -413,7 +413,7 @@ tkenv-default-run=<int>, default:0; global setting
     Specifies which run (of the default config, see tkenv-default-config) Tkenv
     should set up automatically on startup. The default is to ask the user.
 
-tkenv-extra-stack=<double>, unit="B", default:48KB; global setting
+tkenv-extra-stack=<double>, unit="B", default:48KiB; global setting
     Specifies the extra amount of stack that is reserved for each activity()
     simple module when the simulation is run under Tkenv.
 

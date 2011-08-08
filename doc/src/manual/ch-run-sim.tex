@@ -812,10 +812,10 @@ so in \ffilename{omnetpp.ini}:
 
 \begin{inifile}
 [General]
-total-stack = 2MB
+total-stack = 2MiB
 \end{inifile}
 
-There is no penalty if you set \fpar{total-stack} too high. I
+There is no performance penalty if you set \fpar{total-stack} too high. I
 recommend to set it to a few K less than the maximum process stack
 size allowed by the operating system (\fprog[ulimit]{ulimit -s}; see
 next section).
@@ -832,17 +832,17 @@ to display reserved stack size for executables.
 
 You need a low reserved stack size because the Win32 Fiber API,
 which is the mechanism underlying \ffunc{activity()}, uses
-this number as the coroutine stack size, and with 1MB being the default,
-it is easy to run out of the 2GB possible address space (2GB/1MB=2048).
+this number as the coroutine stack size, and with 1MiB being the default,
+it is easy to run out of the 2GiB possible address space (2GiB/1MiB=2048).
 
 A more detailed explanation follows.
-Each fiber has its own stack, by default 1MB (this is the ``reserved''
+Each fiber has its own stack, by default 1MiB (this is the ``reserved''
 stack space -- i.e. reserved in the address space, but not the full
-1MB is actually ``committed'', i.e. has physical memory assigned to it).
-This means that a 2GB address space will run out after 2048 fibers,
+1MiB is actually ``committed'', i.e. has physical memory assigned to it).
+This means that a 2GiB address space will run out after 2048 fibers,
 which is way too few. (In practice, you won't even be able to create
 this many fibers, because physical memory is also a limiting factor).
-Therefore, the 1MB reserved stack size (RSS) must be set to a smaller
+Therefore, the 1MiB reserved stack size (RSS) must be set to a smaller
 value: the coroutine stack size requested for the module, plus
 the \ttt{extra-stack-kb} amount for Cmdenv/Tkenv -- which makes
 about 16K with Cmdenv, and about 48K when using Tkenv.
@@ -870,7 +870,7 @@ On Unix, if you set the total stack size higher, you may get a
 segmentation fault during network setup\index{segmentation fault} (or
 during execution if you use dynamically created modules), for exceeding
 the operating system limit for maximum stack size. For example, in
-Linux 2.4.x, the default stack limit is 8192K (that is, 8MB). The
+Linux 2.4.x, the default stack limit is 8192K (that is, 8MiB). The
 \fprog{ulimit} shell command can be used to modify the
 resource limits, and you can raise the allowed maximum stack size
 up to 64M.

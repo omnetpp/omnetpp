@@ -2435,7 +2435,7 @@ value.setUnit(NULL);          // ==> 180 (clears the unit)
 value.set(500,"ms");          // ==> 500ms
 value.convertTo("s");         // ==> 0.5s
 double us = value.doubleValueInUnit("us"); // ==> 500000 (value is unchanged)
-double bps = cNEDValue::convertUnit(128, "Kbps", "bps"); // ==> 128000
+double bps = cNEDValue::convertUnit(128, "kbps", "bps"); // ==> 128000
 
 // getting persistent measurement unit strings
 const char *unit = argv[0].stringValue(); // cannot be trusted to persist
