@@ -26,7 +26,7 @@ USING_NAMESPACE
 
 const double K = 1024.0;
 
-UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yard,kmph, mps, mph
+UnitConversion::UnitDesc UnitConversion::unitTable[] = {  // note: imperial units (mile,foot,yard,etc.) intentionally left out
     { "s",       1, "s",    "second" },
     { "d",   86400, "s",    "day" },
     { "h",    3600, "s",    "hour" },
@@ -67,6 +67,8 @@ UnitConversion::UnitDesc UnitConversion::unitTable[] = {    //TODO mile,foot,yar
     { "A",       1, "A",    "ampere" },
     { "mA",   1e-3, "A",    "milliampere" },
     { "uA",   1e-6, "A",    "microampere" },
+    { "mps",     1, "mps",  "meter/sec" },
+    { "kmph",1/3.6, "mps",  "kilometer/hour" },
     // this many should be enough
     { NULL,      0, NULL,   NULL }
 };

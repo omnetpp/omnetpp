@@ -1,5 +1,10 @@
 2011-05-06  Andras Varga
 
+	* unitconversion.cc: added "mps" (m/s) and "kmph" (km/h) as recognized
+	units.
+
+2011-05-06  Andras Varga
+
 	* fileutil.cc: fix bug #284: isDirectory() should not throw exception
 	if file or directory does not exist
 
