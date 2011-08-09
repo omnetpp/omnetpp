@@ -80,6 +80,7 @@
 
 typedef int (*intfunc_t)();
 extern "C" int evMain(int argc, char *argv[]);
+const char *loadLibErrorMessage = NULL;  // contains the error message after calling oppLoadLibrary()
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
@@ -139,7 +140,7 @@ static std::string makeLibFileName(const char *libname, const char *prefix, cons
 #include <windows.h>
 #include <psapi.h>
 #include <process.h>
-
+#include "platdep/platmisc.h"
 
 typedef HMODULE libhandle_t;
 
@@ -151,6 +152,9 @@ static libhandle_t oppLoadLibrary(const char *libname)
      std::string libFileName = makeLibFileName(libname, "", ".dll"); // Visual C++
 # endif
     HMODULE handle = LoadLibrary((char *)libFileName.c_str());
+    loadLibErrorMessage = NULL;
+    if (handle == NULL)
+        loadLibErrorMessage = opp_getWindowsError(GetLastError()).c_str();
     return handle;
 }
 
@@ -207,7 +211,11 @@ typedef void *libhandle_t;
 static libhandle_t oppLoadLibrary(const char *libname)
 {
     std::string libFileName = makeLibFileName(libname, "lib", SHARED_LIB_SUFFIX);
-    return dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL);
+    libhandle_t handle = dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL);
+    loadLibErrorMessage = NULL;
+    if (handle == NULL)
+        loadLibErrorMessage = dlerror();
+    return handle;
 }
 
 static void *getSymbol(libhandle_t handle, const char *symbol)
@@ -259,16 +267,13 @@ bool needsDebugSimkernel(int argc, char *argv[])
             }
 
             libhandle_t handle = oppLoadLibrary(libname);
-            if (!handle)
-            {
-                fprintf(stderr, "<!> Error: opp_run: Could not load %s\n", libname);
-                exit(1);
-            }
+            if (!handle && loadLibErrorMessage)
+                fprintf(stderr, "<!> Warning: opp_run: %s\n", loadLibErrorMessage);
 
-            // detect whether oppsim is release
-            if (getSymbol(handle, "__is_release_oppsim__"))
+            // Detect whether oppsim is release. If it was not loaded correctly, assume it is debug.
+            if (handle && getSymbol(handle, "__is_release_oppsim__"))
             {
-                // release kernel. oppsim must be reloaded later by opp_run_release
+                // Release kernel. oppsim must be reloaded later by opp_run_release
                 putenv((char *)"__OPPSIM_LOADED__=no");
                 return false;
             }
