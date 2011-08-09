@@ -26,8 +26,6 @@ L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
 #
 all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
-#	echo "#!/bin/sh" >opp_configfilepath && echo "echo $(OMNETPP_ROOT)/Makefile.inc" >>opp_configfilepath
-	chmod +x opp_makemake opp_test opp_makedep splitvec opp_configfilepath opp_runall omnetpp omnest
 	if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
@@ -47,6 +45,7 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	cp omnetpp $(OMNETPP_BIN_DIR)
 	cp omnest $(OMNETPP_BIN_DIR)
+	chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test $(OMNETPP_BIN_DIR)/opp_makedep $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog opp_lcg32_seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog abspath$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	@# next line is for samples/rundemo

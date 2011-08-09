@@ -56,8 +56,8 @@ $O/%.o: %.cc
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool$(EXE_SUFFIX)
 	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
-	chmod +x opp_msgc
 	cp opp_msgc $(OMNETPP_BIN_DIR)
+	chmod +x $(OMNETPP_BIN_DIR)/opp_msgc
 
 $O/nedtool$(EXE_SUFFIX): $O/nedtool.o $L/$(LIBNAME)$(LIB_SUFFIX)
 	$(CXX) $(LDFLAGS) -o $O/nedtool$(EXE_SUFFIX) $O/nedtool.o -L$L -loppnedxml$D -loppcommon$D $(XML_LIBS)
