@@ -349,9 +349,9 @@ ifdef::OMNEST[]
 
 ==== SystemC
 
-The SystemC integration component with examples is found under the
-`extensions/systemc` directory of the @OMNETPP@ installation. Please
-follow the instructions in the `README` file.
+To enable SystemC integration, add SYSTEMC=yes to the configure.user
+file, run 'configure' and then rebuild your project. You can check the
+systemc examples in the samples/systemc-embedding directory.
 
 endif::OMNEST[]
 
