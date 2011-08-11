@@ -42,13 +42,13 @@ This will bring up the 'Install' dialog.
 image::images/installer.png[align="center",scaledwidth="75%"]
 
 At the top of the dialog you can choose an Eclipse software repository to
-install software from. Select 'Galileo' from the list.
+install software from. Select 'Indigo' from the list.
 
-If 'Galileo' is not present, add it: Click the 'Add...' button, then fill in
+If 'Indigo' is not present, add it: Click the 'Add...' button, then fill in
 the dialog that comes up:
 
-* Name: `Galileo`
-* Location: `http://download.eclipse.org/releases/galileo`
+* Name: `Indigo`
+* Location: `http://download.eclipse.org/releases/indigo`
 
 Then click OK.
 
