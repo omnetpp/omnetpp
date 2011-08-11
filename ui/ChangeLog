@@ -1,11 +1,12 @@
 2011-05-27 Rudolf Hornig
 
-   * Running the simulations will show the used command line before execution.
-     Allows better understanding what command line can be used to start the
-     simulation from the console.
+   * Before running the simulations, the IDE will show the command line in
+     the console view to help you execute the same simulation from the
+     command line.
 
-   * CTRL-TAB now works on freshly opened NED files without even selecting a NED
-     file.
+   * CTRL-TAB now works on freshly opened NED files even if you do not explicitly
+     select a simple module. In this case the IDE opens the .h and .cc files
+     associated with the first simple module in the NED file.
 
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
