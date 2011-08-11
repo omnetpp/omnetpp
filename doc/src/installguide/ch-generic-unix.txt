@@ -307,24 +307,26 @@ which most modern distributions do.
 
 ==== Akaroa
 
-Linux distributions do not contain the Akaroa package. It must be downloaded,
-compiled and installed manually before installing @OMNETPP@;.
+If you wish to use Akaroa, it must be downloaded, compiled, and installed
+manually before installing @OMNETPP@.
 
-NOTE: Akaroa 2.7.6 is supported only on Linux and Solaris platforms.
+NOTE: As of version 2.7.9, Akaroa only supports Linux and Solaris.
 
-Download Akaroa 2.7.6 from:
-  http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download/
+Download Akaroa 2.7.9 from:
+  http://www.cosc.canterbury.ac.nz/research/RG/net_sim/simulation_group/akaroa/download.chtml
 
 Extract it into a temporary directory:
 
-  $ tar xfz akaroa-2.7.6.tar.gz
+  $ tar xfz akaroa-2.7.9.tar.gz
 
-Unfortunately, this version does not compile properly with gcc-4.4. A patch is available
-in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change
-to the Akaroa root directory and apply the patch to the sources.
-
-  $ cd akaroa-2.7.6
-  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch
+////
+// Unfortunately, this version does not compile properly with gcc-4.4. A patch is available
+// in the `<omnetpproot>/contrib/akaroa` directory to fix the compilation problems. Change
+// to the Akaroa root directory and apply the patch to the sources.
+//
+//  $ cd akaroa-2.7.6
+//  $ patch -p1 -i <omnetpproot>/contrib/akaroa/akaroa-2.7.6-gcc-4.4.patch
+////
 
 Configure, build and install the Akaroa library. By default, it will be installed into the
 `/usr/local/akaroa` directory.

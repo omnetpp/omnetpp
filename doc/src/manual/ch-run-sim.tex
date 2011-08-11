@@ -742,29 +742,23 @@ global data analyser.
 Akaroa's RNG is a Combined Multiple Recursive pseudorandom
 number generator (CMRG) with a period of approximately $2^{191}$
 random numbers, and provides a unique stream of random numbers
-for every simulation engine. It is vital to obtain random numbers
-from Akaroa: otherwise, all simulation processes would run with the same
-RNG seeds, and produce exactly the same results!
+for every simulation engine. 
+
+\begin{note}
+It is vital that you obtain random numbers from Akaroa; otherwise,
+all simulation processes will run with the same RNG seeds, and
+produce exactly the same results.
+\end{note}
 
 Then you need to specify which output vectors you want to
-be under Akaroa control. By default, all output vectors are under Akaroa
-control; the
-
-\begin{inifile}
-<modulename>.<vectorname>.with-akaroa = false
-\end{inifile}
-
-setting can be used to make Akaroa ignore specific vectors.
-You can use the \ttt{*}, \ttt{**} wildcards here (see
-section \ref{sec:ch-config-sim:wildcards}). For example,
-if you only want a few vectors be placed under Akaroa,
-you can use the following trick:
+be under Akaroa control (by default, none of them are).
+You can use the \ttt{*}, \ttt{**} wildcards (see
+section \ref{sec:ch-config-sim:wildcards}) to
+place certain vectors under Akaroa control.
 
 \begin{inifile}
 <modulename>.<vectorname1>.with-akaroa = true
 <modulename>.<vectorname2>.with-akaroa = true
-...
-**.*.with-akaroa = false  # catches everything not matched above
 \end{inifile}
 
 

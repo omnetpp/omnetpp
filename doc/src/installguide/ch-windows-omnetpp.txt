@@ -196,7 +196,7 @@ compiler and linker options for models in case they need it.
 
 ==== Akaroa
 
-Akaroa 2.6.7, which is the latest version at the time of writing, does not
+Akaroa 2.7.9, which is the latest version at the time of writing, does not
 support Windows. You may try to port it using the porting guide from the
 Akaroa distribution.
 
