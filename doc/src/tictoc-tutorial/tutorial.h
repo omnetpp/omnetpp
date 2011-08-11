@@ -141,7 +141,7 @@ Create the following very simple omnetpp.ini:
 
 \code
 [General]
-network = tictoc1
+network = Tictoc1
 \endcode
 
 tictoc2 and further steps will all share the following omnetpp.ini:
