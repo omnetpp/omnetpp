@@ -58,6 +58,10 @@ public class ProjectFeaturesHandler extends AbstractHandler {
             if ((sel != null) && (sel instanceof IStructuredSelection))
                 selection = ((IStructuredSelection) sel).getFirstElement();
         }
+        if (selection == null) {
+            IEditorPart activeEditor = workbenchPage == null ? null : workbenchPage.getActiveEditor();
+            selection = activeEditor == null ? null : activeEditor.getEditorInput();
+        }
         if (selection == null)
             return null;
         if (!(selection instanceof IAdaptable))
