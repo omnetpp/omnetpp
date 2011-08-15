@@ -7,6 +7,7 @@
 
 package org.omnetpp.ned.model.ui;
 
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 
@@ -21,6 +22,7 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
+import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.pojo.*;
 
@@ -30,6 +32,7 @@ import org.omnetpp.ned.model.pojo.*;
  * @author rhornig
  */
 public class NedModelLabelProvider extends LabelProvider {
+    private static NedModelLabelProvider instance;
 
 	@Override
     public String getText(Object obj) {
@@ -177,4 +180,13 @@ public class NedModelLabelProvider extends LabelProvider {
 
         return image;
 	}
+
+    /**
+     * Returns the default label/icon provider for NED model trees
+     */
+    public static ILabelProvider getInstance() {
+        if (instance == null)
+            instance = new NedModelLabelProvider();
+        return instance;
+    }
 }

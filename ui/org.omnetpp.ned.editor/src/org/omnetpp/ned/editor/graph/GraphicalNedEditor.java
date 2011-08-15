@@ -135,7 +135,6 @@ import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPartFactory;
 import org.omnetpp.ned.editor.graph.properties.NedPropertySheetPage;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
 import org.omnetpp.ned.model.ex.NedElementUtilEx;
 import org.omnetpp.ned.model.ex.NedFileElementEx;
@@ -151,6 +150,7 @@ import org.omnetpp.ned.model.notification.NedFileRemovedEvent;
 import org.omnetpp.ned.model.notification.NedModelChangeEvent;
 import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 
 /**
@@ -794,7 +794,7 @@ public class GraphicalNedEditor
 		String hoverText = "";
 
 		// brief
-		hoverText += "<b>" + StringUtils.quoteForHtml(NedTreeUtil.getNedModelLabelProvider().getText(element)) + "</b>\n";
+		hoverText += "<b>" + StringUtils.quoteForHtml(NedModelLabelProvider.getInstance().getText(element)) + "</b>\n";
 
 		//debug code:
 		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();

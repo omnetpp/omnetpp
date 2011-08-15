@@ -26,7 +26,6 @@ import org.omnetpp.ned.editor.graph.parts.policies.NedComponentEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTreeContainerEditPolicy;
 import org.omnetpp.ned.editor.graph.parts.policies.NedTreeEditPolicy;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ChannelElementEx;
 import org.omnetpp.ned.model.ex.ChannelInterfaceElementEx;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
@@ -35,6 +34,7 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.INedModelProvider;
 import org.omnetpp.ned.model.ui.NedModelContentProvider;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * EditPart for the NED Outline view.
@@ -108,8 +108,8 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
     @Override
     protected void refreshVisuals() {
         if (getWidget() instanceof Tree) return;
-    	setWidgetImage(NedTreeUtil.getNedModelLabelProvider().getImage(getModel()));
-    	setWidgetText(NedTreeUtil.getNedModelLabelProvider().getText(getModel()));
+    	setWidgetImage(NedModelLabelProvider.getInstance().getImage(getModel()));
+    	setWidgetText(NedModelLabelProvider.getInstance().getText(getModel()));
     }
 
     /**

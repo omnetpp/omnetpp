@@ -1350,7 +1350,7 @@ public class PropertiesDialog extends TrayDialog {
             Arrays.sort(submoduleNames);
             String[] submoduleLabels = new String[submoduleNames.length];
             for (int i=0; i<submoduleLabels.length; i++)
-                submoduleLabels[i] = NedTreeUtil.getNedModelLabelProvider().getText(submodules.get(submoduleNames[i]));
+                submoduleLabels[i] = NedModelLabelProvider.getInstance().getText(submodules.get(submoduleNames[i]));
             submoduleNames = (String[]) ArrayUtils.add(submoduleNames, 0, STR_PARENTMODULE);
             submoduleLabels = (String[]) ArrayUtils.add(submoduleLabels, 0, STR_PARENTMODULE);
             connSrcModuleField.setItems(submoduleNames, submoduleLabels);

@@ -17,13 +17,13 @@ import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
-import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver.IPredicate;
 import org.omnetpp.ned.model.notification.INedChangeListener;
 import org.omnetpp.ned.model.notification.NedModelEvent;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * NED type selection dialog. It can offer types from all projects, or alternatively, 
@@ -75,7 +75,7 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
         @Override
         public Image getImage(Object element) {
             INedTypeInfo nedType = (INedTypeInfo) element;
-            return NedTreeUtil.getNedModelLabelProvider().getImage(nedType.getNedElement());
+            return NedModelLabelProvider.getInstance().getImage(nedType.getNedElement());
         }
 
         @Override

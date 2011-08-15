@@ -36,6 +36,7 @@ import org.omnetpp.ned.model.notification.NedStructuralChangeEvent;
 import org.omnetpp.ned.model.pojo.CommentElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * The default implementation of INedElement.
@@ -474,7 +475,7 @@ public abstract class NedElement extends PlatformObject implements INedElement, 
     }
 
     public String debugString() {
-        return NedTreeUtil.getNedModelLabelProvider().getText(this) + " from " + getSourceLocation();
+        return NedModelLabelProvider.getInstance().getText(this) + " from " + getSourceLocation();
     }
 
     public INedElement dup() {

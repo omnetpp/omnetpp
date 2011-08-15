@@ -44,7 +44,6 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
@@ -52,6 +51,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * Displays the inheritance tree of a NED type.
@@ -87,14 +87,14 @@ public class NedInheritanceView extends AbstractModuleView {
 			public Image getImage(Object element) {
 				if (element instanceof GenericTreeNode)
 					element = ((GenericTreeNode)element).getPayload();
-				return NedTreeUtil.getNedModelLabelProvider().getImage(element);
+				return NedModelLabelProvider.getInstance().getImage(element);
 			}
 
 			@Override
 			public String getText(Object element) {
                 if (element instanceof GenericTreeNode)
                     element = ((GenericTreeNode)element).getPayload();
-                return NedTreeUtil.getNedModelLabelProvider().getText(element);
+                return NedModelLabelProvider.getInstance().getText(element);
 			}
 		});
 		treeViewer.setContentProvider(new GenericTreeContentProvider());

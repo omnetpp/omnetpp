@@ -20,11 +20,11 @@ import org.omnetpp.common.wizard.IWidgetAdapterExt;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.NedElementConstants;
-import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * A control for selecting a gate of a NED module type. If the module
@@ -95,7 +95,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
             if (comboViewer == null) {
                 comboViewer = new ComboViewer(this, SWT.READ_ONLY|SWT.BORDER);
                 comboViewer.setContentProvider(new ArrayContentProvider());
-                comboViewer.setLabelProvider(NedTreeUtil.getNedModelLabelProvider());
+                comboViewer.setLabelProvider(NedModelLabelProvider.getInstance());
                 layout(true);
             }
             

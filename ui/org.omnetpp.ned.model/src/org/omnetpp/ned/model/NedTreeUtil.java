@@ -9,7 +9,6 @@ package org.omnetpp.ned.model;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.engine.NED1Generator;
@@ -30,7 +29,6 @@ import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.pojo.NedElementTags;
 import org.omnetpp.ned.model.pojo.NedFileElement;
-import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
  * Utility functions working on NedElement trees. Conversions, serialization, dumping of trees.
@@ -38,8 +36,6 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  * @author rhornig, andras
  */
 public class NedTreeUtil {
-    private static ILabelProvider nedModelLabelProvider = new NedModelLabelProvider();
-
     /**
 	 * Generate NED code from the given NedElement tree. The root node
 	 * does not have to be NedFileElement, any subtree can be converted
@@ -437,13 +433,6 @@ public class NedTreeUtil {
         if (tree1==null || tree2==null)
             return false;
         return tree1.getNedSource().equals(tree2.getNedSource());
-    }
-
-    /**
-     * Returns the default label/icon provider for ned model trees
-     */
-    public static ILabelProvider getNedModelLabelProvider() {
-        return nedModelLabelProvider;
     }
 
 }
