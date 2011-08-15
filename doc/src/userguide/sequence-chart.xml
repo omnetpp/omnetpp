@@ -45,7 +45,9 @@
       The INI File Editor in the &Omnetpp; IDE provides a group of widgets in the
       ``Output Files'' section to configure automatic eventlog
       recording. To enable it, simply put a checkmark next to its checkbox, or insert the
-      line <screen>record-eventlog = true</screen> into the INI file.
+      line <screen>record-eventlog = true</screen> into the INI file. Additionally, you can use
+      the ``--record-evenlog'' command line option or just click the record button
+      on the Tkenv toolbar before starting the simulation.
     </para>
     <picture file="pictures/INI-Eventlog.png">INI file eventlog configuration</picture>
     <para>

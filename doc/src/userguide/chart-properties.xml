@@ -1,45 +1,50 @@
 <?xml version="1.0"?>
-<!DOCTYPE chapter SYSTEM "custom-docbook.dtd">
+<!DOCTYPE table PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+    "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <table>
-  <tgroup id='BarProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+  <tgroup id='HistogramChartProperties' cols='2' rowsep='1'>
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
+    <row><entry spanname='category'>Plot</entry></row>
       <row>
-        <entry spanname='category'>Bars</entry>
+        <entry>bar type</entry>
+        <entry>Histogram drawing method.</entry>
       </row>
       <row>
-        <entry>color</entry>
-        <entry>Color of the bar. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.
-        </entry>
+        <entry>bar baseline</entry>
+        <entry>Baseline of the bars.</entry>
+      </row>
+      <row>
+        <entry>histogram data type</entry>
+        <entry>Histogram data. Counts, probability density and cumulative density can be displayed.</entry>
+      </row>
+      <row>
+        <entry>show overflow cell</entry>
+        <entry>Show over/underflow cells.</entry>
       </row>
     </tbody>
   </tgroup>
   <tgroup id='ChartProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
-      <row>
-        <entry spanname='category'>Main</entry>
-      </row>
+    <row><entry spanname='category'>Main</entry></row>
       <row>
         <entry>antialias</entry>
         <entry>Enables antialising.</entry>
       </row>
       <row>
         <entry>caching</entry>
-        <entry>Enables caching. Caching makes scrolling faster, but sometimes the plot might not be
-          correct.</entry>
+        <entry>Enables caching. Caching makes scrolling faster, but sometimes the plot might not be correct.</entry>
       </row>
       <row>
         <entry>background color</entry>
         <entry>Background color of the chart.</entry>
       </row>
-      <row>
-        <entry spanname='category'>Titles</entry>
-      </row>
+    <row><entry spanname='category'>Titles</entry></row>
       <row>
         <entry>graph title</entry>
         <entry>Main title of the chart.</entry>
@@ -68,9 +73,7 @@
         <entry>x labels rotated by</entry>
         <entry>Rotates the tick labels of the horizontal axis by the given angle (in degrees).</entry>
       </row>
-      <row>
-        <entry spanname='category'>Axes</entry>
-      </row>
+    <row><entry spanname='category'>Axes</entry></row>
       <row>
         <entry>y axis min</entry>
         <entry>Crops the input below this y value.</entry>
@@ -87,9 +90,7 @@
         <entry>grid</entry>
         <entry>Add grid lines to the plot.</entry>
       </row>
-      <row>
-        <entry spanname='category'>Legend</entry>
-      </row>
+    <row><entry spanname='category'>Legend</entry></row>
       <row>
         <entry>display</entry>
         <entry>Displays the legend.</entry>
@@ -112,51 +113,39 @@
       </row>
     </tbody>
   </tgroup>
-  <tgroup id='HistogramChartProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+  <tgroup id='ChartSheetProperties' cols='2' rowsep='1'>
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
+    <row><entry spanname='category'>Main</entry></row>
       <row>
-        <entry spanname='category'>Plot</entry>
+        <entry>column count</entry>
+        <entry>Number of chart columns on the sheet</entry>
       </row>
       <row>
-        <entry>bar type</entry>
-        <entry>Histogram drawing method.</entry>
+        <entry>min chart width</entry>
+        <entry>Minimum width of individual charts</entry>
       </row>
       <row>
-        <entry>bar baseline</entry>
-        <entry>Baseline of the bars.</entry>
+        <entry>min chart height</entry>
+        <entry>Minimum height of individual charts</entry>
       </row>
       <row>
-        <entry>histogram data type</entry>
-        <entry>Histogram data. Counts, probability density and cumulative density can be displayed.
-        </entry>
-      </row>
-    </tbody>
-  </tgroup>
-  <tgroup id='HistogramProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
-    <tbody>
-      <row>
-        <entry spanname='category'>Histograms</entry>
-      </row>
-      <row>
-        <entry>hist color</entry>
-        <entry>Color of the bar. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.
-        </entry>
+        <entry>chart details</entry>
+        <entry>Hide or show axes, legend, title and other extra information</entry>
       </row>
     </tbody>
   </tgroup>
   <tgroup id='LineProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
+    <row><entry spanname='category'>Lines</entry></row>
       <row>
-        <entry spanname='category'>Lines</entry>
+        <entry>display name</entry>
+        <entry>Display name of the line.</entry>
       </row>
       <row>
         <entry>display line</entry>
@@ -172,31 +161,49 @@
       </row>
       <row>
         <entry>line type</entry>
-        <entry>Line drawing method. One of Linear, Pins, Dots, Points, Sample-Hold or Backward
-          Sample-Hold.</entry>
+        <entry>Line drawing method. One of Linear, Pins, Dots, Points, Sample-Hold or Backward Sample-Hold.</entry>
       </row>
       <row>
         <entry>line color</entry>
-        <entry>Color of the line. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.
-        </entry>
+        <entry>Color of the line. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.</entry>
+      </row>
+    </tbody>
+  </tgroup>
+  <tgroup id='BarProperties' cols='2' rowsep='1'>
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
+    <tbody>
+    <row><entry spanname='category'>Bars</entry></row>
+      <row>
+        <entry>color</entry>
+        <entry>Color of the bar. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.</entry>
+      </row>
+    </tbody>
+  </tgroup>
+  <tgroup id='HistogramProperties' cols='2' rowsep='1'>
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
+    <tbody>
+    <row><entry spanname='category'>Histograms</entry></row>
+      <row>
+        <entry>hist color</entry>
+        <entry>Color of the bar. Color name or #RRGGBB. Press Ctrl+Space for a list of color names.</entry>
       </row>
     </tbody>
   </tgroup>
   <tgroup id='ScalarChartProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
-      <row>
-        <entry spanname='category'>Titles</entry>
-      </row>
+    <row><entry spanname='category'>Titles</entry></row>
       <row>
         <entry>wrap labels</entry>
         <entry>If true labels are wrapped, otherwise aligned vertically.</entry>
       </row>
-      <row>
-        <entry spanname='category'>Plot</entry>
-      </row>
+    <row><entry spanname='category'>Plot</entry></row>
       <row>
         <entry>bar baseline</entry>
         <entry>Baseline of the bars.</entry>
@@ -208,20 +215,18 @@
     </tbody>
   </tgroup>
   <tgroup id='ScatterChartProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
     </tbody>
   </tgroup>
   <tgroup id='VectorChartProperties' cols='2' rowsep='1'>
-    <colspec colname='name' colwidth='1.5in' />
-    <colspec colname='description' colwidth='3*' />
-    <spanspec spanname='category' namest='name' nameend='description' align='left' />
+    <colspec colname='name' colwidth='1.5in'/>
+    <colspec colname='description' colwidth='3*'/>
+    <spanspec spanname='category' namest='name' nameend='description' align='left'/>
     <tbody>
-      <row>
-        <entry spanname='category'>Axes</entry>
-      </row>
+    <row><entry spanname='category'>Axes</entry></row>
       <row>
         <entry>x axis min</entry>
         <entry>Crops the input below this x value.</entry>

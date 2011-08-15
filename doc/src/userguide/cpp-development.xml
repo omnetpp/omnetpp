@@ -247,8 +247,48 @@
       [[opp_makemake]] to generate the makefile.</para>
   </sect1>
   <sect1>
+    <title>Project Features</title>
+    <para>Large projects - like the INET-Framework - may contain a lot of code that greatly increase the
+          complexity and compilation time of the model. On the other hand, not all the code and functionality
+          is needed for the simulation experiments, we want to run. In most cases, the model code can be
+          grouped into smaller components that are either independent of each other or there is a clear,
+          well defined dependency between them (e.g. protocols, network interface types, radio models.)
+          It would be great to be able to independenty add or remove these components to reduce the
+          project's complexity. To alleviate this problem, the IDE allows you to group your code into
+          so called 'project features' and enable or disable them as needed. Project features are
+          defined by the ``.oppfeatures'' file in your project's root directory.
+    </para>
+    <para>
+          A feature can define one or more source folders that contain its C++ code and defines also
+          the NED packages where the feature's module and channel definitions are present. The IDE
+          will automatically include or exclude the source folders from your build process as needed
+          and it will disable the corresponding NED packages if you disable the given feature.
+          Sometimes features depend on each other, e.g. a protocol implementation may depend on a
+          lower-layer protocol. Dependencies between project features can be also defined in the
+          ``.oppfeatures'' file and the IDE ensures that all requirements are met when you enable
+          a feature. Finally, you can also specify command line options that are passed to the
+          compiler or linker when the given feature is enabled. This allows you define macros
+          or symbols that help you to write conditional code to detect whether a given feature
+          is enabled.
+       <tip>
+          Be sure to check the XXX project to see how to configure your project to enable the IDE's
+          project feature support.
+       </tip>
+       <note>
+          The IDE feature support is enabled only on projects that have CDT support and that
+          contain a ``.oppfeatures'' file in the project root directory.
+       </note>
+          <picture file="pictures/CPP-Features.png">Setting project features</picture>
+       <tip>
+          If the IDE detects that your project's configuration is incosistent it will show a
+          warning message on the ``Project Features'' page of the ``Project Properties'' dialog and
+          will offer a way to automatically fix it.
+       </tip>
+    </para>
+  </sect1>
+  <sect1>
     <title>Dependent Projects</title>
-    <para> If your project uses code from other projects (i.e. you are using a library provided by an other
+    <para>If your project uses code from other projects (i.e. you are using a library provided by an other
       project like the INET Framework or the queuing library provided in the samples directory), you should
       make the project dependent on that code. This step ensures that your code is linked with the dependent
       project's output and that the NED path can be correctly set. Include files are also automatically
@@ -260,7 +300,7 @@
       this case, your project should not have any code so that compilation or linking is unnecessary. Your
       project should contain only INI and NED files and use the prebuilt simulation executable from the other
       projects.</para>
-    <picture file="pictures/CPP-ProjectReferences.png"> Setting project dependencies</picture>
+    <picture file="pictures/CPP-ProjectReferences.png">Setting project dependencies</picture>
     <note>
       To see an example of how project dependency works, check the queuenet and queueinglib examples in the
       samples' directory. Queuinglib provides a prebuilt executable file containing all simple modules while

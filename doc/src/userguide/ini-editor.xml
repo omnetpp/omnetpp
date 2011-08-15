@@ -164,7 +164,7 @@
         <title>Add Unassigned Parameters</title>
         <para>
           You can add the names of unassigned module parameters to a Config section by choosing
-          ``Add Missing keys...'' from the context menu.
+          ``Add Missing keys...'' from the context menu or pressing <keycap>Ctrl-Shift-o</keycap>.
         </para>
       </sect3>
       <sect3>
@@ -203,6 +203,10 @@
       not already open) by choosing the view from the
       ``Window | Show View''
       submenu.
+          <note>If you are working with very large NED or INI files, you may improve the performance of the editor
+              by closing all INI file related views you do not need (Parameters, Module Hierarchy and NED
+              Inheritance View).
+          </note>
     </para>
     <sect2>
       <title>Outline View</title>

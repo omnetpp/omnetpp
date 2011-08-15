@@ -86,7 +86,7 @@
     <para>
       You can switch between graphical and source editing mode by clicking the tabs at
       the bottom of the editor, or by using the
-      <keycap>Ctrl+PGUP/PGDN</keycap>
+      <keycap>ALT+PGUP/PGDN</keycap>
       key combinations. The editor will try to keep the selection during the switch. Selecting an element in a
       graphical view and then switching to text view will move the cursor to the related element in the NED
       file. When switching back to graphical view, the graphical editor will try to select the element that
@@ -133,8 +133,14 @@
       <sect3>
         <title>Creating Modules</title>
         <para> To create a module or a submodule, click on the appropriate palette item and then click where
-          you want to place the new element. Submodules can be placed only inside compound modules or networks,
-          while other types can be dropped directly into the editor window.</para>
+          you want to place the new element. Submodules can be placed only inside compound modules or networks.</para>
+      </sect3>
+      <sect3>
+        <title>Creating Types and Inner Types</title>
+        <para>To create a type or inner type inside a compound module, click on the appropriate palette item
+              in the "Types" drawer and then click where you want to place the new element. If you click on
+              the background a new top level type will be created. Clicking on an existing compound module
+              or network creates an inner type inside of that module.</para>
       </sect3>
       <sect3>
         <title>Creating and Changing Connections</title>
@@ -183,8 +189,6 @@
           You can move/resize the selected elements with the mouse. Holding down
           <keycap>SHIFT</keycap>
           during move will perform a constrained (horizontal, diagonal or vertical) move operation.
-          <keycap>CTRL</keycap>
-          + resize will resize around the object’s center.
           <keycap>SHIFT</keycap>
           + resize will keep the aspect ratio of the element.
         </para>
@@ -225,9 +229,42 @@
           submodules may appear at different locations next time the same NED file is opened.</para>
       </sect3>
       <sect3>
-        <title>Choosing an Icon for a Module</title>
-        <para> To choose an icon for a module, right-click on it and select the ``Choose an Icon...'' menu item
-          from the context menu or select the module and modify the icon property in the ``Properties View''.
+        <title>Changing a Module Property</title>
+        <para>To change a module property, right-click on it and select the ``Properties...'' menu item
+          from the context menu or select the module and modify that property in the ``Properties View''.
+          Alternatively, you can press <keycap>Ctrl+Enter</keycap> when the module is selected.
+          NED properties like name, type and vector size are available on ``General'' tab.
+          Visual properties like icon, size, color, border etc. can be set on the
+          ``Appearance'' tab. You may check how your module will look like in the preview panel
+          at the bottom of the dialog.
+          <picture file="pictures/NED-Properties.png">Editing Visual Properties</picture>
+             <note>
+                 You can select several modules at the same time and open the ``Properties'' dialog to set
+                 their common properties at the same time.
+             </note>
+        </para>
+      </sect3>
+      <sect3>
+        <title>Changing a Module Parameter</title>
+        <para>To change a module parameter, right-click on it and select the ``Parameters...'' menu item
+          from the context menu. The dialog allows you to add or remove module parameters or assign
+          value to them.
+          <picture file="pictures/NED-Parameters.png">Editing Module Parameters</picture>
+        </para>
+      </sect3>
+      <sect3>
+        <title>Renaming Modules</title>
+        <para>To rename an existing module select its context menu and choose ``Rename'' or click on an
+            already selected module a second time. You can specify a new name for the module or even turn
+            a submodule into a vector by adding [vectorsize] after its name.
+            Alternatively the name of a module can be set in the ``Properties'' dialog or can be edited by
+                pressing <keycap>F6</keycap> when the module is selected.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Exporting a Module as an Image</title>
+        <para>A module can be exported using several image formats by selecting ``Export Image...'' from the
+            module's context menu.
         </para>
       </sect3>
       <sect3>
@@ -271,22 +308,10 @@
             Creating or modifying gates
           </listitem>
           <listitem>
-            Creating or modifying inner types in compound modules
-          </listitem>
-          <listitem>
             Creating grouped and conditional connections
           </listitem>
           <listitem>
             Adding or editing properties
-          </listitem>
-          <listitem>
-            Adding or editing imports
-          </listitem>
-          <listitem>
-            Creating submodule vectors
-          </listitem>
-          <listitem>
-            Editing submodule vector size
           </listitem>
         </itemizedlist>
       </note>
@@ -339,8 +364,10 @@
         </listitem>
       </itemizedlist>
       <note>
-        <keycap>Ctrl+Shift+L</keycap>
-        pops up a window with all keyboard bindings listed.
+          <para><keycap>Ctrl+Shift+L</keycap>
+          pops up a window with all keyboard bindings listed.</para>
+          <para><keycap>Ctrl+3</keycap>
+          brings up a filtered list of all available options at this point.</para>
       </note>
       <para> The NED source is continually parsed as you type, and errors and warnings are displayed as
         markers on the editor rulers. At times when the NED text is syntactically correct, the editor has full
@@ -443,9 +470,13 @@
   </sect1>
   <sect1>
     <title>Associated Views</title>
-    <para> There are several views related to the NED editor. These views can be displayed (if not already
+    <para>There are several views related to the NED editor. These views can be displayed (if not already
       open) by choosing ``Window | Show View'' in the menu or by selecting a NED element in the graphical
-      editor and selecting ``Show In'' from the context menu.</para>
+      editor and selecting ``Show In'' from the context menu.
+          <note>If you are working with very large NED files, you may improve the performance of the editor
+              by closing all NED file related views you do not need.
+          </note>
+      </para>
     <sect2>
       <title>Outline View</title>
       <para> The ``Outline View'' allows an overview of the current NED file. Clicking on an element will
