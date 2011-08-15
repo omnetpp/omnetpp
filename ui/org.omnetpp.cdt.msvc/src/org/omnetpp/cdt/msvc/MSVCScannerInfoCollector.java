@@ -26,6 +26,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
+import org.omnetpp.common.engine.Common;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
@@ -45,12 +46,18 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
             String vcDir = MSVCEnvironmentVariableSupplier.getVCDir();
 
             List<IPath> paths = new ArrayList<IPath>();
-            if (vcDir != null ) {
-                paths.add(new Path(vcDir).append("INCLUDE"));
-                paths.add(new Path(vcDir).append("INCLUDE\\SYS"));  //XXX likely not needed
-                if (sdkDir != null) {
-                    paths.add(new Path(sdkDir).append("Include"));
-                    paths.add(new Path(sdkDir).append("Include\\gl"));
+            if (vcDir != null) {
+                // add Visual C++ predefined symbols
+                int msc_version = Common.getPEVersion(vcDir+"/bin/cl.exe"); // returns -1 on failure
+                if (msc_version != -1) { 
+                    symbols.put("_MSC_VER", String.valueOf(msc_version)+"00");
+                    symbols.put("_M_IX86", "600");  // Pentium Pro or later
+                    symbols.put("_WIN32", "1");
+
+                    // add Visual C++ and Windows SDK include path
+                    paths.add(new Path(vcDir).append("include"));
+                    if (sdkDir != null)
+                        paths.add(new Path(sdkDir).append("Include"));
                 }
             }
 
@@ -64,12 +71,6 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
                 paths.add(folder.getLocation());
             
             this.paths = paths.toArray(new IPath[]{});
-
-            // add Visual C++ predefined symbols
-            symbols.put("_M_IX86", "600");
-            symbols.put("_WIN32", "1");
-
-            symbols.put("_MSC_VER", "1400"); // FIXME use correct version number
         }
 
         public IPath[] getIncludePaths() {

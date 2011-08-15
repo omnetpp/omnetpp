@@ -15,6 +15,7 @@
 
 %include "commondefs.i"
 %include "loadlib.i"
+%include "pefileversion.i"
 %include "std_string.i"
 %include "std_vector.i"
 
@@ -50,6 +51,7 @@ std::string opp_quotestr(const char *txt);
 bool opp_needsquotes(const char *txt);
 std::string opp_quotestr_ifneeded(const char *txt);
 int strdictcmp(const char *s1, const char *s2);
+//int getPEVersion(const char *fileName);
 
 %ignore UnitConversion::parseQuantity(const char *, std::string&);
 

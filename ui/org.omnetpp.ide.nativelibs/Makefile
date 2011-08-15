@@ -46,7 +46,7 @@ ifeq ("$(JNI_LIB_SUFFIX)",".dll")
 # on mingw we dont need the lib prefix for a JNI library
 DLL = opplibs$(JNI_LIB_SUFFIX)
 # the following is needed for building JNI lib with mingw (name mangling issue)
-LDFLAGS+= -Wl,--kill-at
+LDFLAGS+= -lversion -Wl,--kill-at
 else
 DLL = $(LIB_PREFIX)opplibs$(JNI_LIB_SUFFIX)
 endif
