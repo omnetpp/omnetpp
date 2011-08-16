@@ -10,7 +10,6 @@ package org.omnetpp.ned.model.ui;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.StringUtils;
@@ -24,7 +23,21 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasDisplayString;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.pojo.*;
+import org.omnetpp.ned.model.pojo.ChannelElement;
+import org.omnetpp.ned.model.pojo.ChannelInterfaceElement;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
+import org.omnetpp.ned.model.pojo.ConnectionsElement;
+import org.omnetpp.ned.model.pojo.GateElement;
+import org.omnetpp.ned.model.pojo.GatesElement;
+import org.omnetpp.ned.model.pojo.ImportElement;
+import org.omnetpp.ned.model.pojo.ModuleInterfaceElement;
+import org.omnetpp.ned.model.pojo.NedElementTags;
+import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.pojo.ParametersElement;
+import org.omnetpp.ned.model.pojo.PropertyElement;
+import org.omnetpp.ned.model.pojo.SimpleModuleElement;
+import org.omnetpp.ned.model.pojo.SubmodulesElement;
+import org.omnetpp.ned.model.pojo.TypesElement;
 
 /**
  * Label provider for INedElement tree node. Assumes unparsed expressions.
@@ -33,6 +46,15 @@ import org.omnetpp.ned.model.pojo.*;
  */
 public class NedModelLabelProvider extends LabelProvider {
     private static NedModelLabelProvider instance;
+
+    private boolean prefixWithParent = false; // prefix names with their parent type
+
+    public NedModelLabelProvider() {
+    }
+
+    public NedModelLabelProvider(boolean prefixWithParent) {
+        this.prefixWithParent = prefixWithParent;
+    }
 
 	@Override
     public String getText(Object obj) {
@@ -53,13 +75,13 @@ public class NedModelLabelProvider extends LabelProvider {
             label = StringUtils.substringBefore(getSourceWithoutComments(model), " {");;
         }
         else if (model instanceof PropertyElement) {
-            label = StringUtils.strip(getSourceWithoutComments(model), "@;");
+            label = parentPrefixFor(model) + StringUtils.strip(getSourceWithoutComments(model), "@;");
         }
         else if (model instanceof ParamElement) {
             ParamElement node = (ParamElement)model;
             String attType = node.getAttribute(ParamElement.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
-            label += node.getName();
+            label += parentPrefixFor(node) + node.getName();
 
             if (StringUtils.isNotEmpty(node.getValue())) {
                 if (node.getIsDefault())
@@ -74,15 +96,15 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof SimpleModuleElement) {
             SimpleModuleElement node = (SimpleModuleElement)model;
-            label = node.getName() + " (simple module)";
+            label = parentPrefixFor(node) + node.getName() + " (simple module)";
         }
         else if (model instanceof CompoundModuleElementEx) {
             CompoundModuleElementEx node = (CompoundModuleElementEx)model;
-            label = node.getName() + (node.isNetwork() ? " (network)" : " (compound module)");
+            label = parentPrefixFor(node) + node.getName() + (node.isNetwork() ? " (network)" : " (compound module)");
         }
         else if (model instanceof SubmoduleElementEx) {
             SubmoduleElementEx node = (SubmoduleElementEx)model;
-            label = node.getName()+bracketizeIfNotEmpty(node.getVectorSize())+" : ";
+            label = parentPrefixFor(node) + node.getName() + bracketizeIfNotEmpty(node.getVectorSize()) + " : ";
             String likeType = node.getLikeType();
             if (likeType == null || "".equals(likeType))
                  label += node.getType();
@@ -91,20 +113,21 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         else if (model instanceof ModuleInterfaceElement) {
             ModuleInterfaceElement node = (ModuleInterfaceElement)model;
-            label = node.getName()+" (module interface)";
+            label = parentPrefixFor(node) + node.getName()+" (module interface)";
         }
         else if (model instanceof ChannelInterfaceElement) {
             ChannelInterfaceElement node = (ChannelInterfaceElement)model;
-            label = node.getName()+" (channel interface)";
+            label = parentPrefixFor(node) + node.getName()+" (channel interface)";
         }
         else if (model instanceof ChannelElement) {
             ChannelElement node = (ChannelElement)model;
-            label = node.getName() + " (channel)";
+            label = parentPrefixFor(node) + node.getName() + " (channel)";
         }
         else if (model instanceof GateElement) {
             GateElement node = (GateElement)model;
             String attType = node.getAttribute(ParamElement.ATT_TYPE);
             label = "".equals(attType) ? "" : attType+" ";
+            label += parentPrefixFor(node);
             label += node.getName();
             String vectorSizeInBrackets = bracketizeIfNotEmpty(node.getVectorSize());
             label += vectorSizeInBrackets.equals("") ? (node.getIsVector() ? "[]" : "") : vectorSizeInBrackets;
@@ -119,6 +142,35 @@ public class NedModelLabelProvider extends LabelProvider {
         }
 
         return label;
+	}
+
+	private String parentPrefixFor(INedElement node) {
+	    if (!prefixWithParent)
+	        return "";
+
+	    // produce "TypeName." or "TypeName.submoduleName." or "Typename.<conn>."
+	    String prefix = "";
+	    INedElement e = node.getParent();
+        while (e != null) {
+            if (e instanceof SubmoduleElementEx) {
+                SubmoduleElementEx ee = (SubmoduleElementEx)e;
+                if (StringUtils.isEmpty(ee.getVectorSize()))
+                    prefix = ee.getName() + ".";
+                else
+                    prefix = ee.getName() + "[].";
+            }
+            else if (e instanceof ConnectionElementEx) {
+                prefix = "<conn>.";
+            }
+            else if (e instanceof INedTypeElement) {
+                INedTypeElement ee = (INedTypeElement)e;
+                prefix = ee.getName() + "." + prefix;
+                return prefix;
+            }
+            e = e.getParent();
+        }
+        return "";
+
 	}
 
 	private static String bracketizeIfNotEmpty(String attr) {
@@ -140,7 +192,7 @@ public class NedModelLabelProvider extends LabelProvider {
 
         if (!(obj instanceof INedElement))
             return null;
-        
+
         INedElement model = (INedElement)obj;
         Image image = null;
         if (model instanceof IHasDisplayString && !(model instanceof ChannelElementEx || model instanceof ChannelInterfaceElementEx)) {

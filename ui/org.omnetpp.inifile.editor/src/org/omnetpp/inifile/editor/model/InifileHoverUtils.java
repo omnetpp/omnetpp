@@ -32,11 +32,11 @@ import org.omnetpp.inifile.editor.editors.InifileEditor;
 import org.omnetpp.inifile.editor.text.util.NedElementDetector;
 import org.omnetpp.ned.core.NedResources;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.NedTreeUtil;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ParamElement;
+import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 
 /**
@@ -259,7 +259,7 @@ public class InifileHoverUtils {
         
         Map<Pair<String,String>, INedElement> uniqueSections = new LinkedHashMap<Pair<String,String>, INedElement>();
         for (INedElement element : elements) {
-            String title = StringUtils.quoteForHtml(NedTreeUtil.getNedModelLabelProvider().getText(element));
+            String title = StringUtils.quoteForHtml(new NedModelLabelProvider(true).getText(element));
             String body = getNedElementHoverText(element);
             Pair<String,String> thisSection = pair(title, body);
             if (!uniqueSections.containsKey(thisSection))
@@ -286,14 +286,14 @@ public class InifileHoverUtils {
         
         
         if (contents.length() > 0)
-            contents = "<h2>One of</h2>\n" +
+            contents = "<h2>One of:</h2>\n" +
                        "<ul>\n" + contents + "</ul>\n";
         
         return HoverSupport.addHTMLStyleSheet(contents + sections);
     }
     
     // copied from GraphicalNedEditor.getHTMLHoverTextFor()
-    private static String getNedElementHoverText(INedElement element) {
+    private static String getNedElementHoverText(INedElement element) {  // note: this actually returns the formatted comment
         String hoverText = "";
         
         // comment
