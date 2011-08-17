@@ -39,6 +39,7 @@ public class Activator extends AbstractUIPlugin {
     private IncludeFoldersCache includeFoldersCache = new IncludeFoldersCache();
     private DependencyCache dependencyCache = new DependencyCache();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
+    private CProjectChecker cprojectChecker = new CProjectChecker();
 
     /**
      * The constructor
@@ -53,11 +54,14 @@ public class Activator extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
-        
+
         projectFeaturesListener.hookListeners();
         includeFoldersCache.hookListeners();
         dependencyCache.hookListeners();
         newConfigConfigurer.hookListeners();
+        cprojectChecker.hookListeners();
+
+        cprojectChecker.checkAllOpenProjects();
     }
 
     /*
@@ -69,7 +73,8 @@ public class Activator extends AbstractUIPlugin {
         includeFoldersCache.unhookListeners();
         dependencyCache.unhookListeners();
         newConfigConfigurer.unhookListeners();
-        
+        cprojectChecker.unhookListeners();
+
         plugin = null;
         super.stop(context);
     }
@@ -148,8 +153,8 @@ public class Activator extends AbstractUIPlugin {
      * Decorates the given image with the overlay images (any element may be null),
      * and returns the result as a new image. The index of images in the overlayImagePath
      * array is determined by the {@link IDecoration#TOP_LEFT}, {@link IDecoration#TOP_RIGHT},
-     * {@link IDecoration#BOTTOM_LEFT} and {@link IDecoration#BOTTOM_RIGHT} and 
-     * {@link IDecoration#UNDERLAY} constant values.  
+     * {@link IDecoration#BOTTOM_LEFT} and {@link IDecoration#BOTTOM_RIGHT} and
+     * {@link IDecoration#UNDERLAY} constant values.
      * The result image gets cached in an internal image registry,
      * so clients do not need to (moreover, must not) dispose of the image.
      */
