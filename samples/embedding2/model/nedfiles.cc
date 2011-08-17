@@ -15,7 +15,7 @@ const char *ALOHA_NED =
 	"{\n"
 	"    parameters:\n"
 	"        int numHosts;  // number of hosts\n"
-	"        double txRate @unit(bps) = default(9.6Kbps); \n"
+	"        double txRate @unit(bps) = default(9.6kbps); \n"
 	"        double slotTime @unit(ms) = default(100ms);\n"
 	"    submodules:\n"
 	"        server: Server;\n"
