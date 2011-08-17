@@ -7,66 +7,29 @@ about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
 
 OMNeT++ 4.2rc1 (Aug 2011)
-----------------------
+-------------------------
 
 Ini files:
- - Ini files: iterations (${...}) can now refer to other iteration
-   variables, using the dollar syntax ($var) or the dollar-brace syntax
-   (${var}). An example:
-        **.foo = ${i=1..10}
-        **.bar = ${j=1..$i}  # $i could also be written as ${i}
+ - Ini files: iterations (${...}) can now refer to other iteration variables,
+   using the dollar or the dollar-brace syntax ($var or ${var}). This
+   improvement makes it possible to have loops where the inner iteration range
+   depends on the outer one. When needed, the default top-down nesting order
+   of iteration loops is modified (loops are reordered) to ensure that
+   expressions only refer to more outer loop variables, but not to inner ones.
+   When this is not possible, an error is generated with the "circular
+   dependency" message. Variables are substituted textually, and the text
+   resulting from substitution is NOT evaluated except in the '<from>..<to>
+   step <step>' syntax, and in the 'constraint=' ini file option. CAUTION:
+   textual substitution means that variables in arithmetic expressions should
+   be protected with parentheses. The text substitution model was chosen for
+   greater flexibility as well as the ability to produce a more consistent
+   semantics. See src/envir/ChangeLog for more details.
 
-   Note that this improvement makes it possible to have loops where
-   the inner iteration range depends on the outer one, like in the above
-   example.
-
-   When needed, the default top-down nesting order of iteration loops is
-   modified (loops are reordered) to ensure that expressions only refer
-   to more outer loop variables, but not to inner ones. When this is
-   not possible, an error is generated with the "circular dependency"
-   message.
-
-   Variables are substituted textually, ALWAYS, and the text resulting
-   from substitution is NOT evaluated except in the '<from>..<to> step
-   <step>' syntax, and in the 'constraint=' ini file option. Generally,
-   interpreting the resulting string is left up to the NED parameter's
-   expression evaluation. Illustration:
-       **.foo = ${i=1..3, 1s+, -}001s
-   will result in the foo parameter receiving the following values:
-   1001s, 2001s, 3001s,  1s+001s, -001s.
-
-   Substitution also works inside string constants within ${}.
-       **.foo = "${i=Jo}"  # -> Jo
-       **.bar = ${"Hi $i", "Hi ${i}hn"}  # -> Hi Jo /John
-
-   (However, string constants outside ${..} are a little different: e.g.
-   in **.baz="Hello $i" the variable won't be substituted, you need to
-   write **.baz="Hello ${i}".)
-
-   CAUTION: Because of textual substitution, similarly to C/C++ macros,
-   variables in arithmetic expressions should generally be protected
-   with parentheses. Consider the lines below:
-        **.foo = ${i=10}
-        **.bar = ${j=$i+5}
-        **.baz = ${k=2*$j}   # bogus! $j should be written as ($j)
-        constraint = $i+50 < 2*$j  # ditto: should use ($i) and ($j)
-
-   Here, the baz parameter will receive 2*10+5 which is 25, instead of
-   the expected 30. Like with C macros: mind the parentheses!
-
-   Rationale: the text substitution model was chosen for greater
-   flexibility as well as the ability to produce a more consistent
-   semantics.
-
- - Incompatible change: In the constraint= configuration option,
-   variables now MUST be referenced with the $foo (or ${foo}) syntax,
-   for consistency with variable references inside ${...} iterations.
-   (The dollar sign used to be optional.) For example, the line
-       constraint = x+y < 10
-   must be changed to
-       constraint = $x+$y < 10
-   or, for greater safety, to
-       constraint = ($x)+($y) < 10
+ - Incompatible change: In the constraint= configuration option, variables now
+   MUST be referenced with the dollar sign ($foo or ${foo} syntax), and also
+   be surrounded with parens (to ensure precedence after the textual variable
+   substitution). For example, the expression x+y<10 must be changed to
+   $x+$y<10, or for greater safety, to ($x)+($y)<10.
 
  - Parallel iteration: it is now supported to use named iteration
    variables and parallel iteration together (${foo=...!bar} syntax.)
@@ -76,21 +39,15 @@ Ini files:
    more context.
 
 Sim:
- - The internal class cMathFunction was renamed to cNEDMathFunction,
-   to follow similar renaming of corresponding registration macros
-   (Define_Function --> Define_NED_Math_Function).
-
- - Result filter/recorder interfaces and registration macros made
-   public (moved to src/sim), so that users can contribute
-   their own result filters and recorders.
-   Files: cresultlistener.h, cresultfilter.h  cresultrecorder.h.
-   Result filters have to be subclassed from cResultFilter or the more
-   specific cNumericResultFilter or cObjectResultFilter base
-   classes and registered with the Register_ResultFilter()
-   macro; result recorders have to be subclassed from cResultRecorder
-   or the more specific cNumericResultRecorder, and registered with
-   the Register_ResultRecorder() macro. After that, the new filter or
-   recorder can be used in the source= and record= attributes of
+ - Result filter/recorder interfaces and registration macros made public
+   (moved to src/sim), so that users can contribute their own result filters
+   and recorders. Files: cresultlistener.h, cresultfilter.h  cresultrecorder.h.
+   Result filters have to be subclassed from cResultFilter or the more specific
+   cNumericResultFilter or cObjectResultFilter base classes and registered with
+   the Register_ResultFilter() macro; result recorders have to be subclassed
+   from cResultRecorder or the more specific cNumericResultRecorder, and
+   registered with the Register_ResultRecorder() macro. After that, the new
+   filter or recorder can be used in the source= and record= attributes of
    @statistic, and with the **.result-recording-modes configuration option.
 
  - The Define_Function() macros have been renamed to Define_NED_Math_Function().
@@ -98,78 +55,48 @@ Sim:
    a deprecation warning. Note that the preferred way of defining new NED
    functions is now the Define_NED_Function() macro.
 
- - cDynamicExpression::Value, has been factored out to a cNEDValue class.
-   Data members are no longer public, they can be manipulated via various
-   methods. NOTE: This change is NOT backwards compatible: user-supplied
-   NED functions will need to be revised.
+ - The API for custom NED functions defined via Define_NED_Function() has been
+   changed. cDynamicExpression::Value (the old value class) has been factored
+   out to a new cNEDValue class. Data members are no longer public, they can
+   be manipulated via various methods. NOTE: This change is NOT backwards
+   compatible: user-supplied NED functions will need to be revised.
    Look at src/sim/nedfunctions.cc for code examples.
 
+ - Measurement unit support: added "mps" (m/s) and "kmph" (km/h) as recognized
+   units; changed "Kbps" to more standards compilant "kbps"; changed byte
+   multiples notation to use the now-standard IEC binary prefixes: KB -> KiB,
+   MB -> MiB, GB -> GiB, TB -> TiB. The latter changes affect backwards
+   compatibility, i.e. you may need to update existing models.
+
 Tools:
- - opp_run: Changed how opp_run is used to start debug and release models.
-   There are two programs now to start models built as shared libs:
-    * 'opp_run_release' is built using release opp libraries and starts any release
-      model directly by invoking evMain().
-    * 'opp_run' is linked against debug opp libs. It loads all libraries
-      into the address space dynamically and checks for the symbol __is_release_opp_sim__
-      (which is present only in release builds). If the symbol is not found, the
-      model is debug and proceeds normally by invoking evMain(). If it decides that
-      the model is 'release', it reloads the whole simulation by executing it using
-      'opp_run_release'.
-
-      The simulation IDE also detects whether release or debug version of the model is
-      started and it launches it with either 'opp_run' or 'opp_run_release'. This is
-      required because on Windows, 'opp_run_release' is started as a different process
-      and the IDE would not be able to control/kill the 'opp_run_release' process if
-      it would be started by opp_run.
-
-      Note: The detection process does not work if the shared models libs are specified
-      in the INI file.
-
-      Note2: Because of the above changes the main() function moved from the oppenvir
-      library to a separate statically linked library (oppmain). This library must be linked
-      with executable simulation models so changes in the model makefiles are required.
-      opp_makemake has been changed to generate correct makefiles, but the the makefiles
-      *MUST* be recreated when upgrading to OMNeT++ 4.2. (You need this only when working
-      on the command line. The IDE automatically recreates the makefiles, so no action is
-      needed on your part if you are using only the IDE.)
+ - opp_run: bugfix: release-mode simulation models compiled as shared libraries
+   could not be run using a debug-mode opp_run program (they either crashed
+   or reported that a module was not registered with the Register_Module()
+   macro.) As part of the fix, a new opp_run_release program has been
+   introduced, and opp_run (which is now always compiled as debug) delegates
+   to it when necessary.
+      Due to makefile changes related to the fix, you may need to re-create the
+   makefiles of your simulation when upgrading to OMNeT++ 4.2. (You only need
+   to do that when working on the command line. The IDE automatically recreates
+   the makefiles, so no action is needed on your part if you are using only the
+   IDE.) See src/envir/ChangeLog for details of this change.
 
  - Implemented number filter expressions using multiple inputs for statistics source
-   expressions. Enhanced error reporting for constant expressions that are meaningless
-   as statistics source (they never provide a value).
-      - source="3.14"       => error, meaningless
-      - source="3.14 / 180" => error, meaningless
-      - source="sum(packetLength)/count(packetLength)" => error, multiple
-        uses of the same signal is still not supported due to output glitches
-      - source="count(packetSent)/count(packetDropped)" => valid expression
+   expressions. For example:
+      @statistic[dropRate](source="count(packetDropped)/count(packetSent)");
 
- - opp_msgc: improvement: announcements and type definitions to observe
-   whether they are above the namespace declaration  (=outside the
-   namespace) or below it (=inside the namespace). This change makes it
-   consistent with cplusplus blocks that had this behavior for quite some
-   time. Details:
-      - treat announcements above namespace declaration as being outside the
-        namespace (i.e. unqualified names will be understood as belonging
-        to the global namespace)
-      - do not allow type definitions above the namespace decl (because we
-        always want to generate them into the C++ namespace)
+ - opp_msgc: improvement: announcements and type definitions now observe
+   whether they are above the namespace declaration (=outside the namespace)
+   or below it (=inside the namespace). This change makes it consistent with
+   cplusplus blocks that had this behavior for quite some time. A related
+   improvement is that type lookup in namespaces has been modified to make it
+   possible to use unqualified names when declaring fields. See
+   src/nedxml/ChangeLog for details.
 
- - opp_msgc: improvement: modified type lookup in namespaces, to make it
-   possible to use unqualified names when declaring fields.
-   The rules:
-      - if type contains '::', we regard it as being fully qualified
-      - if type is simplename, and there is such name in the file's
-        namespace, that's it
-      - otherwise, the simplename must be unambiguous when looking at names
-        in all other namespaces (including the global namespace); e.g. if
-        there's both a foo::A and an ::A (or a bar::A), we report it as
-        ambiguous.
+ - Akaroa support improved; samples/aloha/akaroa.ini was added as example
 
 IDE:
  - Upgraded to Eclipse 3.7
-
- - Removed Animation Player as it was only a 'technology preview' bundled
-   with the beta releases to gather feedback from the user community. The
-   animator is scheduled to appear in the next major OMNeT++ release.
 
  - Added Eclipse Marketplace to the Help menu. You can now install
    additional features from the market.
@@ -181,6 +108,31 @@ IDE:
  - Ctrl-Tab now works on freshly opened NED files even if you do not explicitly
    select a simple module. In that case, the IDE opens the .h and .cc files
    associated with the first simple module in the NED file.
+
+ - Improvement on the Manage Build Configurations dialog: newly created build
+   configurations are now configured, by copying the source entries from one
+   of the existing build configurations.
+
+ - Project Makemake Options property page: overhaul for better usability.
+
+ - Documentation generator: turn on JAVADOC_AUTOBRIEF in newly generated
+   doxy.cfg files. (When this option is on, there is no need for @brief
+   in C++ doxy comments; instead the first sentence of the comment is taken
+   automatically as brief description.)
+
+ - Bug fixes on: IDE makefile generator; the Project Features feature;
+   the Inifile Editor (hover info, content assist, etc); the NED editor
+   (display string proposals for connections and channels, etc.); Organize
+   Imports feature; NED documentation generator; Simulation Launcher (e.g.
+   launching folders with simulations in them works again);
+
+ - SVN support removed from the IDE. It had very few users, and can be
+   installed from the Market if needed.
+
+ - Removed Animation Player as it was only a 'technology preview' bundled
+   with the beta releases to gather feedback from the user community. The
+   animator is scheduled to appear in the next major OMNeT++ release.
+
 
 OMNeT++ 4.2b2 (May 2011)
 ------------------------
