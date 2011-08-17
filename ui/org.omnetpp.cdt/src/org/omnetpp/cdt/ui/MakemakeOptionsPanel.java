@@ -589,11 +589,11 @@ public class MakemakeOptionsPanel extends Composite {
 
                 // validate text field contents
                 setErrorMessage(null);
-                if (!targetNameText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+                if (!targetNameText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_-]*)"))
                     setErrorMessage("Target name contains illegal characters");
                 if (outputDirText.getText().matches(".*[:/\\\\].*"))
                     setErrorMessage("Output folder: cannot contain /, \\ or :.");
-                if (!dllSymbolText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_]*)"))
+                if (!dllSymbolText.getText().trim().matches("(?i)|([A-Z_][A-Z0-9_-]*)"))
                     setErrorMessage("DLL export macro: contains illegal characters");
             }
         } finally {
