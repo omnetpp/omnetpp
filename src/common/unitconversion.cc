@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include <locale.h>
+#include <cstdlib>
+#include <errno.h>
 #include "opp_ctype.h"
 #include "stringutil.h"
 #include "platmisc.h"  //strcasecmp
