@@ -15,6 +15,7 @@ module HypercubeNode like IHypercubeNode
     parameters:
         int address;
         int dim;
+        @display("i=block/circle;is=vs");
     gates:
         inout port[dim];
     submodules:
