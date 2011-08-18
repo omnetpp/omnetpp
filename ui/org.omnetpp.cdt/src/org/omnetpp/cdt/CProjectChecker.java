@@ -96,7 +96,7 @@ public class CProjectChecker {
                 InputStream is = cprojectFile.getContents();
                 byte[] buffer = new byte[1024];
                 int n = is.read(buffer);
-                String contents = new String(buffer, 0, n, Charset.forName("utf-8"));
+                String contents = new String(buffer, 0, n, "UTF-8");
                 if (contents.contains("<?fileVersion 4.0.0?>") && !contents.contains("<cproject storage_type_id="))
                     return true;
             }
