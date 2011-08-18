@@ -146,12 +146,10 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 		StringBuffer buff = new StringBuffer();
 
 		buff.append(new Path(vcDir).append("INCLUDE").toOSString()+";");
-		buff.append(new Path(vcDir).append("INCLUDE\\SYS").toOSString()+";");  //FIXME needed????
 
-		if (sdkDir != null) {
+		if (sdkDir != null)
 		    buff.append(new Path(sdkDir).append("Include").toOSString()+";");
-		    buff.append(new Path(sdkDir).append("Include\\gl").toOSString()+";");
-		}
+
 		addvar(vars, new MSVCBuildEnvironmentVariable("INCLUDE", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
 		// LIB
