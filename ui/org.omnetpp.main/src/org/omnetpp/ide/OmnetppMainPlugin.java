@@ -194,4 +194,16 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         return new Path(oppRoot).append("msys").append("bin").toOSString();
     }
 
+    /**
+     * Returns the MinGW bin directory, or the empty string "" on non-Windows OS or if it cannot be determined.
+     */
+    public static String getMingwBinDir() {
+        if (!Platform.getOS().equals(Platform.OS_WIN32))
+            return "";
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("mingw").append("bin").toOSString();
+    }
+
 }

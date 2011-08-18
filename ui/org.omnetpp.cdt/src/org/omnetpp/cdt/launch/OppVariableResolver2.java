@@ -8,14 +8,12 @@
 package org.omnetpp.cdt.launch;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.variables.IDynamicVariable;
 import org.eclipse.core.variables.IDynamicVariableResolver;
 import org.omnetpp.cdt.Activator;
-import org.omnetpp.cdt.MingwEnvironmentVariableSupplier_COPY;
-import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Resolves opp_additional_path
@@ -33,17 +31,11 @@ public class OppVariableResolver2 implements IDynamicVariableResolver {
 	    if (argument != null)
 			abort("${" + varName +"} requires no argument", null);
 
-	    IPath msysBinDir = MingwEnvironmentVariableSupplier_COPY.getMsysBinDir();
-        IPath mingwBinDir = MingwEnvironmentVariableSupplier_COPY.getBinDir();
+	    String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
+        String mingwBinDir = OmnetppMainPlugin.getMingwBinDir();
 
-        String pathSep = System.getProperty("path.separator");
-
-        String result = "";
-        if (msysBinDir != null)
-            result += msysBinDir.toOSString();
-        if (mingwBinDir != null)
-            result += (StringUtils.isEmpty(result)? "" : pathSep) + mingwBinDir.toOSString();
-		return result;
+        String result = msysBinDir + ";" + mingwBinDir;
+		return result.equals(";") ? "" : result;
 	}
 
     protected void abort(String message, Throwable exception) throws CoreException {
