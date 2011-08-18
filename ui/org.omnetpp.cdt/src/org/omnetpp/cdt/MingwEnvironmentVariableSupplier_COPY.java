@@ -28,34 +28,6 @@ import org.eclipse.core.runtime.Platform;
 public class MingwEnvironmentVariableSupplier_COPY implements
 		IConfigurationEnvironmentVariableSupplier {
 
-	private static class MingwBuildEnvironmentVariable implements IBuildEnvironmentVariable {
-		private final String name;
-		private final String value;
-		private final int operation;
-
-		public MingwBuildEnvironmentVariable(String name, String value, int operation) {
-			this.name = name;
-			this.value = value;
-			this.operation = operation;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public int getOperation() {
-			return operation;
-		}
-
-		public String getDelimiter() {
-			return ";";
-		}
-	}
-
 	private IBuildEnvironmentVariable path;
 
 	public static IPath getBinDir() {
@@ -109,7 +81,7 @@ public class MingwEnvironmentVariableSupplier_COPY implements
 			if (msysBinPath != null)
 				pathStr += ';' + msysBinPath.toOSString();
 
-			path = new MingwBuildEnvironmentVariable("PATH", pathStr, IBuildEnvironmentVariable.ENVVAR_PREPEND);
+			path = new BuildEnvironmentVariable("PATH", pathStr, IBuildEnvironmentVariable.ENVVAR_PREPEND);
 		}
 	}
 

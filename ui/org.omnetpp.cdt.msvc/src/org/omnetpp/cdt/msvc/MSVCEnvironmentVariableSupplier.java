@@ -18,53 +18,26 @@ import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
 import org.eclipse.core.runtime.Path;
+import org.omnetpp.cdt.BuildEnvironmentVariable;
 import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
 import org.osgi.framework.Version;
 
 /**
- * Visual C environment detector. Tries to detect Visual C and (optional) MS Windows SDK
+ * Visual C environment detector for OMNeT++. Tries to detect Visual C and (optional) MS Windows SDK
  * installation. (Returns the latest version) Also checks whether the tool-chain is installed at all.
  * Looks for environment variables VCINSTALLDIR, VSINSTALLDIR, MSSdk. If you have several versions
  * of SDK / Visual C on your machine, and need a specific one (not the latest) define these variables
  * to point to the needed installation.
+ *
+ * Also adds omnetpp/bin and omnetpp/msys/bin to the PATH.
  *
  * @author DSchaefer
  * @author rhornig
  */
 public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmentVariableSupplier,
 	    IManagedIsToolChainSupported {
-
-	private static class MSVCBuildEnvironmentVariable implements IBuildEnvironmentVariable {
-
-		private final String name;
-		private final String value;
-		private final int operation;
-
-		public MSVCBuildEnvironmentVariable(String name, String value, int operation) {
-			this.name = name;
-			this.value = value;
-			this.operation = operation;
-		}
-
-		public String getDelimiter() {
-			return ";";
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public int getOperation() {
-			return operation;
-		}
-
-	}
 
 	public IBuildEnvironmentVariable getVariable(String variableName,
 			IConfiguration configuration, IEnvironmentVariableProvider provider) {
@@ -120,7 +93,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 	    Map<String, IBuildEnvironmentVariable> vars = new HashMap<String, IBuildEnvironmentVariable>();
 
 		// add OMNETPP_ROOT variable because it is needed by the nmake scripts
-        addvar(vars, new MSVCBuildEnvironmentVariable("OMNETPP_ROOT", OmnetppMainPlugin.getOmnetppRootDir(), IBuildEnvironmentVariable.ENVVAR_REPLACE));
+        addvar(vars, new BuildEnvironmentVariable("OMNETPP_ROOT", OmnetppMainPlugin.getOmnetppRootDir(), IBuildEnvironmentVariable.ENVVAR_REPLACE));
 
         String vcDir = getVCDir();
 		if (vcDir == null)
@@ -137,14 +110,14 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 		if (sdkDir != null)
 		    buff.append(new Path(sdkDir).append("Include").toOSString()+";");
 
-		addvar(vars, new MSVCBuildEnvironmentVariable("INCLUDE", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
+		addvar(vars, new BuildEnvironmentVariable("INCLUDE", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
 		// LIB
 		buff = new StringBuffer();
 		buff.append(new Path(vcDir).append("LIB").toOSString()+";");
 		if (sdkDir != null)
 		    buff.append(new Path(sdkDir).append("Lib").toOSString()+";");
-		addvar(vars, new MSVCBuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
+		addvar(vars, new BuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
 		// PATH
 		buff = new StringBuffer();
@@ -164,7 +137,7 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 
         if (getAppendPath())
             buff.append(System.getenv("PATH")+";");
-		addvar(vars, new MSVCBuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
+		addvar(vars, new BuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
 		return vars;
 	}
