@@ -17,6 +17,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -37,7 +38,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static OmnetppMainPlugin plugin;
-	
+
 	protected OmnetppDynamicPluginLoader omnetppDynamicPluginLoader;
 	protected OmnetppProjectOpenListener omnetppProjectOpenListener;
 
@@ -110,10 +111,10 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(omnetppDynamicPluginLoader);        
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(omnetppDynamicPluginLoader);
 	}
 
-	/**
+    /**
 	 * Returns the shared instance
 	 */
 	public static OmnetppMainPlugin getDefault() {
@@ -148,7 +149,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * @return The omnetpp bin directory, or empty string "" if omnetpp root dir is not defined.
+	 * Returns the omnetpp bin directory, or empty string "" if the omnetpp root dir is not defined.
 	 */
 	public static String getOmnetppBinDir() {
 		// FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
@@ -159,7 +160,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
     }
 
 	/**
-	 * @return The omnetpp inc directory, or empty string "" if omnetpp root dir is not defined.
+	 * Returns the omnetpp include directory, or empty string "" if the omnetpp root dir is not defined.
 	 */
 	public static String getOmnetppInclDir() {
         // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
@@ -178,6 +179,19 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 		if (StringUtils.isBlank(oppRoot))
 			return "";
     	return new Path(oppRoot).append("lib").toOSString();
+    }
+
+    /**
+     * Returns the MSYS bin directory which contains utilities like perl, wish etc., or the empty string ""
+     * on non-Windows OS or if it cannot be determined.
+     */
+    public static String getMsysBinDir() {
+        if (!Platform.getOS().equals(Platform.OS_WIN32))
+            return "";
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("msys").append("bin").toOSString();
     }
 
 }

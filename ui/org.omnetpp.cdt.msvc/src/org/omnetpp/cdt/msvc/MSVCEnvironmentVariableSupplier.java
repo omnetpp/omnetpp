@@ -17,9 +17,7 @@ import org.eclipse.cdt.managedbuilder.core.IToolChain;
 import org.eclipse.cdt.managedbuilder.envvar.IBuildEnvironmentVariable;
 import org.eclipse.cdt.managedbuilder.envvar.IConfigurationEnvironmentVariableSupplier;
 import org.eclipse.cdt.managedbuilder.envvar.IEnvironmentVariableProvider;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.omnetpp.cdt.msvc.ui.MSVCPreferencePage;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ide.OmnetppMainPlugin;
@@ -103,17 +101,6 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 	    return StringUtils.isEmpty(sdkDir) ? null : sdkDir;
 	}
 
-	
-	/**
-	 * Returns the MSYS bin directory which contains utilities like perl, wish etc.
-	 */
-	public static String getMsysBinDir() {
-		// Just look in the install location parent dir
-		IPath installPath = new Path(Platform.getInstallLocation().getURL().getFile()).removeLastSegments(1);
-		IPath msysBinPath = installPath.append("msys\\bin");
-		return msysBinPath.toFile().isDirectory() ? msysBinPath.toOSString() : null;
-	}
-
 	/**
 	 * Returns true if the PATH environment variable should be appended to the build-time path.
 	 */
@@ -162,18 +149,19 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
 		// PATH
 		buff = new StringBuffer();
 
+        String msysDir = OmnetppMainPlugin.getMsysBinDir();
+        if (!StringUtils.isEmpty(msysDir))
+            buff.append(msysDir+";");
+
 		String vsDir = getVSDir();
 		if (vsDir != null)
 			buff.append(new Path(vsDir).append("Common7\\IDE").toOSString()+";");
 
 		buff.append(new Path(vcDir).append("Bin").toOSString()+";");
+
         if (sdkDir != null)
             buff.append(new Path(sdkDir).append("Bin").toOSString()+";");
-        
-        String msysDir = getMsysBinDir();
-        if (msysDir != null)
-            buff.append(msysDir+";");
-        	
+
         if (getAppendPath())
             buff.append(System.getenv("PATH")+";");
 		addvar(vars, new MSVCBuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
