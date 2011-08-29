@@ -82,7 +82,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             // disable the builder completely! (for the duration of the session)
             Activator.logError(e);
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
-            Display.getDefault().asyncExec(new Runnable() {
+            Display.getDefault().syncExec(new Runnable() {
                 public void run() {
                     ErrorDialog.openError(getActiveShell(), "Error", "Error refreshing Makefiles", e.getStatus());
                 }
@@ -106,7 +106,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     }
 
     /**
-     * Checks whether the project's CDT configuration corresponds to the set of enabled project 
+     * Checks whether the project's CDT configuration corresponds to the set of enabled project
      * features (see ProjectFeatureManager).
      */
     protected void checkProjectFeatures() {
@@ -117,7 +117,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 // check that CDT and NED state corresponds to the feature selection
                 final List<Problem> problems = features.validateProjectState();
                 if (!problems.isEmpty()) {
-                    Display.getDefault().asyncExec(new Runnable() {
+                    Display.getDefault().syncExec(new Runnable() {
                         public void run() {
                             offerFixingProblems(features, problems);
                         }
@@ -142,7 +142,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             }
         }
     }
-    
+
     protected boolean isOkToFixConfigProblems(IProject project, List<Problem> problems) {
         List<String> problemTexts = new ArrayList<String>();
         for (Problem p : problems)
@@ -150,7 +150,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         return ProblemsMessageDialog.openConfirm(getActiveShell(), "Project Setup Inconsistency",
                 "Some configuration settings in project \"" + project.getName() + "\" do not correspond " +
                 "to the enabled project features. This may cause build errors as well. " +
-                "Do you want to fix the project state?", 
+                "Do you want to fix the project state?",
                 problemTexts, UIUtils.ICON_ERROR);
     }
 
@@ -181,7 +181,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
             // warn the user if builders are in reverse order
             if (thisBuilderPos != -1 && cdtBuilderPos != -1 && cdtBuilderPos < thisBuilderPos) {
-                Display.getDefault().asyncExec(new Runnable() {
+                Display.getDefault().syncExec(new Runnable() {
                     public void run() {
                         String message =
                             "The C/C++ Project Builder seems to precede the OMNeT++ Makefile Builder " +
@@ -213,7 +213,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         boolean supported = isToolChainSupported(toolChain);
 
         if (!supported) {
-            Display.getDefault().asyncExec(new Runnable() {
+            Display.getDefault().syncExec(new Runnable() {
                 public void run() {
                     String message =
                         "Toolchain \"" + toolChain.getName() + "\" is not supported on this platform " +
