@@ -152,7 +152,7 @@ public class CDTUtils {
         }
         else {
             // add or replace (unless it's already the same)
-            CMacroEntry entry = new CMacroEntry(name, value, ICSettingEntry.MACRO);
+            CMacroEntry entry = new CMacroEntry(name, value, 0 /*=flags*/);
             if (k==-1)
                 settingEntries = (ICLanguageSettingEntry[]) ArrayUtils.add(settingEntries, entry);
             else if (!settingEntries[k].equalsByContents(entry))

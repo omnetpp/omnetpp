@@ -761,7 +761,7 @@ public class ProjectFeaturesManager {
         ICConfigurationDescription[] configurations = projectDescription!=null ? projectDescription.getConfigurations() : new ICConfigurationDescription[0];
         NedSourceFoldersConfiguration nedSourceFoldersConfig = ProjectUtils.readNedFoldersFile(project);
 
-        // fix them up
+        // return list of problems
         return validateProjectState(configurations, nedSourceFoldersConfig, getEnabledFeatures());
     }
 
