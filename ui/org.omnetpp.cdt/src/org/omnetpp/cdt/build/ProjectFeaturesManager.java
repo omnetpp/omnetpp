@@ -772,6 +772,9 @@ public class ProjectFeaturesManager {
      * in a string list.
      */
     public List<Problem> validateProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
+        System.out.println("====================================================================");
+        dumpMacros(project, configurations, "WITH_F.*");
+
         List<Problem> problems = new ArrayList<Problem>();
         List<String> excludedPackages = Arrays.asList(nedSourceFoldersConfig.getExcludedPackages());
 
@@ -835,6 +838,37 @@ public class ProjectFeaturesManager {
         problem.feature = feature;
         problem.message = message;
         problems.add(problem);
+    }
+
+    protected static void dumpMacros(IProject project, ICConfigurationDescription[] configurations, String macroNameRegex) {
+        for (ICConfigurationDescription configuration : configurations) {
+            System.out.println("Configuration:" + configuration.getName());
+
+            // check it on all source folders
+            Map<String,ICFolderDescription> folderDescriptions = new HashMap<String, ICFolderDescription>();
+            folderDescriptions.put("<root>", configuration.getRootFolderDescription());
+            List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
+            for (IContainer folder : sourceLocations) {
+                folderDescriptions.put(folder.getFullPath().toString(), CDTUtils.getFolderDescription(configuration, folder));
+            }
+
+            for (String folderName : folderDescriptions.keySet())
+            {
+                System.out.println("  Folder: " + folderName);
+                ICLanguageSetting[] folderLanguageSettings = folderDescriptions.get(folderName).getLanguageSettings();
+                for (ICLanguageSetting languageSetting : folderLanguageSettings) {
+                    System.out.println("    Language:" + languageSetting.getId());  // getLanguageId() returns null!
+                    ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);  // .MACRO
+                    for (ICLanguageSettingEntry e : settingEntries) {
+                        if (macroNameRegex == null || e.getName().matches(macroNameRegex)) {
+                            System.out.println("      " + e.getName() + " = " + e.getValue() +
+                                    "  kind=" + e.getKind() + "  flags=" + e.getFlags() +
+                                    "  (" + e.getClass().getSimpleName() + ")");
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override

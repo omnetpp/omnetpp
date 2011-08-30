@@ -127,7 +127,17 @@ public class CDTUtils {
         return null;
     }
 
-    /** 
+    /**
+     * Finds a folder description for the given folder in the configuration; returns null if one does not exist.
+     */
+    public static ICFolderDescription getFolderDescription(ICConfigurationDescription configuration, IContainer folder) {
+        for (ICFolderDescription folderDesc : configuration.getFolderDescriptions())
+            if (folderDesc.getPath().equals(folder.getProjectRelativePath()))
+                return folderDesc;
+        return null;
+    }
+
+    /**
      * Finds or creates and adds a folder description for the given folder in the configuration.
      */
     public static ICFolderDescription getOrCreateFolderDescription(ICConfigurationDescription configuration, IContainer folder) throws WriteAccessException, CoreException {
