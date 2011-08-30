@@ -1,0 +1,57 @@
+%description:
+Test the cMessageHeap optimization using the circular buffer.
+
+Messages scheduled for the same simulation time with same prio
+should be delivered in the order they were scheduled.
+
+%file: test.ned
+
+simple Test {
+    @isNetwork(true);
+}
+
+%file: test.cc
+
+#include <omnetpp.h>
+
+namespace @TESTNAME@ {
+
+class Test : public cSimpleModule
+{
+  public:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module(Test);
+
+void Test::initialize()
+{
+    scheduleAt(simTime()+1, new cMessage("timer1"));
+    scheduleAt(simTime()+1, new cMessage("timer2"));
+}
+
+void Test::handleMessage(cMessage *msg)
+{
+    EV << "received: " << msg->getName() << endl;
+    if (strcmp(msg->getName(), "timer1") == 0)
+    {
+        // note: these msgs should be delivered AFTER timer2! (because they are
+        // all for T = 1s, and timer2 was scheduled first)
+        scheduleAt(simTime(), new cMessage("zerodelay1"));
+        scheduleAt(simTime(), new cMessage("zerodelay2"));
+    }
+    delete msg;
+}
+
+}; //namespace
+
+%contains-regex: stdout
+received: timer1
+.*
+received: timer2
+.*
+received: zerodelay1
+.*
+received: zerodelay2
+
