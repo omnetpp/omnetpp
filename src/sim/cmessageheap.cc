@@ -184,7 +184,7 @@ void cMessageHeap::insert(cMessage *event)
 {
     take(event);
 
-    if (event->getArrivalTime()==simTime() && event->getSchedulingPriority()==0)
+    if (event->getArrivalTime()==simTime() && event->getSchedulingPriority()==0 && (n==0 || h[1]->getArrivalTime()!=simTime()))
     {
         // scheduled for *now* -- use circular buffer
         cb[cbtail] = event;

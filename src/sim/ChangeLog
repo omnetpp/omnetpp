@@ -1,3 +1,10 @@
+2011-08-30  Andras Varga
+
+	cmessageheap.cc: insert(): fix: must not use circbuf optimization if
+	there's already a message in the heap scheduled earlier for the same
+	simulation time, otherwise the insertion order of similar messages
+	(same delivery time and priority) will not be kept.
+
 2011-07-28  Andras Varga
 
 	* csimplemodule.cc: fix: throwing "not owner of message" from send()/
