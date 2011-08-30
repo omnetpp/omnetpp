@@ -772,8 +772,7 @@ public class ProjectFeaturesManager {
      * in a string list.
      */
     public List<Problem> validateProjectState(ICConfigurationDescription[] configurations, NedSourceFoldersConfiguration nedSourceFoldersConfig, List<ProjectFeature> enabledFeatures) throws CoreException {
-        System.out.println("====================================================================");
-        dumpMacros(project, configurations, "WITH_F.*");
+        //dumpMacros(project, configurations, "WITH_.*");
 
         List<Problem> problems = new ArrayList<Problem>();
         List<String> excludedPackages = Arrays.asList(nedSourceFoldersConfig.getExcludedPackages());
