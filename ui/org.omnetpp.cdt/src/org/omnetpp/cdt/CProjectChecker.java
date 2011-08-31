@@ -8,7 +8,6 @@
 package org.omnetpp.cdt;
 
 import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +123,8 @@ public class CProjectChecker {
                         "We recommend that you re-create the projects, as old project files may cause " +
                         "problems for the C++ indexer. You can re-create a project by deleting it " +
                         "(answer \"No\" when asked if you want to delete the files as well), and creating " +
-                        "a new project in the same directory using File -> New -> OMNeT++ Project.");
+                        "a new project in the same directory using File -> New -> OMNeT++ Project -- " +
+                        "this will overwrite the project settings while leaving contents intact.");
             }
         });
     }
