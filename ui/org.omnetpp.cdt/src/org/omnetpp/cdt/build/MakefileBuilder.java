@@ -287,8 +287,12 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
         // generate Makefiles in all folders
         long startTime = System.currentTimeMillis();
-        for (IContainer makemakeFolder : makemakeFolders)
-            generateMakefileFor(makemakeFolder, configuration);
+        for (IContainer makemakeFolder : makemakeFolders) {
+            if (makemakeFolder.isAccessible())
+                generateMakefileFor(makemakeFolder, configuration);
+            else
+                Debug.println("generateMakefiles(): ignoring nonexisting folder listed in buildspec: " + makemakeFolder.getFullPath());
+        }
         Debug.println("Generated " + makemakeFolders.size() + " makefiles in: " + (System.currentTimeMillis()-startTime) + "ms");
     }
 

@@ -935,6 +935,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 
     protected void saveBuildSpecFile() {
         try {
+            // purge entries that correspond to nonexistent (deleted/renamed/moved) folders
+            for (IContainer folder: buildSpec.getMakeFolders())
+                if (!folder.isAccessible())
+                    buildSpec.setFolderMakeType(folder, BuildSpecification.NONE);
+
+            // save
             buildSpec.save();
         }
         catch (CoreException e) {
