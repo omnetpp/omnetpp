@@ -80,8 +80,9 @@ public class BuildSpecification implements Cloneable {
     }
 
     /**
-     * Returns the list of folders where there's a makefile,
-     * either generated or custom one.
+     * Returns the list of folders where there's a makefile, either generated
+     * or custom one. To add/remove folders, use setFolderMakeType().
+     *
      */
     public List<IContainer> getMakeFolders() {
         return new ArrayList<IContainer>(folderSpecs.keySet());
@@ -96,6 +97,8 @@ public class BuildSpecification implements Cloneable {
 
     /**
      * Sets the make type (MAKEMAKE, CUSTOM, or NONE) for the given folder.
+     * If you specify NONE, that will remove the folder from the list of folders
+     * returned by getMakeFolders().
      */
     public void setFolderMakeType(IContainer folder, int type) {
         if (type==NONE)
