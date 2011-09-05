@@ -8,8 +8,8 @@ in the 'Linux' chapter.
 
 The following Ubuntu releases are covered:
 
-* Ubuntu 8.04 LTS ('Hardy Heron')
-* Ubuntu 10.04 LTS ('Lucid Lynx')
+* Ubuntu 10.04 LTS
+* Ubuntu 11.04
 
 They were tested on the following architectures:
 
