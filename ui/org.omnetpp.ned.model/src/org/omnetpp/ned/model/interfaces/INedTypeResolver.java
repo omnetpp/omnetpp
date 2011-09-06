@@ -206,14 +206,17 @@ public interface INedTypeResolver {
     public IMarker[] getMarkersForElement(INedElement node, boolean recursive, int limit);
 
     /**
-     * Returns a INedElement at the given file/line/column. Returns null if no
+     * Returns a INedElement at the given file/line/column. The NedFileElement
+     * is returned if no specific element was found. Returns null if no
      * NED element was found at that position (that may be caused by
-     * missing source region info.)
+     * missing source region info or when the line/column points outside 
+     * the file's range.)
      */
     public INedElement getNedElementAt(IFile file, int line, int column);
 
     /**
      * Returns a INedElement within the given parent at the given line/column.
+     * (or the parent if no specific INedElement was found in the parent's range)
      * Returns null if no NED element was found at that position (that may be
      * caused by missing source region info.)
      */

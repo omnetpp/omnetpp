@@ -21,93 +21,94 @@ import org.omnetpp.ned.model.INedElement;
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates
  * to it. In addition it provides Structured selection for selection events in the text editor
- * sending NEDElements as the selected object
+ * sending NEDElements as the selected object (the element under the cursor). Note that simply 
+ * moving the cursor also generates selection events (0 length selection).
  *
  * @author rhornig
  */
 public class NedSelectionProvider implements IPostSelectionProvider {
-        private TextualNedEditor fNedTextEditor;
-		private boolean notificationInProgress = false;
+    private TextualNedEditor fNedTextEditor;
+    private boolean notificationInProgress = false;
 
-        public NedSelectionProvider(TextualNedEditor editor) {
-            super();
-            fNedTextEditor = editor;
+    public NedSelectionProvider(TextualNedEditor editor) {
+        super();
+        fNedTextEditor = editor;
+    }
+
+    /*
+     * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(ISelectionChangedListener)
+     */
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        if (fNedTextEditor != null)
+            fNedTextEditor.getSelectionProvider().addSelectionChangedListener(listener);
+    }
+
+    /*
+     * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+     */
+    public ISelection getSelection() {
+        ISelection selection = fNedTextEditor.getSelectionProvider().getSelection();
+
+        // calculate the ned element under the current position
+        int offset = ((ITextSelection)selection).getOffset();
+        int line;
+        try {
+            line = fNedTextEditor.getDocument().getLineOfOffset(offset);
+            int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
+            IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
+            INedElement selectedElement = NedResourcesPlugin.getNedResources().getNedElementAt(file, line+1, column);
+            // create a structured selection
+            selection = (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
+        } catch (BadLocationException e) {
         }
 
-        /*
-         * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(ISelectionChangedListener)
-         */
-        public void addSelectionChangedListener(ISelectionChangedListener listener) {
-            if (fNedTextEditor != null)
-                fNedTextEditor.getSelectionProvider().addSelectionChangedListener(listener);
-        }
+        return selection;
+    }
 
-        /*
-         * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
-         */
-        public ISelection getSelection() {
-        	ISelection selection = fNedTextEditor.getSelectionProvider().getSelection();
+    /*
+     * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(ISelectionChangedListener)
+     */
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        if (fNedTextEditor != null && fNedTextEditor.getSelectionProvider() != null)
+            fNedTextEditor.getSelectionProvider().removeSelectionChangedListener(listener);
+    }
 
-        	// calculate the ned element under the current position
-        	int offset = ((ITextSelection)selection).getOffset();
-        	int line;
-        	try {
-        		line = fNedTextEditor.getDocument().getLineOfOffset(offset);
-        		int column = offset - fNedTextEditor.getDocument().getLineOffset(line);
-        		IFile file = ((FileEditorInput) fNedTextEditor.getEditorInput()).getFile();
-        		INedElement selectedElement = NedResourcesPlugin.getNedResources().getNedElementAt(file, line+1, column);
-        		// create a structured selection
-        		selection = (selectedElement != null) ? new StructuredSelection(selectedElement) : StructuredSelection.EMPTY;
-        	} catch (BadLocationException e) {
-        	}
+    /*
+     * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(ISelection)
+     */
+    public void setSelection(ISelection selection) {
+        notificationInProgress = true;
+        fNedTextEditor.getSelectionProvider().setSelection(selection);
+        notificationInProgress = false;
+    }
 
-        	return selection;
-        }
-
-        /*
-         * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(ISelectionChangedListener)
-         */
-        public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-            if (fNedTextEditor != null && fNedTextEditor.getSelectionProvider() != null)
-                fNedTextEditor.getSelectionProvider().removeSelectionChangedListener(listener);
-        }
-
-        /*
-         * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(ISelection)
-         */
-        public void setSelection(ISelection selection) {
-        	notificationInProgress = true;
-        	fNedTextEditor.getSelectionProvider().setSelection(selection);
-        	notificationInProgress = false;
-        }
-
-        /*
-         * @see org.eclipse.jface.text.IPostSelectionProvider#addPostSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-         * @since 3.0
-         */
-        public void addPostSelectionChangedListener(ISelectionChangedListener listener) {
-            if (fNedTextEditor != null) {
-                if (fNedTextEditor.getSelectionProvider() instanceof IPostSelectionProvider)  {
-                    IPostSelectionProvider provider= (IPostSelectionProvider) fNedTextEditor.getSelectionProvider();
-                    provider.addPostSelectionChangedListener(listener);
-                }
+    /*
+     * @see org.eclipse.jface.text.IPostSelectionProvider#addPostSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+     * @since 3.0
+     */
+    public void addPostSelectionChangedListener(ISelectionChangedListener listener) {
+        if (fNedTextEditor != null) {
+            if (fNedTextEditor.getSelectionProvider() instanceof IPostSelectionProvider)  {
+                IPostSelectionProvider provider= (IPostSelectionProvider) fNedTextEditor.getSelectionProvider();
+                provider.addPostSelectionChangedListener(listener);
             }
         }
+    }
 
-        /*
-         * @see org.eclipse.jface.text.IPostSelectionProvider#removePostSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
-         * @since 3.0
-         */
-        public void removePostSelectionChangedListener(ISelectionChangedListener listener) {
-            if (fNedTextEditor != null)  {
-                if (fNedTextEditor.getSelectionProvider() instanceof IPostSelectionProvider)  {
-                    IPostSelectionProvider provider= (IPostSelectionProvider) fNedTextEditor.getSelectionProvider();
-                    provider.removePostSelectionChangedListener(listener);
-                }
+    /*
+     * @see org.eclipse.jface.text.IPostSelectionProvider#removePostSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+     * @since 3.0
+     */
+    public void removePostSelectionChangedListener(ISelectionChangedListener listener) {
+        if (fNedTextEditor != null)  {
+            if (fNedTextEditor.getSelectionProvider() instanceof IPostSelectionProvider)  {
+                IPostSelectionProvider provider= (IPostSelectionProvider) fNedTextEditor.getSelectionProvider();
+                provider.removePostSelectionChangedListener(listener);
             }
         }
+    }
 
-		public boolean isNotificationInProgress() {
-			return notificationInProgress;
-		}
+    public boolean isNotificationInProgress() {
+        return notificationInProgress;
+    }
 }
