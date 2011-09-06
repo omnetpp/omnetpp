@@ -1697,6 +1697,17 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
     ps.nedfile->setFilename(slashifyFilename(np->getFileName()).c_str());
     ps.nedfile->setVersion("2");
 
+    // storing the start and end position of the whole file for the NedFileElement
+    // NOTE: we cannot use storePos() because it strips off the leading spaces
+    // and comments from the element.
+    YYLTYPE pos = np->getSource()->getFullTextPos();
+    NEDSourceRegion region;
+    region.startLine = pos.first_line;
+    region.startColumn = pos.first_column;
+    region.endLine = pos.last_line;
+    region.endColumn = pos.last_column;
+    ps.nedfile->setSourceRegion(region);
+
     // store file comment
     storeFileComment(ps.nedfile);
 

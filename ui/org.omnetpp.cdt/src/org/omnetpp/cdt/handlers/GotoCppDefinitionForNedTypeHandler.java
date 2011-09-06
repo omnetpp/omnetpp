@@ -82,6 +82,12 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                 if (element instanceof INedModelProvider)
                     nedElement = ((INedModelProvider)element).getModel();
 
+                // If we have a selection on an inner element, find the first element up that may have a C++ implementation
+                // or stop at the top level NedFileElement
+                while (nedElement!=null && !(nedElement instanceof INedTypeElement || nedElement instanceof ISubmoduleOrConnection 
+                                             || nedElement instanceof NedFileElementEx))
+                    nedElement = nedElement.getParent();
+                
                 // if the whole file is selected find the first simple module element that may
                 // have C++ implementation. Or try a Channel if no simple module exist in the file
                 if (nedElement instanceof NedFileElementEx) {
@@ -93,10 +99,6 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                         nedElement = implicitSelection;
                 }
                 
-                // we have a selection on an inner element. Find the first element up that may have a C++ implementaion
-                while (nedElement!=null && !(nedElement instanceof INedTypeElement || nedElement instanceof ISubmoduleOrConnection))
-                        nedElement = nedElement.getParent();
-
                 if (nedElement instanceof ISubmoduleOrConnection)
                     nedElement = ((ISubmoduleOrConnection)nedElement).getEffectiveTypeRef();
                 
