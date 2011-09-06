@@ -122,23 +122,23 @@ public class ProjectFeatureTester {
             // generate the test case targets
             String body = "";
             setAllEnabled(false);
-            body += makeMakefileFragment(ALL_DISABLED, extraMakemakeOptions);
+            body += makeMakefileFragment(ALL_DISABLED, extraMakemakeOptions, monitor);
             bump(monitor);
 
             for (ProjectFeature f : features.getFeatures()) {
                 features.setFeatureEnabledRec(configurations, nedSourceFoldersConfig, f, true);
-                body += makeMakefileFragment(f.getId()+_ONLY, extraMakemakeOptions);
+                body += makeMakefileFragment(f.getId()+_ONLY, extraMakemakeOptions, monitor);
                 setAllEnabled(false);
                 bump(monitor);
             }
 
             setAllEnabled(true);
-            body += makeMakefileFragment(ALL_ENABLED, extraMakemakeOptions);
+            body += makeMakefileFragment(ALL_ENABLED, extraMakemakeOptions, monitor);
             bump(monitor);
 
             for (ProjectFeature f : features.getFeatures()) {
                 features.setFeatureEnabledRec(configurations, nedSourceFoldersConfig, f, false);
-                body += makeMakefileFragment(f.getId()+_DISABLED, extraMakemakeOptions);
+                body += makeMakefileFragment(f.getId()+_DISABLED, extraMakemakeOptions, monitor);
                 setAllEnabled(true);
                 bump(monitor);
             }
@@ -198,13 +198,13 @@ public class ProjectFeatureTester {
             features.setFeatureEnabled(f, enable, configurations, nedSourceFoldersConfig);
     }
 
-    protected String makeMakefileFragment(String targetName, String extraNMakeOptions) throws CoreException {
+    protected String makeMakefileFragment(String targetName, String extraNMakeOptions, IProgressMonitor monitor) throws CoreException {
         if (!extraNMakeOptions.equals(""))
             extraNMakeOptions = extraNMakeOptions.trim() + " ";
         String text = targetName + ":\n";
         for (IContainer folder : buildSpec.getMakemakeFolders()) {
             if (folder.exists()) {
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, activeConfiguration);
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, activeConfiguration, monitor);
                 text += "\t$(PRINT_BANNER)\n";
                 text += "\t";
                 if (!folder.equals(project))

@@ -533,7 +533,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
                 if (folder.exists()) {
                     ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
                     ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
-                    MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
+                    MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration, null);
                     text += "\t";
                     if (!folder.equals(project))
                         text += "cd " + folder.getProjectRelativePath().toString() + " && ";
@@ -787,7 +787,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             List<String> submakeDirs = null;
             List<String> sourceDirs = null;
             try {
-                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration);
+                MakemakeOptions translatedOptions = MetaMakemake.translateOptions(folder, buildSpec, configuration, null);
                 submakeDirs = translatedOptions.submakeDirs;
                 sourceDirs = new Makemake().getSourceDirs(folder, translatedOptions);
             }

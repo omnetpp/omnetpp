@@ -171,7 +171,7 @@ public class DependencyCache {
             Job job = new Job("Analyzing includes...") {
                 @Override
                 protected IStatus run(IProgressMonitor monitor) {
-                    refreshDependencies(ProjectUtils.getOpenProjects());
+                    refreshDependencies(ProjectUtils.getOpenProjects(), monitor);
                     return Status.OK_STATUS;
                 }
             };
@@ -264,14 +264,14 @@ public class DependencyCache {
     }
 
     /**
-     * Computes dependency information for the given projects, and updates 
+     * Computes dependency information for the given projects, and updates
      * corresponding markers as a side effect.
      */
-    public synchronized void refreshDependencies(IProject[] projects) {
+    public synchronized void refreshDependencies(IProject[] projects, IProgressMonitor monitor) {
         Debug.println("DependencyCache: running delayed refreshDependencies() job");
-        for (IProject project : projects) 
+        for (IProject project : projects)
             if (CoreModel.getDefault().getProjectDescription(project) != null)  // i.e. is a CDT project
-                getProjectDependencyData(project); // refresh dependency data and update markers
+                getProjectDependencyData(project, monitor); // refresh dependency data and update markers
     }
 
     /**
@@ -280,8 +280,8 @@ public class DependencyCache {
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    public synchronized Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project) {
-        DependencyData projectData = getProjectDependencyData(project);
+    public synchronized Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project, IProgressMonitor monitor) {
+        DependencyData projectData = getProjectDependencyData(project, monitor);
         return projectData.folderDependencies;
     }
 
@@ -295,8 +295,8 @@ public class DependencyCache {
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    public synchronized Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project) {
-        DependencyData projectData = getProjectDependencyData(project);
+    public synchronized Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project, IProgressMonitor monitor) {
+        DependencyData projectData = getProjectDependencyData(project, monitor);
         return projectData.perFileDependencies;
     }
 
@@ -304,20 +304,20 @@ public class DependencyCache {
      * Return the given project and all projects referenced from it (transitively).
      * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
-    public synchronized IProject[] getProjectGroup(IProject project) {
-        DependencyData projectData = getProjectDependencyData(project);
+    public synchronized IProject[] getProjectGroup(IProject project, IProgressMonitor monitor) {
+        DependencyData projectData = getProjectDependencyData(project, monitor);
         return projectData.projectGroup.toArray(new IProject[]{});
     }
 
     /**
      * The central function of DependencyCache, all getters delegate here to obtain all
      * dependency data related to the project. May be a long-running operation, so it is
-     * supposed to be called from a background thread. 
-     * 
-     * All methods that invoke this MUST be synchronized (or directly lock the DependencyCache 
+     * supposed to be called from a background thread.
+     *
+     * All methods that invoke this MUST be synchronized (or directly lock the DependencyCache
      * object).
      */
-    protected DependencyData getProjectDependencyData(IProject project) {
+    protected DependencyData getProjectDependencyData(IProject project, IProgressMonitor monitor) {
         // do the invalidation tasks collected in projectsToInvalidate
         purgeInvalidatedData();
         
@@ -730,8 +730,8 @@ public class DependencyCache {
         }
     }
 
-    public synchronized void dumpPerFileDependencies(IProject project) {
-    	Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project);
+    public synchronized void dumpPerFileDependencies(IProject project, IProgressMonitor monitor) {
+    	Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project, monitor);
     	for(IContainer con : perFileDependencies.keySet()) {
     		Debug.println("folder: "+con.getFullPath());
     		for(IFile file : perFileDependencies.get(con).keySet())

@@ -27,6 +27,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
@@ -48,28 +49,30 @@ import org.omnetpp.common.util.StringUtils;
 //FIXME automatic includes from sub-make folders don't work!
 public class MetaMakemake {
     /**
-     * Generates Makefile in the given folder.
+     * Generates Makefile in the given folder. May be a long-running operation, mainly because of
+     * dependency generation.
      */
-    public static void generateMakefile(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration) throws CoreException, MakemakeException {
-        MakemakeOptions translatedOptions = translateOptions(makefileFolder, buildSpec, configuration);
+    public static void generateMakefile(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration, IProgressMonitor monitor) throws CoreException, MakemakeException {
+        MakemakeOptions translatedOptions = translateOptions(makefileFolder, buildSpec, configuration, monitor);
         IProject project = makefileFolder.getProject();
 
         // Activator.getDependencyCache().dumpPerFileDependencies(project);
 
-        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project);
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = Activator.getDependencyCache().getPerFileDependencies(project, monitor);
         new Makemake().generateMakefile(makefileFolder, translatedOptions, perFileDependencies);
     }
 
     /**
-     * Translates makemake options
+     * Translates makemake options. Currently may be a long-running operation due to the getFolderDependencies() call,
+     * but that does not seem to be strictly necessary.
      */
-    public static MakemakeOptions translateOptions(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration) throws CoreException {
+    public static MakemakeOptions translateOptions(IContainer makefileFolder, BuildSpecification buildSpec, ICConfigurationDescription configuration, IProgressMonitor monitor) throws CoreException {
         Assert.isTrue(buildSpec.getFolderMakeType(makefileFolder)==BuildSpecification.MAKEMAKE);
 
         MakemakeOptions options = buildSpec.getMakemakeOptions(makefileFolder);
         List<IContainer> makeFolders = buildSpec.getMakeFolders();
         IProject project = makefileFolder.getProject();
-        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project);
+        Map<IContainer, Set<IContainer>> folderDeps = Activator.getDependencyCache().getFolderDependencies(project, monitor);
 
         MakemakeOptions translatedOptions = options.clone();
 

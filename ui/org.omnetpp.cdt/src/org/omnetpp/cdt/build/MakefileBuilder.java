@@ -94,7 +94,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             buildSpec = null;
         }
 
-        return Activator.getDependencyCache().getProjectGroup(getProject());
+        return Activator.getDependencyCache().getProjectGroup(getProject(), monitor);
     }
 
     @Override
@@ -289,7 +289,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         long startTime = System.currentTimeMillis();
         for (IContainer makemakeFolder : makemakeFolders) {
             if (makemakeFolder.isAccessible())
-                generateMakefileFor(makemakeFolder, configuration);
+                generateMakefileFor(makemakeFolder, configuration, monitor);
             else
                 Debug.println("generateMakefiles(): ignoring nonexisting folder listed in buildspec: " + makemakeFolder.getFullPath());
         }
@@ -299,14 +299,14 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     /**
      * Generate makefile in the given folder.
      */
-    protected void generateMakefileFor(IContainer folder, ICConfigurationDescription configuration) throws CoreException {
+    protected void generateMakefileFor(IContainer folder, ICConfigurationDescription configuration, IProgressMonitor monitor) throws CoreException {
         boolean deleteMakeFiles = true;
         try {
             //Debug.println("Generating makefile in: " + folder.getFullPath());
             Assert.isTrue(folder.getProject().equals(getProject()));
             MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
             Assert.isTrue(options != null);
-            MetaMakemake.generateMakefile(folder, buildSpec, configuration);
+            MetaMakemake.generateMakefile(folder, buildSpec, configuration, monitor);
             deleteMakeFiles = false;
         }
         catch (MakemakeException e) {

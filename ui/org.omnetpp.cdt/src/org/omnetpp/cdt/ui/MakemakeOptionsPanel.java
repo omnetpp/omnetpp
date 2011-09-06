@@ -620,7 +620,7 @@ public class MakemakeOptionsPanel extends Composite {
                     ICConfigurationDescription configuration = projectDescription.getActiveConfiguration();
                     BuildSpecification tempBuildSpec = buildSpec.clone();
                     tempBuildSpec.setMakemakeOptions(folder, updatedOptions);
-                    final String translatedOptions = MetaMakemake.translateOptions(folder, tempBuildSpec, configuration).toString();
+                    final String translatedOptions = MetaMakemake.translateOptions(folder, tempBuildSpec, configuration, monitor).toString();
 
                     // display result if it's still relevant
                     if (jobSerial == thisJobSerial) {
