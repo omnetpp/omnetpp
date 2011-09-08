@@ -141,7 +141,29 @@ public class ProjectUtils {
 			toProject.setDescription(description, monitor);
 		}
 	}
-	
+
+	/**
+	 * Return the list of all open projects that directly or indirectly reference the given project.
+	 * Note: to obtain the list of open projects that directly reference it, use IProject.getReferencingProjects().
+	 */
+	public static IProject[] getAllReferencingProjects(IProject project, boolean includeSelf) throws CoreException {
+        Set<IProject> result = new HashSet<IProject>();
+        if (includeSelf && project.isAccessible())
+            result.add(project);
+        collectReferencingProjects(project, result);
+        return result.toArray(new IProject[]{});
+    }
+
+    // helper for getAllReferencingProjects()
+    private static void collectReferencingProjects(IProject project, Set<IProject> result) throws CoreException {
+        for (IProject p : project.getReferencingProjects()) {
+            if (p.isAccessible() && !result.contains(p)) {
+                result.add(p);
+                collectReferencingProjects(p, result);
+            }
+        }
+    }
+
 	/**
 	 * In case of CoreException it simply return false.
 	 */

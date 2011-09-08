@@ -94,7 +94,13 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             buildSpec = null;
         }
 
-        return Activator.getDependencyCache().getProjectGroup(getProject(), monitor);
+        try {
+            return Activator.getDependencyCache().getProjectGroup(getProject(), monitor);
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+            return new IProject[0];
+        }
     }
 
     @Override
