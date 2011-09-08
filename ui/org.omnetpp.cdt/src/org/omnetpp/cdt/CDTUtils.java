@@ -153,19 +153,6 @@ public class CDTUtils {
      * specify value==null. (Note: A languageSetting is part of folderDescriptions in ICConfiguration.)
      */
     public static void setMacro(ICLanguageSetting languageSetting, String name, String value) {
-        // "Feature" in CDT: For gcc toolchain, the Project Features feature used to break, due to mysterious
-        // "undef" (gnu.cpp.compiler.option.preprocessor.undef) options appearing in the .cproject file.
-        // They are probably an interference from the scanner: it picks up our WITH_xxx macros from the gcc
-        // command line, and presents them as "built-in" macros in the project configuration.
-        // The workaround is to set a dummy value every time before the real value. (This forces such entry
-        // to exist, and forces CDT to remove the "undef" entry.)
-        // See bug #407
-        //
-        doSetMacro(languageSetting, name, "dummy");
-        doSetMacro(languageSetting, name, value);
-    }
-
-    protected static void doSetMacro(ICLanguageSetting languageSetting, String name, String value) {
         ICLanguageSettingEntry[] settingEntries = languageSetting.getSettingEntries(ICSettingEntry.MACRO);
         int k = findSettingByName(settingEntries, name);
         if (value == null) {

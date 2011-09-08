@@ -125,10 +125,6 @@
             class="org.omnetpp.cdt.OmnetppGCCScannerInfoCollector"
             scope="project">
       </scannerInfoCollector>
-      <buildOutputProvider>
-         <open/>
-         <scannerInfoConsoleParser class="org.eclipse.cdt.make.internal.core.scannerconfig.gnu.GCCScannerInfoConsoleParser"/>
-      </buildOutputProvider>
       <scannerInfoProvider providerId="specsFile">
          <run
                command="gcc"
