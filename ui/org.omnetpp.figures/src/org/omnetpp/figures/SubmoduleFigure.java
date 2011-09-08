@@ -333,7 +333,15 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 			this.vectorArrangementPar1 = vectorArrangementPar1;
 			this.vectorArrangementPar2 = vectorArrangementPar2;
 			this.vectorArrangementPar3 = vectorArrangementPar3;
-			centerLoc = null; // force re-layout of this module
+			
+			// If the module position is set, we do not need the temporary position (centerLoc)
+			// used by the layouter as a temporary position. If we just unpinned
+			// this module (loc == null) we have to keep the current position. The layouter will
+			// use that as the current position (this will ensure that the module will not 'jump away'
+			// when we unpin it.
+			if (loc != null)      
+			    centerLoc = null; 
+			                      
 			revalidate();  // invalidate() not enough here
 		}
 	}
