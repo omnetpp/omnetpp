@@ -688,8 +688,7 @@ public class ProjectFeaturesManager {
         }
     }
 
-    protected static Boolean isMacroSet(IProject project, ICConfigurationDescription[] configurations, String name, String value) throws CoreException {
-        int setCount=0, unsetCount=0;
+    protected static boolean isMacroOK(IProject project, ICConfigurationDescription[] configurations, String name, String value) throws CoreException {
         for (ICConfigurationDescription configuration : configurations) {
             // check it on all source folders
             List<IContainer> sourceLocations = CDTUtils.getSourceLocations(project, configuration.getSourceEntries());
@@ -699,10 +698,10 @@ public class ProjectFeaturesManager {
                 for (ICLanguageSetting languageSetting : folderLanguageSettings) {
                     if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO)) {
                         ICLanguageSettingEntry macro = CDTUtils.getMacro(languageSetting, name);
-                        if (macro != null && ObjectUtils.equals(macro.getValue(), value))
-                            setCount++;
-                        else
-                            unsetCount++;
+                        if (value==null && macro!=null)
+                            return false;
+                        if (value!=null && (macro==null || !ObjectUtils.equals(macro.getValue(), value)))
+                            return false;
                     }
                 }
             }
@@ -711,14 +710,14 @@ public class ProjectFeaturesManager {
             for (ICLanguageSetting languageSetting : rootLanguageSettings) {
                 if (languageSetting.supportsEntryKind(ICSettingEntry.MACRO)) {
                     ICLanguageSettingEntry macro = CDTUtils.getMacro(languageSetting, name);
-                    if (macro != null && ObjectUtils.equals(macro.getValue(), value))
-                        setCount++;
-                    else
-                        unsetCount++;
+                    if (value==null && macro!=null)
+                        return false;
+                    if (value!=null && (macro==null || !ObjectUtils.equals(macro.getValue(), value)))
+                        return false;
                 }
             }
         }
-        return (setCount>0 && unsetCount>0) ? null /*misc*/ : setCount>0;
+        return true;
     }
 
     protected void setFolderExcluded(ICConfigurationDescription[] configurations, IContainer folder, boolean exclude) throws CoreException {
@@ -817,13 +816,11 @@ public class ProjectFeaturesManager {
                 if (cflag.startsWith("-D") && cflag.length()>2) {
                     String symbol = cflag.substring(2).replaceAll("=.*", "");
                     String value = cflag.replaceAll("[^=]*=?(.*)", "$1");
-                    Boolean isMacroSet = isMacroSet(project, configurations, symbol, enabled ? value : null);
-                    if (enabled) {
-                        if (isMacroSet==null || !isMacroSet)
+                    boolean isMacroOK = isMacroOK(project, configurations, symbol, enabled ? value : null);
+                    if (!isMacroOK) {
+                        if (enabled)
                             addProblem(problems, feature, "Feature is enabled but macro " + cflag.substring(2) + " is not set in at least one configuration, folder or language");
-                    }
-                    else {
-                        if (isMacroSet==null || isMacroSet)
+                        else
                             addProblem(problems, feature, "Feature is disabled but macro " + cflag.substring(2) + " is set in at least one configuration, folder or language");
                     }
                 }
