@@ -523,7 +523,7 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
-    if (!opt_expressmode)
+    if (!opt_expressmode && opt_eventbanners && component->isEvEnabled())
         ::fprintf(fout, "Initializing %s %s, stage %d\n",
                 component->isModule() ? "module" : "channel", component->getFullPath().c_str(), stage);
 }
