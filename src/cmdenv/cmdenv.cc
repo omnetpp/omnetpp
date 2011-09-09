@@ -262,6 +262,7 @@ void Cmdenv::run()
             ::fprintf(fout, "Initializing...\n");
             ::fflush(fout);
 
+            disable_tracing = opt_expressmode;
             startRun();
             startrun_done = true;
 
@@ -272,6 +273,7 @@ void Cmdenv::run()
             // simulate() should only throw exception if error occurred and
             // finish() should not be called.
             simulate();
+            disable_tracing = false;
 
             ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
             ::fflush(fout);
@@ -283,6 +285,7 @@ void Cmdenv::run()
         catch (std::exception& e)
         {
             had_error = true;
+            disable_tracing = false;
             stoppedWithException(e);
             displayException(e);
         }
