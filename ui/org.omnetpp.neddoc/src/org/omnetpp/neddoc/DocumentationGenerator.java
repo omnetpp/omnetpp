@@ -635,7 +635,7 @@ public class DocumentationGenerator {
 
                     try {
                         FileUtils.writeTextFile(modifiedDoxyConfigFile, content, null);
-                        ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString());
+                        ProcessUtils.exec(doxyExecutablePath, new String[] {modifiedDoxyConfigFile.toString()}, project.getLocation().toString(), monitor);
                     }
                     finally {
                         modifiedDoxyConfigFile.delete();
@@ -2213,7 +2213,7 @@ public class DocumentationGenerator {
             throw new IllegalStateException("The GraphViz Dot executable path is invalid, set it using Window/Preferences...\nThe currently set path is: " + dotExecutablePath);
 
         // dot has a width/height limit of 32768 pixels, see bug #149.
-        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-Gsize=300,300", "-Gdpi=96" ,"-o", outputFile.toString()}, ".", dot.toString(), 10);
+        ProcessUtils.exec(dotExecutablePath, new String[] {"-T" + format, "-Gsize=300,300", "-Gdpi=96" ,"-o", outputFile.toString()}, ".", dot.toString(), 10, monitor);
     }
 
     protected String getParamTypeAsString(ParamElementEx param) {

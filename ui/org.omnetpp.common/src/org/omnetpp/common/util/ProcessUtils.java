@@ -12,6 +12,9 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.concurrent.CancellationException;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 
 /**
  * Helpful utility class to spawn a child process and provide a string as its standard input and
@@ -55,20 +58,20 @@ public class ProcessUtils {
         private static final long serialVersionUID = 1L;
     }
 
-    public static ProcessResult exec(String command) throws IOException, TimeoutException, ExecException {
-        return exec(command, null);
+    public static ProcessResult exec(String command, IProgressMonitor monitor) throws IOException, TimeoutException, ExecException, CancellationException {
+        return exec(command, null, monitor);
     }
 
-    public static ProcessResult exec(String command, String[] arguments) throws IOException, TimeoutException, ExecException {
-        return exec(command, arguments, ".");
+    public static ProcessResult exec(String command, String[] arguments, IProgressMonitor monitor) throws IOException, TimeoutException, ExecException, CancellationException {
+        return exec(command, arguments, ".", monitor);
     }
 
-    public static ProcessResult exec(String command, String[] arguments, String workingDirectory) throws IOException, TimeoutException, ExecException {
-        return exec(command, arguments, workingDirectory, null);
+    public static ProcessResult exec(String command, String[] arguments, String workingDirectory, IProgressMonitor monitor) throws IOException, TimeoutException, ExecException, CancellationException {
+        return exec(command, arguments, workingDirectory, null, monitor);
     }
 
-    public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput) throws IOException, TimeoutException, ExecException {
-        return exec(command, arguments, workingDirectory, standardInput, 0);
+    public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, IProgressMonitor monitor) throws IOException, TimeoutException, ExecException, CancellationException {
+        return exec(command, arguments, workingDirectory, standardInput, 0, monitor);
     }
 
     /**
@@ -76,7 +79,7 @@ public class ProcessUtils {
      * The standard input is fed into the spawn process and the output is read until the process finishes or timeout occurs.
      * The timeout value 0 means wait infinitely long to finish the process.
      */
-    public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout) throws IOException, TimeoutException, ExecException {
+    public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout, IProgressMonitor monitor) throws IOException, TimeoutException, ExecException, CancellationException {
         String[] cmd = new String[arguments == null ? 1 : arguments.length + 1];
         cmd[0] = command;
         if (arguments != null)
@@ -115,16 +118,22 @@ public class ProcessUtils {
             errorStream.readFully(data);
             standardError.write(data);
 
+            // check progress monitor
+            if (monitor != null && monitor.isCanceled()) {
+                process.destroy();
+                throw new CancellationException();
+            }
+
             int exitValue;
 
             try {
-                exitValue = process.exitValue();
+                exitValue = process.exitValue(); // throws exception if process is still alive
             }
             catch (Exception e) {
-                // ignore exitValue errors
-                continue;
+                continue; // still working
             }
 
+            // process terminated
             ProcessResult result = new ProcessResult(standardOutput.toString(), standardError.toString(), exitValue);
 
             if (exitValue == 0)
@@ -133,6 +142,7 @@ public class ProcessUtils {
                 throw new ExecException(result, "Process exec error for " + command + " (exit code " + exitValue + ") : " + standardError.toString());
         }
 
+        // timeout
         process.destroy();
 
         throw new TimeoutException("Process exec timeout elapsed for: " + command);

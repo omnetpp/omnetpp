@@ -275,7 +275,7 @@ public class DocumentationGeneratorPropertyPage
 
     public static void generateDefaultDoxyConfigurationFile(final IProject project, final String doxyExecutablePath, String fileName) {
         try {
-            ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString());
+            ProcessUtils.exec(doxyExecutablePath, new String[] {"-g", fileName}, project.getLocation().toString(), null);
 
             String content = FileUtils.readTextFile(fileName, null);
             // AUTO means will be set when generating the documentation based on project settings

@@ -32,19 +32,19 @@ public class ProcessUtils {
 
 
     public static ProcessResult exec(String command) throws IOException, TimeoutException, ExecException {
-        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command));
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, null));
     }
 
     public static ProcessResult exec(String command, String[] arguments) throws IOException, TimeoutException, ExecException {
-        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments));
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, null));
     }
 
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory) throws IOException, TimeoutException, ExecException {
-        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory));
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, null));
     }
 
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput) throws IOException, TimeoutException, ExecException {
-        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, 0));
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, 0, null));
     }
 
     /**
@@ -53,7 +53,7 @@ public class ProcessUtils {
      * The timeout value 0 means wait infinitely long to finish the process.
      */
     public static ProcessResult exec(String command, String[] arguments, String workingDirectory, String standardInput, double timeout) throws IOException, TimeoutException, ExecException {
-        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, timeout));
+        return new ProcessResult(org.omnetpp.common.util.ProcessUtils.exec(command, arguments, workingDirectory, standardInput, timeout, null));
     }
 
     /**
