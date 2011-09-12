@@ -446,10 +446,8 @@ void EventLog::cacheEventLogEntry(EventLogEntry *eventLogEntry)
     // collect module created entries
     ModuleCreatedEntry *moduleCreatedEntry = dynamic_cast<ModuleCreatedEntry *>(eventLogEntry);
 
-    if (moduleCreatedEntry) {
+    if (moduleCreatedEntry)
         moduleIdToModuleCreatedEntryMap[moduleCreatedEntry->moduleId] = moduleCreatedEntry;
-        getModuleCreatedEntries();
-    }
 
     // collect gate created entries
     GateCreatedEntry *gateCreatedEntry = dynamic_cast<GateCreatedEntry *>(eventLogEntry);

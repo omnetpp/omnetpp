@@ -232,17 +232,21 @@ EventLogEntry *EventLogTableFacade::getEntryInEvent(IEvent *event, int index)
 {
     Assert(index >= 0 && index < getNumMatchingEventLogEntries(event));
 
-    int num = event->getNumEventLogEntries();
+    if (filterMode == ALL_ENTRIES)
+        return event->getEventLogEntry(index);
+    else {
+        int num = event->getNumEventLogEntries();
 
-    for (int i = 0; i < num; i++)
-    {
-        EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
+        for (int i = 0; i < num; i++)
+        {
+            EventLogEntry *eventLogEntry = event->getEventLogEntry(i);
 
-        if (matchesFilter(eventLogEntry)) {
-            if (index == 0)
-                return eventLogEntry;
-            else
-                index--;
+            if (matchesFilter(eventLogEntry)) {
+                if (index == 0)
+                    return eventLogEntry;
+                else
+                    index--;
+            }
         }
     }
 
