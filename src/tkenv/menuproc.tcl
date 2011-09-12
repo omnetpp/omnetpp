@@ -324,6 +324,10 @@ proc toggle_record_eventlog {} {
    } else {
        opp_setsimoption record_eventlog 1
    }
+   if {[opp_eventlogrecording hasintervals]} {
+       messagebox {Eventlog Recording} "Switching to manual control of eventlog recording -- the recording intervals specified in the configuration will be ignored." info ok
+       opp_eventlogrecording clearintervals
+   }
    reflect_record_eventlog
 }
 
@@ -334,11 +338,6 @@ proc reflect_record_eventlog {} {
        .toolbar.eventlog config -relief sunken
    } else {
        .toolbar.eventlog config -relief flat
-   }
-
-   if {[opp_eventlogrecording hasintervals]} {
-       messagebox {Eventlog Recording} "Switching to manual control of eventlog recording -- the recording intervals specified in the configuration will be ignored." info ok
-       opp_eventlogrecording clearintervals
    }
 }
 
