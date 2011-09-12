@@ -83,12 +83,10 @@ double IEventLog::getApproximatePercentageForEventNumber(eventnumber_t eventNumb
     IEvent *lastEvent = getLastEvent();
     IEvent *event = getEventForEventNumber(eventNumber);
 
-    if (firstEvent == NULL)
+    if (firstEvent == NULL || firstEvent == lastEvent)
         return 0.0;
     else if (event == NULL)
         return 0.5;
-    else if (firstEvent == lastEvent)
-        return 1.0;
     else {
         file_offset_t beginOffset = firstEvent->getBeginOffset();
         file_offset_t endOffset = lastEvent->getBeginOffset();
