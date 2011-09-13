@@ -49,6 +49,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Figure.FigureIterator;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -65,6 +66,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
@@ -75,6 +77,8 @@ import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.StringUtils.IRegexpReplacementProvider;
+import org.omnetpp.figures.SubmoduleFigure;
+import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -82,6 +86,7 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.MsgResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
+import org.omnetpp.ned.editor.graph.figures.CompoundModuleTypeFigure;
 import org.omnetpp.ned.editor.graph.misc.NedFigureProvider;
 import org.omnetpp.ned.editor.graph.parts.CompoundModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.NedEditPart;
@@ -2343,8 +2348,17 @@ public class DocumentationGenerator {
     }
 
     protected void outMapReference(INedTypeElement model, IFigure figure) throws IOException {
+        //FigureUtils.debugPrintFigureAncestors(figure, "");
         Rectangle bounds = new Rectangle(figure.getBounds());
-        figure.translateToAbsolute(bounds);
+        if (figure instanceof SubmoduleFigure) {
+            // translate it to the compound module type figure's coordinate system
+            IFigure f = figure;
+            while (!(f instanceof CompoundModuleTypeFigure)) {
+                f.translateToParent(bounds);
+                f = f.getParent();
+                Assert.isTrue(f != null);
+            }
+        }
         outMapReference(model, bounds);
     }
 

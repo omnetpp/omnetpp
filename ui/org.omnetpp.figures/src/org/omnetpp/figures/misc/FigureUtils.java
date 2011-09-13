@@ -62,11 +62,22 @@ public class FigureUtils {
 	 */
 	static public void debugPrintFigureHierarchy(IFigure f, String indent) {
 		Debug.println(indent + f.getClass().getSimpleName() + " @"
-				+ f.hashCode() + "  " + f.getBounds());
+				+ f.hashCode() + "  " + f.getBounds() + "  useLocalCoords=" + f.isCoordinateSystem());
 		for (Object child : f.getChildren()) {
 			debugPrintFigureHierarchy((IFigure) child, indent + ".   ");
 		}
 	}
+
+	/**
+     * Debug function to display the ancestor chain of a figure
+     */
+    static public void debugPrintFigureAncestors(IFigure f, String indent) {
+        Debug.println(indent + f.getClass().getSimpleName() + " @"
+                + f.hashCode() + "  " + f.getBounds() + "  useLocalCoords=" + f.isCoordinateSystem());
+        if (f.getParent() != null) {
+            debugPrintFigureAncestors(f.getParent(), indent + ".   ");
+        }
+    }
 
 	/**
 	 * Adds a tooltip listener to the provided canvas. Figures that want to display a tooltip
