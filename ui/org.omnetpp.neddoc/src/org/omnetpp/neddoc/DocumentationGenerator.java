@@ -111,6 +111,7 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IInterfaceTypeElement;
 import org.omnetpp.ned.model.interfaces.IModuleTypeElement;
 import org.omnetpp.ned.model.interfaces.IMsgTypeElement;
+import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.ITypeElement;
@@ -1139,12 +1140,10 @@ public class DocumentationGenerator {
         for (final String packageName : packageNames) {
             withGeneratingHTMLFile(packageName + "-package.html", new Runnable() {
                 public void run() throws Exception {
-                    out("<h2>Package " + packageName + "</h2>\r\n" +
-                        "<table class=\"typetable\">\r\n" +
-                        "   <tr>\r\n" +
-                        "      <th>Name</th>\r\n" +
-                        "      <th>Description</th>\r\n" +
-                        "   </tr>\r\n");
+                    out("<h2>Package " + packageName + "</h2>\r\n");
+
+                    out("<table class=\"typestable\">\r\n");
+                    generateTypesTableHead();
 
                     for (ITypeElement typeElement : typeElements)
                         if (typeElement instanceof INedTypeElement)
@@ -1167,23 +1166,22 @@ public class DocumentationGenerator {
                         monitor.subTask(file.getFullPath().toString());
                         String fileType = nedResources.isNedFile(file) ? "NED" : msgResources.isMsgFile(file) ? "Msg" : "";
 
-                        out("<h2 class=\"comptitle\">" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\r\n" +
-                            "<table class=\"typetable\">\r\n" +
-                            "   <tr>\r\n" +
-                            "      <th>Name</th>\r\n" +
-                            "      <th>Description</th>\r\n" +
-                            "   </tr>\r\n");
+                        out("<h2 class=\"comptitle\">" + fileType + " File <i>" + file.getProjectRelativePath() + "</i></h2>\r\n");
 
-                        List<? extends ITypeElement> typeElements;
-                        if (msgResources.isMsgFile(file))
-                            typeElements = msgResources.getMsgFileElement(file).getTopLevelTypeNodes();
-                        else
-                            typeElements = nedResources.getNedFileElement(file).getTopLevelTypeNodes();
+                        INedFileElement fileElement = msgResources.isMsgFile(file) ?
+                                msgResources.getMsgFileElement(file) : nedResources.getNedFileElement(file);
+                        List<? extends ITypeElement> typeElements = fileElement.getTopLevelTypeNodes();
 
-                        for (ITypeElement typeElement : typeElements)
-                            generateTypeReferenceLine(typeElement);
+                        if (!typeElements.isEmpty()) {
+                            out("<table class=\"typestable\">\r\n");
+                            generateTypesTableHead();
 
-                        out("</table>\r\n");
+                            for (ITypeElement typeElement : typeElements)
+                                generateTypeReferenceLine(typeElement);
+
+                            out("</table>\r\n");
+                        }
+
                         generateSourceContent(file);
                         monitor.worked(1);
                     }
@@ -1276,19 +1274,19 @@ public class DocumentationGenerator {
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
         if (fields.size() != 0) {
             out("<h3 class=\"subtitle\">Fields:</h3>\r\n" +
-        		"<table class=\"paramtable\">\r\n" +
+        		"<table class=\"fieldstable\">\r\n" +
         		"   <tr>\r\n" +
-        		"      <th>Name</th>\r\n" +
-        		"      <th>Type</th>\r\n" +
-        		"      <th>Description</th>\r\n" +
+        		"      <th class=\"name\">Name</th>\r\n" +
+        		"      <th class=\"type\">Type</th>\r\n" +
+        		"      <th class=\"description\">Description</th>\r\n" +
         		"   </tr>\r\n");
             for (String name : fields.keySet())
             {
                 FieldElement field = fields.get(name);
                 String trClass = localFields.containsKey(name) ? "local" : "inherited";
                 out("<tr class=\"" + trClass + "\">\r\n" +
-            		"   <td width=\"150\">" + name + "</td>\r\n" +
-            		"   <td width=\"100\">\r\n" +
+            		"   <td>" + name + "</td>\r\n" +
+            		"   <td>\r\n" +
             		"      <i>\r\n");
                 String dataType = field.getDataType();
                 IMsgTypeElement fieldTypeElement = msgResources.lookupMsgType(dataType);
@@ -1297,7 +1295,7 @@ public class DocumentationGenerator {
                 else
                     out(dataType);
         		if (field.getIsVector())
-                    out("[" + field.getVectorSize() + "]");
+                    out("[" + field.getVectorSize() + "]"); // note: no whitespace between type name and "["
         		out("</i>\r\n" +
             		"   </td>\r\n" +
             		"   <td>");
@@ -1314,11 +1312,11 @@ public class DocumentationGenerator {
 
         if (properties.size() != 0) {
             out("<h3 class=\"subtitle\">Properties:</h3>\r\n" +
-        		"<table class=\"paramtable\">\r\n" +
+        		"<table class=\"propertiestable\">\r\n" +
         		"   <tr>\r\n" +
-        		"      <th>Name</th>\r\n" +
-        		"      <th>Value</th>\r\n" +
-        		"      <th>Description</th>\r\n" +
+        		"      <th class=\"name\">Name</th>\r\n" +
+        		"      <th class=\"value\">Value</th>\r\n" +
+        		"      <th class=\"description\">Description</th>\r\n" +
         		"   </tr>\r\n");
 
             for (String name : properties.keySet())
@@ -1327,8 +1325,8 @@ public class DocumentationGenerator {
 
                 if (property != null) {
                 	out("<tr>\r\n" +
-                		"   <td width=\"150\">" + name + "</td>\r\n" +
-                		"   <td width=\"100\"><i>");
+                		"   <td>" + name + "</td>\r\n" +
+                		"   <td><i>");
                 	generatePropertyLiteralValues(property);
                 	out("</i></td>\r\n" +
                 		"   <td>");
@@ -1368,19 +1366,26 @@ public class DocumentationGenerator {
             }
 
             if (compoundModules.size() != 0) {
-                out("<h3 class=\"subtitle\">Used in compound modules:</h3>\r\n" +
-            		"<p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>\r\n" +
-            		"<table>\r\n");
+                out("<h3 class=\"subtitle\">Used in compound modules:</h3>\r\n");
+
+                out("<table class=\"typestable\">\r\n");
+                generateTypesTableHead();
+
                 for (INedTypeElement userElement : compoundModules)
                     generateTypeReferenceLine(userElement);
+
         		out("</table>\r\n");
             }
 
             if (networks.size() != 0) {
-                out("<h3 class=\"subtitle\">Networks:</h3>\r\n" +
-            		"<table>\r\n");
+                out("<h3 class=\"subtitle\">Networks:</h3>\r\n");
+
+                out("<table class=\"typestable\">\r\n");
+                generateTypesTableHead();
+
                 for (INedTypeElement userElement : networks)
                     generateTypeReferenceLine(userElement);
+
         		out("</table>\r\n");
             }
         }
@@ -1393,12 +1398,12 @@ public class DocumentationGenerator {
 
         if (!paramsDeclarations.isEmpty()) {
             out("<h3 class=\"subtitle\">Parameters:</h3>\r\n" +
-        		"<table class=\"paramtable\">\r\n" +
+        		"<table class=\"paramstable\">\r\n" +
         		"   <tr>\r\n" +
-        		"      <th>Name</th>\r\n" +
-        		"      <th>Type</th>\r\n" +
-                "      <th>Default value</th>\r\n" +
-        		"      <th>Description</th>\r\n" +
+        		"      <th class=\"name\">Name</th>\r\n" +
+        		"      <th class=\"type\">Type</th>\r\n" +
+                "      <th class=\"defaultvalue\">Default value</th>\r\n" +
+        		"      <th class=\"description\">Description</th>\r\n" +
         		"   </tr>\r\n");
 
             for (String name : paramsDeclarations.keySet()) {
@@ -1407,11 +1412,11 @@ public class DocumentationGenerator {
                 String trClass = localParamsDeclarations.containsKey(name) ? "local" : "inherited";
 
                 out("<tr class=\"" + trClass + "\">\r\n" +
-            		"   <td width=\"150\">" + name + "</td>\r\n" +
-            		"   <td width=\"100\">\r\n" +
+            		"   <td>" + name + "</td>\r\n" +
+            		"   <td>\r\n" +
             		"      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
             		"   </td>\r\n" +
-            		"   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
+            		"   <td>" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
                     "   <td>");
                 generateTableComment(getExpandedComment(paramDeclaration));
         		out("   </td>\r\n" +
@@ -1426,21 +1431,21 @@ public class DocumentationGenerator {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("signal");
         if (propertyMap != null) {
             out("<h3 class=\"subtitle\">Signals:</h3>\r\n" +
-                    "<table class=\"signaltable\">\r\n" +
+                    "<table class=\"signalstable\">\r\n" +
                     "   <tr>\r\n" +
-                    "      <th>Name</th>\r\n" +
-                    "      <th>Type</th>\r\n" +
-                    "      <th>Unit</th>\r\n" +
+                    "      <th class=\"name\">Name</th>\r\n" +
+                    "      <th class=\"type\">Type</th>\r\n" +
+                    "      <th class=\"unit\">Unit</th>\r\n" +
                     "   </tr>\r\n");
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
                 out("<tr class=\"local\">\r\n" +
-                    "   <td width=\"100\">" + name + "</td>\r\n" +
-                    "   <td width=\"100\"><i>\r\n");
+                    "   <td>" + name + "</td>\r\n" +
+                    "   <td><i>\r\n");
                 String cppType = getPropertyElementValue(propertyElement, "type");
                 generateCppReference(cppType, cppType);
                 out("   </i></td>\r\n" +
-                    "   <td width=\"30\">" + getPropertyElementValue(propertyElement, "unit") + "</td>\r\n");
+                    "   <td>" + getPropertyElementValue(propertyElement, "unit") + "</td>\r\n");
                 out("</tr>\r\n");
             }
             out("</table>\r\n");
@@ -1451,24 +1456,24 @@ public class DocumentationGenerator {
         Map<String, PropertyElementEx> propertyMap = typeElement.getProperties().get("statistic");
         if (propertyMap != null) {
             out("<h3 class=\"subtitle\">Statistics:</h3>\r\n" +
-                    "<table class=\"statistictable\">\r\n" +
+                    "<table class=\"statisticstable\">\r\n" +
                     "   <tr>\r\n" +
-                    "      <th>Name</th>\r\n" +
-                    "      <th>Title</th>\r\n" +
-                    "      <th>Source</th>\r\n" +
-                    "      <th>Record</th>\r\n" +
-                    "      <th>Unit</th>\r\n" +
-                    "      <th>Interpolation Mode</th>\r\n" +
+                    "      <th class=\"name\">Name</th>\r\n" +
+                    "      <th class=\"title\">Title</th>\r\n" +
+                    "      <th class=\"source\">Source</th>\r\n" +
+                    "      <th class=\"record\">Record</th>\r\n" +
+                    "      <th class=\"unit\">Unit</th>\r\n" +
+                    "      <th class=\"interpolationmode\">Interpolation Mode</th>\r\n" +
                     "   </tr>\r\n");
             for (String name : propertyMap.keySet()) {
                 PropertyElementEx propertyElement = propertyMap.get(name);
                 out("<tr class=\"local\">\r\n" +
-                    "   <td width=\"100\">" + name + "</td>\r\n" +
-                    "   <td width=\"200\">" + getPropertyElementValue(propertyElement, "title") + "</td>\r\n" +
-                    "   <td width=\"100\">" + getPropertyElementValue(propertyElement, "source") + "</td>\r\n" +
-                    "   <td width=\"160\">" + getPropertyElementValue(propertyElement, "record") + "</td>\r\n" +
-                    "   <td width=\"30\">" + getPropertyElementValue(propertyElement, "unit") + "</td>\r\n" +
-                    "   <td width=\"120\">" + getPropertyElementValue(propertyElement, "interpolationmode") + "</td>\r\n");
+                    "   <td>" + name + "</td>\r\n" +
+                    "   <td>" + getPropertyElementValue(propertyElement, "title") + "</td>\r\n" +
+                    "   <td>" + getPropertyElementValue(propertyElement, "source") + "</td>\r\n" +
+                    "   <td>" + getPropertyElementValue(propertyElement, "record") + "</td>\r\n" +
+                    "   <td>" + getPropertyElementValue(propertyElement, "unit") + "</td>\r\n" +
+                    "   <td>" + getPropertyElementValue(propertyElement, "interpolationmode") + "</td>\r\n");
                 out("</tr>\r\n");
             }
             out("</table>\r\n");
@@ -1481,12 +1486,12 @@ public class DocumentationGenerator {
 
         if (params.size() != 0) {
             out("<h3 class=\"subtitle\">Unassigned submodule parameters:</h3>\r\n" +
-                "<table class=\"paramtable\">\r\n" +
+                "<table class=\"deepparamstable\">\r\n" +
                 "   <tr>\r\n" +
-                "      <th>Name</th>\r\n" +
-                "      <th>Type</th>\r\n" +
-                "      <th>Default value</th>\r\n" +
-                "      <th>Description</th>\r\n" +
+                "      <th class=\"name\">Name</th>\r\n" +
+                "      <th class=\"type\">Type</th>\r\n" +
+                "      <th class=\"defaultvalue\">Default value</th>\r\n" +
+                "      <th class=\"description\">Description</th>\r\n" +
                 "   </tr>\r\n");
             for (ArrayList<Object> tuple : params) {
                 ParamElementEx paramDeclaration = (ParamElementEx)tuple.get(1);
@@ -1494,10 +1499,10 @@ public class DocumentationGenerator {
 
                 out("<tr>\r\n" +
                         "   <td>" + (String)tuple.get(0) + "</td>\r\n" +
-                        "   <td width=\"100\">\r\n" +
+                        "   <td>\r\n" +
                         "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
                         "   </td>\r\n" +
-                        "   <td width=\"120\">" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
+                        "   <td>" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
                         "   <td>");
                     generateTableComment(getExpandedComment(paramDeclaration));
                     out("   </td>\r\n" +
@@ -1547,12 +1552,12 @@ public class DocumentationGenerator {
 
         if (!gateDeclarations.isEmpty()) {
             out("<h3 class=\"subtitle\">Gates:</h3>\r\n" +
-                "<table class=\"paramtable\">\r\n" +
+                "<table class=\"gatestable\">\r\n" +
                 "   <tr>\r\n" +
-                "      <th>Name</th>\r\n" +
-                "      <th>Direction</th>\r\n" +
-                "      <th>Size</th>\r\n" +
-                "      <th>Description</th>\r\n" +
+                "      <th class=\"name\">Name</th>\r\n" +
+                "      <th class=\"type\">Direction</th>\r\n" +
+                "      <th class=\"gatesize\">Size</th>\r\n" +
+                "      <th class=\"description\">Description</th>\r\n" +
                 "   </tr>\r\n");
 
             for (String name : gateDeclarations.keySet()) {
@@ -1561,9 +1566,9 @@ public class DocumentationGenerator {
                 String trClass = localGateDeclarations.containsKey(name) ? "local" : "inherited";
 
                 out("<tr class=\"" + trClass + "\">\r\n" +
-                    "   <td width=\"150\">" + name + (gateDeclaration.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" +
-                    "   <td width=\"100\"><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" +
-                    "   <td width=\"50\">" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
+                    "   <td>" + name + (gateDeclaration.getIsVector() ? " [ ]" : "") + "</xsl:if></td>\r\n" +
+                    "   <td><i>" + gateDeclaration.getAttribute(GateElementEx.ATT_TYPE) + "</i></td>\r\n" +
+                    "   <td>" + (gateSize != null && gateSize.getIsVector() ? gateSize.getVectorSize() : "") + "</td>" +
                     "   <td>");
                 generateTableComment(getExpandedComment(gateDeclaration));
                 out("</td>\r\n" +
@@ -1579,20 +1584,34 @@ public class DocumentationGenerator {
             out(processHTMLContent("comment", comment));
     }
 
+    protected void generateTypesTableHead() throws IOException {
+        out("   <tr>\r\n" +
+            "      <th class=\"name\">Name</th>\r\n" +
+            "      <th class=\"type\">Type</th>\r\n" +
+            "      <th class=\"description\">Description</th>\r\n" +
+            "   </tr>\r\n");
+    }
+
     protected void generateTypeReferenceLine(ITypeElement typeElement) throws IOException {
         out("<tr>\r\n" +
             "   <td>\r\n");
-        generateTypeReference(typeElement);
+        generateTypeReference(typeElement); out("\r\n");
+        out("   </td>\r\n" +
+                "   <td>\r\n");
+        generateTypeType(typeElement); out("\r\n");
         out("   </td>\r\n" +
             "   <td>\r\n");
-        generateTypeComment(typeElement);
+        generateTypeComment(typeElement); out("\r\n");
         out("   </td>\r\n" +
             "</tr>\r\n");
     }
 
     protected void generateTypeReference(ITypeElement typeElement) throws IOException {
-        out("<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>\r\n" +
-            "<i> (" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + ")</i>\r\n");
+        out("<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>");
+    }
+
+    protected void generateTypeType(ITypeElement typeElement) throws IOException {
+        out("<i>" + typeElement.getReadableTagName().replaceAll(" ", "&nbsp;") + "</i>");
     }
 
     protected void generateTypeComment(ITypeElement typeElement) throws IOException {
@@ -1600,7 +1619,7 @@ public class DocumentationGenerator {
         if (comment != null)
             out(processHTMLContent("briefcomment", comment));
         else
-            out("<i>(no description)</i>\r\n");
+            out("<i>(no description)</i>");
     }
 
     protected void generateUnresolvedTypeReferenceLine(String name) throws IOException {
@@ -1652,8 +1671,10 @@ public class DocumentationGenerator {
 
     protected void generateKnownSubtypesTable(ITypeElement typeElement) throws IOException {
         if (subtypesMap.containsKey(typeElement)) {
-            out("<h3 class=\"subtitle\">Known subclasses:</h3>\r\n" +
-        		"<table>\r\n");
+            out("<h3 class=\"subtitle\">Known subclasses:</h3>\r\n");
+
+            out("<table class=\"typestable\">\r\n");
+            generateTypesTableHead();
 
             for (ITypeElement subtype : subtypesMap.get(typeElement))
                 generateTypeReferenceLine(subtype);
@@ -1664,8 +1685,10 @@ public class DocumentationGenerator {
 
     protected void generateExtendsTable(ITypeElement typeElement) throws IOException {
         if (typeElement.getFirstExtends() != null) {
-            out("<h3 class=\"subtitle\">Extends:</h3>\r\n" +
-        		"<table>\r\n");
+            out("<h3 class=\"subtitle\">Extends:</h3>\r\n");
+
+            out("<table class=\"typestable\">\r\n");
+            generateTypesTableHead();
 
             if (typeElement instanceof IInterfaceTypeElement)
                 for (INedTypeElement supertype : ((IInterfaceTypeElement)typeElement).getNedTypeInfo().getLocalInterfaces())
