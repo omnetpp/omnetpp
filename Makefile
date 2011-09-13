@@ -68,6 +68,9 @@ base: $(BASE)
 
 samples: $(SAMPLES)
 
+opplibs:
+	$(MAKE) $(MOPTS) $(MAKEFILE) BUILDING_UILIBS=yes ui
+
 ui: check-ui-vars common layout eventlog scave nedxml $(JNILIBS)
 
 # dependencies (because of ver.h, opp_msgc, etc)
