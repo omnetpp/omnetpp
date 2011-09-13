@@ -19,8 +19,8 @@
 !error The UI library is supported only with static linking. Please build with "nmake SHARED_LIBS=no ..."
 !endif
 
-L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/ui
+L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/ui
 
 JDK="$(TOOLS_DIR)\jdk1.5.0"
 SWIG="$(TOOLS_DIR)\SWIGWIN-1.3.31\swig.exe"

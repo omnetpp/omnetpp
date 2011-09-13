@@ -19,8 +19,8 @@ endif
 # Local definitions
 #
 LIBNAME=liboppscave$D
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
-L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/scave
+L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
 COPTS=$(CFLAGS) $(XML_CFLAGS) -I. -I../common -I$(OMNETPP_INCL_DIR)/platdep
 IMPLIBS= -L$L -loppcommon$D

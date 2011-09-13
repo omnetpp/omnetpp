@@ -18,8 +18,8 @@
 # Local definitions
 #
 LIBNAME=oppeventlog$D
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
-L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/eventlog
+L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../common/oppcommon$D.lib

@@ -18,8 +18,8 @@
 # Local definitions
 #
 LIBNAME=oppscave$D
-O=$(OMNETPP_OUT_DIR)/$(TOOLCHAIN_NAME)-$(MODE)/src/scave
-L=$(OMNETPP_LIB_DIR)/$(TOOLCHAIN_NAME)
+O=$(OMNETPP_OUT_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)-$(MODE)/src/scave
+L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 
 COPTS= $(CFLAGS) $(XML_CFLAGS) -I. -I../common -I"$(OMNETPP_INCL_DIR)/platdep" /Fd"$O/$(LIBNAME).pdb"
 IMPLIBS= $O/../common/oppcommon$D.lib $(XML_LIBS)
