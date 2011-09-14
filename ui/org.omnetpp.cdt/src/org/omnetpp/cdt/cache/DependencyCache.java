@@ -333,9 +333,8 @@ public class DependencyCache {
     }
 
     protected Map<IFile, List<Include>> collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync, IProgressMonitor monitor) throws CoreException {
-
         // ensure index is up to date
-        Debug.println("DependencyCache: updating index for project " + project.getName());
+        Debug.println("DependencyCache: requesting update of index for project " + project.getName());
         ICProject cproject = CoreModel.getDefault().getCModel().getCProject(project.getName());
         IIndexManager indexManager = CCorePlugin.getIndexManager();
         // Note: IIndexManager.FORCE_INDEX_INCLUSION is needed, otherwise if there is a Foo.h that
@@ -343,13 +342,16 @@ public class DependencyCache {
         // Foo.h will be left out from the index for some reason and we won't know about its includes.
         // See bug #410.
         indexManager.update(new ICElement[] {cproject}, IIndexManager.UPDATE_CHECK_TIMESTAMPS | IIndexManager.FORCE_INDEX_INCLUSION);
-        while (!indexManager.isIndexerIdle()) {
-            Debug.println("DependencyCache: waiting for indexer to finish");
-            try { Thread.sleep(300); } catch (InterruptedException e) { }
-            if (monitor != null && monitor.isCanceled())
-                throw new CoreException(Status.CANCEL_STATUS);
+        if (!indexManager.isIndexerIdle()) {
+            Debug.print("DependencyCache: waiting for indexer to finish");
+            while (!indexManager.isIndexerIdle()) {
+                Debug.print(".");
+                try { Thread.sleep(300); } catch (InterruptedException e) { }
+                if (monitor != null && monitor.isCanceled())
+                    throw new CoreException(Status.CANCEL_STATUS);
+            }
+            Debug.println("\nDependencyCache: indexer done");
         }
-        Debug.println("DependencyCache: indexer done");
 
         // collect #includes using the index, or (for msg files) by directly parsing the file
         Debug.println("DependencyCache: collecting #includes in project " + project.getName());
