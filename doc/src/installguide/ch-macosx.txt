@@ -7,19 +7,26 @@ Mac OS X.
 
 The following releases are covered:
 
-* Mac OS X 10.5 ('Leopard')
 * Mac OS X 10.6 ('Snow Leopard')
+* Mac OS X 10.7 ('Lion')
 
 They were tested on the following architectures:
 
-* Intel 32-bit
+* Intel 32/64-bit
 
 === Installing the Prerequisite Packages
 
-Install Xcode 3.0 or later on your machine. Xcode is available free of charge from
-Apple Inc.
+Mac OS X 10.6 (Snow Leopard)
 
-Xcode can be downloaded from http://developer.apple.com/technology/xcode.html.
+ * Install Xcode 3.2.x on your machine. It can be downloaded from
+   http://developer.apple.com/xcode/.
+
+Mac OS X 10.7 (Lion)
+
+ * Install Xcode 4.1 or later on your machine. It can be downloaded from the App Store.
+ * Install the Java Runtime from http://support.apple.com/kb/DL1421 , because
+   OS X Lion does not provide it by default.
+
 
 Installing additional packages will enable more functionality in @OMNETPP@; see
 the 'Additional packages' section at the end of this chapter.
@@ -127,13 +134,15 @@ associated with the problem.
 not available for the native (Aqua) version of Tcl/Tk.
 
 As an alternative to the Aqua version of Tcl/Tk, you may also use
-the X11 version from the Fink project (http://finkproject.org).
-The Fink version does not have the look and feel of OS X applications,
-but it may provide better performance with animations, and it also has BLT.
-To select Fink, you will need to adjust the Tcl/Tk settings in
-@OMNETPP@'s `configure.user` file. Please note that we do not provide support
-for using the Fink version of Tcl/Tk.
+the X11 version from the MacPorts repository (http://macports.org).
+The MacPorts version does not have the look and feel of OS X applications,
+but it may provide better performance with animations.
+To select the MacPorts version of Tk, you will need to adjust the
+Tcl/Tk settings in @OMNETPP@'s `configure.user` file and re-run the
+`./configure`. Please note that we do not provide support for
+using the MacPorts version of Tcl/Tk.
 ===============================================================
+
 
 When `./configure` has finished, you can compile @OMNETPP@.
 Type in the terminal:
@@ -162,18 +171,6 @@ If you only want to build one set of the libraries, specify
   $ make MODE=release
 ===============================================================
 
-[NOTE]
-===============================================================
-The @OMNETPP@ build process creates 32-bit executables on both
-OS X 10.5 and 10.6. If you want to build a 64-bit executable on
-OS X 10.6, you must remove the `-m32` flag from the `CFLAGS_RELEASE`,
-`CFLAGS_DEBUG` and `LDFLAGS` variables in the `Makefile.inc` file.
-Please note that you will not be able to debug your 64-bit code
-from the @OMNETPP@ IDE, because the version of CDT (C/C++
-Development Toolkit) bundled with the IDE does not support 64-bit
-targets.
-===============================================================
-
 
 === Verifying the Installation
 
@@ -189,8 +186,10 @@ nice gui windows and dialogs.
 
 === Starting the IDE
 
-@OMNETPP@ comes with an Eclipse-based Simulation IDE. Mac OS X already has
-Java installed, so you do not need to install it. You can start the IDE by typing:
+@OMNETPP@ comes with an Eclipse-based Simulation IDE. Mac OS X 10.6 already has
+Java installed, so you do not need to install it. On Mac OS X 10.7 (Lion), the
+Java Runtime must be installed (see prerequisites) before you can use the
+IDE. Start the IDE by typing:
 
     $ @omnetpp@
 
@@ -274,7 +273,24 @@ and are working on the solution.
 
 === Additional Packages
 
-Note that OpenMPI is already bundled with OS X, so you do not need to manually install MPI.
+==== OpenMPI
+
+ * OpenMPI is already bundled with OS X 10.6, so you do not need to
+   manually install it.
+ * OS X 10.7 does not come with OpenMPI, so you must install it manually.
+   Download it from http://open-mpi.org and follow the installation instructions.
+   Alternatively, you can install it from the MacPorts repo by typing
+   `sudo port install openmpi`. In this case, you have to manually set
+   the MPI_CFLAGS and MPI_LIBS variables in `configure.user` and re-run
+   `./configure`. Please note that we do not provide support
+   for OpenMPI installed from the MacPorts repository.
+
+[NOTE]
+===============================================================
+MacPorts is a repository of several open source packages for
+Mac OS X. Using MacPorts packages may save you some manual work.
+You can install MacPorts from http://www.macports.org.
+===============================================================
 
 ==== GraphViz
 
@@ -285,6 +301,9 @@ item in the project context menu).
 Download and install the GraphViz OS X binaries from http://www.pixelglow.com/graphviz/download/.
 Download the latest, version 2.x package; at the time of writing,
 the link is at the top of the page.
+
+Alternatively, you can install it from the MacPorts project by typing
+`sudo port install graphviz`.
 
 After installation, make sure that the `dot` program is available
 from the command line. Open a terminal, and type
@@ -304,6 +323,9 @@ as part of the HTML documentation that you generate from NED files in the IDE
 
 Download the Doxygen OS X binaries from the Doxygen web site's download page,
 http://www.stack.nl/~dimitri/doxygen/download.html, and install it.
+
+Alternatively, you can install it from the MacPorts project by typing
+`sudo port install doxygen`.
 
 After installation, ensure that the `doxygen` program is available
 from the command line. Open a terminal, and type
@@ -331,5 +353,4 @@ file, run 'configure' and then rebuild your project. You can check the
 systemc examples in the samples/systemc-embedding directory.
 
 endif::OMNEST[]
-
 
