@@ -2227,16 +2227,6 @@ else
         PLATFORM=macosx
         SO_LIB_SUFFIX=".dylib"
         JNI_LIB_SUFFIX=".jnilib"
-        if test "$UNIVERSAL_BINARIES" = "yes"; then
-           CFLAGS_ARCH="$CFLAGS_ARCH -arch ppc -arch i386"
-           LDFLAGS_ARCH="$LDFLAGS_ARCH -arch ppc -arch i386"
-        fi
-        # CDT 6.x does not support 64 bit debugging so we force
-        # the compiler to build 32 bit executable because on OS X 10.6,
-        # gcc builds 64 bit executables by default. After upgrading to
-        # CDT 7.0 these lines can be removed.
-        CFLAGS_ARCH="$CFLAGS_ARCH -m32"
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -m32"
         ;;
     *)
         ;;
@@ -5496,8 +5486,13 @@ if test "$JAVA_CFLAGS" = ""; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: JAVA_HOME variable not set." >&5
 $as_echo "$as_me: WARNING: JAVA_HOME variable not set." >&2;}
    else
-      JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
-      JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -Wl,-rpath,$JAVA_HOME/jre/lib/i386/client:. -ljvm"
+      if test "$PLATFORM" = "macosx"; then
+         JAVA_CFLAGS="-I/System/Library/Frameworks/JavaVM.framework/Headers"
+         JAVA_LIBS=""
+      else
+         JAVA_CFLAGS="-fno-strict-aliasing -I$JAVA_HOME/include -I$JAVA_HOME/include/$jni_platform"
+         JAVA_LIBS="-L$JAVA_HOME/jre/lib/i386/client -Wl,-rpath,$JAVA_HOME/jre/lib/i386/client:. -ljvm"
+      fi
    fi
 fi
 

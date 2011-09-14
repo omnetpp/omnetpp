@@ -5,6 +5,19 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 4.2rc2 (Sep 2011)
+-------------------------
+
+Tools:
+  - The build system now creates 64-bit binaries on Mac OS X 10.6 and 10.7
+    (if your processor supports it). Previously the -m32 flag was added to
+    the GCC command line to force the creation of 32-bit binaries. (This
+    was necessary because earlier versions of CDT did not support 64-bit
+    debugging).
+
+IDE:
+  - Dropped PowerPC support for the IDE because Mac OS X 10.7 no longer
+    supports this architecture.
 
 OMNeT++ 4.2rc1 (Aug 2011)
 -------------------------
