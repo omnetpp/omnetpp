@@ -82,7 +82,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             // disable the builder completely! (for the duration of the session)
             Activator.logError(e);
             addMarker(getProject(), IMarker.SEVERITY_ERROR, "Error refreshing Makefiles: " + e.getMessage());
-            Display.getDefault().syncExec(new Runnable() {
+            runInUIThread(new Runnable() {
                 public void run() {
                     ErrorDialog.openError(getActiveShell(), "Error", "Error refreshing Makefiles", e.getStatus());
                 }
@@ -123,7 +123,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 // check that CDT and NED state corresponds to the feature selection
                 final List<Problem> problems = features.validateProjectState();
                 if (!problems.isEmpty()) {
-                    Display.getDefault().syncExec(new Runnable() {
+                    runInUIThread(new Runnable() {
                         public void run() {
                             offerFixingProblems(features, problems);
                         }
@@ -187,7 +187,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
 
             // warn the user if builders are in reverse order
             if (thisBuilderPos != -1 && cdtBuilderPos != -1 && cdtBuilderPos < thisBuilderPos) {
-                Display.getDefault().syncExec(new Runnable() {
+                runInUIThread(new Runnable() {
                     public void run() {
                         String message =
                             "The C/C++ Project Builder seems to precede the OMNeT++ Makefile Builder " +
@@ -219,7 +219,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
         boolean supported = isToolChainSupported(toolChain);
 
         if (!supported) {
-            Display.getDefault().syncExec(new Runnable() {
+            runInUIThread(new Runnable() {
                 public void run() {
                     String message =
                         "Toolchain \"" + toolChain.getName() + "\" is not supported on this platform " +
@@ -230,6 +230,22 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 }
             });
         }
+    }
+
+    /**
+     * Delegates to Display.syncExec() if it is safe to do so (will not cause lockup),
+     * otherwise to Display.asyncExec().
+     */
+    protected void runInUIThread(Runnable runnable) {
+        // When the platform is starting and only the splash screen is displayed, it is not safe to do
+        // Display.syncExec() because it can easily cause a deadlock: syncExec() executes when the UI thread
+        // processes GUI events, but during startup the UI thread may be busy waiting for some lock (e.g.
+        // workspace lock) held by us. To prevent that from happening, we perform an asyncExec() instead of
+        // syncExec() if the platform is currently starting up.
+        if (!PlatformUI.getWorkbench().isStarting())
+            Display.getDefault().syncExec(runnable); // normally
+        else
+            Display.getDefault().asyncExec(runnable); // during startup, to avoid deadlock
     }
 
     /**

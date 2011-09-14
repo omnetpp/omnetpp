@@ -52,6 +52,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
@@ -344,6 +345,8 @@ public class DependencyCache {
         indexManager.update(new ICElement[] {cproject}, IIndexManager.UPDATE_CHECK_TIMESTAMPS | IIndexManager.FORCE_INDEX_INCLUSION);
         if (!indexManager.isIndexerIdle()) {
             Debug.print("DependencyCache: waiting for indexer to finish");
+            if (PlatformUI.getWorkbench().isStarting())  // indexer apparently won't run during startup, so we'd wait forever in the loop below...
+                throw Activator.wrapIntoCoreException("Workbench is not yet started, skipping build process", null);
             while (!indexManager.isIndexerIdle()) {
                 Debug.print(".");
                 try { Thread.sleep(300); } catch (InterruptedException e) { }
