@@ -338,7 +338,11 @@ public class DependencyCache {
         Debug.println("DependencyCache: updating index for project " + project.getName());
         ICProject cproject = CoreModel.getDefault().getCModel().getCProject(project.getName());
         IIndexManager indexManager = CCorePlugin.getIndexManager();
-        indexManager.update(new ICElement[] {cproject}, IIndexManager.UPDATE_CHECK_TIMESTAMPS);
+        // Note: IIndexManager.FORCE_INDEX_INCLUSION is needed, otherwise if there is a Foo.h that
+        // only includes a Foo_m.h which doesn't exist yet (it will be generated during the build),
+        // Foo.h will be left out from the index for some reason and we won't know about its includes.
+        // See bug #410.
+        indexManager.update(new ICElement[] {cproject}, IIndexManager.UPDATE_CHECK_TIMESTAMPS | IIndexManager.FORCE_INDEX_INCLUSION);
         while (!indexManager.isIndexerIdle()) {
             Debug.println("DependencyCache: waiting for indexer to finish");
             try { Thread.sleep(300); } catch (InterruptedException e) { }
@@ -403,9 +407,12 @@ public class DependencyCache {
             // get list of includes from the CDT index
             IIndexFileLocation fileLocation = IndexLocationFactory.getWorkspaceIFL(file);
             IIndexFile[] indexFiles = lockedIndex.getFiles(fileLocation);
-            if (indexFiles.length > 0) {
+            if (indexFiles.length == 0)
+                Activator.log(IMarker.SEVERITY_ERROR, "OMNeT++ DependencyCache: " + file.getFullPath() + " is not found in index! This should not happen, please report at http://bugs.omnetpp.org!");
+            else {
                 IIndexFile indexFile = indexFiles[0];
                 IIndexInclude[] includes = lockedIndex.findIncludes(indexFile);
+
                 //System.out.println("* " + file + ": " + includes.length + " includes");
                 for (IIndexInclude include : includes) {
                     if (include.isActive()) {
