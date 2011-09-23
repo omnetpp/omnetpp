@@ -1079,7 +1079,7 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
                 if (!opp_isalnum(*s) && strchr("-_@", *s)==NULL)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
             if (configNames.find(configName)!=configNames.end())
-                throw cRuntimeError("Configuration name '%s' not unique", configName, section);
+                throw cRuntimeError("Configuration name '%s' not unique", configName);
             configNames.insert(configName);
         }
 
