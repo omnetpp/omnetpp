@@ -333,7 +333,7 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-e", ccext);
         if (!StringUtils.isEmpty(dllSymbol))
             add(result, "-p" + dllSymbol);
-        if (forceCompileForDll && type != Type.SHAREDLIB)
+        if (forceCompileForDll)
             add(result, "-S");
         if (noDeepIncludes)
             result.add("--no-deep-includes");
