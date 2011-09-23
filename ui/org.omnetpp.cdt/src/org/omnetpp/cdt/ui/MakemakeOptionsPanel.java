@@ -122,7 +122,7 @@ public class MakemakeOptionsPanel extends Composite {
 
     // "Compile" page
     private Combo ccextCombo;
-    private Button compileForDllCheckbox;
+    private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
 
     // "Link" page
@@ -221,8 +221,8 @@ public class MakemakeOptionsPanel extends Composite {
         Group dllGroup = createGroup(compilePage, "Windows DLLs", 2);
         final Link dllHelpLink = createLink(dllGroup, "Hover or <A>click here</A> for more info on creating DLLs.");
         setColumnSpan(dllHelpLink, 2);
-        compileForDllCheckbox = createCheckbox(dllGroup, "Compile object files for use in DLLs", "Defines the FOO_EXPORT macro, where FOO is the DLL export/import symbol");
-        compileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
+        forceCompileForDllCheckbox = createCheckbox(dllGroup, "Force compiling object files for use in DLLs", "Forces defining the FOO_EXPORT macro (where FOO is the DLL export/import symbol) even if the target is not a DLL");
+        forceCompileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
 
@@ -438,7 +438,7 @@ public class MakemakeOptionsPanel extends Composite {
         autoIncludePathCheckbox.addSelectionListener(selectionChangeListener);
 
         ccextCombo.addSelectionListener(selectionChangeListener);
-        compileForDllCheckbox.addSelectionListener(selectionChangeListener);
+        forceCompileForDllCheckbox.addSelectionListener(selectionChangeListener);
         dllSymbolText.addModifyListener(modifyListener);
 
         userInterfaceCombo.addSelectionListener(selectionChangeListener);
@@ -523,7 +523,7 @@ public class MakemakeOptionsPanel extends Composite {
             ccextCombo.setText(CCEXT_AUTODETECT);
         else
             ccextCombo.setText("." + options.ccext);
-        compileForDllCheckbox.setSelection(options.compileForDll);
+        forceCompileForDllCheckbox.setSelection(options.forceCompileForDll);
         dllSymbolText.setText(StringUtils.nullToEmpty(options.dllSymbol));
 
         // "Link" page
@@ -686,7 +686,7 @@ public class MakemakeOptionsPanel extends Composite {
         // "Compile" page
         String ccextText = ccextCombo.getText().trim().replace(".", "");
         result.ccext = (ccextText.equals("cc") || ccextText.equals("cpp")) ? ccextText : null;
-        result.compileForDll = compileForDllCheckbox.getSelection();
+        result.forceCompileForDll = forceCompileForDllCheckbox.getSelection();
         result.dllSymbol = dllSymbolText.getText().trim();
 
         // "Link" page

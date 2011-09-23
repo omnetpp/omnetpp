@@ -38,7 +38,7 @@ public class MakemakeOptions implements Cloneable {
     public String defaultMode = null;
     public String userInterface = "ALL";
     public String ccext = null;
-    public boolean compileForDll;
+    public boolean forceCompileForDll;
     public String dllSymbol = "";
     public boolean ignoreNedFiles = true; // note: no option for this
     public List<String> fragmentFiles = new ArrayList<String>();
@@ -198,7 +198,7 @@ public class MakemakeOptions implements Cloneable {
                 type = Type.STATICLIB;
             }
             else if (arg.equals("-S") || arg.equals("--fordll")) {
-                compileForDll = true;
+                forceCompileForDll = true;
             }
             else if (arg.equals("-w") || arg.equals("--withobjects")) {
                 addError(arg + ": obsolete option, please remove");
@@ -333,7 +333,7 @@ public class MakemakeOptions implements Cloneable {
             add(result, "-e", ccext);
         if (!StringUtils.isEmpty(dllSymbol))
             add(result, "-p" + dllSymbol);
-        if (compileForDll && type != Type.SHAREDLIB)
+        if (forceCompileForDll && type != Type.SHAREDLIB)
             add(result, "-S");
         if (noDeepIncludes)
             result.add("--no-deep-includes");
@@ -466,7 +466,7 @@ public class MakemakeOptions implements Cloneable {
         result.userInterface = userInterface;
         result.ccext = ccext;
         result.dllSymbol = dllSymbol;
-        result.compileForDll = compileForDll;
+        result.forceCompileForDll = forceCompileForDll;
         result.ignoreNedFiles = ignoreNedFiles;
         result.fragmentFiles.addAll(fragmentFiles);
         result.submakeDirs.addAll(submakeDirs);

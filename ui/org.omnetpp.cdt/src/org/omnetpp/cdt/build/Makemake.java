@@ -315,7 +315,7 @@ public class Makemake {
 
         // defines
         defines.addAll(options.defines);
-        if ((options.compileForDll || options.type == Type.SHAREDLIB) && !StringUtils.isEmpty(options.dllSymbol))
+        if ((options.type == Type.SHAREDLIB || options.forceCompileForDll) && !StringUtils.isEmpty(options.dllSymbol))
             defines.add(options.dllSymbol+"_EXPORT");
 
         // Windows (cmd.exe) has 8K limit on line length, so we may have to use the inline file feature of nmake
