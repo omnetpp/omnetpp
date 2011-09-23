@@ -55,8 +55,9 @@ import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.build.BuildSpecification;
 import org.omnetpp.cdt.build.MakemakeOptions;
-import org.omnetpp.cdt.build.MetaMakemake;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
+import org.omnetpp.cdt.build.MetaMakemake;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverTextProvider;
 import org.omnetpp.common.ui.SizeConstraint;
@@ -225,6 +226,12 @@ public class MakemakeOptionsPanel extends Composite {
         forceCompileForDllCheckbox.setLayoutData(new GridData(SWT.BEGINNING, SWT.BEGINNING, false, false, 2, 1));
         dllSymbolText = createLabelAndText(dllGroup, "DLL export/import symbol (e.g. FOO):", "Base name for the FOO_API, FOO_EXPORT and FOO_IMPORT macros");
         Link pathsPageLink2 = createLink(compilePage, "NOTE: Additional preprocessor symbols can be specified in the <A>Paths and symbols</A> page.");
+        if (!IConstants.IS_COMMERCIAL) {
+            // the noncommercial version does not need to show the DLL stuff, because it does not support MSVC;
+            // the settings will still be preserved, and also editable via the Preview tab
+            dllGroup.setVisible(false);
+            ((GridData)dllGroup.getLayoutData()).exclude = true;
+        }
 
         // "Link" page
         linkPage.setLayout(new GridLayout(1,false));
