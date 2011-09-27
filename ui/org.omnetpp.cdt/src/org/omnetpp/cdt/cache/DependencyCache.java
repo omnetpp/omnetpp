@@ -549,9 +549,8 @@ public class DependencyCache {
                         includeResolutions.put(include, includeTargets);
 
                     if (count == 0) {
-                        // included file not found; skip warning if it's a system include (see comment above)
-                        if (!include.isSysInclude)
-                            addMarker(markerSync, include, IMarker.SEVERITY_WARNING, "Makefile autodeps: cannot find included file: " + include.toString());
+                        // included file not found: do not report, because CDT will report it anyway
+                        // (and our warning could be incorrect, because we only search workspace paths but not the file system)
                     }
                     else if (count > 1) {
                         // ambiguous include file
