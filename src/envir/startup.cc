@@ -146,6 +146,7 @@ int setupUserInterface(int argc, char *argv[])
             // create custom configuration object
             CREATE_BY_CLASSNAME(configobject, configclass.c_str(), cConfigurationEx, "configuration");
             configobject->initializeFrom(bootconfig);
+            configobject->activateConfig("General", 0);
             delete bootconfig;
             bootconfig = NULL;
 
