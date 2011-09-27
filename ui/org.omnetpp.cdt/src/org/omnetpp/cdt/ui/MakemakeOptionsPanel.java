@@ -117,11 +117,9 @@ public class MakemakeOptionsPanel extends Composite {
     private Button exportLibraryCheckbox;
     private Text outputDirText;
 
-    // "Include" page
+    // "Compile" page
     private Button deepIncludesCheckbox;
     private Button autoIncludePathCheckbox;
-
-    // "Compile" page
     private Combo ccextCombo;
     private Button forceCompileForDllCheckbox;
     private Text dllSymbolText;
