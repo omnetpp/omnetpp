@@ -107,6 +107,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
 	    case KIND_UNSPECIFIED_TYPE: return InifileUtils.ICON_PROPOSAL_MODULECONFIG;
 	    case KIND_SCALAR: return InifileUtils.ICON_PROPOSAL_SCALARCONFIG;
 	    case KIND_VECTOR: return InifileUtils.ICON_PROPOSAL_VECTORCONFIG;
+	    case KIND_OTHER: //TODO
 	    }
 	    return null;
 	}
@@ -177,7 +178,9 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
                 objectKinds.add(ObjectKind.KIND_VECTOR);
             }
         }
-        
+
+        //TODO add KIND_OTHER
+
         return objectKinds;
 	}
 }

@@ -85,6 +85,7 @@ public class InifileUtils {
     public static final Image ICON_PROPOSAL_STATISTICCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_statisticconfig.png");
     public static final Image ICON_PROPOSAL_SCALARCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_scalarconfig.png");
     public static final Image ICON_PROPOSAL_VECTORCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_vectorconfig.png");
+    public static final Image ICON_PROPOSAL_OTHERCONFIG = InifileEditorPlugin.getCachedImage("icons/full/obj16/proposal_otherconfig.png");
 
     public static final Image ICON_KEY_EQUALS_DEFAULT = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_default.png");
     public static final Image ICON_KEY_EQUALS_ASK = InifileEditorPlugin.getCachedImage("icons/full/obj16/par_equals_ask.png");

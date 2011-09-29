@@ -34,11 +34,12 @@ public class ConfigOption {
         KIND_NONE,
         KIND_MODULE,
         KIND_SIMPLE_MODULE,
-        KIND_UNSPECIFIED_TYPE,
+        KIND_UNSPECIFIED_TYPE, // .typename=
         KIND_PARAMETER,
         KIND_STATISTIC,
         KIND_SCALAR,
-        KIND_VECTOR
+        KIND_VECTOR,
+        KIND_OTHER // for unforeseen object kinds in custom config options
     };
 
 

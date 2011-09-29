@@ -55,7 +55,8 @@ class SIM_API cConfigOption : public cNoncopyableOwnedObject
         KIND_PARAMETER,
         KIND_STATISTIC,
         KIND_SCALAR,
-        KIND_VECTOR
+        KIND_VECTOR,
+        KIND_OTHER
     };
 
     // note: option name (e.g. "sim-time-limit") is stored in object's name field
