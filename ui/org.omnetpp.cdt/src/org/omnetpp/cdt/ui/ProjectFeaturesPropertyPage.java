@@ -21,6 +21,8 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -618,6 +620,10 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
 
     @Override
     public boolean performOk() {
+        if (WorkspaceJob.getJobManager().find(ResourcesPlugin.FAMILY_MANUAL_BUILD).length != 0) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot update settings while build is in progress.");
+            return false;
+        }
         // save .nedfolders
         try {
             ProjectUtils.saveNedFoldersFile(getProject(), nedSourceFoldersConfig);
