@@ -1,0 +1,21 @@
+Activating pretty printing in GDB for standard C++ containers:
+
+Windows:
+  The bundled GDB and Python binaries are already configured to support gdb pretty printing.
+
+Mac OS X:
+  Mac OS comes with gdb 6.2 which does not support python pretty printing.
+
+Linux:
+  This directory must be included in the python system path and pretty printer classes must 
+  be registered before starting gdb. This can be done by creating a '.gdbinit' 
+  file in the $HOME directory with the following content. Do not forget to edit
+  the path to point to this directory.
+
+python
+import sys
+sys.path.insert(0, '/path/to/omnetpp/misc/gdb')
+from libstdcxx.v6.printers import register_libstdcxx_printers
+register_libstdcxx_printers (None)
+print 'Python pretty printers initialized.'
+end

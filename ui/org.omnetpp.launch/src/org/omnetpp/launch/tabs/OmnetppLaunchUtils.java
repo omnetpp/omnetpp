@@ -347,6 +347,18 @@ public class OmnetppLaunchUtils {
         				StringUtils.substituteVariables("${env_var:"+ldLibPathVar+"}"));
         }
 
+        // gdb is using Python for pretty printing. On Windows we have to add the HOME
+        // environment variable so gdb can find the .gdbinit file in the OMNETPP_ROOT directory.
+        // on Linux HOME is always present and the user has to create this file manually 
+        if (Platform.getOS().equals(Platform.OS_WIN32)){
+            String homePath = envir.get("HOME");
+            if (StringUtils.isBlank(homePath)) {
+                homePath = OmnetppMainPlugin.getOmnetppRootDir();
+                if (StringUtils.isNotBlank(homePath))
+                    envir.put("HOME", homePath);
+            }
+        }
+        
         String imagePath = envir.get("OMNETPP_IMAGE_PATH");
         if (StringUtils.isBlank(imagePath)) {
             imagePath = CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_IMAGE_PATH);
