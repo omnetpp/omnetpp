@@ -83,6 +83,9 @@ class SIM_API cVarHistogram : public cHistogramBase
     // rangemin=bin_bounds[0], bin_bounds[1], ... bin_bounds[num_cells]=rangemax
     // consequence: sizeof(binbounds)=sizeof(cellv)+1
 
+  private:
+    void copy(const cVarHistogram& other);
+
   protected:
     /**
      * Used internally to create equiprobable cells from the precollected
@@ -98,8 +101,7 @@ class SIM_API cVarHistogram : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r)
-       {setName(r.getName());bin_bounds=NULL;operator=(r);}
+    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r) {bin_bounds=NULL;copy(r);}
 
     /**
      * Constructor. The third argument can be one of HIST_TR_NO_TRANSFORM,

@@ -143,6 +143,8 @@ class SIM_API cMessage : public cOwnedObject
     // internal: create parlist
     void _createparlist();
 
+    void copy(const cMessage& msg);
+
   public:
     // internal: returns the event number which scheduled this event, or the event in which
     // this message was last delivered to a module. Stored for recording into the event log file.
@@ -716,6 +718,9 @@ class SIM_API cPacket : public cMessage
                                // 1: shared once (shared among two messages);
                                // 2: shared twice (shared among three messages); etc.
                                // on reaching max sharecount a new packet gets created
+
+  private:
+    void copy(const cPacket& packet);
 
   public:
     // internal: sets the message duration; called by channel objects and sendDirect

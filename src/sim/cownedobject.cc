@@ -88,11 +88,10 @@ cOwnedObject::cOwnedObject(const char *name, bool namepooling) : cNamedObject(na
 #endif
 }
 
-cOwnedObject::cOwnedObject(const cOwnedObject& obj)
+cOwnedObject::cOwnedObject(const cOwnedObject& obj) : cNamedObject(obj)
 {
-    setName(obj.getName());
     defaultowner->doInsert(this);
-    operator=(obj);
+    copy(obj);
 
     // statistics
     total_objs++;
@@ -133,7 +132,7 @@ cDefaultList *cOwnedObject::getDefaultOwner()
     return defaultowner;
 }
 
-cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
+void cOwnedObject::copy(const cOwnedObject& obj)
 {
     // Not too much to do:
     // - ownership not affected
@@ -141,6 +140,12 @@ cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
     // - flags are taken over, except for FL_NAMEPOOLING which is preserved
     unsigned short namePooling = flags & FL_NAMEPOOLING;
     flags = (obj.flags & ~FL_NAMEPOOLING) | namePooling;
+}
+
+cOwnedObject& cOwnedObject::operator=(const cOwnedObject& obj)
+{
+    cNamedObject::operator=(obj);
+    copy(obj);
     return *this;
 }
 

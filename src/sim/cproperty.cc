@@ -53,18 +53,8 @@ void cProperty::releaseValues(CharPtrVector& vals)
     vals.clear();
 }
 
-cProperty& cProperty::operator=(const cProperty& other)
+void cProperty::copy(const cProperty& other)
 {
-    if (isLocked())
-        throw cRuntimeError(this, eLOCKED);
-
-    // note: do NOT copy islocked flag
-    bool oldIsLocked = isLocked();
-    cNamedObject::operator=(other);
-    setFlag(FL_ISLOCKED, oldIsLocked);
-
-    setName(other.getName()); // cNamedObject doesn't do that
-
     stringPool.release(propfullname);
     propfullname = NULL;
 
@@ -93,6 +83,17 @@ cProperty& cProperty::operator=(const cProperty& other)
         for (int j=0; j<nn; j++)
             vals[j] = stringPool.get(othervals[j]);
     }
+}
+
+cProperty& cProperty::operator=(const cProperty& other)
+{
+    if (this==&other) return *this;
+    if (isLocked())
+        throw cRuntimeError(this, eLOCKED);
+    cNamedObject::operator=(other);
+    copy(other);
+    setName(other.getName()); // cNamedObject doesn't do that
+    setFlag(FL_ISLOCKED, false);
     return *this;
 }
 

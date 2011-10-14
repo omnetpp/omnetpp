@@ -33,17 +33,20 @@ cBoolParImpl::~cBoolParImpl()
     deleteOld();
 }
 
-void cBoolParImpl::operator=(const cBoolParImpl& other)
+void cBoolParImpl::copy(const cBoolParImpl& other)
 {
-    if (this==&other) return;
-
-    deleteOld();
-
-    cParImpl::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
+}
+
+void cBoolParImpl::operator=(const cBoolParImpl& other)
+{
+    if (this==&other) return;
+    deleteOld();
+    cParImpl::operator=(other);
+    copy(other);
 }
 
 void cBoolParImpl::parsimPack(cCommBuffer *buffer)

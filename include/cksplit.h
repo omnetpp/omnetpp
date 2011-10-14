@@ -155,6 +155,9 @@ class SIM_API cKSplit : public cDensityEstBase
     mutable Iterator *iter;   // iterator used by getBasepoint(), getCellValue() etc.
     mutable long iter_num_vals; // num_vals when iterator was created
 
+  private:
+    void copy(const cKSplit& other);
+
   protected:
     // internal:
     void resetGrids(int grid);

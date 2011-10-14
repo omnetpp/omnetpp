@@ -38,6 +38,9 @@ class SIM_API cStdDev : public cStatistic
     double min_vals, max_vals;
     double sum_vals, sqrsum_vals;
 
+  private:
+    void copy(const cStdDev& other);
+
   protected:
     void doMerge(const cStatistic *other);
 
@@ -48,7 +51,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Copy constructor.
      */
-    cStdDev(const cStdDev& r) : cStatistic() {setName(r.getName());operator=(r);}
+    cStdDev(const cStdDev& r) : cStatistic(r) {copy(r);}
 
     /**
      * Constructor.
@@ -232,6 +235,9 @@ class SIM_API cWeightedStdDev : public cStdDev
     double sum_squared_weights;
     double sum_weights_squared_vals;
 
+  private:
+    void copy(const cWeightedStdDev& other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -239,7 +245,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev() {setName(r.getName());operator=(r);}
+    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev(r) {copy(r);}
 
     /**
      * Constructors, destructor, duplication and assignment.

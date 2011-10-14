@@ -84,6 +84,8 @@ class SIM_API cDisplayString
     cComponent *ownercomponent;
 
   private:
+    void copy(const cDisplayString& other) {parse(other.str());}
+
     // helper functions
     void doParse(const char *s);
     void doUpdateWith(const cDisplayString& ds);
@@ -138,7 +140,7 @@ class SIM_API cDisplayString
     /**
      * Assignment operator.
      */
-    cDisplayString& operator=(const cDisplayString& ds) {parse(ds.str()); return *this;}
+    cDisplayString& operator=(const cDisplayString& ds);
 
     /**
      * Conversion from string.

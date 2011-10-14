@@ -63,11 +63,9 @@ cTopology::cTopology(const char *name) : cOwnedObject(name)
     nodev = NULL;
 }
 
-cTopology::cTopology(const cTopology& topo) : cOwnedObject()
+cTopology::cTopology(const cTopology& topo) : cOwnedObject(topo)
 {
-    nodev = NULL;
-    setName(topo.getName());
-    cTopology::operator=(topo);
+    throw cRuntimeError(this,"copy ctor not implemented yet");
 }
 
 cTopology::~cTopology()

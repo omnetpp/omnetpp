@@ -26,7 +26,7 @@ USING_NAMESPACE
 
 EnumType::EnumType(const EnumType& list)
 {
-     operator=(list);
+     copy(list);
 }
 
 EnumType::EnumType()
@@ -37,10 +37,16 @@ EnumType::~EnumType()
 {
 }
 
-EnumType& EnumType::operator=(const EnumType& other)
+void EnumType::copy(const EnumType& other)
 {
     valueToNameMap = other.valueToNameMap;
     nameToValueMap = other.nameToValueMap;
+}
+
+EnumType& EnumType::operator=(const EnumType& other)
+{
+    if (this==&other) return *this;
+    copy(other);
     return *this;
 }
 

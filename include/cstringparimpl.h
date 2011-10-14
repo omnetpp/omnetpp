@@ -37,6 +37,9 @@ class SIM_API cStringParImpl : public cParImpl
     cExpression *expr;
     std::string val;
 
+  private:
+    void copy(const cStringParImpl& other);
+
   protected:
     std::string evaluate(cComponent *context) const;
     void deleteOld();
@@ -53,7 +56,7 @@ class SIM_API cStringParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cStringParImpl(const cStringParImpl& other) {setName(other.getName()); operator=(other);}
+    cStringParImpl(const cStringParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.

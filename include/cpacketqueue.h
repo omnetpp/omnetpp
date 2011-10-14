@@ -36,6 +36,9 @@ class SIM_API cPacketQueue : public cQueue
   private:
     int64 bitlength;
 
+  private:
+    void copy(const cPacketQueue& other);
+
   protected:
     // internal
     void addLen(cPacket *pkt);

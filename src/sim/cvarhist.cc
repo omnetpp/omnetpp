@@ -121,11 +121,8 @@ void cVarHistogram::addBinBound(double x) //--LG
     num_cells++;
 }
 
-cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res) //--LG
+void cVarHistogram::copy(const cVarHistogram& res)
 {
-    if (this==&res) return *this;
-
-    cHistogramBase::operator=(res);
     // hack: as this ^ uses num_cells instead of max_num_cells, we must correct it:
     if (res.cellv)
     {
@@ -144,7 +141,13 @@ cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res) //--LG
         bin_bounds = new double [max_num_cells+1];
         memcpy(bin_bounds, res.bin_bounds, (num_cells+1)*sizeof(double));
     }
+}
 
+cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res) //--LG
+{
+    if (this==&res) return *this;
+    cHistogramBase::operator=(res);
+    copy(res);
     return *this;
 }
 

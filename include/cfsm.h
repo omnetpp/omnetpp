@@ -196,6 +196,9 @@ class SIM_API cFSM : public cOwnedObject
     int _state;
     const char *_statename;   // just a ptr to an external string
 
+  private:
+    void copy(const cFSM& other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -208,7 +211,7 @@ class SIM_API cFSM : public cOwnedObject
     /**
      * Copy constructor.
      */
-    cFSM(const cFSM& vs) : cOwnedObject() {setName(vs.getName());operator=(vs);}
+    cFSM(const cFSM& other) : cOwnedObject(other) {copy(other);}
 
     /**
      * Assignment operator. The name member is not copied;

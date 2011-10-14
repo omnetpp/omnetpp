@@ -73,11 +73,10 @@ double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
 
 //----
 
-cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase()
+cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase(r)
 {
-    setName(r.getName());
     gridv = NULL; iter = NULL;
-    operator=(r);
+    copy(r);
 }
 
 cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
@@ -117,12 +116,8 @@ void cKSplit::parsimUnpack(cCommBuffer *buffer)
     throw cRuntimeError(this, "parsimUnpack() not implemented");
 }
 
-cKSplit& cKSplit::operator=(const cKSplit& res)
+void cKSplit::copy(const cKSplit& res)
 {
-    if (this==&res) return *this;
-
-    cDensityEstBase::operator=(res);
-
     num_cells = res.num_cells;
 
     rootgrid = res.rootgrid;
@@ -147,7 +142,13 @@ cKSplit& cKSplit::operator=(const cKSplit& res)
 
     delete iter;
     iter = NULL;
+}
 
+cKSplit& cKSplit::operator=(const cKSplit& res)
+{
+    if (this==&res) return *this;
+    cDensityEstBase::operator=(res);
+    copy(res);
     return (*this);
 }
 

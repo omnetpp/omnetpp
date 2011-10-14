@@ -40,11 +40,10 @@ USING_NAMESPACE
 Register_Class(cLinkedList);
 
 
-cLinkedList::cLinkedList(const cLinkedList& llist) : cOwnedObject()
+cLinkedList::cLinkedList(const cLinkedList& llist) : cOwnedObject(llist)
 {
     headp = tailp = NULL; n = 0;
-    setName( llist.getName() );
-    operator=(llist);
+    copy(llist);
 }
 
 cLinkedList::cLinkedList(const char *name) : cOwnedObject(name)
@@ -108,14 +107,8 @@ void cLinkedList::clear()
     n = 0;
 }
 
-cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
+void cLinkedList::copy(const cLinkedList& llist)
 {
-    if (this==&llist) return *this;
-
-    clear();
-
-    cOwnedObject::operator=(llist);
-
     for (cLinkedList::Iterator iter(llist, 0); !iter.end(); iter--)
     {
        void *item;
@@ -127,6 +120,14 @@ cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
           item=iter();
        insert( item );
     }
+}
+
+cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
+{
+    if (this==&llist) return *this;
+    clear();
+    cOwnedObject::operator=(llist);
+    copy(llist);
     return *this;
 }
 

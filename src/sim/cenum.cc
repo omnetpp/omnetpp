@@ -33,10 +33,9 @@ USING_NAMESPACE
 
 Register_Class(cEnum);
 
-cEnum::cEnum(const cEnum& list) : cOwnedObject()
+cEnum::cEnum(const cEnum& other) : cOwnedObject(other)
 {
-     setName(list.getName());
-     operator=(list);
+     copy(other);
 }
 
 cEnum::cEnum(const char *name) : cOwnedObject(name, false)
@@ -47,11 +46,17 @@ cEnum::~cEnum()
 {
 }
 
-cEnum& cEnum::operator=(const cEnum& other)
+void cEnum::copy(const cEnum& other)
 {
-    cOwnedObject::operator=(other);
     valueToNameMap = other.valueToNameMap;
     nameToValueMap = other.nameToValueMap;
+}
+
+cEnum& cEnum::operator=(const cEnum& other)
+{
+    if (this==&other) return *this;
+    cOwnedObject::operator=(other);
+    copy(other);
     return *this;
 }
 

@@ -1223,6 +1223,8 @@ sub generateClass
         print H " * <pre>\n";
         print H " * class $exportdef$realmsgclass : public $msgclass\n";
         print H " * {\n";
+        print H " *   private:\n";
+        print H " *     void copy(const $realmsgclass& other) { ... }\n\n";
         print H " *   public:\n";
         if ($classtype eq "cownedobject" || $classtype eq "cnamedobject") {
             if ($keyword eq "message" or $keyword eq "packet") {
@@ -1230,12 +1232,11 @@ sub generateClass
             } else {
                 print H " *     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
             }
-            print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass(other.getName()) {operator=(other);}\n";
         } else {
             print H " *     $realmsgclass() : $msgclass() {}\n";
-            print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
         }
-        print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
+        print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass(other) {copy(other);}\n";
+        print H " *     $realmsgclass& operator=(const $realmsgclass& other) {if (this==&other) return *this; $msgclass\:\:operator=(other); copy(other); return *this;}\n";
         if ($classtype eq "cownedobject" || $classtype eq "cnamedobject" || $classtype eq "cobject") {
             print H " *     virtual $realmsgclass *dup() const {return new $realmsgclass(*this);}\n";
         }
@@ -1276,6 +1277,9 @@ sub generateClass
         }
     }
     print H "\n";
+    print H "  private:\n";
+    print H "    void copy(const $msgclass& other);\n\n";
+    print H "  protected:\n";
     print H "    // protected and unimplemented operator==(), to prevent accidental usage\n";
     print H "    bool operator==(const $msgclass&);\n";
     if ($gap) {
@@ -1409,12 +1413,9 @@ sub generateClass
     if ($msgbaseclass eq "") {
         print CC "$msgclass\:\:$msgclass(const $msgclass& other)\n";
     } else {
-        print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass()\n";
+        print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass(other)\n";
     }
     print CC "{\n";
-    if ($classtype eq "cownedobject" || $classtype eq "cnamedobject") {
-        print CC "    setName(other.getName());\n";
-    }
     foreach my $fieldname (@fieldlist)
     {
       if (!$fisabstract{$fieldname}) {
@@ -1431,7 +1432,7 @@ sub generateClass
         }
       }
     }
-    print CC "    operator=(other);\n";
+    print CC "    copy(other);\n";
     print CC "}\n\n";
     print CC "$msgclass\:\:~$msgclass()\n";
     print CC "{\n";
@@ -1461,6 +1462,11 @@ sub generateClass
     if ($msgbaseclass ne "") {
         print CC "    $msgbaseclass\:\:operator=(other);\n";
     }
+    print CC "    copy(other);\n";
+    print CC "    return *this;\n";
+    print CC "}\n\n";
+    print CC "void $msgclass\:\:copy(const $msgclass& other)\n";
+    print CC "{\n";
     foreach my $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
@@ -1493,7 +1499,6 @@ sub generateClass
             }
         }
     }
-    print CC "    return *this;\n";
     print CC "}\n\n";
 
     #

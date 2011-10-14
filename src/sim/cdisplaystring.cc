@@ -67,13 +67,20 @@ cDisplayString::cDisplayString(const cDisplayString& ds)
 
     ownercomponent = NULL;
 
-    operator=(ds);
+    copy(ds);
 }
 
 cDisplayString::~cDisplayString()
 {
     delete [] dispstr;
     clearTags();
+}
+
+cDisplayString& cDisplayString::operator=(const cDisplayString& ds)
+{
+    if (this==&ds) return *this;
+    copy(ds);
+    return *this;
 }
 
 void cDisplayString::beforeChange()

@@ -91,6 +91,14 @@ class SIM_API cObject
     cObject() {}
 
     /**
+     * Copy constructor. It has an empty body. (The class does not have data members
+     * and there is nothing special to do at construction time.)
+     * Subclasses should call the copy constructor of their base classes from their own
+     * copy constructors.
+     */
+    cObject(const cObject& other) {}
+
+    /**
      * Destructor. It has an empty body (the class does not have data members.)
      * It is declared here only to make the class polymorphic and make its
      * destructor virtual.

@@ -55,13 +55,20 @@ DisplayString::DisplayString(const DisplayString& ds)
     numtags = 0;
     needsassemble = false;
 
-    operator=(ds);
+    copy(ds);
 }
 
 DisplayString::~DisplayString()
 {
     delete [] dispstr;
     cleartags();
+}
+
+DisplayString& DisplayString::operator=(const DisplayString& other)
+{
+    if (this==&other) return *this;
+    copy(other);
+    return *this;
 }
 
 const char *DisplayString::str() const

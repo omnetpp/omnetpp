@@ -31,12 +31,9 @@ USING_NAMESPACE
 
 cStringPool cDynamicExpression::Elem::stringPool("cDynamicExpression::Elem::stringPool");
 
-void cDynamicExpression::Elem::operator=(const Elem& other)
+void cDynamicExpression::Elem::copy(const Elem& other)
 {
-    deleteOld();
-
     memcpy(this, &other, sizeof(Elem));
-
     if (type==STR)
         s = stringPool.get(s);
     else if (type==DBL)
@@ -45,6 +42,13 @@ void cDynamicExpression::Elem::operator=(const Elem& other)
         fu = (Functor *) fu->dup();
     else if (type==CONSTSUBEXPR)
         constExpr = (cExpression *) constExpr->dup();
+}
+
+void cDynamicExpression::Elem::operator=(const Elem& other)
+{
+    if (this==&other) return;
+    deleteOld();
+    copy(other);
 }
 
 cDynamicExpression::Elem::~Elem()
@@ -99,16 +103,20 @@ cDynamicExpression::~cDynamicExpression()
     delete [] elems;
 }
 
-cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& other)
+void cDynamicExpression::copy(const cDynamicExpression& other)
 {
-    if (this==&other) return *this;
-
     delete [] elems;
-
     size = other.size;
     elems = new Elem[size];
     for (int i=0; i<size; i++)
         elems[i] = other.elems[i];
+}
+
+cDynamicExpression& cDynamicExpression::operator=(const cDynamicExpression& other)
+{
+    if (this==&other) return *this;
+    cExpression::operator=(other);
+    copy(other);
     return *this;
 }
 

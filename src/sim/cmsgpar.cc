@@ -72,15 +72,13 @@ cMsgPar::cMsgPar(const char *name) : cOwnedObject(name)
     lng.val = 0L;
 }
 
-cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject()
+cMsgPar::cMsgPar(const cMsgPar& par) : cOwnedObject(par)
 {
     tkownership = false;
     changedflag = false;
     typechar = 'L';
     lng.val = 0L;
-
-    setName( par.getName() );
-    cMsgPar::operator=(par);
+    copy(par);
 }
 
 cMsgPar::cMsgPar(const char *name, cMsgPar& other) : cOwnedObject(name)
@@ -934,15 +932,8 @@ double cMsgPar::getFromstat()
     return  dtr.res->random();
 }
 
-
-cMsgPar& cMsgPar::operator=(const cMsgPar& val)
+void cMsgPar::copy(const cMsgPar& val)
 {
-    if (this==&val) return *this;
-
-    beforeChange();
-    deleteOld();
-
-    cOwnedObject::operator=(val);
     typechar = val.typechar;
     changedflag = val.changedflag;
 
@@ -974,11 +965,18 @@ cMsgPar& cMsgPar::operator=(const cMsgPar& val)
          if (p->getOwner()==const_cast<cMsgPar*>(&val))
             take( p = (cOwnedObject *)p->dup() );
     }
+}
 
+cMsgPar& cMsgPar::operator=(const cMsgPar& val)
+{
+    if (this==&val) return *this;
+    beforeChange();
+    deleteOld();
+    cOwnedObject::operator=(val);
+    copy(val);
     afterChange();
     return *this;
 }
-
 
 void cMsgPar::convertToConst ()
 {

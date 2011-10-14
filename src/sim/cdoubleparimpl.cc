@@ -33,17 +33,20 @@ cDoubleParImpl::~cDoubleParImpl()
     deleteOld();
 }
 
-void cDoubleParImpl::operator=(const cDoubleParImpl& other)
+void cDoubleParImpl::copy(const cDoubleParImpl& other)
 {
-    if (this==&other) return;
-
-    deleteOld();
-
-    cParImpl::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
+}
+
+void cDoubleParImpl::operator=(const cDoubleParImpl& other)
+{
+    if (this==&other) return;
+    deleteOld();
+    cParImpl::operator=(other);
+    copy(other);
 }
 
 void cDoubleParImpl::parsimPack(cCommBuffer *buffer)

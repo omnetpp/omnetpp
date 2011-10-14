@@ -122,6 +122,9 @@ class SIM_API cQueue : public cOwnedObject
     int n;  // number of items in the queue
     CompareFunc compare;   // comparison function; NULL for FIFO
 
+  private:
+    void copy(const cQueue& other);
+
   protected:
     // internal functions
     QElem *find_qelem(cObject *obj) const;

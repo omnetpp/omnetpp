@@ -95,17 +95,20 @@ void cStdDev::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cStdDev& cStdDev::operator=(const cStdDev& res)
+void cStdDev::copy(const cStdDev& res)
 {
-    if (this==&res) return *this;
-
-    cStatistic::operator=(res);
     num_vals = res.num_vals;
     min_vals = res.min_vals;
     max_vals = res.max_vals;
     sum_vals = res.sum_vals;
     sqrsum_vals = res.sqrsum_vals;
+}
 
+cStdDev& cStdDev::operator=(const cStdDev& res)
+{
+    if (this==&res) return *this;
+    cStatistic::operator=(res);
+    copy(res);
     return *this;
 }
 
@@ -268,15 +271,19 @@ void cWeightedStdDev::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
+void cWeightedStdDev::copy(const cWeightedStdDev& res)
 {
-    if (this==&res) return *this;
-
-    cStdDev::operator=(res);
     sum_weights = res.sum_weights;
     sum_weighted_vals = res.sum_weighted_vals;
     sum_squared_weights = res.sum_squared_weights;
     sum_weights_squared_vals = res.sum_weights_squared_vals;
+}
+
+cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
+{
+    if (this==&res) return *this;
+    cStdDev::operator=(res);
+    copy(res);
     return *this;
 }
 

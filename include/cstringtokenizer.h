@@ -63,6 +63,9 @@ class SIM_API cStringTokenizer
     char *rest; // rest of string (to be tokenized)
     std::string delimiter;
 
+  private:
+    void copy(const cStringTokenizer& other);
+
   public:
     /**
      * Constructor. The class will make its own copy of the input string

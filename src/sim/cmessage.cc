@@ -57,7 +57,7 @@ cMessage::cMessage(const cMessage& msg) : cOwnedObject(msg)
     parlistp = NULL;
     ctrlp = NULL;
     heapindex = -1;
-    operator=(msg);
+    copy(msg);
 
     msgid = next_id++;
     total_msgs++;
@@ -234,9 +234,13 @@ void cMessage::parsimUnpack(cCommBuffer *buffer)
 cMessage& cMessage::operator=(const cMessage& msg)
 {
     if (this==&msg) return *this;
-
     cOwnedObject::operator=(msg);
+    copy(msg);
+    return *this;
+}
 
+void cMessage::copy(const cMessage& msg)
+{
     msgkind = msg.msgkind;
     prior = msg.prior;
     tstamp = msg.tstamp;
@@ -261,8 +265,6 @@ cMessage& cMessage::operator=(const cMessage& msg)
     delivd = msg.delivd;
 
     msgtreeid = msg.msgtreeid;
-
-    return *this;
 }
 
 void cMessage::_createparlist()
@@ -380,7 +382,7 @@ cPacket::cPacket(const cPacket& pkt) : cMessage(pkt)
 {
     encapmsg = NULL;
     sharecount = 0;
-    operator=(pkt);
+    copy(pkt);
 }
 
 cPacket::cPacket(const char *name, short k, int64 l) : cMessage(name, k)
@@ -502,8 +504,13 @@ void cPacket::parsimUnpack(cCommBuffer *buffer)
 cPacket& cPacket::operator=(const cPacket& msg)
 {
     if (this==&msg) return *this;
-
     cMessage::operator=(msg);
+    copy(msg);
+    return *this;
+}
+
+void cPacket::copy(const cPacket& msg)
+{
 
 #ifdef REFCOUNTING
     if (sharecount!=0)
@@ -530,8 +537,6 @@ cPacket& cPacket::operator=(const cPacket& msg)
         take(encapmsg = (cPacket *)encapmsg->dup());
     }
 #endif
-
-    return *this;
 }
 
 #ifdef REFCOUNTING

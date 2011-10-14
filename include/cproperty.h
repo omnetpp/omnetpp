@@ -57,6 +57,9 @@ class SIM_API cProperty : public cNamedObject
     CharPtrVector keyv;
     std::vector<CharPtrVector> valuesv;
 
+  private:
+    void copy(const cProperty& other);
+
   protected:
     static void releaseValues(CharPtrVector& vals);
     int findKey(const char *key) const;
@@ -86,7 +89,7 @@ class SIM_API cProperty : public cNamedObject
     /**
      * Copy constructor.
      */
-    cProperty(const cProperty& other) {setFlag(FL_ISLOCKED,false); propindex=propfullname=NULL; operator=(other);}
+    cProperty(const cProperty& other) : cNamedObject(other) {setFlag(FL_ISLOCKED,false); propindex=propfullname=NULL; copy(other);}
 
     /**
      * Destructor.

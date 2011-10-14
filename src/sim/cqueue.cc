@@ -38,12 +38,11 @@ using std::ostream;
 Register_Class(cQueue);
 
 
-cQueue::cQueue(const cQueue& queue) : cOwnedObject()
+cQueue::cQueue(const cQueue& queue) : cOwnedObject(queue)
 {
     frontp = backp = NULL;
     n = 0;
-    setName( queue.getName() );
-    operator=(queue);
+    copy(queue);
 }
 
 cQueue::cQueue(const char *name, CompareFunc cmp) : cOwnedObject(name)
@@ -133,14 +132,8 @@ void cQueue::clear()
     n = 0;
 }
 
-cQueue& cQueue::operator=(const cQueue& queue)
+void cQueue::copy(const cQueue& queue)
 {
-    if (this==&queue) return *this;
-
-    clear();
-
-    cOwnedObject::operator=(queue);
-
     compare = NULL; // temporarily, so that insert() keeps the original order
     for (cQueue::Iterator iter(queue, false); !iter.end(); iter++)
     {
@@ -155,7 +148,14 @@ cQueue& cQueue::operator=(const cQueue& queue)
 
     tkownership = queue.tkownership;
     compare = queue.compare;
+}
 
+cQueue& cQueue::operator=(const cQueue& queue)
+{
+    if (this==&queue) return *this;
+    clear();
+    cOwnedObject::operator=(queue);
+    copy(queue);
     return *this;
 }
 

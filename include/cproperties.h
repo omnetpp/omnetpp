@@ -38,6 +38,9 @@ class SIM_API cProperties : public cObject
     int refcount;
     std::vector<cProperty *> propv;
 
+  private:
+    void copy(const cProperties& other);
+
   public:
     // internal: locks the object and all contained properties against modifications.
     // The object cannot be unlocked -- one must copy contents to an unlocked
@@ -59,7 +62,7 @@ class SIM_API cProperties : public cObject
     /**
      * Copy constructor.
      */
-    cProperties(const cProperties& other) {refcount=0; islocked=false; operator=(other);}
+    cProperties(const cProperties& other) : cObject(other) {refcount=0; islocked=false; copy(other);}
 
     /**
      * Destructor.

@@ -45,12 +45,11 @@ USING_NAMESPACE
 using std::ostream;
 
 
-cStatistic::cStatistic(const cStatistic& r) : cOwnedObject()
+cStatistic::cStatistic(const cStatistic& r) : cOwnedObject(r)
 {
-    setName(r.getName());
     td = NULL;
     ra = NULL;
-    operator=(r);
+    copy(r);
 }
 
 cStatistic::cStatistic(const char *name) : cOwnedObject(name)
@@ -98,11 +97,8 @@ void cStatistic::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cStatistic& cStatistic::operator=(const cStatistic& res)
+void cStatistic::copy(const cStatistic& res)
 {
-    if (this==&res) return *this;
-
-    cOwnedObject::operator=(res);
     genk = res.genk;
     dropAndDelete(td);
     dropAndDelete(ra);
@@ -112,6 +108,12 @@ cStatistic& cStatistic::operator=(const cStatistic& res)
     ra = res.ra;
     if (ra)
         take(ra = (cAccuracyDetection *)ra->dup());
+}
+
+cStatistic& cStatistic::operator=(const cStatistic& res)
+{
+    cOwnedObject::operator=(res);
+    copy(res);
     return *this;
 }
 

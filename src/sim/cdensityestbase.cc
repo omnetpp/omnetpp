@@ -99,12 +99,8 @@ void cDensityEstBase::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
+void cDensityEstBase::copy(const cDensityEstBase& res)
 {
-    if (this==&res) return *this;
-
-    cStdDev::operator=(res);
-
     rangemin = res.rangemin;
     rangemax = res.rangemax;
     num_firstvals = res.num_firstvals;
@@ -123,6 +119,12 @@ cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
         firstvals = new double[num_firstvals];
         memcpy(firstvals, res.firstvals, num_firstvals*sizeof(double));
     }
+}
+
+cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
+{
+    cStdDev::operator=(res);
+    copy(res);
     return *this;
 }
 

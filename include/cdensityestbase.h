@@ -109,6 +109,9 @@ class SIM_API cDensityEstBase : public cStdDev
     bool transfd;
     double *firstvals;         // pointer to array of "pre-collected" observations
 
+  private:
+    void copy(const cDensityEstBase& other);
+
   protected:
     static void plotline (std::ostream& os, const char *pref, double xval, double count, double a);
 
@@ -125,8 +128,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& r) : cStdDev()
-            {setName(r.getName());firstvals=NULL;operator=(r);}
+    cDensityEstBase(const cDensityEstBase& other) : cStdDev(other) {firstvals=NULL;copy(other);}
 
     /**
      * Constructor.

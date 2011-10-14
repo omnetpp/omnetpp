@@ -89,12 +89,8 @@ void cHistogramBase::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
+void cHistogramBase::copy(const cHistogramBase& res)
 {
-    if (this==&res) return *this;
-
-    cDensityEstBase::operator=(res);
-
     num_cells = res.num_cells;
     delete [] cellv;
     cellv = NULL;
@@ -103,6 +99,12 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
         cellv = new unsigned[num_cells];
         memcpy(cellv, res.cellv, num_cells*sizeof(unsigned));
     }
+}
+
+cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
+{
+    cDensityEstBase::operator=(res);
+    copy(res);
     return *this;
 }
 
@@ -209,13 +211,17 @@ void cHistogram::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cHistogram& cHistogram::operator = (const cHistogram& res)
+void cHistogram::copy(const cHistogram& res)
 {
-    if (this==&res) return *this;
-
-    cHistogramBase::operator=(res);
     cellsize = res.cellsize;
     mode = res.mode;
+}
+
+cHistogram& cHistogram::operator=(const cHistogram& res)
+{
+    if (this==&res) return *this;
+    cHistogramBase::operator=(res);
+    copy(res);
     return *this;
 }
 
@@ -461,4 +467,18 @@ void cHistogram::loadFromFile(FILE *f)
     freadvarsf(f, "%g\t #= cellsize", &cellsize);
 }
 
+cLongHistogram& cLongHistogram::operator=(const cLongHistogram& res)
+{
+    if (this==&res) return *this;
+    cHistogram::operator=(res);
+    copy(res);
+    return *this;
+}
 
+cDoubleHistogram& cDoubleHistogram::operator=(const cDoubleHistogram& res)
+{
+    if (this==&res) return *this;
+    cHistogram::operator=(res);
+    copy(res);
+    return *this;
+}

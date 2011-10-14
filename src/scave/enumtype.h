@@ -35,6 +35,9 @@ class SCAVE_API EnumType
     std::map<int,std::string> valueToNameMap;
     std::map<std::string,int> nameToValueMap;
 
+  private:
+    void copy(const EnumType& other);
+
   public:
     /**
      * Constructor.

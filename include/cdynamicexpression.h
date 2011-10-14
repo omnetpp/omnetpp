@@ -91,11 +91,13 @@ class SIM_API cDynamicExpression : public cExpression
         };
 
       private:
+        void copy(const Elem& other);
+
         void deleteOld();
 
       public:
         Elem()  {type=UNDEF;}
-        Elem(const Elem& other)  {type=UNDEF; operator=(other);}
+        Elem(const Elem& other)  {type=UNDEF; copy(other);}
         ~Elem();
 
         /**
@@ -204,6 +206,9 @@ class SIM_API cDynamicExpression : public cExpression
     Elem *elems;
     int size;
 
+  private:
+    void copy(const cDynamicExpression& other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -216,7 +221,7 @@ class SIM_API cDynamicExpression : public cExpression
     /**
      * Copy constructor.
      */
-    cDynamicExpression(const cDynamicExpression& other) {elems=NULL; operator=(other);}
+    cDynamicExpression(const cDynamicExpression& other) : cExpression(other) {elems=NULL; copy(other);}
 
     /**
      * Destructor.

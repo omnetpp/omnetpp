@@ -34,17 +34,20 @@ cXMLParImpl::~cXMLParImpl()
     deleteOld();
 }
 
-void cXMLParImpl::operator=(const cXMLParImpl& other)
+void cXMLParImpl::copy(const cXMLParImpl& other)
 {
-    if (this==&other) return;
-
-    deleteOld();
-
-    cParImpl::operator=(other);
     if (flags & FL_ISEXPR)
         expr = (cExpression *) other.expr->dup();
     else
         val = other.val;
+}
+
+void cXMLParImpl::operator=(const cXMLParImpl& other)
+{
+    if (this==&other) return;
+    deleteOld();
+    cParImpl::operator=(other);
+    copy(other);
 }
 
 std::string cXMLParImpl::detailedInfo() const

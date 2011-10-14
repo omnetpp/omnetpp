@@ -87,7 +87,7 @@ cException::cException(const cObject *where, const char *msgformat...) : std::ex
     va_end(va);
 }
 
-cException::cException(const cException& e)
+cException::cException(const cException& e) : std::exception(e)
 {
     errorcode = e.errorcode;
     msg = e.msg;

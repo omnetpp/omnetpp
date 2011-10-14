@@ -88,12 +88,11 @@ cObject *cArray::Iterator::operator--(int)
 
 //----
 
-cArray::cArray(const cArray& other) : cOwnedObject()
+cArray::cArray(const cArray& other) : cOwnedObject(other)
 {
     vect = NULL;
     last = -1;
-    setName(other.getName());
-    operator=(other);
+    copy(other);
 }
 
 cArray::cArray(const char *name, int cap, int dt) : cOwnedObject(name)
@@ -114,15 +113,8 @@ cArray::~cArray()
     delete [] vect;
 }
 
-cArray& cArray::operator=(const cArray& other)
+void cArray::copy(const cArray& other)
 {
-    if (this == &other)
-        return *this;
-
-    clear();
-
-    cOwnedObject::operator=(other);
-
     capacity = other.capacity;
     delta = other.delta;
     firstfree = other.firstfree;
@@ -141,6 +133,14 @@ cArray& cArray::operator=(const cArray& other)
                 take(static_cast<cOwnedObject*>(vect[i] = vect[i]->dup()));
         }
     }
+}
+
+cArray& cArray::operator=(const cArray& other)
+{
+    if (this == &other) return *this;
+    clear();
+    cOwnedObject::operator=(other);
+    copy(other);
     return *this;
 }
 

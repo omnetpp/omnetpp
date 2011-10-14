@@ -117,16 +117,19 @@ Expression::~Expression()
     delete [] elems;
 }
 
-Expression& Expression::operator=(const Expression& other)
+void Expression::copy(const Expression& other)
 {
-    if (this==&other) return *this;
-
     delete [] elems;
-
     nelems = other.nelems;
     elems = new Elem[nelems];
     for (int i=0; i<nelems; i++)
         elems[i] = other.elems[i];
+}
+
+Expression& Expression::operator=(const Expression& other)
+{
+    if (this==&other) return *this;
+    copy(other);
     return *this;
 }
 

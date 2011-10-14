@@ -46,12 +46,17 @@ cParImpl::~cParImpl()
     live_parimpl_objs--;
 }
 
+void cParImpl::copy(const cParImpl& other)
+{
+    setUnit(other.getUnit());
+}
+
 cParImpl& cParImpl::operator=(const cParImpl& other)
 {
     bool shared = isShared();
     cNamedObject::operator=(other);
+    copy(other);
     setIsShared(shared); // preserve FL_ISSHARED flag
-    setUnit(other.getUnit());
     return *this;
 }
 

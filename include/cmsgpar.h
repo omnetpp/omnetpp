@@ -78,6 +78,8 @@ class SIM_API cMsgPar : public cOwnedObject
     };
 
   private:
+    void copy(const cMsgPar& other);
+
     // helper func: destruct old value
     void deleteOld();
 

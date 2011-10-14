@@ -32,11 +32,10 @@
 USING_NAMESPACE
 
 
-cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection()
+cTDExpandingWindows::cTDExpandingWindows(const cTDExpandingWindows& r) : cTransientDetection(r)
 {
     func=0;
-    setName(r.getName());
-    operator=(r);
+    copy(r);
 }
 
 cTDExpandingWindows::cTDExpandingWindows(const char *name,
@@ -55,11 +54,8 @@ cTDExpandingWindows::~cTDExpandingWindows()
     reset();
 }
 
-cTDExpandingWindows& cTDExpandingWindows::operator=(const cTDExpandingWindows& res)
+void cTDExpandingWindows::copy(const cTDExpandingWindows& res)
 {
-    if (this==&res) return *this;
-
-    cOwnedObject::operator=(res);
 
     // setHostObject(res.getHostObject());
     go=res.go;
@@ -94,6 +90,13 @@ cTDExpandingWindows& cTDExpandingWindows::operator=(const cTDExpandingWindows& r
         }
         p->next = NULL;
     }
+}
+
+cTDExpandingWindows& cTDExpandingWindows::operator=(const cTDExpandingWindows& res)
+{
+    if (this==&res) return *this;
+    cOwnedObject::operator=(res);
+    copy(res);
     return *this;
 }
 
@@ -211,14 +214,12 @@ void cTDExpandingWindows::detectTransient()
 
 //----
 
-cADByStddev::cADByStddev(const cADByStddev& r) : cAccuracyDetection()
+cADByStddev::cADByStddev(const cADByStddev& r) : cAccuracyDetection(r)
 {
     go=resaccval=false;
     detreps=sctr=0;
     ssum=sqrsum=0.0;
-
-    setName(r.getName());
-    operator=(r);
+    copy(r);
 }
 
 cADByStddev::cADByStddev(const char *name,
@@ -233,17 +234,21 @@ cADByStddev::cADByStddev(const char *name,
    ssum=sqrsum=0.0;
 }
 
+void cADByStddev::copy(const cADByStddev& res)
+{
+    // setHostObject(res.getHostObject());
+    go=res.go; resaccval=res.resaccval;
+    accuracy=res.accuracy; sctr=res.sctr;
+    ssum=res.ssum; sqrsum=res.sqrsum;
+    repeats=res.repeats; detreps=res.detreps;
+    pdf=res.pdf; pdfdata=res.pdfdata;
+}
+
 cADByStddev& cADByStddev::operator=(const cADByStddev& res)
 {
    if (this==&res) return *this;
-
    cOwnedObject::operator=(res);
-   // setHostObject(res.getHostObject());
-   go=res.go; resaccval=res.resaccval;
-   accuracy=res.accuracy; sctr=res.sctr;
-   ssum=res.ssum; sqrsum=sqrsum;
-   repeats=res.repeats; detreps=res.detreps;
-   pdf=res.pdf; pdfdata=res.pdfdata;
+   copy(res);
    return *this;
 }
 

@@ -75,6 +75,7 @@ class COMMON_API DisplayString
 
   private:
     // helper functions
+    void copy(const DisplayString& ds) {parse(ds.str());}
     bool parse();
     void assemble() const;
     int gettagindex(const char *tagname) const;
@@ -112,7 +113,7 @@ class COMMON_API DisplayString
     /**
      * Assignment operator.
      */
-    DisplayString& operator=(const DisplayString& ds) {parse(ds.str()); return *this;}
+    DisplayString& operator=(const DisplayString& other);
 
     /**
      * Conversion from string.

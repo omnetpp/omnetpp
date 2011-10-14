@@ -42,6 +42,9 @@ class SIM_API cPSquare : public cDensityEstBase
     double *q;         // array of heights
 
   protected:
+    void copy(const cPSquare& other);
+
+  protected:
     // abstract method in cDensityEstBase
     virtual void doMergeCellValues(const cDensityEstBase *other);
 

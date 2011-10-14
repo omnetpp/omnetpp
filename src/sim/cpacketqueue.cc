@@ -40,16 +40,21 @@ cPacketQueue::cPacketQueue(const char *name, CompareFunc cmp) : cQueue(name,cmp)
     bitlength = 0;
 }
 
-cPacketQueue::cPacketQueue(const cPacketQueue& queue)
+cPacketQueue::cPacketQueue(const cPacketQueue& queue) : cQueue(queue)
 {
-    setName(queue.getName());
-    operator=(queue);
+    copy(queue);
+}
+
+void cPacketQueue::copy(const cPacketQueue& queue)
+{
+    bitlength = queue.bitlength;
 }
 
 cPacketQueue& cPacketQueue::operator=(const cPacketQueue& queue)
 {
+    if (this==&queue) return *this;
     cQueue::operator=(queue);
-    bitlength = queue.bitlength;
+    copy(queue);
     return *this;
 }
 

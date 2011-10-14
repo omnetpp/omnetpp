@@ -126,6 +126,9 @@ class SIM_API cOwnedObject : public cNamedObject
     static long total_objs;
     static long live_objs;
 
+  private:
+    void copy(const cOwnedObject& obj);
+
   public:
     // internal
     virtual void removeFromOwnershipTree();
@@ -149,8 +152,7 @@ class SIM_API cOwnedObject : public cNamedObject
     explicit cOwnedObject(const char *name, bool namepooling=true);
 
     /**
-     * Copy constructor. In derived classes, it is usually implemented
-     * as <tt>{operator=(obj);</tt>
+     * Copy constructor.
      */
     cOwnedObject(const cOwnedObject& obj);
 
@@ -249,12 +251,6 @@ class SIM_API cOwnedObject : public cNamedObject
  */
 class SIM_API cNoncopyableOwnedObject : public cOwnedObject, noncopyable
 {
-  private:
-    /**
-     * Private copy constructor, to prevent copying.
-     */
-    cNoncopyableOwnedObject(const cOwnedObject&) {}
-
   public:
     /**
      * Constructor

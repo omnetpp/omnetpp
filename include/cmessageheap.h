@@ -90,6 +90,9 @@ class SIM_API cMessageHeap : public cOwnedObject
     int cbsize;               // always power of 2
     int cbhead, cbtail;       // cbhead is inclusive, cbtail is exclusive
 
+  private:
+    void copy(const cMessageHeap& other);
+
     // internal: restore heap
     void shiftup(int from=1);
 

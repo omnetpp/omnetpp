@@ -53,12 +53,12 @@ cNamedObject::cNamedObject(const char *name, bool namepooling)
         namep  = opp_strdup(name);
 }
 
-cNamedObject::cNamedObject(const cNamedObject& obj)
+cNamedObject::cNamedObject(const cNamedObject& obj) : cObject(obj)
 {
-    flags = obj.flags; // copy all flags, incl namepooling
     namep = NULL;
+    flags = obj.flags & FL_NAMEPOOLING;
     setName(obj.getName());
-    operator=(obj);
+    copy(obj);
 }
 
 cNamedObject::~cNamedObject()
@@ -72,7 +72,7 @@ cNamedObject::~cNamedObject()
     }
 }
 
-cNamedObject& cNamedObject::operator=(const cNamedObject& obj)
+void cNamedObject::copy(const cNamedObject& obj)
 {
     // Not much to do:
     // - ownership not affected
@@ -80,6 +80,11 @@ cNamedObject& cNamedObject::operator=(const cNamedObject& obj)
     // - flags are taken over, except for FL_NAMEPOOLING which is preserved
     unsigned short namePooling = flags & FL_NAMEPOOLING;
     flags = (obj.flags & ~FL_NAMEPOOLING) | namePooling;
+}
+
+cNamedObject& cNamedObject::operator=(const cNamedObject& obj)
+{
+    copy(obj);
     return *this;
 }
 

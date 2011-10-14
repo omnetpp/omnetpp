@@ -42,7 +42,7 @@ cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
 cStringTokenizer::cStringTokenizer(const cStringTokenizer& other)
 {
     str = NULL;
-    operator=(other);
+    copy(other);
 }
 
 cStringTokenizer::~cStringTokenizer()
@@ -50,17 +50,20 @@ cStringTokenizer::~cStringTokenizer()
     delete [] str;
 }
 
-cStringTokenizer& cStringTokenizer::operator=(const cStringTokenizer& other)
+void cStringTokenizer::copy(const cStringTokenizer& other)
 {
-    if (this == &other)
-        return *this;
-
     delimiter = other.delimiter;
     delete [] str;
     size_t len = (other.rest - other.str) + strlen(other.rest);
     str = new char[len+1];
     memcpy(str, other.str, len+1);
     rest = str + (other.rest - other.str);
+}
+
+cStringTokenizer& cStringTokenizer::operator=(const cStringTokenizer& other)
+{
+    if (this == &other) return *this;
+    copy(other);
     return *this;
 }
 

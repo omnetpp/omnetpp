@@ -104,6 +104,9 @@ class SIM_API cArray : public cOwnedObject
     int firstfree;    // first free position in vect[]
     int last;         // last used position
 
+  private:
+    void copy(const cArray& other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{

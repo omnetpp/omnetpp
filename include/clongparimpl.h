@@ -37,6 +37,9 @@ class SIM_API cLongParImpl : public cParImpl
       long val;
     };
 
+  private:
+    void copy(const cLongParImpl& other);
+
   protected:
     long evaluate(cComponent *context) const;
     void deleteOld();
@@ -53,7 +56,7 @@ class SIM_API cLongParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cLongParImpl(const cLongParImpl& other) {setName(other.getName()); operator=(other);}
+    cLongParImpl(const cLongParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.

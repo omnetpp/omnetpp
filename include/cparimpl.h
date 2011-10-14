@@ -63,6 +63,9 @@ class SIM_API cParImpl : public cNamedObject
     static long live_parimpl_objs;
     static cStringPool unitStringPool;
 
+  private:
+    void copy(const cParImpl& other);
+
   public:
     typedef cPar::Type Type;
 
@@ -78,7 +81,7 @@ class SIM_API cParImpl : public cNamedObject
     /**
      * Copy constructor.
      */
-    cParImpl(const cParImpl& other);
+    cParImpl(const cParImpl& other) : cNamedObject(other) {unitp = NULL; copy(other);}
 
     /**
      * Destructor.

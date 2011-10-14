@@ -40,13 +40,17 @@ cFSM::cFSM(const char *name) :
   _statename="INIT";
 }
 
+void cFSM::copy(const cFSM& vs)
+{
+    _statename=vs._statename;
+    _state=vs._state;
+}
+
 cFSM& cFSM::operator=(const cFSM& vs)
 {
     if (this==&vs) return *this;
-
     cOwnedObject::operator=(vs);
-    _statename=vs._statename;
-    _state=vs._state;
+    copy(vs);
     return *this;
 }
 

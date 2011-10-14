@@ -53,7 +53,7 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
  *
  * @ingroup Statistics
  */
-class SIM_API cTransientDetection : public cOwnedObject, noncopyable
+class SIM_API cTransientDetection : public cOwnedObject
 {
   protected:
     cStatistic *back;    // ptr to cStatistic that uses this object
@@ -142,7 +142,7 @@ class SIM_API cTransientDetection : public cOwnedObject, noncopyable
  *
  * @ingroup Statistics
  */
-class SIM_API cAccuracyDetection : public cOwnedObject, noncopyable
+class SIM_API cAccuracyDetection : public cOwnedObject
 {
   protected:
     cStatistic *back;           // ptr to cStatistic that uses this object
@@ -254,6 +254,8 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     // internal: computes new value of transval
     void detectTransient();
 
+    void copy(const cTDExpandingWindows& other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -353,6 +355,8 @@ class SIM_API cADByStddev : public cAccuracyDetection
     int repeats, detreps;       // repetitions necessary for detection
 
   private:
+    void copy(const cADByStddev& other);
+
     // internal: compute new value of transval
     void detectAccuracy();
 

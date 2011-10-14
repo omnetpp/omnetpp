@@ -41,10 +41,11 @@ using std::endl;
 Register_Class(cPSquare);
 
 
-cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase()
+cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase(r)
 {
-    setName( r.getName() );
-    operator=(r);
+    n = NULL;
+    q = NULL;
+    copy(r);
 }
 
 
@@ -112,12 +113,8 @@ void cPSquare::parsimUnpack(cCommBuffer *buffer)
 #endif
 }
 
-cPSquare& cPSquare::operator=(const cPSquare& res)
+void cPSquare::copy(const cPSquare& res)
 {
-    if (this==&res) return *this;
-
-    cDensityEstBase::operator=(res);
-
     numobs=res.numobs;
     numcells=res.numcells;
     delete [] n;
@@ -129,6 +126,13 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
       n[i]=res.n[i];
       q[i]=res.q[i];
     }
+}
+
+cPSquare& cPSquare::operator=(const cPSquare& res)
+{
+    if (this==&res) return *this;
+    cDensityEstBase::operator=(res);
+    copy(res);
     return (*this);
 }
 

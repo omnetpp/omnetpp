@@ -82,11 +82,10 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cOwnedObject(name, false
     cbhead = cbtail = 0;
 }
 
-cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject()
+cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cOwnedObject(heap)
 {
-    h=NULL; n=0;
-    setName(heap.getName());
-    operator=(heap);
+    cb = NULL; h=NULL; n=0;
+    copy(heap);
 }
 
 cMessageHeap::~cMessageHeap()
@@ -128,14 +127,8 @@ void cMessageHeap::clear()
     n = 0;
 }
 
-cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
+void cMessageHeap::copy(const cMessageHeap& heap)
 {
-    if (this==&heap) return *this;
-
-    clear();
-
-    cOwnedObject::operator=(heap);
-
     // copy heap
     n = heap.n;
     size = heap.size;
@@ -152,7 +145,13 @@ cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
     cb = new cMessage *[cbsize];
     for (int i=cbhead; i!=cbtail; CBINC(i))
         take( cb[i]=(cMessage *)heap.cb[i]->dup() );
-
+}
+cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
+{
+    if (this==&heap) return *this;
+    clear();
+    cOwnedObject::operator=(heap);
+    copy(heap);
     return *this;
 }
 

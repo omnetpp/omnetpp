@@ -41,6 +41,9 @@ class SIM_API cHistogramBase : public cDensityEstBase
     int num_cells;        // nr. of categories
     unsigned *cellv;      // array of counters
 
+  private:
+    void copy(const cHistogramBase& other);
+
   protected:
     // abstract method in cDensityEstBase
     virtual void doMergeCellValues(const cDensityEstBase *other);
@@ -52,8 +55,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r)
-        {setName(r.getName());cellv=NULL;operator=(r);}
+    cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r) {cellv=NULL;copy(r);}
 
     /**
      * Constructor.
@@ -196,6 +198,9 @@ class SIM_API cHistogram : public cHistogramBase
     Mode mode;
     double cellsize;  // cell/category sizes; <=0 if unset
 
+  private:
+    void copy(const cHistogram& other);
+
   protected:
     virtual void setupRangeInteger();
     virtual void setupRangeDouble();
@@ -208,8 +213,7 @@ class SIM_API cHistogram : public cHistogramBase
     /**
      * Copy constructor.
      */
-    cHistogram(const cHistogram& r) : cHistogramBase(r)
-        {setName(r.getName());operator=(r);}
+    cHistogram(const cHistogram& r) : cHistogramBase(r) {copy(r);}
 
     /**
      * Constructor.
@@ -337,14 +341,16 @@ class SIM_API cHistogram : public cHistogramBase
  */
 class SIM_API cLongHistogram : public cHistogram
 {
+  private:
+    void copy(const cLongHistogram& other) {}
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
     /**
      * Copy constructor.
      */
-    cLongHistogram(const cLongHistogram& r) : cHistogram(r)
-        {setName(r.getName());operator=(r);}
+    cLongHistogram(const cLongHistogram& r) : cHistogram(r) {copy(r);}
 
     /**
      * Constructor.
@@ -360,7 +366,7 @@ class SIM_API cLongHistogram : public cHistogram
     /**
      * Assignment operator.
      */
-    cLongHistogram& operator=(const cLongHistogram& other)  {return (cLongHistogram&)cHistogram::operator=(other);}
+    cLongHistogram& operator=(const cLongHistogram& other);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -398,6 +404,9 @@ class SIM_API cLongHistogram : public cHistogram
  */
 class SIM_API cDoubleHistogram : public cHistogram
 {
+  private:
+    void copy(const cDoubleHistogram& other) {}
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -405,8 +414,7 @@ class SIM_API cDoubleHistogram : public cHistogram
     /**
      * Copy constructor
      */
-    cDoubleHistogram(const cDoubleHistogram& r) : cHistogram(r)
-        {setName(r.getName());operator=(r);}
+    cDoubleHistogram(const cDoubleHistogram& r) : cHistogram(r) {copy(r);}
 
     /**
      * Constructor.
@@ -422,7 +430,7 @@ class SIM_API cDoubleHistogram : public cHistogram
     /**
      * Assignment operator.
      */
-    cDoubleHistogram& operator=(const cDoubleHistogram& other)  {return (cDoubleHistogram&)cHistogram::operator=(other);}
+    cDoubleHistogram& operator=(const cDoubleHistogram& other);
     //@}
 
     /** @name Redefined cObject member functions. */

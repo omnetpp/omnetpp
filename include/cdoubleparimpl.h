@@ -37,6 +37,9 @@ class SIM_API cDoubleParImpl : public cParImpl
       double val;
     };
 
+  private:
+    void copy(const cDoubleParImpl& other);
+
   protected:
     double evaluate(cComponent *context) const;
     void deleteOld();
@@ -53,7 +56,7 @@ class SIM_API cDoubleParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cDoubleParImpl(const cDoubleParImpl& other) {setName(other.getName()); operator=(other);}
+    cDoubleParImpl(const cDoubleParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.

@@ -122,6 +122,10 @@ class SIM_API CLINKEDLIST_DEPRECATED cLinkedList : public cOwnedObject
                               // if both dupfunc and itemsize are 0, we do
                               // no memory management (we treat pointers as
                               // mere pointers)
+
+  private:
+    void copy(const cLinkedList& other);
+
   protected:
     // internal use.
     // if both dupfunc and itemsize are 0, we do no memory management

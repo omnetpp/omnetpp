@@ -34,6 +34,9 @@ class SIM_API cXMLParImpl : public cParImpl
     cExpression *expr;
     cXMLElement *val;
 
+  private:
+    void copy(const cXMLParImpl& other);
+
   protected:
     cXMLElement *evaluate(cComponent *context) const;
     void deleteOld();
@@ -50,7 +53,7 @@ class SIM_API cXMLParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cXMLParImpl(const cXMLParImpl& other) {setName(other.getName()); operator=(other);}
+    cXMLParImpl(const cXMLParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.

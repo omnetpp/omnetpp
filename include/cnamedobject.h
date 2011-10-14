@@ -45,6 +45,9 @@ class SIM_API cNamedObject : public cObject
     unsigned short unused; // space lost to due to word aligment; one may make use of it in subclasses (cModule, cSimpleModule, cGate)
     enum {FL_NAMEPOOLING = 1};
 
+  private:
+    void copy(const cNamedObject& other);
+
   protected:
     // internal: set a bit in flags; flag is one of the FL_xxx constants
     void setFlag(int flag, bool value) {if (value) flags|=flag; else flags&=~flag;}
@@ -67,8 +70,7 @@ class SIM_API cNamedObject : public cObject
     explicit cNamedObject(const char *name, bool namepooling=true);
 
     /**
-     * Copy constructor. In derived classes, it is usually implemented
-     * as <tt>{operator=(obj);</tt>
+     * Copy constructor.
      */
     cNamedObject(const cNamedObject& obj);
 

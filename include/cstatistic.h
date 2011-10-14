@@ -47,6 +47,9 @@ class SIM_API cStatistic : public cOwnedObject
     cAccuracyDetection *ra;     // ptr to associated object
     int genk;                   // index of random number generator to use
 
+  private:
+    void copy(const cStatistic& other);
+
   protected:
     // internal: utility function for implementing loadFromFile() functions
     void freadvarsf (FILE *f,  const char *fmt, ...);

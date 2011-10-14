@@ -34,7 +34,7 @@ cProperties::~cProperties()
         delete propv[i];
 }
 
-cProperties& cProperties::operator=(const cProperties& other)
+void cProperties::copy(const cProperties& other)
 {
     if (islocked)
         throw cRuntimeError(this, eLOCKED);
@@ -52,6 +52,12 @@ cProperties& cProperties::operator=(const cProperties& other)
         cProperty *p = other.propv[i]->dup();
         propv.push_back(p);
     }
+}
+
+cProperties& cProperties::operator=(const cProperties& other)
+{
+    if (this==&other) return *this;
+    copy(other);
     return *this;
 }
 

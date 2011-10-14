@@ -43,6 +43,9 @@ class SIM_API cEnum : public cOwnedObject
      std::map<std::string,int> nameToValueMap;
      std::vector<std::string> tmpNames;
 
+  private:
+     void copy(const cEnum& other);
+
   public:
     // internal: helper for the Register_Enum() macro
     cEnum *registerNames(const char *nameList);

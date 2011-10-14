@@ -37,6 +37,9 @@ class SIM_API cBoolParImpl : public cParImpl
       bool val;
     };
 
+  private:
+    void copy(const cBoolParImpl& other);
+
   protected:
     bool evaluate(cComponent *context) const;
     void deleteOld();
@@ -53,7 +56,7 @@ class SIM_API cBoolParImpl : public cParImpl
     /**
      * Copy constructor.
      */
-    cBoolParImpl(const cBoolParImpl& other) {setName(other.getName()); operator=(other);}
+    cBoolParImpl(const cBoolParImpl& other) : cParImpl(other) {copy(other);}
 
     /**
      * Destructor.

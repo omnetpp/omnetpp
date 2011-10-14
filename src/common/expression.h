@@ -282,6 +282,9 @@ class COMMON_API Expression
     static std::string Elem_str(int type, bool b, double d, const char *s, Functor *fu, int op);
     static std::string Function_str(const char *name, std::string args[], int numargs);
 
+  private:
+    void copy(const Expression& other);
+
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
@@ -294,7 +297,7 @@ class COMMON_API Expression
     /**
      * Copy constructor.
      */
-    Expression(const Expression& other) {elems=NULL; operator=(other);}
+    Expression(const Expression& other) {elems=NULL; copy(other);}
 
     /**
      * Destructor.
