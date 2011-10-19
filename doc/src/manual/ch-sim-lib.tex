@@ -206,13 +206,16 @@ case of message objects.
 cMessage *copy = msg->dup();
 \end{cpp}
 
-\ffunc{dup()} delegates to the copy constructor, which in
-turn relies on the assignment operator between objects.
-\ffunc{operator=()} can be used to copy contents of an object into
-another object of the same type. This is a deep copy: objects
+\ffunc{dup()} delegates to the copy constructor. Classes also declare
+an assignment operator (\ffunc{operator=()}) which can be used to copy contents
+of an object into another object of the same type. \ffunc{dup()}, the copy
+constructor and the assignment operator all perform deep coping: objects
 contained in the copied object will also be duplicated if necessary.
-\ffunc{operator=()} does not copy the name string -- this task is done
-by the copy constructor\index{copy constructor}.
+
+\ffunc{operator=()} differs from the other two in that it does \textit{not}
+copy the object's name string, i.e. does not invoke \ffunc{setName()}.
+The rationale is that the name string is often used for identifying the particular
+object instance, as opposed to being considered as part of its contents.
 
 \begin{note}
     Since the {\opp} 4.0 version, \ffunc{dup()} returns a pointer to
@@ -2563,19 +2566,14 @@ The following methods \textbf{must} be implemented:
         (must be present). The two are usually implemented as a single
         method, with \ttt{NULL} as default name string.}
   \item{\textit{Copy constructor}, which must have the following signature
-        for a class \ttt{X}: \ttt{X(const X\&)}. The copy constructor is used
-        whenever an object is duplicated. The usual implementation of
-        the copy constructor is to initialize the base class with the
-        name (\ffunc{getName()}) of the other object it receives, then call the
-        assignment operator (see below).}
+        for a class \ttt{X}: \ttt{X(const X\&)}.}
   \item{\textit{Destructor}.}
   \item{\textit{Duplication function,} \ffunc{X *dup() const}.
         It should create and return an exact duplicate of the object.
-        It is usually a one-line function, implemented with the help
-        of the \ttt{new} operator and the copy constructor.}
+        It is usually a one-line function that delegates to the copy constructor.}
   \item{\textit{Assignment operator}, that is, \ttt{X\& operator=(const X\&)}
         for a class \ttt{X}. It should copy the contents of the other
-        object into this one, except the name string. See later what to do
+        object into this one, \textit{except} the name string. See later what to do
         if the object contains pointers to other objects.}
 \end{itemize}
 
@@ -2608,6 +2606,9 @@ Implementation of the following methods is \textbf{recommended}:
         objects of this type to be transmitted across partitions.}
 \end{itemize}
 
+It is customary to implement the copy constructor and the assignment operator
+so that they delegate to the same function of the base class, and invoke a common
+private \ffunc{copy()} function to copy the local members.
 
 \subsection{Class Registration}
 
@@ -2666,11 +2667,13 @@ of all methods discussed in the previous section.
 class NewClass : public cOwnedObject
 {
   protected:
-    int data;
+    int size;
     double *array;
     cQueue queue;
     cMessage *msg;
     ...
+  private:
+    void copy(const NewClass& other); // local utility function
   public:
     NewClass(const char *name=NULL, int d=0);
     NewClass(const NewClass& other);
@@ -2698,10 +2701,10 @@ Here is the top of the \ttt{.cc} file:
 Register_Class( NewClass );
 
 
-NewClass::NewClass(const char *name, int d) : cOwnedObject(name)
+NewClass::NewClass(const char *name, int sz) : cOwnedObject(name)
 {
-    data = d;
-    array = new double[10];
+    size = sz;
+    array = new double[size];
     take(&queue);
     msg = NULL;
 }
@@ -2711,26 +2714,20 @@ The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
 You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
-
 \begin{cpp}
-NewClass::NewClass(const NewClass& other) : cOwnedObject(other.getName())
+NewClass::NewClass(const NewClass& other) : cOwnedObject(other)
 {
-    array = new double[10];
+    size = -1; // needed by copy()
+    array = NULL;
     msg = NULL;
     take(&queue);
-    operator=(other);
+    copy(other);
 }
 \end{cpp}
 
-The copy constructor relies on the assignment operator. Because
-by convention the assignment operator does not copy the
-name member, it is passed here to the base class constructor.
-(Alternatively, we could have written \ttt{setName(other.getName())}
-into the function body.)
-
+The copy constructor relies on the private \ffunc{copy()} function.
 Note that pointer members have to be initialized (to \ttt{NULL} or to an
-allocated object/memory) before calling the assignment operator,
-to avoid crashes.
+allocated object/memory) before calling the \ffunc{copy()} function.
 
 You need to call \ffunc{take()} for \cclass{cOwnedObject}-based data members.
 
@@ -2762,11 +2759,30 @@ NewClass& NewClass::operator=(const NewClass& other)
 {
     if (&other==this)
         return *this;
+
     cOwnedObject::operator=(other);
+    copy(other);
+    return *this;
+}
+\end{cpp}
 
-    data = other.data;
+The assignment operator (above) first makes sure that will not try to copy
+the object to itself, because that can be disastrous. If so (that is,
+\ttt{\&other==this}), the function returns immediately without doing anything.
 
-    for (int i=0; i<10; i++)
+The base class part is copied via invoking the assignment operator of
+the base class. Then the method copies over the local members using the
+\ffunc{copy()} private utility function.
+
+\begin{cpp}
+void NewClass::copy(const NewClass& other)
+{
+    if (size != other.size) {
+        size = other.size;
+        delete array;
+        array = new double[size];
+    }
+    for (int i = 0; i < size; i++)
         array[i] = other.array[i];
 
     queue = other.queue;
@@ -2774,37 +2790,18 @@ NewClass& NewClass::operator=(const NewClass& other)
 
     if (msg && msg->getOwner()==this)
         delete msg;
+
     if (other.msg && other.msg->getOwner()==const_cast<cMessage*>(&other))
         take(msg = other.msg->dup());
     else
         msg = other.msg;
-    return *this;
 }
 \end{cpp}
 
 Complexity associated with copying and duplicating the object
-is concentrated in the assignment operator, so it is usually
-the one that requires the most work from you of all methods
-required by \cclass{cOwnedObject}.
+is concentrated in the \ffunc{copy()} utility function.
 
-If you do not want to implement object copying and duplication,
-you should implement the assignment operator to call
-\ffunc{copyNotSupported()} -- it'll throw an exception that
-stops the simulation with an error message if this function
-is called.
-
-The assignment operator copies contents of the \ttt{other} object
-to this one, except the name string. It should always return
-\ttt{*this}.
-
-First, we should make sure we are not trying to copy the object
-to itself, because it might be disastrous. If so (that is,
-\ttt{\&other==this}), we return immediately without doing anything.
-
-The base class part is copied via invoking the assignment operator of
-the base class.
-
-New data members are copied in the normal C++ way. If the class
+Data members are copied in the normal C++ way. If the class
 contains pointers, you will most probably want to make a deep copy of
 the data where they point, and not just copy the pointer values.
 
@@ -3040,25 +3037,20 @@ where \ttt{obj->getOwner()==this}.
 \subsubsection{Object Copying}
 
 The ownership mechanism also has to be taken into consideration
-when a \cclass{cArray} or \cclass{cQueue} object is duplicated.
+when a \cclass{cArray} or \cclass{cQueue} object is duplicated
+(using \ffunc{dup()} or the copy constructor.)
 The duplicate is supposed to have the same content as the
-original, however the question is whether the contained objects
+original; however, the question is whether the contained objects
 should also be duplicated or only their pointers taken over
-to the duplicate \cclass{cArray} or \cclass{cQueue}.
+to the duplicate \cclass{cArray} or \cclass{cQueue}. A similar
+question arises when an object is copied using the assignment operator
+(\ffunc{operator=()}).
 
 The convention followed by \cclass{cArray}/\cclass{cQueue} is that
 only owned objects are copied, and the contained but not owned ones
 will have their pointers taken over and their original owners
 left unchanged.
 
-In fact, the same question arises in three places:
-the assignment operator \ffunc{operator=()}, the copy constructor
-and the \ffunc{dup()} method.
-In {\opp}, the convention is that copying is implemented
-in the assignment operator, and the other two just rely on it.
-(The copy constructor just constructs an empty object and
-invokes assignment, while \ffunc{dup()}
-is implemented as \ffunc{new cArray(*this)}).
 
 % FIXME finish this!
 %
