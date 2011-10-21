@@ -9,7 +9,178 @@
   </style>
 <body>
 
-<h1>What's New in the IDE</h1>
+
+
+<h1>What's New in the OMNeT++/OMNEST 4.2 IDE</h1>
+
+<h2>Platform</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Updated Eclipse Platform
+</b></p></td><td><p>The IDE is now based on <a href="http://download.eclipse.org/eclipse/downloads/drops/R-3.7-201106131736/eclipse-news-part1.html">Eclipse 3.7.1</a>
+and <a href="http://wiki.eclipse.org/CDT/User/NewIn80">CDT 8.0.1.</a>
+(Click on the links to review the changes in Eclipse and CDT.)</p>
+<img src="pictures/42-version.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Eclipse Marketplace
+</b></p></td><td><p>You can use the Eclipse Marketplace to install additional
+features into the IDE by selecting <strong>Help | Eclipse Marketplace...</strong></p>
+<img src="pictures/42-marketplace.png" border="0">
+</td></tr>
+
+</tbody></table>
+
+<h2>NED Editor</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Error Markers on Connections
+</b></p></td><td><p>Connections with an error are now annotated with a marker
+in the graphical editor.</p>
+<img src="pictures/42-ned-connection-errormarker.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Package Names in Graphical Editor
+</b></p></td><td><p>The graphical editor now displays the package
+name at the top of the canvas.</p>
+<img src="pictures/42-ned-packagename.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Visible Self-connections
+</b></p></td><td><p>Connections that start and end at the same module are now
+represented by arcs in the top-right corner of the module. Previously, self-connections
+were represented only by a small arrow head. </p>
+<img src="pictures/42-ned-selfconnection.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Rearranged Context Menu
+</b></p></td><td><p>The context menu in the graphical editor has been rearranged
+to increase its usability.</p>
+<img src="pictures/42-ned-context-menu.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Changing the Visual Appearance of the Modules
+</b></p></td><td><p>A new Properties dialog has been introduced that lets you
+change the name, type, vector size and visual appearance of modules and channels.
+The dialog is accessible from the context menu or by pressing
+<strong>Ctrl-Enter</strong> after selecting an item or several items together.
+</p>
+<img src="pictures/42-ned-properties.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Changing Module Type and Vector Index
+</b></p></td><td><p>The 'General' tab in the properties dialog
+allows you to change the name, vector size and type of a module.
+</p>
+<img src="pictures/42-ned-properties2.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Enhanced Type Selection Dialog
+</b></p></td><td><p>The Open NED Type dialog now shows you the project name where
+the opened type is defined. This is especially useful if you are working with
+multiple open projects.</p>
+<img src="pictures/42-ned-typeselectiondialog.png" border="0">
+</td></tr>
+
+<tr><td><p align="right"><b>Excluding NED Packages
+</b></p></td><td><p>The IDE now allows you to exclude specific NED packages
+from the NED path. NED files in those packages will not generate errors and they
+cannot be edited in the NED editor. This feature is useful for disabling certain
+parts of your project.</p>
+<img src="pictures/42-ned-folderexclusion.png" border="0">
+</td></tr>
+
+
+</tbody></table>
+
+
+<h2>C++ Development</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Clean Local Project Only
+</b></p></td><td><p>The new '<strong>Clean Local</strong>' action on the project context menu
+allows you to clean only the selected project without invoking the 'Clean' action
+on referenced projects. This is useful if your project references a third party project
+(e.g. the INET Framework) and you want to clean only your own project, but not the
+third party one.</p>
+<img src="pictures/42-cpp-clean-local.png"/>
+</td></tr>
+
+<tr><td><p align="right"><b>Partition your Project into Features
+</b></p></td><td><p>The IDE now allows you to partition your projects into smaller
+parts called 'Features'. Features can depend on each other and can be enabled/disabled
+independently. The IDE handles the C++ source and NED package exlusion/inclusion
+automatically, based on your feature selection. Features can also define macros which
+will be passed to the compiler, so it is possible to write conditional code that depends
+on the enablement of certain features. This is especially useful for large projects
+like the INET Framework. See the User Guide for further details.</p>
+<img src="pictures/42-cpp-features.png"/>
+</td></tr>
+
+</tbody></table>
+
+<h2>INI Editor</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Rearranged INI Editor Pages
+</b></p></td><td><p>The pages in the form based INI editor have been rearranged
+for better usability.</p>
+<img src="pictures/42-ini-rearranged-editor-tree.png"/>
+</td></tr>
+
+</tbody></table>
+
+<h2>Launcher</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Getting the Command Line
+</b></p></td><td><p>The IDE launcher now prints out the command line to the console
+before starting your simulation. You can use this information to start
+your simulation from the command prompt.</p>
+<img src="pictures/42-launcher-commandline.png"/>
+</td></tr>
+
+<tr><td><p align="right"><b>Profiling with Valgrind
+</b></p></td><td><p>On Linux systems, the IDE now allows you to start and profile
+your program using 'valgrind'. This allows you to detect memory errors and other
+programming mistakes. This feature is available only on Linux systems where
+valgrind is installed.</p>
+<img src="pictures/42-launcher-profiling.png"/>
+</td></tr>
+
+</tbody></table>
+
+<h2>Sequence Chart</h2>
+
+<table cellpadding="10" cellspacing="0" > <colgroup> <col width="150"> <col width="500"> </colgroup>
+<tbody>
+
+<tr><td><p align="right"><b>Enhanced Navigation
+</b></p></td><td><p>The context menu now contains additional actions to move to a
+certain simulation event or simulation time.</p>
+<img src="pictures/42-seq-gotoevent.png"/>
+</td></tr>
+
+</tbody></table>
+
+<br/>
+<br/>
+<br/>
+<br/>
+<hr/>
+<hr/>
+
+<h1>What's New in the OMNeT++/OMNEST 4.1 IDE</h1>
 
 <h2>NED Editor</h2>
 
@@ -58,18 +229,18 @@ parameters. It can be accessed using the context menu of the submodule or connec
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Icons
-</b></p></td><td><p>Content assist is available for icons by pressing Ctrl+Space inside a display string.</p>
+</b></p></td><td><p>Content assist is available for icons by pressing <strong>Ctrl+Space</strong> inside a display string.</p>
 <img src="pictures/41-ned-icon-assist.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Colors
-</b></p></td><td><p>Content assist is available for colors by pressing Ctrl+Space inside a display string.</p>
+</b></p></td><td><p>Content assist is available for colors by pressing <strong>Ctrl+Space</strong> inside a display string.</p>
 <img src="pictures/41-ned-color-assist.png"/>
 </td></tr>
 
 <tr><td><p align="right"><b>Content Assist for Statistics
 </b></p></td><td><p>Content assist is available for statistics by pressing
-Ctrl+Space inside a <b>@statistic</b> property definition.</p>
+<strong>Ctrl+Space</strong> inside a <b>@statistic</b> property definition.</p>
 <img src="pictures/41-ned-statistic-assist.png"/>
 </td></tr>
 
@@ -114,7 +285,7 @@ the <b>**.channel.parametername =</b> syntax.</p>
 
 <tr><td><p align="right"><b>Statistics and Signals in Module Hierarchy
 </b></p></td><td><p>In addition to parameters, the Module Hierarchy view
-now also displays the @statistic and @signal properties of the modules.</p>
+now also displays the <strong>@statistic</strong> and <strong>@signal</strong> properties of the modules.</p>
 <img src="pictures/41-module-view.png"/>
 </td></tr>
 
