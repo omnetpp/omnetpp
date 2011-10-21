@@ -1,7 +1,7 @@
-Building the core and models in OMNeT++ 4.0
+Building the core and models in OMNeT++/OMNEST
 ===========================================
 
-Building the core OMNeT++
+Building the core
 -------------------------
 
 1. Dealing with platform differences

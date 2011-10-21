@@ -1,4 +1,4 @@
-Packages in OMNeT++ 4.0
+Packages in OMNeT++ 4.x
 =======================
 
 
