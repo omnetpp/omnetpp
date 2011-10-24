@@ -237,7 +237,7 @@ public class BrowseDataPage extends ScaveEditorPage {
 	 * the tab labels as well.
 	 */
 	protected void refreshPage(ResultFileManager manager) {
-	    IDList items = manager.getAllItems(false, false);
+	    IDList items = manager.getAllItems(false, true);
 		IDList vectors = manager.getAllVectors(false);
 		IDList scalars = manager.getAllScalars(false, true);
 		IDList histograms = manager.getAllHistograms(false);
