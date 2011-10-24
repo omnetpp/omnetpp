@@ -169,6 +169,11 @@ void EventlogFileManager::remove()
 
 void EventlogFileManager::recordSimulation()
 {
+    // TODO: this is a very simple and wrong implementation to be able to turn on eventlog recording after the simulation initialized or even after it is started
+    // TODO: the real solution would be much more complicated than this, it would require additional eventlog entries to explicitly say what the simulation state is
+    // TODO: writing a fake event line and pretending that the current state "happened" within that event is cheating and plain wrong
+    // TODO: the simulation state is something that is "just being there" and we cannot describe that properly with the current eventlog entries that specify changes
+    // TODO: such as CreateModule, BeginSend, etc.
     if (entryIndex == -1) {
         cModule *systemModule = simulation.getSystemModule();
         recordInitialize();
@@ -180,6 +185,8 @@ void EventlogFileManager::recordSimulation()
 
 void EventlogFileManager::recordInitialize()
 {
+    // TODO: we are always faking an initialize event to pretend that the whole simulation state has been created there
+    // TODO: this is clearly a lie, but we do this only once per simulation
     eventNumber = 0;
     EventLogWriter::recordEventEntry_e_t_m_ce_msg(feventlog, eventNumber, 0, 1, -1, -1);
     entryIndex = 0;
@@ -206,6 +213,10 @@ void EventlogFileManager::recordMessages()
             removeBeginSendEntryReference(msg);
             recordKeyframe();
         }
+        // TODO: this will write more than one fake ModuleMethodBegin entries for initialize, but it is a lie anyway
+        if (eventNumber == 0)
+            // NOTE: we lie that the network module called initialize in the arrival module which sent the message to itself
+            EventLogWriter::recordModuleMethodBeginEntry_sm_tm_m(feventlog, 1, msg->getArrivalModuleId(), "initialize");
         eventnumber_t previousEventNumber = msg->getPreviousEventNumber();
         msg->setPreviousEventNumber(-1);
         messageCreated(msg);
@@ -228,6 +239,8 @@ void EventlogFileManager::recordMessages()
             messageSendHop(msg, msg->getSenderGate());
             endSend(msg);
         }
+        if (eventNumber == 0)
+            EventLogWriter::recordModuleMethodEndEntry(feventlog);
     }
     eventNumber = oldEventNumber;
 }
