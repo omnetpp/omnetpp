@@ -22,6 +22,20 @@
 		</p2.mirror>
 	</target>
 
+        <!-- This taget can be used to download the linuxtools repository which contains binaries for all platforms.
+             Required to build IDE for multiple platforms. Can be called maually only. Not called during the
+             build process. -->
+	<target name="sync-target-linuxtools">
+                <echo>Starting download of LinuxTools repo into ${baseLocation}/target/linuxtools</echo>
+		<p2.mirror>
+			<repository location="${baseLocation}/target/linuxtools" name="Local LinuxTools repo" append="false" />
+			<source>
+				<repository location="http://download.eclipse.org/technology/linuxtools/update" />
+			</source>
+			<!-- <iu id="org.eclipse.linuxtools.feature.group"/> -->
+			<slicingoptions followStrict="true" />
+		</p2.mirror>
+	</target>
 	<target name="clean">
 		<delete dir="${buildDirectory}" />
 	</target>

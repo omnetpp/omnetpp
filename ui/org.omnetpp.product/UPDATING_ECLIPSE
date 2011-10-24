@@ -29,10 +29,11 @@ This is a quick how to/checklist what to do when updating to a new eclipse versi
 
 - adjust the ECLIPSE_HOME directory in 'build-ide-java'
 
-- download/mirror the CDT repo. (This is required to build a multi-platform
+- download/mirror the CDT/LinuxTools repo. (This is required to build a multi-platform
   CDT installation): Can be done by invoking:
 
   $ what=sync-target-cdt ./build-ide-java
+  $ what=sync-target-linux ./build-ide-java
 
   after finishing, the CDT repo mirror should be present in the $ECLIPSE_HOME/target/cdt directory
 
