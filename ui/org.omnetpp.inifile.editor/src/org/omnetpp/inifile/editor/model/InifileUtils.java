@@ -622,6 +622,8 @@ public class InifileUtils {
     }
 
     public static String getParamValue(ParamResolution res, IReadonlyInifileDocument doc, boolean allowNull) {
+        if (res == null)
+            return null;
     	switch (res.type) {
     		case UNASSIGNED:
     		    if (allowNull)
