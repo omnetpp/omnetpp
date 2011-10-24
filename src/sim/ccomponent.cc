@@ -324,7 +324,14 @@ int cComponent::SignalData::findListener(cIListener *l)
 
 simsignal_t cComponent::registerSignal(const char *name)
 {
-    if (signalIDs.find(name) == signalIDs.end()) {
+    if (!cStaticFlag::isSet())
+        throw cRuntimeError("registerSignal(): illegal registration of signal `%s' in model code: "
+                            "simsignal_t variables may not be initialized statically, "
+                            "please use the initialize() method of a module or channel",
+                            name);
+
+    if (signalIDs.find(name) == signalIDs.end())
+    {
         simsignal_t signalID = ++lastSignalID;
         signalIDs[name] = signalID;
         signalNames[signalID] = name;

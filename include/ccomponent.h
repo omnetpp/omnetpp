@@ -376,6 +376,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * first 64 signal names registered have somewhat better notification
      * performance characteristics than later signals, so it is advised to
      * register frequently emitted signals first.
+     *
+     * Important: Signal IDs are assigned per simulation, so do NOT register
+     * signals using static initialization. Signal registration code is best
+     * placed into the initialize() methods of related modules or channels.
      */
     static simsignal_t registerSignal(const char *name);
 
