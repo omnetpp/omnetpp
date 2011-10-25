@@ -530,11 +530,11 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
 
     const char *s = pos+2;
     while (opp_isspace(*s)) s++;
-    if (opp_isalpha(*s))
+    if (opp_isalphaext(*s))
     {
         // must be a variable or a variable reference
         varbegin = varend = s;
-        while (opp_isalnum(*varend)) varend++;
+        while (opp_isalnumext(*varend)) varend++;
         s = varend;
         while (opp_isspace(*s)) s++;
         if (*s=='}') {
@@ -565,10 +565,10 @@ void SectionBasedConfiguration::parseVariable(const char *pos, std::string& outV
         {
             const char *s = exclamationMark+1;
             while (opp_isspace(*s)) s++;
-            if (opp_isalpha(*s))
+            if (opp_isalphaext(*s))
             {
                 parvarbegin = s;
-                while (opp_isalnum(*s)) s++;
+                while (opp_isalnumext(*s)) s++;
                 parvarend = s;
                 while (opp_isspace(*s)) s++;
                 if (s!=valueend)
@@ -636,7 +636,7 @@ std::vector<const char *> SectionBasedConfiguration::getIterationVariableNames()
 {
     std::vector<const char *> result;
     for (StringMap::const_iterator it = variables.begin(); it!=variables.end(); ++it)
-        if (opp_isalpha(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
+        if (opp_isalphaext(it->first[0]) && !isPredefinedVariable(it->first.c_str()))  // skip unnamed and predefined ones
             result.push_back(it->first.c_str());
     return result;
 }
@@ -1073,10 +1073,10 @@ void SectionBasedConfiguration::validate(const char *ignorableConfigKeys) const
         {
             if (*configName == ' ')
                 throw cRuntimeError("Invalid section name [%s]: too many spaces", section);
-            if (!opp_isalpha(*configName) && *configName!='_')
+            if (!opp_isalphaext(*configName) && *configName!='_')
                 throw cRuntimeError("Invalid section name [%s]: config name must begin with a letter or underscore", section);
             for (const char *s=configName; *s; s++)
-                if (!opp_isalnum(*s) && strchr("-_@", *s)==NULL)
+                if (!opp_isalnumext(*s) && strchr("-_@", *s)==NULL)
                     throw cRuntimeError("Invalid section name [%s], contains illegal character '%c'", section, *s);
             if (configNames.find(configName)!=configNames.end())
                 throw cRuntimeError("Configuration name '%s' not unique", configName);

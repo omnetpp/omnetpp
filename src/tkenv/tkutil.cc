@@ -316,7 +316,7 @@ cPar *displayStringPar(const char *parname, cComponent *component, bool searchpa
 bool displayStringContainsParamRefs(const char *dispstr)
 {
     for (const char *s = dispstr; *s; s++)
-        if (*s=='$' && (*(s+1)=='{' || opp_isalpha(*(s+1))))
+        if (*s=='$' && (*(s+1)=='{' || opp_isalphaext(*(s+1))))
             return true;
     return false;
 }
@@ -360,7 +360,7 @@ const char *substituteDisplayStringParamRefs(const char *src, std::string& buffe
             }
             else
             {
-                while (opp_isalnum(*s) || *s == '_')
+                while (opp_isalnumext(*s) || *s == '_')
                     name += *s++;
             }
 

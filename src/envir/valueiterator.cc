@@ -168,7 +168,7 @@ void ValueIterator::Item::parse(const char *s)
     const char *fromPtr = s;
     const char *toPtr = strstr(fromPtr, "..");
     const char *stepPtr = toPtr ? strstr(toPtr+2, "step") : NULL;
-    while (stepPtr && (opp_isalnum(*(stepPtr-1)) || opp_isalnum(*(stepPtr+4))))
+    while (stepPtr && (opp_isalnumext(*(stepPtr-1)) || opp_isalnumext(*(stepPtr+4))))
         stepPtr = strstr(stepPtr+4, "step");
 
     std::string fromStr = toPtr ? std::string(fromPtr, toPtr - fromPtr) : std::string(fromPtr);

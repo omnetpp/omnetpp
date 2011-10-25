@@ -976,10 +976,10 @@ std::vector<std::string> EnvirBase::extractRecorderList(const char *modesOption,
 
 static bool opp_isidentifier(const char *s)
 {
-    if (!opp_isalpha(s[0]) && s[0]!='_')
+    if (!opp_isalphaext(s[0]) && s[0]!='_')
         return false;
     while (*++s)
-        if (!opp_isalnum(*s))
+        if (!opp_isalnumext(*s) && s[0]!='_')
             return false;
     return true;
 }

@@ -29,7 +29,7 @@
  */
 
 D  [0-9]
-L  [a-zA-Z_]
+L  [a-zA-Z_\x80-\xff]
 X  [0-9a-fA-F]
 E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]

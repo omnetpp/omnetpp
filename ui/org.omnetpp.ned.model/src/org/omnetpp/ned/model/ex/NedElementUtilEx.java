@@ -327,7 +327,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     public static boolean isValidIdentifier(String str) {
         if (str == null)
             return false;
-        if (!str.matches("[a-zA-Z_][a-zA-Z0-9_]*"))
+        if (!str.matches("[a-zA-Z\u0080-\uffff_][a-zA-Z\u0080-\uffff_0-9]*"))  // "\u0080-\uffff": rudimentary support for internationalized identifiers
             return false;
         if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(str))
             return false;

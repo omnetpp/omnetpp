@@ -154,7 +154,7 @@ void NEDSyntaxValidator::checkDottedNameAttribute(NEDElement *node, const char *
     if (!*s)
         return;
     for (; *s; s++)
-        if (!opp_isalpha(*s) && !opp_isdigit(*s) && *s!='_' && *s!='.' && (wildcardsAllowed ? *s!='*' : true))
+        if (!opp_isalnumext(*s) && *s!='_' && *s!='.' && (wildcardsAllowed ? *s!='*' : true))
             {errors->addError(node,"validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 

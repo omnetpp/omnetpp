@@ -797,9 +797,9 @@ public final class InifileAnalyzer {
         int index = value.indexOf("${", startPos);
         if (index >= 0) {
             StringTokenizer2 tokenizer = new StringTokenizer2(value.substring(index), "}", "{}()[]", "\"");
-            tokenizer.nextToken(); // does not contain ending '}' !
+            String token = tokenizer.nextToken(); // does not contain ending '}' !
             int start = index;
-            int end = start + tokenizer.getTokenLength() + 1;
+            int end = start + token.length() + 1; // note: do not use tokenizer.getTokenLength(), as it fails for multi-byte chars (returns byte count instead of character count)
             return Pair.pair(start, end);
         }
         else
