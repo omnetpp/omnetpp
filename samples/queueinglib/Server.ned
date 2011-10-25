@@ -19,7 +19,7 @@ simple Server
         @group(Queueing);
         @display("i=block/server");
         @signal[busy](type="bool");
-        @statistic[busy](title="server busy state";record=vector,timeavg;interpolationmode=sample-hold);
+        @statistic[busy](title="server busy state";record=vector?,timeavg;interpolationmode=sample-hold);
 
         string fetchingAlgorithm @enum("priority","random","roundRobin","longestQueue") = default("priority");
              // how the next job will be choosen from the attached queues

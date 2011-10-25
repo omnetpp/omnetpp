@@ -20,7 +20,7 @@ simple HCSink
         @signal[hopCount](type="int");
         @signal[hopRatio](type="double");
         @statistic[endToEndDelay](title="end-to-end delay";unit=s;record=vector,mean,max;interpolationmode=none);
-        @statistic[hopCount](title="hop count";record=vector,mean,max;interpolationmode=none);
+        @statistic[hopCount](title="hop count";record=vector?,mean,max;interpolationmode=none);
         @statistic[hopRatio](title="hop count/shortest path hops";record=mean,max;interpolationmode=none);
     gates:
         input in;
