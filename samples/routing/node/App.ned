@@ -23,9 +23,9 @@ simple App like IApp
         @signal[endToEndDelay](type="simtime_t");
         @signal[hopCount](type="int");
         @signal[sourceAddress](type="int");
-        @statistic[endToEndDelay](title="end-to-end delay of arrived packets";unit=s;interpolationmode=none);
-        @statistic[hopCount](title="hop count of arrived packets";interpolationmode=none);
-        @statistic[sourceAddress](title="source address of arrived packets";interpolationmode=none);
+        @statistic[endToEndDelay](title="end-to-end delay of arrived packets";unit=s;record=vector,mean,max;interpolationmode=none);
+        @statistic[hopCount](title="hop count of arrived packets";interpolationmode=none;record=vector,mean,max);
+        @statistic[sourceAddress](title="source address of arrived packets";interpolationmode=none;record=vector);
     gates:
         input in;
         output out;
