@@ -164,7 +164,7 @@
         <title>Add Unassigned Parameters</title>
         <para>
           You can add the names of unassigned module parameters to a Config section by choosing
-          ``Add Missing keys...'' from the context menu or pressing <keycap>Ctrl-Shift-o</keycap>.
+          ``Add Missing keys...'' from the context menu or pressing <keycap>Ctrl+Shift+O</keycap>.
         </para>
       </sect3>
       <sect3>

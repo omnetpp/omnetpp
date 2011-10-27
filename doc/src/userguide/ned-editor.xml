@@ -34,11 +34,8 @@
       ).
     </para>
     <para>
-      The
-      <command>gned</command>
-      program from &Omnetpp;
-      3.x viewed NED files in isolation. In contrast, the &Omnetpp;
-      IDE gathers information from all [[.ned]] files in all open &Omnetpp;
+      The <command>gned</command> program from &Omnetpp; 3.x viewed NED files in isolation.
+      In contrast, the &Omnetpp; IDE gathers information from all [[.ned]] files in all open &Omnetpp;
       projects and makes this information available to the NED editor. This is necessary because &Omnetpp;
       4.x modules may inherit parameters, visual appearance or even submodules and connections from other
       modules, so it is only possible to display a compound module correctly if all related NED definitions
@@ -86,7 +83,7 @@
     <para>
       You can switch between graphical and source editing mode by clicking the tabs at
       the bottom of the editor, or by using the
-      <keycap>ALT+PGUP/PGDN</keycap>
+      <keycap>Alt+PGUP/PGDN</keycap>
       key combinations. The editor will try to keep the selection during the switch. Selecting an element in a
       graphical view and then switching to text view will move the cursor to the related element in the NED
       file. When switching back to graphical view, the graphical editor will try to select the element that
@@ -163,11 +160,8 @@
           Selecting an element is done by clicking on it or by dragging a rectangle over the target modules.
           A compound module can be selected by clicking on its border or title. If you want to select only
           connections within a selection rectangle, use the ``connection selector'' tool in the dropdown menu
-          of the ``connection tool'' . The
-          <keycap>CTRL</keycap>
-          and
-          <keycap>SHIFT</keycap>
-          key can be used to add/remove to/from the current selection. Note that the keyboard (arrow keys) can
+          of the ``connection tool'' . The <keycap>Ctrl</keycap> and <keycap>Shift</keycap>
+          keys can be used to add/remove to/from the current selection. Note that the keyboard (arrow keys) can
           also be used to navigate between submodules. You can also select using a selection rectangle by
           dragging the mouse around the modules.
         </para>
@@ -175,11 +169,8 @@
       <sect3>
         <title>Undo, Redo, Deleting Elements</title>
         <para>
-          Use
-          <keycap>Ctrl+Z</keycap> and
-
-          <keycap>Ctrl+Y</keycap>
-          for undo and redo respectively, and the DEL key for deletion. These functions are also available in the ``Edit'' menu
+          Use <keycap>Ctrl+Z</keycap> and <keycap>Ctrl+Y</keycap> for undo and redo, respectively,
+          and the <keycap>DEL</keycap> key for deletion. These functions are also available in the ``Edit'' menu
           and in the context menu of the selected element.
         </para>
       </sect3>
@@ -187,9 +178,9 @@
         <title>Moving and Resizing Elements</title>
         <para>
           You can move/resize the selected elements with the mouse. Holding down
-          <keycap>SHIFT</keycap>
+          <keycap>Shift</keycap>
           during move will perform a constrained (horizontal, diagonal or vertical) move operation.
-          <keycap>SHIFT</keycap>
+          <keycap>Shift</keycap>
           + resize will keep the aspect ratio of the element.
         </para>
         <para> If you turn on ``Snap to Geometry'' in the ``View'' menu, helper lines will appear to help you
@@ -199,8 +190,7 @@
       <sect3>
         <title>Copying Elements</title>
         <para>
-          Holding down
-          <keycap>CTRL</keycap>
+          Holding down <keycap>Ctrl</keycap>
           while dragging will clone the module(s). Copy/Paste can also be used both on single modules and with
           group selection.
         </para>
@@ -209,11 +199,7 @@
         <title>Zooming</title>
         <para>
           Zooming in and out is possible from the ``View'' menu, or using
-          <keycap>Ctrl+-</keycap>
-          ,
-          <keycap>Ctrl+=,</keycap>
-          or holding down
-          <keycap>CTRL</keycap>
+          <keycap>Ctrl+-</keycap>, <keycap>Ctrl+=,</keycap> or holding down <keycap>Ctrl</keycap>
           and using the mouse wheel.
         </para>
       </sect3>
@@ -283,7 +269,7 @@
         <para>
           If you know only the name of a module type or other NED element, you can use the ``Open NED
           Type'' dialog by pressing
-          <keycap>Ctrl+SHIFT+N</keycap>
+          <keycap>Ctrl+Shift+N</keycap>
           . Type the name, or search with wildcards. The requested type will be opened in an editor. This
           feature is not tied to the graphical editor: the Open NED Type dialog is available from anywhere in
           the IDE.
@@ -297,7 +283,7 @@
           you can switch off this behavior on the view toolbar. Most properties can be edited directly in the
           ``Properties View'', but some also have specific editors that can be activated by pressing the ellipsis button at the
           end of the field. Fields marked with a small light bulb support content assist. Use the
-          <keycap>CTRL+SPACE</keycap>
+          <keycap>Ctrl+SPACE</keycap>
           key combination to get a list of possible values.
         </para>
       </sect3>
@@ -343,7 +329,7 @@
             <para>Find (<keycap>Ctrl+F</keycap>), incremental search (<keycap>Ctrl+J</keycap>)</para>
           </listitem>
           <listitem>
-            <para>Move lines (<keycap>ALT+UP/DOWN</keycap>)</para>
+            <para>Move lines (<keycap>Alt+UP/DOWN</keycap>)</para>
           </listitem>
         </itemizedlist>
         <tip>
@@ -382,7 +368,7 @@
         <title>Searching in NED Files</title>
         <para>
           Selecting a text or moving the cursor over a word and pressing
-          <keycap>CTRL+SHIFT+G</keycap>
+          <keycap>Ctrl+Shift+G</keycap>
           searches for the selection in all NED files in the open projects. This function lets you quickly
           find references to the word or type currently under the cursor. The results are shown in the
           standard ``Search View''.
@@ -393,7 +379,7 @@
         <para>
           Sometimes, it is very inconvenient to add the necessary import statements to the beginning of the NED
           file by hand. The IDE can do it for you (almost) automatically. Pressing
-          <keycap>CTRL+SHIFT+O</keycap>
+          <keycap>Ctrl+Shift+O</keycap>
           will cause the IDE to try to insert all necessary import statements. You will be prompted to specify the used packages in case of
           ambiguity.
         </para>
@@ -417,7 +403,7 @@
         <para>
           It is possible to reformat the whole NED file according to the recommended coding guidelines by
           activating the ``Format Source'' context menu item or by pressing the
-          <keycap>CTRL+SHIFT+F</keycap>
+          <keycap>Ctrl+Shift+F</keycap>
           key combination.
         </para>
         <note>
@@ -428,7 +414,7 @@
       <sect3>
         <title>Navigation</title>
         <para>
-          Holding the <keycap>CTRL</keycap> key and clicking any identifier type will jump to the definition.
+          Holding the <keycap>Ctrl</keycap> key and clicking any identifier type will jump to the definition.
           Alternatively, move the cursor into the identifier and hit <keycap>F3</keycap> to achieve
           the same effect.
         </para>
@@ -480,7 +466,7 @@
         name, type and other properties can be changed in this view. Some fields have specialized editors that
         can be activated by clicking on the ellipsis button in the field editor. Fields marked with a small
         light bulb icon have content assist support. Pressing
-        <keycap>CTRL+SPACE</keycap>
+        <keycap>Ctrl+SPACE</keycap>
         will display the possible values the field can hold.
       </para>
       <picture file="pictures/NED-PropertiesView.png">Properties View</picture>

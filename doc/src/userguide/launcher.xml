@@ -121,8 +121,7 @@
           <para>
             ``Dynamic libraries'': A simulation may load additional DLLs or shared libraries before execution
             or your entire simulation may be built as a shared library. The ``Browse'' button is available to
-            select one or more files (use
-            <keycap>CTRL</keycap>
+            select one or more files (use <keycap>Ctrl</keycap> +
             click for multiple selection). This option can be used to load simulation code (i.e. simple
             modules), user interface libraries, or other extension libraries (scheduler, output file managers,
             etc.). The special macro [[${opp_shared_libs:/workingdir}]] expands to all shared libraries

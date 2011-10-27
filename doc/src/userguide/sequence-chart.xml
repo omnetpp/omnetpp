@@ -406,18 +406,18 @@
       <title>Navigation</title>
       <para>
 	To scroll through the Sequence Chart, use either the scroll bars, drag with the left mouse
-	button or scroll with the mouse wheel using the <keycap>SHIFT</keycap> modifier
+	button or scroll with the mouse wheel using the <keycap>Shift</keycap> modifier
 	key for horizontal scroll.
       </para>
       <para>
 	There are also navigation options to go to the previous
-	(<keycap>SHIFT+LEFT</keycap>) or next (<keycap>SHIFT+RIGHT</keycap>) event in the
+	(<keycap>Shift+LEFT</keycap>) or next (<keycap>Shift+RIGHT</keycap>) event in the
 	same module.
       </para>
       <para>
 	Similar to navigating in the Eventlog Table, to go to the cause event, press
-	<keycap>CTRL+LEFT</keycap>. To go to the arrival of a message send, press
-	<keycap>CTRL+RIGHT</keycap> while an event is selected.
+	<keycap>Ctrl+LEFT</keycap>. To go to the arrival of a message send, press
+	<keycap>Ctrl+RIGHT</keycap> while an event is selected.
       </para>
     </sect2>
     <sect2>
@@ -592,15 +592,15 @@
 	Simulation Time'', both of which simply jump to the designated location.
       </para>
       <para>
-	There are navigation options for going to the previous (<keycap>ALT+UP</keycap>) or
-	next (<keycap>ALT+DOWN</keycap>) event in general, and to go to the previous
-	(<keycap>SHIFT+UP</keycap>) or next (<keycap>SHIFT+DOWN</keycap>) event in the
+	There are navigation options for going to the previous (<keycap>Alt+UP</keycap>) or
+	next (<keycap>Alt+DOWN</keycap>) event in general, and to go to the previous
+	(<keycap>Shift+UP</keycap>) or next (<keycap>Shift+DOWN</keycap>) event in the
 	same module.
       </para>
       <para>
 	Some of the navigation options focus on the causes of events and consequences of
-	message sends. To go to the cause event, press <keycap>CTRL+UP</keycap>. To go
-	to the arrival of a message send, press <keycap>CTRL+DOWN</keycap>, after
+	message sends. To go to the cause event, press <keycap>Ctrl+UP</keycap>. To go
+	to the arrival of a message send, press <keycap>Ctrl+DOWN</keycap>, after
 	selecting the message being sent.
       </para>
       <para>
