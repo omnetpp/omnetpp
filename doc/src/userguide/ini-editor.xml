@@ -168,10 +168,10 @@
         </para>
       </sect3>
       <sect3>
-        <title>Comments</title>
+        <title>Commenting</title>
         <para>
-          To comment out the selected lines, press <keycombo><keycap>Ctrl</keycap><keycap>/</keycap></keycombo>.
-          To remove the comment, press <keycombo><keycap>Ctrl</keycap><keycap>/</keycap></keycombo> again.
+          To comment out the selected lines, press <keycap>Ctrl+/</keycap>.
+          To remove the comment, press <keycap>Ctrl+/</keycap> again.
         </para>
       </sect3>
       <sect3>

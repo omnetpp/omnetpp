@@ -11,15 +11,18 @@
       different parameters required the writing and execution of external scripts. The new version of the &Omnetpp;
       IDE allows for running simulations and simulation batches directly from the IDE.
     </para>
+
     <sect2>
       <title>Creating a Launch Configuration</title>
       <para> &Omnetpp;
         IDE adds a new Eclipse launch configuration type that supports launching simulation executables. This
         launch type, &Omnetpp;
         Simulation, is available from the ``Run Configurations'' dialog. To create a new run configuration,
-        select ``Run Configurations...'' from the ``Run'' menu. A dialog appears with the possible launch
-        types on the left. Select ``&Omnetpp;
-        Simulation'' and click the ``New launch configuration'' icon. Then, enter a configuration name at the top
+        select ``Run Configurations...'' from the ``Run'' menu. FIXME a screenshoton nem a Run menu van!!!
+      </para>
+      <picture file="pictures/Launch-RunProject.png">Running a project</picture>
+      <para> A dialog appears with the possible launch types on the left. Select ``&Omnetpp; Simulation''
+        and click the ``New launch configuration'' icon. Then, enter a configuration name at the top
         of the dialog form that appears.
       </para>
       <picture file="pictures/Launch-RunDialog.png">The Simulation Launcher</picture>
@@ -219,7 +222,7 @@
       run and selected the command line environment, you may try to hover over the
       ``Run Number'' field. This will give you a description of the possible runs and how they are
       associated with the iteration variable values (the tooltip is calculated by
-      executing the simulation program with the [[-x Congiguration -G]] options in command line mode).
+      executing the simulation program with the [[-x Configuration -G]] options in command line mode).
     </tip>
     <picture file="pictures/Launch-BatchRun2.png">
       Iteration loop expansion in a tooltip

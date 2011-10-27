@@ -26,9 +26,6 @@
         event-by-event, normal and fast execution
       </listitem>
       <listitem>
-        labeled breakpoints
-      </listitem>
-      <listitem>
         inspector windows to examine and alter objects and variables in the model
       </listitem>
       <listitem>
@@ -278,8 +275,8 @@
             which later can be used to analyze the simulation run using the ``Sequence Chart'' tool in
             the IDE. To enable event recording, you can:</para>
         <itemizedlist>
-           <listitem>Specify record-evenlog=true in ``omnetpp.ini''</listitem>
-           <listitem>Use the --record-eventlog command line option</listitem>
+           <listitem>Specify [[record-eventlog=true]] in ``omnetpp.ini''</listitem>
+           <listitem>Use the [[--record-eventlog=true]] command line option</listitem>
            <listitem>Click the little record button (red circle) on the toolbar near the run button
                before starting the simulation</listitem>
         </itemizedlist>
@@ -320,7 +317,7 @@
       Wildcards ([["?"]], [["*"]]) are allowed. [["{a-exz}"]] matches any character in the range [["a".."e"]] plus [["x"]] and
       [["z"]]. You can match numbers: [["*.job{128..191}"]] will match objects named [["job128"]], [["job129"]], ...,
       "job191". "job{128..}" and "job{..191}" are also understood. You can combine patterns with [[AND]], [[OR]] and
-      [[NOT]] and parentheses (lowercase and, or, not are also OK). You can match other object fields such
+      [[NOT]] and parentheses (lowercase [[and]], [[or]], [[not]] are also accepted). You can match other object fields such
       as queue length, message kind, etc., with the syntax [["fieldname(pattern)"]]. Put quotation marks around a
       pattern if it contains parentheses (HINT: You will want to start the pattern with [["*."]] in most cases to
       match objects anywhere in the network!).</para>

@@ -12,6 +12,7 @@
     open-source and commercial plug-ins. The environment will be instantly recognizable to those at home with
     the Eclipse platform.
   </para>
+
   <sect1>
     <title>The Workbench</title>
     <para>The Eclipse main window consists of various Views and Editors. These are collected into
@@ -47,6 +48,7 @@
       from the menu.
     </para>
   </sect1>
+
   <sect1>
     <title>Workspaces</title>
     <para>
@@ -61,6 +63,7 @@
       using ``Project Explorer''.
     </para>
   </sect1>
+
   <sect1>
     <title>The Simulation Perspective</title>
     <para>The &Omnetpp;
@@ -71,6 +74,7 @@
       development or debugging.
     </para>
   </sect1>
+
   <sect1>
     <title>Configuring &Omnetpp; Preferences
     </title>
@@ -88,30 +92,58 @@
       to extend the PATH environment variable.
     </para>
   </sect1>
+
   <sect1>
     <title>Creating &Omnetpp;
       Projects
     </title>
     <para>
       In Eclipse, all files are within projects, so you will need a suitable project first. The project needs to be
-      one designated as an &Omnetpp;
-      Project (in Eclipse lingo, it should have the &Omnetpp;
-      Nature). The easiest way to create such a project is to use a wizard. Choose ``File|New|&Omnetpp;
-      Project...'' from the menu, specify a project name, and click the ``Finish'' button. If you do not plan
+      one designated as an &Omnetpp; Project (in Eclipse lingo, it should have the &Omnetpp; Nature).
+      The easiest way to create such a project is to use a wizard. Choose ``File|New|&Omnetpp; Project...''
+      from the menu, specify a project name, and click the ``Finish'' button. If you do not plan
       to write simple modules, you may unselect the ``C++ Support'' checkbox which will disable all C++
       related features for the project.
       <picture file="pictures/Intro-NewProjectWizard.png">
-        Creating a new &Omnetpp;
-        project
+        Creating a new &Omnetpp; project
       </picture>
     </para>
   </sect1>
+
+  <sect1>
+    <title>Project References</title>
+    <para>
+      Most aspects of a project can be configured in the ``Project Properties'' dialog.
+      The dialog is accessible via the ``Project | Properties...'' menu item, or by right-clicking
+      the project in ``Project Explorer'' and choosing ``Properties'' from the context menu.
+    </para>
+    <para>
+      An important Eclipse concept is that a project may reference other projects in the workspace;
+      project references can be configured in the ``Project References'' page of the properties
+      dialog. To update the list of referenced projects, simply check those projects in the list
+      that your project depends on, then click ``Apply''. Note that circular references are not allowed
+      (i.e. the dependency graph must be a tree).
+    </para>
+    <picture file="pictures/Intro-ProjectReferences.png">Setting project dependencies</picture>
+    <para>
+      In the &Omnetpp; IDE, all NED types, C++ code and build artifacts (executables, libraries) in a project
+      are available to other projects that reference the given project.
+     </para>
+    <note>
+      To see an example of project references, check the [[queuenet]] and [[queueinglib]] example projects.
+      In this example, [[queuenet]] references [[queueinglib]]. [[Queuinglib]] provides simple
+      modules (NED files, and a prebuilt shared library that contains the code of the simple modules),
+      and makes those modules available to [[queuenet]] that contains simulations (networks and ini files)
+      built from them.
+    </note>
+  </sect1>
+
   <sect1>
     <title>Getting Help</title>
     <para>
       You may access the online help system from the ``Help | Help Contents'' menu item. The &Omnetpp;
       IDE is built on top of Eclipse, so if you are not familiar with Eclipse, we recommend reading
-      the [[Workbench User Guide]] and the [[C/C++ Development User Guide]] before starting to use &Omnetpp;-specific
+      the ``Workbench User Guide'' and the ``C/C++ Development User Guide'' before starting to use &Omnetpp;-specific
       features.
     </para>
   </sect1>

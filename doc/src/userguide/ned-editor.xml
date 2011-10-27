@@ -319,78 +319,61 @@
     <sect2>
       <title>Editing in Source Mode</title>
       <para> The NED source editor supports all functionality that one can expect from an Eclipse-based text
-        editor, such as syntax highlighting (for the new NED syntax), clipboard cut/copy/paste and unlimited
-        undo/redo. Here is a summary of these features:</para>
-      <itemizedlist>
-        <listitem>
-          <para>
-            Undo (
-            <keycap>Ctrl+Z</keycap>
-            ), Redo (
-            <keycap>Ctrl+Y</keycap>
-            )
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            Indenting/unindenting code blocks with
-            <keycap>TAB/Shift+TAB</keycap>
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            Correct indentation (NED syntax aware) (
-            <keycap>Ctrl+I</keycap>
-            )
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            Find (
-            <keycap>Ctrl+F</keycap>
-            ), incremental search (
-            <keycap>Ctrl+J</keycap>
-            )
-          </para>
-        </listitem>
-        <listitem>
-          <para>
-            Moving lines with
-            <keycap>ALT+UP/DOWN</keycap>
-          </para>
-        </listitem>
-        <listitem>
-          <para>Folding regions (NED syntax aware)</para>
-        </listitem>
-      </itemizedlist>
-      <note>
-          <para><keycap>Ctrl+Shift+L</keycap>
-          pops up a window with all keyboard bindings listed.</para>
-          <para><keycap>Ctrl+3</keycap>
-          brings up a filtered list of all available options at this point.</para>
-      </note>
+        editor, such as syntax highlighting, clipboard cut/copy/paste, unlimited
+        undo/redo, folding, find/replace and incremental search.</para>
       <para> The NED source is continually parsed as you type, and errors and warnings are displayed as
         markers on the editor rulers. At times when the NED text is syntactically correct, the editor has full
         knowledge of "what is what" in the text buffer.</para>
       <picture file="pictures/NED-TextEditor.png">NED Source Editor</picture>
-      <para>
-        Hovering the mouse over a NED type name will display the documentation in a "tooltip" window, which
-        can be made persistent by hitting
-        <keycap>F2</keycap>
-        .
-      </para>
+
+      <sect3>
+        <title>Basic Functions</title>
+        <itemizedlist>
+          <listitem>
+            <para>Undo (<keycap>Ctrl+Z</keycap>), Redo (<keycap>Ctrl+Y</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Indent/unindent code blocks (<keycap>TAB/Shift+TAB</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Correct indentation (NED syntax aware) (<keycap>Ctrl+I</keycap>)
+            </para>
+          </listitem>
+          <listitem>
+            <para>Find (<keycap>Ctrl+F</keycap>), incremental search (<keycap>Ctrl+J</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Move lines (<keycap>ALT+UP/DOWN</keycap>)</para>
+          </listitem>
+        </itemizedlist>
+        <tip>
+            <para>The following functions can help you explore the IDE:</para>
+            <itemizedlist>
+              <listitem><para><keycap>Ctrl+Shift+L</keycap> pops up a window that lists all keyboard bindings, and </para></listitem>
+              <listitem><para><keycap>Ctrl+3</keycap> brings up a filtered list of all available commands.</para></listitem>
+            </itemizedlist>
+        </tip>
+      </sect3>
       <sect3>
         <title>Converting to the New NED Syntax</title>
         <para> If you have an NED file with older syntax, you can still open it. A context menu item allows you
           to convert it to the new syntax. If the NED file is already using the new syntax, the ``Convert to
           4.x Format'' menu item is disabled.</para>
       </sect3>
+
+      <sect3>
+        <title>View Documentation</title>
+        <para>
+          Hovering the mouse over a NED type name will display the documentation in a "tooltip" window, which
+          can be made persistent by hitting <keycap>F2</keycap>.
+        </para>
+      </sect3>
+
       <sect3>
         <title>Content Assist</title>
         <para>
-          If you need help, just press
-          <keycap>Ctrl+SPACE</keycap>
-          . The editor will offer possible words or templates. This is context sensitive, so it will offer
+          If you need help, just press <keycap>Ctrl+SPACE</keycap>.
+          The editor will offer possible words or templates. This is context sensitive, so it will offer
           only valid suggestions. Content assist is also a good way of exploring the new NED syntax and features.
         </para>
         <picture file="pictures/NED-TextEditorCA.png"> NED Source Editor with content assist activated</picture>
@@ -423,6 +406,13 @@
           menu item from the main menu.</para>
       </sect3>
       <sect3>
+        <title>Commenting</title>
+        <para>
+          To comment out the selected lines, press <keycap>Ctrl+/</keycap>.
+          To remove the comment, press <keycap>Ctrl+/</keycap> again.
+        </para>
+      </sect3>
+      <sect3>
         <title>Formatting the Source Code</title>
         <para>
           It is possible to reformat the whole NED file according to the recommended coding guidelines by
@@ -438,10 +428,9 @@
       <sect3>
         <title>Navigation</title>
         <para>
-          Holding the
-          <keycap>CTRL</keycap>
-          key and clicking on an URL or on a module type will jump to the target page or type
-          definition.
+          Holding the <keycap>CTRL</keycap> key and clicking any identifier type will jump to the definition.
+          Alternatively, move the cursor into the identifier and hit <keycap>F3</keycap> to achieve
+          the same effect.
         </para>
         <para> If you switch to graphical mode from text mode, the editor will try to locate the NED element
           under the cursor and select it in the graphical editor.</para>
@@ -533,3 +522,4 @@
     <para>The latter two views are used mainly with the INI File Editor.</para>
   </sect1>
 </chapter>
+

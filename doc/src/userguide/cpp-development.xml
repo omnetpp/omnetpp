@@ -5,65 +5,42 @@
   <sect1>
     <title>Introduction</title>
     <para>
-      The &Omnetpp;
-      IDE contains CDT (C/C++ Development Tooling) to help you develop the C++ part of your simulation. We
-      recommend reading the CDT documentation in the IDE help system (Help/Help Content) to get a better
-      general understanding of how CDT works. The &Omnetpp;
-      IDE adds several extensions to the standard CDT features for ease of use:
-      <itemizedlist>
-        <listitem>
-          Customized project creation dialog
-        </listitem>
-        <listitem>
-          Extended C++ toolchain for &Omnetpp;
-          (including MSG compiler)
-        </listitem>
-        <listitem>
-          Automatic makefile generation
-        </listitem>
-        <listitem>
-          &Omnetpp;-specific
-          build configuration
-        </listitem>
-        <listitem>
-          Special launch configuration type for launching and debugging &Omnetpp;
-          Simulations
-        </listitem>
-      </itemizedlist>
+      The &Omnetpp; IDE contains editors, views and other tools to assist you while developing
+      your C++ code. C++ files open in the IDE in the C++ source editor. The C++ source editor supports syntax
+      highlighting, documentation tooltips, content assist, automatic indentation, code formatting,
+      refactoring, and several other useful features. The IDE also allows you to configure the build,
+      start the build process, launch simulations, and debug the model without leaving the IDE.
     </para>
     <para>
-      CDT already supports "standard make" builds. It can invoke
-      "make" and when you select "Build" in the IDE, we generate a makefile (via a built-in Java version of
-      opp_makemake) and then let CDT do a "standard make" build.
-      <note>
-        The &Omnetpp;
-        IDE does not use the "managed make" feature of CDT.
-      </note>
-      Eclipse, CDT and the &Omnetpp;
-      IDE uses several files in the project to store settings. The following files should be present in the
-      project root directory (these files are normally hidden by the IDE in the ``Project Explorer View''):
+      Most of these features are provided by the Eclipse CDT (C/C++ Development Tooling)
+      project (http://eclipse.org/cdt). This chapter briefly explains the basics of using CDT for
+      developing simulation models. If you want to learn more about how to use CDT effectively, we
+      recommend that you read the CDT documentation in the IDE help system (Help/Help Content).
+    </para>
+
+    <para>
+      The &Omnetpp; IDE extends CDT with the following features to make model development easier:
       <itemizedlist>
         <listitem>
-          [[.project]] : Eclipse stores the general project properties in this file including project name,
-          dependencies from other projects, and project type (i.e. whether &Omnetpp;-specific
-          features are supported at all).
+          A new &Omnetpp; project creation wizard allows you to create simple, working
+          simulation models in one step.
         </listitem>
         <listitem>
-          [[.cproject]] : This file contains settings specific to C++ development including toolchain
-          definition, configuration templates (i.e. debug / release), error parsers, and debugger settings.
+          Makefiles are automatically generated for your project based on the project build configuration.
+          The built-in makefile generator is compatible with the command line [[opp_makemake]] tool,
+          and features deep makefiles, recursive make, cross-project references, invoking the message compiler,
+          automatic dependency generation, automatic linking with the &Omnetpp; libraries; and
+          can build executables, shared libraries or static libraries.
         </listitem>
         <listitem>
-          [[.oppbuildspec]] : Contains all settings specific to &Omnetpp;.
-          This file contains the settings passed to the makefile generator. You can configure all &Omnetpp;-specific
-          settings in the ``Project Properties'' dialog on the ``&Omnetpp;/Makemakepage''.
-          Everything you set on this page will be stored in the [[.oppbuildspec]] file.
+          Makefile generation and the project build system can be configured using a GUI interface.
+        </listitem>
+        <listitem>
+            Project Features: Large projects can be partitioned into smaller units which can be
+            independently excluded or included in the build. Disabling parts of the project
+            can significantly reduce build time or make it possible to build the project at all.
         </listitem>
       </itemizedlist>
-      <note>
-        If you are creating a project where no C++ support is needed (i.e. you are using an existing
-        precompiled simulation library and you edit only NED and Ini files), the [[.cproject]] and
-        [[.oppbuildspec]] files will not be present in your project.
-      </note>
     </para>
   </sect1>
   <sect1>
@@ -75,17 +52,20 @@
       <itemizedlist>
         <listitem>
           On Windows: The &Omnetpp;
-          distribution comes with a preconfigured MinGW compiler toolchain. You do not have to install or
-          download anything. The IDE should be able to use the MinGW compiler without any problem.
+          distribution comes with a preconfigured MinGW compiler toolchain (MinGW is the Windows port of the
+          GCC compiler.) You do not have to install or download anything. The IDE should be able to use the
+          MinGW compiler out of box. <commercial>You can also use the Visual C++ compiler from your
+          Microsoft Visual Studio installation.</commercial>
         </listitem>
         <listitem>
-          On Linux: The default GCC toolchain can be used. &Omnetpp;
-          4.1 was tested on GCC 4.4, although other versions should work, too. You have to install the GCC
-          toolchain on your distribution before trying to compile a simulation with &Omnetpp;.
+          On Linux: The default GCC toolchain can be used.
+          You have to install the GCC toolchain on your system before trying to compile a simulation with &Omnetpp;.
+          Please read the Install Guide for detailed instructions.
         </listitem>
         <listitem>
-          On Mac OS X: Version 10.5 (i386) is supported. You should install XCode 3.x tools to get compiler
+          On Mac OS X: You should install Xcode Developer Tools to get compiler
           support before trying to compile a simulation with &Omnetpp;.
+          Please read the Install Guide for detailed instructions.
         </listitem>
       </itemizedlist>
     </para>
@@ -101,294 +81,947 @@
       project
     </picture>
     <para>
-      This will show you the ``New &Omnetpp;
-      Project'' wizard that lets you create a project that supports NED, MSG and INI file editing as well as
-      C++ development for simple modules.
+      This menu item will bring up the ``New &Omnetpp; Project'' wizard.
+      The wizard lets you create an &Omnetpp;-specific project, which includes support
+      for NED, MSG and INI file editing, as well as C++ development of simple modules.
     </para>
-    <para> On the first page of the wizard, you should specify the project name and ensure that the ``Support
+    <para> On the first page of the wizard, specify the project name and ensure that the ``Support
       C++ Development'' checkbox is selected.</para>
     <picture file="pictures/CPP-NewProjectWizard.png"> Setting project name and enabling C++ support</picture>
-    <para> Select a project template.</para>
+    <para> Select a project template. A template defines the initial content and layout of the
+        project. </para>
     <picture file="pictures/CPP-NewProjectWizard1.png">Selecting a project template</picture>
-    <para>Select a toolchain which is supported on your platform. Usually you will see only a single
-      toolchain supported, so you do not need to select anything.</para>
+    <para>Select a toolchain that is supported on your platform. Usually you will see only a single
+      supported toolchain, so you do not need to change anything on the page.</para>
     <picture file="pictures/CPP-NewProjectWizard2.png">Selecting a toolchain</picture>
-    <para> Finally, choose from the preset configurations. By default, a debug and release configuration can
-      be created. A configuration is a set of options that are associated with the build process. It is
-      used mainly to create debug and release builds. Pressing the ``Finish'' button
-      will create the project.</para>
-    <picture file="pictures/CPP-NewProjectWizard3.png"> Selecting configurations</picture>
-  </sect1>
-  <sect1>
-    <title>Configuring the Project</title>
+    <para>Finally, select one or more from the preset build configurations. A configuration is a set of
+        options that are associated with the build process. It is used mainly to build debug and release
+        versions of your program.
+    </para>
+    <picture file="pictures/CPP-NewProjectWizard3.png">Selecting configurations</picture>
     <para>
-      The &Omnetpp;
-      IDE adds several extensions to the standard CDT to make the building of simulations easier. The
-      project properties dialog is extended with a special page - ``&Omnetpp;
-      | Makemake'' - where you can configure the options used for automatically generating the makefile(s). A
-      separate makefile will be created according to the settings you specify in the dialog. On the ``C/C++
-      Build'' page you can specify which makefile will be called by the IDE build process when you initiate a
-      Build action. By default, the Build directory is specified as [[${ProjDirPath}]], which is the root
-      directory of your project. You can set any directory for the build directory, but keep in mind that it
-      should contain an automatically generated makefile or you will have to create a makefile manually there (not
-      recommended). If you have several source directories, make sure that the primary makefile calls the
-      sub-makefiles correctly.
-    </para>
-    <note>
-      The build configuration is done on the ``Makemake'' page. Usually, you do not have to change anything on other
-      C++ related property pages.
-    </note>
-    <tip>Use
-      the project templates in the ``New &Omnetpp;
-      Project'' wizard to start a new project. The templates are especially helpful if you have a project
-      where you need multiple source trees that have their own makefiles.
-    </tip>
-    <para>
-      You can open the property dialog by right-clicking on a folder or project and selecting the
-      ``Properties'' menu. Choose the ``&Omnetpp; | Makemake'' page.
-    </para>
-    <para> Before you start modifying the settings, make sure that you select the folder you want to
-      configure. If you want to convert the current folder to a source folder, simply click on ``Source
-      Location'' . It is also possible to selectively include or exclude a whole directory tree if it is
-      already inside a source tree.</para>
-    <note>
-      Creating a source folder here will affect all configurations.
-    </note>
-    <picture file="pictures/CPP-SourceFolder.png">Setting a source folder</picture>
-    <note>
-      To regenerate your makefile on the command line, you can export the settings by pressing the ``Export''
-      button. This action will create a file with the name [[makemakefiles]]. After exporting, execute [[make
-      -f makemakefiles]] from the command line.
-    </note>
-    <para> Press the ``Makemake'' button to turn on the automatic makefile generation in the selected folder.
-        Manually written makefiles can be used by selecting ``Custom Make''. This expects that a
-        makefile will be already present in the selected directory (it must be called [[Makefile]]
-        <commercial>or Makefile.vc</commercial>).
-    </para>
-    <para> To configure how the makefile will be generated, press the ``Options'' button.</para>
-    <para>
-      On the first tab of the options dialog, you can specify how the final target of the makefile is created.
-      <itemizedlist>
-        <listitem>
-          The target type can be either executable or a shared/static library. Libraries can be exported to be
-          used by other dependent projects that can link to them automatically. It is possible to compile
-          all the sources without linking them.
-        </listitem>
-        <listitem>
-          You may set the target name. The default value is derived from the project name.
-        </listitem>
-        <listitem>
-          The output directory can specify where the object files and the final target will be created
-          (relative to the project root)
-        </listitem>
-      </itemizedlist>
-    </para>
-    <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
-    <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
-    <para>
-      The ``Scope'' tab allows you to configure the scope of the makefile and what source files will be
-      included.
-      <itemizedlist>
-        <listitem>
-          Deep - will use all source files recursively in all subdirectories.
-        </listitem>
-        <listitem>
-          Recursive - will use source files only in the current directory. Invokes make in all subdirectories
-          (i.e. makefiles must exist in those directories).
-        </listitem>
-      </itemizedlist>
-      If you want to invoke additional makefiles from this makefile, click on the ``More >>'' button and
-      specify which directories should be visited (relative to this makefile).
-    </para>
-    <picture file="pictures/CPP-ConfigureProject3.png">Compiler options</picture>
-    <para> The ``Compile'' tab allows you to adjust the parameters passed to the compiler during the build
-      process. You can specify where the system should look for input files. You can scan all subfolders in the source directory or
-      even allow scanning of all directories in the project (and all other projects it depends on).</para>
-    <warning>
-      As a rule of thumb, the include file names must be unique (i.e. include files with the same name in
-      different directories are not allowed) otherwise the builder cannot determine the correct location of
-      the file.
-    </warning>
-    <tip>
-      Include files can be qualified with the parent directories to avoid this problem. If you have two
-      include files with the same name (e.g. [[inc.h]]) in different directories, add the directory names
-      before the filenames to make the include statements unique. Use [[#include "dir1/inc.h"]] and [[#include
-      "dir2/inc.h"]] in your C++ files. If the problematic file is located in the project root, use the form
-      [[#include "../projectname/inc.h"]] to make it unique.
-    </tip>
-    <para> If needed, you can set the source file extensions ([[.cc]] or [[.cpp]]). In most cases,
-      auto-detection works correctly, so you do not have to change this parameter.</para>
-    <commercial>
-      <note>
-        The commercial version of &Omnetpp;
-        supports the Microsoft Visual C++ toolchain. This compiler requires some special steps during DLL
-        linking. Please check the Windows DLL section and click on the help link to get further information on
-        how to use this feature.
-      </note>
-    </commercial>
-    <para>
-      Link options allows the user to fine-tune the linking steps at the end of the build process.
-      <itemizedlist>
-        <listitem>
-          Link with libraries exported from referenced projects - if you are depending on an other project's
-          target (i.e. static or dynamic library), you can instruct the linker to automatically link with
-          those libraries. You must explicitly set your project dependencies (See Dependent Projects section).
-        </listitem>
-        <listitem>
-          Additional object files and libraries can be added by clicking on the ``More>>'' button.
-        </listitem>
-      </itemizedlist>
-    </para>
-    <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
-    <para>The ``Custom'' tab allows the customization of the makefiles by inserting handwritten makefile
-      fragments inside the automatically generated makefile. It is possible to add additional variables,
-      targets, and rules. The fragment code entered here will be written into the Makefrag file.</para>
-    <para>The ``Preview'' tab displays the final command line with all options that will be passed to
-      [[opp_makemake]] to generate the makefile.</para>
-  </sect1>
-  <sect1>
-    <title>Project Features</title>
-    <para>Large projects - like the INET-Framework - may contain a lot of code that greatly increase the
-          complexity and compilation time of the model. On the other hand, not all the code and functionality
-          is needed for the simulation experiments, we want to run. In most cases, the model code can be
-          grouped into smaller components that are either independent of each other or there is a clear,
-          well defined dependency between them (e.g. protocols, network interface types, radio models.)
-          It would be great to be able to independenty add or remove these components to reduce the
-          project's complexity. To alleviate this problem, the IDE allows you to group your code into
-          so called 'project features' and enable or disable them as needed. Project features are
-          defined by the ``.oppfeatures'' file in your project's root directory.
-    </para>
-    <para>
-          A feature can define one or more source folders that contain its C++ code and defines also
-          the NED packages where the feature's module and channel definitions are present. The IDE
-          will automatically include or exclude the source folders from your build process as needed
-          and it will disable the corresponding NED packages if you disable the given feature.
-          Sometimes features depend on each other, e.g. a protocol implementation may depend on a
-          lower-layer protocol. Dependencies between project features can be also defined in the
-          ``.oppfeatures'' file and the IDE ensures that all requirements are met when you enable
-          a feature. Finally, you can also specify command line options that are passed to the
-          compiler or linker when the given feature is enabled. This allows you define macros
-          or symbols that help you to write conditional code to detect whether a given feature
-          is enabled.
-       <tip>
-          Be sure to check the XXX project to see how to configure your project to enable the IDE's
-          project feature support.
-       </tip>
-       <note>
-          The IDE feature support is enabled only on projects that have CDT support and that
-          contain a ``.oppfeatures'' file in the project root directory.
-       </note>
-          <picture file="pictures/CPP-Features.png">Setting project features</picture>
-       <tip>
-          If the IDE detects that your project's configuration is incosistent it will show a
-          warning message on the ``Project Features'' page of the ``Project Properties'' dialog and
-          will offer a way to automatically fix it.
-       </tip>
+         Pressing the ``Finish'' button will create the project.
     </para>
   </sect1>
-  <sect1>
-    <title>Dependent Projects</title>
-    <para>If your project uses code from other projects (i.e. you are using a library provided by an other
-      project like the INET Framework or the queuing library provided in the samples directory), you should
-      make the project dependent on that code. This step ensures that your code is linked with the dependent
-      project's output and that the NED path can be correctly set. Include files are also automatically
-      used from dependent projects.</para>
-    <para> To set the project dependence, right-click on your project and select ``Properties'' . In the
-      ``Properties'' dialog, select the ``Project References'' page and click on the projects on which you are depending. If
-      those projects provide shared or static libraries as their output, the linker will automatically include
-      those libraries during link phase. It is also possible to use executable files from other projects. In
-      this case, your project should not have any code so that compilation or linking is unnecessary. Your
-      project should contain only INI and NED files and use the prebuilt simulation executable from the other
-      projects.</para>
-    <picture file="pictures/CPP-ProjectReferences.png">Setting project dependencies</picture>
-    <note>
-      To see an example of how project dependency works, check the queuenet and queueinglib examples in the
-      samples' directory. Queuinglib provides a prebuilt executable file containing all simple modules while
-      queuenet contains only network definitions and initialization files as samples.
-    </note>
-  </sect1>
+
   <sect1>
     <title>Editing C++ Code</title>
     <para>
       The &Omnetpp;
-      IDE comes with a C/C++ editor provided by the CDT component. In addition to the standard editor features
-      provided by the Eclipse environment, the C/C++ editor provides syntax highlighting and content assistance
-      on the source code. Use
-      <keycap>CTRL+SPACE</keycap>
-      to activate the content assist window anywhere in your source code. An other useful key combination is
-      <keycap>CTRL+TAB</keycap>,
-      which switches between your C++ and header file. Press
-      <keycap>CTRL+SHIFT+L</keycap>
-      to get a list of currently active key bindings. For further information about editing C++ files, please
-      visit the CDT section in the online help system.
+      IDE comes with a C/C++ editor. In addition to standard editing features, the C/C++ editor
+      provides syntax highlighting, content assistance, and other C++ specific functionality.
+      The source is continually parsed as you type, and errors and warnings are displayed as
+      markers on the editor rulers.
     </para>
     <picture file="pictures/CPP-Editor.png">C++ source editor</picture>
-    <note>
-      Content assistance works only if the IDE can scan your header files in the background.
-    </note>
+
+    <sect2>
+      <title>The C++ Editor</title>
+
+      <para> The C++ source editor provides the usual features of Eclipse-based text editors,
+        such as syntax highlighting, clipboard cut/copy/paste, unlimited undo/redo, folding,
+        find/replace and incremental search.
+      </para>
+
+      <para> The IDE scans and indexes the C++ files in your project in the background, and provides
+        navigation and code analysis features on top of that knowledge; this database
+        is kept up to date as you edit the source.
+      </para>
+
+      <sect3>
+        <title>Basic Functions</title>
+        <para>Some of the most useful features of the source editor:</para>
+        <itemizedlist>
+          <listitem>
+            <para>Undo (<keycap>Ctrl+Z</keycap>), Redo (<keycap>Ctrl+Y</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Switch between a C++ source and its matching header file (<keycap>Ctrl+TAB</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Indent/unindent code blocks (<keycap>TAB/Shift+TAB</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Correct indentation (<keycap>Ctrl+I</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Move lines (<keycap>Alt+UP/DOWN</keycap>)</para>
+          </listitem>
+          <listitem>
+            <para>Find (<keycap>Ctrl+F</keycap>), incremental search (<keycap>Ctrl+J</keycap>)</para>
+          </listitem>
+        </itemizedlist>
+        <tip>
+            <para>The following functions can help you explore the IDE:</para>
+            <itemizedlist>
+              <listitem><para><keycap>Ctrl+Shift+L</keycap> pops up a window that lists all keyboard bindings, and </para></listitem>
+              <listitem><para><keycap>Ctrl+3</keycap> brings up a filtered list of all available commands.</para></listitem>
+            </itemizedlist>
+        </tip>
+      </sect3>
+      <sect3>
+        <title>View Documentation</title>
+        <para>
+          Hovering the mouse over an identifier will display its declaration and the documentation comment
+          in a "tooltip" window. The window can be made persistent by hitting <keycap>F2</keycap>.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Content Assist</title>
+        <para>
+          If you need help, just press <keycap>Ctrl+SPACE</keycap>.
+          The editor will offer possible completions (variable names, type names, argument lists, etc.).
+        </para>
+      </sect3>
+      <sect3>
+        <title>Navigation</title>
+        <para>
+          Hitting <keycap>F3</keycap> or holding the <keycap>Ctrl</keycap>
+          key and clicking an identifier will jump to the definition/declaration.
+        </para>
+        <para>The Eclipse platform's bookmarking and navigation history facilities are also available in the C++ editor.</para>
+      </sect3>
+      <sect3>
+        <title>Commenting</title>
+        <para>
+          To comment out the selected lines, press <keycap>Ctrl+/</keycap>.
+          To remove the comment, press <keycap>Ctrl+/</keycap> again.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Open Type</title>
+        <para>
+            Pressing <keycap>Ctrl+Shift+T</keycap> will bring up the ``Open Element'' dialog which lets
+            you type a class name, method name or other identifier, and opens its declaration in a new editor.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Exploring the Code</title>
+        <para>The editor offers various ways to explore the code:
+            Open Declaration (<keycap>F3</keycap>), Open Type Hierarchy (<keycap>F4</keycap>),
+            Open Call Hierarchy (<keycap>Ctrl+Alt+H</keycap>),
+            Quick Outline (<keycap>Ctrl+O</keycap>), Quick Type Hierarchy (<keycap>Ctrl+T</keycap>),
+            Explore Macro Expansion (<keycap>Ctrl+=</keycap>),
+            Search for References (<keycap>Ctrl+Shift+G</keycap>), etc.
+        </para>
+      </sect3>
+      <sect3>
+        <title>Refactoring</title>
+        <para>
+            Several refactoring operations are available, for example Rename (<keycap>Shift+Alt+R</keycap>).
+        </para>
+      </sect3>
+      <note>
+          Most features that depend on cross-references require the project to be indexed. The C/C++ index contains
+          the locations of functions, classes, enums, defines etc. from the whole project and referenced projects.
+          The CDT does not keep the index up to date fully automatically, and occasionally you may need to
+          manually request rebuilding or updating it. You can do so in the ``Index'' submenu of the project context menu.
+      </note>
+    </sect2>
+
+    <sect2>
+        <title>Include Browser View</title>
+        <para>Dropping a C++ file into the ``Include Browser View'' displays the include files used by the
+        C++ file (either directly or indirectly).</para>
+        <picture file="pictures/CPP-IncludeBrowserView.png">Include Browser</picture>
+    </sect2>
+    <sect2>
+        <title>Outline View</title>
+        <para>During source editing, the ``Outline View'' gives you an overview of the structure of your source
+        file and can be used to quickly navigate inside the file.</para>
+        <picture file="pictures/CPP-OutlineView.png">Navigating with Outline View</picture>
+    </sect2>
+    <sect2>
+        <title>Type Hierarchy View</title>
+        <para>Displaying the C++ type hierarchy may be helpful for understanding
+        the inheritance relationships among your classes (and among &Omnetpp; classes).
+        </para>
+        <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
+    </sect2>
   </sect1>
+
   <sect1>
     <title>Building the Project</title>
-    <para> Once you have created your source files and configured your project settings, you can build your
-      executable. Before doing this, check if the active build configuration is correctly set for your
-      project. Select ``Build Configurations | Set Active'' from the project context menu and choose which
-      configuration should be built.</para>
-    <picture file="pictures/CPP-BuildConfiguration.png">Activating a build configuration</picture>
-    <para> Once the correct configuration is active, select ``Build Project'' from the ``Project'' menu or from
-      the project context menu. This should start the build process. First, a makefile will be created in each
-      source folder (according to the project properties ``Makemake'' page) and then the primary makefile will
-      be called to start the build process. You should switch to the console view to see the actual progress
-      of the build.</para>
-    <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
-    <tip>
-      If you have a multi-core system, you may try to configure &Omnetpp;
-      to support parallel build. Open the Project properties dialog (Properties from the project context
-      menu), and select the ``C/C++ Build'' page and the ``Behavior'' tab. Click the ``Use parallel build''
-      checkbox and specify the number of parallel jobs. Do not set this higher than the number of CPUs
-      available in your system (Warning: Never use the "Optimal jobs number" choice as it will start too many
-      jobs at once and you will run out of physical memory very quickly).
-    </tip>
+    <sect2>
+        <title>Basics</title>
+        <para>Once you have created your source files and configured your project settings, you can build the
+        project by selecting ``Build Project'' from the ``Project'' menu or from the project context menu.
+        You can also press <keycap>Ctrl+B</keycap> to build all open projects in the workspace.
+        <picture file="pictures/CPP-BuildProject.png">Building a project</picture>
+        </para>
+
+        <note>
+        <para>
+        You may notice that the initial build of the project starts after a (sometimes long)
+        delay, which is spent on indexing the project. The index is CDT's database of
+        the project's classes, functions, methods, variables, macros, etc.;
+        features such as content assist, go to definition, class hierarchy and refactoring
+        are all based on the index.
+        </para>
+
+        <para>
+        It is important that the C++ index is up to date before the build, because the index is used
+        by the IDE for dependency generation in the generated makefiles. (The input for dependencies
+        is the list of active [[#include]]'s in the sources, and the IDE takes this information
+        from the index.)
+        </para>
+        </note>
+
+        <sect3>
+          <title>Build Output</title>
+          <para>The build output (standard output and standard error) is displayed in the ``Console View''
+              as the build progresses. Errors and warnings parsed from the output are displayed in the
+              ``Problems View''. Double-clicking a line in the ``Problems View'' will jump to the corresponding
+              source line. Conversely, the ``Console View'' is more useful when you want to look
+              at the build messages in their natural order (``Problems View'' is usually sorted),
+              for example when you get a lot of build errors and you want to begin by looking at
+              the first one.
+          </para>
+        </sect3>
+
+        <sect3>
+          <title>Makefile Generation</title>
+          <para>When you start the build process, a makefile will be created or refreshed in each
+             folder where makefile creation is configured. After that, make will be invoked with the [[all]]
+             target in the folder configured as build root.
+          </para>
+        </sect3>
+
+        <sect3>
+          <title>Cleaning the Project</title>
+          <para>To clean the project, choose ``Clean...'' from the ``Project'' menu, or ``Clean Project'' from the
+             project context menu. This will invoke make with the [[clean]] target in the build root folder.
+             Often you may want to use the ``Clean Local'' item from the project context menu instead
+             of ``Clean Projects'', because it does not clean referenced projects (see next section).
+          </para>
+        </sect3>
+
+        <sect3>
+          <title>Referenced Projects and the Build Process</title>
+          <para>When you start the build, the IDE will build the referenced projects first. When you clean
+              the project, the IDE will also clean the referenced projects first. This is often inconvenient
+              (especially if your project depends on a large third party project). To avoid cleaning the
+              referenced projects, use ``Clean Local'' from the project context menu.
+          </para>
+        </sect3>
+
+        <sect3>
+          <title>Build Configurations</title>
+          <para>
+              A project is built using the active build configuration. A project may have several build
+              configurations, where each configuration selects a compiler toolchain, debug or release mode,
+              defines symbols, etc. To set the active build configuration, choose ``Build Configurations | Set Active''
+              from the project context menu.
+              <picture file="pictures/CPP-BuildConfiguration.png">Activating a build configuration</picture>
+          </para>
+        </sect3>
+    </sect2>
+
+    <sect2>
+        <title>Console View</title>
+        <para>The ``Console View'' displays the output of the build process.
+        </para>
+        <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
+    </sect2>
+    <sect2>
+        <title>Problems View</title>
+        <para>The ``Problems View'' contains the errors and warnings generated by the build process. You can
+        browse the problem list and double-click any message to go to the problem location in the source file.
+        NED file and INI file problems are also reported in this view along with C++ problems. The editors
+        are annotated with these markers, too. Hover over an error marker in the editor window to get the
+        corresponding message as a tooltip.</para>
+        <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
+    </sect2>
   </sect1>
+
   <sect1>
-    <title>Running or Debugging the Project</title>
-    <para> If you want to run or debug your simulation, open the ``Run'' menu and choose the ``Run/Debug
-      Configurations...'' dialog. For a more detailed discussion, please visit the Launching and Debugging
-      chapter.</para>
-    <picture file="pictures/CPP-RunProject.png">Running a project</picture>
+    <title>Configuring the Project</title>
+
+    <sect2>
+        <title>Configuring the Build Process</title>
+        <para>The make invocation can be configured on ``C/C++ Build'' page of the ``Project Properties'' dialog.
+        Most settings are already set correctly and do not need to be changed. One exception is the
+        ``Use parallel build'' option on the ``Behavior'' tab that you may want to enable, especially
+        if you have a multi-core computer.</para>
+
+        <warning>
+        Do not set the number of parallel jobs to be significantly higher than the number of CPU cores
+        you have. In particular, never turn on the ``Optimal jobs number'' feature, as it will start
+        an excessive number of processes and you will run out of physical memory!
+        </warning>
+
+        <para>We do not recommend that you change any setting on property pages under the
+        ``C/C++ Build'' tree node.</para>
+    </sect2>
+
+    <sect2>
+        <title>Managing Build Configurations</title>
+        <para>A project may have several build configurations, where each configuration describes
+            the selected compiler toolchain, debug or release mode, any potential extra include and
+            linker paths, defined symbols, etc. You can activate, create or delete build configurations
+            under the ``Build Configurations'' submenu of the project context menu.</para>
+    </sect2>
+
+    <sect2>
+        <title>Configuring the Project Build System</title>
+        <para>&Omnetpp; uses makefiles to build the project. You can use a single makefile for
+        the whole project, or a hiearchy of makefiles. Each makefile may be hand-written
+        (i.e. provided by you), or generated automatically. The IDE provides several
+        options for automatically created makefiles.
+        </para>
+        <para>The build system for an &Omnetpp; project can be configured on the
+        ``&Omnetpp; | Makemake'' page of the ``Project Properties'' dialog.
+        All settings you do in this page will affect all build configurations.
+        <picture file="pictures/CPP-SourceFolder.png">Configuring Makefiles</picture>
+        </para>
+
+        <sect3><title>Folders and Makefiles</title>
+            <para>The page displays the folder tree of the project. Using controls on
+            the page (``Build'' group in the top-right corner), you can declare that
+            a selected folder contains a hand-written (custom) makefile, or
+            tell the IDE to generate a makefile for you. Generated makefiles will be
+            automatically refreshed before each build.  If a makefile is configured
+            for a folder, the makefile kind will be indicated with a small
+            decoration on the folder icon.
+            </para>
+
+            <para>The build root folder is indicated with a small arrow. This is the
+            folder in which the IDE's ``Build'' function will invoke the make command,
+            so it should contain a makefile. It is expected that this makefile
+            will build the whole project, so it is supposed to invoke all other makefiles,
+            either directly or indirectly. By default, the build root folder is
+            the project root.  This is usually fine, but if you really need to change
+            the project build root, overwrite the ``Build location'' setting
+            in the ``C/C++ Build'' page of the same dialog.
+            </para>
+
+            <note>
+            All generated makefiles will be named [[Makefile]]<commercial> or Makefile.vc</commercial>;
+            custom makefiles are also expected to have this name.
+            </note>
+        </sect3>
+
+        <sect3><title>Source Folders</title>
+            <para>In addition to makefiles, you also need to specify where your C++ files are
+            located (source folders). This is usually the [[src]] folder of the project,
+            or, for small projects, the project root. It is also possible to exclude folders
+            from a source folder. The controls on the right-bottom part of the dialog
+            (``Source'' group) allow you to set up source folders and exclusions on
+            the project. Source files that are outside source folders or are in an excluded
+            folder will be ignored by both the IDE and the build process.
+            </para>
+
+            <note>
+            Source folders and exclusions that you configure on this page actually
+            modify the contents of the ``Source Location'' tab of the ``C++ General | Paths and Symbols''
+            page of the project properties dialog; the changes will affect all build
+            configurations.
+            </note>
+
+            <para>Automatically created makefiles are by default ``deep'', meaning that
+            they include all (non-excluded) source files under them in the build.
+            That is, a source file will be included in the build if it is both under
+            a source folder and covered by a makefile. (This applies to automatically
+            generated makefiles; the IDE has obviously no control over the behaviour
+            of custom makefiles.)
+            </para>
+        </sect3>
+
+        <sect3><title>Makefile Generation</title>
+            <para>Makefile generation for the selected folder can be configured on the
+            ``Makemake Options'' dialog, which can be brought up by clicking the
+            ``Options'' button on the page. The dialog is described in the next section.
+            </para>
+        </sect3>
+
+        <sect3><title>Command-line Build</title>
+            <para>To re-create your makefiles on the command line, you can export the
+            settings by pressing the ``Export'' button. This action will create a file
+            with the name [[makemakefiles]]. After exporting, execute [[make -f makemakefiles]]
+            from the command line.
+            </para>
+        </sect3>
+    </sect2>
+
+    <sect2>
+        <title>Configuring Makefile Generation for a Folder</title>
+
+        <para>Makefile generation for a folder can be configured in the ``Makemake Options''
+        dialog. To access the dialog, open the ``OMNeT++ | Makemake'' page in the
+        ``Project Properties'' dialog, select the folder, make sure makefile generation
+        is enabled for it, and click the ``Options'' button.
+        </para>
+
+        <para>The following sections describe each page of the dialog.
+        </para>
+
+        <sect3>
+          <title>The ``Target'' Tab</title>
+          <para>On the first, ``Target'' tab of the dialog, you can specify how the final
+          target of the makefile is created.
+            <itemizedlist>
+              <listitem>
+                ``Target type'': The build target can be an executable, a shared or static library,
+                or the linking step may be omitted altogether.
+                Makemake options: [[--make-so]], [[--make-lib]], [[--nolink]]
+              </listitem>
+              <listitem>
+                ``Export this shared/static library for other projects'': This option is observed
+                if a library (shared or static) is selected as target type, and works in conjunction
+                with the ``Link with libraries exported from referenced projects'' option on the ``Link'' tab.
+                Namely, referencing projects will automatically link with this library if both the library is
+                exported from this project AND linking with exported libraries is enabled in the referencing project.
+                Makemake option: [[--meta:export-library]]
+              </listitem>
+              <listitem>
+                ``Target name'': You may set the target name. The default value is derived from the project name.
+                Makemake option: [[-o]]
+              </listitem>
+              <listitem>
+                ``Output directory'': The output directory specifies where the object files and the final target
+                will be created, relative to the project root. Makemake option: [[-O]]
+              </listitem>
+            </itemizedlist>
+          </para>
+          <picture file="pictures/CPP-ConfigureProject2.png">Target definition</picture>
+        </sect3>
+
+        <sect3>
+          <title>The ``Scope'' Tab</title>
+          <picture file="pictures/CPP-ConfigureProject.png">Scope of makefile</picture>
+          <para>
+            The ``Scope'' tab allows you to configure the scope of the makefile and which source files
+            will be included.</para>
+          <itemizedlist>
+            <listitem>
+              ``Deep compile'': When enabled, the makefile will compile the source files in the whole
+              subdirectory tree (except excluded folders and folder covered by other makefiles).
+              When disabled, the makefile only compiles sources in the makefile's folder.
+              Makemake option: [[--deep]]
+            </listitem>
+            <listitem>
+              ``Recursive make'': When enabled, the build will invoke make in all descendant folders
+              that are configured to contain a makefile.
+              Makemake option: [[--meta:recurse]] (resolves to multiple [[-d]] options)
+            </listitem>
+            <listitem>
+              ``More &raquo; Additionally invoke make in the following directories'':
+              If you want to invoke additional makefiles from this makefile, specify which directories
+              should be visited (relative to this makefile). This option is useful if you want to
+              invoke makefiles outside this source tree.
+              Makemake option: [[-d]]
+            </listitem>
+          </itemizedlist>
+        </sect3>
+
+        <sect3>
+          <title>The ``Compile'' Tab</title>
+          <commercial>
+            <picture file="pictures/CPP-ConfigureProject3-omnest.png">Compiler options</picture>
+          </commercial>
+          <noncommercial>
+            <picture file="pictures/CPP-ConfigureProject3-omnetpp.png">Compiler options</picture>
+          </noncommercial>
+          <para>
+            The ``Compile'' tab allows you to adjust the parameters passed to the compiler during the build
+            process.</para>
+          <para>Settings that affect the include path:</para>
+          <itemizedlist>
+            <listitem>
+              ``Add all source folders under this deep makefile'': When turned on, it adds all folders
+              under this makefile to the include path. This means that source files can include header files
+              from any folder just by using the file name; see the discussion below on resolving ambiguities.
+              Makemake option: [[--no-deep-includes]] (negated option)
+            </listitem>
+            <listitem>
+              ``Automatically add other folders where include files are located'': This option
+              supplements the above option, and provides an automatic way to handle inclusions
+              from folders outside this source tree. When turned on, it automatically adds the
+              extra folders necessary for compiling the source files under this makefile.
+              It works by analyzing the include statements in the source files, finds out where the
+              included files are located, and adds those folders to the include path. Only looks at
+              folders outside this source tree, and into referenced projects.
+              Makemake option: [[--meta:auto-include-path]] (resolves to multiple [[-I]] options)
+            </listitem>
+          </itemizedlist>
+          <para>
+            Automatic include path works best when include file names are unique, which is usually so.
+            In the case of collisions (two or more include files having the same name), include statements
+            should be qualified with the names of include files' parent folder (or more levels of ancestor
+            folders), otherwise the result will be unpredictable. For instance, if you have two header
+            files [[src/ospf/Route.h]] and [[src/ip/base/Route.h]], you can include them with
+            [[#include "ospf/Route.h"]] and [[#include "base/Route.h"]] (or [[#include "ip/base/Route.h"]]);
+            do ``not'' use [[#include "Route.h"]] because it would be ambiguous.
+            If the problematic file is located in the project root, use the form
+            [[#include "../projectname/inc.h"]] to make it unique.
+          </para>
+
+          <para>Source files:</para>
+          <itemizedlist>
+            <listitem>
+              ``C++ file extension'': You can specify the source file extension you are
+              using in the project ([[.cc]] or [[.cpp]]). We recommend that you use [[.cc]]
+              in your projects. Makemake option: [[-e]]
+            </listitem>
+          </itemizedlist>
+
+          <commercial>
+          <para>
+              If you want to build a DLL on Windows using Microsoft Visual C++,
+              symbols you want to use from other code need to be explicitly exported from the DLL.
+              Functions, variables and classes must be marked with [[__declspec(dllexport)]] when the DLL is
+              compiled, and with [[__declspec(dllimport)]] when you reference them from external code.
+              This is achieved by defining a macro which expands differently in the two cases. The &Omnetpp;
+              convention is to name the macro [[FOO_API]], where ``FOO'' is your project's short name.
+              The macro should be defined as follows:</para>
+          <screen>
+#if defined(FOO_EXPORT)
+#  define FOO_API OPP_DLLEXPORT
+#elif defined(FOO_IMPORT)
+#  define FOO_API OPP_DLLIMPORT
+#else
+#  define FOO_API
+#endif
+          </screen>
+          <para>and the above definition should be manually placed into a header file which is included
+          by all headers where the macro is used.
+          [[OPP_DLLEXPORT]] and [[OPP_DLLIMPORT]] are provided by [[&lt;omnetpp.h&gt;]], and
+          [[FOO_EXPORT]] / [[FOO_IMPORT]] that control the macro expansion will be provided by the
+          generated makefile via a compile option.
+          </para>
+          <para>Settings for Windows DLLs:</para>
+          <itemizedlist>
+            <listitem>
+              ``Force compiling object files for use in DLLs'': If the makefile target is a DLL,
+              &Omnetpp; automatically compiles the sources for DLL (defines the [[FOO_EXPORT]] macro, etc.),
+              regardless of the state of this option. Rather, this option is useful if the makefile target
+              is ``not'' a DLL, but the code compiled here will eventually end up in a DLL.
+              Makemake option: [[-S]]
+            </listitem>
+            <listitem>
+              ``DLL export/import symbol'': Name for the DLL import/export symbol, i.e. [[FOO]] in the above examples.
+              Makemake option: [[-p]]
+            </listitem>
+          </itemizedlist>
+          </commercial>
+        </sect3>
+
+        <sect3>
+          <title>The ``Link'' Tab</title>
+          <para>
+            Link options allow the user to fine-tune the linking steps at the end of the build process.
+          </para>
+          <picture file="pictures/CPP-ConfigureProject4.png">Linker options</picture>
+          <itemizedlist>
+            <listitem>
+              ``Link with libraries exported from referenced projects'': If your project references other projects
+              that build static or dynamic libraries, you can instruct the linker to
+              automatically link with those libraries by enabling this option. The libraries from
+              the other projects must be exported via the ``Export this shared/static library for other projects''
+              option on the ``Target'' tab.
+              Makemake option: [[--meta:use-exported-libs]]
+            </listitem>
+            <listitem>
+              ``User interface libraries to link with'': If the makefile target is an executable, you may
+              specify which &Omnetpp; user interface libraries (Cmdenv, Tkenv, or both) should be linked
+              into the program.
+              Makemake option: [[-u]]
+            </listitem>
+            <listitem>
+              ``More &raquo; Additional libraries to link with'': This box allows you to specify
+              additional libraries to link with. Specify the library name without its path, possible prefix ([[lib]])
+              and file extension, and also without the [[-l]] option. The library must be on the linker path;
+              the linker path can be edited on the ``Library Paths'' tab of the ``C/C++ General | Paths and Symbols''
+              page of the ``Project Properties'' dialog.
+              Makemake option: [[-l]]
+            </listitem>
+            <listitem>
+              ``More &raquo; Additional objects to link with'': Additional object files and libraries can be
+              specified here. The files must be given with their full paths and file extension. Wildcards
+              and makefile macros are also accepted. Example: [[$O/subdir/*.o]].
+              Makemake option: none (files will become plain makemake arguments)
+            </listitem>
+          </itemizedlist>
+        </sect3>
+
+        <sect3>
+          <title>The ``Custom'' Tab</title>
+          <para>The ``Custom'' tab allows the customization of the makefiles by inserting handwritten makefile
+            fragments into the automatically generated makefile. This lets you contribute additional targets,
+            rules, variables, etc.</para>
+
+          <itemizedlist>
+            <listitem>
+              ``Makefile variables'': Variables (name + value) that you enter here will be inserted
+              into the generated makefile.
+              Makemake option: [[-K]]
+            </listitem>
+            <listitem>
+              ``Makefrag'': If the folder contains a file named [[makefrag]]<commercial> or [[makefrag.vc]]</commercial>,
+              its contents will be automatically copied into the generated makefile, just above the
+              first target rule. [[makefrag]] allows you to customize the generated makefile to some extent;
+              for example, you can add new targets (e.g. to generate documentation or run a test suite),
+              new rules (e.g. to generate source files during the build), override the default target,
+              add new dependencies to existing targets, overwrite variables, etc.
+              The dialog lets you edit the contents of the [[makefrag]] file directly (it will be saved
+              when you accept the dialog).
+              Makemake option: n/a
+            </listitem>
+            <listitem>
+              ``More &raquo; Fragment files to include'': Here, it is possible to explicitly specify
+              a list of makefile fragment files to include, instead of the default
+              [[makefrag]]<commercial> ([[makefrag.vc]])</commercial>.
+              Makemake option: [[-i]]
+            </listitem>
+          </itemizedlist>
+        </sect3>
+
+        <sect3>
+          <title>The ``Preview'' Tab</title>
+          <para>The ``Preview'' tab displays the command-line options that will be passed to
+            [[opp_makemake]] to generate the makefile. It consists of two parts:
+          </para>
+          <itemizedlist>
+            <listitem>
+              ``Makemake options'': This is an ``editable'' list of makefile generation options.
+              Most options map directly to checkboxes, edit fields and other controls on the
+              previous tabs of the dialog. For example, if you check the ``Deep compile'' checkbox
+              on the ``Scope'' tab, the [[--deep]] option will be added to the command line.
+              Conversely, if you delete [[--deep]] from the command line options, that will cause
+              the ``Deep compile'' checkbox to be unchecked.
+              Some options are directly [[opp_makemake]] options, others are "meta" options
+              that will be resolved to one or more [[opp_makemake]] options; see below.
+            </listitem>
+            <listitem>
+              ``Makemake options modified with CDT settings and with meta-options resolved'':
+              This is a read-only text field, displayed for information purposes only.
+              Not all options in the above options list are directly understood by [[opp_makemake]];
+              namely, the options that start with [[--meta:]] denote higher-level features offered
+              by the IDE only. Meta options will be translated to [[opp_makemake]] options by the IDE.
+              For example, [[--meta:auto-include-path]] will be resolved by the IDE to multiple
+              [[-I]] options, one for each directory in the C++ source trees of the project.
+              This field shows the [[opp_makemake]] options after the resolution of the meta options.
+            </listitem>
+          </itemizedlist>
+        </sect3>
+    </sect2>
+
+    <sect2>
+        <title>Project References and Makefile Generation</title>
+
+        <para>When your project references another project (say the INET Framework),
+        your project's build will be affected in the following way:</para>
+
+        <itemizedlist>
+          <listitem>
+            Include path: Source folders in referenced projects will be automatically added
+            to the include path of your makefile if the ``Automatically add other folders
+            where include files are located'' option on the ``Compile'' tab is checked.
+          </listitem>
+          <listitem>
+            Linking: If the ``Link with libraries exported from referenced projects'' option on the
+            ``Link'' tab is enabled, then the makefile target will be linked with those libraries
+            in referenced projects that have the ``Export this shared/static library for other projects''
+            option checked on the ``Target'' tab.
+          </listitem>
+          <listitem>
+            NED types: NED types defined in a referenced project are automatically available
+            in referencing projects.
+          </listitem>
+        </itemizedlist>
+    </sect2>
   </sect1>
+
   <sect1>
-    <title>Include Browser View</title>
-    <para>Dropping a C++ file into the ``Include Browser View'' displays the include files used by the
-    C++ file (either directly or indirectly).</para>
-    <picture file="pictures/CPP-IncludeBrowserView.png">Include Browser</picture>
+    <title>Project Features</title>
+
+    <sect2>
+      <title>Motivation</title>
+      <para>
+        Long compile times are often an inconvenience when working with large
+        &Omnetpp;-based model frameworks like the INET Framework. The IDE feature
+        named ``Project Features'' lets you reduce build times by excluding or
+        disabling parts of the model framework that you do not use for your
+        simulation study. For example, when you are working on mobile ad-hoc simulations in INET,
+        you can disable compilation of the Ethernet model, the IPv6/MIPv6 code,
+        MPLS models and other unrelated protocol models. The word ``feature'' refers
+        to a piece of the project codebase that can be turned off as a whole.
+      </para>
+      <para>
+        Additional benefits of project features include a less cluttered model palette
+        in the NED editor, being able to exclude code that does not compile on your system,
+        and enforcing cleaner separation of unrelated parts in the model framework.
+      </para>
+      <note>
+        A similar effect could also achieved via breaking up the model framework (e.g. INET)
+        into several smaller projects, but that would cause other kinds of inconveniences for
+        model developers and users alike.
+      </note>
+    </sect2>
+
+    <sect2>
+      <title>What is a Project Feature</title>
+      <para>
+        Features can be defined per project. As already mentioned, a feature is a piece of the
+        project codebase that can be turned off as a whole, that is, excluded from the C++ sources
+        (and thus from the build) and also from NED. Feature definitions are typically written
+        and distributed by the author of the project; end users are only presented with the
+        option of enabling/disabling those features. A feature definition contains:
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          ``Feature name,'' for example [["UDP"]] or [["Mobility examples"]].
+        </listitem>
+        <listitem>
+          ``Feature description.'' This is a few sentences of text describing what the feature
+          is or does; for example [["Implementation of the UDP protocol"]].
+        </listitem>
+        <listitem>
+          ``Labels.'' This is list of labels or keywords that facilitate grouping or finding features.
+        </listitem>
+        <listitem>
+          ``Initially enabled.'' This is a boolean flag that determines the initial enablement
+          of the feature.
+        </listitem>
+        <listitem>
+          ``Required features.'' Some features may be built on top of others; for example, a HMIPv6
+          protocol implementation relies on MIPv6, which in turn relies on IPv6. Thus, HMIPv6 can
+          only be enabled if MIPv6 and IPv6 are enabled as well.
+        </listitem>
+        <listitem>
+          ``NED packages.'' This is a list of NED package names that identify the code that implements
+          the feature. When you disable the feature, NED types defined in those packages and their
+          subpackages will be excluded; also, C++ code in the folders that correspond to the packages
+          (i.e. in the same folders as excluded NED files) will also be excluded.
+        </listitem>
+        <listitem>
+          ``Extra C++ source folders.'' If the feature contains C++ code that lives outside NED source
+          folders (nontypical), those folders are listed here.
+        </listitem>
+        <listitem>
+          ``Compile options,'' for example [[-DWITH_IPv6]]. When the feature is enabled, the compiler
+          options listed here are added to the compiler command line of all C++ files in the project.
+          A typical use of this field is defining symbols ([[WITH_xxx]]] that allows you to write conditional code
+          that only compiles when a given feature is enabled. Currently only the [[-D]] option
+          (``define symbol'') is supported here.
+        </listitem>
+        <listitem>
+          ``Linker options.'' When the feature is enabled, the linker options listed here are added
+          to the linker command line. A typical use of this field is linking with additional
+          libraries that the feature's code requires, for example libavcodec.
+          Currently only the [[-l]] option (``link with library'') is supported here.
+        </listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>The Project Features Dialog</title>
+      <para>
+        Features can be viewed, enabled and disabled on the ``Project Features'' page of the
+        ``Project Properties'' dialog. The ``Project | Project Features...'' menu item
+        is a direct shortcut to this property page.
+      </para>
+      <picture file="pictures/CPP-Features.png">The Project Features page</picture>
+      <para>
+        The central area of the dialog page lists the features defined for the project.
+        Hovering the mouse over a list item will show the description and other fields
+        of the feature in a tooltip window. Check an item to enable the feature, and uncheck
+        to disable.
+      </para>
+      <para>
+        When you enable a feature that requires other features to work, the dialog
+        will ask for permission to enable the required features as well. Also, if you disable
+        a feature that others depend on, they will be disabled, too.
+      </para>
+      <para>
+        The ``Apply'', ``OK'' and ``Cancel'' buttons work as expected. ``Restore Defaults''
+        restores the features to their initial state (see the ``Initially enabled'' attribute above).
+      </para>
+      <para>
+        Above the list there is a notification area in the dialog. If the IDE detects that
+        your project's configuration is inconsistent with the feature enablements, it will display
+        a warning there, and offer a way to automatically fix the problems. Fixing means that
+        the IDE will adjust the project's NED and C++ settings to make them consistent
+        with the feature enablements. Such check is also performed just before build.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>What Happens When You Enable/Disable a Feature</title>
+      <para>
+        When you enable or disable a feature on the ``Project Features'' page, a number of project
+        settings will be modified:
+      </para>
+      <itemizedlist>
+        <listitem>
+          NED package exclusions. This corresponds to the contents of the ``Excluded package subtrees''
+          list on the ``NED Source Folders'' property page. When a feature is disabled,
+          its NED packages will be excluded (added to the list), and vice versa.
+        </listitem>
+        <listitem>
+          C++ folder exclusions. This can be viewed/edited on the ``Makemake'' property page, and
+          also on the ``Source Location'' tab of the ``C/C++ General > Paths and Symbols''
+          property page.
+        </listitem>
+        <listitem>
+          Compile options. For example, if the feature defines preprocessor symbols ([[-DWITH_xxx]]),
+          they will be displayed on the ``Symbols'' tab of the ``C/C++ General > Paths and Symbols''
+          property page.
+        </listitem>
+        <listitem>
+          Linker options. For example, if the feature defines additional libraries to link with,
+          they will be displayed on the ``Libraries'' tab of the ``C/C++ General > Paths and Symbols''
+          property page.
+        </listitem>
+      </itemizedlist>
+      <note>
+        Feature enablements are saved into the workspace metadata, i.e. outside in the project directory.
+        This also means that the current feature enablement state cannot be (easily) put under
+        version control.
+      </note>
+      <note>
+        When you enable or disable a feature, &Omnetpp; (as of version 4.2) will trigger
+        a reindexing for the project.
+        This is done because C++ sources in the project may contain [[#ifdef]]'s that use
+        symbols defined by the changed features ([[WITH_xxx]] symbols), and CDT does not
+        automatically detect that those source files need to be re-parsed because of the changed
+        conditions. Its is important for the &Omnetpp; IDE that the C++ index is up to date,
+        because the index is used for dependency generation in generated makefiles.
+      </note>
+    </sect2>
+
+    <sect2>
+      <title>Using Features from Command Line</title>
+      <para>
+        ``Project Features'' is an IDE feature. Command-line tools ([[opp_makemake]], etc.)
+        do not understand the [[.oppfeatures]] file and do not know which features are
+        enabled.
+      </para>
+      <para>
+        If you want to build the project from the command-line in some feature
+        combination, you need to generate the makefiles with the same [[opp_makemake]]
+        options that the IDE uses in that feature combination. You can copy/paste the
+        the [[opp_makemake]] options from the ``Makemake'' page of the project's properties
+        dialog (select each makemake folder one by one, click ``Options'', and copy the options
+        from the bottom of the ``Preview'' tab in the dialog that comes up).
+        Alternatively, choose ``Export'' on the ``Makemake'' page, and copy/paste the
+        options from the generated [[makemakefiles]] file.
+      </para>
+    </sect2>
+
+    <sect2>
+      <title>The [[.oppfeatures]] File</title>
+      <para>
+        Project features are defined in the [[.oppfeatures]] file in your project's
+        root directory. This is an XML file, and it currently has to be written by hand
+        (there is no specialized editor for it).
+      </para>
+
+      <para>
+        The root element is [[&lt;features&gt;]], and it may have several [[&lt;feature&gt;]]
+        child elements, each defining a project feature. The fields of a feature
+        are represented with XML attributes; attribute names are [[id]], [[name]],
+        [[description]], [[initiallyEnabled]], [[requires]], [[labels]], [[nedPackages]],
+        [[extraSourceFolders]], [[compileFlags]] and [[linkerFlags]]. Items within attributes
+        that represent lists ([[requires]], [[labels]], etc.) are separated by spaces.
+      </para>
+
+      <para>
+        Here is an example feature from the INET Framework:
+      </para>
+
+<screen><![CDATA[
+<feature
+        id="TCP_common"
+        name="TCP Common"
+        description = "The common part of TCP implementations"
+        initiallyEnabled = "true"
+        requires = ""
+        labels = ""
+        nedPackages = "
+                       inet.transport.tcp_common
+                       inet.applications.tcpapp
+                       inet.util.headerserializers.tcp
+                      "
+        extraSourceFolders = ""
+        compileFlags = "-DWITH_TCP_COMMON"
+        linkerFlags = ""
+        />
+]]></screen>
+    </sect2>
+
+    <sect2>
+      <title>How to Introduce a Project Feature</title>
+      <para>
+        If you plan to introduce a project feature in your project, here's what you'll need
+        to do:
+      </para>
+      <itemizedlist>
+        <listitem>
+          Isolate the code that implements the feature into a separate source directory
+          (or several directories). This is because only whole folders can be
+          declared as part of a feature, individual source files cannot.
+        </listitem>
+        <listitem>
+          Check the remainder of the project. If you find source lines that reference
+          code from the new feature, use conditional compilation ([[#ifdef WITH_YOURFEATURE]])
+          to make sure that code compiles (and either works sensibly or throws an error)
+          when the new feature is disabled. (Your feature should define the [[WITH_YOURFEATURE]]
+          symbol, i.e. [[-DWITH_YOURFEATURE]] will need to be added to the feature compile flags.)
+        </listitem>
+        <listitem>
+          Add the feature description into the [[.oppfeatures]] file of your project.
+        </listitem>
+        <listitem>
+          Test. A rudimentary test can be verify that your project compiles at all, both
+          with the new feature enabled and disabled. For such build tests, the
+          ``Export build tester makefile'' function (at the bottom of the ``Project Features''
+          property page) can be quite useful: it creates a makefile that builds the
+          project in typical feature combinations. (It does not test ``2^N'' combinations because
+          that's usually prohibitive, only about ``2*N+2''.)
+        </listitem>
+      </itemizedlist>
+    </sect2>
   </sect1>
+
   <sect1>
-    <title>Outline View</title>
-    <para>During source editing, the Outline View gives you an overview of the structure of your source
-      file and can be used to quickly navigate inside the file.</para>
-    <picture file="pictures/CPP-OutlineView.png">Navigating with Outline View</picture>
-  </sect1>
-  <sect1>
-    <title>Type Hierarchy View</title>
-    <para>Displaying
-      the C++ type hierarchy may be a great help in understanding the code and the inheritance relationship
-      between your classes (and between &Omnetpp; classes).
+    <title>Internals</title>
+    <para>
+      CDT supports the build process by invoking the "make" command when you select the "Build" action
+      in the IDE. Before invoking "make" the IDE generates a makefile (via a built-in Java version of
+      opp_makemake) and then let CDT execute the generated makefile.
+      <note>
+        The &Omnetpp; IDE does not use the "managed make" feature of CDT.
+      </note>
+      Eclipse, CDT and the &Omnetpp;
+      IDE uses several files in the project to store settings. The following files are present in the
+      project root directory (these files are normally hidden by the IDE in the ``Project Explorer View''):
+      <itemizedlist>
+        <listitem>
+          [[.project]] : Eclipse stores the general project properties in this file including project name,
+          dependencies from other projects, and project type (i.e. whether &Omnetpp;-specific
+          features are supported or this is only a generic Eclipse project).
+        </listitem>
+        <listitem>
+          [[.cproject]] : This file contains settings specific to C++ development including toolchain
+          definition, configuration templates (i.e. debug / release), error parsers, and debugger settings.
+        </listitem>
+        <listitem>
+          [[.oppbuildspec]] : Contains settings specific to &Omnetpp;.
+          This file contains most of the settings used while generating the makefile. You can configure
+          all &Omnetpp;-specific settings in the ``Project Properties'' dialog on the
+          ``&Omnetpp;/Makemake'' page. Everything you set on this page will be stored in
+          the [[.oppbuildspec]] file.
+        </listitem>
+      </itemizedlist>
+      <note>
+        If you are creating a project where no C++ support is needed (i.e. you are using an existing
+        precompiled simulation library and you edit only NED and Ini files), the [[.cproject]] and
+        [[.oppbuildspec]] files will not be present in your project.
+      </note>
     </para>
-    <picture file="pictures/CPP-TypeHierarchy.png">C++ Type hierarchy</picture>
   </sect1>
-  <sect1>
-    <title>Problems View</title>
-    <para>The ``Problems View'' contains the errors and warnings generated by the build process. You can
-      browse the problem list and double-click any message to go to the problem location in the source file.
-      NED file and INI file problems are also reported in this view along with C++ problems. The editors
-      are annotated with these markers, too. Hover over an error marker in the editor window to get the
-      corresponding message as a tooltip.</para>
-    <picture file="pictures/CPP-ProblemsView.png">C++ problems</picture>
-  </sect1>
-  <sect1>
-    <title>Console View</title>
-    <para>You may use the ``Console View'' to see the results of a build process or an actual simulation run.
-    </para>
-    <picture file="pictures/CPP-ConsoleView.png">Build output in a console</picture>
-  </sect1>
+
 </chapter>
+
