@@ -43,20 +43,23 @@ public class EditableFigureCanvas extends ScrolledComposite {
         getRootFigure().add(figure);
         Dimension size = figure.getPreferredSize();
         ArrayList<Point> candidates = new ArrayList<Point>();
+        candidates.add(new Point(0, 0));
         for (IFigure presentFigure : getEditableFigures()) {
-            Rectangle r = presentFigure.getBounds();
-            candidates.add(r.getTopLeft().translate(-spacing - size.width, 0));
-            candidates.add(r.getTopLeft().translate(0, -spacing - size.height));
-            candidates.add(r.getTop().translate(-size.width / 2, -spacing - size.height));
-            candidates.add(r.getTopRight().translate(spacing, 0));
-            candidates.add(r.getTopRight().translate(-size.width, -spacing - size.height));
-            candidates.add(r.getRight().translate(spacing, - size.height / 2));
-            candidates.add(r.getBottomRight().translate(-size.width, spacing));
-            candidates.add(r.getBottomRight().translate(spacing, -size.height));
-            candidates.add(r.getBottom().translate(-size.width / 2, spacing));
-            candidates.add(r.getBottomLeft().translate(-spacing - size.width, -size.height));
-            candidates.add(r.getBottomLeft().translate(0, spacing));
-            candidates.add(r.getLeft().translate(-spacing - size.width, -size.height / 2));
+            if (presentFigure != figure) {
+                Rectangle r = presentFigure.getBounds();
+                candidates.add(r.getTopLeft().translate(-spacing - size.width, 0));
+                candidates.add(r.getTopLeft().translate(0, -spacing - size.height));
+                candidates.add(r.getTop().translate(-size.width / 2, -spacing - size.height));
+                candidates.add(r.getTopRight().translate(spacing, 0));
+                candidates.add(r.getTopRight().translate(-size.width, -spacing - size.height));
+                candidates.add(r.getRight().translate(spacing, - size.height / 2));
+                candidates.add(r.getBottomRight().translate(-size.width, spacing));
+                candidates.add(r.getBottomRight().translate(spacing, -size.height));
+                candidates.add(r.getBottom().translate(-size.width / 2, spacing));
+                candidates.add(r.getBottomLeft().translate(-spacing - size.width, -size.height));
+                candidates.add(r.getBottomLeft().translate(0, spacing));
+                candidates.add(r.getLeft().translate(-spacing - size.width, -size.height / 2));
+            }
         }
         double bestDistance = Double.POSITIVE_INFINITY;
         Point bestPoint = null;

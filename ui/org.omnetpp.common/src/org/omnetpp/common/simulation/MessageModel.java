@@ -1,16 +1,8 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-package org.omnetpp.common.eventlog;
+package org.omnetpp.common.simulation;
 
 import org.omnetpp.common.engine.BigDecimal;
 
-
-public class EventLogMessage {
+public class MessageModel {
 	private String name;
 	private String className;
 
@@ -27,10 +19,10 @@ public class EventLogMessage {
 	private long senderEventNumber;
 	private long arrivalEventNumber;
 
-	private EventLogModule senderModule;
-	private EventLogGate senderGate;
-	private EventLogModule arrivalModule;
-	private EventLogGate arrivalGate;
+	private ModuleModel senderModule;
+	private GateModel senderGate;
+	private ModuleModel arrivalModule;
+	private GateModel arrivalGate;
 	private BigDecimal sendingTime, arrivalTime;
 
 	public String getName() {
@@ -93,19 +85,19 @@ public class EventLogMessage {
         return arrivalEventNumber;
     }
 
-	public EventLogModule getSenderModule() {
+	public ModuleModel getSenderModule() {
 		return senderModule;
 	}
 
-	public EventLogGate getSenderGate() {
+	public GateModel getSenderGate() {
 		return senderGate;
 	}
 
-	public EventLogModule getArrivalModule() {
+	public ModuleModel getArrivalModule() {
 		return arrivalModule;
 	}
 
-	public EventLogGate getArrivalGate() {
+	public GateModel getArrivalGate() {
 		return arrivalGate;
 	}
 
@@ -117,11 +109,11 @@ public class EventLogMessage {
 		return arrivalTime;
 	}
 
-	public void setArrivalGate(EventLogGate arrivalGate) {
+	public void setArrivalGate(GateModel arrivalGate) {
 		this.arrivalGate = arrivalGate;
 	}
 
-	public void setArrivalModule(EventLogModule arrivalModule) {
+	public void setArrivalModule(ModuleModel arrivalModule) {
 		this.arrivalModule = arrivalModule;
 	}
 
@@ -129,11 +121,11 @@ public class EventLogMessage {
 		this.arrivalTime = arrivalTime;
 	}
 
-	public void setSenderGate(EventLogGate senderGate) {
+	public void setSenderGate(GateModel senderGate) {
 		this.senderGate = senderGate;
 	}
 
-	public void setSenderModule(EventLogModule senderModule) {
+	public void setSenderModule(ModuleModel senderModule) {
 		this.senderModule = senderModule;
 	}
 

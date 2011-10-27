@@ -116,6 +116,7 @@ import org.omnetpp.common.eventlog.ModuleTreeItem;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.common.util.VectorFileUtil;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.FilteredEventLog;
 import org.omnetpp.eventlog.engine.IEvent;
@@ -133,7 +134,6 @@ import org.omnetpp.scave.engine.XYArray;
 import org.omnetpp.sequencechart.SequenceChartPlugin;
 import org.omnetpp.sequencechart.widgets.SequenceChart;
 import org.omnetpp.sequencechart.widgets.SequenceChart.AxisSpacingMode;
-import org.omnetpp.sequencechart.widgets.VectorFileUtil;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisLineRenderer;
 import org.omnetpp.sequencechart.widgets.axisrenderer.AxisVectorBarRenderer;
 
@@ -472,7 +472,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 	public void update() {
 		try {
-			for (Field field : getClass().getDeclaredFields()) {
+			for (Field field : SequenceChartContributor.class.getDeclaredFields()) {
 				Class<?> fieldType = field.getType();
 				if (fieldType == SequenceChartAction.class || fieldType == SequenceChartMenuAction.class) {
 					SequenceChartAction fieldValue = (SequenceChartAction)field.get(this);

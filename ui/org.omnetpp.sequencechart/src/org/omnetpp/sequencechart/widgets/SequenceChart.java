@@ -83,6 +83,7 @@ import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
+import org.omnetpp.common.util.VectorFileUtil;
 import org.omnetpp.common.virtualtable.IVirtualContentWidget;
 import org.omnetpp.eventlog.engine.EventLogEntry;
 import org.omnetpp.eventlog.engine.EventLogMessageEntry;

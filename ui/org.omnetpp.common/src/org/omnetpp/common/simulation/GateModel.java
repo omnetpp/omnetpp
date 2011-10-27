@@ -1,23 +1,16 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-package org.omnetpp.common.eventlog;
+package org.omnetpp.common.simulation;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 
-public class EventLogGate {
+public class GateModel {
     private int id;
     private String name;
 	private int index;
 	private int size;
-	private EventLogModule ownerModule;
+	private ModuleModel ownerModule;
 	private IDisplayString displayString;
 
-	public EventLogGate(EventLogModule ownerModule, int id) {
+	public GateModel(ModuleModel ownerModule, int id) {
 	    this.ownerModule = ownerModule;
 	    this.id = id;
     }
@@ -66,7 +59,7 @@ public class EventLogGate {
 		return ownerModule==null ? getFullName() : ownerModule.getFullPath()+"."+getFullName();
 	}
 
-	public EventLogModule getOwnerModule() {
+	public ModuleModel getOwnerModule() {
 		return ownerModule;
 	}
 
@@ -99,7 +92,7 @@ public class EventLogGate {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        EventLogGate other = (EventLogGate) obj;
+        GateModel other = (GateModel) obj;
         if (id != other.id)
             return false;
         if (ownerModule.getId() != other.ownerModule.getId())

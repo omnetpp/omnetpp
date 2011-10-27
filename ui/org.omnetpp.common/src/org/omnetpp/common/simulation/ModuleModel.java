@@ -1,52 +1,45 @@
-/*--------------------------------------------------------------*
-  Copyright (C) 2006-2008 OpenSim Ltd.
-
-  This file is distributed WITHOUT ANY WARRANTY. See the file
-  'License' for details on this and other legal matters.
-*--------------------------------------------------------------*/
-
-package org.omnetpp.common.eventlog;
+package org.omnetpp.common.simulation;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 
-public class EventLogModule {
+public class ModuleModel {
 	private int id;
 	private String name;
 	private int index;
 	private int size = -1;
-	private EventLogModule parent;
+	private ModuleModel parent;
 	private String typeName;
 	private String className;
 	private IDisplayString displayString;
-	private List<EventLogModule> submodules;
-	private List<EventLogGate> gates;
+	private List<ModuleModel> submodules;
+	private List<GateModel> gates;
 
-	public EventLogModule() {
+	public ModuleModel() {
 	}
 
-	public EventLogModule(EventLogModule parent) {
+	public ModuleModel(ModuleModel parent) {
 		if (parent != null)
 			parent.addSubmodule(this);
 	}
 
-	public EventLogModule(EventLogModule parent, int id) {
+	public ModuleModel(ModuleModel parent, int id) {
 		this(parent);
 		this.id = id;
 	}
 
-	public void addSubmodule(EventLogModule module) {
+	public void addSubmodule(ModuleModel module) {
 		if (module.getParentModule() != null)
 			throw new RuntimeException("submodule already has a parent");
 		if (submodules == null)
-			submodules = new ArrayList<EventLogModule>(2);
+			submodules = new ArrayList<ModuleModel>(2);
 		submodules.add(module);
 		module.parent = this;
 	}
 
-	public void removeSubmodule(EventLogModule module) {
+	public void removeSubmodule(ModuleModel module) {
 		if (module.getParentModule() != this)
 			throw new RuntimeException("not parent of this submodule");
 		submodules.remove(module);
@@ -105,11 +98,11 @@ public class EventLogModule {
 		return parent == null ? getFullName() : parent.getFullPath() + "." + getFullName();
 	}
 
-	public EventLogModule getParentModule() {
+	public ModuleModel getParentModule() {
 		return parent;
 	}
 
-	public List<EventLogModule> getSubmodules() {
+	public List<ModuleModel> getSubmodules() {
 		return submodules;
 	}
 
@@ -128,42 +121,42 @@ public class EventLogModule {
 		this.id = moduleId;
 	}
 
-	public EventLogModule getSubmodule(String name) {
+	public ModuleModel getSubmodule(String name) {
 		// TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
 		if (submodules != null)
-			for (EventLogModule m : submodules)
+			for (ModuleModel m : submodules)
 				if (name.equals(m.getName()) && m.getVectorSize()<0)
 					return m;
 
 		return null;
 	}
 
-	public EventLogModule getSubmodule(String name, int index) {
+	public ModuleModel getSubmodule(String name, int index) {
 		// TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
 		if (submodules != null)
-			for (EventLogModule m : submodules)
+			for (ModuleModel m : submodules)
 				if (name.equals(m.getName()) && m.getIndex()==index)
 					return m;
 		return null;
 	}
 
 	// TODO: this method to be removed -- ID is globally unique so it makes no sense
-	public EventLogModule getSubmoduleByID(int id) {
+	public ModuleModel getSubmoduleByID(int id) {
 		if (submodules != null)
-			for (EventLogModule submodule : submodules)
+			for (ModuleModel submodule : submodules)
 				if (submodule.getId() == id)
 					return submodule;
 		return null;
 	}
 
 	// TODO: removeGate, more efficient storage, etc
-	public void addGate(EventLogGate gate) {
+	public void addGate(GateModel gate) {
         if (gates == null)
-            gates = new ArrayList<EventLogGate>(2);
+            gates = new ArrayList<GateModel>(2);
 		gates.add(gate);
 	}
 
-	public EventLogGate getGate(int i) {
+	public GateModel getGate(int i) {
 		return gates.get(index);
 	}
 
@@ -174,15 +167,15 @@ public class EventLogModule {
 	        return gates.size();
 	}
 
-    public EventLogGate getGateById(int id) {
+    public GateModel getGateById(int id) {
         if (gates != null)
-            for (EventLogGate gate : gates)
+            for (GateModel gate : gates)
                 if (gate.getId() == id)
                     return gate;
         return null;
     }
 
-	public EventLogModule getCommonAncestorModule(EventLogModule otherModule) {
+	public ModuleModel getCommonAncestorModule(ModuleModel otherModule) {
 	    if (isAncestorModuleOf(otherModule))
 	        return this;
 	    else if (otherModule.isAncestorModuleOf(this))
@@ -191,7 +184,7 @@ public class EventLogModule {
 	        return getCommonAncestorModule(otherModule.getParentModule());
 	}
 
-	public boolean isAncestorModuleOf(EventLogModule otherModule) {
+	public boolean isAncestorModuleOf(ModuleModel otherModule) {
 	    while (otherModule != null) {
 	        if (otherModule.equals(this))
 	            return true;
@@ -222,7 +215,7 @@ public class EventLogModule {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final EventLogModule other = (EventLogModule) obj;
+		final ModuleModel other = (ModuleModel) obj;
 		if (id != other.id)
 			return false;
 		return true;

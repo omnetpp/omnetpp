@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.sequencechart.widgets;
+package org.omnetpp.common.util;
 
 import org.omnetpp.common.Debug;
 import org.omnetpp.scave.engine.DataflowManager;

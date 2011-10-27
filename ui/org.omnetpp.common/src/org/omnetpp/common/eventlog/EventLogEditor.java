@@ -26,6 +26,16 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.omnetpp.common.simulation.ConnectionModel;
+import org.omnetpp.common.simulation.ConnectionModelPropertySource;
+import org.omnetpp.common.simulation.GateModel;
+import org.omnetpp.common.simulation.GateModelPropertySource;
+import org.omnetpp.common.simulation.MessageModel;
+import org.omnetpp.common.simulation.MessageModelPropertySource;
+import org.omnetpp.common.simulation.ModuleModel;
+import org.omnetpp.common.simulation.ModuleModelPropertySource;
+import org.omnetpp.common.simulation.QueueModel;
+import org.omnetpp.common.simulation.QueueModelPropertySource;
 import org.omnetpp.common.util.DetailedPartInitException;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.EventLogEntry;
@@ -132,14 +142,16 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                             return new EventLogEntryPropertySource((EventLogEntry)object);
                         else if (object instanceof IEvent)
                             return new EventLogEntryPropertySource(((IEvent)object).getEventEntry());
-                        else if (object instanceof EventLogModule)
-                            return new EventLogModulePropertySource(this, (EventLogModule)object);
-                        else if (object instanceof EventLogConnection)
-                            return new EventLogConnectionPropertySource(this, (EventLogConnection)object);
-                        else if (object instanceof EventLogGate)
-                            return new EventLogGatePropertySource(this, (EventLogGate)object);
-                        else if (object instanceof EventLogMessage)
-                            return new EventLogMessagePropertySource(this, (EventLogMessage)object);
+                        else if (object instanceof ModuleModel)
+                            return new ModuleModelPropertySource(this, (ModuleModel)object);
+                        else if (object instanceof ConnectionModel)
+                            return new ConnectionModelPropertySource(this, (ConnectionModel)object);
+                        else if (object instanceof GateModel)
+                            return new GateModelPropertySource(this, (GateModel)object);
+                        else if (object instanceof MessageModel)
+                            return new MessageModelPropertySource(this, (MessageModel)object);
+                        else if (object instanceof QueueModel)
+                            return new QueueModelPropertySource(this, (QueueModel)object);
                         else
                             return null;
                     }

@@ -258,7 +258,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
 	public void update() {
 		try {
 	        if (eventLogTable != null) {
-    			for (Field field : getClass().getDeclaredFields()) {
+    			for (Field field : EventLogTableContributor.class.getDeclaredFields()) {
     				Class<?> fieldType = field.getType();
     				if (fieldType == EventLogTableAction.class || fieldType == EventLogTableMenuAction.class) {
     					EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
