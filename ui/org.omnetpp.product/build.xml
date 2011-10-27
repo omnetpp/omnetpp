@@ -52,6 +52,12 @@
 				<include name="org.visigoths.*/**" />
 				<exclude name="*/bin/**" />
 				<exclude name="org.omnetpp.ide/**" />
+				<exclude name="org.omnetpp.ide.academic/**" />
+				<exclude name="org.omnetpp.ide.commercial/**" />
+				<exclude name="org.omnetpp.ide.scave/**" />
+				<exclude name="org.omnetpp.ide.linuxtools/**" />
+				<exclude name="org.omnetpp.runtime/**" />
+				<exclude name="org.omnetpp.animation/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
 				<exclude name="org.omnetpp.scave.autoimport/**" />
 				<exclude name="org.omnetpp.test.*/**" />
@@ -61,7 +67,6 @@
 		<copy todir="${srcDirectory}/features">
 			<fileset dir="../">
 				<include name="org.omnetpp.ide/**" />
-				<include name="org.omnetpp.ide.source/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
 				<include name="org.omnetpp.ide.linuxtools/**" />

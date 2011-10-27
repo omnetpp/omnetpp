@@ -3,6 +3,7 @@
 
 <product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.2.0.qualifier" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -278,7 +279,6 @@ POSSIBILITY OF SUCH DAMAGES.
 
    <features>
       <feature id="org.omnetpp.ide.academic"/>
-      <feature id="org.omnetpp.ide.source"/>
       <feature id="org.omnetpp.ide.linuxtools"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>

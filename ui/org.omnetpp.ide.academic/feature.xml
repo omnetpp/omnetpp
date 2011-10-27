@@ -343,6 +343,10 @@ END OF TERMS AND CONDITIONS
          version="4.2.0.qualifier"
          name="OMNeT++ IDE Features"/>
 
+   <includes
+         id="org.omnetpp.ide.source"
+         version="0.0.0"/>
+
    <plugin
          id="org.omnetpp.main.omnetpp"
          download-size="0"
