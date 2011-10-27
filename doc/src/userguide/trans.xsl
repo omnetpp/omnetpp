@@ -24,6 +24,12 @@
 </xsl:if>
 </xsl:template>
 
+<xsl:template match="noncommercial">
+<xsl:if test="$what!='omnest'">
+    <xsl:apply-templates select="@*|node()"/>
+</xsl:if>
+</xsl:template>
+
 
 <xsl:template match="picture">
    <figure float="0">
