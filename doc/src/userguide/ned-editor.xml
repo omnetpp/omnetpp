@@ -137,10 +137,10 @@
       </sect3>
       <sect3>
         <title>Creating Types and Inner Types</title>
-        <para>To create a type or inner type inside a compound module, click on the appropriate palette item
-              in the "Types" drawer and then click where you want to place the new element. If you click on
-              the background a new top level type will be created. Clicking on an existing compound module
-              or network creates an inner type inside of that module.</para>
+        <para>To create a type, or an inner type inside a compound module, click on the appropriate palette item
+              in the "Types" drawer, and then click where you want to place the new element. If you click on
+              the background, a new top-level type will be created. Clicking on an existing compound module
+              or network creates an inner type inside that module.</para>
       </sect3>
       <sect3>
         <title>Creating and Changing Connections</title>

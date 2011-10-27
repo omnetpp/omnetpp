@@ -268,17 +268,17 @@
   <sect1>
     <title>Profiling a Simulation on Linux</title>
     <para>
-      On Linux systems the &Omnetpp; IDE supports executing your simulation using ``valgrind''.
-      (Before proceeding, you have to install the valgrind package with your Linux package manager.)
-      Profiling with valgrind allows you to find memory related issues and programming errors
-      in your code. Your model will run in an emulated environment (much slower than normal
+      On Linux systems, the &Omnetpp; IDE supports executing your simulation using the ``valgrind'' program.
+      Running your program with valgrind allows you to find memory-related issues and programming errors
+      in your code. The simulation will run in an emulated environment (much slower than normal
       execution speeds), but valgrind will generate a detailed report when it finishes.
       The report is shown in a separate ``Valgrind View'' at the end of the simulation run.
     </para>
 
     <para>
       To start profiling, right-click on your project in the ``Project Explorer'' tree
-      and select ``Profile As... | &Omnetpp; Simulation''.
+      and select ``Profile As... | &Omnetpp; Simulation''. Valgrind must already be installed
+      on your system.
     </para>
     <note>
         Simulation executes considerably slower than a normal run. Prepare for long run-times or

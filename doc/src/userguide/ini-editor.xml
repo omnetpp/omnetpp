@@ -204,7 +204,7 @@
       ``Window | Show View''
       submenu.
           <note>If you are working with very large NED or INI files, you may improve the performance of the editor
-              by closing all INI file related views you do not need (Parameters, Module Hierarchy and NED
+              by closing all views related to INI files (Parameters, Module Hierarchy and NED
               Inheritance View).
           </note>
     </para>
