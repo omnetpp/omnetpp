@@ -986,40 +986,39 @@
   </sect1>
 
   <sect1>
-    <title>Internals</title>
+    <title>Project Files</title>
     <para>
-      CDT supports the build process by invoking the "make" command when you select the "Build" action
-      in the IDE. Before invoking "make" the IDE generates a makefile (via a built-in Java version of
-      opp_makemake) and then let CDT execute the generated makefile.
-      <note>
-        The &Omnetpp; IDE does not use the "managed make" feature of CDT.
-      </note>
-      Eclipse, CDT and the &Omnetpp;
-      IDE uses several files in the project to store settings. The following files are present in the
-      project root directory (these files are normally hidden by the IDE in the ``Project Explorer View''):
-      <itemizedlist>
-        <listitem>
-          [[.project]] : Eclipse stores the general project properties in this file including project name,
-          dependencies from other projects, and project type (i.e. whether &Omnetpp;-specific
-          features are supported or this is only a generic Eclipse project).
-        </listitem>
-        <listitem>
-          [[.cproject]] : This file contains settings specific to C++ development including toolchain
-          definition, configuration templates (i.e. debug / release), error parsers, and debugger settings.
-        </listitem>
-        <listitem>
-          [[.oppbuildspec]] : Contains settings specific to &Omnetpp;.
-          This file contains most of the settings used while generating the makefile. You can configure
-          all &Omnetpp;-specific settings in the ``Project Properties'' dialog on the
-          ``&Omnetpp;/Makemake'' page. Everything you set on this page will be stored in
-          the [[.oppbuildspec]] file.
-        </listitem>
-      </itemizedlist>
-      <note>
-        If you are creating a project where no C++ support is needed (i.e. you are using an existing
-        precompiled simulation library and you edit only NED and Ini files), the [[.cproject]] and
-        [[.oppbuildspec]] files will not be present in your project.
-      </note>
+      Eclipse, CDT and the &Omnetpp; IDE uses several files in the project to store settings.
+      These files are located in the project root directory, and they are normally
+      hidden by the IDE in the ``Project Explorer View''. The files include:
+    </para>
+    <itemizedlist>
+      <listitem>
+        [[.project]] : Eclipse stores the general project properties in this file including project name,
+        dependencies from other projects, and project type (i.e. whether &Omnetpp;-specific
+        features are supported or this is only a generic Eclipse project).
+      </listitem>
+      <listitem>
+        [[.cproject]] : This file contains settings specific to C++ development, including
+        the build configurations; and per-configuration settings such as source folder locations
+        and exclusions, include paths, linker paths, symbols; the build command, error parsers,
+        debugger settings and so on.
+      </listitem>
+      <listitem>
+        [[.oppbuildspec]] : Contains settings specific to &Omnetpp;.
+        This file stores per-folder makefile generation settings that can be configured
+        on the ``Makemake'' page of the ``Project Properties'' dialog.
+      </listitem>
+      <listitem>
+        [[.nedfolders]] : Contains the names of NED source folders, and also package exclusions;
+        this is the information that can be configured on the ``NED Source Folders'' page
+        of the ``Project Properties'' dialog.
+      </listitem>
+    </itemizedlist>
+    <para>
+      If you are creating a project where no C++ support is needed (i.e. you are using an existing
+      precompiled simulation library and you edit only NED and Ini files), the [[.cproject]] and
+      [[.oppbuildspec]] files will not be present in your project.
     </para>
   </sect1>
 

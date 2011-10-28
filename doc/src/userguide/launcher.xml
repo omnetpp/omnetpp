@@ -3,33 +3,108 @@
 <chapter id="launcher">
   <title>Launching and Debugging</title>
   <sect1>
-    <title>Running a Simulation</title>
+    <title>Introduction</title>
     <para>
-      In previous versions of &Omnetpp;,
-      executing a simulation or carrying out experiments was done by manually launching the executable file
-      from the windowing environment or from a command line shell. Experiments that needed several runs with
-      different parameters required the writing and execution of external scripts. The new version of the &Omnetpp;
-      IDE allows for running simulations and simulation batches directly from the IDE.
+      The &Omnetpp; IDE lets you execute single simulations and simulation batches, and also
+      to debug and, to some extent, profile simulations. You can choose whether you want
+      the simulation to run in graphical mode (using ``Tkenv'') or in console (using ``Cmdenv'');
+      which simulation configuration and run number to execute; whether to record an eventlog or not;
+      and many other options.
     </para>
+
+    <para>
+      When running simulation batches, you can specify the number of processes allowed
+      to run in parallel, so you can take advantage of multiple processors or processor cores.
+      The progress of the batch can be monitored, and you can also kill processes from the
+      batch if needed. Batches are based on the ``parameter study'' feature of INI files;
+      you can read more about it in the ``&Omnetpp; User Manual''.
+    </para>
+
+    <para>
+      Debugging support comes from the Eclipse C/C++ Development Toolkit (CDT), and beyond
+      the basics (single-stepping, stack trace, breakpoints, watches, etc.) it also offers you
+      several conveniences and advanced functionality such as inspection tooltips,
+      conditional breakpoints and so on. Debugging with CDT also has extensive literature
+      on the Internet. Currently CDT uses the GNU Debugger (gdb) as the underlying debugger.
+    </para>
+
+    <para>
+      Profiling support is based on the ``valgrind'' program, http://valgrind.org. Valgrind is
+      a suite of tools for debugging and profiling on Linux. It can automatically detect various
+      memory access and memory management bugs, and perform detailed profiling of your program.
+      Valgrind support is brought into the &Omnetpp; IDE by the Linux Tools Project of Eclipse,
+      currently in incubation state.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Launch Configurations</title>
+    <para>
+      Eclipse, and thus the IDE as well, uses ``launch configurations'' to store particulars
+      of the program to be launched: what program to run, the list of arguments and
+      environment variables, and other options. Eclipse and its C/C++ Development Toolkit (CDT)
+      already comes with several types of launch configurations (e.g. "C/C++ Application"),
+      and the IDE adds ``&Omnetpp; Simulation''. The same launch configuration can be used with
+      the ``Run'', ``Debug'' and ``Profile'' buttons alike.
+    </para>
+  </sect1>
+
+  <sect1>
+    <title>Running a Simulation</title>
+
+    <sect2>
+      <title>Quick Run</title>
+      <para>
+        The easiest way to launch a simulation is by selecting a project, folder, ini or NED file
+        in ``Project Explorer'', and clicking the ``Run'' button on the toolbar. This will
+        create a suitable launch configuration (possibly after asking a few questions to
+        clarify what you want to run) if one does not exist already. Instead of the ``Run''
+        button, you can also choose the ``Run As... | &Omnetpp; Simulation'' from the item's
+        context menu.
+      </para>
+      <para>The details:</para>
+      <itemizedlist>
+        <listitem>If a folder is selected and it contains a single INI file, the IDE will use
+        this file to start the simulation.</listitem>
+        <listitem>If an INI file is selected, it will be used during the launch as the main INI file
+        for the simulation.</listitem>
+        <listitem>If a NED file is selected which contains a network definition, the IDE will
+        scan for INI files in the active projects and will try to find a configuration that allows
+        this network to start.</listitem>
+      </itemizedlist>
+    </sect2>
+
+    <sect2>
+      <title>The Run Configurations Dialog</title>
+      <para>
+        Launch configurations can be managed in the ``Run Configurations'' dialog. (Two further
+        dialogs, ``Debug Configurations'' and ``Profile Configurations'' are very similar, and
+        allow you to manage debugging/profiling aspects of launch configurations).
+      </para>
+      <para>
+        The ``Run Configurations'' can be opened in various ways: via the main menu (``Run | Run Configurations...'');
+        via the context menu item of a project, folder or file (``Run As | Run Configurations...'');
+        via the green ``Run'' toolbar button (``Run Configurations...'' item of its attached menu, or
+        by <keycap>Ctrl</keycap>-clicking any other menu item or the toolbar button itself).
+      </para>
+      <picture file="pictures/Launch-RunProject.png">One way of opening the ``Run Configurations'' dialog</picture>
+    </sect2>
 
     <sect2>
       <title>Creating a Launch Configuration</title>
-      <para> &Omnetpp;
-        IDE adds a new Eclipse launch configuration type that supports launching simulation executables. This
-        launch type, &Omnetpp;
-        Simulation, is available from the ``Run Configurations'' dialog. To create a new run configuration,
-        select ``Run Configurations...'' from the ``Run'' menu. FIXME a screenshoton nem a Run menu van!!!
-      </para>
-      <picture file="pictures/Launch-RunProject.png">Running a project</picture>
-      <para> A dialog appears with the possible launch types on the left. Select ``&Omnetpp; Simulation''
-        and click the ``New launch configuration'' icon. Then, enter a configuration name at the top
-        of the dialog form that appears.
+      <para>&Omnetpp; IDE adds a new Eclipse launch configuration type, ``&Omnetpp; Simulation'',
+        that supports launching simulation executables. To create a new run configuration,
+        open the ``Run Configurations...'' dialog. In the dialog, select ``&Omnetpp; Simulation''
+        from the tree, and click the ``New launch configuration'' icon in the top-left corner.
+        A blank launch configuration is created; you can give it a name at the top of the form
+        that appears.
       </para>
       <picture file="pictures/Launch-RunDialog.png">The Simulation Launcher</picture>
       <para> The ``Main'' tab of the configuration dialog was designed to make the launching of simulations as
         easy as possible. The only required field is the Working directory; all others have defaults. If you
         only select the working directory and the simulation program, it will start "Run 0" of the first
-        configuration from the [[omnetpp.ini]] file in the specified working directory.</para>
+        configuration from the [[omnetpp.ini]] file in the specified working directory.
+      </para>
       <tip>
         Hover your mouse above the controls in this dialog and you will receive tooltip help for the
         selected control.
@@ -275,6 +350,9 @@
       in your code. The simulation will run in an emulated environment (much slower than normal
       execution speeds), but valgrind will generate a detailed report when it finishes.
       The report is shown in a separate ``Valgrind View'' at the end of the simulation run.
+      The &Omnetpp; IDE contains support only for the ``memcheck'' tool. If you want to use
+      other tools (``cachegrind, callgrind, massif'' etc.), you may try to install the full 'Linux
+      Tools Project' from the Eclipse Marketplace.
     </para>
 
     <para>
@@ -286,31 +364,6 @@
         Simulation executes considerably slower than a normal run. Prepare for long run-times or
         limit the simulation time in your .INI file. You do not need statistical convergence here,
         just run long enough that all the code paths are executed in your model.
-    </note>
-  </sect1>
-
-
-  <sect1>
-    <title>Launching Shortcuts</title>
-    <para>While the ``Launch'' dialog is very powerful, in most cases you will want to run your
-    simulation as quickly as possible. Based on the current selection, the IDE provides several
-    quick methods to create a launch configuration. You can select a file by either clicking on
-    it in the ``Project Explorer'', or by opening it for editing. After selection, just click on the
-    ``Run'' or ``Debug'' icon on the toolbar, or right-click on
-    the file and choose the ``Run As...'' or ``Debug As...''
-    menu.</para>
-      <itemizedlist>
-        <listitem>If a directory is selected and contains a single INI file, the IDE will use
-        this file to start the simulation.</listitem>
-        <listitem>If an INI file is selected, it will be used during the launch as the main INI file
-        for the simulation.</listitem>
-        <listitem>If a NED file is selected which contains a network definition, the IDE will
-        scan for INI files in the active projects and will try to find a configuration that allows
-        this network to start.</listitem>
-      </itemizedlist>
-    <note>
-      If the information to launch the simulation is insufficient or ambiguous, the IDE will ask you
-      whether it should create a configuration.
     </note>
   </sect1>
 
