@@ -1,3 +1,5 @@
+2011-10-28  ------ omnetpp-4.2 released ------
+
 2011-07-21  Andras Varga
 
 	* tkenv.cc: fix: ensure correct order of lines printed on startup:

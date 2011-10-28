@@ -1,3 +1,5 @@
+2011-10-28  ------ omnetpp-4.2 released ------
+
 2011-10-24  Andras Varga
 
 	* ccomponent.h: asserted that registerSignal() cannot be invoked

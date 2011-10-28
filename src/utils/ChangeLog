@@ -1,3 +1,5 @@
+2011-10-28  ------ omnetpp-4.2 released ------
+
 2011-05-25  Andras Varga
 
 	* opp_msvcver.pl: fix #75: Chinese version of Visual C++ was not 

@@ -1,3 +1,5 @@
+2011-10-28  ------ omnetpp-4.2 released ------
+
 2011-10-14  Levente Meszaros
 
 	* Refactored operator= and copy constructor in all SIM_API classes.
