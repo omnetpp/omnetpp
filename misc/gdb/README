@@ -1,21 +1,41 @@
-Activating pretty printing in GDB for standard C++ containers:
+Activating pretty printing in GDB for standard C++ containers and OMNeT++ classes:
 
 Windows:
   The bundled GDB and Python binaries are already configured to support gdb pretty printing.
+  No additional steps are needed to activate the printers. A preconfigured .gdbinit file is
+  available in the OMNeT++ root directory (which is configured as the $HOME directory when
+  using MSYS / MINGW).
 
 Mac OS X:
-  Mac OS comes with gdb 6.2 which does not support python pretty printing.
+  Mac OS comes with gdb 6.2 which does not support gdb pretty printers.
 
 Linux:
-  This directory must be included in the python system path and pretty printer classes must 
-  be registered before starting gdb. This can be done by creating a '.gdbinit' 
+  This directory must be included in the python system path and the pretty printer
+  classes must be registered before starting gdb. This can be done by creating a '.gdbinit'
   file in the $HOME directory with the following content. Do not forget to edit
   the path to point to this directory.
 
+$HOME/.gdbinit:
+--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--
 python
+
 import sys
+
 sys.path.insert(0, '/path/to/omnetpp/misc/gdb')
-from libstdcxx.v6.printers import register_libstdcxx_printers
-register_libstdcxx_printers (None)
-print 'Python pretty printers initialized.'
+
+if 'register_libstdcxx_printers' in dir():
+    print 'libstdc++ pretty printers already initialized.'
+else:
+    from libstdcxx.v6.printers import register_libstdcxx_printers
+    register_libstdcxx_printers (None)
+    print 'Pretty printers initialized: libstdc++'
+
+if 'register_omnetpp_printers' in dir():
+    print 'omnetpp pretty printers already initialized.'
+else:
+    from omnetpp.printers import register_omnetpp_printers
+    register_omnetpp_printers(None)
+    print 'Pretty printers initialized: omnetpp'
+
 end
+--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--
