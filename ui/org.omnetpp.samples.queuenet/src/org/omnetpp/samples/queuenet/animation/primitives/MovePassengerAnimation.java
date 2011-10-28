@@ -5,36 +5,31 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.samles.queuenet.animation.primitives;
+package org.omnetpp.samples.queuenet.animation.primitives;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.ImageFigure;
 import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.primitives.AbstractInfiniteAnimation;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.MessageModel;
 
-public class CreatePassengerAnimation extends AbstractInfiniteAnimation {
+public class MovePassengerAnimation extends AbstractInfiniteAnimation {
     private MessageModel message;
 
-	public CreatePassengerAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, MessageModel message) {
+	public MovePassengerAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, MessageModel message) {
 		super(animationController, eventNumber, simulationTime);
 		this.message = message;
 	}
 
 	@Override
-	public void activate() {
-	    super.activate();
-	    IFigure figure = new ImageFigure();
-        animationController.setFigure(message, figure);
-	    animationController.getAnimationCanvas().addFigure(figure);
-	}
-
-	@Override
-	public void deactivate() {
-	    super.deactivate();
+	public void refreshAnimation(AnimationPosition animationPosition) {
+	    BigDecimal simulationTime = animationPosition.getSimulationTime();
+	    BigDecimal sendingTime = message.getSendingTime();
+	    BigDecimal arrivalTime = message.getArrivalTime();
+	    double alpha = simulationTime.subtract(sendingTime).doubleValue() / arrivalTime.subtract(sendingTime).doubleValue();
         IFigure figure = animationController.getFigure(message, ImageFigure.class);
-        animationController.setFigure(message, ImageFigure.class, null);
-        animationController.getAnimationCanvas().removeFigure(figure);
+
 	}
 }

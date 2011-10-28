@@ -29,6 +29,7 @@ import org.omnetpp.common.simulation.GateModel;
 import org.omnetpp.common.simulation.MessageModel;
 import org.omnetpp.common.simulation.ModuleModel;
 import org.omnetpp.common.simulation.SimulationModel;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.eventlog.engine.BeginSendEntry;
 import org.omnetpp.eventlog.engine.BubbleEntry;
 import org.omnetpp.eventlog.engine.ConnectionCreatedEntry;
@@ -40,6 +41,7 @@ import org.omnetpp.eventlog.engine.EventNumberKind;
 import org.omnetpp.eventlog.engine.GateCreatedEntry;
 import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.eventlog.engine.KeyframeEntry;
 import org.omnetpp.eventlog.engine.MessageSendDependency;
 import org.omnetpp.eventlog.engine.ModuleCreatedEntry;
 import org.omnetpp.eventlog.engine.ModuleDisplayStringChangedEntry;
@@ -48,6 +50,21 @@ import org.omnetpp.eventlog.engine.SendDirectEntry;
 import org.omnetpp.eventlog.engine.SendHopEntry;
 import org.omnetpp.ned.model.DisplayString;
 
+/**
+ *
+ * <p>
+ * Animation primitives are loaded lazily based on the current animation
+ * position. At any given moment animation primitives are loaded for a
+ * continuous range of events plus the extra events marked in the corresponding
+ * eventlog keyframes.
+ * </p>
+ * <p>
+ * The animation primitive provider ensures that when the eventlog file is appended,
+ * the animation that is already done by the previous version of the file will not
+ * change. In other words it is not allowed to animate into the not completely known
+ * future.
+ * </p>
+ */
 public class EventLogAnimationPrimitiveProvider implements IAnimationPrimitiveProvider {
     private final static boolean debug = false;
 
@@ -66,9 +83,8 @@ public class EventLogAnimationPrimitiveProvider implements IAnimationPrimitivePr
      */
     private EventLogAnimationParameters eventLogAnimationParameters;
 
-    public EventLogAnimationPrimitiveProvider(EventLogInput eventLogInput, AnimationController animationController, EventLogAnimationParameters eventLogAnimationParameters) {
+    public EventLogAnimationPrimitiveProvider(EventLogInput eventLogInput, EventLogAnimationParameters eventLogAnimationParameters) {
         this.eventLogInput = eventLogInput;
-        this.animationController = animationController;
         this.eventLogAnimationParameters = eventLogAnimationParameters;
     }
 
@@ -79,6 +95,78 @@ public class EventLogAnimationPrimitiveProvider implements IAnimationPrimitivePr
     public EventLogAnimationParameters getAnimationParameters() {
         return eventLogAnimationParameters;
     }
+
+    /**
+     * Creates and stores all animation primitives for the given animation position.
+     *
+     * The first step is to generate the primitives and fill in the begin/end simulation times and simulation/animation
+     * time durations that are known just by looking at the eventlog.
+     *
+     * In the second step the begin/end animation times are calculated by doing a topological sort on all the animation
+     * positions of the collected animation primitives.
+     */
+     public ArrayList<IAnimationPrimitive> loadAnimationPrimitivesForAnimationPosition(AnimationPosition animationPosition) {
+         long begin = System.currentTimeMillis();
+         ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
+         IEventLog eventLog = eventLogInput.getEventLog();
+         if (eventLog != null && !eventLog.isEmpty()) {
+             Long eventNumber = animationPosition.getEventNumber();
+             if (eventNumber != null) {
+                 if (animationController.getFrameRelativeEndAnimationTimeForEventNumber(eventNumber) == null) {
+                     int keyframeBlockSize = eventLog.getKeyframeBlockSize();
+                     int keyframeBlockIndex = (int)(eventNumber / keyframeBlockSize);
+                     long firstEventNumber = keyframeBlockIndex * keyframeBlockSize;
+                     long lastEventNumber = firstEventNumber + keyframeBlockSize - 1;
+                     IEvent firstEvent = eventLog.getEventForEventNumber(firstEventNumber);
+                     IEvent lastEvent = eventLog.getEventForEventNumber(lastEventNumber);
+                     if (lastEvent == null)
+                         lastEvent = eventLog.getLastEvent();
+                     // TODO: KLUDGE: what about events that generate animation positions that fall into another event's animation frame???
+                     // TODO: KLUDGE: how can we be still lazy by knowing this??? is it enough that we load those events too? does the order matter?
+                     animationPrimitives.addAll(collectAnimationPrimitivesForKeyframeSimulationState(firstEvent));
+                     animationPrimitives.addAll(collectAnimationPrimitivesForEvents(firstEvent, lastEvent));
+                 }
+             }
+             else if (animationPosition.getOriginRelativeAnimationTime() != null) {
+                 double currentAnimationTime = animationController.getCurrentAnimationTime();
+                 double newAnimationTime = animationPosition.getOriginRelativeAnimationTime();
+                 boolean forward = currentAnimationTime < newAnimationTime;
+                 eventNumber = animationController.getCurrentEventNumber();
+                 long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                 while (eventNumber >= 0 && eventNumber <= lastEventNumber) {
+                     double eventAnimationTime = animationController.getAnimationCoordinateSystem().getAnimationTime(eventNumber);
+                     if (forward ? eventAnimationTime >= newAnimationTime : eventAnimationTime <= newAnimationTime)
+                         break;
+                     animationPrimitives.addAll(loadAnimationPrimitivesForAnimationPosition(new AnimationPosition(eventNumber, null, null, null)));
+                     eventNumber += forward ? 1 : -1;
+                 }
+             }
+         }
+         if (debug)
+             System.out.println("loadAnimationPrimitivesForAnimationPosition:" + (System.currentTimeMillis() - begin) + "ms");
+         return animationPrimitives;
+     }
+
+     private ArrayList<IAnimationPrimitive> collectAnimationPrimitivesForKeyframeSimulationState(IEvent keyframeEvent) {
+         KeyframeEntry keyframeEntry = null;
+         for (int i = 0; i < keyframeEvent.getNumEventLogEntries(); i++) {
+             EventLogEntry eventLogEntry = keyframeEvent.getEventLogEntry(i);
+             if (eventLogEntry instanceof KeyframeEntry)
+                 keyframeEntry = (KeyframeEntry)eventLogEntry;
+         }
+         String[] simulationStateEntries = keyframeEntry.getSimulationStateEntries().split(",");
+         ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
+         for (String simulationStateEntry : simulationStateEntries) {
+             if (!StringUtils.isEmpty(simulationStateEntry)) {
+                 long eventNumber = Long.parseLong(simulationStateEntry.split(":")[0]);
+                 if (eventNumber != -1) {
+                     IEvent event = keyframeEvent.getEventLog().getEventForEventNumber(eventNumber);
+                     animationPrimitives.addAll(collectAnimationPrimitivesForEvents(event, event));
+                 }
+             }
+         }
+         return animationPrimitives;
+     }
 
     /**
      * Collects animation primitives for all events between the two specified events.

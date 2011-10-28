@@ -38,9 +38,12 @@ import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.figures.misc.ISelectableFigure;
 
-public class AnimationCanvas
-    extends EditableFigureCanvas
-    implements ISelectionProvider, IEventLogChangeListener, IEventLogProvider, IAnimationListener
+/**
+ * Animation widget.
+ *
+ * @author levy
+ */
+public class AnimationCanvas extends EditableFigureCanvas implements ISelectionProvider, IEventLogChangeListener, IEventLogProvider, IAnimationListener
 {
     private IEventLog eventLog; // the C++ wrapper for the data to be displayed
 

@@ -1,11 +1,11 @@
-package org.omnetpp.animation.providers;
+package org.omnetpp.samples.queuenet.animation.providers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.primitives.IAnimationPrimitive;
-import org.omnetpp.eventlog.engine.IEvent;
+import org.omnetpp.animation.providers.IAnimationPrimitiveProvider;
 
 public class TerminalAnimationPrimitiveProvider implements IAnimationPrimitiveProvider {
     private AnimationController animationController;
@@ -18,7 +18,7 @@ public class TerminalAnimationPrimitiveProvider implements IAnimationPrimitivePr
     }
 
     @Override
-    public List<IAnimationPrimitive> collectAnimationPrimitivesForEvents(IEvent beginEvent, IEvent endEvent) {
+    public ArrayList<IAnimationPrimitive> loadAnimationPrimitivesForAnimationPosition(AnimationPosition animationPosition) {
         ArrayList<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
         // TODO:
         return animationPrimitives;

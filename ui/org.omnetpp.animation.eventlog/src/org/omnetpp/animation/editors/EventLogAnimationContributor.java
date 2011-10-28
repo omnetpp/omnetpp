@@ -12,16 +12,34 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.omnetpp.animation.controller.AnimationController;
 import org.omnetpp.animation.providers.EventLogAnimationPrimitiveProvider;
 import org.omnetpp.animation.widgets.EventLogAnimationConfigurationDialog;
+import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.eventlog.IEventLogChangeListener;
 
-public class EventLogAnimationContributor extends AnimationContributor {
+public class EventLogAnimationContributor extends AnimationContributor implements IEventLogChangeListener {
     protected AnimationAction configureAction;
 
 	public EventLogAnimationContributor() {
         this.configureAction = createConfigureAction();
 	}
+
+    @Override
+    public void setActiveEditor(IEditorPart targetEditor) {
+        if (targetEditor instanceof AnimationEditor && animationCanvas != null) {
+            EventLogInput eventLogInput = animationCanvas.getInput();
+            if (eventLogInput != null)
+                eventLogInput.removeEventLogChangedListener(this);
+        }
+        super.setActiveEditor(targetEditor);
+        if (targetEditor instanceof AnimationEditor && animationCanvas != null) {
+            EventLogInput eventLogInput = animationCanvas.getInput();
+            if (eventLogInput != null)
+                eventLogInput.addEventLogChangedListener(this);
+        }
+    }
 
 	@Override
     public void menuAboutToShow(IMenuManager menuManager) {
@@ -50,5 +68,37 @@ public class EventLogAnimationContributor extends AnimationContributor {
                 }
             }
         };
+    }
+
+    /*************************************************************************************
+     * NOTIFICATIONS
+     */
+
+    public void eventLogAppended() {
+        // void
+    }
+
+    public void eventLogOverwritten() {
+        // void
+    }
+
+    public void eventLogFilterRemoved() {
+        update();
+    }
+
+    public void eventLogFiltered() {
+        update();
+    }
+
+    public void eventLogLongOperationEnded() {
+        update();
+    }
+
+    public void eventLogLongOperationStarted() {
+        update();
+    }
+
+    public void eventLogProgress() {
+        // void
     }
 }

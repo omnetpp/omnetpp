@@ -28,6 +28,6 @@ public class SetQueueCountAnimation extends AbstractAnimationPrimitive {
     public void refreshAnimation(AnimationPosition animationPosition) {
         queue.setCount(count);
         QueueFigure figure = (QueueFigure)animationController.getFigure(queue, QueueFigure.class);
-        figure.refesh();
+        figure.refeshAppearance();
     }
 }

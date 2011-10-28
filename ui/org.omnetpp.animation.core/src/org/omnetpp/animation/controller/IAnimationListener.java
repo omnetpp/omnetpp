@@ -14,17 +14,17 @@ package org.omnetpp.animation.controller;
  */
 public interface IAnimationListener {
     /**
-     * Notifies the listener when the animation has been started.
+     * Notification sent to the listener when the animation has been started.
      */
     public void animationStarted();
 
     /**
-     * Notifies the listener when the animation has been stopped.
+     * Notification sent to the listener when the animation has been stopped.
      */
     public void animationStopped();
 
 	/**
-	 * Notifies the listener about a new animation position when the animation is running.
+	 * Notification sent to the listener about a new animation position when the animation is running.
 	 */
 	public void animationPositionChanged(AnimationPosition animationPosition);
 }

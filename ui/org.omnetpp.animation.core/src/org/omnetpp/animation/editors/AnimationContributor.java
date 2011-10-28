@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.window.Window;
 import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
@@ -55,16 +54,18 @@ import org.omnetpp.animation.controller.AnimationController;
 import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.controller.IAnimationListener;
 import org.omnetpp.animation.widgets.AnimationCanvas;
-import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.eventlog.GotoEventDialog;
 import org.omnetpp.common.eventlog.GotoSimulationTimeDialog;
-import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IFollowSelectionSupport;
 import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
 
-public class AnimationContributor extends EditorActionBarContributor implements IPartListener, ISelectionChangedListener, IEventLogChangeListener, IAnimationListener, IMenuListener {
+/**
+ * Contributes context menu and toolbar items to the platform.
+ *
+ * @author levy
+ */
+public class AnimationContributor extends EditorActionBarContributor implements IPartListener, ISelectionChangedListener, IAnimationListener, IMenuListener {
     public final static String TOOL_IMAGE_DIR = "icons/full/etool16/";
     public final static String IMAGE_ANIMATION_MODE = TOOL_IMAGE_DIR + "animationmode.png";
     public final static String IMAGE_INCREASE_ANIMATION_SPEED = TOOL_IMAGE_DIR + "increaseanimationspeed.gif";
@@ -88,7 +89,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     protected AnimationCanvas animationCanvas;
 
     protected Separator separatorAction;
-    protected AnimationAction animationModeAction;
     protected AnimationAction increaseAnimationSpeedAction;
     protected AnimationAction decreaseAnimationSpeedAction;
     protected AnimationAction gotoBeginAction;
@@ -110,7 +110,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 
 	public AnimationContributor() {
 		this.separatorAction = new Separator();
-		this.animationModeAction = createAnimationModeAction();
 		this.increaseAnimationSpeedAction = createIncreaseAnimationSpeedActionAction();
         this.decreaseAnimationSpeedAction = createDecreaseAnimationSpeedActionAction();
 		this.gotoBeginAction = createGotoBeginAction();
@@ -169,8 +168,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
 
-        // context menu static part
-        // TODO: menuManager.add(animationModeAction);
         menuManager.add(separatorAction);
 
         IMenuManager subMenuManager = new MenuManager("Speed");
@@ -211,8 +208,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	}
 
 	public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
-        // TODO: doesn't work at the moment
-	    // toolBarManager.add(animationModeAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(increaseAnimationSpeedAction);
         toolBarManager.add(decreaseAnimationSpeedAction);
@@ -235,19 +230,12 @@ public class AnimationContributor extends EditorActionBarContributor implements 
 	@Override
 	public void setActiveEditor(IEditorPart targetEditor) {
 		if (targetEditor instanceof AnimationEditor) {
-			EventLogInput eventLogInput;
 			if (animationCanvas != null) {
-				eventLogInput = animationCanvas.getInput();
-				if (eventLogInput != null)
-					eventLogInput.removeEventLogChangedListener(this);
 				getPage().removePartListener(this);
 				animationCanvas.removeSelectionChangedListener(this);
 				animationCanvas.getAnimationController().removeAnimationListener(this);
 			}
 			animationCanvas = ((AnimationEditor)targetEditor).getAnimationCanvas();
-			eventLogInput = animationCanvas.getInput();
-			if (eventLogInput != null)
-				eventLogInput.addEventLogChangedListener(this);
 			getPage().addPartListener(this);
 			animationCanvas.addSelectionChangedListener(this);
 			animationCanvas.getAnimationController().addAnimationListener(this);
@@ -308,34 +296,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
     public void selectionChanged(SelectionChangedEvent event) {
         update();
     }
-
-    public void eventLogAppended() {
-		// void
-	}
-
-    public void eventLogOverwritten() {
-        // void
-    }
-
-    public void eventLogFilterRemoved() {
-		update();
-	}
-
-	public void eventLogFiltered() {
-		update();
-	}
-
-	public void eventLogLongOperationEnded() {
-		update();
-	}
-
-	public void eventLogLongOperationStarted() {
-		update();
-	}
-
-	public void eventLogProgress() {
-		// void
-	}
 
     public void partActivated(IWorkbenchPart part) {
         update();
@@ -501,50 +461,6 @@ public class AnimationContributor extends EditorActionBarContributor implements 
         };
     }
 
-    protected AnimationMenuAction createAnimationModeAction() {
-        return new AnimationMenuAction("Animation Mode", Action.AS_DROP_DOWN_MENU, AnimationCorePlugin.getImageDescriptor(IMAGE_ANIMATION_MODE)) {
-            @Override
-            protected void doRun() {
-                animationCanvas.getAnimationController().setAnimationMode(EventLogInput.TimelineMode.values()[(animationCanvas.getAnimationController().getAnimationMode().ordinal() + 1) % EventLogInput.TimelineMode.values().length]);
-                update();
-            }
-
-            @Override
-            protected int getMenuIndex() {
-                return animationCanvas.getAnimationController().getAnimationMode().ordinal();
-            }
-
-            @Override
-            public IMenuCreator getMenuCreator() {
-                return new AbstractMenuCreator() {
-                    @Override
-                    protected void createMenu(Menu menu) {
-                        addSubMenuItem(menu, "Linear", EventLogInput.TimelineMode.SIMULATION_TIME);
-                        addSubMenuItem(menu, "Event number", EventLogInput.TimelineMode.EVENT_NUMBER);
-                        addSubMenuItem(menu, "Step", EventLogInput.TimelineMode.STEP);
-                        addSubMenuItem(menu, "Nonlinear", EventLogInput.TimelineMode.NONLINEAR);
-                    }
-
-                    protected void addSubMenuItem(Menu menu, String text, final EventLogInput.TimelineMode timelineMode) {
-                        MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-                        subMenuItem.setText(text);
-                        subMenuItem.addSelectionListener( new SelectionAdapter() {
-                            @Override
-                            public void widgetSelected(SelectionEvent e) {
-                                MenuItem menuItem = (MenuItem)e.widget;
-
-                                if (menuItem.getSelection()) {
-                                    animationCanvas.getAnimationController().setAnimationMode(timelineMode);
-                                    update();
-                                }
-                            }
-                        });
-                    }
-                };
-            }
-        };
-    }
-
     protected CommandContributionItem createGotoEventCommandContributionItem() {
         return new CommandContributionItem(new CommandContributionItemParameter(PlatformUI.getWorkbench(), null, "org.omnetpp.animation.gotoEvent", SWT.PUSH));
     }
@@ -639,9 +555,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
                     int selection = slider.getSelection();
                     AnimationController animationController = animationCanvas.getAnimationController();
                     animationController.stopAnimation();
-                    IEventLog eventLog = animationController.getEventLogInput().getEventLog();
-                    long firstEventNumber = eventLog.getFirstEvent().getEventNumber();
-                    long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                    long firstEventNumber = animationController.getAnimationCoordinateSystem().getFirstEventNumber();
+                    long lastEventNumber = animationController.getAnimationCoordinateSystem().getLastEventNumber();
                     if (selection == firstEventNumber)
                         animationController.gotoBeginAnimationPosition();
                     else if (selection == lastEventNumber)
@@ -670,9 +585,8 @@ public class AnimationContributor extends EditorActionBarContributor implements 
             if (slider != null && animationCanvas != null) {
                 AnimationController animationController = animationCanvas.getAnimationController();
                 if (animationController != null && animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
-                    IEventLog eventLog = animationController.getEventLogInput().getEventLog();
-                    long firstEventNumber = eventLog.getFirstEvent().getEventNumber();
-                    long lastEventNumber = eventLog.getLastEvent().getEventNumber();
+                    long firstEventNumber = animationController.getAnimationCoordinateSystem().getFirstEventNumber();
+                    long lastEventNumber = animationController.getAnimationCoordinateSystem().getLastEventNumber();
                     // TODO: handle overflow
                     slider.setValues((int)animationController.getCurrentEventNumber(), (int)firstEventNumber, (int)(lastEventNumber - firstEventNumber + 1), 1, 1, 10);
                 }

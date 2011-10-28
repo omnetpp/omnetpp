@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.animation.figures;
 
 import org.eclipse.draw2d.Figure;
@@ -14,7 +21,11 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.animation.controller.AnimationController;
 import org.omnetpp.common.image.ImageFactory;
 
-// TODO: subclass from WindowFigure
+/**
+ * TODO: subclass from WindowFigure
+ *
+ * @author levy
+ */
 public class AnimationCompoundModuleFigure extends Figure {
     protected static final int TITLE_HEIGHT = 20;
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.primitives.AbstractAnimationPrimitive;
 import org.omnetpp.animation.primitives.CreateQueueAnimation;
 import org.omnetpp.animation.primitives.CreateVectorAnimation;
@@ -15,7 +16,6 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.simulation.QueueModel;
 import org.omnetpp.common.util.VectorFileUtil;
-import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFile;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -36,9 +36,9 @@ public class VectorFileAnimationPrimitiveProvider implements IAnimationPrimitive
         this.animationController = animationController;
     }
 
-    public ArrayList<IAnimationPrimitive> collectAnimationPrimitivesForEvents(IEvent beginEvent, IEvent endEvent) {
+    public ArrayList<IAnimationPrimitive> loadAnimationPrimitivesForAnimationPosition(AnimationPosition animationPosition) {
         // TODO: KLUDGE: this provider is not lazy
-        if (animationController.getAnimationCoordinateSystem().getSize() != 0)
+        if (animationController.getAnimationCoordinateSystem().getFirstEventNumber() != -1)
             return new ArrayList<IAnimationPrimitive>();
         else {
             try {

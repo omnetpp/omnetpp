@@ -24,6 +24,11 @@ import org.omnetpp.common.eventlog.EventLogView;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.eventlog.engine.IEventLog;
 
+/**
+ * View for animation files.
+ *
+ * @author levy
+ */
 public abstract class AnimationView extends EventLogView implements IAnimationCanvasProvider {
     private AnimationCanvas animationCanvas;
     private AnimationContributor animationContributor;
@@ -97,13 +102,11 @@ public abstract class AnimationView extends EventLogView implements IAnimationCa
 	@Override
 	public void dispose() {
 		IViewSite viewSite = (IViewSite)getSite();
-
 		if (selectionListener != null)
 			viewSite.getPage().removeSelectionListener(selectionListener);
-
 		if (partListener != null)
 			viewSite.getPage().removePartListener(partListener);
-
+        animationController.stopAnimation();
 		super.dispose();
 	}
 
@@ -118,16 +121,15 @@ public abstract class AnimationView extends EventLogView implements IAnimationCa
         animationPrimitiveProvider = createAnimationPrimitiveProvider();
         animationController = createAnimationController();
         animationCanvas.setAnimationController(animationController);
+        animationCanvas.setWorkbenchPart(this);
         animationPrimitiveProvider.setAnimationController(animationController);
         animationController.clearInternalState();
         animationController.gotoInitialAnimationPosition();
 	    return animationCanvas;
 	}
 
-    private AnimationCanvas createAnimationCanvas(Composite parent) {
-        AnimationCanvas animationCanvas = new AnimationCanvas(parent, SWT.NONE);
-	    animationCanvas.setWorkbenchPart(this);
-		return animationCanvas;
+    protected AnimationCanvas createAnimationCanvas(Composite parent) {
+        return new AnimationCanvas(parent, SWT.NONE);
     }
 
     protected AnimationController createAnimationController() {

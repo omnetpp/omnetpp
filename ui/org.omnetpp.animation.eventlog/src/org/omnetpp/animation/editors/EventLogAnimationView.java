@@ -14,6 +14,7 @@ import org.omnetpp.animation.widgets.EventLogAnimationParameters;
 public class EventLogAnimationView extends AnimationView {
     @Override
     protected IAnimationPrimitiveProvider createAnimationPrimitiveProvider() {
-        return new EventLogAnimationPrimitiveProvider(null, getAnimationController(), new EventLogAnimationParameters());
+        // TODO: pass eventLogInput
+        return new EventLogAnimationPrimitiveProvider(null, new EventLogAnimationParameters());
     }
 }

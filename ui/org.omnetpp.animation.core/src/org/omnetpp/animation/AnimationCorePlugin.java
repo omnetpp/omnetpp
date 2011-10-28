@@ -1,4 +1,5 @@
 /*--------------------------------------------------------------*
+
   Copyright (C) 2006-2008 OpenSim Ltd.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
@@ -14,7 +15,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * The activator class controls the plug-in life cycle
+ * The activator class controls the plug-in life cycle.
+ *
+ * @author levy
  */
 public class AnimationCorePlugin extends AbstractUIPlugin {
 	// The plug-in ID

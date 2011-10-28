@@ -1,16 +1,25 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.animation.figures;
 
 /**
  * Interface for animation figures displayed by the animation canvas.
+ *
+ * @author levy
  */
 public interface IAnimationFigure {
     /**
-     * Returns the model object that this figure represents.
+     * Returns the model that this figure represents.
      */
     public Object getModel();
 
     /**
-     * Refreshes the visual representation of the model according to the current state of the model object.
+     * Refreshes the visual appearance according to the current model.
      */
-    public void refesh();
+    public void refeshAppearance();
 }

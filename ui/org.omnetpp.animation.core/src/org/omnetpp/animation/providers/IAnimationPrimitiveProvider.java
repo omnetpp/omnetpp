@@ -1,24 +1,34 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+ *--------------------------------------------------------------*/
+
 package org.omnetpp.animation.providers;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.primitives.IAnimationPrimitive;
-import org.omnetpp.eventlog.engine.IEvent;
 
 /**
- * Interface that provides animation primitives for the animation controller for a given animation position.
+ * Interface that provides active animation primitives for the animation
+ * controller at the given animation position.
+ *
+ * @author levy
  */
 public interface IAnimationPrimitiveProvider {
     /**
-     * Sets the corresponding animation controller that will ask for animation primitives from this provider.
+     * Sets the corresponding animation controller that will ask for animation
+     * primitives from this provider.
      */
     public void setAnimationController(AnimationController animationController);
 
     /**
-     * Returns a list of animation primitives that are active at the given animation position.
+     * Returns the list of animation primitives that are active at the given
+     * animation position.
      */
-    // TODO: this should rather be something like
-    // public List<IAnimationPrimitive> collectAnimationPrimitives(AnimationPosition animationPosition);
-    public List<IAnimationPrimitive> collectAnimationPrimitivesForEvents(IEvent beginEvent, IEvent endEvent);
+    public ArrayList<IAnimationPrimitive> loadAnimationPrimitivesForAnimationPosition(AnimationPosition animationPosition);
 }

@@ -39,6 +39,7 @@ import org.eclipse.ui.part.ShowInContext;
 import org.omnetpp.animation.AnimationCorePlugin;
 import org.omnetpp.animation.controller.AnimationController;
 import org.omnetpp.animation.controller.AnimationPosition;
+import org.omnetpp.animation.controller.IAnimationCoordinateSystem;
 import org.omnetpp.animation.providers.IAnimationPrimitiveProvider;
 import org.omnetpp.animation.widgets.AnimationCanvas;
 import org.omnetpp.animation.widgets.AnimationTimeline;
@@ -46,6 +47,11 @@ import org.omnetpp.common.IConstants;
 import org.omnetpp.common.eventlog.EventLogEditor;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 
+/**
+ * Editor for animation files.
+ *
+ * @author levy
+ */
 public abstract class AnimationEditor extends EventLogEditor implements IAnimationCanvasProvider, INavigationLocationProvider, IShowInSource, IShowInTargetList
 {
     private AnimationCanvas animationCanvas;
@@ -96,6 +102,7 @@ public abstract class AnimationEditor extends EventLogEditor implements IAnimati
             ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
         if (selectionListener != null)
             getSite().getPage().removeSelectionListener(selectionListener);
+        animationController.stopAnimation();
         super.dispose();
     }
 
@@ -109,9 +116,15 @@ public abstract class AnimationEditor extends EventLogEditor implements IAnimati
         animationPrimitiveProvider = createAnimationPrimitiveProvider();
 	    animationController = createAnimationController();
         animationTimeline = createAnimationTimeline(parent);
+        animationTimeline.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        animationTimeline.setAnimationController(animationController);
         animationCanvas = createAnimationCanvas(parent);
-        animationController.setAnimationCanvas(animationCanvas);
+        animationCanvas.setInput(eventLogInput);
+        animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        animationCanvas.setAnimationContributor(AnimationContributor.getDefault());
+        animationCanvas.setWorkbenchPart(this);
         animationCanvas.setAnimationController(animationController);
+        animationController.setAnimationCanvas(animationCanvas);
         animationPrimitiveProvider.setAnimationController(animationController);
 
         animationController.clearInternalState();
@@ -136,25 +149,19 @@ public abstract class AnimationEditor extends EventLogEditor implements IAnimati
         getSite().getPage().addSelectionListener(selectionListener);
 	}
 
-    private AnimationCanvas createAnimationCanvas(Composite parent) {
-        AnimationCanvas animationCanvas = new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
-        animationCanvas.setInput(eventLogInput);
-        animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		animationCanvas.setAnimationContributor(AnimationContributor.getDefault());
-		animationCanvas.setWorkbenchPart(this);
-		return animationCanvas;
+    protected AnimationCanvas createAnimationCanvas(Composite parent) {
+        return new AnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
     }
 
     protected AnimationTimeline createAnimationTimeline(Composite parent) {
-        AnimationTimeline animationTimeline = new AnimationTimeline(parent, SWT.NONE);
-	    animationTimeline.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-        animationTimeline.setAnimationController(animationController);
-	    return animationTimeline;
+        return new AnimationTimeline(parent, SWT.NONE);
     }
 
     protected AnimationController createAnimationController() {
-        return new AnimationController(eventLogInput, animationPrimitiveProvider);
+        return new AnimationController(createAnimationCoordinateSystem(), animationPrimitiveProvider);
     }
+
+    protected abstract IAnimationCoordinateSystem createAnimationCoordinateSystem();
 
     protected abstract IAnimationPrimitiveProvider createAnimationPrimitiveProvider();
 

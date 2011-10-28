@@ -120,8 +120,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 	}
 
     @Override
-    @SuppressWarnings("unchecked")
-	public Object getAdapter(Class key) {
+	public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
         if (key.equals(IPropertySheetPage.class)) {
             if (propertySheetPage == null) {
                 propertySheetPage = new PropertySheetPage();

@@ -1,3 +1,10 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.animation.widgets;
 
 import org.eclipse.draw2d.Graphics;
@@ -14,12 +21,13 @@ import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.controller.IAnimationListener;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.util.GraphicsUtils;
-import org.omnetpp.eventlog.engine.IEvent;
-import org.omnetpp.eventlog.engine.IEventLog;
 
-public class AnimationTimeline
-    extends Canvas
-    implements IAnimationListener
+/**
+ * Widget that shows the current animation position along with the future events.
+ *
+ * @author levy
+ */
+public class AnimationTimeline extends Canvas implements IAnimationListener
 {
     public static int HEIGHT = 32;
 
@@ -107,17 +115,6 @@ public class AnimationTimeline
         Rectangle clientArea = getClientArea();
         int y = clientArea.y + clientArea.height / 2;
         graphics.drawLine(clientArea.x, y, clientArea.x + clientArea.width, y);
-        if (animationController.getCurrentAnimationPosition().isCompletelySpecified()) {
-            IEventLog eventLog = animationController.getEventLogInput().getEventLog();
-            IEvent event = eventLog.getEventForEventNumber(animationController.getCurrentEventNumber());
-            IEvent firstEvent = event;
-            IEvent lastEvent = event;
-            for (int i = 0; i < 10; i++) {
-                if (firstEvent.getPreviousEvent() != null)
-                    firstEvent = firstEvent.getPreviousEvent();
-                if (lastEvent.getNextEvent() != null)
-                    lastEvent = lastEvent.getNextEvent();
-            }
-        }
+        // TODO: draw event ellipses
     }
 }

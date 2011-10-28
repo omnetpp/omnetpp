@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.editors;bundle-version="3.7.0",
  org.eclipse.ui.ide,
  org.eclipse.draw2d,
- org.omnetpp.common,
+ org.omnetpp.common;bundle-version="4.2.0",
  org.omnetpp.figures;bundle-version="4.2.0"
 Eclipse-LazyStart: true
 Bundle-Vendor: OpenSim Ltd.

@@ -15,7 +15,7 @@ public class QueueFigure extends AbstractAnimationFigure {
         return (QueueModel)model;
     }
 
-    public void refesh() {
+    public void refeshAppearance() {
         repaint();
     }
 

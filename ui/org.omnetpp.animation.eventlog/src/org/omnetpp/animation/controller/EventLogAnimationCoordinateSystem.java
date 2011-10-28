@@ -20,7 +20,7 @@ import org.omnetpp.eventlog.engine.IEventLog;
  *
  * @author levy
  */
-public class AnimationCoordinateSystem {
+public class EventLogAnimationCoordinateSystem implements IAnimationCoordinateSystem {
     private EventLogInput eventLogInput;
 
     private double nonLinearFocus;
@@ -31,22 +31,46 @@ public class AnimationCoordinateSystem {
 
     private Map<Long, Double> eventNumberToAnimationTime = new HashMap<Long, Double>();
 
-    public AnimationCoordinateSystem(EventLogInput eventLogInput, ArrayList<AnimationPosition> animationPositions) {
+    public EventLogAnimationCoordinateSystem(EventLogInput eventLogInput) {
         this.eventLogInput = eventLogInput;
         this.animationPositions = animationPositions;
         this.nonLinearFocus = calculateNonLinearFocus();
         this.nonLinearMinimumAnimationTimeDelta = 0.1;
     }
 
-    public int getSize() {
-        return animationPositions.size();
+    public void setAnimationPositions(ArrayList<AnimationPosition> animationPositions) {
+        this.animationPositions = animationPositions;
     }
 
-    public double getAnimationTime(IEvent event) {
-        long eventNumber = event.getEventNumber();
+    public long getFirstEventNumber() {
+        IEvent event = eventLogInput.getEventLog().getFirstEvent();
+        return event != null ? event.getEventNumber() : -1;
+    }
+
+    public long getLastEventNumber() {
+        IEvent event = eventLogInput.getEventLog().getLastEvent();
+        return event != null ? event.getEventNumber() : -1;
+    }
+
+    public BigDecimal getFirstSimulationTime() {
+        IEvent event = eventLogInput.getEventLog().getFirstEvent();
+        return event != null ? event.getSimulationTime() : null;
+    }
+
+    public BigDecimal getLastSimulationTime() {
+        IEvent event = eventLogInput.getEventLog().getLastEvent();
+        return event != null ? event.getSimulationTime() : null;
+    }
+
+    public BigDecimal getSimulationTime(long eventNumber) {
+        IEvent event = eventLogInput.getEventLog().getEventForEventNumber(eventNumber);
+        return event != null ? event.getSimulationTime() : null;
+    }
+
+    public double getAnimationTime(long eventNumber) {
         Double animationTime = eventNumberToAnimationTime.get(eventNumber);
         if (animationTime == null) {
-            AnimationPosition eventAnimationPosition = new AnimationPosition(eventNumber, event.getSimulationTime(), 0.0, null);
+            AnimationPosition eventAnimationPosition = new AnimationPosition(eventNumber, getSimulationTime(eventNumber), 0.0, null);
             int index = (int)BinarySearchUtils.binarySearch(animationPositions, eventAnimationPosition, BinarySearchUtils.BoundKind.LOWER_BOUND);
             if (index < 0 || animationPositions.size() <= index)
                 animationTime = 0.0;
@@ -97,10 +121,6 @@ public class AnimationCoordinateSystem {
         }
     }
 
-    public IEvent getLastEventNotAfterSimulationTime(BigDecimal simulationTime) {
-        return eventLogInput.getEventLog().getLastEventNotAfterSimulationTime(simulationTime);
-    }
-
     public BigDecimal getSimulationTimeForAnimationTime(double animationTime) {
         AnimationPosition simulationTimeAnimationPosition = new AnimationPosition(null, null, null, animationTime);
         int index = (int)BinarySearchUtils.binarySearch(animationPositions, simulationTimeAnimationPosition, BinarySearchUtils.BoundKind.LOWER_BOUND);
@@ -132,19 +152,23 @@ public class AnimationCoordinateSystem {
         }
     }
 
-    public IEvent getLastEventNotAfterAnimationTime(final double animationTime) {
+    public long getLastEventNumberNotAfterAnimationTime(final double animationTime) {
         final IEventLog eventLog = eventLogInput.getEventLog();
         long eventLogSize = eventLog.getLastEvent().getEventNumber() + 1;
         BinarySearchUtils.KeyComparator keyComparator = new BinarySearchUtils.KeyComparator() {
             public int compareTo(long eventNumber) {
-                return (int)Math.signum(animationTime - getAnimationTime(eventLog.getEventForEventNumber(eventNumber)));
+                return (int)Math.signum(animationTime - getAnimationTime(eventNumber));
             }
         };
         long eventNumber = BinarySearchUtils.binarySearch(keyComparator, eventLogSize, BoundKind.UPPER_BOUND);
         if (eventNumber > eventLog.getLastEvent().getEventNumber())
-            return eventLog.getLastEvent();
+            return eventLog.getLastEvent().getEventNumber();
         else
-            return eventLog.getEventForEventNumber(eventNumber - 1);
+            return eventLog.getEventForEventNumber(eventNumber - 1).getEventNumber();
+    }
+
+    public long getLastEventNumberNotAfterSimulationTime(BigDecimal simulationTime) {
+        return eventLogInput.getEventLog().getLastEventNotAfterSimulationTime(simulationTime).getEventNumber();
     }
 
     public double getAnimationTimeDelta(double simulationTimeDelta) {

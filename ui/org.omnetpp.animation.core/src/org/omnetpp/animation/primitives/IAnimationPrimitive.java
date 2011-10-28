@@ -14,9 +14,9 @@ import org.omnetpp.common.engine.BigDecimal;
  * <p>
  * IAnimationPrimitive is an atomic animation element managed by its exclusive
  * AnimationController owner. An animation primitive may or may not be active
- * depending on the current animation position provided by the controller. Being
- * active means having effect on the simulation model state and/or the animation
- * graphics state.
+ * depending on the current animation position provided by its controller. Being
+ * active means having effect on the simulation model and/or the animation
+ * graphics.
  * </p>
  * <p>
  * The controller is responsible for notifying the animation primitive when it
@@ -26,7 +26,7 @@ import org.omnetpp.common.engine.BigDecimal;
  * </p>
  * <p>
  * The animation primitive life cycle is the following: <code>
- * constructor (activate refreshAnimation* deactivate)* finalize
+ * construct (activate refreshAnimation* deactivate)* finalize
  * </code>
  * </p>
  *
@@ -51,7 +51,7 @@ public interface IAnimationPrimitive {
 
     /**
      * Returns the total duration of this animation primitive in terms of
-     * simulation time. This function must return zero or a positive value.
+     * simulation time. This function must return non-negative value.
      */
     public BigDecimal getSimulationTimeDuration();
 
@@ -64,27 +64,27 @@ public interface IAnimationPrimitive {
     public Double getAnimationTimeDuration();
 
     /**
-     * Applies the changes to the model. This method is called by the controller
-     * when the model needs to be updated to a new animation position where this
-     * animation primitive is active while it was not active at the old
-     * animation position.
+     * Applies the changes to the model and the graphics. This method is called
+     * by the controller when the model needs to be updated to a new animation
+     * position where this animation primitive is active while it was not active
+     * at the old animation position.
      */
     public void activate();
 
     /**
-     * Reverses the changes to the model. This method is called by the
-     * controller when the model needs to be updated to a new animation position
-     * where this animation primitive is not active while it was active at the
-     * old animation position.
+     * Reverses the changes to the model and the graphics. This method is called
+     * by the controller when the model needs to be updated to a new animation
+     * position where this animation primitive is not active while it was active
+     * at the old animation position.
      */
     public void deactivate();
 
     /**
      * Updates graphics and figures according to the given animation position.
      * This method will be called only when the animation primitive is active.
-     * The method might be called several times as the animation progresses
-     * (forward or backward) between the begin and end animation positions of
-     * the animation primitive.
+     * even if the animation is currently not running. The method might be
+     * called several times as the animation progresses (forward or backward)
+     * between the begin and end animation positions of the animation primitive.
      */
     public void refreshAnimation(AnimationPosition animationPosition);
 }
