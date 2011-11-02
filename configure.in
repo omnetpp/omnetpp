@@ -195,7 +195,7 @@ if test "$TOOLCHAIN" = "mingw"; then
     PLATFORM=win32.x86
     EXE_SUFFIX=".exe"
     SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
-    LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc"
+    LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc"
 else
     jni_platform=$host_os
     case $host in
@@ -216,9 +216,9 @@ else
         SHARED_LIB_SUFFIX='$(DLL_LIB_SUFFIX)'
         # add default include and lib paths to make it similar to gcc on Linux
         CFLAGS_ARCH="$CFLAGS_ARCH -I/usr/include"
-        # on MinGW dll auto importing is used and must be linked with shared gcc and stdc++
-        # otherwise exceptions cant be thrown across dll boundaries
-        LDFLAGS_ARCH="$LDFLAGS_ARCH -enable-auto-import -shared-libgcc -L/usr/bin -L/usr/lib"
+        # on MinGW dll auto importing MUST be used with shared gcc and stdc++
+        # otherwise exceptions can't be thrown across dll boundaries
+        LDFLAGS_ARCH="$LDFLAGS_ARCH -Wl,--enable-auto-import -shared-libgcc -L/usr/bin -L/usr/lib"
         ;;
     x86_64-*-linux*)
         jni_platform=linux
