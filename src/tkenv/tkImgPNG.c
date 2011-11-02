@@ -331,8 +331,10 @@ PNGCleanup(PNGImage* pPNG)
 	/* Don't need the object containing the -data .. data anymore. */
 
 	if (pPNG -> mpObjData)
+	{
 		Tcl_DecrRefCount(pPNG -> mpObjData);
-
+	}
+	
 	/* Discard pixel buffer */
 
 	if (pPNG -> mZStreamInit)

@@ -752,7 +752,7 @@ void EventlogFileManager::addPreviousEventNumber(eventnumber_t previousEventNumb
 {
     if (previousEventNumber != -1) {
         eventnumber_t blockIndex = previousEventNumber / keyframeBlockSize;
-        if (blockIndex + 1 > consequenceLookaheadLimits.size())
+        if (blockIndex + 1 > (eventnumber_t)consequenceLookaheadLimits.size())
             consequenceLookaheadLimits.resize(blockIndex + 1);
         consequenceLookaheadLimits[blockIndex] = std::max(consequenceLookaheadLimits[blockIndex], eventNumber - previousEventNumber);
     }

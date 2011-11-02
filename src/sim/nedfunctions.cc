@@ -260,7 +260,7 @@ DEF(nedf_replace,
 
     size_t searchSize = search.size();
     size_t replacementSize = replacement.size();
-    while ((index = str.find(search, index)) != std::string::npos) {
+    while ((size_t)(index = str.find(search, index)) != std::string::npos) {
         str.replace(index, searchSize, replacement);
         index += replacementSize - searchSize + 1;
     }
@@ -285,7 +285,7 @@ DEF(nedf_replaceFirst,
     }
 
     size_t searchSize = search.size();
-    if ((index = str.find(search, index)) != std::string::npos)
+    if ((size_t)(index = str.find(search, index)) != std::string::npos)
         str.replace(index, searchSize, replacement);
     return str;
 })
