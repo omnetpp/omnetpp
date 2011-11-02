@@ -504,9 +504,8 @@ other packets as well.
 The \cclass{cPacket} class does not directly support encapsulating more
 than one packet, but you can subclass \cclass{cPacket} or \cclass{cMessage}
 to add the necessary functionality. (It is recommended that you
-use the message definition syntax \ref{cha:message-definitions}
-and customized messages \ref{sec:ch-messages:customizing-generated-class}
-to be described later on in this chapter -- it can spare you some work.)
+use the message definition syntax that will be described in chapter
+\ref{cha:message-definitions} -- it can spare you some work.)
 
 You can store the messages in a fixed-size or a dynamically allocated
 array, or you can use STL classes like \ttt{std::vector} or \ttt{std::list}.
@@ -591,7 +590,7 @@ msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
 \subsection{Attaching Parameters}
 
 The preferred way of extending messages with new data fields is to use
-message definitions (see section \ref{ch:messages:message-definitions}).
+message definitions (see chapter \ref{cha:message-definitions}).
 
 The old, deprecated way of adding new fields to messages is via
 attaching \cclass{cMsgPar} objects.
