@@ -254,7 +254,7 @@ DEF(nedf_replace,
         index = (int)argv[3];
         if (index < 0)
             throw cRuntimeError("replace(): start index is negative");
-        if (index > str.size())
+        if (index > (int)str.size())
             throw cRuntimeError("replace(): start index out of bounds");
     }
 
@@ -280,7 +280,7 @@ DEF(nedf_replaceFirst,
         index = (int)argv[3];
         if (index < 0)
             throw cRuntimeError("replaceFirst(): start index is negative");
-        if (index > str.size())
+        if (index > (int)str.size())
             throw cRuntimeError("replaceFirst(): start index out of bounds");
     }
 

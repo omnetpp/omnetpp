@@ -583,6 +583,7 @@ void EnvirBase::dumpComponentList(const char *category)
                 CASE(KIND_SCALAR)
                 CASE(KIND_VECTOR)
                 CASE(KIND_NONE)
+                CASE(KIND_OTHER)
             }
             #undef CASE
 

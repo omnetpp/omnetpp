@@ -728,10 +728,9 @@ NEDElement *doParseMSG2(NEDParser *p, const char *nedtext)
         storeSourceCode(ps.msgfile, np->getSource()->getFullTextPos());
 
     // parse
-    int ret;
     try
     {
-        ret = yyparse();
+        yyparse();
     }
     catch (NEDException& e)
     {

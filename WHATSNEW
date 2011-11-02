@@ -28,6 +28,9 @@ IDE:
   - Dropped PowerPC support for the IDE because Mac OS X 10.7 no longer
     supports this architecture.
 
+Sim:
+  - Fixed all warnings to make it compile using -Wall -Werror.
+
 
 OMNeT++ 4.2rc1 (Aug 2011)
 -------------------------
