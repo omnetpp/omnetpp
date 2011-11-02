@@ -5,6 +5,8 @@
 	* ccomponent.h: asserted that registerSignal() cannot be invoked
 	from static initialization code.
 
+2011-09-11  ------ omnetpp-4.2rc1 released ------
+
 2011-08-30  Andras Varga
 
 	cmessageheap.cc: insert(): fix: must not use circbuf optimization if

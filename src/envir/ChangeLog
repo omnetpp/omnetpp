@@ -1,5 +1,7 @@
 2011-10-28  ------ omnetpp-4.2 released ------
 
+2011-09-11  ------ omnetpp-4.2rc1 released ------
+
 2011-07-17 Rudolf Hornig
 
     * opp_run: Changed how opp_run is used to start debug and release models.

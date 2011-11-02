@@ -10,6 +10,8 @@
 	now obeys the same flags as printing the event banners
 	(cmdenv-event-banners and **.cmdenv-ev-output)
 
+2011-09-11  ------ omnetpp-4.2rc1 released ------
+
 2011-05-05  ------ omnetpp-4.2b2 released ------
 
 2011-02-23  ------ omnetpp-4.2b1 released ------

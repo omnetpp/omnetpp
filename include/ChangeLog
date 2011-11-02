@@ -52,6 +52,8 @@
 	   // etc
 	}
 
+2011-09-11  ------ omnetpp-4.2rc1 released ------
+
 2011-06-25  Andras Varga
 
 	* The internal class cMathFunction was renamed to cNEDMathFunction,
