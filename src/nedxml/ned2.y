@@ -1706,10 +1706,9 @@ NEDElement *doParseNED2(NEDParser *p, const char *nedtext)
         storeSourceCode(ps.nedfile, np->getSource()->getFullTextPos());
 
     // parse
-    int ret;
     try
     {
-        ret = yyparse();
+        yyparse();
     }
     catch (NEDException& e)
     {

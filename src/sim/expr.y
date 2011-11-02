@@ -334,10 +334,9 @@ void doParseExpression(const char *nedtext, cDynamicExpression::Elem *&elems, in
     e = v;
 
     // parse
-    int ret;
     try
     {
-        ret = yyparse();
+        yyparse();
     }
     catch (std::exception& e)
     {
