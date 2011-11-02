@@ -261,10 +261,9 @@ void doParseExpression(const char *text, Expression::Resolver *res, Expression::
     resolver = res;
 
     // parse
-    int ret;
     try
     {
-        ret = yyparse();
+        yyparse();
     }
     catch (std::exception& e)
     {
