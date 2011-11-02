@@ -161,7 +161,7 @@
 //
 #if defined(_MSC_VER) || defined(__MINGW32__)
 #   define INT64_PRINTF_FORMAT   "I64"
-#elif __WORDSIZE == 64
+#elif __WORDSIZE == 64 && !defined(__APPLE__)
 #   define INT64_PRINTF_FORMAT   "l"
 #else
 #   define INT64_PRINTF_FORMAT   "ll"

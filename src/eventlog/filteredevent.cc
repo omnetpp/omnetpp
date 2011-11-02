@@ -215,7 +215,7 @@ IMessageDependencyList *FilteredEvent::getCauses()
         // this is recursive and might take some time
         while (!todoList.empty()) {
             filteredEventLog->progress();
-            if (clock() - begin >= filteredEventLog->getMaximumCauseCollectionTime() * CLOCKS_PER_SEC / 1000)
+            if ((long)clock() - begin >= filteredEventLog->getMaximumCauseCollectionTime() * CLOCKS_PER_SEC / 1000)
                 break;
 
             BreadthSearchItem searchItem = todoList.front();
@@ -269,7 +269,7 @@ IMessageDependencyList *FilteredEvent::getConsequences()
         // this is recursive and might take some time
         while (!todoList.empty()) {
             filteredEventLog->progress();
-            if (clock() - begin >= filteredEventLog->getMaximumConsequenceCollectionTime() * CLOCKS_PER_SEC / 1000)
+            if ((long)clock() - begin >= filteredEventLog->getMaximumConsequenceCollectionTime() * CLOCKS_PER_SEC / 1000)
                 break;
 
             BreadthSearchItem searchItem = todoList.front();

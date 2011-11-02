@@ -108,7 +108,7 @@ ProgressMonitor EventLog::setProgressMonitor(ProgressMonitor newProgressMonitor)
 
 void EventLog::progress()
 {
-    if (lastProgressCall + progressCallInterval < clock()) {
+    if (lastProgressCall + progressCallInterval < (long)clock()) {
         progressMonitor.progress(this);
         lastProgressCall = clock();
     }
