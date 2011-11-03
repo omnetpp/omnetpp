@@ -5,31 +5,52 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
-OMNeT++ 4.2rc2 (Oct 2011)
+OMNeT++ 4.2rc2 (Nov 2011)
 -------------------------
 
 Documentation:
-  - Updated the "C++ Development" and "Launching and Debugging" chapters
-    in User Guide.
+  - Revised and significantly expanded the "C++ Development" chapter in the
+    User Guide to better assist model developers; smaller improvements in
+    other chapters
 
 Tools:
+  - Updated MSYS and MinGW binaries in the Windows distribution.
+
   - The build system now creates 64-bit binaries on Mac OS X 10.6 and 10.7
     (if your processor supports it). Previously the -m32 flag was added to
     the GCC command line to force the creation of 32-bit binaries. (This
     was necessary because earlier versions of CDT did not support 64-bit
     debugging).
 
-  - Added support for Python based pretty printers in gdb (On Linux and Windows).
-    For activating the printers see the misc/gdb/README file.
-
-  - Updated MSYS and MINGW binaries in the Windows distribution.
+  - Enabled pretty-printing of variables in gdb (see below)
 
 IDE:
+  - Better C++ debugging experience: std::string, std::vector, std::map and
+    other standard classes as well as simtime_t are now displayed in a
+    meaningful way; simulation objects (cObject) display their full paths.
+    This functionality is enabled by gdb pretty printer extensions written
+    in Python, and is thus available for command-line gdb debugging too.
+    For activating the pretty printers, see misc/gdb/README.
+
+  - NED documentation generator improvements: better-looking tables in the
+    generated documentation; running Doxygen is now cancellable; etc.
+
   - Dropped PowerPC support for the IDE because Mac OS X 10.7 no longer
     supports this architecture.
 
 Sim:
+  - Refactored operator= and copy constructor in all classes. Now they
+    delegate to the same function in the super class, and the common
+    part of the two is factored out to private copy() functions.
+
   - Fixed all warnings to make it compile using -Wall -Werror.
+
+Sample simulations:
+  - Database example revived. It demonstrates using database as configuration
+    source, as storage for output scalars and vectors, and as source of
+    network topology. Currently it works with MySQL.
+
+Countless bug fixes and smaller improvements.
 
 
 OMNeT++ 4.2rc1 (Aug 2011)
@@ -120,6 +141,12 @@ Tools:
    src/nedxml/ChangeLog for details.
 
  - Akaroa support improved; samples/aloha/akaroa.ini was added as example
+
+Documentation:
+
+ - Several chapters in the User Manual have been updated; especially, the
+   Message Definitions section was turned into a separate chapter, and
+   was completely revised.
 
 IDE:
  - Upgraded to Eclipse 3.7
