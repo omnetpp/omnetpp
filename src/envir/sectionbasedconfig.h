@@ -206,6 +206,11 @@ class ENVIR_API SectionBasedConfiguration : public cConfigurationEx
     virtual void setConfigurationReader(cConfigurationReader *ini);
 
     /**
+     * Returns the pointer of current cConfigurationReader.
+     */
+    virtual cConfigurationReader *getConfigurationReader() { return ini; }
+
+    /**
      * Specifies config options passed on the command line. These options
      * are global (effective for all configs), cannot be per-object options,
      * and take precedence over the ones read from the ini file (i.e. from

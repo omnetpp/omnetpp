@@ -13,22 +13,23 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
-#include <omnetpp.h>
+
 #include "cmysqloutputscalarmgr.h"
+
 #include "oppmysqlutils.h"
 
 //
 // NOTE: INSERT DELAYED is not supported on all engines, notably InnoDB.
 // It is best to create the tables with the ENGINE = MYISAM option.
 //
-#define SQL_INSERT_RUN     "INSERT INTO run(runnumber,network) VALUES(@runnumber@,\"@network@\")"
+#define SQL_INSERT_RUN     "INSERT INTO run(runnumber,network) VALUES(@runnumber@,'@network@')"
 #define SQL_INSERT_SCALAR  "INSERT DELAYED INTO scalar(runid,module,name,value) VALUES(?,?,?,?)"
 
 
 Register_Class(cMySQLOutputScalarManager);
 
-Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX, "mysqloutputscalarmanager-connectprefix", "General", CFG_STRING, "", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", "General", CFG_INT,  10, "FIXME add some description here");
+Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME, "mysqloutputscalarmanager-connectionname", CFG_STRING, "\"mysql\"", "Object name of database connection parameters");
+Register_GlobalConfigOption(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ, "mysqloutputscalarmanager-commit-freq", CFG_INT,  "10", "COMMIT every n INSERTs, default=10");
 
 
 cMySQLOutputScalarManager::cMySQLOutputScalarManager()
@@ -46,12 +47,12 @@ cMySQLOutputScalarManager::~cMySQLOutputScalarManager()
 void cMySQLOutputScalarManager::openDB()
 {
     // connect
-    const char *prefix = ev.getConfig()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTPREFIX);
-    EV << getClassName() << " connecting to MySQL database";
-    if (prefix && prefix[0]) EV << " using " << prefix << "-* config entries";
-    EV << "...";
+    EV << getClassName() << " connecting to MySQL database...";
+    std::string cfgobj = ev.getConfig()->getAsString(CFGID_MYSQLOUTSCALARMGR_CONNECTIONNAME);
+    if (cfgobj.empty())
+        cfgobj = "mysql";
     mysql = mysql_init(NULL);
-    opp_mysql_connectToDB(mysql, ev.getConfig(), prefix);
+    opp_mysql_connectToDB(mysql, ev.getConfig(), cfgobj.c_str());
     EV << " OK\n";
 
     commitFreq = ev.getConfig()->getAsInt(CFGID_MYSQLOUTSCALARMGR_COMMIT_FREQ);
@@ -63,7 +64,7 @@ void cMySQLOutputScalarManager::openDB()
         throw cRuntimeError("MySQL error: out of memory");
     if (mysql_stmt_prepare(insertScalarStmt, SQL_INSERT_SCALAR, strlen(SQL_INSERT_SCALAR)))
         throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
-    ASSERT(mysql_stmt_param_count(insertScalarStmt)==sizeof(insScalarBind)/sizeof(MYSQL_BIND));
+    ASSERT(mysql_stmt_param_count(insertScalarStmt) == sizeof(insScalarBind)/sizeof(MYSQL_BIND));
 
     opp_mysql_bindLONG(  insScalarBind[0], runidBuf); // scalar.runid
     opp_mysql_bindSTRING(insScalarBind[1], moduleBuf, sizeof(moduleBuf), moduleLength); // scalar.module
@@ -114,7 +115,7 @@ void cMySQLOutputScalarManager::insertRunIntoDB()
     {
         // insert run into the database
         std::string insertRunStmt = SQL_INSERT_RUN;
-        opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.runNumber(), mysql);
+        opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.getActiveEnvir()->getConfigEx()->getActiveRunNumber(), mysql);
         opp_mysql_substitute(insertRunStmt, "@network@", simulation.getNetworkType()->getName(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))
             throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));

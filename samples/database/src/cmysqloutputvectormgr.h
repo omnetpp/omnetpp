@@ -7,6 +7,7 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2011 Zoltan Bojthe
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -15,8 +16,11 @@
 #ifndef __MYSQLOUTPUTVECTORMGR_H
 #define __MYSQLOUTPUTVECTORMGR_H
 
-#include <omnetpp.h>
 #include <mysql.h>
+
+#include <omnetpp.h>
+
+#include "intervals.h"
 
 
 /**
@@ -27,29 +31,38 @@
  * VECTOR corresponds to the "vector" lines in the normal .vec files,
  * and VECDATA to the data lines.
  *
- * Note that the tables are created with the MyISAM engine. This is important,
+ * Note that the vecdata table is created with the MyISAM engine. This is important,
  * because the InnoDB engine doesn't support INSERT DELAYED, which completely
  * ruins performance.
  *
  * <pre>
  * CREATE TABLE vrun (
  *      id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
- *      runnumber INT,
- *      network VARCHAR(80),
- *      date TIMESTAMP
- * ) ENGINE = MYISAM;
+ *      runnumber INT NOT NULL,
+ *      network VARCHAR(80) NOT NULL,
+ *      date TIMESTAMP NOT NULL
+ * );
  *
  * CREATE TABLE vector (
- *      runid INT,
  *      id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
- *      module VARCHAR(200),
- *      name VARCHAR(80)
- * ) ENGINE = MYISAM;
+ *      runid INT NOT NULL,
+ *      module VARCHAR(200) NOT NULL,
+ *      name VARCHAR(80) NOT NULL,
+ *      FOREIGN KEY (runid) REFERENCES vrun(id)
+ * );
+ *
+ * CREATE TABLE vecattr (
+ *      vectorid INT NOT NULL,
+ *      name VARCHAR(200) NOT NULL,
+ *      value VARCHAR(200) NOT NULL,
+ *      FOREIGN KEY (vectorid) REFERENCES vector(id)
+ * );
  *
  * CREATE TABLE vecdata (
- *      vectorid INT,
- *      time DOUBLE PRECISION,
- *      value DOUBLE PRECISION
+ *      vectorid INT NOT NULL,
+ *      time DOUBLE PRECISION NOT NULL,
+ *      value DOUBLE PRECISION NOT NULL,
+ *      FOREIGN KEY (vectorid) REFERENCES vector(id)
  * ) ENGINE = MYISAM;
  * </pre>
  *
@@ -61,7 +74,7 @@
  * <pre>
  * [General]
  * mysqloutputvectormanager-commit-freq = <integer> # COMMIT every n INSERTs, default=50
- * mysqloutputscalarmanager-connectprefix = <string> # look for connect parameters with the given prefix
+ * mysqloutputscalarmanager-connectionname = <string> # look for connect parameters in the given object
  * </pre>
  *
  * @ingroup Envir
@@ -73,10 +86,11 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
        long id;             // vector ID
        opp_string modulename; // module of cOutVector object
        opp_string vectorname; // cOutVector object name
+       opp_string_map attributes; // vector attributes
        bool initialised;    // true if the "label" line is already written out
        bool enabled;        // write to the output file can be enabled/disabled
-       simtime_t starttime; // write begins at starttime
-       simtime_t stoptime;  // write stops at stoptime
+       bool recordEventNumbers;  // write to the output file can be enabled/disabled
+       Intervals intervals; // write begins at starttime
     };
 
     // the database connection
@@ -93,8 +107,10 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
 
     // prepared statements and their parameter bindings
     MYSQL_STMT *insertVectorStmt;
-    MYSQL_STMT *insertVecdataStmt;
     MYSQL_BIND insVectorBind[3];
+    MYSQL_STMT *insertVecAttrStmt;
+    MYSQL_BIND insVecAttrBind[3];
+    MYSQL_STMT *insertVecdataStmt;
     MYSQL_BIND insVecdataBind[3];
 
     // these variables are bound to the above bind parameters
@@ -106,6 +122,10 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
     int vectoridBuf;
     double timeBuf;
     double valueBuf;
+    char vecAttrNameBuf[201];
+    unsigned long vecAttrNameLength;
+    char vecAttrValueBuf[201];
+    unsigned long vecAttrValueLength;
 
   protected:
     void openDB();
@@ -152,12 +172,12 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
     /**
      * Deregisters the output vector.
      */
-    virtual void deregisterVector(void *vechandle);
+    virtual void deregisterVector(void *vectorhandle);
 
     /**
      * Sets an attribute of an output vector.
      */
-    virtual void setVectorAttribute(void *vechandle, const char *name, const char *value);
+    virtual void setVectorAttribute(void *vectorhandle, const char *name, const char *value);
 
     /**
      * Writes the (time, value) pair into the output file.

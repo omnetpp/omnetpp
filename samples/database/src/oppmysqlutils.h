@@ -7,6 +7,7 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2011 Zoltan Bojthe
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -17,38 +18,39 @@
 
 #include <mysql.h>
 
+#include <omnetpp.h>
 
 /**
  * The following options are read from the configuration (omnetpp.ini):
  *
  * <pre>
  * [General]
- * mysql-host = <hostname>
- * mysql-user = <username>
- * mysql-password = <password>
- * mysql-database = <database-name>
- * mysql-port = <TCP-port-number>
- * mysql-socket = <unix-socket-name>
- * mysql-clientflag = <int>
- * mysql-use-pipe = <true/false>  # Windows named pipes
- * mysql-options-file = <MySQL-options-filename>
+ * mysql.mysql-host = <hostname>
+ * mysql.mysql-user = <username>
+ * mysql.mysql-password = <password>
+ * mysql.mysql-database = <database-name>
+ * mysql.mysql-port = <TCP-port-number>
+ * mysql.mysql-socket = <unix-socket-name>
+ * mysql.mysql-clientflag = <int>
+ * mysql.mysql-use-pipe = <true/false>  # Windows named pipes
+ * mysql.mysql-options-file = <MySQL-options-filename>
  * </pre>
  *
  * Please refer to the MySQL documentation about their meanings.
  *
- * If a prefix is given (not NULL or the empty string), then the above
- * config entry names are prefixed with it. That is, with prefix="homepc",
+ * If a cfgobj is given (not NULL or the empty string), then the above
+ * config entries get from cfgobj instead 'mysql'. That is, with cfgobj="homepc",
  * the configuration is searched for the following entries:
  *
  * <pre>
  * [General]
- * homepc-mysql-host = <hostname>
- * homepc-mysql-user = <username>
- * homepc-mysql-password = <password>
+ * homepc.mysql-host = <hostname>
+ * homepc.mysql-user = <username>
+ * homepc.mysql-password = <password>
  * ...
  * </pre>
  */
-void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *prefix);
+void opp_mysql_connectToDB(MYSQL *mysql, cConfiguration *cfg, const char *cfgobj);
 
 /**
  * Fills in a MYSQL_BIND structure with the given data.
@@ -91,6 +93,13 @@ int opp_mysql_substitute(std::string& query, const char *substring, const char *
  * Like the other opp_mysql_substitute(), but this one converts the long to string first.
  */
 int opp_mysql_substitute(std::string& query, const char *substring, long value, MYSQL *mysql);
+
+/**
+ * This function escaping the input string str to a legal SQL string that you can use in an SQL statement.
+ * See also mysql_real_escape_string() in MySQL documentation.
+ */
+std::string opp_mysql_escape(MYSQL *mysql, const char *str);
+
 
 #endif
 

@@ -7,15 +7,17 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2011 Zoltan Bojthe
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 #include <assert.h>
-#include <omnetpp.h>
-#include "filemgrs.h" // getOutVectorConfig() -- TODO eliminate dependency
+
 #include "cmysqloutputvectormgr.h"
+
+#include "fileoutvectormgr.h"
 #include "oppmysqlutils.h"
 
 
@@ -25,15 +27,17 @@
 //
 // IMPORTANT: "INSERT INTO vector" cannot be DELAYED, otherwise we don't get back the vectorid.
 //
-#define SQL_INSERT_VRUN     "INSERT INTO vrun(runnumber,network) VALUES(@runnumber@,\"@network@\")"
+#define SQL_INSERT_VRUN     "INSERT INTO vrun(runnumber,network) VALUES(@runnumber@,'@network@')"
 #define SQL_INSERT_VECTOR   "INSERT INTO vector(runid,module,name) VALUES(?,?,?)"
+#define SQL_INSERT_VECATTR  "INSERT INTO vecattr(vectorid,name,value) VALUES(?,?,?)"
 #define SQL_INSERT_VECDATA  "INSERT DELAYED INTO vecdata(vectorid,time,value) VALUES(?,?,?)"
 
 
 Register_Class(cMySQLOutputVectorManager);
 
-Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX, "mysqloutputvectormanager-connectprefix", "General", CFG_STRING, "", "FIXME add some description here");
-Register_GlobalConfigEntry(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ, "mysqloutputvectormanager-commit-freq", "General", CFG_INT,  50, "FIXME add some description here");
+//#define Register_GlobalConfigOption(ID, NAME, TYPE, DEFAULTVALUE, DESCRIPTION)
+Register_GlobalConfigOption(CFGID_MYSQLOUTVECTORMGR_CONNECTIONNAME, "mysqloutputvectormanager-connectionname", CFG_STRING, "\"mysql\"", "Object name of database connection parameters, default='mysql'");
+Register_GlobalConfigOption(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ, "mysqloutputvectormanager-commit-freq", CFG_INT, "50", "COMMIT every n INSERTs, default=50");
 
 
 cMySQLOutputVectorManager::cMySQLOutputVectorManager()
@@ -50,13 +54,14 @@ cMySQLOutputVectorManager::~cMySQLOutputVectorManager()
 
 void cMySQLOutputVectorManager::openDB()
 {
+    EV << getClassName() << " connecting to MySQL database...";
+
     // connect
-    const char *prefix = ev.getConfig()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTPREFIX);
-    EV << getClassName() << " connecting to MySQL database";
-    if (prefix && prefix[0]) EV << " using " << prefix << "-* config entries";
-    EV << "...";
+    std::string cfgobj = ev.getConfig()->getAsString(CFGID_MYSQLOUTVECTORMGR_CONNECTIONNAME);
+    if (cfgobj.empty())
+        cfgobj = "mysql";
     mysql = mysql_init(NULL);
-    opp_mysql_connectToDB(mysql, ev.getConfig(), prefix);
+    opp_mysql_connectToDB(mysql, ev.getConfig(), cfgobj.c_str());
     EV << " OK\n";
 
     commitFreq = ev.getConfig()->getAsInt(CFGID_MYSQLOUTVECTORMGR_COMMIT_FREQ);
@@ -68,7 +73,7 @@ void cMySQLOutputVectorManager::openDB()
         throw cRuntimeError("MySQL error: out of memory");
     if (mysql_stmt_prepare(insertVectorStmt, SQL_INSERT_VECTOR, strlen(SQL_INSERT_VECTOR)))
         throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
-    ASSERT(mysql_stmt_param_count(insertVectorStmt)==sizeof(insVectorBind)/sizeof(MYSQL_BIND));
+    ASSERT(mysql_stmt_param_count(insertVectorStmt) == sizeof(insVectorBind)/sizeof(MYSQL_BIND));
 
     opp_mysql_bindLONG(insVectorBind[0], runidBuf); // vector.runid
     opp_mysql_bindSTRING(insVectorBind[1], moduleBuf, sizeof(moduleBuf), moduleLength); // vector.module
@@ -77,13 +82,28 @@ void cMySQLOutputVectorManager::openDB()
     if (mysql_stmt_bind_param(insertVectorStmt, insVectorBind))
         throw cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
 
+    // prepare and bind INSERT INTO VECATTR...
+    insertVecAttrStmt = mysql_stmt_init(mysql);
+    if (!insertVecAttrStmt)
+        throw cRuntimeError("MySQL error: out of memory");
+    if (mysql_stmt_prepare(insertVecAttrStmt, SQL_INSERT_VECATTR, strlen(SQL_INSERT_VECATTR)))
+        throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
+    ASSERT(mysql_stmt_param_count(insertVecAttrStmt) == sizeof(insVecAttrBind)/sizeof(MYSQL_BIND));
+
+    opp_mysql_bindLONG(insVecAttrBind[0], vectoridBuf); // vecattr.vectorid
+    opp_mysql_bindSTRING(insVecAttrBind[1], vecAttrNameBuf, sizeof(vecAttrNameBuf), vecAttrNameLength); // vecattr.name
+    opp_mysql_bindSTRING(insVecAttrBind[2], vecAttrValueBuf, sizeof(vecAttrValueBuf), vecAttrValueLength); // vecattr.value
+
+    if (mysql_stmt_bind_param(insertVecAttrStmt, insVecAttrBind))
+        throw cRuntimeError("MySQL error: bind failed: %s", mysql_error(mysql));
+
     // prepare and bind INSERT INTO VECDATA...
     insertVecdataStmt = mysql_stmt_init(mysql);
     if (!insertVecdataStmt)
         throw cRuntimeError("MySQL error: out of memory");
     if (mysql_stmt_prepare(insertVecdataStmt, SQL_INSERT_VECDATA, strlen(SQL_INSERT_VECDATA)))
         throw cRuntimeError("MySQL error: prepare statement failed: %s", mysql_error(mysql));
-    ASSERT(mysql_stmt_param_count(insertVecdataStmt)==sizeof(insVecdataBind)/sizeof(MYSQL_BIND));
+    ASSERT(mysql_stmt_param_count(insertVecdataStmt) == sizeof(insVecdataBind)/sizeof(MYSQL_BIND));
 
     opp_mysql_bindLONG(insVecdataBind[0], vectoridBuf); // vecdata.vectorid
     opp_mysql_bindDOUBLE(insVecdataBind[1], timeBuf); // vecdata.time
@@ -96,8 +116,9 @@ void cMySQLOutputVectorManager::openDB()
 void cMySQLOutputVectorManager::closeDB()
 {
     if (insertVectorStmt) mysql_stmt_close(insertVectorStmt);
+    if (insertVecAttrStmt) mysql_stmt_close(insertVecAttrStmt);
     if (insertVecdataStmt) mysql_stmt_close(insertVecdataStmt);
-    insertVectorStmt = insertVecdataStmt = NULL;
+    insertVectorStmt = insertVecdataStmt = insertVecAttrStmt = NULL;
 
     if (mysql) mysql_close(mysql);
     mysql = NULL;
@@ -124,6 +145,16 @@ void cMySQLOutputVectorManager::initVector(sVectorData *vp)
     // query the automatic vectorid from the newly inserted row
     // Note: this INSERT must not be DELAYED, otherwise we get zero here.
     vp->id = (long) mysql_stmt_insert_id(insertVectorStmt);
+
+    // write attributes:
+    vectoridBuf = vp->id;
+    for (opp_string_map::iterator it=vp->attributes.begin(); it != vp->attributes.end(); ++it)
+    {
+        opp_mysql_assignSTRING(insVecAttrBind[1], vecAttrNameBuf, it->first.c_str());
+        opp_mysql_assignSTRING(insVecAttrBind[2], vecAttrValueBuf, it->second.c_str());
+        if (mysql_stmt_execute(insertVecAttrStmt))
+            throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
+    }
 
     vp->initialised = true;
 }
@@ -152,7 +183,8 @@ void cMySQLOutputVectorManager::insertRunIntoDB()
     {
         // insert run into the database
         std::string insertRunStmt = SQL_INSERT_VRUN;
-        opp_mysql_substitute(insertRunStmt, "@runnumber@", simulation.runNumber(), mysql);
+        int runNumber = simulation.getActiveEnvir()->getConfigEx()->getActiveRunNumber();
+        opp_mysql_substitute(insertRunStmt, "@runnumber@", runNumber, mysql);
         opp_mysql_substitute(insertRunStmt, "@network@", simulation.getNetworkType()->getName(), mysql);
         if (mysql_query(mysql, insertRunStmt.c_str()))
             throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));
@@ -175,7 +207,7 @@ void *cMySQLOutputVectorManager::registerVector(const char *modulename, const ch
     vp->vectorname = vectorname;
 
     cFileOutputVectorManager::getOutVectorConfig(modulename, vectorname,
-                                                 vp->enabled, vp->starttime, vp->stoptime); //FIXME...
+                                                 vp->enabled, vp->recordEventNumbers, vp->intervals); //FIXME...
     return vp;
 }
 
@@ -190,9 +222,11 @@ void cMySQLOutputVectorManager::deregisterVector(void *vectorhandle)
     delete vp;
 }
 
-void cMySQLOutputVectorManager::setVectorAttribute(void *vechandle, const char *name, const char *value)
+void cMySQLOutputVectorManager::setVectorAttribute(void *vectorhandle, const char *name, const char *value)
 {
-    //FIXME todo
+    ASSERT(vectorhandle != NULL);
+    sVectorData *vp = (sVectorData *)vectorhandle;
+    vp->attributes[name] = value;
 }
 
 bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double value)
@@ -202,14 +236,14 @@ bool cMySQLOutputVectorManager::record(void *vectorhandle, simtime_t t, double v
     if (!vp->enabled)
         return false;
 
-    if (t>=vp->starttime && (vp->stoptime==0.0 || t<=vp->stoptime))
+    if (vp->intervals.contains(t))
     {
         if (!vp->initialised)
             initVector(vp);
 
         // fill in prepared statement parameters, and fire off the statement
         vectoridBuf = vp->id;
-        timeBuf = t;
+        timeBuf = SIMTIME_DBL(t);
         valueBuf = value;
         if (mysql_stmt_execute(insertVecdataStmt))
             throw cRuntimeError("MySQL error: INSERT failed: %s", mysql_error(mysql));

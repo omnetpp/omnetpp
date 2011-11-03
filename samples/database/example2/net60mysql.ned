@@ -8,19 +8,11 @@
 //
 
 
-//
-// Represents a network node. This is just a dummy, but one could of course
-// replace it with something useful as well.
-//
-module Node
-{
-    parameters:
-        @display("i=misc/node_vs");
-    gates:
-        input in[];
-        output out[];
-    connections allowunconnected:
-}
+import mysql.cMySQLNetBuilder;
+
+import node.Node;
+
+@namespace();
 
 //
 // The network will by dynamically constructed by the "builder" submodule,

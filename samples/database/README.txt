@@ -12,7 +12,7 @@ It demonstrates four ways of using a database:
 
 The first one is implemented as a simple module (cMySQLNetBuilder),
 and it is intended as an example that can be customised at will.
-The latter three are plug-in extensions to Envir (cMySQLConfiguration,
+The latter three are plug-in extensions to Envir (cMySQLConfigReader,
 cMySQLOutputVectorManager and cMySQLOutputScalarManager) and they are
 completely generic -- they can be used with any simulation model to make them
 datatabase-enabled, without having to change a single line of source code.
@@ -35,14 +35,15 @@ the performance drop with cMySQLOutputVectorManager was almost unnoticeable
 Token Ring model, on Windows XP, with MySQL 4.1 running on the *same* machine.
 
 Directory contents:
-  - C++ sources (.cc/h) for the above classes;
+  - the src/ subdirectory contains C++ sources (.cc/h) and NED file for the
+    above classes;
   - the sql/ subdirectory contains SQL scripts to create the necessary
     database tables;
-  - example1/ configures the Token Ring model to read module parameters
+  - example1/ configures the FiFo model to read module parameters
     from the database, and write output scalars and vectors there;
-  - example2/ demonstrates cMySQLNetBuilder, and builds a network with a
-    topology coming from the database. An SQL script to fill the database
-    with the topology info (nodes and links) is provided.
+  - example2/ demonstrates cMySQLNetBuilder on Route model, it builds a
+    network with a topology coming from the database. An SQL script to fill
+    the database with the topology info (nodes and links) is provided.
 
 Steps to get things up and running (These instructions use Linux command-line
 syntax, but the equivalent will work on Windows too):
@@ -64,13 +65,14 @@ syntax, but the equivalent will work on Windows too):
    and libraries (libmysqlclient.so on Linux, libmysql.lib+libmysql.dll on
    Windows) to build programs with MySQL access. If you are installing from RPM
    in Linux, you need the "-devel" package to get these files. If installed,
-   they usually can be found in /usr/include/mysql and /usr/lib. On Windows,
-   you need the full package (~40 Meg) not just the Essentials one.
+   they usually can be found in /usr/include/mysql and /usr/lib.
+   On Ubuntu linux, you need the libmysqlclient-dev package.
+   On Windows, you need the full package (~40 Meg) not just the Essentials one.
 
 2. Create the database tables: log in using the MySQL console, and
    copy/paste the contents of the scripts in sql/ into it. (Or use the
    "source <filename>" command at the mysql prompt.) If you want to try
-   cMySQLNetBuilder or cMySQLConfiguration, fill in the database with
+   cMySQLNetBuilder or cMySQLConfigReader, fill in the database with
    the sample data by executing the *.sql files in the example subdirectories
    in much the same way.
 
@@ -83,26 +85,31 @@ syntax, but the equivalent will work on Windows too):
    mysql> exit;
 
 3. Take the given C++ sources, and compile them into your simulation.
-   (Use Token Ring sample simulation if you're unsure -- the sample database
-   contents for demonstrating cMySQLConfiguration is for this model.)
+   (Use FiFo sample simulation if you're unsure -- the sample database
+   contents for demonstrating cMySQLConfigReader is for this model.)
    To get the sources built, the MySQL headers AND OMNeT++'s src/envir
    directory need to be in the include path (-I compiler options),
    and you need to link against the MySQL library (-lmysqlclient).
 
-   For example, to add database support to the Token Ring model, you'd do the
+   For example, to add database support to the FiFo model, you'd do the
    following:
 
    $ cd samples/database
-   $ cp *.cc *.h ../tokenring
-   $ cd ../tokenring
-   $ opp_makemake -f -N -x -I/usr/include/mysql -I$HOME/omnetpp/src/envir
+
+   $ ln -s ../database/src ../fifo/mysql
+   or
+   $ mkdir ../fifo/mysql
+   $ cp src/* ../fifo/mysql
+
+   $ cd ../fifo
+   $ opp_makemake -f --deep -I/usr/include/mysql -I$HOME/omnetpp/src/envir -I$HOME/omnetpp/src/common -I$HOME/omnetpp/include/platdep
            -lmysqlclient
    $ make
 
    On Windows, the last commands would look like this (provided you installed
    MySQL into C:\MySQL;):
 
-   > opp_nmakemake -f -N -x -IC:/MySQL/include -IC:/OMNeT++/src/envir
+   > opp_nmakemake -f --deep -IC:/MySQL/include -IC:/OMNeT++/src/envir -IC:/OMNeT++/src/common -IC:/OMNeT++/include/platdep
            -LC:/MySQL/lib -llibmysql.lib
    > nmake -f Makefile.vc
 
@@ -118,26 +125,28 @@ syntax, but the equivalent will work on Windows too):
    into the simulation dynamically (using the load-libs= omnetpp.ini
    entry).
 
-4. Fill the database with the input data. If you want to use cMySQLConfiguration,
+4. Fill the database with the input data. If you want to use cMySQLConfigReader,
    this means INSERTs into the config, configsection and configentry tables,
-   and with cMySQLNetBuilder, into the network, node, link and parameter tables.
+   and with cMySQLNetBuilder, into the network, node, nodeparameter, link and
+   linkparameter tables.
 
-   To use the sample cMySQLConfiguration data for the Token Ring model, run the
+   To use the sample cMySQLConfigReader data for the FiFo model, run the
    SQL script in example1:
 
    $ cd samples/database/example1
    $ mysql test
-   mysql> source tokenring-config.sql
+   mysql> source fifo-config.sql
    mysql> exit
 
-   You can load the sample topology data for cMySQLNetBuilder in example2/
-   net60.sql in much the same way.
+   To use the sample cMySQLNetBuilder data for the Routing model, run the
+   SQL script net60.sql in example2 in much the same way.
 
 5. Prepare an omnetpp.ini to activate the MySQL extensions. Add one or more
    of the following entries:
 
    [General]
-   configuration-class = "cMySQLConfiguration"
+   configuration-class = "SectionBasedConfiguration"
+   sectionbasedconfig-configreader-class = "cMySQLConfigReader"
    outputvectormanager-class = "cMySQLOutputVectorManager"
    outputscalarmanager-class = "cMySQLOutputScalarManager"
 
@@ -146,30 +155,30 @@ syntax, but the equivalent will work on Windows too):
    documented in oppmysqlutils.h.
 
    [General]
-   mysql-host = <hostname>
-   mysql-user = <username>
-   mysql-password = <password>
-   mysql-database = <database-name>
-   mysql-port = <TCP-port-number>
-   mysql-socket = <unix-socket-name>
-   mysql-clientflag = <int>
-   mysql-use-pipe = <true/false>  # use Windows named pipes
-   mysql-options-file = <MySQL-options-filename>
+   mysql.mysql-host = <hostname>
+   mysql.mysql-user = <username>
+   mysql.mysql-password = <password>
+   mysql.mysql-database = <database-name>
+   mysql.mysql-port = <TCP-port-number>
+   mysql.mysql-socket = <unix-socket-name>
+   mysql.mysql-clientflag = <int>
+   mysql.mysql-use-pipe = <true/false>  # use Windows named pipes
+   mysql.mysql-options-file = <MySQL-options-filename>
 
    Not all of them make sense together and most have defaults. For example,
    with a Linux MySQL default installation and no password (which is, BTW,
    not recommended) I got away with setting the mysql-database= entry only.
    Look up the MySQL documentation if in trouble.
 
-   For the Token Ring example, the provided sample ini file will likely work,
+   For the FiFo example, the provided sample ini file will likely work,
    just copy it over from the example1/ directory:
 
-   $ cp tokenring-db.ini ../../tokenring
-   $ cd ../../tokenring
+   $ cp fifo-db.ini ../../fifo
+   $ cd ../../fifo
 
-6. Run the simulation with the new ini file.
+6. Start simulation:
 
-   $ ./tokenring -f tokenring-db.ini
+   $ ./fifo
 
    If you get an "Error connecting to MySQL", you'll need to play with
    the settings in Step 5.
@@ -186,18 +195,46 @@ syntax, but the equivalent will work on Windows too):
    mysql> SELECT * FROM scalar WHERE runid=...;
    ...and so on.
 
-A hint about cMySQLConfiguration:
+A hint about cMySQLConfigReader:
 
 The easiest way to transfer the contents of an existing omnetpp.ini file
-into the database is by using the mysqlconfiguration-dumpbootcfg=true
+into the database is by using the mysqlconfig-dumpbootcfg=true
 configuration option, which prints the current configuration as a series
 of SQL INSERT statements. Add the following lines to your omnetpp.ini:
       [General]
-      configuration-class = "cMySQLConfiguration"
-      mysqlconfiguration-dumpbootcfg = true
+      configuration-class = "SectionBasedConfiguration"
+      sectionbasedconfig-configreader-class = "cMySQLConfigReader"
+      mysqlconfig-dumpbootcfg = true
       ...
 Then start the simulation and redirect the output into a file. After some
 editing, the result can be used as an SQL script.
+
+
+The samples/database/example2 folder contains files for "routing" sample.
+This example demonstrates cMySQLNetBuilder on Route model, it builds a
+network with a topology coming from the database. An SQL script to fill
+the database with the topology info (nodes and links) is provided.
+
+   copy files into Routing sample:
+      $ cd samples/database
+      $ ln -s ../database/src ../routing/mysql
+      $ #mkdir ../routing/mysql
+      $ #cp *.cc *.h ../routing/mysql
+      $ cp example2/net60mysql.ned ../routing/networks/
+      $ cp example2/net60mysql.ini ../routing/
+
+   fill the database:
+      $ mysql test
+      mysql> source example2/net60.sql
+      mysql> exit
+
+   make:
+      $ opp_makemake -f --deep -I/usr/include/mysql -I$HOME/omnetpp/src/envir -I$HOME/omnetpp/src/common -I$HOME/omnetpp/include/platdep
+              -lmysqlclient
+      $ make
+
+   Run the simulation with the new 'net60mysql.ini' ini file.
+      $ ./routing -f net60mysql.ini
 
 Enjoy!
 

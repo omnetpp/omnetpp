@@ -7,6 +7,7 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2011 Zoltan Bojthe
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -15,8 +16,9 @@
 #ifndef __MYSQLOUTPUTSCALARMGR_H
 #define __MYSQLOUTPUTSCALARMGR_H
 
-#include <omnetpp.h>
 #include <mysql.h>
+
+#include <omnetpp.h>
 
 
 /**
@@ -34,16 +36,18 @@
  * <pre>
  * CREATE TABLE run (
  *      id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
- *      runnumber INT,
- *      network VARCHAR(80),
- *      date TIMESTAMP
- * ) ENGINE = MYISAM;
+ *      runnumber INT NOT NULL,
+ *      network VARCHAR(80) NOT NULL,
+ *      date TIMESTAMP NOT NULL
+ * );
  *
  * CREATE TABLE scalar (
- *      runid INT,
- *      module VARCHAR(200),
- *      name VARCHAR(80),
- *      value DOUBLE PRECISION
+ *      runid INT  NOT NULL,
+ *      module VARCHAR(200) NOT NULL,
+ *      name VARCHAR(80) NOT NULL,
+ *      value DOUBLE PRECISION NOT NULL,
+ *      KEY (runid,module,name),
+ *      FOREIGN KEY (runid) REFERENCES run(id)
  * ) ENGINE = MYISAM;
  * </pre>
  *
@@ -55,7 +59,7 @@
  * <pre>
  * [General]
  * mysqloutputscalarmanager-commit-freq = <integer> # COMMIT every n INSERTs, default=10
- * mysqloutputscalarmanager-connectprefix = <string> # look for connect parameters with the given prefix
+ * mysqloutputscalarmanager-connectionname = <string> # look for connect parameters in the given object
  * </pre>
  *
  * @ingroup Envir

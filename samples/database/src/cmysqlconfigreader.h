@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMYSQLCONFIGURATION.H - part of
+//  CMYSQLCONFIGREADER.H - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -8,21 +8,22 @@
 
 /*--------------------------------------------------------------*
   Copyright (C) 1992-2008 Andras Varga
+  Copyright (C) 2011 Zoltan Bojthe
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __CMYSQLCONFIGURATION_H
-#define __CMYSQLCONFIGURATION_H
+#ifndef __CMYSQLCONFIGREADER_H
+#define __CMYSQLCONFIGREADER_H
 
-#include <omnetpp.h>
 #include <string>
 #include <vector>
-#include <mysql.h>
-#include "cconfigreader.h"
 
-//FIXME code is incomplete, and won't even compile
+#include <mysql.h>
+
+#include <omnetpp.h>
+#include "cconfigreader.h"
 
 /**
  * Configuration class which reads data from a MYSQL database. The two
@@ -34,20 +35,25 @@
  * <pre>
  * CREATE TABLE config (
  *      id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
- *      name VARCHAR(80)
+ *      name VARCHAR(80) NOT NULL
  * );
  *
  * CREATE TABLE configsection (
  *      id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
- *      configid INT,
- *      name VARCHAR(80)
+ *      configid INT NOT NULL,
+ *      name VARCHAR(80) NOT NULL,
+ *      UNIQUE KEY (configid, name),
+ *      FOREIGN KEY (configid) REFERENCES config(id)
  * );
  *
  * CREATE TABLE configentry (
- *      sectionid INT,
- *      name VARCHAR(200),
- *      value VARCHAR(200),
- *      entryorder INT
+ *      sectionid INT NOT NULL,
+ *      name VARCHAR(200) NOT NULL,
+ *      value VARCHAR(200) NOT NULL,
+ *      entryorder INT,
+ *      KEY (sectionid, name),
+ *      KEY (sectionid, entryorder),
+ *      FOREIGN KEY (sectionid) REFERENCES configsection(id)
  * );
  * </pre>
  *
@@ -66,25 +72,25 @@
  *
  * <pre>
  * [General]
- * mysqlconfiguration-connectprefix = <string> # look for connect parameters with the given prefix
- * mysqlconfiguration-dumpbootcfg = <true/false>  # dump ini file as SQL INSERTs; default=false
+ * mysqlconfig-connectionname = <string> # look for connection parameters within given object
+ * mysqlconfig-dumpbootcfg = <true/false>  # dump ini file as SQL INSERTs; default=false
  * </pre>
  *
  * @ingroup EnvirExtensions
  */
-class cMySQLConfigReader : public cConfigurationReader
+class cMySQLConfigReader : public cConfigurationReader, public cObject
 {
   protected:
     class KeyValue1 : public KeyValue {
       private:
-        std::string *basedir;  // points into basedirs[]
-        std::string *filename; // points into filenames[]
+        const std::string *basedir;  // points into basedirs[]
+        const std::string *filename; // points into filenames[]
         int lineNumber;
         std::string key;
         std::string value; //XXX stringpool it?
 
       public:
-        KeyValue1(std::string *bdir, std::string *fname, int li, const char *k, const char *v) {
+        KeyValue1(const std::string *bdir, const std::string *fname, int li, const char *k, const char *v) {
             basedir = bdir; filename = fname; lineNumber = li; key = k; value = v;
         }
 
@@ -110,17 +116,19 @@ class cMySQLConfigReader : public cConfigurationReader
     std::vector<Section> sections;
 
   protected:
-    void internalReadFile(const char *filename);
     const Section& getSection(int sectionId) const;
     static const char *findEndContent(const char *line, const char *filename, int lineNumber);
     static bool readLineInto(std::string& line, FILE *file);
     static std::string trim(const char *start, const char *end);
+    static std::string escape(const char *str);
+    int findSection(const char * sectionName) const;
+    void copyExistingConfig(cConfigurationReader *cfg);
+    void readDB(MYSQL *mysql, const char *databaseConfigName);
 
   public:
     cMySQLConfigReader();
     virtual ~cMySQLConfigReader();
-    virtual void readDB(MYSQL *mysql, const char *databaseConfigName);
-    void cMySQLConfigReader::initializeFrom(cConfiguration *cfg); //XXX currently not called from anywhere
+    void initializeFrom(cConfiguration *cfg);
 
     /** @name Methods implementing cConfigurationReader */
     //@{
@@ -132,8 +140,11 @@ class cMySQLConfigReader : public cConfigurationReader
     virtual const KeyValue& getEntry(int sectionId, int entryId) const;
     virtual void dump() const;
     //@}
+
+    virtual void dumpConfig(cConfigurationReader *cfg) const;
+    virtual void clearContents();
 };
 
 
-#endif
+#endif  // __CMYSQLCONFIGREADER_H
 
