@@ -9,11 +9,13 @@ OMNeT++ 4.2rc2 (Nov 2011)
 -------------------------
 
 Documentation:
+
   - Revised and significantly expanded the "C++ Development" chapter in the
     User Guide to better assist model developers; smaller improvements in
     other chapters
 
 Tools:
+
   - Updated MSYS and MinGW binaries in the Windows distribution.
 
   - The build system now creates 64-bit binaries on Mac OS X 10.6 and 10.7
@@ -25,6 +27,7 @@ Tools:
   - Enabled pretty-printing of variables in gdb (see below)
 
 IDE:
+
   - Better C++ debugging experience: std::string, std::vector, std::map and
     other standard classes as well as simtime_t are now displayed in a
     meaningful way; simulation objects (cObject) display their full paths.
@@ -39,6 +42,7 @@ IDE:
     supports this architecture.
 
 Sim:
+
   - Refactored operator= and copy constructor in all classes. Now they
     delegate to the same function in the super class, and the common
     part of the two is factored out to private copy() functions.
@@ -46,6 +50,7 @@ Sim:
   - Fixed all warnings to make it compile using -Wall -Werror.
 
 Sample simulations:
+
   - Database example revived. It demonstrates using database as configuration
     source, as storage for output scalars and vectors, and as source of
     network topology. Currently it works with MySQL.
@@ -57,6 +62,7 @@ OMNeT++ 4.2rc1 (Aug 2011)
 -------------------------
 
 Ini files:
+
  - Ini files: iterations (${...}) can now refer to other iteration variables,
    using the dollar or the dollar-brace syntax ($var or ${var}). This
    improvement makes it possible to have loops where the inner iteration range
@@ -86,6 +92,7 @@ Ini files:
    more context.
 
 Sim:
+
  - Result filter/recorder interfaces and registration macros made public
    (moved to src/sim), so that users can contribute their own result filters
    and recorders. Files: cresultlistener.h, cresultfilter.h  cresultrecorder.h.
@@ -116,6 +123,7 @@ Sim:
    compatibility, i.e. you may need to update existing models.
 
 Tools:
+
  - opp_run: bugfix: release-mode simulation models compiled as shared libraries
    could not be run using a debug-mode opp_run program (they either crashed
    or reported that a module was not registered with the Register_Module()
@@ -130,6 +138,7 @@ Tools:
 
  - Implemented number filter expressions using multiple inputs for statistics source
    expressions. For example:
+
       @statistic[dropRate](source="count(packetDropped)/count(packetSent)");
 
  - opp_msgc: improvement: announcements and type definitions now observe
@@ -149,6 +158,7 @@ Documentation:
    was completely revised.
 
 IDE:
+
  - Upgraded to Eclipse 3.7
 
  - Added Eclipse Marketplace to the Help menu. You can now install
@@ -182,7 +192,7 @@ IDE:
  - SVN support removed from the IDE. It had very few users, and can be
    installed from the Market if needed.
 
- - Removed Animation Player as it was only a 'technology preview' bundled
+ - Removed Animation Player as it was only a "technology preview" bundled
    with the beta releases to gather feedback from the user community. The
    animator is scheduled to appear in the next major OMNeT++ release.
 
@@ -193,7 +203,9 @@ OMNeT++ 4.2b2 (May 2011)
 Most important feature: "Project Features" (see below).
 
 NED:
+
  - Added support for conditional submodules. Syntax:
+
      udp: UDP if needsUDP {...}
      tcp: <tcpType> like ITCP if needsTCP {...}
 
@@ -203,10 +215,13 @@ NED:
 
  - Implemented default value for parametric submodule and channel types.
    NED now supports the following syntax:
+
      mobility: <default("NullMobility")> like IMobility;
+
    The effect is that the NullMobility NED type will be used for the mobility
    submodule if the type name is not specified otherwise, e.g. in the config-
    uration with something like
+
      **.mobility.type-name = "ConstSpeedMobility"
 
  - Added the firstAvailable() NED function, which is helpful with the Project
@@ -215,13 +230,16 @@ NED:
    (either short names or fully qualified names), and returns the first one
    that exists and is also "available" (its C++ implementation class exists).
    Example usage:
+
      tcp: <default(firstAvailable("TCP_lwIP", "TCP_NSC", "TCP"))> {..}
+
    It chooses the TCP_lwIP, TCP_NSC or TCP module type for the tcp submodule,
    in this order, unless the type is explicitly defined to be something else
    in the configuration.
 
  - Parametric submodule type can now also be specified in NED files, using
    patterns that end in the new "typename" keyword. An example:
+
      network Net {
          parameters:
              host[*].tcp.typename = "TCP_lwIP";
@@ -229,10 +247,12 @@ NED:
      }
 
 Ini files:
+
  - The "type-name" per-object configuration option (**.typename=) has been
    renamed in to "typename", for consistency with the similar new NED feature.
 
 Sim:
+
  - Implemented varargs support for NED functions. If the signature (see
    Define_NED_Function() and Define_NED_Function2() macros) ends in ", ...",
    then the function will accept any number of additional arguments of any type.
@@ -242,6 +262,7 @@ Sim:
    when all typed args are there.
 
 IDE:
+
  - Upgraded to Eclipse 3.6.2
 
  - Implemented the "Project Features" feature, which makes it possible to
@@ -267,6 +288,7 @@ IDE:
    file.
 
 IDE/Animation Player:
+
  - Implemented lazy loading of the eventlog file: the tool can now animate
    large eventlog files with acceptable performance.
 
@@ -276,6 +298,7 @@ IDE/Animation Player:
    it is generally not yet ready for everyday use.
 
 IDE/Inifile Editor:
+
  - Usability: the editor now comes up with the page (text or form) that was
    used last time, and not always with the form editor. (When you flip the
    editor to the other page, the page type is stored in the preferences.
@@ -305,6 +328,7 @@ IDE/Inifile Editor:
    it into the editor area.
 
 IDE/Wizards:
+
  - New Tictoc Example and New Source-Sink Example wizards: fix: the root
    Makefile executed opp_makemake in the src/ folder at each build,
    overwriting the IDE-generated Makefile.
@@ -326,10 +350,12 @@ IDE/Wizards:
    template.properties options.
 
 IDE/Graphical Editor:
+
  - Switched back double-click behaviour to Open NED Type action. The Properties
    dialog can now opened with Ctrl+Enter (Alt+Enter was unavailable.)
 
 IDE/Sequence Chart and Event Log:
+
  - Added show/hide options for arrows that represent mixed dependencies.
    (Such arrows are drawn when the sequence chart is filtered, and represent
    e.g. a sequence of message sendings and self-messages)
@@ -354,6 +380,7 @@ Partial list of changes since 4.1 (see ChangeLog files in individual folders
 for a more complete list):
 
 Simulation runtime:
+
  - Removed #include <winsock.h> from <platdep/timeutil.h>; the reason
    is that it conflicted with lwIP code recently integrated into INET.
    <platdep/sockets.h> still includes <winsock.h>, but now
@@ -361,8 +388,10 @@ Simulation runtime:
    in all source files.
 
  - Ini files: implemented multiple inheritance for sections. Syntax:
+
      [Config Foobar]
      extends = Foo, Bar
+
    When the runtime looks for a config option or param assignment, sections
    are examined in a "fallback order" until the first match is found. In the
    above example the order would be: Foobar, Foo, Bar, General.
@@ -377,6 +406,7 @@ Simulation runtime:
  - NED: fixed deep parameter assignments: parameter references were
    interpreted in the wrong context. Deep parameter assignments are when
    an inifile-like pattern is used to name the parameter(s) to be set, as in:
+
       network Inet {
           parameters:
               host[*].tcp.nagleEnabled = true;
@@ -402,6 +432,7 @@ Simulation runtime:
    need to be re-recorded!
 
 IDE/Animation Player:
+
  - This is a new component in the IDE, you can access it by right-clicking
    an .elog file and selecting "Open With / OMNeT++ Animation Player" from
    the context menu. This is a preliminary implementation (Technology
@@ -409,6 +440,7 @@ IDE/Animation Player:
    size it can handle is about 10MB.
 
 IDE/C++ Development:
+
  - Added a new "Clean Local" item to the project's context menu that does
    not clean referenced projects. This resolves the problem that CDT's
    "Clean Project" command also cleans the referenced projects, e.g. if
@@ -435,6 +467,7 @@ IDE/C++ Development:
    The dialog now displays a "Fix it" link.
 
 IDE/Graphical Editor:
+
  - Several performance optimizations for the NED Editor. It can open much larger
    files than before. NED validation is done now in a background thread and
    does not block the UI.
@@ -470,6 +503,7 @@ IDE/Graphical Editor:
    simulation runtime (Tkenv).
 
 IDE/Inifile Editor:
+
  - Support for inifile improvements in this release, namely multiple section
    inheritance and better parsing for iteration variables
 
@@ -480,6 +514,7 @@ IDE/Inifile Editor:
    analysis. Further performance and UI responsiveness improvements are planned.
 
 IDE/Sequence Chart:
+
  - Added 'Goto Simulation Time' and 'Goto Event Number' in the context menu.
 
  - 'Go to Simulation Time' in the 'Event Log' view now supports relative values.
@@ -491,10 +526,12 @@ IDE/Sequence Chart:
    newly recorded files. Existing event logs need to be re-recorded!
 
 IDE/Launcher:
+
  - The command-line for launching the simulation now uses relative paths instead
    of absolute ones. This makes the starting command-line easier to understand.
 
 IDE/Documentation Generator:
+
  - Added tilde notation as an alternative to automatic hyperlinking of module
    names in comments. The latter was often too agressive (e.g. linking to the
    IP module in the phrase "IP address" is wrong). Automatic hyperlinking can
@@ -517,6 +554,7 @@ IDE/Documentation Generator:
    file names for @page; added/refined test cases
 
 Tkenv:
+
  - Parallel simulation: Placeholder modules are now displayed with a semi-
    transparent icon (or if it's a rectangle or oval, with dotted border).
 
@@ -537,6 +575,7 @@ Tkenv:
  - Tcl errors are now logged into .tkenvlog instead of dumping them on stdout.
 
 Misc:
+
  - Added -g option to 'scavetool scalar' command. You can specify how the
    scalars are grouped into columns/variables.
 
