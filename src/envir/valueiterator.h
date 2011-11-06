@@ -36,44 +36,53 @@ NAMESPACE_BEGIN
  * (that is, commas are ignored within string constants).
  * If an item has the format <tt><i>expr..expr</i></tt> or
  * <tt><i>expr..expr</i> step <i>expr</i></tt>, it generates
- * a numeric sequence. Expression syntax is that accepted by
- * the Expression class in src/common. References to other iteration
- * variables are also accepted in expressions (e.g. '$x'); see
- * the Resolve class in scenario.cc.
+ * a numeric sequence.
  *
- * Example:
- * <pre>
- * ValueIterator v;
- * Expression::Resolver resolver = ...;
- * v.parse("1, 2, foo, bar, 5..8, 10..100 step 10, 10..1 step -1, 1.2e8..1.6e8 step 1e+7", &resolver);
- * v.dump();
- * </pre>
+ * Items may contain variable references, in the $var or ${var} syntax.
+ * For single items, variables will be textually substituted; for numeric
+ * sequences (from/to/step), variables will be textually substituted, then
+ * the from/to/step expressions will be evaluated using the Expression class
+ * in src/common.
+ *
+ * Usage: the string should be passed to the constructor or the parse() method.
+ * Before iteration, the restart() method MUST be called, with a map of variables
+ * to be substituted as argument. Then iteration may begin, using get() and
+ * operator++. Iteration may be restarted any number of times.
  */
 class ENVIR_API ValueIterator
 {
   public:
     typedef std::map<std::string,ValueIterator*> VariableMap; // maps variable names to their iterators
 
+    /**
+     * Represents an element in the iteration string (a single item, or one of
+     * the from/to/step expressions); stores both the original ("raw") string,
+     * and the result after variable substitution and optional evaluation.
+     * Currently also used for the constraint= expression.
+     */
     class Expr {
-        std::string text; // may contain variables
-        Expression::Value currentValue;
+      private:
+        std::string raw; // original text of item; may contain variable references
+        Expression::Value value;  // value after variable substitution and optional evalutation; filled in by substituteVariables() and evaluate()
         void checkType(char expected) const;
-    public:
+      public:
         Expr() {}
-        Expr(const char *text) : text(text) {}
+        Expr(const char *text) : raw(text) {}
         void collectVariablesInto(std::set<std::string>& vars) const;
-        void substituteVariables(const VariableMap& map);
-        void evaluate();
-        double dblValue() const { checkType('D'); return currentValue.dbl; }
-        bool boolValue() const { checkType('B'); return currentValue.bl; }
-        std::string strValue() const { checkType('S'); return currentValue.s; }
+        void substituteVariables(const VariableMap& map);  // raw -> value
+        void evaluate(); // value -> value
+        double dblValue() const { checkType('D'); return value.dbl; }
+        bool boolValue() const { checkType('B'); return value.bl; }
+        std::string strValue() const { checkType('S'); return value.s; }
     };
 
   private:
-    // the parsed iteration spec; it can be
-    //   - constant text
-    //   - '<from>..<to>' where <from> and <to> are either contants or numeric expressions
-    //   - '<from>..<to> step <step>' where <from>, <to> and <step> are either constants or numeric expressions
+    /**
+     * The parsed iteration spec; it can be
+     *   - constant text
+     *  - '<from>..<to>' where <from> and <to> are either contants or numeric expressions
+     *  - '<from>..<to> step <step>' where <from>, <to> and <step> are either constants or numeric expressions
+     */
     struct Item {
         enum Type { TEXT, FROM_TO_STEP};
         Type type;
@@ -132,14 +141,17 @@ class ENVIR_API ValueIterator
     /**
      * Stateless access: returns the length of the sequence, with numeric
      * ranges expanded. Does not change the state of the iterator.
+     *
+     * Note: restart() MUST BE CALLED before iteration!
      */
     int length() const;
-
 
     /**
      * Stateless access: returns the ith value in the sequence.
      * If i<0 or i>=length(), an error is thrown.
      * Does not change the state of the iterator.
+     *
+     * Note: restart() MUST BE CALLED before iteration!
      */
     std::string get(int k) const;
 
@@ -151,12 +163,16 @@ class ENVIR_API ValueIterator
 
     /**
      * Moves the iterator to the next element.
+     *
+     * Note: restart() MUST BE CALLED before iteration!
      */
     void operator++(int);
 
     /**
      * Returns the current element. Result is undefined when the iteration is
      * over (end() returns true).
+     *
+     * Note: restart() MUST BE CALLED before iteration!
      */
     std::string get() const;
 
@@ -172,8 +188,9 @@ class ENVIR_API ValueIterator
     int getPosition() const  {return pos;}
 
     /**
-     * Go to the ith position in the sequence.
-     * Returns false if there is no ith element.
+     * Restart the iteration, and go to the ith position in the sequence.
+     * Returns false if there is no ith element. The vars argument will
+     * be passed to restart().
      */
     bool gotoPosition(int pos, const VariableMap& vars);
 

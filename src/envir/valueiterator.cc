@@ -42,16 +42,16 @@ inline const char* getTypeName(char type)
 
 void ValueIterator::Expr::checkType(char expected) const
 {
-    if (currentValue.type != expected)
+    if (value.type != expected)
     {
-        if (currentValue.type)
+        if (value.type)
             throw opp_runtime_error("%s expected, but %s (%s) found in the expression '%s'",
-                    getTypeName(expected), getTypeName(currentValue.type),
-                    const_cast<Expression::Value*>(&currentValue)->str().c_str(),
-                    text.c_str());
+                    getTypeName(expected), getTypeName(value.type),
+                    const_cast<Expression::Value*>(&value)->str().c_str(),
+                    raw.c_str());
         else
             throw opp_runtime_error("%s expected, but nothing found in the expression '%s'",
-                    getTypeName(expected), text.c_str());
+                    getTypeName(expected), raw.c_str());
     }
 }
 
@@ -64,14 +64,14 @@ inline bool isVariableNameChar(char c)
 void ValueIterator::Expr::collectVariablesInto(set<string>& result) const
 {
     string::size_type start = 0, dollarPos;
-    while (start < text.size() && (dollarPos = text.find('$', start)) != string::npos)
+    while (start < raw.size() && (dollarPos = raw.find('$', start)) != string::npos)
     {
-        start = (dollarPos+1 < text.size() && text[dollarPos+1]=='{') ? dollarPos+2 : dollarPos+1; // support both "$x" and "${x}"
+        start = (dollarPos+1 < raw.size() && raw[dollarPos+1]=='{') ? dollarPos+2 : dollarPos+1; // support both "$x" and "${x}"
         size_t end = start;
-        while (end < text.size() && isVariableNameChar(text[end]))
+        while (end < raw.size() && isVariableNameChar(raw[end]))
             ++end;
-        if (end > start && (start!=dollarPos+2 || (end+1 < text.size() && text[end+1]=='}')))
-            result.insert(text.substr(start, end-start));
+        if (end > start && (start!=dollarPos+2 || (end+1 < raw.size() && raw[end+1]=='}')))
+            result.insert(raw.substr(start, end-start));
         start = end;
     }
 }
@@ -94,28 +94,28 @@ void ValueIterator::Expr::substituteVariables(const VariableMap& map)
     string result;
 
     string::size_type dollarPos, varStart, varEnd, prevEnd=0;
-    while (prevEnd < text.size() && (dollarPos = text.find('$', prevEnd)) != string::npos)
+    while (prevEnd < raw.size() && (dollarPos = raw.find('$', prevEnd)) != string::npos)
     {
         // copy segment before '$'
-        result.append(text.substr(prevEnd, dollarPos-prevEnd));
+        result.append(raw.substr(prevEnd, dollarPos-prevEnd));
 
-        varStart = (dollarPos+1<text.size() && text[dollarPos+1]=='{')? dollarPos+2 : dollarPos+1;
+        varStart = (dollarPos+1<raw.size() && raw[dollarPos+1]=='{')? dollarPos+2 : dollarPos+1;
 
         // find variable end
-        for (varEnd = varStart; varEnd < text.size() && isVariableNameChar(text[varEnd]); ++varEnd)
+        for (varEnd = varStart; varEnd < raw.size() && isVariableNameChar(raw[varEnd]); ++varEnd)
             ;
 
         if (varEnd == varStart) // no varname after "$" or "${"
         {
-            result.append(text.substr(dollarPos, varStart-dollarPos)); // copy "$" or "${"
+            result.append(raw.substr(dollarPos, varStart-dollarPos)); // copy "$" or "${"
         }
-        else if (varStart == dollarPos+2 && (varEnd==text.size() || text[varEnd]!='}')) // started with "${", no closing "}"
+        else if (varStart == dollarPos+2 && (varEnd==raw.size() || raw[varEnd]!='}')) // started with "${", no closing "}"
         {
-            result.append(text.substr(dollarPos, varEnd-dollarPos));
+            result.append(raw.substr(dollarPos, varEnd-dollarPos));
         }
         else
         {
-            string name = text.substr(varStart, varEnd-varStart);
+            string name = raw.substr(varStart, varEnd-varStart);
             if (varStart == dollarPos+2)
                 varEnd++; // skip closing "}"
             VariableMap::const_iterator it = map.find(name);
@@ -131,34 +131,34 @@ void ValueIterator::Expr::substituteVariables(const VariableMap& map)
     }
 
     // append last segment
-    if (prevEnd < text.size())
-        result.append(text.substr(prevEnd));
+    if (prevEnd < raw.size())
+        result.append(raw.substr(prevEnd));
 
-    currentValue = result;
+    value = result;
 }
 
 void ValueIterator::Expr::evaluate()
 {
-    Assert(currentValue.type == 'S');
+    Assert(value.type == 'S');
 
     FunctionResolver resolver;
     Expression expr;
     try
     {
-        expr.parse(currentValue.s.c_str(), &resolver);
+        expr.parse(value.s.c_str(), &resolver);
     }
     catch (std::exception& e)
     {
-        throw opp_runtime_error("Parse error in expression: %s", currentValue.s.c_str(), e.what());
+        throw opp_runtime_error("Parse error in expression: %s", value.s.c_str(), e.what());
     }
 
     try
     {
-        currentValue = expr.evaluate();
+        value = expr.evaluate();
     }
     catch (std::exception& e)
     {
-        throw opp_runtime_error("Cannot evaluate expression: %s (%s)", currentValue.s.c_str(), e.what());
+        throw opp_runtime_error("Cannot evaluate expression: %s (%s)", value.s.c_str(), e.what());
     }
 }
 
@@ -210,6 +210,8 @@ void ValueIterator::Item::restart(const VariableMap& map)
     {
     case TEXT:
         text.substituteVariables(map);
+        // note: no evaluate()! only from-to-step are evaluated, evaluation of other
+        // iteration items are left to NED parameter evaluation
         break;
     case FROM_TO_STEP:
         from.substituteVariables(map);
