@@ -32,15 +32,6 @@ $tempfilename ="linkall.tmp";
 );
 foreach $i (@knownlibs) {$knownlibs{$i} = 1;}
 
-# collect linker path
-@libpath = split(';', $ENV{LIB});
-foreach $arg (@ARGV) {
-    if ($arg =~ /[-\/]libpath:(.*)/i) {
-        $dir = $1;
-        print("adding dir to lib path: $dir\n") if $verbose;
-        push(@libpath, $dir);
-    }
-}
 
 # remove temp files when killed by Ctrl+C, by catching the INT signal
 $SIG{'INT'} = 'removeTempFiles';
@@ -64,6 +55,16 @@ foreach $arg (@ARGV) {
     }
     else {
         push(@ARGV2, $arg);
+    }
+}
+
+# collect linker path
+@libpath = split(';', $ENV{LIB});
+foreach $arg (@ARGV2) {
+    if ($arg =~ /^[-\/]libpath:"?(.*?)"?$/i) {
+        $dir = $1;
+        print("adding dir to lib path: $dir\n") if $verbose;
+        push(@libpath, $dir);
     }
 }
 
