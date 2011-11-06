@@ -11,13 +11,15 @@ static void expand(const char *txt)
     ev << "'" << txt << "' -> ";
     try {
         ValueIterator it(txt);
+        ValueIterator::VariableMap vars; // no vars
+        it.restart(vars);
         ev << "len=" << it.length() << ":";
         for (; !it.end(); it++)
             ev << " (" << it.get() << ")";
         ev << "\n";
     }
     catch (std::exception& e) {
-        ev << "exception\n";  // e.what() << "\n";
+        ev << "exception: " << e.what() << "\n";
     }
 }
 
