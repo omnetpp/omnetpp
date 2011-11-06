@@ -61,7 +61,7 @@ inline bool isVariableNameChar(char c)
                                                //       Not allowed here, because '$x$y' would refer to a variable named 'x$y'
 }
 
-void ValueIterator::Expr::collectVariablesInto(set<string> &result) const
+void ValueIterator::Expr::collectVariablesInto(set<string>& result) const
 {
     string::size_type start = 0, dollarPos;
     while (start < text.size() && (dollarPos = text.find('$', start)) != string::npos)
@@ -89,7 +89,7 @@ class FunctionResolver : public Expression::Resolver
     }
 };
 
-void ValueIterator::Expr::substituteVariables(const VariableMap &map)
+void ValueIterator::Expr::substituteVariables(const VariableMap& map)
 {
     string result;
 
@@ -147,7 +147,7 @@ void ValueIterator::Expr::evaluate()
     {
         expr.parse(currentValue.s.c_str(), &resolver);
     }
-    catch (std::exception &e)
+    catch (std::exception& e)
     {
         throw opp_runtime_error("Parse error in expression: %s", currentValue.s.c_str(), e.what());
     }
@@ -156,7 +156,7 @@ void ValueIterator::Expr::evaluate()
     {
         currentValue = expr.evaluate();
     }
-    catch (std::exception &e)
+    catch (std::exception& e)
     {
         throw opp_runtime_error("Cannot evaluate expression: %s (%s)", currentValue.s.c_str(), e.what());
     }
@@ -189,7 +189,7 @@ void ValueIterator::Item::parse(const char *s)
     }
 }
 
-void ValueIterator::Item::collectVariablesInto(std::set<std::string> &result) const
+void ValueIterator::Item::collectVariablesInto(std::set<std::string>& result) const
 {
     switch (type)
     {
@@ -204,7 +204,7 @@ void ValueIterator::Item::collectVariablesInto(std::set<std::string> &result) co
     }
 }
 
-void ValueIterator::Item::restart(const VariableMap &map)
+void ValueIterator::Item::restart(const VariableMap& map)
 {
     switch (type)
     {
@@ -311,7 +311,7 @@ std::string ValueIterator::get(int index) const
     return "";
 }
 
-void ValueIterator::restart(const VariableMap &vars)
+void ValueIterator::restart(const VariableMap& vars)
 {
     // substitute variables here
     for (std::vector<Item>::iterator it = items.begin(); it != items.end(); ++it)
@@ -337,7 +337,7 @@ void ValueIterator::operator++(int)
     }
 }
 
-bool ValueIterator::gotoPosition(int pos, const VariableMap &vars)
+bool ValueIterator::gotoPosition(int pos, const VariableMap& vars)
 {
     restart(vars);
     for ( ; pos > 0 && !end(); --pos)

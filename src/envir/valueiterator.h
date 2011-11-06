@@ -61,8 +61,8 @@ class ENVIR_API ValueIterator
     public:
         Expr() {}
         Expr(const char *text) : text(text) {}
-        void collectVariablesInto(std::set<std::string> &vars) const;
-        void substituteVariables(const VariableMap &map);
+        void collectVariablesInto(std::set<std::string>& vars) const;
+        void substituteVariables(const VariableMap& map);
         void evaluate();
         double dblValue() const { checkType('D'); return currentValue.dbl; }
         bool boolValue() const { checkType('B'); return currentValue.bl; }
@@ -83,7 +83,7 @@ class ENVIR_API ValueIterator
         Item() : type(TEXT) {}
         void parse(const char *s);
         void collectVariablesInto(std::set<std::string>& result) const;
-        void restart(const VariableMap &map);
+        void restart(const VariableMap& map);
 
         int getNumValues() const;
         std::string getValueAsString(int k) const;
@@ -147,7 +147,7 @@ class ENVIR_API ValueIterator
      * Restarts the iteration. It substitutes variables in the expression
      * defining this iterator and re-evaluates the <from>, <to>, <step> expressions.
      */
-    void restart(const VariableMap &vars);
+    void restart(const VariableMap& vars);
 
     /**
      * Moves the iterator to the next element.
@@ -175,7 +175,7 @@ class ENVIR_API ValueIterator
      * Go to the ith position in the sequence.
      * Returns false if there is no ith element.
      */
-    bool gotoPosition(int pos, const VariableMap &vars);
+    bool gotoPosition(int pos, const VariableMap& vars);
 
     /**
      * Returns true when the iteration is over, that is, after invoking
