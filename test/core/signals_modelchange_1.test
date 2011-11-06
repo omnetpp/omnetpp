@@ -122,11 +122,6 @@ SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHAN
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE" (id=1), class cPostParameterChangeNotification, info:
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "PRE_MODEL_CHANGE" (id=0), class cPreParameterChangeNotification, info:
 SIGNAL from channel "Test.twoNodes.node2.g$o[0].channel", signal "POST_MODEL_CHANGE" (id=1), class cPostParameterChangeNotification, info:
-Initializing channel Test.twoNodes.node1.g$o[0].channel, stage 0
-Initializing channel Test.twoNodes.node2.g$o[0].channel, stage 0
-Initializing module Test.twoNodes, stage 0
-Initializing module Test.twoNodes.node1, stage 0
-Initializing module Test.twoNodes.node2, stage 0
 
 DELETING:
 SIGNAL from module "Test.twoNodes", signal "PRE_MODEL_CHANGE" (id=0), class cPreModuleDeleteNotification, info:
