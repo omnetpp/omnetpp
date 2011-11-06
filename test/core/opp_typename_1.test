@@ -33,7 +33,7 @@ PRINT(const char *)
 PRINT(int *)
 PRINT(int * *)
 PRINT(const int *)
-PRINT(const int * *)
+PRINT(const int * *)   // this is the problematic one, usually
 
 PRINT(Alma)
 PRINT(Alma *)
@@ -44,7 +44,8 @@ PRINT(const @TESTNAME@::Korte *)
 
 %subst: /char const \*/const char */
 %subst: /int const \*/const int */
-%subst: /int const \* \*/int * * const/
+%subst: /int const \* \*/const int * */
+%subst: /int \* \* const/const int * */
 %subst: /Alma const \*/const Alma */
 %subst: /@TESTNAME@::Korte const \*/const @TESTNAME@::Korte */
 
@@ -67,7 +68,7 @@ const char * = const char *
 int * = int *
 int * * = int * *
 const int * = const int *
-const int * * = int * * const
+const int * * = const int * *
 Alma = Alma
 Alma * = Alma *
 const Alma * = const Alma *
