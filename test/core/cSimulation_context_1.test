@@ -96,25 +96,21 @@ cmdenv-express-mode = false
 cmdenv-event-banners = false
 
 %contains: stdout
-Initializing channel Test.a.g$o.channel, stage 0
+Initializing...
 - Test.a.g$o.channel initialize
-Initializing channel Test.b.g$o.channel, stage 0
 - Test.b.g$o.channel initialize
-Initializing module Test, stage 0
-Initializing module Test.a, stage 0
 - Test.a initialize
-Initializing module Test.b, stage 0
 - Test.b initialize
 
 Running simulation...
 - Test.a handleMessage: "timer"
 - Test.a.g$o.channel process: "packet"
-- Test.b handleMessage: "packet"
 - Test.b handleMessage: "timer"
 - Test.b.g$o.channel process: "packet"
+- Test.b handleMessage: "packet"
 - Test.a handleMessage: "packet"
 
-<!> No more events -- simulation ended.
+<!> No more events -- simulation ended at event #5, t=1.
 
 
 Calling finish() at end of Run #0...
@@ -122,4 +118,3 @@ Calling finish() at end of Run #0...
 - Test.b.g$o.channel finish
 - Test.a finish
 - Test.b finish
-
