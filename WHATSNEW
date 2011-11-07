@@ -49,6 +49,9 @@ Sim:
 
   - Fixed all warnings to make it compile using -Wall -Werror.
 
+  - Coroutines used for 'activities' are now implemented using the 
+    swapcontext() POSIX call (if it is available on the system).
+
 Sample simulations:
 
   - Database example revived. It demonstrates using database as configuration

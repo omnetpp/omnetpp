@@ -1,5 +1,12 @@
 2011-10-28  ------ omnetpp-4.2 released ------
 
+2011-11-05  Zoltan Bojthe
+
+    * Activities are now using the swapcontext() POSIX call 
+      to implement coroutines (if available on the platform).
+      Newer Linux distros use 'fortified' gcc, so the older coroutine
+      library using setjmp()/longjmp() does not work any more.
+
 2011-10-24  Andras Varga
 
 	* ccomponent.h: asserted that registerSignal() cannot be invoked
