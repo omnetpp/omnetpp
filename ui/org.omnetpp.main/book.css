@@ -46,6 +46,9 @@ P.Note {
 	vertical-align: baseline;
 	text-transform: none;
 }
+P.subheading {
+	font-weight: Bold;
+}
 EM.UILabel {
 	font-weight: Bold;
 	font-style: normal;
