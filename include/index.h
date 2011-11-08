@@ -178,7 +178,6 @@
  *    - cTopology supports routing in telecommunication or multiprocessor networks
  *    - cStringTokenizer splits up a string to words
  *    - cFSM is used to build Final State Machines
- *    - cWatch makes variables visible (inspectable) in Tkenv
  *    - cVisitor: subclass from this to traverse the tree of simulation objects
  *
  * Many other classes closely related to the above ones are not listed
