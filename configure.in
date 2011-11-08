@@ -325,8 +325,7 @@ else
         #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
 
         # -w1 disables all remarks
-        CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
-        CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
+        CFLAGS_ARCH="$CFLAGS_ARCH -w1 -wd654 -wd177"
     fi
     AS=${AS:-as}
     AR=${AR:-ar cr}
@@ -357,8 +356,7 @@ fi
 #----------------------
 # check and disable stack checking to avoid opplibs.so dependence on glibc 2.4
 #----------------------
-AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector")
-AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector")
+AC_PROG_CXX_OPTION(-fno-stack-protector, CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-protector")
 
 #----------------------
 # check for support of --no-as-needed  linker option. GCC 4.6 has changed not to link with a shared lib

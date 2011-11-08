@@ -3286,8 +3286,7 @@ else
         #CFLAGS="$CFLAGS -wd654 -wd177 -wd869 -wd981 -wd279 -wd1572 -wd424 -wd1682 -wd1683 -wd810 -wd1418 -wd1419"
 
         # -w1 disables all remarks
-        CFLAGS_DEBUG="$CFLAGS_DEBUG -w1 -wd654 -wd177"
-        CFLAGS_RELEASE="$CFLAGS_RELEASE -w1 -wd654 -wd177"
+        CFLAGS_ARCH="$CFLAGS_ARCH -w1 -wd654 -wd177"
     fi
     AS=${AS:-as}
     AR=${AR:-ar cr}
@@ -3431,41 +3430,7 @@ if ac_fn_cxx_try_link "$LINENO"; then :
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
         CXX="$ac_save_CXX"
-        CFLAGS_RELEASE="$CFLAGS_RELEASE -fno-stack-protector"
-
-else
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-        CXX="$ac_save_CXX"
-
-
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CXX supports -fno-stack-protector" >&5
-$as_echo_n "checking whether $CXX supports -fno-stack-protector... " >&6; }
-    ac_save_CXX="$CXX"
-    CXX="$CXX -fno-stack-protector"
-    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-        CXX="$ac_save_CXX"
-        CFLAGS_DEBUG="$CFLAGS_DEBUG -fno-stack-protector"
+        CFLAGS_ARCH="$CFLAGS_ARCH -fno-stack-protector"
 
 else
 
