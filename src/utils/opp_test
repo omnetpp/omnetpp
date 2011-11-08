@@ -952,7 +952,7 @@ namespace @TESTNAME@ {
 class @MODULE@ : public cSimpleModule
 {
     public:
-        @MODULE@() : cSimpleModule(16384) {}
+        @MODULE@() : cSimpleModule(32768) {}
         virtual void activity();
 };
 
