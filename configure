@@ -3556,7 +3556,11 @@ rm -f core conftest.err conftest.$ac_objext \
 
 #----------------------
 # check if swapcontext() call is available (used for coroutines)
+# NOTE: we should explicitly exclude MAC OS because AC_CHECK_FUNC reports that swapcontext()
+# is present, but it is uninmplemented (and deprecated) on OS X 10.6 and later. We use the
+# original 'portable' implementation on MAC.
 #----------------------
+if test "$PLATFORM" != "macosx"; then
 for ac_func in swapcontext
 do :
   ac_fn_cxx_check_func "$LINENO" "swapcontext" "ac_cv_func_swapcontext"
@@ -3564,11 +3568,11 @@ if test "x$ac_cv_func_swapcontext" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_SWAPCONTEXT 1
 _ACEOF
- CFLAGS_RELEASE="$CFLAGS_RELEASE -DHAVE_SWAPCONTEXT" CFLAGS_DEBUG="$CFLAGS_DEBUG -DHAVE_SWAPCONTEXT"
+ CFLAGS_ARCH="$CFLAGS_ARCH -DHAVE_SWAPCONTEXT"
 fi
 done
 
-
+fi
 #----------------------
 # Test if "-fPIC" is needed for shared libs (there's a performance penalty if we use it unnecessarily)
 #----------------------
