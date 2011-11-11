@@ -17,6 +17,8 @@ Linux:
 
 $HOME/.gdbinit:
 --8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--8<--
+set unwindonsignal on
+
 python
 
 import sys

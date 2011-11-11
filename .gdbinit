@@ -1,3 +1,5 @@
+set unwindonsignal on
+
 python
 
 import sys
