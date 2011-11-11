@@ -70,6 +70,12 @@
             commandId="org.omnetpp.ned.openNedType"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="M1+M2+N"/>
+     <!-- undefine Ctrl-Shift-N for C++ editors (add includes) -->
+     <key
+            sequence="M1+M2+N"
+            contextId="org.eclipse.cdt.ui.cEditorScope"
+            commandId=""
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
