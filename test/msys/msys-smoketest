@@ -1,0 +1,261 @@
+#! /bin/sh
+#
+# Smoke test of MSYS programs we include with OMNeT++/OMNEST.
+# Should be sufficient so that it unveils missing DLLs, DLL incompatibility,
+# and similar issues.
+#
+# Author: Andras Varga, 2011
+#
+
+
+#
+# Usage: check <command-to-run> [<expected-exit-code>]
+#
+# When <expected-exit-code> is missing, zero is assumed.
+#
+check()
+{
+  # take args
+  command=$1
+  expected_exitcode=$2
+  test -z "$expected_exitcode" && expected_exitcode=0
+
+  # progress report, logging etc
+  echo -e -n "$command\r"
+  echo '---------------------------------' >>$logfile
+  echo $command >>$logfile
+
+  # run test program
+  $command >>$logfile 2>&1
+  exitcode=$?
+
+  # check exit code
+  if [ $exitcode != $expected_exitcode ]; then
+      echo "FAIL: $command  ===> exitcode $exitcode (expected $expected_exitcode)" | tee -a $logfile
+  fi
+
+  # $remaining_progs will collect untested programs - remove this one from it
+  prog=`echo $command | awk '{print $1}'`
+  remaining_progs=`echo " $remaining_progs " | perl -pe "s/\\Q $prog \\E/ /g"`  # must use \Q..\E and perl due to [.exe
+
+  # clear line
+  echo -e -n "                                                               \r"
+}
+
+# use /tmp/msystest as working dir
+cd /tmp
+rm -rf msystest
+mkdir msystest
+cd msystest
+
+logfile=`pwd`/msys-smoketest.log
+
+remaining_progs=`(cd /bin; echo *.exe)`
+
+# dummy input files for the programs to chew on
+echo '{print $1}' >awkprog
+echo 'exit' >tclprog
+echo 'digraph G { a -> b -> c; }' >dotfile
+zip a.zip dotfile  >/dev/null
+
+# tests
+check 'a2p.exe awkprog'
+check 'awk.exe --version'
+check 'basename.exe --version'
+check 'bash.exe --version'
+check 'bison.exe --version'
+check 'bunzip2.exe --help'
+check 'bzcat.exe --help'
+check 'bzip2.exe --help'
+check 'bzip2recover.exe' 1
+check 'cat.exe --version'
+check 'chgrp.exe --version'
+check 'chmod.exe --version'
+check 'chown.exe --version'
+check 'chroot.exe --version'
+check 'cksum.exe --version'
+check 'cmp.exe --version'
+check 'comm.exe --version'
+check 'conv.exe --version'
+check 'cp.exe --version'
+check 'crypt.exe dummy'
+check 'csplit.exe --version'
+check 'curl.exe --version'
+check 'cut.exe --version'
+check 'd2u.exe --version'
+check 'date.exe --version'
+check 'dd.exe --version'
+check 'df.exe --version'
+check 'diff.exe --version'
+check 'diff3.exe --version'
+check 'dircolors.exe --version'
+check 'dirname.exe --version'
+check 'dir.exe --version'
+check 'dos2unix.exe --version'
+check 'dot.exe -Tgif dotfile'
+check 'dot.exe -Tpng dotfile'
+check 'dot.exe -Tjpg dotfile'
+check 'doxygen.exe --version'
+check 'doxytag.exe' 1
+check 'du.exe --version'
+check 'echo.exe --version'
+check 'egrep.exe --version'
+check 'env.exe --version'
+check 'error-mode.exe --version'
+check 'ex.exe --version'
+check 'expand.exe --version'
+check 'expr.exe --version'
+check 'factor.exe --version'
+check 'false.exe --version' 1
+check 'fgrep.exe --version'
+check 'file.exe --help'
+check 'find.exe --version'
+check 'flex.exe --version'
+check 'fmt.exe --version'
+check 'fold.exe --version'
+check 'funzip.exe a.zip'
+check 'gawk-3.1.7.exe --version'
+check 'git-upload-pack.exe' 129
+check 'git.exe --version'  # note: git is tested in detail later
+check 'grep.exe --version'
+check 'gzip.exe --version'
+check 'head.exe --version'
+check 'hostname.exe --version'
+check 'iconv.exe --version'
+check 'id.exe --version'
+check 'install.exe --version'
+check 'join.exe --version'
+check 'kill.exe --version'
+check 'less.exe --version'
+check 'lessecho.exe --version'
+check 'lesskey.exe --version'
+check 'link.exe --version'
+check 'ln.exe --version'
+check 'logname.exe --version'
+check 'ls.exe --version'
+check 'lzcat.exe --version'
+check 'lzma.exe --version'
+check 'lzmadec.exe --version'
+check 'lzmainfo.exe --version'
+check 'm4.exe --version'
+check 'make.exe --version'
+check 'md5sum.exe --version'
+check 'minigzip.exe /dev/null'
+check 'mkdir.exe --version'
+check 'mkfifo.exe --version'
+check 'mknod.exe --version'
+check 'msysmnt.exe'
+check 'mv.exe --version'
+check 'nice.exe --version'
+check 'nl.exe --version'
+check 'nohup.exe --version'
+check 'od.exe --version'
+check 'oldfind.exe --version'
+check 'paste.exe --version'
+check 'patch.exe --version'
+check 'pathchk.exe --version'
+check 'perl.exe --version'
+check 'perl5.8.8.exe --version'
+check 'pgawk-3.1.7.exe --version'
+check 'pgawk.exe --version'
+check 'pinky.exe --version'
+check 'pr.exe --version'
+check 'printf.exe --version'
+check 'ps.exe --version'
+check 'ptx.exe --version'
+check 'pwd.exe --version'
+check 'python.exe --version'
+check 'pythonw.exe --version'
+check 'readlink.exe --version'
+check 'rm.exe --version'
+check 'rmdir.exe --version'
+check 'rview.exe --version'
+check 'rvim.exe --version'
+check 'scp.exe' 1
+check 'sdiff.exe --version'
+check 'sed.exe --version'
+check 'seq.exe --version'
+check 'sftp.exe' 1
+check 'sh.exe --version'
+check 'sha1sum.exe --version'
+check 'shred.exe --version'
+check 'sleep.exe --version'
+check 'slogin.exe dummyhost' 255
+check 'sort.exe --version'
+check 'split.exe --version'
+check 'ssh-add.exe' 2
+check 'ssh-agent.exe'
+check 'ssh-keygen.exe </dev/null' 1
+check 'ssh-keyscan.exe dummyhost' 255
+check 'ssh.exe dummyhost' 255
+check 'stat.exe --version'
+check 'stty.exe --version'
+check 'su.exe --version'
+check 'sum.exe --version'
+check 'sync.exe --version'
+check 'tac.exe --version'
+check 'tail.exe --version'
+check 'tar.exe --version'
+check 'tclsh.exe tclprog'
+check 'tclsh84.exe tclprog'
+check 'tee.exe --version'
+check 'test.exe hello'
+check 'touch.exe --version'
+check 'tr.exe --version'
+check 'true.exe'
+check 'tsort.exe --version'
+check 'tty.exe --version'
+check 'uname.exe --version'
+check 'unexpand.exe --version'
+check 'uniq.exe --version'
+check 'unix2dos.exe --version'
+check 'unlink.exe --version'
+check 'unlzma.exe --version'
+check 'unxz.exe --version'
+check 'unzip.exe -o a.zip'
+check 'unzipsfx.exe --version' 10
+check 'users.exe --version'
+check 'vdir.exe --version'
+check 'view.exe --version'
+check 'vim.exe --version'
+check 'vimdiff.exe --version'
+check 'w9xpopen.exe dummy' 1
+check 'wc.exe --version'
+check 'wget.exe --version'
+check 'who.exe --version'
+check 'whoami.exe --version'
+check 'wish.exe tclprog'
+check 'wish84.exe tclprog'
+check 'xargs.exe --version'
+check 'xmlcatalog.exe' 1
+check 'xmllint.exe --version'
+check 'xxd.exe --version'
+check 'xz.exe --version'
+check 'xzcat.exe --version'
+check 'xzdec.exe --version'
+check 'yes.exe --version'
+check 'zip.exe --version'
+check 'zipcloak.exe'
+check 'zipinfo.exe'
+check 'zipnote.exe'
+check 'zipsplit.exe'
+check '[.exe --version'
+
+# exercise git a little, on a random publicly available small repo
+check 'git.exe clone https://github.com/JackDanger/jack.git' # https:// url
+rm -rf jack
+check 'git.exe clone git://github.com/JackDanger/jack.git'  # git:// url
+cd jack
+echo '#include <whatever.h>' > dummy.c
+check 'git.exe add dummy.c'
+check 'git.exe commit -m dummy-commit'
+check 'git.exe remote add xxx git@github.com:JackDanger/jack.git' # git@github r/w url
+check 'git.exe push xxx' 128
+
+# report results
+remaining_progs=`echo "$remaining_progs" | perl -pe "s/ +/ /g"` # trim
+echo
+echo "untested programs: $remaining_progs"
+echo "detailed log in: $logfile"
+
+
