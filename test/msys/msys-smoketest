@@ -1,6 +1,6 @@
 #! /bin/sh
 #
-# Smoke test of MSYS programs we include with OMNeT++/OMNEST.
+# Smoke test of MSYS and MinGW programs we include with OMNeT++/OMNEST.
 # Should be sufficient so that it unveils missing DLLs, DLL incompatibility,
 # and similar issues.
 #
@@ -50,7 +50,7 @@ cd msystest
 
 logfile=`pwd`/msys-smoketest.log
 
-remaining_progs=`(cd /bin; echo *.exe)`
+remaining_progs=`(cd /bin; echo -n *.exe); echo -n " "; (cd ~/mingw/bin; echo -n *.exe)`
 
 # dummy input files for the programs to chew on
 echo '{print $1}' >awkprog
@@ -58,7 +58,7 @@ echo 'exit' >tclprog
 echo 'digraph G { a -> b -> c; }' >dotfile
 zip a.zip dotfile  >/dev/null
 
-# tests
+# msys programs
 check 'a2p.exe awkprog'
 check 'awk.exe --version'
 check 'basename.exe --version'
@@ -92,9 +92,9 @@ check 'dircolors.exe --version'
 check 'dirname.exe --version'
 check 'dir.exe --version'
 check 'dos2unix.exe --version'
-check 'dot.exe -Tgif dotfile'
-check 'dot.exe -Tpng dotfile'
-check 'dot.exe -Tjpg dotfile'
+check 'dot.exe -Tgif dotfile -oa.gif'
+check 'dot.exe -Tpng dotfile -oa.png'
+check 'dot.exe -Tjpg dotfile -oa.jpg'
 check 'doxygen.exe --version'
 check 'doxytag.exe' 1
 check 'du.exe --version'
@@ -114,6 +114,7 @@ check 'flex.exe --version'
 check 'fmt.exe --version'
 check 'fold.exe --version'
 check 'funzip.exe a.zip'
+check 'gawk.exe --version'
 check 'gawk-3.1.7.exe --version'
 check 'git-upload-pack.exe' 129
 check 'git.exe --version'  # note: git is tested in detail later
@@ -160,6 +161,7 @@ check 'pgawk-3.1.7.exe --version'
 check 'pgawk.exe --version'
 check 'pinky.exe --version'
 check 'pr.exe --version'
+check 'printenv.exe'
 check 'printf.exe --version'
 check 'ps.exe --version'
 check 'ptx.exe --version'
@@ -205,6 +207,7 @@ check 'tr.exe --version'
 check 'true.exe'
 check 'tsort.exe --version'
 check 'tty.exe --version'
+check 'u2d.exe --version'
 check 'uname.exe --version'
 check 'unexpand.exe --version'
 check 'uniq.exe --version'
@@ -241,11 +244,46 @@ check 'zipnote.exe'
 check 'zipsplit.exe'
 check '[.exe --version'
 
+# mingw programs
+check 'addr2line.exe --version'
+check 'ar.exe --version'
+check 'as.exe --version'
+check 'c++.exe --version'
+check 'c++filt.exe --version'
+check 'cpp.exe --version'
+check 'dlltool.exe --version'
+check 'dllwrap.exe --version'
+check 'elfedit.exe --version'
+check 'g++.exe --version'
+check 'gcc.exe --version'
+check 'gcov.exe --version'
+check 'gdb.exe --version'
+check 'gdbreplay.exe --version'
+check 'gdbserver.exe --version'
+check 'gprof.exe --version'
+check 'ld.bfd.exe --version'
+check 'ld.exe --version'
+check 'mingw32-c++.exe --version'
+check 'mingw32-g++.exe --version'
+check 'mingw32-gcc-4.6.1.exe --version'
+check 'mingw32-gcc.exe --version'
+check 'nm.exe --version'
+check 'objcopy.exe --version'
+check 'objdump.exe --version'
+check 'quserex-test.exe --version'
+check 'ranlib.exe --version'
+check 'readelf.exe --version'
+check 'size.exe --version'
+check 'strings.exe --version'
+check 'strip.exe --version'
+check 'windmc.exe --version'
+check 'windres.exe --version'
+
 # exercise git a little, on a random publicly available small repo
 check 'git.exe clone https://github.com/JackDanger/jack.git' # https:// url
 rm -rf jack
 check 'git.exe clone git://github.com/JackDanger/jack.git'  # git:// url
-cd jack
+cd jack || echo 'Warning: test repo not found -- subsequent git tests are likely to fail'
 echo '#include <whatever.h>' > dummy.c
 check 'git.exe add dummy.c'
 check 'git.exe commit -m dummy-commit'
@@ -258,4 +296,7 @@ echo
 echo "untested programs: $remaining_progs"
 echo "detailed log in: $logfile"
 
+# try killing ssh-agents we run during the tests
+#sshagents=`ps | grep ssh-agent | awk '{print $1}'`
+#kill $sshagents  # usually we get 'error: not owner'
 
