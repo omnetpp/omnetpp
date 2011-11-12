@@ -220,7 +220,7 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // (e.g. the system module which is owned by the global object 'simulation').
     cModule *prevp, *nextp; // pointers to sibling submodules
     cModule *firstsubmodp;  // pointer to first submodule
-    cModule *lastsubmodp;   // pointer to last getSubmodule(needed for efficient append operation)
+    cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
     typedef std::set<cGate::Name> NamePool;
     static NamePool namePool;

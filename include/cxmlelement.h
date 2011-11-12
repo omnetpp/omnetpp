@@ -296,14 +296,14 @@ class SIM_API cXMLElement
      *  - <tt>foo</tt> -- same as <tt>./foo</tt> (initial <tt>./</tt> can be omitted)
      *  - <tt>./foo</tt> -- first "foo" child of this node
      *  - <tt>./foo/bar</tt> -- first "bar" child of first "foo" child of this node
-     *  - <tt>.//bar</tt> -- first "bar" anywhere under this getNode(depth-first search!)
-     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this getNode(omit spaces)
+     *  - <tt>.//bar</tt> -- first "bar" anywhere under this node (depth-first search!)
+     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this node (remove the spaces!)
      *  - <tt>./foo[0]</tt> -- first "foo" child of this node
      *  - <tt>./foo[1]</tt> -- second "foo" child of this node
      *  - <tt>./foo[\@color='green']</tt> -- first "foo" child which has attribute "color" with value "green"
      *  - <tt>.//bar[1]</tt> -- a "bar" anywhere under this node which is the second "bar" among its siblings
-     *  - <tt>.// * [\@color='yellow']</tt> -- an element anywhere under this node with attribute color="yellow" (omit spaces)
-     *  - <tt>.// * [\@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" getNode(omit spaces)
+     *  - <tt>.// * [\@color='yellow']</tt> -- an element anywhere under this node with attribute color="yellow" (remove the spaces!)
+     *  - <tt>.// * [\@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" node (remove the spaces!)
      *
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
