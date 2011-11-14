@@ -27,13 +27,14 @@ import org.eclipse.jface.text.rules.IWordDetector;
 import org.eclipse.jface.text.templates.Template;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.ned.core.INedResources;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver.IPredicate;
 import org.omnetpp.ned.model.pojo.SubmoduleElement;
 
@@ -48,6 +49,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author andras
  */
 public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcessor {
+    private static final String IDENT_REGEX = Keywords.NED_IDENT_REGEX;
 
 	/**
 	 * Simple content assist tip closer. The tip is valid in a range
@@ -148,7 +150,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 		// first, get rid of everything before any arrow(s), because it causes a problem for the next regexp
 		line = line.replaceFirst("^.*(-->|<--|<-->)", "");
 		// identifier followed by ".", potentially a submodule index ("[something]") in between
-		Matcher matcher = Pattern.compile("([A-Za-z_][A-Za-z0-9_]*) *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
+		Matcher matcher = Pattern.compile("(" + IDENT_REGEX + ") *(\\[[^\\[\\]]*\\])? *\\.$").matcher(line);
 		if (matcher.find()) { // use find() because line may start with garbage
 			String submoduleName = matcher.group(1);
 			INedElement submodNode = parentComponent.getMembers().get(submoduleName);
@@ -227,8 +229,8 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
             // kill (...) regions
             while (prefix.matches(".*\\([^\\(\\)]*\\).*"))
                 prefix = prefix.replaceAll("\\([^\\(\\)]*\\)", "###");
-    		prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
-    		String linePrefixTrimmed = prefix.replaceFirst("[a-zA-Z_@][a-zA-Z0-9_]*$", "").trim(); // chop off last word
+            prefix = prefix.replaceFirst(".*\\b(parameters|gates|types|submodules|connections|connections +[a-z]+) *:", "");
+            String linePrefixTrimmed = prefix.replaceFirst("@?" + IDENT_REGEX + "$", "").trim(); // chop off last word
 
     		// kill {...} regions (including bodies of inner types, etc)
     		while (source.matches("(?s).*\\{[^\\{\\}]*\\}.*"))
@@ -243,7 +245,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
     		String enclosingNedTypeName = null;
             if (insideInnertype) {
                 String sourceBeforeTypes = source.replaceFirst("(?s)^(.*)\\btypes\\s*:.*$", "$1");
-                enclosingNedTypeName = sourceBeforeTypes.replaceFirst("(?s)^.*(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]*).*$", "$2");
+                enclosingNedTypeName = sourceBeforeTypes.replaceFirst("(?s)^.*(simple|module|network|channel|interface|channelinterface)\\s+(" + IDENT_REGEX + ").*$", "$2");
                 if (enclosingNedTypeName.equals(source))
                     enclosingNedTypeName = null;  // replace failed
                 // use only the source after the type keyword (the inner type source)
@@ -275,13 +277,13 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 				sectionType = SECT_GLOBAL;
 
 			// detect module name: identifier after last "simple", "module", etc.
-			String nedTypeName = source.replaceFirst("(?s)^.*\\b(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]*).*\\{.*$", "$2");
+			String nedTypeName = source.replaceFirst("(?s)^.*\\b(simple|module|network|channel|interface|channelinterface)\\s+(" + IDENT_REGEX + ").*\\{.*$", "$2");
 			if (nedTypeName.equals(source))
 			    nedTypeName = null;  // replace failed
 
 			// detect submodule type: last occurrence of "identifier {"
 			String lastTypeName = null;
-	        Matcher matcher = Pattern.compile("(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]*)\\s*\\{").matcher(source);
+	        Matcher matcher = Pattern.compile("(?s).*[:\\s](" + IDENT_REGEX + ")\\s*\\{").matcher(source);
 	        if (matcher.lookingAt())
 	            lastTypeName = matcher.group(1);
 	        else

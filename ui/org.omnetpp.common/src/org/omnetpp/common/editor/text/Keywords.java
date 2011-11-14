@@ -13,6 +13,9 @@ package org.omnetpp.common.editor.text;
  * @author Andras
  */
 public class Keywords {
+    public static final String NED_IDENT_REGEX = "[a-zA-Z\u0080-\uffff_][a-zA-Z\u0080-\uffff_0-9]*";  // note rudimentary support for internationalized identifiers, bug #419
+
+    public static final String MSG_IDENT_REGEX = "[a-zA-Z_][a-zA-Z_0-9]*";  // MSG files don't support international identifiers (because C++ doesn't either)
 
 	public final static String[] DOC_TODO = { "CHECKME", "FIXME", "TBD", "TODO" };
 
