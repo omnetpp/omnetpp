@@ -243,7 +243,7 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
     		String enclosingNedTypeName = null;
             if (insideInnertype) {
                 String sourceBeforeTypes = source.replaceFirst("(?s)^(.*)\\btypes\\s*:.*$", "$1");
-                enclosingNedTypeName = sourceBeforeTypes.replaceFirst("(?s)^.*(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]+).*$", "$2");
+                enclosingNedTypeName = sourceBeforeTypes.replaceFirst("(?s)^.*(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]*).*$", "$2");
                 if (enclosingNedTypeName.equals(source))
                     enclosingNedTypeName = null;  // replace failed
                 // use only the source after the type keyword (the inner type source)
@@ -275,13 +275,13 @@ public class AbstractNedCompletionProcessor extends NedTemplateCompletionProcess
 				sectionType = SECT_GLOBAL;
 
 			// detect module name: identifier after last "simple", "module", etc.
-			String nedTypeName = source.replaceFirst("(?s)^.*\\b(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]+).*\\{.*$", "$2");
+			String nedTypeName = source.replaceFirst("(?s)^.*\\b(simple|module|network|channel|interface|channelinterface)\\s+([A-Za-z_][A-Za-z0-9_]*).*\\{.*$", "$2");
 			if (nedTypeName.equals(source))
 			    nedTypeName = null;  // replace failed
 
 			// detect submodule type: last occurrence of "identifier {"
 			String lastTypeName = null;
-	        Matcher matcher = Pattern.compile("(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]+)\\s*\\{").matcher(source);
+	        Matcher matcher = Pattern.compile("(?s).*[:\\s]([A-Za-z_][A-Za-z0-9_]*)\\s*\\{").matcher(source);
 	        if (matcher.lookingAt())
 	            lastTypeName = matcher.group(1);
 	        else
