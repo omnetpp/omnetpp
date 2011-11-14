@@ -169,10 +169,12 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     }
 
 	/**
-	 * Produce a list that starts with this type, and ends with the root if .
+	 * Produce a list that starts with this type, and ends with the root.
 	 * Cycles in the "extends" chain are handled gracefully. The returned list always starts
      * with this NED type, and ends with the root if no cycle is found. Otherwise the list
-     * contains only the first element of the cycle and the rest is skipped.
+     * contains only the first element of the cycle and the rest is skipped. (It is on purpose
+     * that we don't include ANY edges from the cycle: this way one cannot get into infinite
+     * loop by just following the getSuperType() calls of various types.)
 	 */
 	protected List<INedTypeInfo> resolveExtendsChain() {
 	    if (getNedElement() instanceof IInterfaceTypeElement)
@@ -352,10 +354,20 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 		allSubmodules.clear();
 		allMembers.clear();
 
-        // collect all inherited members
-		INedTypeInfo[] forwardExtendsChain = extendsChain.toArray(new INedTypeInfo[]{});
-		ArrayUtils.reverse(forwardExtendsChain);
-		for (INedTypeInfo typeInfo : forwardExtendsChain) {
+        // collect all inherited members (from the extends chain; or for interfaces, from all base interfaces)
+		INedTypeInfo[] ancestors;
+		if (componentNode instanceof IInterfaceTypeElement) {
+		    ancestors = new INedTypeInfo[allInterfaces.size()];
+		    int i = 0;
+		    for (INedTypeElement element : allInterfaces)
+		        ancestors[i++] = element.getNedTypeInfo();
+		}
+		else {
+		    ancestors = extendsChain.toArray(new INedTypeInfo[]{});
+		    ArrayUtils.reverse(ancestors);  // we want to start from the root, so for allParamValues and allGateSizes we end up with the *latest* assignments 
+		}
+
+		for (INedTypeInfo typeInfo : ancestors) {
 			Assert.isTrue(typeInfo instanceof NedTypeInfo);
 			NedTypeInfo component = (NedTypeInfo)typeInfo;
 			allProperties.putAll(component.getLocalProperties());
