@@ -226,10 +226,13 @@ public class NedValidator extends AbstractNedValidatorEx {
 
 		// if all OK, add inherited members to our member list
 		for (String memberName : e.getMembers().keySet()) {
-			if (members.containsKey(memberName))
-				errors.addError(node, "conflict: '"+memberName+"' occurs in multiple base interfaces");
+		    INedElement member = e.getMembers().get(memberName);
+			if (members.containsKey(memberName)) {
+			    if (members.get(memberName) != member)
+			        errors.addError(node, "conflict: '"+memberName+"' occurs in multiple base interfaces");
+			}
 			else
-			    members.put(memberName, e.getMembers().get(memberName));
+			    members.put(memberName, member);
 		}
 
 		// validate xxx
