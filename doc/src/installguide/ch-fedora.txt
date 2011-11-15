@@ -1,4 +1,4 @@
-== Fedora 15
+== Fedora 15 and 16
 
 === Supported Releases
 
@@ -8,7 +8,7 @@ in the 'Linux' chapter.
 
 The following Fedora releases are covered:
 
-* Fedora 15
+* Fedora 15 and 16
 
 They were tested on the following architectures:
 

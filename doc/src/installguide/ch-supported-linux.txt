@@ -6,7 +6,7 @@ This chapter provides instructions for installing @OMNETPP@ on selected Linux
 distributions:
 
 * Ubuntu 10.04 LTS, 11.04
-* Fedora Core 15
+* Fedora Core 15, 16
 * Red Hat Enterprise Linux Desktop Workstation 5.5
 * OpenSUSE 11.4
 
