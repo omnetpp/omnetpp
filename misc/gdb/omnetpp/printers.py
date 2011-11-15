@@ -50,7 +50,7 @@ class cObjectPrinter:
             path = gdb.parse_and_eval("((::cObject *)0x%x)->getFullPath()" % (self.addr))
             path = path['_M_dataplus']['_M_p'].string('','replace')
         except Exception as e:
-            print 'Error in getFullPath: %s' % e
+            # print 'Error in getFullPath: %s' % e
             path = '<ERROR>'
         return path
 
@@ -62,7 +62,7 @@ class cObjectPrinter:
             name = gdb.parse_and_eval("((::cObject *)0x%x)->getFullName()" % (self.addr))
             name = name.string('','replace')
         except Exception as e:
-            print 'Error in getFullName: %s' % e
+            # print 'Error in getFullName: %s' % e
             name = '<ERROR>'
         return name
 
@@ -73,7 +73,7 @@ class cObjectPrinter:
         try:
             owner = gdb.parse_and_eval("((::cObject *)0x%x)->getOwner()" % (self.addr))
         except Exception as e:
-            print 'Error in getOwner: %s' % e
+            # print 'Error in getOwner: %s' % e
             owner = 0
         return owner
 
@@ -202,7 +202,7 @@ class cParImplPrinter(cNamedObjectPrinter):
         try:
             ret = gdb.parse_and_eval("((::cParImpl *)0x%x)->getType()" % (self.addr))
         except Exception as e:
-            print 'Error in getType(): %s' % (e)
+            # print 'Error in getType(): %s' % (e)
             ret = '<ERROR>'
         return ret
 
@@ -314,7 +314,7 @@ class cChannelPrinter(cComponentPrinter):
         try:
             ret = gdb.parse_and_eval("((::cChannel *)0x%x)->%s" % (self.addr, func))
         except Exception as e:
-            print 'Error in %s: %s' % (func, e)
+            # print 'Error in %s: %s' % (func, e)
             ret = '<ERROR>'
         return ret
 
