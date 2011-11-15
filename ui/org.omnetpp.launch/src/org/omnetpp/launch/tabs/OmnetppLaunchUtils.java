@@ -247,7 +247,7 @@ public class OmnetppLaunchUtils {
      */
     @SuppressWarnings("unchecked")
     public static ILaunchConfigurationWorkingCopy createUpdatedLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
-        ILaunchConfigurationWorkingCopy newCfg = config.copy("opp_run temporary configuration");
+        ILaunchConfigurationWorkingCopy newCfg = config.copy(config.getName());
         newCfg.setAttributes(CollectionUtils.getDeepCopyOf(newCfg.getAttributes())); // otherwise attrs that are Collections themselves are not copied
 
         // working directory (converted from path to location)
