@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -49,19 +50,34 @@ public class ProjectFeaturesHandler extends AbstractHandler {
     private static IProject getProject() {
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchPage workbenchPage = workbenchWindow == null ? null : workbenchWindow.getActivePage();
-        IWorkbenchPart part = workbenchPage == null ? null : workbenchPage.getActivePart();
+        if (workbenchPage == null)
+            return null;
+        
+        IWorkbenchPart part = workbenchPage.getActivePart();
         Object selection = null;
         if (part instanceof IEditorPart) {
             selection = ((IEditorPart) part).getEditorInput();
         } else {
             ISelection sel = workbenchWindow.getSelectionService().getSelection();
-            if ((sel != null) && (sel instanceof IStructuredSelection))
+            if (sel != null && (sel instanceof IStructuredSelection))
                 selection = ((IStructuredSelection) sel).getFirstElement();
         }
         if (selection == null) {
-            IEditorPart activeEditor = workbenchPage == null ? null : workbenchPage.getActiveEditor();
-            selection = activeEditor == null ? null : activeEditor.getEditorInput();
+            IEditorPart activeEditor = workbenchPage.getActiveEditor();
+            if (activeEditor != null)
+                selection = activeEditor.getEditorInput();
         }
+        if (selection == null) {
+            ISelection sel = workbenchPage.getSelection(IPageLayout.ID_PROJECT_EXPLORER);
+            if (sel != null && (sel instanceof IStructuredSelection))
+                selection = ((IStructuredSelection) sel).getFirstElement();
+        }
+        if (selection == null) {
+            ISelection sel = workbenchPage.getSelection(IPageLayout.ID_RES_NAV);
+            if (sel != null && (sel instanceof IStructuredSelection))
+                selection = ((IStructuredSelection) sel).getFirstElement();
+        }
+        
         if (selection == null)
             return null;
         if (!(selection instanceof IAdaptable))
