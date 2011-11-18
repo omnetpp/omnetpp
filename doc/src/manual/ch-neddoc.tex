@@ -425,8 +425,9 @@ The syntax of the \ttt{@page} directive is the following:
 // @page filename.html, Title of the Page
 \end{ned}
 
-Please choose a file name that doesn't collide with the files generated
-by the documentation tool (such as \ttt{index.html}).
+Choose a file name that doesn't collide with the files generated
+by the documentation tool (such as \ttt{index.html}). If the file name
+does not end in \ttt{.html} already, it will be appended.
 The page title you supply will appear on the top of the page as well as
 in the page index.
 
@@ -490,10 +491,10 @@ You can include content into the documentation comment with the
 \ttt{@include} directive. It expects the path of the file to be incuded
 relative to the file that includes it.
 
-The line of the \ttt{@include} directive will be replaced by the 
-content of the file. The lines of the included file does not need
-to start with \texttt{//}, otherwise they are processed
-as the ned comments. They can include other files, but circular
+The line of the \ttt{@include} directive will be replaced by the
+content of the file. The lines of the included file do not need
+to start with \texttt{//}, but otherwise they are processed in the same way
+as the NED comments. They can include other files, but circular
 includes are not allowed.
 
 \begin{ned}
