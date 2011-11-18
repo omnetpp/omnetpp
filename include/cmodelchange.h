@@ -120,11 +120,11 @@ class SIM_API cModelChangeNotification : public cObject, noncopyable
 class SIM_API cPreModuleAddNotification : public cModelChangeNotification
 {
   public:
-    cModuleType *moduleType;
-    const char *moduleName;
-    cModule *parentModule;
-    int vectorSize;
-    int index;
+    cModuleType *moduleType;  ///< Type of the new module
+    const char *moduleName;   ///< Name of the new module
+    cModule *parentModule;    ///< Parent module
+    int vectorSize;           ///< Size of the module vector that will contain the new module; -1 if not a vector
+    int index;                ///< Index of the new module in its vector; 0 if not part of a module vector
 };
 
 /**
@@ -138,12 +138,12 @@ class SIM_API cPreModuleAddNotification : public cModelChangeNotification
 class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
+    cModule *module;          ///< The new module
 };
 
 /**
  * Fired at the top of cModule::deleteModule(). The module still exists
- * at this point. Note that this notification also gets fired when the
+ * at this point. Note that this notification is also fired when the
  * network is being deleted after simulation completion.
  *
  * @ingroup Signals
@@ -151,7 +151,7 @@ class SIM_API cPostModuleAddNotification : public cModelChangeNotification
 class SIM_API cPreModuleDeleteNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
+    cModule *module;          ///< The module that is about to be deleted
 };
 
 /**
@@ -166,13 +166,13 @@ class SIM_API cPreModuleDeleteNotification : public cModelChangeNotification
 class SIM_API cPostModuleDeleteNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;  // this is the pointer of the already deleted module -- DO NOT DEREFERENCE
-    int moduleId;
-    cModuleType *moduleType;
-    const char *moduleName;
-    cModule *parentModule;
-    int vectorSize;
-    int index;
+    cModule *module;          ///< Pointer of the deleted module. The module object has already been deleted at this point, and the pointer invalid -- you SHOULD NOT DEREFERENCE it in any way.
+    int moduleId;             ///< The ID of the deleted module
+    cModuleType *moduleType;  ///< Type of the deleted module
+    const char *moduleName;   ///< Name of the deleted module
+    cModule *parentModule;    ///< Parent module of the deleted module
+    int vectorSize;           ///< Size of the module vector that contained the deleted module; -1 if not a vector
+    int index;                ///< Index of the deleted in its vector; 0 if not part of a module vector
 };
 
 /**
@@ -184,8 +184,8 @@ class SIM_API cPostModuleDeleteNotification : public cModelChangeNotification
 class SIM_API cPreModuleReparentNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    cModule *newParentModule;
+    cModule *module;          ///< The module which is about to be reparented
+    cModule *newParentModule; ///< The new parent for the module
 };
 
 /**
@@ -196,13 +196,13 @@ class SIM_API cPreModuleReparentNotification : public cModelChangeNotification
 class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    cModule *oldParentModule;
+    cModule *module;          ///< The reparented module
+    cModule *oldParentModule; ///< The old parent for the module
 };
 
 /**
- * This gets fired at the top of cModule::addGate(), that is, when a gate
- * or gate vector is added to the module.
+ * This notification is fired at the top of cModule::addGate(), that is,
+ * when a gate or gate vector is added to the module.
  *
  * Note: this notification is fired for the gate or gate vector as a
  * whole, and not for individual gate objects in it. That is, a single
@@ -217,15 +217,15 @@ class SIM_API cPostModuleReparentNotification : public cModelChangeNotification
 class SIM_API cPreGateAddNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    const char *gateName;
-    cGate::Type gateType;
-    bool isVector;
+    cModule *module;          ///< The module to which the new gate or gate vector will be added
+    const char *gateName;     ///< Name of the new gate or gate vector
+    cGate::Type gateType;     ///< Type of the new gate or gate vector (INPUT, OUTPUT or INOUT)
+    bool isVector;            ///< Whether a new gate or a gate vector will be added
 };
 
 /**
- * This gets fired at the bottom of cModule::addGate(), that is, when a gate
- * or gate vector was added to the module.
+ * This notification is fired at the bottom of cModule::addGate(), that is,
+ * when a gate or gate vector was added to the module.
  *
  * Note: this notification is fired for the gate or gate vector as a
  * whole, and not for individual gate objects in it. That is, a single
@@ -240,8 +240,8 @@ class SIM_API cPreGateAddNotification : public cModelChangeNotification
 class SIM_API cPostGateAddNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    const char *gateName;
+    cModule *module;          ///< The module to which the new gate or gate vector was added
+    const char *gateName;     ///< Name of the new gate or gate vector
 };
 
 /**
@@ -258,8 +258,8 @@ class SIM_API cPostGateAddNotification : public cModelChangeNotification
 class SIM_API cPreGateDeleteNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    const char *gateName;
+    cModule *module;          ///< Parent of the gate or gate vector
+    const char *gateName;     ///< Name of the gate or gate vector
 };
 
 /**
@@ -278,11 +278,11 @@ class SIM_API cPreGateDeleteNotification : public cModelChangeNotification
 class SIM_API cPostGateDeleteNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    const char *gateName;
-    cGate::Type gateType;
-    bool isVector;
-    int vectorSize;
+    cModule *module;          ///< Parent of the gate or gate vector
+    const char *gateName;     ///< Name of the gate or gate vector
+    cGate::Type gateType;     ///< Type of the gate or gate vector
+    bool isVector;            ///< Name of the gate vector that was deleted
+    int vectorSize;           ///< If a gate vector was deleted: size of the vector
 };
 
 /**
@@ -296,9 +296,9 @@ class SIM_API cPostGateDeleteNotification : public cModelChangeNotification
 class SIM_API cPreGateVectorResizeNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    const char *gateName;
-    int newSize;
+    cModule *module;          ///< The module of the gate vector
+    const char *gateName;     ///< The name of the gate vector
+    int newSize;              ///< The new size of the gate vector
 };
 
 /**
@@ -312,9 +312,9 @@ class SIM_API cPreGateVectorResizeNotification : public cModelChangeNotification
 class SIM_API cPostGateVectorResizeNotification : public cModelChangeNotification
 {
   public:
-    cModule *module;
-    const char *gateName;
-    int oldSize;
+    cModule *module;          ///< The module of the gate vector
+    const char *gateName;     ///< The name of the gate vector
+    int oldSize;              ///< The old size of the gate vector
 };
 
 /**
@@ -330,9 +330,9 @@ class SIM_API cPostGateVectorResizeNotification : public cModelChangeNotificatio
 class SIM_API cPreGateConnectNotification : public cModelChangeNotification
 {
   public:
-    cGate *gate;
-    cGate *targetGate;
-    cChannel *channel;
+    cGate *gate;              ///< The gate that is about to be connected
+    cGate *targetGate;        ///< The gate it will be connected to
+    cChannel *channel;        ///< The channel object to be associated with the connection
 };
 
 /**
@@ -349,7 +349,7 @@ class SIM_API cPreGateConnectNotification : public cModelChangeNotification
 class SIM_API cPostGateConnectNotification : public cModelChangeNotification
 {
   public:
-    cGate *gate;
+    cGate *gate;              ///< The gate that has been connected
 };
 
 /**
@@ -367,7 +367,7 @@ class SIM_API cPostGateConnectNotification : public cModelChangeNotification
 class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
 {
   public:
-    cGate *gate;
+    cGate *gate;              ///< The gate that is about to be disconnected
 };
 
 /**
@@ -384,14 +384,14 @@ class SIM_API cPreGateDisconnectNotification : public cModelChangeNotification
 class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
 {
   public:
-    cGate *gate;
-    cGate *targetGate;
-    cChannel *channel; // points to  valid object, but will be deleted once the notification has finished
+    cGate *gate;              ///< The gate that has been disconnected
+    cGate *targetGate;        ///< The gate to which it was connected
+    cChannel *channel;        ///< The channel object associated with the link; it points to valid object that will be deleted once the notification has finished
 };
 
 /**
  * Base class for path change notifications. Like gate connect/disconnect
- * notifications, they are fired when a gate gets connected/disconnected;
+ * notifications, they are fired when a gate is connected or disconnected;
  * the difference is that path change notifications are fired on the owner
  * modules of the start AND end gates of the path that contains the connection
  * (two notifications!), NOT on the module of the gate being connected or
@@ -409,9 +409,9 @@ class SIM_API cPostGateDisconnectNotification : public cModelChangeNotification
 class SIM_API cPathChangeNotification : public cModelChangeNotification
 {
   public:
-    cGate *pathStartGate;
-    cGate *pathEndGate;
-    cGate *changedGate; // the gate that got connected or disconnected
+    cGate *pathStartGate;     ///< The start gate of the path
+    cGate *pathEndGate;       ///< The end gate of the path
+    cGate *changedGate;       ///< The gate whose connection has changed
 };
 
 /**
@@ -455,7 +455,7 @@ class SIM_API cPrePathCutNotification : public cPathChangeNotification { };
 class SIM_API cPostPathCutNotification : public cPathChangeNotification { };
 
 /**
- * This notification gets fired before a module or channel parameter value was
+ * This notification is fired before a module or channel parameter value was
  * changed.
  *
  * @ingroup Signals
@@ -463,11 +463,11 @@ class SIM_API cPostPathCutNotification : public cPathChangeNotification { };
 class SIM_API cPreParameterChangeNotification : public cModelChangeNotification
 {
   public:
-    cPar *par;
+    cPar *par;                ///< The module parameter that is about to be changed
 };
 
 /**
- * This notification gets fired after a module or channel parameter value was
+ * This notification is fired after a module or channel parameter value was
  * changed.
  *
  * @ingroup Signals
@@ -475,29 +475,29 @@ class SIM_API cPreParameterChangeNotification : public cModelChangeNotification
 class SIM_API cPostParameterChangeNotification : public cModelChangeNotification
 {
   public:
-    cPar *par;
+    cPar *par;                ///< The module parameter that has changed
 };
 
 /**
- * This notification gets fired before a display string gets changed.
+ * This notification is fired before a display string gets changed.
  *
  * @ingroup Signals
  */
 class SIM_API cPreDisplayStringChangeNotification : public cModelChangeNotification
 {
   public:
-    cDisplayString *displayString;
+    cDisplayString *displayString;  ///< The display string that is about to be updated
 };
 
 /**
- * This notification gets fired after a display string gets changed.
+ * This notification is fired after a display string gets changed.
  *
  * @ingroup Signals
  */
 class SIM_API cPostDisplayStringChangeNotification : public cModelChangeNotification
 {
   public:
-    cDisplayString *displayString;
+    cDisplayString *displayString;  ///< The display string that was updated
 };
 
 NAMESPACE_END
