@@ -49,7 +49,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Figure.FigureIterator;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.gef.ui.parts.ScrollingGraphicalViewer;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -66,7 +65,6 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
@@ -78,7 +76,6 @@ import org.omnetpp.common.util.ProcessUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.StringUtils.IRegexpReplacementProvider;
 import org.omnetpp.figures.SubmoduleFigure;
-import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.msg.editor.highlight.MsgCodeColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgDocColorizerScanner;
 import org.omnetpp.msg.editor.highlight.MsgPrivateDocColorizerScanner;
@@ -1057,7 +1054,7 @@ public class DocumentationGenerator {
         // (i.e. non-ASCII chars). When changing this code, make sure that the page "Nasty-Filename"
         // in test/neddoc can be generated and also opened!
         fileName = fileName.trim().replaceAll("\\s+", "-").replace('[', '(').replace(']', ')');
-        fileName = fileName.replaceAll("[^-A-Za-z0-9!@$(){};+=]", "_");
+        fileName = fileName.replaceAll("[^-A-Za-z0-9!@$(){};+=.]", "_");
 
         // add suffix
         if (!fileName.endsWith(requiredSuffix))
