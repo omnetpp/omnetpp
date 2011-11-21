@@ -94,7 +94,7 @@ proc create_omnetpp_window {} {
     set iconphoto_main $icons(logo128m)
     set iconphoto_other $icons(logo128w)
     if {$tcl_platform(platform) == "windows"} {
-        if {[string compare $tk_patchLevel "8.5.6"] < 0} {
+        if {![is_tk_at_least "8.5.6"]} {
             # Tk bug #2504402: "On Windows the wm iconphoto command only works with
             # 32-bit color displays. Other display settings produce a black icon."
             # This bug appears to have been fixed in Tk 8.5.6. For earlier versions,
@@ -103,7 +103,7 @@ proc create_omnetpp_window {} {
                 # Bug #1467997: "the displayed icons have red and blue colors transposed."
                 # This bug was was fixed in 8.4.16. For earlier versions, we manually swap
                 # the R and B channels.
-                if {[string compare $tk_patchLevel "8.4.16"] < 0} {
+                if {![is_tk_at_least "8.4.16"]} {
                     opp_swapredandblue $iconphoto_other
                     opp_swapredandblue $iconphoto_main
                 }
@@ -119,7 +119,7 @@ proc create_omnetpp_window {} {
         # on 10.6, it does not cause an error but simply has no apparent effect
     } else {
         # On linux, 8.4.19 was tested and known to be working.
-        if {[string compare $tk_patchLevel "8.4.19"] >= 0} {
+        if {[is_tk_at_least "8.4.19"]} {
             wm iconphoto . -default $iconphoto_other
             wm iconphoto . $iconphoto_main
         }
@@ -722,6 +722,31 @@ proc busy {{msg {}}} {
         #$statusbar.mode config -text "Ready"
         . config -cursor ""
         update idletasks
+    }
+}
+
+proc is_tk_at_least {version} {
+    global tk_patchLevel
+
+    # must use dictionary comparison due to the embedded numbers
+    if {[strdictcmp $tk_patchLevel $version] < 0} {
+        return 0
+    } else {
+        return 1
+    }
+}
+
+proc strdictcmp {s1 s2} {
+    if {$s1 eq $s2} {
+        return 0
+    } else {
+        # there's no dictionary comparison in Tcl, only dictionary sort...
+        set ordered [lsort -dictionary [list $s1 $s2]]
+        if {[lindex $ordered 0] eq $s1} {
+            return -1
+        } else {
+            return 1
+        }
     }
 }
 
