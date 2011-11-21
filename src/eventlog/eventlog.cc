@@ -502,22 +502,29 @@ std::vector<MessageEntry *> EventLog::getMessageEntriesWithPreviousEventNumber(e
         eventnumber_t beginEventNumber = (eventnumber_t)keyframeBlockIndex * keyframeBlockSize;
         eventnumber_t endEventNumber = beginEventNumber + keyframeBlockSize;
         eventnumber_t consequenceLookahead = getConsequenceLookahead(previousEventNumber);
-        for (eventnumber_t eventNumber = beginEventNumber; eventNumber < endEventNumber; eventNumber++)
-            previousEventNumberToMessageEntriesMap[eventNumber] = std::vector<MessageEntry *>();
+        for (eventnumber_t i = beginEventNumber; i < endEventNumber; i++)
+            previousEventNumberToMessageEntriesMap[i] = std::vector<MessageEntry *>();
+        eventnumber_t eventNumber = beginEventNumber;
         Event *event = getEventForEventNumber(beginEventNumber);
-        Assert(event);
-        while (event && event->getEventNumber() < endEventNumber + consequenceLookahead) {
-            for (int i = 0; i < (int)event->getNumEventLogEntries(); i++) {
-                MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(event->getEventLogEntry(i));
-                if (messageEntry) {
-                    eventnumber_t messageEntryPreviousEventNumber =  messageEntry->previousEventNumber;
-                    if (beginEventNumber <= messageEntryPreviousEventNumber && messageEntryPreviousEventNumber < endEventNumber && messageEntryPreviousEventNumber != event->getEventNumber()) {
-                        it = previousEventNumberToMessageEntriesMap.find(messageEntry->previousEventNumber);
-                        it->second.push_back(messageEntry);
+        while (eventNumber < endEventNumber + consequenceLookahead) {
+            if (event) {
+                for (int i = 0; i < (int)event->getNumEventLogEntries(); i++) {
+                    MessageEntry *messageEntry = dynamic_cast<MessageEntry *>(event->getEventLogEntry(i));
+                    if (messageEntry) {
+                        eventnumber_t messageEntryPreviousEventNumber =  messageEntry->previousEventNumber;
+                        if (beginEventNumber <= messageEntryPreviousEventNumber && messageEntryPreviousEventNumber < endEventNumber && messageEntryPreviousEventNumber != event->getEventNumber()) {
+                            it = previousEventNumberToMessageEntriesMap.find(messageEntryPreviousEventNumber);
+                            it->second.push_back(messageEntry);
+                        }
                     }
                 }
+                eventNumber++;
+                event = event->getNextEvent();
             }
-            event = event->getNextEvent();
+            else {
+                eventNumber++;
+                event = getEventForEventNumber(beginEventNumber);
+            }
         }
         return previousEventNumberToMessageEntriesMap.find(previousEventNumber)->second;
     }
