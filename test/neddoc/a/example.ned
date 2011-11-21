@@ -4,11 +4,15 @@ simple TCP
 {
 }
 
-simple a
+module NClients  // duplicated in package 'b'
 {
 }
 
-simple Bar  // contains an 'a' 
+simple r
+{
+}
+
+simple Bar  // contains an 'r' 
 {
 }
 
@@ -19,3 +23,4 @@ simple FooBar  // ends in 'Bar'
 simple BarTender // starts with 'Bar'
 {
 }
+

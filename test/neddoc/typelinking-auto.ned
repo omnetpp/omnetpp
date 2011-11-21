@@ -10,30 +10,38 @@
 // A backslash-plus-word can be produced in the output by either using
 // "nohtml" (<nohtml>\TCP</nohtml>), or by using a double backslash (\\TCP).
 //
-// In this mode, tildes don't have any special meaning (and they are preserved 
-// in the output). Backslashes not immediately followed by an identifier 
+// In this mode, tildes don't have any special meaning (and they are preserved
+// in the output). Backslashes not immediately followed by an identifier
 // don't have a special meaning either, and are preserved in the output.
 //
 // Test cases with expected results:
 //
-//    - TCP: "<nohtml>TCP</nohtml>", hyperlinked
-//    - \TCP: "<nohtml>TCP</nohtml>" (backslash removed)
-//    - \Hello: "Hello" (backslash removed)
-//    - \\TCP: <nohtml>\</nohtml>TCP (backslash, plus "<nohtml>TCP</nohtml>" hyperlinked)
-//    - \\Hello: <nohtml>\Hello</nohtml> (backslash plus "Hello")
-//    - \100: unchanged: <nohtml>\100</nohtml> (backslash plus 100)
-//    - ~TCP: unchanged: <nohtml>~</nohtml>TCP (tilde plus <nohtml>TCP</nohtml>, hyperlinked)
-//    - ~~TCP: unchanged: <nohtml>~~</nohtml>TCP (double tilde plus <nohtml>TCP</nohtml>, hyperlinked)
+// Linking:
+//    - TCP: <nohtml>"TCP" (hyperlinked)</nohtml>
+//    - org.omnetpp.neddoc.a.TCP: <nohtml>"TCP" (hyperlinked, fully qualified name replace with simple name)</nohtml>
+//    - NClients: <nohtml>"NClients(1,2)" (1 and 2 are hyperlinked to a.NClients and b.NClients)</nohtml>
+//    - org.omnetpp.neddoc.a.NClients: <nohtml>"NClients" (hyperlinked to a.Clients)</nohtml>
+//    - org.omnetpp.neddoc.b.NClients: <nohtml>"NClients" (hyperlinked to b.Clients)</nohtml>
+//    - NoSuchType: <nohtml>NoSuchType (unrecognized word, not hyperlinked at all)</nohtml>
+//
+// Backslash, tilde (in this mode, tilde has no special meaning):
+//    - \TCP: <nohtml>"TCP" (backslash removed)</nohtml>
+//    - \Hello: <nohtml>"Hello" (backslash removed)</nohtml>
+//    - \\TCP: <nohtml>\TCP (backslash, plus "TCP" hyperlinked)</nohtml>
+//    - \\Hello: <nohtml>\Hello (backslash plus "Hello")</nohtml>
+//    - \100: <nohtml>unchanged: \100 (backslash plus 100)</nohtml>
+//    - ~TCP: <nohtml>unchanged: ~TCP (tilde plus TCP, hyperlinked)</nohtml>
+//    - ~~TCP: <nohtml>unchanged: ~~TCP (double tilde plus TCP, hyperlinked)</nohtml>
 //
 //
-// The existing types are 'a', 'Bar' and 'FooBar' and 'Bartender'; the others are 
+// The existing types are 'r', 'Bar' and 'FooBar' and 'Bartender'; the others are
 // nonexistent.
 //
-// Plain: a, Bar, FooBar, BarTender, ZooBar, Barack, aaa.
+// Plain: r, Bar, FooBar, BarTender, ZooBar, Barack, rrr.
 //
-// Backslashed: \a, \Bar, \FooBar, \BarTender, \ZooBar, \Barack, \aaa.
+// Backslashed: \r, \Bar, \FooBar, \BarTender, \ZooBar, \Barack, \rrr.
 //
-// With tilde: ~a, ~Bar, ~FooBar, ~Bartender, ~zooBar, ~Barack, ~aaa. (tilde should be removed even in the autolinking case?)
+// With tilde: ~r, ~Bar, ~FooBar, ~Bartender, ~zooBar, ~Barack, ~rrr. (tilde should be removed even in the autolinking case?)
 //
 // A tilde: ~~
 //

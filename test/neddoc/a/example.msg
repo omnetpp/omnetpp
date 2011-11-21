@@ -1,8 +1,8 @@
-message a 
+message r
 {
 }
 
-message Bar  // contains an 'a' 
+message Bar  // contains an 'r'
 {
 }
 
