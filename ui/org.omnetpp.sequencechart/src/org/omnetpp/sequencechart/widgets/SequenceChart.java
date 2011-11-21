@@ -1722,9 +1722,10 @@ public class SequenceChart
                 long consequenceEventPtr = sequenceChartFacade.IMessageDependency_getConsequenceEvent(messageDependencyPtr);
                 long messageEntryPtr = sequenceChartFacade.IMessageDependency_getMessageEntry(messageDependencyPtr);
                 boolean isReuse = sequenceChartFacade.IMessageDependency_isReuse(messageDependencyPtr);
-                axisModuleIds.add(isInitializationEvent(causeEventPtr) ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) :
-                    !isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) :
-                        sequenceChartFacade.IEvent_getModuleId(causeEventPtr));
+                if (causeEventPtr != 0)
+                    axisModuleIds.add(isInitializationEvent(causeEventPtr) ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) :
+                        !isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) :
+                            sequenceChartFacade.IEvent_getModuleId(causeEventPtr));
                 if (consequenceEventPtr != 0)
                     axisModuleIds.add(isReuse && messageEntryPtr != 0 ? sequenceChartFacade.EventLogEntry_getContextModuleId(messageEntryPtr) : sequenceChartFacade.IEvent_getModuleId(consequenceEventPtr));
             }
