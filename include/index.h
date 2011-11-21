@@ -202,6 +202,29 @@
  */
 
 /**
+ * @defgroup EnvirExtensions  Extension interfaces
+ *
+ * Classes in this group provide a plugin mechanism that can be used to
+ * customize the functionality of the Envir user interface library
+ * (and also Cmdenv and Tkenv, because they build on Envir).
+ *
+ * To customize, subclass from the classes below, and select the new class
+ * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>,
+ * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>,
+ * etc. config options.
+ *
+ *    - cResultFilter, cResultRecorder: subclass them if you need new filters
+ *      or recorders for signal-based statistic recoding (<tt>\@statistic</tt>)
+ *    - cOutputVectorManager, cOutputScalarManager, cSnapshotManager: subclassing
+ *      them lets you write output vectors, output scalars and simulation snapshots
+ *      in a different format or in a different way (e.g. into a database)
+ *      let you
+ *    - cRNG: subclass it if you want to use a new random number generator algorithm
+ *    - cConfiguration, cConfigurationEx: subclass it if you want to customize or
+ *      override the inifile-based configuration mechanism
+ */
+
+/**
  * @defgroup Internals  Internal classes
  *
  * The classes described here are used internally by the simulation kernel.
@@ -240,19 +263,6 @@
  * Some other classes, closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
  * main classes.
- */
-
-/**
- * @defgroup EnvirExtensions  Extension interface to Envir
- *
- * Classes in this group provide a plugin mechanism that can be used to
- * customize the functionality of the Envir user interface library
- * (and also Cmdenv and Tkenv, because they build on Envir).
- *
- * To customize, subclass from the classes below, and select the new class
- * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>,
- * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>,
- * etc. config options.
  */
 
 /**

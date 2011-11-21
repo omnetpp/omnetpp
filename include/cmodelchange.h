@@ -105,7 +105,7 @@ NAMESPACE_BEGIN
  * Common base class for data objects that accompany PRE_MODEL_CHANGE
  * and POST_MODEL_CHANGE notifications (signals).
  *
- * @ingroup Signals
+ * @ingroup Signals SimCore
  */
 class SIM_API cModelChangeNotification : public cObject, noncopyable
 {
