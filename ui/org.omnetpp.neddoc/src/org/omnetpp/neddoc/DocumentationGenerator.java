@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -206,7 +207,7 @@ public class DocumentationGenerator {
     protected boolean generateFullUsageDiagrams = false;
     protected boolean generateFullInheritanceDiagrams = false;
     protected boolean generateNedSourceListings = true;
-    protected boolean generateExplicitLinksOnly = false;
+    protected boolean generateExplicitLinksOnly = false;  // true: tilde notation; false: autolinking
     protected boolean generateDoxy = true;
     protected boolean generateCppSourceListings = false;
 
@@ -232,7 +233,7 @@ public class DocumentationGenerator {
     protected Map<ITypeElement, ArrayList<ITypeElement>> subtypesMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
     protected Map<INedTypeElement, ArrayList<INedTypeElement>> implementorsMap = new HashMap<INedTypeElement, ArrayList<INedTypeElement>>();
     protected Map<ITypeElement, ArrayList<ITypeElement>> usersMap = new HashMap<ITypeElement, ArrayList<ITypeElement>>();
-    protected Map<String, ITypeElement> typeNamesMap = new HashMap<String, ITypeElement>();
+    protected Map<String, List<ITypeElement>> typeNamesMap = new HashMap<String, List<ITypeElement>>();
     protected Map<String, String> doxyMap = new HashMap<String, String>();
     protected Map<INedElement, String> commentCache = new HashMap<INedElement, String>();
     protected Map<File, String> includedFileCache = new HashMap<File,String>();
@@ -489,26 +490,29 @@ public class DocumentationGenerator {
             if (typeElement instanceof INedTypeElement) {
                 String qname = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
                 buffer.append(qname + "|");
-                typeNamesMap.put(qname, typeElement);
+                typeNamesMap.put(qname, Arrays.asList(new ITypeElement[] {typeElement} ));
             }
 
             String name = typeElement.getName();
-            if (typeNamesMap.containsKey(name)) {
-                // multiple names, ignoring short references in comments to those types
-                if (typeNamesMap.get(name) != typeElement)
-                    typeNamesMap.put(name, null);
-            }
-            else {
+            if (!typeNamesMap.containsKey(name)) {
                 buffer.append(name + "|");
-                typeNamesMap.put(name, typeElement);
+                typeNamesMap.put(name, new ArrayList<ITypeElement>());
             }
+            typeNamesMap.get(name).add(typeElement);
         }
         if (buffer.length() > 0)
-            buffer.deleteCharAt(buffer.length() - 1);
+            buffer.deleteCharAt(buffer.length() - 1);  // remove last "|"
 
-        possibleTypeReferencesPattern = generateExplicitLinksOnly ?
-                                            Pattern.compile("(?i)(~+)([a-z_](\\w|\\.(?=\\w))*)") :
-                                            Pattern.compile("(\\\\*)\\b(" + buffer.toString() + ")\\b");
+        String typeNamesPattern = buffer.toString().replace(".", "\\.");
+        if (generateExplicitLinksOnly) {
+            // tilde syntax; we match any name prefixed with a tilde (or more tildes); 
+            // a double tilde means one literal tilde, so we'll have to count them when we do the replacement
+            possibleTypeReferencesPattern = Pattern.compile("(?i)(~+)([a-z_](\\w|\\.(?=\\w))*)");  //FIXME does not match Chinese names 
+        } else {
+            // autolinking: match recognized names, optionally prefixed with a backslash (or more backslashes);
+            // a double backslash means one literal backslash, so we'll have to count them when we do the replacement
+            possibleTypeReferencesPattern = Pattern.compile("(\\\\*)\\b(" + typeNamesPattern + ")\\b"); 
+        }
         monitor.worked(1);
     }
 
@@ -663,18 +667,31 @@ public class DocumentationGenerator {
     protected String replaceTypeReferences(String comment) {
         return StringUtils.replaceMatches(comment, possibleTypeReferencesPattern, new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
-                String prefix = matcher.group(1);
+                String prefix = matcher.group(1); // one or more tildes, or zero or more backslashes, depending on generateExplicitLinksOnly
                 boolean evenPrefixes = prefix.length() % 2 == 0;
                 String identifier = matcher.group(2);
-                ITypeElement typeElement = typeNamesMap.get(identifier);
+                List<ITypeElement> typeElements = typeNamesMap.get(identifier);
 
-                if ((generateExplicitLinksOnly && !evenPrefixes) || (!generateExplicitLinksOnly && evenPrefixes && typeElement != null))
+                if ((generateExplicitLinksOnly && !evenPrefixes) || (!generateExplicitLinksOnly && evenPrefixes && typeElements != null))
                 {
-                    prefix = prefix.substring(0, prefix.length() / 2); // remove double '\' or '~' here, because they won't be followed by an
-                                                                       // identifier in the generated output
-                    String replacement = typeElement != null ? prefix + "<a href=\"" + getOutputFileName(typeElement) + "\">" + typeElement.getName() + "</a>" :
-                                                               prefix + "<span class=\"error\" title=\"Unresolved link\">" + identifier + "</span>";
-                    return replacement;
+                    // literal backslashes and tildes are doubled in the neddoc source when they are in front of an identifier
+                    prefix = prefix.substring(0, prefix.length() / 2);
+
+                    if (typeElements == null) {
+                        return prefix + "<span class=\"error\" title=\"Unresolved link\">" + identifier + "</span>";
+                    }
+                    else if (typeElements.size() == 1) {
+                        return prefix + "<a href=\"" + getOutputFileName(typeElements.get(0)) + "\">" + typeElements.get(0).getName() + "</a>"; // use simple name in hyperlink
+                    }
+                    else {
+                        // several types with the same simple name
+                        String replacement = prefix + typeElements.get(0).getName() + "("; 
+                        int i = 1;
+                        for (ITypeElement typeElement : typeElements)
+                            replacement += "<a href=\"" + getOutputFileName(typeElement) + "\">" + (i++) + "</a>" + ",";
+                        replacement = replacement.substring(0, replacement.length()-1) + ")"; 
+                        return replacement;
+                    }
                 }
                 else
                     return null;
