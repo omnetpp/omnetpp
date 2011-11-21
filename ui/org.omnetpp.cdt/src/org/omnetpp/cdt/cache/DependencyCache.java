@@ -28,6 +28,8 @@ import org.eclipse.cdt.core.index.IndexLocationFactory;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IInclude;
+import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICDescriptionDelta;
@@ -412,8 +414,30 @@ public class DependencyCache {
             // get list of includes from the CDT index
             IIndexFileLocation fileLocation = IndexLocationFactory.getWorkspaceIFL(file);
             IIndexFile[] indexFiles = lockedIndex.getFiles(fileLocation);
-            if (indexFiles.length == 0)
-                Activator.log(IMarker.SEVERITY_ERROR, "OMNeT++ DependencyCache: " + file.getFullPath() + " is not found in index! This should not happen, please report at http://bugs.omnetpp.org!");
+            if (indexFiles.length == 0) {
+                // File not in index. Now, normally all cc/h files ARE in the index. However, it may happen (quite 
+                // rarely though) that a header file which is not included by any cc or h file does not immediately 
+                // make it to the index. In the OMNeT++ IDE this can happen when a project is built for the first time: 
+                // if an RSVPPacket.h is only included into RSVPPathMsg.msg but RSVPPathMsg_m.cc does not exist yet,
+                // CDT sometimes thinks that RSCPPacket.h is an unused header file and does not index it.
+                // The workaround is to parse the file by means of ITranslationUnit. (We do need the includes from it,
+                // otherwise our generate makefile will miss dependencies!)
+                try {
+                    Activator.log(IMarker.SEVERITY_WARNING, "OMNeT++ DependencyCache: " + file.getFullPath() + " not found in index, parsing it now using ITranslationUnit");
+                    ICProject cproject = CoreModel.getDefault().getCModel().getCProject(file.getProject().getName());
+                    ICElement element = cproject.findElement(file.getProjectRelativePath());  // this apparently throws exception for non-source files instead of returning null
+                    ITranslationUnit unit = (ITranslationUnit)element;  // not clear whether we need to check for null or instanceof
+                    IInclude[] includes = unit.getIncludes();
+                    for (IInclude include : includes) {
+                        if (include.isActive()) {
+                            result.add(new Include(file, include.getSourceRange().getStartLine(), include.getIncludeName(), include.isStandard()));
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e);
+                }
+            }
             else {
                 IIndexFile indexFile = indexFiles[0];
                 IIndexInclude[] includes = lockedIndex.findIncludes(indexFile);
