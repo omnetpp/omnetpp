@@ -180,6 +180,11 @@ public class IncludeFoldersCache {
     }
 
     protected void rescanProject(IProject project) throws CoreException {
+        if (!project.isAccessible()) {
+            projectIncludeFolders.remove(project);
+            return;
+        }
+
         // compute current state
         List<IContainer> folders = scanProjectForIncludeFolders(project);
         
