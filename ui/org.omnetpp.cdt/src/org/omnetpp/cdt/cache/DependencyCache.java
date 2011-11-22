@@ -423,7 +423,6 @@ public class DependencyCache {
                 // The workaround is to parse the file by means of ITranslationUnit. (We do need the includes from it,
                 // otherwise our generate makefile will miss dependencies!)
                 try {
-                    Activator.log(IMarker.SEVERITY_WARNING, "OMNeT++ DependencyCache: " + file.getFullPath() + " not found in index, parsing it now using ITranslationUnit");
                     ICProject cproject = CoreModel.getDefault().getCModel().getCProject(file.getProject().getName());
                     ICElement element = cproject.findElement(file.getProjectRelativePath());  // this apparently throws exception for non-source files instead of returning null
                     ITranslationUnit unit = (ITranslationUnit)element;  // not clear whether we need to check for null or instanceof
