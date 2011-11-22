@@ -114,13 +114,21 @@ public class NedCommentFormatter {
         // escape html content, elements will be restored later, after processor has been called
         comment = StringEscapeUtils.escapeHtml(comment);
 
+        // restore unicode chars, otherwise Chinese identifiers won't be hyperlinked
+        // (they can remain as they are anyway, because we generate html in utf-8 encoding)
+        comment = StringUtils.replaceMatches(comment, "&#([0-9]+);", new IRegexpReplacementProvider() {
+            public String getReplacement(Matcher matcher) {
+                char code = (char)Integer.parseInt(matcher.group(1));
+                return code < 128 ? null : new String(new char[] {code});
+            }
+        });
+
         // extract <nohtml> sections to prevent substituting inside them;
         // also backslashed words to prevent putting hyperlinks on them
         final ArrayList<String> nohtmlList = new ArrayList<String>();
         comment = StringUtils.replaceMatches(comment, "(?s)&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;", new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
                 nohtmlList.add(matcher.group(1));
-
                 return "<nohtml" + (nohtmlList.size() - 1) + "/>";
             }
         });
@@ -140,6 +148,7 @@ public class NedCommentFormatter {
         comment = comment.replaceAll("&lt;(/(" + ANY_RECOGNIZED_HTML_TAG + "))&gt;", "<$1>");
 
         // remove backslashes and tildes before identifiers; double backslashes and tildes become single ones
+        // (note: this will only process tildes and backslashes not hyperlinked by INeddocProcessor already)
         //  !tildeMode                          tildeMode
         // \TCP    ->  TCP                   ~TCP   -> TCP
         // \Hello  ->  Hello                 ~Hello -> Hello

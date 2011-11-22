@@ -67,6 +67,7 @@ import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.editor.text.Keywords;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.editor.text.NedCommentFormatter.INeddocProcessor;
 import org.omnetpp.common.util.DisplayUtils;
@@ -510,7 +511,7 @@ public class DocumentationGenerator {
         if (generateExplicitLinksOnly) {
             // tilde syntax; we match any name prefixed with a tilde (or more tildes); 
             // a double tilde means one literal tilde, so we'll have to count them when we do the replacement
-            possibleTypeReferencesPattern = Pattern.compile("(?i)(~+)([a-z_](\\w|\\.(?=\\w))*)");  //FIXME does not match Chinese names 
+            possibleTypeReferencesPattern = Pattern.compile("(~+)(" + Keywords.NED_IDENT_REGEX + "(\\." + Keywords.NED_IDENT_REGEX + ")*)\\b");
         } else {
             // autolinking: match recognized names, optionally prefixed with a backslash (or more backslashes);
             // a double backslash means one literal backslash, so we'll have to count them when we do the replacement
@@ -668,6 +669,8 @@ public class DocumentationGenerator {
     }
 
     protected String replaceTypeReferences(String comment) {
+        // note: Chinese characters in the comment must be unescaped at this point (not as numeric entities),
+        // otherwise we our regex won't find them and Chinese identifiers won't be hyperlinked
         return StringUtils.replaceMatches(comment, possibleTypeReferencesPattern, new IRegexpReplacementProvider() {
             public String getReplacement(Matcher matcher) {
                 String prefix = matcher.group(1); // one or more tildes, or zero or more backslashes, depending on generateExplicitLinksOnly
