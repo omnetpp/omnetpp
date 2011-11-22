@@ -487,13 +487,16 @@ public class DocumentationGenerator {
         monitor.subTask("Collecting type names");
         StringBuffer buffer = new StringBuffer();
         for (ITypeElement typeElement : typeElements) {
+            String name = typeElement.getName();
+
             if (typeElement instanceof INedTypeElement) {
                 String qname = ((INedTypeElement)typeElement).getNedTypeInfo().getFullyQualifiedName();
-                buffer.append(qname + "|");
-                typeNamesMap.put(qname, Arrays.asList(new ITypeElement[] {typeElement} ));
+                if (!qname.equals(name)) {
+                    buffer.append(qname + "|");
+                    typeNamesMap.put(qname, Arrays.asList(new ITypeElement[] {typeElement} ));
+                }
             }
 
-            String name = typeElement.getName();
             if (!typeNamesMap.containsKey(name)) {
                 buffer.append(name + "|");
                 typeNamesMap.put(name, new ArrayList<ITypeElement>());
