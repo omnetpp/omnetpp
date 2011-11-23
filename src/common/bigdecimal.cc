@@ -389,41 +389,44 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     int sign = 1;
     const char *p = s;
 
-    // skip leading spaces
-    while (opp_isspace(*p))
-        ++p;
+    // check for slow path
+    if (!opp_isdigit(*p)) {
+        // skip leading spaces
+        while (opp_isspace(*p))
+            ++p;
 
-    // optional signs
-    if (*p == '-')
-    {
-        sign = -1;
-        ++p;
-    }
-    else if (*p == '+')
-        ++p;
+        // optional signs
+        if (*p == '-')
+        {
+            sign = -1;
+            ++p;
+        }
+        else if (*p == '+')
+            ++p;
 
-    // parse special numbers
-    if (opp_isalpha(*p))
-    {
-        if (strncasecmp(p, "nan", 3) == 0)
+        // parse special numbers
+        if (opp_isalpha(*p))
         {
-            endp = p+3;
-            return NaN;
-        }
-        else if (strncasecmp(p, "inf", 3) == 0) // inf and infinity
-        {
-            endp = p+3;
-            if (strncasecmp(endp, "inity", 5) == 0)
-                endp += 5;
-            return sign > 0 ? PositiveInfinity : NegativeInfinity;
-        }
-        else
-        {
-            endp = p;
-            return Zero;  // XXX should return Nil?
+            if (strncasecmp(p, "nan", 3) == 0)
+            {
+                endp = p+3;
+                return NaN;
+            }
+            else if (strncasecmp(p, "inf", 3) == 0) // inf and infinity
+            {
+                endp = p+3;
+                if (strncasecmp(endp, "inity", 5) == 0)
+                    endp += 5;
+                return sign > 0 ? PositiveInfinity : NegativeInfinity;
+            }
+            else
+            {
+                endp = p;
+                return Zero;  // XXX should return Nil?
+            }
         }
     }
-    else if (*p=='1' && *(p+1)=='.' && *(p+2)=='#')
+    if (*p=='1' && *(p+1)=='.' && *(p+2)=='#')
     {
         if (strncasecmp(p+3, "ind", 3) == 0)
         {
@@ -441,10 +444,8 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
     while (opp_isdigit(*p))
     {
         OVERFLOW_CHECK(intVal <= INT64_MAX / 10, s);
-        intVal *= 10;
-        digit = ((*p++)-'0');
-        OVERFLOW_CHECK(intVal <= INT64_MAX - digit, s);
-        intVal += digit;
+        intVal = intVal * 10 + ((*p++)-'0');
+        OVERFLOW_CHECK(intVal >= 0, s);
         digits++;
     }
 
@@ -460,11 +461,8 @@ const BigDecimal BigDecimal::parse(const char *s, const char *&endp)
         while (opp_isdigit(*p))
         {
             OVERFLOW_CHECK(intVal <= INT64_MAX / 10, s);
-            intVal *= 10;
-            digit = ((*p++)-'0');
-            OVERFLOW_CHECK(intVal <= INT64_MAX - digit, s);
-            intVal += digit;
-            digits++;
+            intVal = intVal * 10 + ((*p++)-'0');
+            OVERFLOW_CHECK(intVal >= 0, s);
             scale--;
         }
     }
