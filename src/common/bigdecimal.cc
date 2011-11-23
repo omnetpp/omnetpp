@@ -124,40 +124,6 @@ void BigDecimal::normalize()
     }
 }
 
-int64 BigDecimal::getDigits(int scale, int numDigits) const
-{
-    assert(!this->isSpecial());
-
-    int start = max(scale, this->scale); // inclusive
-    int end = scale+numDigits; // exclusive
-
-    if (start >= end)
-        return 0;
-
-    int64 val = this->intVal < 0 ? -this->intVal : this->intVal;  // abs()
-    for (int i = this->scale; i < start; ++i)
-        val /= 10;
-
-    if (val == 0)
-        return 0;
-
-    int64 result = 0;
-    int digit;
-    int64 multiplier = 1;
-    for (int i = start; i < end; ++i)
-    {
-        digit = val % 10;
-        val /= 10;
-        result += multiplier*digit;
-        multiplier *= 10;
-    }
-
-    for (int i = 0; i < (start-scale); ++i)
-        result *= 10;
-
-    return result;
-}
-
 const BigDecimal& BigDecimal::operator=(double d)
 {
     // check NaN and infinity

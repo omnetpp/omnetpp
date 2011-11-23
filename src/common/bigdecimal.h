@@ -63,11 +63,6 @@ class COMMON_API BigDecimal
      */
     void normalize();
 
-    /*
-     * Returns digits of the decimal number from place-values in [scale,scale+numDigits) as an int64.
-     */
-    int64 getDigits(int scale, int numDigits) const;
-
   public:
     /** @name Constants */
     //@{
