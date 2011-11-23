@@ -269,26 +269,28 @@ bool BigDecimal::operator<(const BigDecimal &x) const
 
     assert((intVal < 0 && x.intVal < 0) || (intVal > 0 && x.intVal > 0));
     bool negatives = intVal < 0;
-
-    // compare absolute values by comparing most significant digits first
-    bool result = false;
-    for (int s = max(scale,x.scale); s > min(scale,x.scale)-18; s-=18)
-    {
-        int64 digits = this->getDigits(s, 18);
-        int64 digitsX = x.getDigits(s, 18);
-        if (digits < digitsX)
-        {
-            result = true;
-            break;
-        }
-        else if (digits > digitsX)
-        {
-            result = false;
-            break;
-        }
+    int minScale = std::min(scale, x.scale);
+    int m = scale - minScale;
+    int xm = x.scale - minScale;
+    const int NUMPOWERS = sizeof(powersOfTen) / sizeof(*powersOfTen);
+    assert(m < NUMPOWERS && xm < NUMPOWERS);
+    int64 v = intVal;
+    if (m != 0) {
+        int64 mp = powersOfTen[m];
+        v = intVal * mp;
+        if (v / mp != intVal)
+            // overflow
+            return negatives;
     }
-
-    return negatives ? !result : result;
+    int64 xv = x.intVal;
+    if (xm != 0) {
+        int64 xmp = powersOfTen[xm];
+        xv = x.intVal * xmp;
+        if (xv / xmp != x.intVal)
+            // overflow
+            return !negatives;
+    }
+    return v < xv;
 }
 
 int64 BigDecimal::getMantissaForScale(int reqScale) const
