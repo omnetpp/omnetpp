@@ -20,7 +20,7 @@
  * 'opp_run' allows starting simulation models that are linked as shared
  * libraries. It provides the main() entry point for the simulation and
  * ensures that all models are compiled in either debug- or release-mode.
- * 
+ *
  * How it works:
  *
  * In straightforward cases, 'opp_run' simply calls evMain() (in oppenvir) and
@@ -64,7 +64,7 @@
  *   release-mode shared model library is specified in the .ini file, it will
  *   not be correctly detected, and both debug and release kernel will be
  *   loaded, resulting in an error message. In this case the user have to use
- *   the command 'opp_run_release' to start the simulation. 
+ *   the command 'opp_run_release' to start the simulation.
  *
  */
 
@@ -179,7 +179,7 @@ static void *getSymbol(libhandle_t handle, const char *symbol)
     if (numModules > 1024)
     {
         fprintf(stderr, "<!> Warning: opp_run: Too many modules loaded, some of them will be ignored. "
-                        "opp_run may not detect correctly whether it requires release or debug libraries.\n");
+                        "opp_run may not detect correctly whether it requires release or debug libraries.\n\n"); // double "\n" to separate message from subsequent OMNeT++ startup banner
         numModules = 1024;
     }
 
@@ -275,6 +275,7 @@ bool needsDebugSimkernel(int argc, char *argv[])
             {
                 // Release kernel. oppsim must be reloaded later by opp_run_release
                 putenv((char *)"__OPPSIM_LOADED__=no");
+                fflush(stderr);
                 return false;
             }
         }
@@ -282,6 +283,7 @@ bool needsDebugSimkernel(int argc, char *argv[])
 
     // debug kernel. oppsim already loaded and the loaded debug version will be used
     putenv((char *)"__OPPSIM_LOADED__=yes");
+    fflush(stderr);
     return true;
 }
 
@@ -291,8 +293,9 @@ int main(int argc, char *argv[])
         return evMain(argc, argv);
     else
     {
-        // We want to run a 'release' model, however, opp_run is linked with the debug oppsim,
-        // so we invoke opp_run_release with the current command line arguments.
+        // The libs specified on the command line were compiled with release-mode simulation libraries
+        // but opp_run is by definition a debug executable; we must delegate to opp_run_release with the
+        // current command line arguments.
         return oppExec("opp_run_release", argv);
     }
 }
