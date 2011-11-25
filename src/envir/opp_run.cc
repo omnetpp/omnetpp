@@ -80,7 +80,7 @@
 
 typedef int (*intfunc_t)();
 extern "C" int evMain(int argc, char *argv[]);
-const char *loadLibErrorMessage = NULL;  // contains the error message after calling oppLoadLibrary()
+std::string lastLoadLibError;  // contains the error message after calling oppLoadLibrary()
 
 static void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
@@ -152,9 +152,9 @@ static libhandle_t oppLoadLibrary(const char *libname)
      std::string libFileName = makeLibFileName(libname, "", ".dll"); // Visual C++
 # endif
     HMODULE handle = LoadLibrary((char *)libFileName.c_str());
-    loadLibErrorMessage = NULL;
+    lastLoadLibError = "";
     if (handle == NULL)
-        loadLibErrorMessage = opp_getWindowsError(GetLastError()).c_str();
+        lastLoadLibError = opp_getWindowsError(GetLastError());
     return handle;
 }
 
@@ -212,9 +212,9 @@ static libhandle_t oppLoadLibrary(const char *libname)
 {
     std::string libFileName = makeLibFileName(libname, "lib", SHARED_LIB_SUFFIX);
     libhandle_t handle = dlopen(libFileName.c_str(), RTLD_NOW|RTLD_GLOBAL);
-    loadLibErrorMessage = NULL;
+    lastLoadLibError = "";
     if (handle == NULL)
-        loadLibErrorMessage = dlerror();
+        lastLoadLibError = dlerror();
     return handle;
 }
 
@@ -267,8 +267,8 @@ bool needsDebugSimkernel(int argc, char *argv[])
             }
 
             libhandle_t handle = oppLoadLibrary(libname);
-            if (!handle && loadLibErrorMessage)
-                fprintf(stderr, "<!> Warning: opp_run: %s\n", loadLibErrorMessage);
+            if (!handle && lastLoadLibError!="")
+                fprintf(stderr, "<!> Warning: opp_run: Cannot check library %s: %s\n\n", libname, lastLoadLibError.c_str()); // double "\n" to separate message from subsequent OMNeT++ startup banner
 
             // Detect whether oppsim is release. If it was not loaded correctly, assume it is debug.
             if (handle && getSymbol(handle, "__is_release_oppsim__"))
