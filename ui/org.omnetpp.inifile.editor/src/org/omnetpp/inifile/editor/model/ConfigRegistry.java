@@ -300,7 +300,7 @@ public class ConfigRegistry {
         "suitable for crude regression tests. As fingerprints occasionally differ " +
         "across platforms, more than one fingerprint values can be specified here, " +
         "separated by spaces, and a match with any of them will be accepted. To " +
-        "calculate the initial fingerprint, enter any dummy string (such as \"none\"), " +
+        "obtain the initial fingerprint, enter a dummy value such as \"0000\"), " +
         "and run the simulation.");
     public static final ConfigOption CFGID_FNAME_APPEND_HOST = addGlobalOption(
         "fname-append-host", CFG_BOOL, null,
