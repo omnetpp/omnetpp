@@ -596,12 +596,11 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                         switch (delta.getKind()) {
                         case IResourceDelta.REMOVED:
                         case IResourceDelta.ADDED:
-                        case IResourceDelta.OPEN:
                             rebuildProjectsTable();
                             break;
                         case IResourceDelta.CHANGED:
                             // change in natures and referenced projects will be reported as description changes
-                            if ((delta.getFlags() & IResourceDelta.DESCRIPTION) != 0)
+                            if ((delta.getFlags() & (IResourceDelta.OPEN | IResourceDelta.DESCRIPTION)) != 0)
                                 rebuildProjectsTable();
                             break;
                         }
