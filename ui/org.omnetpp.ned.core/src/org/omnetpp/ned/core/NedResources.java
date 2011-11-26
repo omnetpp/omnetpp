@@ -622,12 +622,15 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     // Utility functions for debugging
     public static void printResourceChangeEvent(IResourceChangeEvent event) {
         Debug.println("event type: "+event.getType());
+        printDelta(event.getDelta(), "  ");
     }
 
-    public static void printDelta(IResourceDelta delta) {
+    public static void printDelta(IResourceDelta delta, String indent) {
         // LEGEND: [+] added, [-] removed, [*] changed, [>] and [<] phantom added/removed;
         // then: {CONTENT, MOVED_FROM, MOVED_TO, OPEN, TYPE, SYNC, MARKERS, REPLACED, DESCRIPTION, ENCODING}
-        Debug.println("  "+((ResourceDelta)delta).toDebugString());
+        Debug.println(indent + ((ResourceDelta)delta).toDebugString());
+        for (IResourceDelta child : delta.getAffectedChildren())
+            printDelta(child, indent + "  ");
     }
 
 }
