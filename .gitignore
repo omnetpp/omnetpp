@@ -45,6 +45,7 @@ Thumbs.db
 /src/utils/opp_configfilepath.cmd
 /src/nedxml/nedelements.*
 /src/nedxml/nedvalidator.*
+/src/include/
 /ui/.metadata
 /ui/org.omnetpp.runtime.nativelibs/src/org/omnetpp/runtime/nativelibs/simkernel/
 /ui/org.omnetpp.ide.nativelibs/*.cxx
@@ -72,6 +73,7 @@ Thumbs.db
 /samples/*/results.*/
 /tmp/
 /ui/org.omnetpp.test.gui/test-workspace/.metadata
+/ui/_*/
 /test/*/work/
 /test/nedtool/nedc-negtests/*.out
 /test/eventlog/result/
@@ -85,3 +87,13 @@ Thumbs.db
 .computed
 /configure.user
 /configuser.vc
+m.bat
+m71.bat
+m80.bat
+m90.bat
+m100.bat
+r.bat
+r71.bat
+r80.bat
+r90.bat
+r100.bat
