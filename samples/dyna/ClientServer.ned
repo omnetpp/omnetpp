@@ -17,7 +17,6 @@ network ClientServer
     submodules:
         server: Server {
             parameters:
-                processingTime;
                 @display("p=210,70");
         }
         switch: Switch {
