@@ -84,12 +84,12 @@ void ArgList::parse(int argc, char *argv[], const char *spec)
         }
         else
         {
-            // end of options
-            break;
+            // non-option arg before '--'
+            params.push_back(argv[i]);
         }
     }
 
-    // store the rest of the args
+    // store the rest of the args (after '--')
     for (; i<argc; i++)
     {
         params.push_back(argv[i]);
