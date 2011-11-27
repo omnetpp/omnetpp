@@ -433,6 +433,7 @@ bool EnvirBase::setup()
     catch (std::exception& e)
     {
         displayException(e);
+        exitcode = 1;
         return false; // don't run the app
     }
     return true;
