@@ -27,19 +27,19 @@ export LANG=en_US.UTF-8
 
 case $PLATFORM in
 *MINGW*)
-	./${LAUNCHER}.exe &
+	./${LAUNCHER}.exe 2>$IDEDIR/error.log &
         ;;
 *Linux*x86_64*)
-	./${LAUNCHER} &
+	./${LAUNCHER} 2>$IDEDIR/error.log &
         ;;
 *Linux*)
-	./$LAUNCHER &
+	./$LAUNCHER 2>$IDEDIR/error.log &
         ;;
 *Darwin*)
-	open ./${LAUNCHER}.app
+	open ./${LAUNCHER}.app 2>$IDEDIR/error.log
         ;;
 *)
-	echo OMNEST IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel
+	echo OMNEST IDE is supported only on: Linux, Windows and MacOS X Intel
 	exit 1
         ;;
 esac
