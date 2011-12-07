@@ -8,25 +8,17 @@
 package org.omnetpp.ide;
 
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.util.StringUtils;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -60,8 +52,6 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 
         if (omnetppDynamicPluginLoader == null) {
             omnetppDynamicPluginLoader = new OmnetppDynamicPluginLoader(context);
-
-            uninstallOmnetppBundlesWithoutProject();
         }
         ResourcesPlugin.getWorkspace().addResourceChangeListener(omnetppDynamicPluginLoader);
 
@@ -69,36 +59,6 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         omnetppProjectOpenListener = new OmnetppProjectOpenListener();
         ResourcesPlugin.getWorkspace().addResourceChangeListener(omnetppProjectOpenListener);
 	}
-
-    protected void uninstallOmnetppBundlesWithoutProject() throws BundleException {
-        Display.getDefault().asyncExec(new Runnable() {
-            public void run() {
-                BundleContext context = getBundle().getBundleContext();
-
-                outer: for (Bundle bundle : context.getBundles()) {
-                    if ("true".equals(bundle.getHeaders().get("Omnetpp-Plugin"))) {
-                        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-                        try {
-                            for (IFile file : workspace.getRoot().findFilesForLocationURI(new URI(bundle.getLocation())))
-                                if (file.exists())
-                                    continue outer;
-
-                            try {
-                                bundle.uninstall();
-                            }
-                            catch (BundleException e) {
-                                OmnetppMainPlugin.logError(e);
-                            }
-                        }
-                        catch (URISyntaxException f) {
-                            OmnetppMainPlugin.logError(f);
-                        }
-                    }
-                }
-            }
-        });
-    }
 
     public static String getVersion() {
         return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
