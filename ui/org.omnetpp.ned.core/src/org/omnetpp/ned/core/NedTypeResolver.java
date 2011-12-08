@@ -332,6 +332,12 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized Collection<INedTypeInfo> getToplevelNedTypes(IProject context) {
+        Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
+        result.addAll(getToplevelNedTypesInternal(context));
+        return result;
+    }
+
+    private synchronized Collection<INedTypeInfo> getToplevelNedTypesInternal(IProject context) {
         rehashIfNeeded();
         ProjectData projectData = projects.get(context);
         return projectData==null ? new ArrayList<INedTypeInfo>() : projectData.components.values();
@@ -339,7 +345,7 @@ public class NedTypeResolver implements INedTypeResolver {
 
     public synchronized Collection<INedTypeInfo> getToplevelNedTypes(IPredicate predicate, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        for (INedTypeInfo type : getToplevelNedTypes(context))
+        for (INedTypeInfo type : getToplevelNedTypesInternal(context))
             if (predicate.matches(type))
                 result.add(type);
         return result;
@@ -347,7 +353,7 @@ public class NedTypeResolver implements INedTypeResolver {
 
     public synchronized Collection<INedTypeInfo> getToplevelNedTypesThatImplement(INedTypeInfo interfaceType, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        for (INedTypeInfo type : getToplevelNedTypes(context))
+        for (INedTypeInfo type : getToplevelNedTypesInternal(context))
             if (type.getInterfaces().contains(interfaceType.getNedElement()))
                 result.add(type);
         return result;
@@ -355,7 +361,7 @@ public class NedTypeResolver implements INedTypeResolver {
 
     public Collection<INedTypeInfo> getToplevelNedTypesBySimpleName(String simpleName, IProject context) {
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        for (INedTypeInfo type : getToplevelNedTypes(context))
+        for (INedTypeInfo type : getToplevelNedTypesInternal(context))
             if (type.getName().equals(simpleName))
                 result.add(type);
         return result;
@@ -363,7 +369,7 @@ public class NedTypeResolver implements INedTypeResolver {
 
     public synchronized Set<String> getToplevelNedTypeQNames(IPredicate predicate, IProject context) {
         Set<String> result = new HashSet<String>();
-        for (INedTypeInfo typeInfo : getToplevelNedTypes(context))
+        for (INedTypeInfo typeInfo : getToplevelNedTypesInternal(context))
             if (predicate.matches(typeInfo))
                 result.add(typeInfo.getFullyQualifiedName());
         return result;
@@ -595,7 +601,7 @@ public class NedTypeResolver implements INedTypeResolver {
         else {
             // there must be exactly one NED type with that name that implements the given interface
             INedTypeInfo result = null;
-            for (INedTypeInfo type : getToplevelNedTypes(context))  // linear search, but it's OK since lookups are cached
+            for (INedTypeInfo type : getToplevelNedTypesInternal(context))  // linear search, but it's OK since lookups are cached
                 if (type.getName().equals(name))
                     if (type.getInterfaces().contains(interfaceType.getNedElement()))
                         if (result != null)
