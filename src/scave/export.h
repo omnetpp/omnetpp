@@ -144,6 +144,22 @@ class SCAVE_API ScalarDataTable : public DataTable
 };
 
 /**
+ * A table containing a histogram. It has three columns: bin_lower, bin_upper and value.
+ */
+class SCAVE_API HistogramDataTable : public DataTable
+{
+    private:
+        const HistogramResult *histResult;
+    public:
+        HistogramDataTable(const std::string &name, const std::string &description, const HistogramResult *histogramResult);
+        virtual int getNumRows() const;
+        virtual bool isNull(int row, int col) const;
+        virtual double getDoubleValue(int row, int col) const;
+        virtual BigDecimal getBigDecimalValue(int row, int col) const;
+        virtual std::string getStringValue(int row, int col) const;
+};
+
+/**
  * Computes the outer join of DataTables.
  */
 class SCAVE_API JoinedDataTable : public DataTable
@@ -219,11 +235,14 @@ class SCAVE_API ScaveExport
                                     const std::vector<std::string> &isoModuleNames, const StringVector &isoScalarNames,
                                     ResultItemFields isoFields, ResultFileManager &manager);
 
+        virtual void saveHistograms(const std::string &name, const std::string &description,
+                                    const IDList &histograms, ResultFileManager &manager);
+
         const std::string &getLastFileName() const { return fileName; }
     protected:
         std::string makeUniqueIdentifier(const std::string &name);
         virtual std::string makeIdentifier(const std::string &name) = 0;
-        virtual void saveTable(const DataTable &rows, int startIndex, int endIndex) = 0;
+        virtual void saveTable(const DataTable &table, int startIndex, int endIndex) = 0;
 };
 
 /**

@@ -165,12 +165,13 @@ public class ExportJob extends WorkspaceJob
 	}
 
 	protected IStatus exportHistograms(ScaveExport exporter, IProgressMonitor monitor) {
-		if (histograms != null && histograms.size() > 0) {
-			if (monitor.isCanceled())
-				return Status.CANCEL_STATUS;
-			// TODO: export histogram
-			monitor.worked(1);
-		}
-		return Status.OK_STATUS;
+        if (histograms != null && histograms.size() > 0) {
+            if (monitor.isCanceled())
+                return Status.CANCEL_STATUS;
+            exporter.saveHistograms("histograms", "", histograms, manager);
+            monitor.worked(1);
+        }
+        return Status.OK_STATUS;
 	}
+
 }

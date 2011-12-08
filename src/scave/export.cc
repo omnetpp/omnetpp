@@ -257,6 +257,52 @@ std::string ScalarDataTable::getStringValue(int row, int col) const
 }
 
 /*=====================
+ *       Histograms
+ *=====================*/
+HistogramDataTable::HistogramDataTable(const string &name, const string &description, const HistogramResult *histogramResult)
+    : DataTable(name, description), histResult(histogramResult)
+{
+    header.push_back(Column("bin_lower", DOUBLE));
+    header.push_back(Column("bin_upper", DOUBLE));
+    header.push_back(Column("value", DOUBLE)); //
+}
+
+int HistogramDataTable::getNumRows() const
+{
+    return histResult->values.size();
+}
+
+bool HistogramDataTable::isNull(int row, int col) const
+{
+    return false;
+}
+
+string HistogramDataTable::getStringValue(int row, int col) const
+{
+    // no string column
+    return "";
+}
+
+BigDecimal HistogramDataTable::getBigDecimalValue(int row, int col) const
+{
+    // no big decimal column
+    return BigDecimal::NaN;
+}
+
+double HistogramDataTable::getDoubleValue(int row, int col) const
+{
+    if (col == 0)
+        return histResult->bins[row];
+    else if (col == 1)
+        // use the next lower bound as the upper bound for this bin
+        return row < (int)histResult->bins.size()-1 ? histResult->bins[row+1] : POSITIVE_INFINITY;
+    else if (col == 2)
+        return histResult->values[row];
+    else
+        return NaN;
+}
+
+/*=====================
  *  Join data tables
  *=====================*/
 class DataTableIterator
@@ -528,6 +574,18 @@ void ScaveExport::saveScalars(const string &name, const string &description,
     JoinedDataTable table(name, description, tables, 0 /*first column is X*/);
     saveTable(table, 0, table.getNumRows());
 }
+
+void ScaveExport::saveHistograms(const std::string &name, const std::string &description,
+                                 const IDList &histograms, ResultFileManager &manager)
+{
+    for (int i = 0; i < (int)histograms.size(); ++i)
+    {
+        const HistogramResult& histogramResult = manager.getHistogram(histograms.get(i));
+        const HistogramDataTable table(name, description, &histogramResult);
+        saveTable(table, 0, table.getNumRows());
+    }
+}
+
 
 string ScaveExport::makeUniqueIdentifier(const string &name)
 {
