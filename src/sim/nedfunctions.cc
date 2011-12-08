@@ -722,6 +722,19 @@ DEF(nedf_simTime,
     return cNEDValue(SIMTIME_DBL(simTime()), "s");
 })
 
+DEF(nedf_select,
+    "any select(int index, ...)",
+    "misc",
+    "Returns the <index>th item from the rest of the argument list; numbering starts from 0.",
+{
+    long index = argv[0];
+    if (index < 0)
+        throw cRuntimeError("select(): negative index %ld", index);
+    if (index >= argc-1)
+        throw cRuntimeError("select(): index=%ld is too large", index, argc-1);
+    return argv[index+1];
+})
+
 DEF(nedf_firstAvailable,
     "string firstAvailable(...)",
     "misc",

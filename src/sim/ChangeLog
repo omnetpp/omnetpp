@@ -1,11 +1,15 @@
+2011-12-08  Andras Varga
+
+	* nedfunctions.cc: implemented "any select(int index,...)"
+
 2011-10-28  ------ omnetpp-4.2 released ------
 
 2011-11-05  Zoltan Bojthe
 
-    * Activities are now using the swapcontext() POSIX call 
-      to implement coroutines (if available on the platform).
-      Newer Linux distros use 'fortified' gcc, so the older coroutine
-      library using setjmp()/longjmp() does not work any more.
+	* Activities are now using the swapcontext() POSIX call to implement
+	coroutines (if available on the platform). Newer Linux distros use
+	'fortified' gcc, so the older coroutine library using
+	setjmp()/longjmp() does not work any more.
 
 2011-10-24  Andras Varga
 
@@ -24,13 +28,13 @@
 2011-07-28  Andras Varga
 
 	* csimplemodule.cc: fix: throwing "not owner of message" from send()/
-	sendDirect()/scheduleAt() crashed if simulation.getContextModule() 
+	sendDirect()/scheduleAt() crashed if simulation.getContextModule()
 	returned NULL (does not occur in event handling code).
 
 2011-06-25  Andras Varga
 
-	* The internal class cMathFunction was renamed to cNEDMathFunction, 
-	to follow similar renaming of corresponding registration macros 
+	* The internal class cMathFunction was renamed to cNEDMathFunction,
+	to follow similar renaming of corresponding registration macros
 	(Define_Function --> Define_NED_Math_Function).
 
 	* Result filter/recorder stuff moved here from src/envir, so that
