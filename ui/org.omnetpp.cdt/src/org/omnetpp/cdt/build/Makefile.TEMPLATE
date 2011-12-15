@@ -131,13 +131,13 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@$(MKPATH) $O
-{gcclongline:}{exe:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) {-out}$O/$(TARGET) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
-{~gcclongline:}{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
+{gcclongline:}{exe:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{~gcclongline:}{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
 {sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@$(MKPATH) $O
-{gcclongline:}{sharedlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) {-out}$O/$(TARGET) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
-{~gcclongline:}{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(LIBS) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
+{gcclongline:}{sharedlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{~gcclongline:}{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
 {sharedlib:}{~nmake:}	$(SHLIB_POSTPROCESS) $O/$(TARGET)
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
