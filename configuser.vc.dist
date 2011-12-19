@@ -322,7 +322,7 @@ KERNEL_LIBS = $(KERNEL_LIBS) $(MPI_LIBS)
 CXX=cl.exe
 LINK=linkall.cmd
 AR=lib.exe /nologo
-SHLIB_LD=$(LINK) /dll $(LDFLAGS)
+SHLIB_LD=$(LINK) /dll
 RC=rc.exe
 
 # dependency generator (needs Perl!)
