@@ -138,7 +138,7 @@ public abstract class AbstractModuleView extends PinnableView implements IShowIn
                     showMessage("Network not specified (no network= setting in ["+sel.getSection()+"] or the sections it extends)");
                     return;
                 }
-                INedTypeInfo networkType = analyzer.resolveNetwork(NedResourcesPlugin.getNedResources(), networkName);
+                INedTypeInfo networkType = analyzer.resolveNetwork(NedResourcesPlugin.getNedResources().getImmutableCopy(), networkName);
                 if (networkType == null) {
                     showMessage("No such NED network: "+networkName);
                     return;

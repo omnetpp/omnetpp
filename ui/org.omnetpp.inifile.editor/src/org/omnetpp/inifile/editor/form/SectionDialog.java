@@ -179,7 +179,7 @@ public class SectionDialog extends TitleAreaDialog {
 
 		// fill network combo
 		IProject contextProject = doc.getDocumentFile().getProject();
-		Set<String> networkNameSet = NedResourcesPlugin.getNedResources().getNetworkQNames(contextProject);
+		Set<String> networkNameSet = NedResourcesPlugin.getNedResources().getNetworkQNames(contextProject); // no need to work on a copy of ned resources
 		String[] networkNames = networkNameSet.toArray(new String[]{});
 		Arrays.sort(networkNames);
 		networkCombo.setItems(networkNames);

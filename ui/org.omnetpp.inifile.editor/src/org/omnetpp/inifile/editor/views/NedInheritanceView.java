@@ -247,7 +247,7 @@ public class NedInheritanceView extends AbstractModuleView {
 
     private List<INedTypeInfo> getSubtypesOf(INedTypeInfo inputType) {
         List<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
-        INedTypeResolver res = NedResourcesPlugin.getNedResources();
+        INedTypeResolver res = inputType.getResolver();
 
         // examine all NED types we know of, whether they extend/implement this one (not too efficient)
         for (INedTypeInfo type : res.getToplevelNedTypesFromAllProjects()) {

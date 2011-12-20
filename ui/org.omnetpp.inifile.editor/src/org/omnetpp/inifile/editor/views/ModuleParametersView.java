@@ -403,7 +403,7 @@ public class ModuleParametersView extends AbstractModuleView {
 		if (analyzer==null) {
 			List<ParamResolution> pars = null;
 			
-			INedTypeResolver nedResolver = NedResourcesPlugin.getNedResources();
+			INedTypeResolver nedResolver = elementWithParameters.getContainingNedFileElement().getResolver();
 
 			if (elementWithParameters instanceof SubmoduleElementEx) {
 			    SubmoduleElementEx submodule = (SubmoduleElementEx)elementWithParameters;

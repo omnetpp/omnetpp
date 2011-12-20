@@ -146,10 +146,10 @@ s	 * before getting presented to the user.
 
 		if (entry==CFGID_NETWORK) {
 			IProject contextProject = doc.getDocumentFile().getProject();
-			INedResources nedResources = NedResourcesPlugin.getNedResources();
+			INedTypeResolver nedResources = NedResourcesPlugin.getNedResources().getImmutableCopy();
 			// first
 			List<IContentProposal> p1 = new ArrayList<IContentProposal>();
-			String iniFilePackage = NedResourcesPlugin.getNedResources().getPackageFor(doc.getDocumentFile().getParent());
+			String iniFilePackage = nedResources.getPackageFor(doc.getDocumentFile().getParent());
 			if (StringUtils.isNotEmpty(iniFilePackage)) {
 				for (String networkName : nedResources.getNetworkQNames(contextProject)) {
 					INedTypeElement network = nedResources.getToplevelNedType(networkName, contextProject).getNedElement();
@@ -337,11 +337,10 @@ s	 * before getting presented to the user.
 
         // if different params require different interfaces, find the common subset
         // of modules that implement both/all, and return that.
-	    INedTypeResolver res = NedResourcesPlugin.getNedResources();
         Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
         boolean firstIter = true;
 	    for (INedTypeInfo likeInterface : likeInterfaces) {
-	        Collection<INedTypeInfo> types = res.getToplevelNedTypesThatImplement(likeInterface, context);
+	        Collection<INedTypeInfo> types = likeInterface.getResolver().getToplevelNedTypesThatImplement(likeInterface, context);
 	        if (firstIter) {
 	            result.addAll(types);
 	            firstIter = false;
@@ -377,7 +376,7 @@ s	 * before getting presented to the user.
         // note: we only look to local submodules: inherited submodules wouldn't see
         // this parameter (since it's declared in a subclass)
         Set<INedTypeInfo> result = new HashSet<INedTypeInfo>();
-        INedTypeResolver res = NedResourcesPlugin.getNedResources();
+        INedTypeResolver res = module.getResolver();
         String paramName = param.paramDeclaration.getName();
         for (SubmoduleElementEx submodule : module.getSubmodules()) {
             if (submodule.getLikeExpr().equals(paramName)) {

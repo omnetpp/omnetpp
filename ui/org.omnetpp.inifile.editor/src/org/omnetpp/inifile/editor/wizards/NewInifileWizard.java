@@ -37,7 +37,7 @@ public class NewInifileWizard extends TemplateBasedNewFileWizard {
     protected CreationContext createContext(IContentTemplate selectedTemplate, IContainer folder) {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
-        String packageName = NedResourcesPlugin.getNedResources().getPackageFor(folder);
+        String packageName = NedResourcesPlugin.getNedResources().getPackageFor(folder);// no need to work on a copy of ned resources
         context.getVariables().put("nedPackageName", StringUtils.nullToEmpty(packageName));
 
         return context;

@@ -41,7 +41,7 @@ public class NewMsgFileWizard extends TemplateBasedNewFileWizard {
         CreationContext context = super.createContext(selectedTemplate, folder);
 
         // namespace
-        String namespaceName = NedResourcesPlugin.getNedResources().getSimplePropertyFor(folder, INedTypeResolver.NAMESPACE_PROPERTY);
+        String namespaceName = NedResourcesPlugin.getNedResources().getSimplePropertyFor(folder, INedTypeResolver.NAMESPACE_PROPERTY);  // no need to work on a copy of ned resources
         context.getVariables().put("namespaceName", StringUtils.defaultString(namespaceName,""));
 
         return context;

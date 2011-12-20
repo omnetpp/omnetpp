@@ -67,9 +67,11 @@ import org.omnetpp.ned.core.ParamUtil;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
+import org.omnetpp.ned.model.ex.NedFileElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.interfaces.IHasName;
+import org.omnetpp.ned.model.interfaces.INedFileElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
@@ -530,8 +532,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
 		// build tree
         final GenericTreeNode root = new GenericTreeNode("root");
 
-    	INedTypeResolver nedResources = NedResourcesPlugin.getNedResources();
-    	contextProject = nedResources.getNedFile(elementWithParameters.getContainingNedFileElement()).getProject();
+        NedFileElementEx nedFileElement = elementWithParameters.getContainingNedFileElement();
+        INedTypeResolver nedResources = nedFileElement.getResolver();
+        contextProject = nedResources.getNedFile(nedFileElement).getProject();
 
         if (elementWithParameters instanceof ISubmoduleOrConnection)
             computeChildren(root, (ISubmoduleOrConnection)elementWithParameters);
@@ -574,21 +577,18 @@ public class ModuleHierarchyView extends AbstractModuleView {
 	}
 	
 	private void computeChildren(GenericTreeNode parent, INedTypeInfo typeInfo) {
-        INedTypeResolver nedResources = NedResourcesPlugin.getNedResources();
-        NedTreeTraversal iterator = new NedTreeTraversal(nedResources, new TreeBuilder(parent, false), contextProject);
+        NedTreeTraversal iterator = new NedTreeTraversal(typeInfo.getResolver(), new TreeBuilder(parent, false), contextProject);
         iterator.traverse(typeInfo);
 	}
 	
 	private void computeChildren(GenericTreeNode parent, ISubmoduleOrConnection element) {
-        INedTypeResolver nedResources = NedResourcesPlugin.getNedResources();
-        NedTreeTraversal iterator = new NedTreeTraversal(nedResources, new TreeBuilder(parent, false), contextProject);
+        NedTreeTraversal iterator = new NedTreeTraversal(element.getResolver(), new TreeBuilder(parent, false), contextProject);
         iterator.traverse(element);
 	}
 	
 	private void computeChildren(GenericTreeNode parent, ISubmoduleOrConnection element, INedTypeInfo typeInfo)
 	{
-        INedTypeResolver nedResources = NedResourcesPlugin.getNedResources();
-        NedTreeTraversal iterator = new NedTreeTraversal(nedResources, new TreeBuilder(parent, true), contextProject);
+        NedTreeTraversal iterator = new NedTreeTraversal(typeInfo.getResolver(), new TreeBuilder(parent, true), contextProject);
         if (element != null)
             iterator.traverse(element);
         else
