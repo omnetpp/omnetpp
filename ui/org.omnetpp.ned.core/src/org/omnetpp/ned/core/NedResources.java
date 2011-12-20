@@ -294,6 +294,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
 
     // store NED file contents
     protected synchronized void storeNedFileModel(IFile file, NedFileElementEx tree) {
+        Assert.isTrue(tree.getResolver() == this, "cannot use another resolver than the one that created the element");
         Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
         
         NedFileElementEx oldTree = nedFiles.get(file);

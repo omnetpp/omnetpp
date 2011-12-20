@@ -195,6 +195,7 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public boolean isBuiltInDeclaration(INedTypeInfo typeInfo) {
+        Assert.isTrue(typeInfo.getResolver() == this, "cannot use another resolver for lookups than the one that created the element");
         return typeInfo.getNedElement().getContainingNedFileElement() == builtInDeclarationsFile;
     }
 
@@ -239,6 +240,7 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized IFile getNedFile(NedFileElementEx nedFileElement) {
+        Assert.isTrue(nedFileElement.getResolver() == this, "cannot use another resolver for lookups than the one that created the element");
         Assert.isTrue(nedElementFiles.containsKey(nedFileElement) || nedFileElement==builtInDeclarationsFile, "NedFileElement is not in the resolver");
         return nedElementFiles.get(nedFileElement);
     }
@@ -352,6 +354,7 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized Collection<INedTypeInfo> getToplevelNedTypesThatImplement(INedTypeInfo interfaceType, IProject context) {
+        Assert.isTrue(interfaceType.getResolver() == this, "cannot use another resolver for lookups than the one that created the element");
         Collection<INedTypeInfo> result = new ArrayList<INedTypeInfo>();
         for (INedTypeInfo type : getToplevelNedTypesInternal(context))
             if (type.getInterfaces().contains(interfaceType.getNedElement()))
@@ -487,6 +490,7 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized INedTypeInfo lookupNedType(String name, INedTypeLookupContext lookupContext) {
+        Assert.isTrue(lookupContext.getResolver() == this, "cannot use another resolver for lookups than the one that created the element");
         // return cached value if exists, otherwise call doLookupNedType()
         Map<String, INedTypeInfo> map = nedTypeLookupCache.get(lookupContext);
         if (map == null)
@@ -578,6 +582,7 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public INedTypeInfo lookupLikeType(String name, INedTypeInfo interfaceType, IProject context) {
+        Assert.isTrue(interfaceType.getResolver() == this, "cannot use another resolver for lookups than the one that created the element");
         // return cached value if exists, otherwise call doLookupLikeType()
         Map<INedTypeInfo, Map<String, INedTypeInfo>> map = nedLikeTypeLookupCache.get(context);
         if (map == null)
@@ -613,6 +618,7 @@ public class NedTypeResolver implements INedTypeResolver {
     }
 
     public synchronized Set<String> getLocalTypeNames(INedTypeLookupContext lookupContext, IPredicate predicate) {
+        Assert.isTrue(lookupContext.getResolver() == this, "cannot use another resolver for lookups than the one that created the element");
         Set<String> result = new HashSet<String>();
         if (lookupContext instanceof NedFileElement) {
             List<INedTypeElement> topLevelTypeNodes = lookupContext.getContainingNedFileElement().getTopLevelTypeNodes();
