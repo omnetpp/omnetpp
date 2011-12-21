@@ -220,7 +220,7 @@
          point="org.eclipse.ui.preferencePages">
       <page
             class="org.omnetpp.ide.preferences.OmnetppPreferencePage"
-            id="org.omnetpp.cdt.OmnetppCdtPreferencePage"
+            id="org.omnetpp.main.OmnetppPreferencePage"
             name="OMNeT++">
       </page>
    </extension>

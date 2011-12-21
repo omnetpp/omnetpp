@@ -411,7 +411,7 @@
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            category="org.eclipse.cdt.ui.preferences.CPluginPreferencePage"
+            category="org.omnetpp.main.OmnetppPreferencePage"
             class="org.omnetpp.cdt.msvc.ui.MSVCPreferencePage"
             id="org.omnetpp.cdt.msvc.MSVCPreferencePage"
             name="Microsoft Visual C++">

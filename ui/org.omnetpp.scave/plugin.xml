@@ -160,7 +160,7 @@
   <extension
         point="org.eclipse.ui.preferencePages">
      <page
-           category="org.omnetpp.cdt.OmnetppCdtPreferencePage"
+           category="org.omnetpp.main.OmnetppPreferencePage"
            class="org.omnetpp.scave.preferences.ScavePreferencePage"
            id="org.omnetpp.scave.preferences.ScavePreferencePage"
            name="Result Analysis">
