@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
@@ -47,7 +48,11 @@ public abstract class ExpandableFieldEditor extends FieldEditor  {
 
 	private IInifileChangeListener inifileChangeListener = new IInifileChangeListener() {
 		public void modelChanged() {
-			updateToggleButton();
+	        Display.getDefault().asyncExec(new Runnable() {
+	            public void run() {
+	                updateToggleButton();
+	            }
+	        });
 		}
 	};
 
