@@ -57,6 +57,7 @@ import org.eclipse.gef.ui.actions.AlignmentAction;
 import org.eclipse.gef.ui.actions.GEFActionConstants;
 import org.eclipse.gef.ui.actions.MatchHeightAction;
 import org.eclipse.gef.ui.actions.MatchWidthAction;
+import org.eclipse.gef.ui.actions.PrintAction;
 import org.eclipse.gef.ui.actions.ZoomInAction;
 import org.eclipse.gef.ui.actions.ZoomOutAction;
 import org.eclipse.gef.ui.palette.PaletteContextMenuProvider;
@@ -499,6 +500,21 @@ public class GraphicalNedEditor
         super.createActions();
         ActionRegistry registry = getActionRegistry();
         IAction action;
+        
+        // KLUDGE: Do not call getPrinterList() from PrintAction.calculateEnbabled()
+        // because it causes exception. PrintAction is already registered in super class.
+        // See: 
+        // http://dev.omnetpp.org/bugs/view.php?id=337
+        // https://bugs.eclipse.org/bugs/show_bug.cgi?id=330165
+        IAction origPrintAction = registry.getAction(ActionFactory.PRINT.getId());
+        registry.removeAction(origPrintAction);
+        IAction printAction = new PrintAction(this) {
+            @Override
+            protected boolean calculateEnabled() {
+                return true;
+            }
+        };
+        registry.registerAction(printAction);
 
         action = new NedSelectAllAction(this);
         registry.registerAction(action);
