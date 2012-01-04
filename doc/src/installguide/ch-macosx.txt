@@ -348,9 +348,8 @@ ifdef::OMNEST[]
 
 ==== SystemC
 
-To enable SystemC integration, add SYSTEMC=yes to the configure.user
-file, run 'configure' and then rebuild your project. You can check the
-systemc examples in the samples/systemc-embedding directory.
+SystemC integration is not available on Mac OS X, because the bundled
+SystemC reference implementation does not support Mac OS X 10.7.
 
 endif::OMNEST[]
 
