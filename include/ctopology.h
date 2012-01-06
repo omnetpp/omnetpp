@@ -70,6 +70,7 @@ class SIM_API cTopology : public cOwnedObject
     class SIM_API Node
     {
         friend class cTopology;
+        friend class WeightedTopology;
 
       private:
         int module_id;
