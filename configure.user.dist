@@ -54,6 +54,7 @@ WITH_PARSIM=yes
 
 #
 # Set to "yes" to enable SystemC support. (Available only in the commecial version (OMNEST))
+# Please note that SystemC is not supported on MacOS and on the MinGW compiler on Windows.
 #
 SYSTEMC=no
 
