@@ -146,7 +146,7 @@ ifeq ($(SHARED_LIBS),yes)
 else
   LIB_SUFFIX = $(A_LIB_SUFFIX)
   # extra libs we are indirectly depend on. they are needed if we are building statically
-  KERNEL_LIBS += $(XML_LIBS) -loppnedxml$D -loppcommon$D
+  KERNEL_LIBS += -loppnedxml$D -loppcommon$D $(XML_LIBS) 
   TKENV_LIBS += $(TK_LIBS) $(BLT_LIBS) $(ZLIB_LIBS)
 
   ifeq ($(WITH_PARSIM),yes)
