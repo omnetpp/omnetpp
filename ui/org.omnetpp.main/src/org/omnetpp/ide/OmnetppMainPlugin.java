@@ -8,6 +8,8 @@
 package org.omnetpp.ide;
 
 
+import java.io.File;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
@@ -165,5 +167,39 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
             return "";
         return new Path(oppRoot).append("mingw").append("bin").toOSString();
     }
+    
+    /**
+     * Detects whether oppsim library (built by GCC) is present in the
+     * lib directory.  
+     */
+    public static boolean isOppsimGccLibraryPresent(boolean debug) {
+        String fileName = getOmnetppLibDir() + "/liboppsim" + (debug ? "d" : "");
+        String dllExtension, staticLibExtension;
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            dllExtension = ".dll";
+            staticLibExtension = ".lib";
+        } else if (Platform.getOS().equals(Platform.OS_MACOSX)) {                                                         
+            dllExtension = ".dylib";                                                                                        
+            staticLibExtension = ".a";
+        } else {                                                                                                          
+            dllExtension = ".so";
+            staticLibExtension = ".a";
+        }
 
+        File dllFile = new File(fileName+dllExtension);
+        File staticLibFile = new File(fileName+staticLibExtension);
+        return dllFile.exists() || staticLibFile.exists();
+    }
+
+    /**
+     * Detects whether oppsim library (dll/lib) (built by Visual C++) is present in the
+     * lib directory.  
+     */
+    public static  boolean isOppsimVcLibraryPresent(boolean debug) {
+        String fileName = getOmnetppLibDir() + "/oppsim" + (debug ? "d" : ""); 
+
+        File dllFile = new File(fileName+".dll");
+        File staticLibFile = new File(fileName+".lib");
+        return dllFile.exists() || staticLibFile.exists();
+    }
 }

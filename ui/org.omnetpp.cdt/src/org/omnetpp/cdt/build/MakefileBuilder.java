@@ -44,6 +44,7 @@ import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.ui.ProblemsMessageDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
+import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
  * Keeps makefiles up to date.
@@ -211,7 +212,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
     protected void checkActiveCDTConfiguration() {
         IProject project = getProject();
         IManagedBuildInfo buildInfo = ManagedBuildManager.getBuildInfo(project);
-        IConfiguration activeConfig = buildInfo!=null ? buildInfo.getDefaultConfiguration() : null;
+        final IConfiguration activeConfig = buildInfo!=null ? buildInfo.getDefaultConfiguration() : null;
         final IToolChain toolChain = activeConfig!=null ? activeConfig.getToolChain() : null;
         if (toolChain==null)
             return;
@@ -223,9 +224,31 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 public void run() {
                     String message =
                         "Toolchain \"" + toolChain.getName() + "\" is not supported on this platform " +
-                        "or installation. Please go to the Project menu, and activate a different " +
-                        "build configuration. (You may need to switch to the C/C++ perspective first, " +
-                        "so that the required menu items appear in the Project menu.)";
+                        "or installation. \n\n" +
+                        "Please switch to a different build configuration in the project context menu.";
+                    MessageDialog.openWarning(getActiveShell(), "Project "+getProject().getName(), message);
+                }
+            });
+            return;
+        }
+        
+        // check if the libraries required for the active configuration are present
+        // advise the user to switch configs
+        boolean libMissing =
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.debug") && !OmnetppMainPlugin.isOppsimGccLibraryPresent(true)) ||
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.release") && !OmnetppMainPlugin.isOppsimGccLibraryPresent(false)) ||
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.debug") && !OmnetppMainPlugin.isOppsimVcLibraryPresent(true)) ||
+                (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.release") && !OmnetppMainPlugin.isOppsimVcLibraryPresent(false));
+        
+        if (libMissing) {
+            runInUIThread(new Runnable() {
+                public void run() {
+                    String message =
+                        "OMNeT++ library files for configuration \"" + activeConfig.getName() + "\" " + 
+                        "not found in " + OmnetppMainPlugin.getOmnetppLibDir() + ".\n\n"+
+                        "Switch to a different build configuration in the project context menu, " +
+                        "or build the OMNeT++ libraries from " +
+                        "the command line. (See the Install Guide for help.)";        
                     MessageDialog.openWarning(getActiveShell(), "Project "+getProject().getName(), message);
                 }
             });
