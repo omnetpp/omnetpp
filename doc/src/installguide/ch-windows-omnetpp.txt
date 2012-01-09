@@ -138,9 +138,8 @@ or
     $ make MODE=debug
 
 By default, shared libraries will be created. If you want to build static
-libraries, use:
-
-    $ make SHARED_LIBS=no
+libraries, set `SHARED_LIBS=no` in `configure.user` and re-configure your
+project.
 
 NOTE: The built libraries and programs are immediately copied
 to the `lib/` and `bin/` subdirs.
@@ -149,7 +148,7 @@ to the `lib/` and `bin/` subdirs.
 === Portability Issues
 
 @OMNETPP@ has been tested with the MinGW gcc compiler. The current distribution
-contains gcc version 4.5.
+contains gcc version 4.6.
 
 Microsoft Visual C++ is not supported in the Academic Edition.
 

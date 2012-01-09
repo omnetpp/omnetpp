@@ -252,9 +252,8 @@ or
     $ make MODE=debug
 
 By default, shared libraries will be created. If you want to build static
-libraries, use:
-
-    $ make SHARED_LIBS=no
+libraries, set `SHARED_LIBS=no` in `configure.user` and re-configure your
+project.
 
 [NOTE]
 ===============================================================
