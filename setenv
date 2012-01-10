@@ -14,5 +14,7 @@ else
     echo $omnetpp_root
     export PATH=$omnetpp_root/bin:$PATH
     export LD_LIBRARY_PATH=$omnetpp_root/lib:$LD_LIBRARY_PATH
+    export HOSTNAME
+    export HOST
 fi
 
