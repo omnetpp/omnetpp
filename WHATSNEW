@@ -61,7 +61,7 @@ Sim:
 
   - Fixed all warnings to make it compile using -Wall -Werror.
 
-  - Coroutines used for 'activities' are now implemented using the 
+  - Coroutines used for 'activities' are now implemented using the
     swapcontext() POSIX call (if it is available on the system).
 
 Sample simulations:
@@ -132,8 +132,8 @@ Sim:
    Look at src/sim/nedfunctions.cc for code examples.
 
  - Measurement unit support: added "mps" (m/s) and "kmph" (km/h) as recognized
-   units; changed "Kbps" to more standards compilant "kbps"; changed byte
-   multiples notation to use the now-standard IEC binary prefixes: KB -> KiB,
+   units; changed "Kbps" to the more standard "kbps"; changed byte multiples
+   notation to use the now-standard IEC binary prefixes: KB -> KiB,
    MB -> MiB, GB -> GiB, TB -> TiB. The latter changes affect backwards
    compatibility, i.e. you may need to update existing models.
 
