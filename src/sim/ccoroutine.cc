@@ -34,6 +34,14 @@ LPVOID cCoroutine::lpMainFiber;
 void cCoroutine::init(unsigned total_stack, unsigned main_stack)
 {
     lpMainFiber = ConvertThreadToFiber(0);
+    if (!lpMainFiber)
+    {
+        DWORD err = GetLastError();
+        if (err == ERROR_ALREADY_FIBER)
+            lpMainFiber = GetCurrentFiber();
+        if (!lpMainFiber)
+            throw std::exception("cCoroutine::init(): cannot convert main thread to fiber");
+    }
 }
 
 void cCoroutine::switchTo(cCoroutine *cor)
