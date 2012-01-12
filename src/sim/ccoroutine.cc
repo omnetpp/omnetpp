@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <new>  //bad::alloc
 #include "ccoroutine.h"
+#include "cexception.h"
 
 USING_NAMESPACE
 
@@ -40,7 +41,7 @@ void cCoroutine::init(unsigned total_stack, unsigned main_stack)
         if (err == ERROR_ALREADY_FIBER)
             lpMainFiber = GetCurrentFiber();
         if (!lpMainFiber)
-            throw std::exception("cCoroutine::init(): cannot convert main thread to fiber");
+            throw cRuntimeError("cCoroutine::init(): cannot convert main thread to fiber");
     }
 }
 
