@@ -15,6 +15,7 @@
 # and http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
 
+$quiet = 0;
 $verbose = 0;
 
 $DUMPBIN = "dumpbin";
@@ -38,6 +39,7 @@ $SIG{'INT'} = 'removeTempFiles';
 
 # read the list files because active perl does not handle them automatically
 @ARGV2 = ();
+print "  linker args:" unless $quiet;
 foreach $arg (@ARGV) {
     if (substr($arg,0,1) eq "@") {
         $listfile = substr($arg,1);
@@ -48,15 +50,18 @@ foreach $arg (@ARGV) {
             # usually each arg is on a separate line, but sometimes nmake puts everything on the same line (???)
             my @list = split(' ', $_);
             foreach my $i (@list) {
+                print " $i" unless $quiet;
                 push(@ARGV2, $i);
             }
         }
         close(INPUT);
     }
     else {
+        print " $arg" unless $quiet;
         push(@ARGV2, $arg);
     }
 }
+print "\n" unless $quiet;
 
 # collect linker path
 @libpath = split(';', $ENV{LIB});
