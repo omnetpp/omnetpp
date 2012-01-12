@@ -173,33 +173,43 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
      * lib directory.  
      */
     public static boolean isOppsimGccLibraryPresent(boolean debug) {
-        String fileName = getOmnetppLibDir() + "/liboppsim" + (debug ? "d" : "");
-        String dllExtension, staticLibExtension;
+        String libFileName = getOmnetppLibDir() + "/gcc/liboppsim" + (debug ? "d" : "");
+        String extension1, extension2;
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
-            dllExtension = ".dll";
-            staticLibExtension = ".lib";
+            // on windows we do not test for dynamic libs (as they are in the bin directory) 
+            extension1 = ".a";
+            extension2 = ".lib";
         } else if (Platform.getOS().equals(Platform.OS_MACOSX)) {                                                         
-            dllExtension = ".dylib";                                                                                        
-            staticLibExtension = ".a";
+            extension1 = ".dylib";                                                                                        
+            extension2 = ".a";
         } else {                                                                                                          
-            dllExtension = ".so";
-            staticLibExtension = ".a";
+            extension1 = ".so";
+            extension2 = ".a";
         }
 
-        File dllFile = new File(fileName+dllExtension);
-        File staticLibFile = new File(fileName+staticLibExtension);
-        return dllFile.exists() || staticLibFile.exists();
+        File file1 = new File(libFileName+extension1);
+        File file2 = new File(libFileName+extension2);
+        return file1.exists() || file2.exists();
     }
 
     /**
      * Detects whether oppsim library (dll/lib) (built by Visual C++) is present in the
      * lib directory.  
      */
+    // FIXME should be reviewed once we put all library files under /lib (instead
+    // of the current /lib/<toolchain> name.
     public static  boolean isOppsimVcLibraryPresent(boolean debug) {
-        String fileName = getOmnetppLibDir() + "/oppsim" + (debug ? "d" : ""); 
-
-        File dllFile = new File(fileName+".dll");
-        File staticLibFile = new File(fileName+".lib");
-        return dllFile.exists() || staticLibFile.exists();
+        return isOppsimVcXXXLibraryPresent("vc90", debug) ||
+               isOppsimVcXXXLibraryPresent("vc100", debug) ||
+               isOppsimVcXXXLibraryPresent("vc110", debug);
+    }
+    
+    /**
+     * checks if there exist a compiled lib under the lib/<libSubDir>
+     */
+    private static boolean isOppsimVcXXXLibraryPresent(String libSubDir, boolean debug) {
+        String fileBaseName = getOmnetppLibDir() +"/" + libSubDir + "/oppsim" + (debug ? "d" : ""); 
+        File libFile = new File(fileBaseName+".lib");
+        return libFile.exists();
     }
 }
