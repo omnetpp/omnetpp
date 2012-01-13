@@ -1,10 +1,14 @@
 #!/bin/sh
 #
-# tests the build process with different configurations and run
+# Test the build process with different configurations and run
 # all examples for a while and check their fingerprints
 #
-# If $what=omnest then we must assume OMNEST testing i.e.
-# we must also test the precompiled binaries
+# The toolchain used for testing (default is gcc)
+# $TOOLCHAIN=vc or gcc
+#
+# EXTRA_TESTS=yes/no (default no) - whether to carry out additional testing
+# like double simtime support and tests whether OMNeT++ compiles without XML
+# libraries
 
 
 cd `dirname $0`
@@ -14,7 +18,6 @@ cd $TEST_DIR/../..
 OMNETPP_ROOT=`pwd`
 
 export TEST_PROG="opp_run -h all"
-export MAKE_ARGS="-j2"
 export WITH_NETBUILDER=yes
 export WITH_PARSIM=yes
 export SHARED_LIBS=yes
@@ -27,6 +30,32 @@ export CFLAGS_RELEASE=
 export SYSTEMC=no
 
 export TWEAKCONFIG="perl $TEST_DIR/tweakconfigfile.pl"
+
+# opsystem detection (assume windows by default)
+export PLATFORM=windows
+if [ `uname -s` = Linux ]; then
+    export PLATFORM=linux
+fi
+if [ `uname -s` = Darwin ]; then
+    export PLATFORM=macosx
+fi
+
+# default toolchain is gcc
+if [ "$TOOLCHAIN" = "" ]; then
+    export TOOLCHAIN=gcc
+fi
+
+export MAKE_PROG=make
+if [ "$TOOLCHAIN" = "vc" ]; then
+    export MAKE_PROG="nmake -f Makefile.vc"
+fi
+
+echo "Testing on $PLATFORM using the $TOOLCHAIN toolchain."
+
+######################################################
+#
+# test functions...
+#
 
 failure() {
     echo "FAILED: $1"
@@ -45,18 +74,24 @@ contains() {
     fi
 }
 
-compile() {
-    echo "*** Testing: $CFG"
+
+#######################################################
+#
+# Compile functions
+#
+
+compile_gcc() {
+    echo "*** Compiling with gcc: $CFG"
 
     # tweak
-    $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "\"$WITH_NETBUILDER\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "\"$WITH_PARSIM\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "\"$SHARED_LIBS\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user NO_TCL  "\"$NO_TCL\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "\"$MPI_LIBS\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "\"$LIBXML_LIBS\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "\"$EXPAT_LIBS\"" || failure $CFG
-    $TWEAKCONFIG setoradd configure.user SYSTEMC  "\"$SYSTEMC\"" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user NO_TCL  "$NO_TCL" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user MPI_LIBS  "$MPI_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user LIBXML_LIBS  "$LIBXML_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user EXPAT_LIBS  "$EXPAT_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configure.user SYSTEMC  "$SYSTEMC" || failure $CFG
 
     echo "    Configuring..."
     cp configure.user "$LOG_DIR/$CFG-configure.user"
@@ -70,10 +105,41 @@ compile() {
     $TWEAKCONFIG assert Makefile.inc SYSTEMC  "$SYSTEMC" || failure $CFG
 
     echo "    Building..."
-    make cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
-    make $MAKE_ARGS >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
+    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
+    $MAKE_PROG >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
     samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
 }
+
+compile_vc() {
+    echo "*** Compiling with Visual C++: $CFG"
+
+    # tweak
+    $TWEAKCONFIG setoradd configuser.vc WITH_NETBUILDER  "$WITH_NETBUILDER" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc WITH_PARSIM  "$WITH_PARSIM" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc SHARED_LIBS  "$SHARED_LIBS" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc NO_TCL  "$NO_TCL" || failure $CFG
+    $TWEAKCONFIG setoradd configuser.vc SYSTEMC  "$SYSTEMC" || failure $CFG
+
+    cp configuser.vc "$LOG_DIR/$CFG-configuser.vc"
+
+    echo "    Building..."
+    $MAKE_PROG cleanall >"$LOG_DIR/$CFG-makeclean.out" 2>"$LOG_DIR/$CFG-makeclean.err" || failure "make cleanall failed - $CFG"
+    $MAKE_PROG >"$LOG_DIR/$CFG-make.out" 2>"$LOG_DIR/$CFG-make.err" || failure "make failed - $CFG"
+    samples/aloha/aloha -v >"$LOG_DIR/$CFG-buildinfo.out" 2>"$LOG_DIR/$CFG-buildinfo.err"
+}
+
+compile() {
+    if [ "$TOOLCHAIN" = "gcc" ]; then
+        compile_gcc
+    else
+        compile_vc
+    fi
+}
+
+###############################################
+#
+# fingerprint testing functions 
+#
 
 checkfingerprint() {
     (cd $1 && ./$2 -u Cmdenv -c $3 fingerprints.ini >"$LOG_DIR/$CFG-fingerprint-$2-$3.out" 2>"$LOG_DIR/$CFG-fingerprint-$2-$3.err") || failure "fingerprint check failed: $2 $3"
@@ -89,13 +155,17 @@ checkfingerprints() {
     checkfingerprint samples/cqn       cqn       CQN-B
     checkfingerprint samples/cqn       cqn       CQN-A
     checkfingerprint samples/dyna      dyna      Medium
+    checkfingerprint samples/routing   routing   Net60
+}
+
+checkfingerprints_sharedlibs() {
+    echo "    Checking fingerprints on models using shared libs..."
     checkfingerprint samples/queuenet  queuenet  OneFifo
     checkfingerprint samples/queuenet  queuenet  TandemFifos
     checkfingerprint samples/queuenet  queuenet  Ring
     checkfingerprint samples/queuenet  queuenet  Terminal
     checkfingerprint samples/queuenet  queuenet  CallCenter
     checkfingerprint samples/queuenet  queuenet  ForkJoin
-    checkfingerprint samples/routing   routing   Net60
 }
 
 checkfingerprints_systemc() {
@@ -105,37 +175,53 @@ checkfingerprints_systemc() {
     checkfingerprint samples/systemc-embedding     systemc-embedding     example3
 }
 
+###############################################
+#
+# unit test runner
+#
+
 runtest() {
     maxfailures=$2
-    outputfile="$LOG_DIR/$CFG-test.out"
+    outputfile="$LOG_DIR/$CFG-$1-test.out"
     echo "    Running $1 tests..."
-    cd test && make test_$1 >$outputfile 2>"$LOG_DIR/$CFG-test.err" || failure "test/$1 failed - $CFG"
+    cd test && $MAKE_PROG test_$1 >$outputfile 2>"$LOG_DIR/$CFG-$1-test.err" || failure "test/$1 failed - $CFG"
     grep -E "PASS:|FAILED" $outputfile
     awk '/FAIL:/ {if($4>'$maxfailures') {exit 1;} }' $outputfile || failure "test_$1 failed (too many failed tests) - $CFG"
 }
+
+
+################################################
 
 rm -rf $LOG_DIR
 mkdir -p $LOG_DIR
 
 ########################################
-# on MinGW/OMNEST test fingerprints before compiling (i.e. test the precompiled binaries)
-# if the precompiled libraries exist (i.e. right after installation)
-if test "$what"="omnest" -a `uname -o`=Msys -a -f bin/liboppsim.dll; then
+# test fingerprints before compiling (= test the precompiled binaries)
+# if the precompiled binaries exist (right after installation)
+#
+if [ "$PLATFORM" = "windows" -a -f bin/opp_run.exe ]; then
 
-  CFG=precompiled-mingw-binaries
+  CFG=precompiled-binaries
   (checkfingerprints)
+  (checkfingerprints_sharedlibs)
+  # test also the SystemC examples if the systemc folder exists
+  if [ -d src/systemc ]; then
+        (checkfingerprints_systemc)
+  fi
   (runtest core 4)
   (runtest common 0)
-  (runtest makemake 0)
   (runtest envir 1)
+  (runtest makemake 0)
 fi
 
 ########################################
+#
+# Compile tests
+#
 CFG=default
 (compile)
 
 contains cParsimPartition yes
-contains cMPICommunications yes
 contains "Tkenv : graphical user interface" yes
 contains "Cmdenv : command-line user interface" yes
 (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" yes)
@@ -143,89 +229,104 @@ contains "Cmdenv : command-line user interface" yes
 (TEST_PROG="opp_run -v" contains "simtime_t=SimTime" yes)
 (TEST_PROG="opp_run -v" contains "large-file-support=yes" yes)
 (checkfingerprints)
+(checkfingerprints_sharedlibs)
 (runtest core 4)
 (runtest common 0)
-(runtest makemake 0)
 (runtest envir 1)
+(runtest makemake 0)
 
 ########################################
-# run SystemC compile and fingerprint tests on Linux
-if test "$what"="omnest" -a `uname -o`=GNU/linux; then
-  CFG=systemc
-  (SYSTEMC=yes compile)
-  (checkfingerprints)
-  (checkfingerprints_systemc)
+# Run SystemC compile and fingerprint tests on Linux and on Visual C++
+# Other platforms / compilers are not supported
+if [ "$PLATFORM" = "linux" -o "$TOOLCHAIN" = "vc" ]; then
+    if [ -d src/systemc ]; then
+        CFG=systemc
+        (SYSTEMC=yes compile)
+        (checkfingerprints)
+        (checkfingerprints_sharedlibs)
+        (checkfingerprints_systemc)
+  fi
 fi
 
 ########################################
+# check the static build
 CFG=default_static
 (SHARED_LIBS=no compile)
 # the static build does not contain opp_run so we must use the aloha sample
-(TEST_PROG="samples/aloha/aloha -h all" contains cParsimPartition yes)
-(TEST_PROG="samples/aloha/aloha -h all" contains cMPICommunications yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Tkenv : graphical user interface" yes)
 (TEST_PROG="samples/aloha/aloha -h all" contains "Cmdenv : command-line user interface" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "XMLPARSER=libxml" yes)
 (TEST_PROG="samples/aloha/aloha -v" contains "WITH_NETBUILDER" yes)
 (checkfingerprints)
 
+########################################
+# Test MPI only on linux where MPI libs are available
+# On Mac and Windows the user must install MPI libs manually.
+if [ "$PLATFORM" = "linux" ]; then
+  ########################################
+  CFG=parsim
+  (compile)
+  contains cParsimPartition yes
+  contains cMPICommunications yes
+  (runtest makemake 0)
+  # TODO check MPI examples with fingerprint check
+
+  ########################################
+  # test if disabling MPI is working
+  CFG=no_mpi
+  (WITH_PARSIM=yes MPI_LIBS=-lbubu compile)
+  contains cParsimPartition yes
+  contains cMPICommunications no
+  (runtest makemake 0)
+  # TODO check parsim examples with fingerprint check
+fi
+
+
 #########################################
-# check without cPacket
-CFG=without_cpacket
-(CFLAGS_DEBUG="-DWITHOUT_CPACKET -g -Wall" compile)
-(TEST_PROG="opp_run -v" contains "WITHOUT_CPACKET" yes)
-(checkfingerprints)
-(runtest makemake 0)
+# extra tests for rare configurations
+if [ "$EXTRA_TESTS" != "yes" ]; then
+    exit
+fi
 
 #########################################
 # check building with double simtime instead of simtime_t
+# (no fingerprint testing here as it will surely fail becuase of
+# the different time representation)
 CFG=with_double_simtime
 (CFLAGS_DEBUG="-DUSE_DOUBLE_SIMTIME -g -Wall" compile)
 (TEST_PROG="opp_run -v" contains "USE_DOUBLE_SIMTIME" yes)
 (TEST_PROG="opp_run -v" contains "simtime_t=d" yes)
-(checkfingerprints)
 (runtest makemake 0)
 
 ########################################
-CFG=no_netbuilder
-(WITH_NETBUILDER=no compile)
-(TEST_PROG="opp_run -v" contains "WITH_NETBUILDER" no)
-(checkfingerprints)
-(runtest makemake 0)
+#
+# The rest is tested only on GCC, because with Visual C++
+# the libs should be configured by hand (no configure process)
+# in configuser.vc file. If we change those libs in this test
+# (i.e. set it to a fake value) those lib settings will be 
+# permanently lost and the user will be forced to restore 
+# the original configuser.vc somehow (e.g. by reinsalling OMNEST)
+# We don't want to permanently ruin the installation.
+#
 
-########################################
-CFG=no_parsim
-(WITH_PARSIM=no compile)
-contains cParsimPartition no
-contains cMPICommunications no
-(checkfingerprints)
-(runtest makemake 0)
+if test "$TOOLCHAIN" = "gcc"; then
 
-########################################
-CFG=no_mpi
-(MPI_LIBS=-lbubu compile)
-contains cParsimPartition yes
-contains cMPICommunications no
-(checkfingerprints)
-(runtest makemake 0)
+  ########################################
+  CFG=no_libxml
+  (LIBXML_LIBS=-lbubu compile)
+  (TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" no)
+  (runtest makemake 0)
 
-########################################
-CFG=no_libxml
-(LIBXML_LIBS=-lbubu compile)
-(TEST_PROG="opp_run -v" contains "XMLPARSER=libxml" no)
-(checkfingerprints)
-(runtest makemake 0)
+  ########################################
+  CFG=no_expat
+  (EXPAT_LIBS=-lbubu compile)
+  (TEST_PROG="opp_run -v" contains "XMLPARSER=expat" no)
+  (runtest makemake 0)
 
-########################################
-CFG=no_expat
-(EXPAT_LIBS=-lbubu compile)
-(TEST_PROG="opp_run -v" contains "XMLPARSER=expat" no)
-(checkfingerprints)
-(runtest makemake 0)
+  ########################################
+  CFG=no_xmlparser
+  (LIBXML_LIBS=-lbubu EXPAT_LIBS=-lbubu compile)
+  (TEST_PROG="opp_run -v" contains "XMLPARSER=none" yes)
+  (runtest makemake 0)
 
-########################################
-CFG=no_xmlparser
-(LIBXML_LIBS=-lbubu EXPAT_LIBS=-lbubu compile)
-(TEST_PROG="opp_run -v" contains "XMLPARSER=none" yes)
-(checkfingerprints)
-(runtest makemake 0)
+fi

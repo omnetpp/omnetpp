@@ -1,5 +1,8 @@
 
-all: test_common test_core test_envir test_makemake
+all: test_builds
+
+test_builds:
+	cd build && ./test-builds
 
 test_common:
 	cd common && ./runtest
