@@ -38,14 +38,15 @@
 USING_NAMESPACE
 
 
-//TODO consider:
-//  call cGate::clearFullnamePool() between events, and add to doc:
-//  "lifetime of the string returned by getFullName() is the simulation event"?
-
-
 // static members:
 std::string cModule::lastmodulefullpath;
 const cModule *cModule::lastmodulefullpathmod = NULL;
+
+#ifdef NDEBUG
+bool cModule::cachefullpath = false; // in release mode keep memory usage low
+#else
+bool cModule::cachefullpath = true;  // fullpath is useful during debugging
+#endif
 
 
 cModule::cModule()
@@ -53,6 +54,7 @@ cModule::cModule()
     mod_id = -1;
     idx = 0;
     vectsize = -1;
+    fullpath = NULL;
     fullname = NULL;
 
     prevp = nextp = firstsubmodp = lastsubmodp = NULL;
@@ -113,6 +115,7 @@ cModule::~cModule()
         getParentModule()->removeSubmodule(this);
 
     delete [] fullname;
+    delete [] fullpath;
 }
 
 void cModule::releaseListeners()
@@ -221,6 +224,19 @@ void cModule::updateFullName()
 
     if (lastmodulefullpathmod == this)
         lastmodulefullpathmod = NULL;  // invalidate
+
+    if (cachefullpath)
+        updateFullPath();
+}
+
+void cModule::updateFullPath()
+{
+    delete [] fullpath;
+    fullpath = NULL; // for the next getFullPath() call
+    fullpath = opp_strdup(getFullPath().c_str());
+
+    for (cModule *child = firstsubmodp; child; child = child->nextp)
+        child->updateFullPath();
 }
 
 const char *cModule::getFullName() const
@@ -231,6 +247,10 @@ const char *cModule::getFullName() const
 
 std::string cModule::getFullPath() const
 {
+    // use cached value if filled in
+    if (fullpath)
+        return fullpath;
+
     if (lastmodulefullpathmod != this)
     {
         // stop at the toplevel module (don't go up to cSimulation);
@@ -1158,6 +1178,7 @@ void cModule::changeParentTo(cModule *mod)
     cModule *oldparent = getParentModule();
     oldparent->removeSubmodule(this);
     mod->insertSubmodule(this);
+    updateFullPath();
 
     // notify environment
     EVCB.moduleReparented(this,oldparent);

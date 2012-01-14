@@ -212,8 +212,10 @@ class SIM_API cModule : public cComponent //implies noncopyable
     };
 
   protected:
+    mutable char *fullpath; // cached fullPath string (caching is optional, so it may be NULL)
     mutable char *fullname; // buffer to store full name of object
     int mod_id;             // id (subscript into cSimulation)
+    static bool cachefullpath; // whether to cache the fullPath string or not
 
     // Note: parent module is stored in ownerp -- a module is always owned by its parent
     // module. If ownerp cannot be cast to a cModule, the module has no parent module
@@ -263,6 +265,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
 
     // internal: called from setName() and setIndex()
     void updateFullName();
+
+    // internal: called from setName() and setIndex()
+    void updateFullPath();
 
     // internal: inserts a submodule. Called as part of the module creation process.
     void insertSubmodule(cModule *mod);

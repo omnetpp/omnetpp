@@ -157,13 +157,13 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
         throw;
     }
 
-    // set up module: set name, module type, vector size, parent
-    mod->setName(modname);
-    mod->setComponentType(this);
-    if (vectorsize>=0)
-        mod->setIndex(index, vectorsize);
+    // set up module: set parent, module type, name, vector size
     if (parentmod)
         parentmod->insertSubmodule(mod);
+    mod->setComponentType(this);
+    mod->setName(modname);
+    if (vectorsize>=0)
+        mod->setIndex(index, vectorsize);
 
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
