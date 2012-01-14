@@ -259,9 +259,9 @@ class SIM_API cModule : public cComponent //implies noncopyable
     // internal: sets the module ID. Called as part of the module creation process.
     virtual void setId(int n);
 
-    // internal: sets module index within vector (if module is part of
-    // a module vector). Called as part of the module creation process.
-    virtual void setIndex(int i, int n);
+    // internal: sets module name and its index within vector (if module is
+    // part of a module vector). Called as part of the module creation process.
+    virtual void setNameAndIndex(const char *s, int i, int n);
 
     // internal: called from setName() and setIndex()
     void updateFullName();

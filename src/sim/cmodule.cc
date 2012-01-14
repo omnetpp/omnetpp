@@ -143,8 +143,10 @@ void cModule::setId(int n)
     mod_id = n;
 }
 
-void cModule::setIndex(int i, int n)
+void cModule::setNameAndIndex(const char *s, int i, int n)
 {
+    // a two-in-one function, so that we don't end up calling updateFullPath() twice
+    cOwnedObject::setName(s);
     idx = i;
     vectsize = n;
     updateFullName();
