@@ -979,7 +979,8 @@ void cNEDNetworkBuilder::doAddConnection(cModule *modp, ConnectionElement *conn)
 
 void cNEDNetworkBuilder::doConnectGates(cModule *modp, cGate *srcg, cGate *destg, ConnectionElement *conn)
 {
-    if (opp_isempty(conn->getType()) && opp_isempty(conn->getLikeType()) && !conn->getFirstParametersChild())
+    if (opp_isempty(conn->getName()) && opp_isempty(conn->getType()) &&
+        opp_isempty(conn->getLikeType()) && !conn->getFirstParametersChild())
     {
         srcg->connectTo(destg);
     }
@@ -1187,10 +1188,14 @@ std::string cNEDNetworkBuilder::getChannelTypeName(cModule *parentmodp, cGate *s
 cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *parentmodp, cGate *srcgate)
 {
     // resolve channel type
-    const char *channelName = "channel";
+    const char *channelName = conn->getName();
+    if (opp_isempty(channelName)) 
+		channelName = NULL; // use NULL to indicate "no name"
+
     cChannelType *channeltype;
     try {
-        std::string channelTypeName = getChannelTypeName(parentmodp, srcgate, conn, channelName);
+        // note: for **.channelname.liketype= lookups we cannot take the channel type @defaultname into account, because we don't have the type yet!
+        std::string channelTypeName = getChannelTypeName(parentmodp, srcgate, conn, (channelName ? channelName : "channel"));
         bool usesLike = !opp_isempty(conn->getLikeType());
         channeltype = usesLike ?
             findAndCheckChannelTypeLike(channelTypeName.c_str(), conn->getLikeType(), parentmodp) :
@@ -1201,7 +1206,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionElement *conn, cModule *pa
     }
 
     // create channel object
-    cChannel *channelp = channeltype->create(channelName);
+    cChannel *channelp = channeltype->create(channelName); // it will choose a name if it's NULL
     return channelp;
 }
 

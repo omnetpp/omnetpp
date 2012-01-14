@@ -176,7 +176,7 @@ std::string cGate::info() const
     out << "." << g->getFullName();
 
     if (chan)
-        out << ", " << chan->getComponentType()->getFullName() << " " << chan->info();
+        out << ", (" << chan->getComponentType()->getFullName() << ")" << chan->getFullName() << " " << chan->info();
 
     return out.str();
 }

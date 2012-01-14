@@ -27,6 +27,8 @@
 #include "cdelaychannel.h"
 #include "cdataratechannel.h"
 #include "cmodelchange.h"
+#include "cproperties.h"
+#include "cproperty.h"
 
 #ifdef WITH_PARSIM
 #include "ccommbuffer.h"
@@ -297,6 +299,15 @@ cChannel *cChannelType::create(const char *name)
         // restore defaultowner, otherwise it'll remain pointing to a dead object
         cOwnedObject::setDefaultOwner(oldlist);
         throw;
+    }
+
+    // determine channel name
+    if (!name) {
+        cProperty *prop = getProperties()->get("defaultname");
+        if (prop)
+            name = prop->getValue(cProperty::DEFAULTKEY);
+        if (!name)
+            name = "channel";
     }
 
     // set up channel: set name, channel type, etc

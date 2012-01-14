@@ -1449,17 +1449,23 @@ channelspec
 
 
 channelspec_header
-        :
-        | dottedname
+        : opt_channelname
+        | opt_channelname dottedname
                 {
-                  ps.conn->setType(removeSpaces(@1).c_str());
+                  ps.conn->setType(removeSpaces(@2).c_str());
                 }
-        | likeexpr LIKE dottedname
+        | opt_channelname likeexpr LIKE dottedname
                 {
-                  addOptionalExpression(ps.conn, "like-expr", ps.exprPos, $1);
-                  ps.conn->setLikeType(removeSpaces(@3).c_str());
+                  addOptionalExpression(ps.conn, "like-expr", ps.exprPos, $2);
+                  ps.conn->setLikeType(removeSpaces(@4).c_str());
                   ps.conn->setIsDefault(ps.isDefault);
                 }
+        ;
+
+opt_channelname
+        :
+        | NAME ':'
+                { ps.conn->setName(toString(@1)); }
         ;
 
 /*

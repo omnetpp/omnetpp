@@ -606,8 +606,13 @@ void NED2Generator::doConnection(ConnectionElement *node, const char *indent, bo
     OUT << arrow;
 
     // print channel spec
-    if (!opp_isempty(node->getType()) || !opp_isempty(node->getLikeType()) || node->getFirstChildWithTag(NED_PARAMETERS))
+    if (!opp_isempty(node->getName()) || !opp_isempty(node->getType()) || !opp_isempty(node->getLikeType()) || node->getFirstChildWithTag(NED_PARAMETERS))
     {
+        if (!opp_isempty(node->getName()))
+        {
+            OUT << " " << node->getName() << ":";
+        }
+
         if (!opp_isempty(node->getLikeType()))
         {
             // "like" version

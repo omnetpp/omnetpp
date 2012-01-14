@@ -285,12 +285,13 @@ void NEDDTDValidator::validateElement(ConnectionElement *node)
     checkEnumeratedAttribute(node, "dest-gate-plusplus", vals9, sizeof(vals9)/sizeof(const char *));
     const char *vals11[] = {"i","o",""};
     checkEnumeratedAttribute(node, "dest-gate-subg", vals11, sizeof(vals11)/sizeof(const char *));
-    const char *vals15[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-default", vals15, sizeof(vals15)/sizeof(const char *));
+    checkNameAttribute(node, "name");
     const char *vals16[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-bidirectional", vals16, sizeof(vals16)/sizeof(const char *));
+    checkEnumeratedAttribute(node, "is-default", vals16, sizeof(vals16)/sizeof(const char *));
     const char *vals17[] = {"true","false"};
-    checkEnumeratedAttribute(node, "is-forward-arrow", vals17, sizeof(vals17)/sizeof(const char *));
+    checkEnumeratedAttribute(node, "is-bidirectional", vals17, sizeof(vals17)/sizeof(const char *));
+    const char *vals18[] = {"true","false"};
+    checkEnumeratedAttribute(node, "is-forward-arrow", vals18, sizeof(vals18)/sizeof(const char *));
 }
 
 void NEDDTDValidator::validateElement(ConnectionGroupElement *node)
