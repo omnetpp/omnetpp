@@ -16,11 +16,7 @@
 
 /* Tokens */
 %token STRINGLITERAL
-
-/* Operator precedences (low to high) and associativity */
-%left OR_
-%left AND_
-%left NOT_
+%token OR_ AND_ NOT_   /* note: cannot use %left/%right because of implicit "or" operator */
 
 %pure_parser
 
@@ -73,21 +69,36 @@ using OPP::opp_runtime_error;
 %%
 
 expression
-        : expr
+        : or_expr
         ;
 
-expr
-        : fieldpattern
-        | '(' expr ')'
-        | NOT_ expr
-                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
-        | expr AND_ expr
-                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
-                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
-        | expr OR_ expr
+or_expr
+        : or_expr OR_ and_expr
                 { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
                   state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
+        | or_expr /*implicit-OR*/ and_expr
+                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
+                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::OR)); }
+        | and_expr
+        ;
+
+and_expr
+        : and_expr AND_ not_expr
+                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
+                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::AND)); }
+        | not_expr
+        ;
+
+not_expr
+        : NOT_ term
+                { MatchExpressionParserState &state = *(MatchExpressionParserState*)statePtr;
+                  state.elemsp->push_back(MatchExpression::Elem(MatchExpression::Elem::NOT)); }
+        | term
+        ;
+
+term
+        : '(' or_expr ')'
+        | fieldpattern
         ;
 
 fieldpattern
@@ -117,7 +128,7 @@ fieldpattern
 void MatchExpression::parsePattern(std::vector<MatchExpression::Elem>& elems, const char *pattern,
                                    bool dottedpath, bool fullstring, bool casesensitive)
 {
-	MatchExpressionLexer *lexer = new MatchExpressionLexer(pattern);
+    MatchExpressionLexer *lexer = new MatchExpressionLexer(pattern);
 
     // store options
     MatchExpressionParserState state;
