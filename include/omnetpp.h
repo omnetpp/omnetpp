@@ -58,6 +58,8 @@
 #include "cmodelchange.h"
 #include "cmodule.h"
 #include "cmessageheap.h"
+#include "cmatchexpression.h"
+#include "cpatternmatcher.h"
 #include "cnedfunction.h"
 #include "cnedvalue.h"
 #include "cnedmathfunction.h"

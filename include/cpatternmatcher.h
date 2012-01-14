@@ -1,5 +1,5 @@
 //==========================================================================
-//  PATTERNMATCHER.H - part of
+//  CPATTERNMATCHER.H - part of
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
@@ -14,13 +14,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PATTERNMATCHER_H
-#define __PATTERNMATCHER_H
+#ifndef __CPATTERNMATCHER_H
+#define __CPATTERNMATCHER_H
 
 #include <stdio.h>
 #include <string>
 #include <vector>
-#include "commondefs.h"
+#include "simkerneldefs.h"
+
+class PatternMatcher;
 
 NAMESPACE_BEGIN
 
@@ -70,58 +72,26 @@ NAMESPACE_BEGIN
  *     matches any number). The specification must use exactly two dots.
  *     Caveat: "*{17..19}" will match "a17","117" and "963217" as well.
  */
-class COMMON_API PatternMatcher
+class SIM_API cPatternMatcher
 {
   private:
-    enum ElemType {
-      LITERALSTRING = 0,
-      ANYCHAR,
-      COMMONCHAR, // any char except "."
-      SET,
-      NEGSET,
-      NUMRANGE,
-      ANYSEQ,     // "**": sequence of any chars
-      COMMONSEQ,  // "*": seq of any chars except "."
-      END
-    };
-
-    struct Elem {
-      ElemType type;
-      std::string literalstring; // if type==LITERALSTRING
-      std::string setchars; // SET/NEGSET: character pairs (0,1),(2,3) etc denote char ranges
-      long fromnum, tonum; // NUMRANGE; -1 means "unset"
-    };
-
-    std::vector<Elem> pattern;
-    bool iscasesensitive;
-
-    std::string rest; // used to pass return value from doMatch() to patternPrefixMatches()
-
-  private:
-    void parseSet(const char *&s, Elem& e);
-    void parseNumRange(const char *&s, Elem& e);
-    void parseLiteralString(const char *&s, Elem& e);
-    bool parseNumRange(const char *&str, char closingchar, long& lo, long& up);
-    std::string debugStrFrom(int from);
-    bool isInSet(char c, const char *set);
-    // match line from pattern[patternpos]; with last string literal, ignore last suffixlen of pattern
-    bool doMatch(const char *line, int patternpos, int suffixlen);
+    PatternMatcher *impl;
 
   public:
     /**
      * Constructor
      */
-    PatternMatcher();
+    cPatternMatcher();
 
     /**
      * Constructor
      */
-    PatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
+    cPatternMatcher(const char *pattern, bool dottedpath, bool fullstring, bool casesensitive);
 
     /**
      * Destructor
      */
-    ~PatternMatcher();
+    ~cPatternMatcher();
 
     /**
      * Sets the pattern to be used by subsequent calls to matches(). See the
@@ -162,18 +132,18 @@ class COMMON_API PatternMatcher
      * Returns the internal representation of the pattern as a string.
      * May be useful for debugging purposes.
      */
-    std::string debugStr()  {return debugStrFrom(0);}
+    std::string debugStr();
 
     /**
      * Prints the internal representation of the pattern on the standard output.
      * May be useful for debugging purposes.
      */
-    void dump()  {printf("%s", debugStr().c_str());}
+    void dump();
 
     /**
      * Utility function to determine whether a given string contains wildcards.
      * If it does not, a simple strcmp() might be a faster option than using
-     * PatternMatcher.
+     * cPatternMatcher.
      */
     static bool containsWildcards(const char *pattern);
 
