@@ -13,9 +13,11 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource2;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.omnetpp.ned.core.INedResources;
+import org.omnetpp.ned.editor.graph.properties.util.ConnectionNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.DelegatingPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.DisplayPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.MergedPropertySource;
+import org.omnetpp.ned.editor.graph.properties.util.NamePropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.ParameterListPropertySource;
 import org.omnetpp.ned.editor.graph.properties.util.TypePropertySource;
 import org.omnetpp.ned.model.DisplayString;
@@ -104,6 +106,8 @@ public class ConnectionPropertySource extends MergedPropertySource {
     // constructor
     public ConnectionPropertySource(final ConnectionElementEx modelElement) {
         super(modelElement);
+        // name
+        mergePropertySource(new NamePropertySource(modelElement, new ConnectionNameValidator(modelElement)));
         // create a nested displayPropertySources
         mergePropertySource(new BasePropertySource(modelElement));
         // type

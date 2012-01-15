@@ -403,6 +403,22 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     /**
+     * Returns the named connection with the provided name, excluding inherited connections.
+     * Returns null if not found.
+     */
+    protected ConnectionElementEx getOwnConnectionByName(String connectionName) {
+        return getNedTypeInfo().getLocalNamedConnections().get(connectionName);
+    }
+
+    /**
+     * Returns the named connection (including inherited ones) with the provided name,
+     * or null if not found.
+     */
+    public ConnectionElementEx getConnectionByName(String connectionName) {
+        return getNedTypeInfo().getNamedConnections().get(connectionName);
+    }
+    
+    /**
      * Add this connection to the model (to the "connections" section; it will
      * be created if not yet exists)
      */

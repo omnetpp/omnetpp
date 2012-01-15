@@ -89,6 +89,7 @@ import org.omnetpp.ned.editor.graph.commands.SetAttributeCommand;
 import org.omnetpp.ned.editor.graph.commands.SetDocumentationCommand;
 import org.omnetpp.ned.editor.graph.commands.SetInheritanceCommand;
 import org.omnetpp.ned.editor.graph.commands.SetTypeOrLikeTypeCommand;
+import org.omnetpp.ned.editor.graph.properties.util.ConnectionNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.SubmoduleNameValidator;
 import org.omnetpp.ned.editor.graph.properties.util.TypeNameValidator;
 import org.omnetpp.ned.model.DisplayString;
@@ -644,6 +645,13 @@ public class PropertiesDialog extends TrayDialog {
                 createLabel(group, "Vector size:*", false);
                 vectorSizeField = createText(group, 10);
                 createWrappingLabel(group, "* Number of elements in this submodule vector. Leave empty for scalar submodule", false, 2);
+            }
+            else {
+                // connections
+                group = createGroup(page, "Name", 2, 2);
+                createLabel(group, "Name (optional):", false);
+                nameField = createText(group, 20);
+                nameField.setEnabled(elements.length == 1); // makes no sense to give the same name to multiple elements
             }
 
             group = createGroup(page, "Type", 2, 2);
@@ -1310,11 +1318,10 @@ public class PropertiesDialog extends TrayDialog {
             populateField(documentationField, (String)getCommonProperty(new DocumentationPropertyAccess()));
         }
         else if (elements[0] instanceof ISubmoduleOrConnection) {
-            // for submodules and connections: name (submodule only), type, and "vectorness" (submodule only)
-            if (elements[0] instanceof SubmoduleElement) {
-                populateField(nameField, (String)getCommonProperty(new NamePropertyAccess()));
+            // for submodules and connections: name, type, and "vectorness" (submodule only)
+            populateField(nameField, (String)getCommonProperty(new NamePropertyAccess()));
+            if (elements[0] instanceof SubmoduleElement)
                 populateField(vectorSizeField, (String)getCommonProperty(new VectorSizePropertyAccess()));
-            }
 
             // type, likeType
             populateField(typeField, NedElementUtilEx.qnameToFriendlyTypeName((String)getCommonProperty(new TypePropertyAccess())));
@@ -2258,11 +2265,15 @@ public class PropertiesDialog extends TrayDialog {
         Map<IFieldEditor, String> errors = new LinkedHashMap<IFieldEditor, String>();
 
         // name
-        if (elements[0] instanceof INedTypeElement && nameField.isEnabled() && !nameField.isGrayed())
-            addErrorIfNotNull(errors, nameField, "Name", new TypeNameValidator((INedTypeElement)elements[0]).isValid(nameField.getText()));
-        else if (elements[0] instanceof SubmoduleElementEx && nameField.isEnabled() && !nameField.isGrayed())
-            addErrorIfNotNull(errors, nameField, "Name", new SubmoduleNameValidator((SubmoduleElementEx)elements[0]).isValid(nameField.getText()));
-
+        if (nameField.isEnabled() && !nameField.isGrayed()) {
+            if (elements[0] instanceof INedTypeElement)
+                addErrorIfNotNull(errors, nameField, "Name", new TypeNameValidator((INedTypeElement)elements[0]).isValid(nameField.getText()));
+            else if (elements[0] instanceof SubmoduleElementEx)
+                addErrorIfNotNull(errors, nameField, "Name", new SubmoduleNameValidator((SubmoduleElementEx)elements[0]).isValid(nameField.getText()));
+            else if (elements[0] instanceof ConnectionElementEx)
+                addErrorIfNotNull(errors, nameField, "Name", new ConnectionNameValidator((ConnectionElementEx)elements[0]).isValid(nameField.getText()));
+        }
+        
         // submodule size, "like" type name expression
         if (vectorSizeField != null && vectorSizeField.isEnabled() && !vectorSizeField.isGrayed())
             validateExpressionField(errors, vectorSizeField, "Vector size", true, null);

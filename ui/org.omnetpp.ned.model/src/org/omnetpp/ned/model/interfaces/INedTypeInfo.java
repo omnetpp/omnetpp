@@ -14,6 +14,7 @@ import java.util.Set;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.omnetpp.ned.model.INedElement;
+import org.omnetpp.ned.model.ex.ConnectionElementEx;
 import org.omnetpp.ned.model.ex.GateElementEx;
 import org.omnetpp.ned.model.ex.ParamElementEx;
 import org.omnetpp.ned.model.ex.PropertyElementEx;
@@ -208,12 +209,15 @@ public interface INedTypeInfo extends INedChangeListener {
     /** Submodules declared locally within this (compound module) type */
     public Map<String, SubmoduleElementEx> getLocalSubmodules();
 
+    /** Named connections local within this (compound module) type */
+    public Map<String, ConnectionElementEx> getLocalNamedConnections();
+
     /** Types used locally in this (compound module) type as submodules or connections */
     public Set<INedTypeElement> getLocalUsedTypes();
 
 	// same as above, for inherited members as well
 
-    /** Inner types, parameters, gates and submodules, including inherited ones */
+    /** Inner types, parameters, gates, submodules and named connections, including inherited ones */
     public Map<String, INedElement> getMembers();
     
     /** Parameter declarations (i.e. where parameter type is not empty), including inherited ones */
@@ -250,6 +254,9 @@ public interface INedTypeInfo extends INedChangeListener {
 
     /** All submodules in this (compound module) type, including inherited ones */
     public Map<String, SubmoduleElementEx> getSubmodules();
+
+    /** All named connections in this (compound module) type, including inherited ones */
+    public Map<String, ConnectionElementEx> getNamedConnections();
 
     /** Types used in this (compound module) type as submodules or connections, including inherited ones */
     public Set<INedTypeElement> getUsedTypes();

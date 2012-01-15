@@ -309,6 +309,10 @@ public class NedCompletionProcessor extends AbstractNedCompletionProcessor {
                         addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNEL_FILTER);
 	    		}
 	    	}
+			else if (line.endsWith(":")) {
+			    // offer type after channel name
+			    addNedTypeProposals(viewer, documentOffset, result, project, nedTypeInfo, INedResources.CHANNEL_FILTER);
+			}
 	    	else if (line.endsWith(".")) {
 	    		// after dot: offer gates of given submodule
 	    		if (nedTypeInfo != null) {

@@ -20,7 +20,6 @@ import org.omnetpp.ned.model.NedElement;
 import org.omnetpp.ned.model.interfaces.IConnectableElement;
 import org.omnetpp.ned.model.interfaces.IHasGates;
 import org.omnetpp.ned.model.interfaces.IHasIndex;
-import org.omnetpp.ned.model.interfaces.IHasName;
 import org.omnetpp.ned.model.interfaces.IModuleKindTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
 import org.omnetpp.ned.model.interfaces.INedTypeInfo;
@@ -38,7 +37,7 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author rhornig, andras
  */
 public class SubmoduleElementEx extends SubmoduleElement
-    implements ISubmoduleOrConnection, IConnectableElement, IHasName, IHasIndex, IHasGates
+    implements ISubmoduleOrConnection, IConnectableElement, IHasIndex, IHasGates
 {
     private static final String PROP_DYNAMIC = "dynamic";
 

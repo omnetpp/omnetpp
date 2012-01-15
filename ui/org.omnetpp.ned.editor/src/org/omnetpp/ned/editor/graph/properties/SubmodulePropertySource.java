@@ -44,8 +44,9 @@ public class SubmodulePropertySource extends MergedPropertySource {
 
     public SubmodulePropertySource(final SubmoduleElementEx modelElement) {
         super(modelElement);
-        // create a nested displayPropertySource name
+        // name
         mergePropertySource(new NamePropertySource(modelElement, new SubmoduleNameValidator(modelElement)));
+        // create a nested displayPropertySource name
         mergePropertySource(new BasePropertySource(modelElement));
         // type
         mergePropertySource(new TypePropertySource(modelElement,

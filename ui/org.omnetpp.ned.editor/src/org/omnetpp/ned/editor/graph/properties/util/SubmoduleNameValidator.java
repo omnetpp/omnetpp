@@ -25,7 +25,7 @@ public class SubmoduleNameValidator extends NedNameValidator {
     public String isValid(Object newValue) {
         if (submodule.getCompoundModule().getNedTypeInfo().getMembers().containsKey(newValue) && !newValue.equals(submodule.getName()))
             return "Name is already in use. Submodule name must not be the same as an existing" +
-            		" submodule, gate, parameter or inner type name.";
+            		" submodule, connection, gate, parameter or inner type name.";
 
         return super.isValid(newValue);
     }

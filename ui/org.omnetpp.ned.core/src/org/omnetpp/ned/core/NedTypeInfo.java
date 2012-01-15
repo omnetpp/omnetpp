@@ -40,6 +40,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
 import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.notification.NedModelChangeEvent;
 import org.omnetpp.ned.model.notification.NedModelEvent;
+import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 import org.omnetpp.ned.model.pojo.NedElementTags;
@@ -74,6 +75,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     protected Map<String, GateElementEx> localGateSizes = new LinkedHashMap<String, GateElementEx>();
 	protected Map<String, INedTypeElement> localInnerTypes = new LinkedHashMap<String, INedTypeElement>();
 	protected Map<String, SubmoduleElementEx> localSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
+	protected Map<String, ConnectionElementEx> localNamedConnections = new LinkedHashMap<String, ConnectionElementEx>();
     protected HashSet<INedTypeElement> localUsedTypes;
 
 	// sum of all "local" stuff
@@ -90,6 +92,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     protected Map<String, GateElementEx> allGateSizes = new LinkedHashMap<String, GateElementEx>();
 	protected Map<String, INedTypeElement> allInnerTypes = new LinkedHashMap<String, INedTypeElement>();
 	protected Map<String, SubmoduleElementEx> allSubmodules = new LinkedHashMap<String, SubmoduleElementEx>();
+	protected Map<String, ConnectionElementEx> allNamedConnections = new LinkedHashMap<String, ConnectionElementEx>();
     protected HashSet<INedTypeElement> allUsedTypes;
 
 	// sum of all local+inherited stuff
@@ -133,6 +136,10 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 			for (INedElement node : section)
 				if (node instanceof IHasName && predicate.matches((IHasName)node))
 					((Map)map).put(((IHasName)node).getName(), node);
+		        else if (node instanceof ConnectionGroupElement)
+		            for (INedElement conn : node)
+		                if (conn instanceof IHasName && predicate.matches((IHasName)conn))
+		                    ((Map)map).put(((IHasName)conn).getName(), conn);
 	}
 
 	/**
@@ -246,6 +253,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         localGateDecls.clear();
         localGateSizes.clear();
         localSubmodules.clear();
+        localNamedConnections.clear();
         localInnerTypes.clear();
         localMembers.clear();
 
@@ -305,12 +313,17 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
 			public boolean matches(IHasName node) {
 				return node.getTagCode()==NED_SUBMODULE;
 			}});
+        collect(localNamedConnections, NED_CONNECTIONS, new IPredicate() {
+            public boolean matches(IHasName node) {
+                return node.getTagCode()==NED_CONNECTION && !StringUtils.isEmpty(node.getName());
+            }});
 
         // collect them in one common hash table as well (we assume there's no name clash --
         // that should be checked beforehand by validation!)
         localMembers.putAll(localParamDecls);
         localMembers.putAll(localGateDecls);
         localMembers.putAll(localSubmodules);
+        localMembers.putAll(localNamedConnections);
         localMembers.putAll(localInnerTypes);
 
         needsRefreshLocal = false;
@@ -320,7 +333,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     }
 
 	/**
-	 * Collect all inherited parameters, gates, properties, submodules, etc.
+	 * Collect all inherited parameters, gates, properties, submodules, named connections, etc.
 	 */
 	protected void refreshInheritedMembersIfNeeded() {
 		if (!needsRefreshInherited)
@@ -352,6 +365,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         allGateSizes.clear();
 		allInnerTypes.clear();
 		allSubmodules.clear();
+		allNamedConnections.clear();
 		allMembers.clear();
 
         // collect all inherited members (from the extends chain; or for interfaces, from all base interfaces)
@@ -377,6 +391,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
             allGateSizes.putAll(component.getLocalGateSizes());
 			allInnerTypes.putAll(component.getLocalInnerTypes());
 			allSubmodules.putAll(component.getLocalSubmodules());
+			allNamedConnections.putAll(component.getLocalNamedConnections());
 			allMembers.putAll(component.getLocalMembers());
 		}
 
@@ -539,6 +554,11 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
         return localSubmodules;
     }
 
+    public Map<String, ConnectionElementEx> getLocalNamedConnections() {
+        refreshLocalMembersIfNeeded();
+        return localNamedConnections;
+    }
+
     public Map<String,INedElement> getLocalMembers() {
     	refreshLocalMembersIfNeeded();
         return localMembers;
@@ -600,6 +620,11 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     public Map<String, SubmoduleElementEx> getSubmodules() {
     	refreshInheritedMembersIfNeeded();
         return allSubmodules;
+    }
+
+    public Map<String, ConnectionElementEx> getNamedConnections() {
+        refreshInheritedMembersIfNeeded();
+        return allNamedConnections;
     }
 
     public Map<String, INedElement> getMembers() {
@@ -676,5 +701,7 @@ public class NedTypeInfo implements INedTypeInfo, NedElementTags, NedElementCons
     	Debug.println("  all properties: " + StringUtils.join(allProperties.keySet(), ", "));
     	Debug.println("  local submodules: " + StringUtils.join(localSubmodules.keySet(), ", "));
     	Debug.println("  all submodules: " + StringUtils.join(allSubmodules.keySet(), ", "));
+        Debug.println("  local named connections: " + StringUtils.join(localNamedConnections.keySet(), ", "));
+    	Debug.println("  all named connections: " + StringUtils.join(allNamedConnections.keySet(), ", "));
     }
 }
