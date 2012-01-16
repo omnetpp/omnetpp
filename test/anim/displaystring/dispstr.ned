@@ -47,6 +47,9 @@ network DisplayStringTest
         active: Active {
             @display("p=112,270");
         }
+        connLabelPlacement : ConnLabelPlacement {
+            @display("p=191,270");
+        }
 }
 
 

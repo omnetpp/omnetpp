@@ -673,7 +673,8 @@ proc draw_connection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_
 
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
-           # TODO implement: second par is text position
+           set pos [lindex $tags(t) 1]
+           if {$pos == ""} {set pos "t"}
            set color [lindex $tags(t) 2]
            if {$color == ""} {set color "#005030"}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
@@ -681,14 +682,24 @@ proc draw_connection {c gateptr dispstr srcptr destptr chanptr src_i src_n dest_
            set y1 [lindex $arrow_coords 1]
            set x2 [lindex $arrow_coords 2]
            set y2 [lindex $arrow_coords 3]
-           set x [expr ($x1+$x2+$x2)/3]
-           set y [expr ($y1+$y2+$y2)/3]
-           if {($x1<$x2) == ($y1<=$y2)} {
-              set anch "n"
-           } else {
-              set anch "s"
-           }
+           set anch "center"
            set just "center"
+           if {$pos=="l"} {
+               # "beginning"
+               set x [expr (3*$x1+$x2)/4]
+               set y [expr (3*$y1+$y2)/4]
+           } elseif {$pos=="r"} {
+               # "end"
+               set x [expr ($x1+3*$x2)/4]
+               set y [expr ($y1+3*$y2)/4]
+           } elseif {$pos=="t"} {
+               # "middle"
+               set x [expr ($x1+$x2)/2]
+               set y [expr ($y1+$y2)/2]
+               if {($x1==$x2)?($y1<$y2):($x1<$x2)} {set anch "n"} else {set anch "s"}
+           } else {
+               error "wrong position in connection t= tag, should be `l', `r' or `t' (for beginning, end, or middle, respectively)"
+           }
            $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx" -font $fonts(canvas)
        }
 

@@ -1,5 +1,9 @@
 2012-01-10  ------ omnetpp-4.2.1 released ------
 
+2011-01-16  Andras Varga
+
+	* Implemented connection label ("t" tag) positioning
+
 2011-10-28  ------ omnetpp-4.2 released ------
 
 2011-09-11  ------ omnetpp-4.2rc1 released ------
