@@ -882,7 +882,7 @@ sub quoteJoin($)
     return prefixQuoteJoin($listref, "");
 }
 
-sub prefixQuoteJoin($,$)
+sub prefixQuoteJoin($;$)
 {
     my($listref,$prefix) = @_;
     @list = @$listref;
