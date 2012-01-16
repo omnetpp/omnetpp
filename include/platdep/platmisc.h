@@ -144,13 +144,19 @@ typedef int64 file_offset_t;  // off_t on Linux
   #define opp_stat_t __stat64 // name of the struct
   #define opp_stat _stat64    // name of the function
   #define opp_fstat _fstati64
-#elif defined _MSC_VER || __MINGW32__ // FIXME: no 64 bit version under mingw?
+#elif defined _MSC_VER 
 // for Visual C++ 7.1, fall back to 32-bit functions
   #define opp_ftell ftell
   #define opp_fseek fseek
   #define opp_stat_t stat
   #define opp_stat stat
   #define opp_fstat fstat
+#elif defined __MINGW32__
+  #define opp_ftell(f) _telli64(_fileno(f))
+  #define opp_fseek(f, off, whence) _lseeki64((_fileno(f)), (off), (whence))
+  #define opp_stat_t _stati64 // name of the struct
+  #define opp_stat _stati64    // name of the function
+  #define opp_fstat _fstati64
 #elif defined __APPLE__ || defined __FreeBSD__
   #define opp_ftell ftello
   #define opp_fseek fseeko
