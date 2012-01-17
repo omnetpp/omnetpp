@@ -255,6 +255,22 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         NedFileElementEx tree = NedTreeUtil.parseNedFile(file.getLocation().toOSString(), errorStore, file.getFullPath().toString(), this);
         Assert.isNotNull(tree);
 
+        // only store the file if its declared package is not excluded -- that would lead to thrashing, see bug #518
+        // (this can only happen to top package.ned files that *define* their own package, for other files
+        // we won't get invoked in the first place)
+        String filePackage = tree.getPackage();
+        String[] excludedPackages = projects.get(file.getProject()).excludedPackageRoots;
+        if (filePackage != null) {
+            for (String excludedPackage : excludedPackages) {
+                if (filePackage.equals(excludedPackage) || filePackage.startsWith(excludedPackage+".")) {
+                    if (debug)
+                        Debug.println("read " + file.toString() + " but won't store it, because its declared package " + filePackage + " is excluded");
+                    return;
+                }
+            }
+        }
+
+        // store
         storeNedFileModel(file, tree);
         
         // if this is a package.ned, expected package names might have changed
