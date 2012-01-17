@@ -77,6 +77,14 @@ public class NedTypeResolver implements INedTypeResolver {
         
         // reserved (used) fully qualified names (contains all names including duplicates)
         final Set<String> reservedNames = new HashSet<String>();
+        
+        @Override
+        public String toString() {
+            return "references: " + StringUtils.join(referencedProjects, ",") +
+                    "  nedfolders: " + StringUtils.join(nedSourceFolders, ",") + 
+                    "  nedfolderpackages: " + StringUtils.join(nedSourceFolderPackages, ",") + 
+                    "  excludedpackages: " + StringUtils.join(excludedPackageRoots, "," );
+        }
     }
 
     /**
@@ -800,9 +808,7 @@ public class NedTypeResolver implements INedTypeResolver {
         Debug.println(projects.size() + " projects:");
         for (IProject project : projects.keySet()) {
             ProjectData projectData = projects.get(project);
-            Debug.println("  " + project.getName() + ":" +
-                    "  deps: " + StringUtils.join(projectData.referencedProjects, ",") +
-                    "  nedfolders: " + StringUtils.join(projectData.nedSourceFolders, ","));
+            Debug.println("  " + project.getName() + ": " + projectData.toString());
         }
     }
 }
