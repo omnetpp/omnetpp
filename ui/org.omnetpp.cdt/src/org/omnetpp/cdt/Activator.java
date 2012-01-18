@@ -8,15 +8,20 @@
 package org.omnetpp.cdt;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.formatter.DefaultCodeFormatterConstants;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.DecorationOverlayIcon;
 import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
@@ -62,6 +67,15 @@ public class Activator extends AbstractUIPlugin {
         cprojectChecker.hookListeners();
 
         cprojectChecker.checkAllOpenProjects();
+
+        // Set the default settings ifor CDT editors.
+        // We will use spaces instead of tabs. This hack is needed because the
+        // OMNeT++ code style profile is not applied by default when a new
+        // workspace is created.
+        // TODO we should implement the OMMeT++ style via an extension point.
+        // See ToolFactory for hints on the extension point to use.
+        IPreferenceStore ps = new ScopedPreferenceStore(InstanceScope.INSTANCE, CCorePlugin.PLUGIN_ID);
+        ps.setDefault(DefaultCodeFormatterConstants.FORMATTER_TAB_CHAR, CCorePlugin.SPACE);
     }
 
     /*
