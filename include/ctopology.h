@@ -83,7 +83,6 @@ class SIM_API cTopology : public cOwnedObject
         Link *out_links;
 
         // variables used by the shortest-path algorithms
-        bool known;
         double dist;
         Link *out_path;
 

@@ -206,7 +206,6 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
             temp_nodev[k].enabl = true;
 
             // init auxiliary variables
-            temp_nodev[k].known = false;
             temp_nodev[k].dist = INFINITY;
             temp_nodev[k].out_path = NULL;
 
@@ -311,7 +310,6 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
 
     for (int i=0; i<num_nodes; i++)
     {
-       nodev[i].known = false;   // not really needed for unweighted
        nodev[i].dist = INFINITY;
        nodev[i].out_path = NULL;
     }
@@ -353,7 +351,6 @@ void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
     // clean path infos
     for (int i=0; i<num_nodes; i++)
     {
-       nodev[i].known = false;
        nodev[i].dist = INFINITY;
        nodev[i].out_path = NULL;
     }
