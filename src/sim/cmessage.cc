@@ -651,6 +651,11 @@ cPacket *cPacket::getEncapsulatedPacket() const
     return encapmsg;
 }
 
+bool cPacket::hasEncapsulatedPacket() const
+{
+    return encapmsg != NULL;
+}
+
 long cPacket::getEncapsulationId() const
 {
     // find innermost msg. Note: don't use getEncapsulatedPacket() because it does copy-on-touch of shared msgs

@@ -924,6 +924,14 @@ class SIM_API cPacket : public cMessage
      * this method was left for backward compatibility.
      */
     _OPPDEPRECATED cPacket *getEncapsulatedMsg() const {return getEncapsulatedPacket();}
+
+    /**
+     * Returns true if the packet contains an encapsulated packet, and false
+     * otherwise. This method is potentially more efficient than
+     * <tt>getEncapsulatedPacket()!=NULL</tt>, because it does not need to
+     * unshare a shared encapsulated packet (see note at encapsulate()).
+     */
+    virtual bool hasEncapsulatedPacket() const;
     //@}
 
     /** @name Transmission state */
