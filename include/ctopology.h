@@ -494,7 +494,6 @@ class SIM_API cTopology : public cOwnedObject
     /*
      * To be implemented:
      *    -  void unweightedMultiShortestPathsTo(Node *target);
-     *    -  void weightedSingleShortestPathsTo(Node *target);
      *    -  void weightedMultiShortestPathsTo(Node *target);
      */
     //@{
@@ -504,6 +503,13 @@ class SIM_API cTopology : public cOwnedObject
      * graph node. The paths found can be extracted via Node's methods.
      */
     void calculateUnweightedSingleShortestPathsTo(Node *target);
+
+    /**
+     * Apply the Dijkstra algorithm to find all shortest paths to the given
+     * graph node. The paths found can be extracted via Node's methods.
+     * Uses weights in nodes and links.
+     */
+    void calculateWeightedSingleShortestPathsTo(Node *target);
 
     /**
      * Returns the node that was passed to the most recently called

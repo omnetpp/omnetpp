@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <deque>
+#include <list>
 #include <algorithm>
 #include <sstream>
 #include "ctopology.h"
@@ -205,7 +206,7 @@ void cTopology::extractFromNetwork(bool (*selfunc)(cModule *,void *), void *data
             temp_nodev[k].enabl = true;
 
             // init auxiliary variables
-            temp_nodev[k].known = 0;
+            temp_nodev[k].known = false;
             temp_nodev[k].dist = INFINITY;
             temp_nodev[k].out_path = NULL;
 
@@ -343,39 +344,62 @@ void cTopology::calculateUnweightedSingleShortestPathsTo(Node *_target)
     }
 }
 
-
-/* to be adapted:
-void cTopology::weightedSingleShortestPathsTo(Node *_target)
+void cTopology::calculateWeightedSingleShortestPathsTo(Node *_target)
 {
     if (!_target)
         throw cRuntimeError(this,"..ShortestPathTo(): target node is NULL");
-
     target = _target;
 
-    void Dijstra( Table t)
-
-    Vertex v,w;
-
-    for (;;)
+    // clean path infos
+    for (int i=0; i<num_nodes; i++)
     {
-       v = smallest unknown distance vertex; // priority queue-val!
-                                             // az unknown-ok vannak benne
-                                             // priority q = pl. binary heap
-       if (v == NO_VERTEX) break;
+       nodev[i].known = false;
+       nodev[i].dist = INFINITY;
+       nodev[i].out_path = NULL;
+    }
 
-       t[v].known = true;                    // delete_min()
-       for (each w adjacent to v)
-       {
-           if (!t[v].known  &&  t[v].dist+C(w,v) < t[w].dist)
-           {
-               decrease( t[w].dist  to  t[v].dist+C(w,v); // decrease_key!
-                  // belekavar a prio q-ba!
-                  // megoldas lehet, hogy nem vesszuk ki a sorbol,
-                  // hanem meg egyszer betesszuk
-                  // ekkor fent a delete_min()-ne'l kell vadaszni unknown-okra!
-               t[w].path = v;
-           }
-       }
+    target->dist = 0;
+
+    std::list<Node*> q;
+
+    q.push_back(target);
+
+    while (!q.empty())
+    {
+        Node *dest = q.front();
+        q.pop_front();
+
+        ASSERT(dest->getWeight() >= 0.0);
+
+        // for each w adjacent to v...
+        for (int i=0; i < dest->getNumInLinks(); i++)
+        {
+            if (!(dest->getLinkIn(i)->isEnabled())) continue;
+
+            Node *src = dest->getLinkIn(i)->getRemoteNode();
+            if (!src->isEnabled()) continue;
+
+            double linkWeight = dest->getLinkIn(i)->getWeight();
+            ASSERT(linkWeight > 0.0);
+
+            double newdist = dest->dist + linkWeight;
+            if (dest != target)
+                newdist += dest->getWeight();  // dest is not the target, uses weight of dest node as price of routing (infinity means dest node doesn't route between interfaces)
+            if (newdist != INFINITY && src->dist > newdist)  // it's a valid shorter path from src to target node
+            {
+                if (src->dist != INFINITY)
+                    q.remove(src);   // src is in the queue
+                src->dist = newdist;
+                src->out_path = dest->in_links[i];
+
+                // insert src node to ordered list
+                std::list<Node*>::iterator it;
+                for (it = q.begin(); it != q.end(); ++it)
+                    if ((*it)->dist > newdist)
+                        break;
+                q.insert(it, src);
+            }
+        }
     }
 }
-*/
+
