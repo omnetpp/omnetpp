@@ -392,6 +392,7 @@ if echo $CFLAGS_DEBUG | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
    if echo $CFLAGS_RELEASE | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
         AC_MSG_RESULT([skip (already in CFLAGS)])
         fpic=""
+        PIC_FLAGS=-fPIC
    fi
 fi
 if test "$fpic" = "x" && \
@@ -423,6 +424,7 @@ else
    CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
    CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
+   PIC_FLAGS="$fpic"
 fi
 rm -f conftest.*
 
@@ -1145,6 +1147,7 @@ AC_SUBST(WHOLE_ARCHIVE_ON)
 AC_SUBST(WHOLE_ARCHIVE_OFF)
 AC_SUBST(AS_NEEDED_ON)
 AC_SUBST(AS_NEEDED_OFF)
+AC_SUBST(PIC_FLAGS)
 AC_SUBST(TOOLCHAIN_NAME)
 AC_SUBST(MYPWD)
 AC_SUBST(MSGC)

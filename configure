@@ -619,6 +619,7 @@ NEDTOOL
 MSGC
 MYPWD
 TOOLCHAIN_NAME
+PIC_FLAGS
 AS_NEEDED_OFF
 AS_NEEDED_ON
 WHOLE_ARCHIVE_OFF
@@ -3556,6 +3557,7 @@ if echo $CFLAGS_DEBUG | grep -i -- "-fPIC" >/dev/null 2>/dev/null; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: skip (already in CFLAGS)" >&5
 $as_echo "skip (already in CFLAGS)" >&6; }
         fpic=""
+        PIC_FLAGS=-fPIC
    fi
 fi
 if test "$fpic" = "x" && \
@@ -3592,6 +3594,7 @@ else
    CFLAGS_DEBUG="$CFLAGS_DEBUG $fpic"
    CFLAGS_RELEASE="$CFLAGS_RELEASE $fpic"
    SHLIB_LD="$SHLIB_LD $fpic"
+   PIC_FLAGS="$fpic"
 fi
 rm -f conftest.*
 
@@ -6497,6 +6500,7 @@ ac_config_files="$ac_config_files Makefile.inc test/core/runtest"
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
