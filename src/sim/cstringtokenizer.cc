@@ -117,6 +117,7 @@ std::vector<int> cStringTokenizer::asIntVector()
     while ((s=nextToken())!=NULL)
     {
         char *e;
+        errno = 0;
         long d = strtol(s, &e, 10);
         if (*e)
             throw cRuntimeError("Converting string to a vector of ints: error at token '%s'", s);

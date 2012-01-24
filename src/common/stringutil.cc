@@ -447,6 +447,7 @@ long opp_strtol(const char *s, char **endptr)
         s++;
     bool ishex = (s[0]=='0' && opp_toupper(s[1])=='X') ||
                  ((s[0]=='+' || s[0]=='-') && s[1]=='0' && opp_toupper(s[2])=='X');
+    errno = 0;
     long d = strtol(s, endptr, ishex ? 16 : 10);
     if ((d==LONG_MAX || d==LONG_MIN) && errno==ERANGE)
         throw opp_runtime_error("overflow converting `%s' to long", s);
@@ -473,6 +474,7 @@ unsigned long opp_strtoul(const char *s, char **endptr)
         s++;
     bool ishex = (s[0]=='0' && opp_toupper(s[1])=='X') ||
                  (s[0]=='+' && s[1]=='0' && opp_toupper(s[2])=='X');
+    errno = 0;
     unsigned long d = strtoul(s, endptr, ishex ? 16 : 10);
     if (d==ULONG_MAX && errno==ERANGE)
         throw opp_runtime_error("overflow converting `%s' to unsigned long", s);

@@ -109,6 +109,7 @@ bool UnitConversion::readNumber(const char *&s, double& number)
 
     char *endp;
     setlocale(LC_NUMERIC, "C");
+    errno = 0;
     number = strtod(s, &endp);
     if (s==endp)
         return false; // no number read
