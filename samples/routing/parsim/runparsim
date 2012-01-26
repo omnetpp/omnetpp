@@ -10,6 +10,11 @@ rm -rf comm
 mkdir comm
 mkdir comm/read
 
+# make sure HOSTNAME is exported as some distros no longer export it by default
+if test "$HOSTNAME" = ""; then
+  export HOSTNAME=`hostname`
+fi
+
 export NEDPATH=..
 ../routing -p0,2 $* > routing-0.log &
 ../routing -p1,2 $* > routing-1.log &
