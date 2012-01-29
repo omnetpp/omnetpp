@@ -364,10 +364,12 @@ cComponent::SignalData *cComponent::findSignalData(simsignal_t signalID) const
     // note: we could use std::binary_search() instead of linear search here,
     // but the number of signals that have listeners is likely to be small (<10),
     // so linear search is probably faster.
-    if (signalTable)
-        for (int i=0; i<(int)signalTable->size(); i++)
+    if (signalTable) {
+        int n = signalTable->size();
+        for (int i=0; i<n; i++)
             if ((*signalTable)[i].signalID == signalID)
                 return &(*signalTable)[i];
+    }
     return NULL;
 }
 
@@ -408,13 +410,13 @@ void cComponent::removeSignalData(simsignal_t signalID)
 {
     if (signalTable) {
         // find in signal table
-        int i;
-        for (i=0; i<(int)signalTable->size(); i++)
+        int i, n = signalTable->size();
+        for (i=0; i<n; i++)
             if ((*signalTable)[i].signalID == signalID)
                 break;
 
         // if found, remove
-        if (i<(int)signalTable->size()) {
+        if (i<n) {
             ASSERT(!(*signalTable)[i].hasListener()); // must not have listeners
             signalTable->erase(signalTable->begin()+i);
         }
@@ -500,10 +502,12 @@ void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
 
 void cComponent::fireFinish()
 {
-    if (signalTable)
-        for (int i=0; i<(int)signalTable->size(); i++)
+    if (signalTable) {
+        int n = signalTable->size();
+        for (int i=0; i<n; i++)
             for (cIListener **lp = (*signalTable)[i].listeners; *lp; ++lp)
                 (*lp)->finish(this, (*signalTable)[i].signalID);
+    }
 }
 
 inline void setBit(uint64& flags, int bitnum, bool value)
@@ -717,7 +721,7 @@ void cComponent::releaseLocalListeners()
             // as well. This "unsubscribe n times" method chosen here has problems if new
             // listeners get subscribed inside the unsubscribed() hook though.
             int n = signalData.countListeners();
-            for (int i = 0; i < n; i++)
+            for (int i=0; i<n; i++)
                 unsubscribe(signalID, signalData.listeners[0]);
         }
         delete signalTable;
