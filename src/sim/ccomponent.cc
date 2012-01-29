@@ -429,36 +429,48 @@ void cComponent::removeSignalData(simsignal_t signalID)
 
 void cComponent::emit(simsignal_t signalID, long l)
 {
+    if (signalID == SIMSIGNAL_NULL) // note: getSignalName()==NULL is too costly
+        throw cRuntimeError(this, "emit(): signalID is SIMSIGNAL_NULL");
     if (mayHaveListeners(signalID))
         fire(this, signalID, l);
 }
 
 void cComponent::emit(simsignal_t signalID, unsigned long l)
 {
+    if (signalID == SIMSIGNAL_NULL) // note: getSignalName()==NULL is too costly
+        throw cRuntimeError(this, "emit(): signalID is SIMSIGNAL_NULL");
     if (mayHaveListeners(signalID))
         fire(this, signalID, l);
 }
 
 void cComponent::emit(simsignal_t signalID, double d)
 {
+    if (signalID == SIMSIGNAL_NULL) // note: getSignalName()==NULL is too costly
+        throw cRuntimeError(this, "emit(): signalID is SIMSIGNAL_NULL");
     if (mayHaveListeners(signalID))
         fire(this, signalID, d);
 }
 
 void cComponent::emit(simsignal_t signalID, const SimTime& t)
 {
+    if (signalID == SIMSIGNAL_NULL) // note: getSignalName()==NULL is too costly
+        throw cRuntimeError(this, "emit(): signalID is SIMSIGNAL_NULL");
     if (mayHaveListeners(signalID))
         fire(this, signalID, t);
 }
 
 void cComponent::emit(simsignal_t signalID, const char *s)
 {
+    if (signalID == SIMSIGNAL_NULL) // note: getSignalName()==NULL is too costly
+        throw cRuntimeError(this, "emit(): signalID is SIMSIGNAL_NULL");
     if (mayHaveListeners(signalID))
         fire(this, signalID, s);
 }
 
 void cComponent::emit(simsignal_t signalID, cObject *obj)
 {
+    if (signalID == SIMSIGNAL_NULL) // note: getSignalName()==NULL is too costly
+        throw cRuntimeError(this, "emit(): signalID is SIMSIGNAL_NULL");
     if (mayHaveListeners(signalID))
         fire(this, signalID, obj);
 }
@@ -528,6 +540,10 @@ inline bool getBit(const uint64& flags, int bitnum)
 
 void cComponent::subscribe(simsignal_t signalID, cIListener *listener)
 {
+    // check that the signal exits
+    if (getSignalName(signalID)==NULL)
+        throw cRuntimeError(this, "subscribe(): not a valid signal: signalID=%d", signalID);
+
     // add to local listeners
     SignalData *data = findOrCreateSignalData(signalID);
     checkNotFiring(signalID, data->listeners);
@@ -566,6 +582,10 @@ void cComponent::signalListenerAdded(simsignal_t signalID)
 
 void cComponent::unsubscribe(simsignal_t signalID, cIListener *listener)
 {
+    // check that the signal exits
+    if (getSignalName(signalID)==NULL)
+        throw cRuntimeError(this, "unsubscribe(): not a valid signal: signalID=%d", signalID);
+
     // remove from local listeners list
     SignalData *data = findSignalData(signalID);
     if (!data)
