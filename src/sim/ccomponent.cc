@@ -466,7 +466,8 @@ void cComponent::emit(simsignal_t signalID, cObject *obj)
 template<typename T>
 void cComponent::fire(cComponent *source, simsignal_t signalID, T x)
 {
-    uint64 mask = (uint64)1 << signalID;
+    uint64 mask = (unsigned)signalID > 63 ? 0 : ((uint64)1 << signalID); // note: shift must be in 0..63 (C++ spec)
+
     if ((~signalHasLocalListeners & mask)==0)  // always true for signalID > 63
     {
         // notify local listeners if there are any
@@ -512,7 +513,7 @@ void cComponent::fireFinish()
 
 inline void setBit(uint64& flags, int bitnum, bool value)
 {
-    uint64 mask = (uint64)1 << bitnum;
+    uint64 mask = (unsigned)bitnum > 63 ? 0 : ((uint64)1 << bitnum); // note: shift must be in 0..63 (C++ spec)
     if (value)
         flags |= mask;
     else
@@ -521,7 +522,7 @@ inline void setBit(uint64& flags, int bitnum, bool value)
 
 inline bool getBit(const uint64& flags, int bitnum)
 {
-    uint64 mask = (uint64)1 << bitnum;
+    uint64 mask = (unsigned)bitnum > 63 ? 0 : ((uint64)1 << bitnum); // note: shift must be in 0..63 (C++ spec)
     return flags & mask;
 }
 

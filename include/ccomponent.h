@@ -470,10 +470,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * (amortizes in constant time), but may return "false positive".
      */
     bool mayHaveListeners(simsignal_t signalID) const {
-        // for fast signals (ID in 0..63) we use flags that cache the state;
-        // for other signals we return true. Note: no "if" for efficiency reasons
+        if ((unsigned)signalID > 63)  // note: shift must be in 0..63 (C++ spec)
+            return true;
         uint64 mask = (uint64)1 << signalID;
-        return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for signalID > 63
+        return (signalHasLocalListeners|signalHasAncestorListeners) & mask;
     }
 
     /**
@@ -484,8 +484,12 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @see mayHaveListeners()
      */
     bool hasListeners(simsignal_t signalID) const {
+        if (signalID < 0)  // note: result of negative shift is undefined (C++ spec)
+            return false;
+        if (signalID > 63)
+            return computeHasListeners(signalID);
         uint64 mask = (uint64)1 << signalID;
-        return mask ? ((signalHasLocalListeners|signalHasAncestorListeners) & mask) : computeHasListeners(signalID);
+        return (signalHasLocalListeners|signalHasAncestorListeners) & mask;
     }
     //@}
 
