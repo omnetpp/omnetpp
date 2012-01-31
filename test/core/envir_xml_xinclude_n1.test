@@ -1,0 +1,20 @@
+%description:
+Tests XInclude error reporting when xincluded file file is missing.
+
+%file: foo.xml
+<?xml version="1.0"?>
+<foo xmlns:xi="http://www.w3.org/2003/XInclude">
+   <xi:include href="nonexistent.xml" />
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("foo.xml");
+node->debugDump();
+
+%exitcode: 1
+
+%contains: stdout
+XInclude substitution error
+
+%contains: stderr
+failed to load external entity

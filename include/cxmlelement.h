@@ -43,18 +43,17 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
 
 /**
  * Represents an XML element in an XML configuration file. XML-typed
- * NED parameters are accessible as cXMLElement via the cPar::xmlValue() const
+ * NED parameters are accessible as cXMLElement via the cPar::xmlValue()
  * method.
  *
- * cXMLElement provides read only access to the XML, with functionality that
- * resembles DOM. (A full-featured DOM implementation would have
- * been too bloated for the purpose of accessing readonly
- * configuration files).
+ * cXMLElement provides readonly access to XML documents via a DOM-like API.
+ * (A full-featured DOM implementation would have been too bloated for
+ * the purpose of accessing readonly configuration files).
  *
- * Features: only readonly (getter) methods; represents only elements
- * and text (entities, processing instructions, comments are ignored);
- * attributes are presented as part of an element getNode(not as separate
- * attribute nodes as in DOM); mixed content model not supported
+ * Features: readonly access (getter methods) only; represents only elements,
+ * attributes and text content (i.e. entities, processing instructions, comments
+ * are ignored); attributes are presented as part of an element node (not as
+ * separate attribute nodes as in DOM); mixed content model is not supported
  * (element body cannot mix text with further elements);
  * text is represented as a property of its enclosing element (and not
  * as separate node as in DOM); CDATA sections are also represented as
@@ -65,8 +64,9 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  *
  * Supports XPath-like addressing via the getElementByPath() member function.
  *
- * File inclusion via limited support of the XInclude 1.0 spec.
- * An element \<xi:include href="doc.xml"/\> gets replaced with
+ * File inclusion is provided via limited support of the XInclude 1.0 spec,
+ * if the underlying XML parser supports it (e.g. Expat does not).
+ * An element \<xi:include href="doc.xml"/\> will be replaced with
  * the content of the corresponding document. The "href" and "parse"
  * attributes from the XInclude spec are supported.
  *

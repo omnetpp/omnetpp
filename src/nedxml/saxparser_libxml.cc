@@ -15,12 +15,14 @@
 *--------------------------------------------------------------*/
 
 
+#include <string>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <libxml/parser.h>
+#include <libxml/xinclude.h>
 #include <libxml/SAX.h>
 #include "saxparser.h"
 
@@ -113,11 +115,12 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
         case XML_COMMENT_NODE:
             sh->comment((const char *)node->content);
             break;
+        case XML_XINCLUDE_START:
+        case XML_XINCLUDE_END:
+            break; // ignore
         case XML_CDATA_SECTION_NODE:
         case XML_ENTITY_REF_NODE:
         case XML_ENTITY_NODE:
-        case XML_XINCLUDE_START:
-        case XML_XINCLUDE_END:
         case XML_ATTRIBUTE_NODE:
             // should not occur (see XML_PARSE_xxx options)
             fprintf(stderr,"ERROR: libxml wrapper: generateSAXEvents(): node type %d unexpected\n",node->type);
@@ -143,6 +146,7 @@ bool SAXParser::parseContent(const char *content)
 bool SAXParser::doParse(const char *filename, const char *content)
 {
     assert((filename==NULL) != (content==NULL));  // exactly one of them is non-NULL
+    strcpy(errortext, "<error msg unfilled>");
 
     //
     // When there's a DTD given, we *must* use it, and complete default attrs from it.
@@ -159,17 +163,16 @@ bool SAXParser::doParse(const char *filename, const char *content)
     }
 
     // parse the file
-    unsigned options = XML_PARSE_DTDVALID | // validate with the DTD
+    unsigned options = XML_PARSE_DTDVALID | // validate with the DTD (but we'll have to revalidate after XInclude processing anyway)
                        XML_PARSE_DTDATTR |  // complete default attributes from DTD
                        XML_PARSE_NOENT |    // substitute entities
                        XML_PARSE_NONET |    // forbid network access
                        XML_PARSE_NOBLANKS | // discard ignorable white space
                        XML_PARSE_NOCDATA |  // merge CDATA as text nodes
                        XML_PARSE_NOERROR |  // suppress error reports
+                       //XML_PARSE_XINCLUDE |  // would be nice, but does not work
                        XML_PARSE_NOWARNING; // suppress warning reports
-    //ctxt->vctxt.warning = NULL;
-    //ctxt->vctxt.error = NULL;
-    xmlStructuredError = dontPrintError; // hack to prevent errors being written to stdout
+
     xmlDocPtr doc;
     if (filename)
         doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
@@ -185,20 +188,42 @@ bool SAXParser::doParse(const char *filename, const char *content)
         return false;
     }
 
-    // handle validation errors.
-    // note: errNo==XML_ERR_NO_DTD is unusable, because it occurs both when there's
-    // no DOCTYPE in document and when DTD cannot be opened (wrong URI)
+    // perform XInclude substitution. Note: errors will be dumped on stderr (these messages
+    // cannot be captured via the public libXML2 API, as xmlXIncludeCtxt doesn't have
+    // error/warning function ptrs as other ctxts)
+    //xmlStructuredError = dontPrintError;
+    int xincludeResult = xmlXIncludeProcess(doc);
+    if (xincludeResult == -1) // error
+    {
+        sprintf(errortext, "XInclude substitution error"); // further details unavailable from libXML without much pain
+        xmlFreeParserCtxt(ctxt);
+        xmlFreeDoc(doc);
+        return false;
+    }
+
+    // validate with the DTD again, because the document only becomes complete
+    // after XInclude processing. Must check whether we have a DTD first, otherwise
+    // there'll be a XML_ERR_NO_DTD error (ctxt->errNo).
     bool hasDTD = false;
     for (xmlNode *child = doc->children; child; child = child->next)
         if (child->type == XML_DTD_NODE)
             hasDTD = true;
-    if (!ctxt->valid && hasDTD) // ctxt->errNo!=XML_ERR_NO_DTD
+    if (hasDTD)
     {
-        sprintf(errortext, "Validation error: %s at line %s:%d",
-                ctxt->lastError.message, ctxt->lastError.file, ctxt->lastError.line);
-        xmlFreeParserCtxt(ctxt);
-        xmlFreeDoc(doc);
-        return false;
+        xmlValidCtxtPtr vctxt = xmlNewValidCtxt();
+        vctxt->userData = errortext;
+        vctxt->error = (xmlValidityErrorFunc) sprintf;
+        vctxt->warning = (xmlValidityWarningFunc) sprintf;
+
+        if (!xmlValidateDocument(vctxt, doc))
+        {
+            sprintf(errortext, "Validation error: %s", std::string(errortext).c_str());
+            xmlFreeValidCtxt(vctxt);
+            xmlFreeParserCtxt(ctxt);
+            xmlFreeDoc(doc);
+            return false;
+        }
+        xmlFreeValidCtxt(vctxt);
     }
 
     // traverse tree and generate SAX events

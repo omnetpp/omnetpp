@@ -1,0 +1,25 @@
+%description:
+Tests XInclude support in XML documents. xinclude in an other xincluded file.
+
+%file: foo.xml
+<?xml version="1.0"?>
+<foo xmlns:xi="http://www.w3.org/2003/XInclude">
+   <xi:include href="bar.xml" />
+</foo>
+
+%file: bar.xml
+<?xml version="1.0"?>
+<bar xmlns:xi="http://www.w3.org/2003/XInclude">
+  <xi:include href="leaf.xml" />
+</bar>
+
+%file: leaf.xml
+<?xml version="1.0"?>
+<leaf>test</leaf>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("foo.xml");
+node->debugDump();
+
+%contains-regex: stdout
+<foo>\s*<bar>\s*<leaf>test</leaf>\s*</bar>\s*</foo>

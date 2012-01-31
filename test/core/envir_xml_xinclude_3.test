@@ -1,0 +1,25 @@
+%description:
+Tests XInclude support in XML documents. With DTD validation
+
+%file: test.dtd
+<!ELEMENT foo (bar)>
+<!ATTLIST foo xmlns:xi CDATA "">
+<!ELEMENT bar ANY>
+
+%file: foo.xml
+<?xml version="1.0"?>
+<!DOCTYPE foo SYSTEM "./test.dtd">
+<foo xmlns:xi="http://www.w3.org/2003/XInclude">
+   <xi:include href="bar.xml" />
+</foo>
+
+%file: bar.xml
+<?xml version="1.0"?>
+<bar>test</bar>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("foo.xml");
+node->debugDump();
+
+%contains-regex: stdout
+<foo>\s*<bar>test</bar>\s*</foo>

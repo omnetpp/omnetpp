@@ -1,0 +1,26 @@
+%description:
+External entities declared within the DOCTYPE are substituted.
+
+Unfortunately, elements within the included file cannot not be gotten to work, due to problems in libXML2...
+
+THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
+
+%file: test.xml
+<?xml version="1.0"?>
+<!DOCTYPE foo [
+  <!ELEMENT foo (#PCDATA)>
+  <!ENTITY greeting SYSTEM "greeting.txt">
+]>
+<foo>&greeting;</foo>
+
+%file: greeting.txt
+Hello!
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("test.xml");
+node->debugDump();
+
+%contains: stdout
+<foo>Hello!
+
+</foo>
