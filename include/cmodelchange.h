@@ -52,7 +52,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Signals
  */
-#define PRE_MODEL_CHANGE   ((simsignal_t)0)
+SIM_API extern simsignal_t PRE_MODEL_CHANGE;
 
 /**
  * A signal which is fired after simulation model changes such as module
@@ -98,8 +98,7 @@ NAMESPACE_BEGIN
  *
  * @ingroup Signals
  */
-#define POST_MODEL_CHANGE  ((simsignal_t)1)
-
+SIM_API extern simsignal_t POST_MODEL_CHANGE;
 
 /**
  * Common base class for data objects that accompany PRE_MODEL_CHANGE

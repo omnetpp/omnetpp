@@ -33,6 +33,8 @@ class cDisplayString;
 class cRNG;
 class cStatistic;
 
+#define SIGNALMASK_UNFILLED (~(uint64)0)
+
 /**
  * Common base for module and channel classes: cModule and cChannel.
  * cComponent provides parameters, properties and RNG mapping.
@@ -89,9 +91,15 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     uint64 signalHasAncestorListeners; // bit[k]==1: signalID k has listener in parent or in any ancestor component
 
     // string-to-simsignal_t mapping
-    static std::map<std::string,simsignal_t> signalIDs;
-    static std::map<simsignal_t,std::string> signalNames;
+    static struct SignalNameMapping {
+        std::map<std::string,simsignal_t> signalNameToID;
+        std::map<simsignal_t,std::string> signalIDToName;
+    } *signalNameMapping;  // must be dynamically allocated on first access so that registerSignal() can be invoked from static initialization code
     static int lastSignalID;
+
+    // dynamic assignment of signalHasLocalListeners/signalHasAncestorListeners bits (64 of them) to signalIDs
+    static std::vector<uint64> signalMasks;  // index: signalID, value: mask (1<<bitIndex), or 0xffff... for "unfilled"
+    static int firstFreeSignalMaskBitIndex; // 0..63; 64 means "all sold out"
 
     // stack of listener lists being notified, to detect concurrent modification
     static cIListener **notificationStack[];
@@ -102,10 +110,10 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     SignalData *findOrCreateSignalData(simsignal_t signalID);
     void removeSignalData(simsignal_t signalID);
     void checkNotFiring(simsignal_t, cIListener **listenerList);
-    template<typename T> void fire(cComponent *src, simsignal_t signalID, T x);
+    template<typename T> void fire(cComponent *src, simsignal_t signalID, const uint64& mask, T x);
     void fireFinish();
-    void signalListenerAdded(simsignal_t signalID);
-    void signalListenerRemoved(simsignal_t signalID);
+    void signalListenerAdded(simsignal_t signalID, uint64 mask);
+    void signalListenerRemoved(simsignal_t signalID, uint64 mask);
     void repairSignalFlags();
     bool computeHasListeners(simsignal_t signalID) const;
     void releaseLocalListeners();
@@ -145,8 +153,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     void checkLocalSignalConsistency() const;
     void checkSignalConsistency() const;
 
-    // internal: clears signal-related static data structures; to be invoked before each simulation run
+    // internal: clears global signals-related data structures; to be invoked before each simulation run
     static void clearSignalState();
+
+    // internal: allocates a signalHasLocalListeners/signalHasAncestorListeners bit index to the
+    // given signal and returns the corresponding mask (1<<index); returns 0 if there are no more
+    // free bit indices. Result is remembered and returned in subsequent calls (until clearSignalState())
+    static uint64 getSignalMask(simsignal_t signalID);
 
   protected:
     /** @name Initialization, finish and parameter change hooks.
@@ -372,14 +385,13 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * at the first registerSignal() call; further registerSignal() calls for
      * the same name will return the same ID.
      *
-     * There is some significance to the order of registerSignal() calls: the
-     * first 64 signal names registered have somewhat better notification
-     * performance characteristics than later signals, so it is advised to
-     * register frequently emitted signals first.
+     * Note: Since OMNeT++ 4.3, the signal registration table is not cleared
+     * between runs, so it is possible to assign global simsignal_t variables
+     * using static initialization:
      *
-     * Important: Signal IDs are assigned per simulation, so do NOT register
-     * signals using static initialization. Signal registration code is best
-     * placed into the initialize() methods of related modules or channels.
+     * <pre>
+     * simsignal_t somethingHappenedSignal = cComponent::registerSignal("somethingHappened");
+     * </pre>
      */
     static simsignal_t registerSignal(const char *name);
 
@@ -392,28 +404,28 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Emits the long value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
-     * get called. If there are no listeners, the runtime cost is usually minimal.
+     * are called. If there are no listeners, the runtime cost is usually minimal.
      */
     void emit(simsignal_t signalID, long l);
 
     /**
      * Emits the unsigned long value as a signal. If the given signal has listeners in
      * this component or in ancestor components, their appropriate receiveSignal() methods
-     * get called. If there are no listeners, the runtime cost is usually minimal.
+     * are called. If there are no listeners, the runtime cost is usually minimal.
      */
     void emit(simsignal_t signalID, unsigned long l);
 
     /**
      * Emits the double value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
-     * get called. If there are no listeners, the runtime cost is usually minimal.
+     * are called. If there are no listeners, the runtime cost is usually minimal.
      */
     void emit(simsignal_t signalID, double d);
 
     /**
      * Emits the simtime_t value as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
-     * get called. If there are no listeners, the runtime cost is usually minimal.
+     * are called. If there are no listeners, the runtime cost is usually minimal.
      *
      * Note: for technical reasons, the argument type is SimTime instead of simtime_t;
      * otherwise when compiled with USE_DOUBLE_SIMTIME we would have two "double"
@@ -424,14 +436,14 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
     /**
      * Emits the given string as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
-     * get called. If there are no listeners, the runtime cost is usually minimal.
+     * are called. If there are no listeners, the runtime cost is usually minimal.
      */
     void emit(simsignal_t signalID, const char *s);
 
     /**
      * Emits the given object as a signal. If the given signal has listeners in this
      * component or in ancestor components, their appropriate receiveSignal() methods
-     * get called. If there are no listeners, the runtime cost is usually minimal.
+     * are called. If there are no listeners, the runtime cost is usually minimal.
      */
     void emit(simsignal_t signalID, cObject *obj);
 
@@ -470,10 +482,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * (amortizes in constant time), but may return "false positive".
      */
     bool mayHaveListeners(simsignal_t signalID) const {
-        if ((unsigned)signalID > 63)  // note: shift must be in 0..63 (C++ spec)
-            return true;
-        uint64 mask = (uint64)1 << signalID;
-        return (signalHasLocalListeners|signalHasAncestorListeners) & mask;
+        uint64 mask = getSignalMask(signalID);
+        return (~signalHasLocalListeners & ~signalHasAncestorListeners & mask)==0; // always true for mask==0
     }
 
     /**
@@ -484,12 +494,8 @@ class SIM_API cComponent : public cDefaultList //implies noncopyable
      * @see mayHaveListeners()
      */
     bool hasListeners(simsignal_t signalID) const {
-        if (signalID < 0)  // note: result of negative shift is undefined (C++ spec)
-            return false;
-        if (signalID > 63)
-            return computeHasListeners(signalID);
-        uint64 mask = (uint64)1 << signalID;
-        return (signalHasLocalListeners|signalHasAncestorListeners) & mask;
+        uint64 mask = getSignalMask(signalID);
+        return mask ? ((signalHasLocalListeners|signalHasAncestorListeners) & mask) : computeHasListeners(signalID);
     }
     //@}
 

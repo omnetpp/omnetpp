@@ -11,6 +11,16 @@
 #endif
 #endif
 
+// register 64+ signals...
+#define Reg(name)  simsignal_t name##Signal  = cComponent::registerSignal(#name);
+Reg(a0) Reg(a1) Reg(a2) Reg(a3) Reg(a4) Reg(a5) Reg(a6) Reg(a7) Reg(a8) Reg(a9)
+Reg(a10) Reg(a11) Reg(a12) Reg(a13) Reg(a14) Reg(a15) Reg(a16) Reg(a17) Reg(a18) Reg(a19)
+Reg(a20) Reg(a21) Reg(a22) Reg(a23) Reg(a24) Reg(a25) Reg(a26) Reg(a27) Reg(a28) Reg(a29)
+Reg(a30) Reg(a31) Reg(a32) Reg(a33) Reg(a34) Reg(a35) Reg(a36) Reg(a37) Reg(a38) Reg(a39)
+Reg(a40) Reg(a41) Reg(a42) Reg(a43) Reg(a44) Reg(a45) Reg(a46) Reg(a47) Reg(a48) Reg(a49)
+Reg(a50) Reg(a51) Reg(a52) Reg(a53) Reg(a54) Reg(a55) Reg(a56) Reg(a57) Reg(a58) Reg(a59)
+Reg(a60) Reg(a61) Reg(a62) Reg(a63) Reg(a64) Reg(a65) Reg(a66) Reg(a67) Reg(a68) Reg(a69)
+
 std::string stringf(const char *format, ...)
 {
     const int BUFLEN = 1024;
@@ -49,14 +59,7 @@ inline void disconnectOutside(cGate *g) //XXX add this method into cGate!
 
 void Tester::activity()
 {
-    for (int i=0; i<110; i++)
-    {
-        char name[32];
-        sprintf(name, "signal%d", i);
-        registerSignal(name);
-    }
-
-    simsignal_t signalIDs[] = {10,63,64,100};
+    simsignal_t signalIDs[] = {10,63,64,70};
     int numSignalIDs = 4;
     for (int i=0; i<numSignalIDs; i++)
         ASSERT(getSignalName(signalIDs[i]) != NULL); // make sure our test signals are all registered
