@@ -289,7 +289,7 @@ int vectorCommand(int argc, char **argv)
                 outPort = &(filterNode->out);
             }
 
-            // create writer getNode(s) and connect
+            // create writer node(s) and connect them
             if (opt_outputFormat == "vec")
             {
                 if (opt_writeSeparateFiles)
