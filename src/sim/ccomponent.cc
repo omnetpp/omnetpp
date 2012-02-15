@@ -467,7 +467,7 @@ void cComponent::emit(simsignal_t signalID, cObject *obj)
     fire(this, signalID, getSignalMask(signalID), obj);
 }
 
-inline uint64 cComponent::getSignalMask(simsignal_t signalID)
+uint64 cComponent::getSignalMask(simsignal_t signalID)
 {
     if ((unsigned)signalID > lastSignalID)
         throw cRuntimeError("emit()/hasListeners(): not a valid signal: signalID=%d", signalID);
