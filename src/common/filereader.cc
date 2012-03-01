@@ -90,6 +90,8 @@ void FileReader::ensureFileOpenInternal()
 
 int FileReader::readFileEnd(void *dataPointer)
 {
+    if (!file)
+        throw opp_runtime_error("File is not open '%s'", fileName.c_str());
     opp_fseek(file, std::max((file_offset_t)0, (file_offset_t)(fileSize - bufferSize)), SEEK_SET);
     if (ferror(file))
         throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
@@ -237,6 +239,8 @@ void FileReader::fillBuffer(bool forward)
         }
 
         file_offset_t fileOffset = pointerToFileOffset(dataPointer);
+        if (!file)
+            throw opp_runtime_error("File is not open '%s'", fileName.c_str());
         opp_fseek(file, fileOffset, SEEK_SET);
         if (ferror(file))
             throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
@@ -281,15 +285,17 @@ bool FileReader::isLineStart(char *s) {
         if (bufferFileOffset == 0)
             return true;
         else { // slow path
-           file_offset_t fileOffset = pointerToFileOffset(s) - 1;
-           opp_fseek(file, fileOffset, SEEK_SET);
-           if (ferror(file))
-               throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
-           char previousChar;
-           fread(&previousChar, 1, 1, file);  //XXX warning: ignored return value
-           if (ferror(file))
-               throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
-           return previousChar == '\n';
+            file_offset_t fileOffset = pointerToFileOffset(s) - 1;
+            if (!file)
+                throw opp_runtime_error("File is not open '%s'", fileName.c_str());
+            opp_fseek(file, fileOffset, SEEK_SET);
+            if (ferror(file))
+                throw opp_runtime_error("Cannot seek in file `%s'", fileName.c_str());
+            char previousChar;
+            fread(&previousChar, 1, 1, file);  //XXX warning: ignored return value
+            if (ferror(file))
+                throw opp_runtime_error("Read error in file `%s'", fileName.c_str());
+            return previousChar == '\n';
         }
     }
     else if (s - 1 < dataBegin)
@@ -571,6 +577,8 @@ int64 FileReader::getFileSize()
 int64 FileReader::getFileSizeInternal()
 {
     struct opp_stat_t s;
+    if (!file)
+        throw opp_runtime_error("File is not open '%s'", fileName.c_str());
     opp_fstat(fileno(file), &s);
     return s.st_size;
 }

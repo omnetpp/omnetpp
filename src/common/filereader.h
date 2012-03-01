@@ -138,6 +138,11 @@ class COMMON_API FileReader
     void setIgnoreAppendChanges(bool value) { enableIgnoreAppendChanges = value; }
 
     /**
+     * Returns true if the file is open, otherwise returns false.
+     */
+    bool isFileOpen() { return file; }
+
+    /**
      * This method is called automatically whenever the file is accessed through a public function.
      */
     void ensureFileOpen();
