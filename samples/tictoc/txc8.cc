@@ -67,8 +67,8 @@ void Tic8::handleMessage(cMessage *msg)
         // If we receive the timeout event, that means the packet hasn't
         // arrived in time and we have to re-send it.
         EV << "Timeout expired, resending message and restarting timer\n";
-        cMessage *msg = new cMessage("tictocMsg");
-        send(msg, "out");
+        cMessage *newMsg = new cMessage("tictocMsg");
+        send(newMsg, "out");
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
     else // message arrived
@@ -77,10 +77,11 @@ void Tic8::handleMessage(cMessage *msg)
         // the timeout event.
         EV << "Timer cancelled.\n";
         cancelEvent(timeoutEvent);
+        delete msg;
 
         // Ready to send another one.
-        cMessage *msg = new cMessage("tictocMsg");
-        send(msg, "out");
+        cMessage *newMsg = new cMessage("tictocMsg");
+        send(newMsg, "out");
         scheduleAt(simTime()+timeout, timeoutEvent);
     }
 }
