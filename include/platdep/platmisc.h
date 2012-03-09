@@ -152,8 +152,8 @@ typedef int64 file_offset_t;  // off_t on Linux
   #define opp_stat stat
   #define opp_fstat fstat
 #elif defined __MINGW32__
-  #define opp_ftell(f) _telli64(_fileno(f))
-  #define opp_fseek(f, off, whence) _lseeki64((_fileno(f)), (off), (whence))
+  #define opp_ftell ftello64
+  #define opp_fseek fseeko64
   #define opp_stat_t _stati64 // name of the struct
   #define opp_stat _stati64    // name of the function
   #define opp_fstat _fstati64
