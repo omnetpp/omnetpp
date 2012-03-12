@@ -318,18 +318,16 @@
             class="org.omnetpp.cdt.ui.FolderMakemakePropertyPage"
             id="org.omnetpp.cdt.FolderBuildSpec"
             name="Makemake">
-         <filter
-               name="projectNature"
-               value="org.omnetpp.main.omnetppnature">
-         </filter>
-         <filter
-               name="projectNature"
-               value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
-         </filter>
          <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IFolder">
-            </adapt>
+            <and>
+                <adapt
+                      type="org.eclipse.core.resources.IFolder">
+                </adapt>
+                <test property="org.eclipse.core.resources.projectNature" 
+                      value="org.omnetpp.main.omnetppnature" />
+                <test property="org.eclipse.core.resources.projectNature" 
+                      value="org.eclipse.cdt.core.cnature" />
+            </and>
          </enabledWhen>
       </page>
       <page
@@ -337,18 +335,16 @@
             class="org.omnetpp.cdt.ui.ProjectMakemakePropertyPage"
             id="org.omnetpp.cdt.ProjectBuildSpec"
             name="Makemake">
-         <filter
-               name="projectNature"
-               value="org.omnetpp.main.omnetppnature">
-         </filter>
-         <filter
-               name="projectNature"
-               value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
-         </filter>
          <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IProject">
-            </adapt>
+            <and>
+                <adapt
+                      type="org.eclipse.core.resources.IProject">
+                </adapt>
+                <test property="org.eclipse.core.resources.projectNature" 
+                      value="org.omnetpp.main.omnetppnature" />
+                <test property="org.eclipse.core.resources.projectNature" 
+                      value="org.eclipse.cdt.core.cnature" />
+            </and>
          </enabledWhen>
       </page>
       <page
@@ -356,18 +352,16 @@
             class="org.omnetpp.cdt.ui.ProjectFeaturesPropertyPage"
             id="org.omnetpp.cdt.ProjectFeatures"
             name="Project Features">
-         <filter
-               name="projectNature"
-               value="org.omnetpp.main.omnetppnature">
-         </filter>
-         <filter
-               name="projectNature"
-               value="org.eclipse.cdt.managedbuilder.core.managedBuildNature">
-         </filter>
          <enabledWhen>
-            <adapt
-                  type="org.eclipse.core.resources.IProject">
-            </adapt>
+            <and>
+                <adapt
+                      type="org.eclipse.core.resources.IProject">
+                </adapt>
+                <test property="org.eclipse.core.resources.projectNature" 
+                      value="org.omnetpp.main.omnetppnature" />
+                <test property="org.eclipse.core.resources.projectNature" 
+                      value="org.eclipse.cdt.core.cnature" />
+            </and>
          </enabledWhen>
       </page>
    </extension>
