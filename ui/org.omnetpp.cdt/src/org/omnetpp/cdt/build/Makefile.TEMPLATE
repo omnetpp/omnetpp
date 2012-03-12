@@ -117,9 +117,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 #------------------------------------------------------------------------------
 
 # Main target
-{~nolink:}all: $(TARGET)
-{~nolink:}
-{~nolink:}$(TARGET) : $O/$(TARGET)
+{~nolink:}all: $O/$(TARGET)
 {~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) .
 {~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . >NUL
 {sharedlib:}{nmake:}	-copy $(O:/=\)\$(TARGET:.dll=.lib) . >NUL
@@ -151,7 +149,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### the *_dir targets), and does not print "Entering"/"Leaving" messages like gnu make.
 {submakedirs:}submakedirs: {@i:submakenames} {i}_dir{/@}
 {submakedirs:}
-{~nmake:}.PHONY:{@i:submakenames} {i}{/@}
+{~nmake:}.PHONY: all clean cleanall depend msgheaders {@i:submakenames} {i}{/@}
 {~nmake:}{@i:submakenames}{i}: {i}_dir
 {~nmake:}{/@}
 {submakedirs:}
