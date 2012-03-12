@@ -625,14 +625,14 @@ string MatlabStructExport::makeIdentifier(const string &name)
 string MatlabStructExport::quoteString(const string &str)
 {
     string result;
-    result.push_back('"');
+    result.push_back('\'');
     for (string::const_iterator it = str.begin(); it != str.end(); ++it)
     {
-        if (*it == '\\' || *it == '\"')
-            result.push_back('\\');
+        if (*it == '\'')
+            result.push_back('\'');  // quotes (') are escaped as two quotes ('') in matlab
         result.push_back(*it);
     }
-    result.push_back('"');
+    result.push_back('\'');
 
     return result;
 }
@@ -700,7 +700,7 @@ void MatlabScriptExport::writeStringColumn(const DataTable &table, int col, int 
 {
     for (int row = startRow; row < endRow; ++row)
     {
-        out << '"' << table.getStringValue(row, col) << '"' << ";\n";
+        out << quoteString(table.getStringValue(row, col)) << ";\n";
     }
 }
 
