@@ -5,6 +5,11 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 4.2.2 (March 2012)
+----------------------
+
+Bugs fixed: http://tinyurl.com/omnetpp422-fixes
+
 OMNeT++ 4.2.1 (Jan 2012)
 ----------------------
 
