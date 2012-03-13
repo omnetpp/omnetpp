@@ -35,7 +35,7 @@ public class ExportDataAction extends AbstractScaveAction {
 		MATLAB	= "matlab",
 		OCTAVE	= "octave";
 
-	public static final String[] FORMATS = {CSV, MATLAB, OCTAVE };
+	public static final String[] FORMATS = {CSV, OCTAVE };  // We do not provide MATLAB format
 
 	String format;
 
