@@ -183,7 +183,7 @@ public class ConfigRegistry {
         "cmdenv-express-mode", CFG_BOOL, "true",
         "Selects ``normal'' (debug/trace) or ``express'' mode.");
     public static final ConfigOption CFGID_CMDENV_EXTRA_STACK = addGlobalOptionU(
-        "cmdenv-extra-stack", "B", "8KB",
+        "cmdenv-extra-stack", "B", "8KiB",
         "Specifies the extra amount of stack that is reserved for each activity() " +
         "simple module when the simulation is run under Cmdenv.");
     public static final ConfigOption CFGID_CMDENV_INTERACTIVE = addGlobalOption(
@@ -365,7 +365,7 @@ public class ConfigRegistry {
         "effect on the \"time\" column of output vectors, which are represented as " +
         "fixed-point numbers and always get recorded precisely.");
     public static final ConfigOption CFGID_OUTPUT_VECTORS_MEMORY_LIMIT = addPerRunOptionU(
-        "output-vectors-memory-limit", "B", "16MB",
+        "output-vectors-memory-limit", "B", "16MiB",
         "Total memory that can be used for buffering output vectors. Larger values " +
         "produce less fragmented vector files (i.e. cause vector data to be grouped " +
         "into larger chunks), and therefore allow more efficient processing later.");
@@ -560,7 +560,7 @@ public class ConfigRegistry {
         "Specifies which run (of the default config, see tkenv-default-config) Tkenv " +
         "should set up automatically on startup. The default is to ask the user.");
     public static final ConfigOption CFGID_TKENV_EXTRA_STACK = addGlobalOptionU(
-        "tkenv-extra-stack", "B", "48KB",
+        "tkenv-extra-stack", "B", "48KiB",
         "Specifies the extra amount of stack that is reserved for each activity() " +
         "simple module when the simulation is run under Tkenv.");
     public static final ConfigOption CFGID_TKENV_IMAGE_PATH = addGlobalOption(
