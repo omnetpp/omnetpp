@@ -1,3 +1,9 @@
+2012-03-27 Tamas Borbely
+
+    Fix bug #555: Memory leak in output vector recording.
+    When the output vector was deleted, its buffer was
+    not freed. [From David Eckhoff]
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------

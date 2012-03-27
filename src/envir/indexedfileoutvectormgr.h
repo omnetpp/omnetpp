@@ -78,6 +78,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
       sBlock currentBlock;
 
       sVector() : buffer(), maxBufferedSamples(0) {}
+      virtual ~sVector() {}
       void allocateBuffer(long count) { buffer.reserve(count); }
     };
 

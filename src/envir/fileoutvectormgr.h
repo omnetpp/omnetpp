@@ -50,6 +50,7 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
        Intervals intervals;
 
        const char *getColumns() { return recordEventNumbers ? "ETV" : "TV"; }
+       virtual ~sVectorData() {}
     };
 
     sRunData run;      // holds data of the current run
