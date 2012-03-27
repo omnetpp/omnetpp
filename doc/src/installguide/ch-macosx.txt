@@ -24,8 +24,8 @@ Mac OS X 10.6 (Snow Leopard)
 Mac OS X 10.7 (Lion)
 
  * Install Xcode 4.3 or later on your machine. It can be downloaded from the App Store.
- * You MUST activalte command line support by starting XCode and installing 
-   `Command Line Tools` from `Xcode | Preferences | Downloads | Components`.
+ * You must activate command line support by starting XCode and installing 
+   'Command Line Tools' from 'Xcode > Preferences > Downloads > Components'.
  * Install the Java Runtime from http://support.apple.com/kb/DL1421 , because
    OS X Lion does not provide it by default.
 
