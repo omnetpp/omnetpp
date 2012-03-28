@@ -49,11 +49,22 @@ inline void disconnectOutside(cGate *g) //XXX add this method into cGate!
 
 void Tester::activity()
 {
-    cModuleType *type = cModuleType::find("TestNode");
+    for (int i=0; i<110; i++)
+    {
+        char name[32];
+        sprintf(name, "signal%d", i);
+        registerSignal(name);
+    }
+
     simsignal_t signalIDs[] = {10,63,64,100};
     int numSignalIDs = 4;
+    for (int i=0; i<numSignalIDs; i++)
+        ASSERT(getSignalName(signalIDs[i]) != NULL); // make sure our test signals are all registered
+
     simulation.getSystemModule()->subscribe(PRE_MODEL_CHANGE, this);
     simulation.getSystemModule()->subscribe(POST_MODEL_CHANGE, this);
+
+    cModuleType *type = cModuleType::find("TestNode");
 
     for (int i=1; true; i++)
     {
@@ -61,7 +72,7 @@ void Tester::activity()
         {
             // create a node
             int k = intuniform(0, nodes.size());
-            cModule *parent = k==nodes.size() ? simulation.getSystemModule() : nodes[k];
+            cModule *parent = k==(int)nodes.size() ? simulation.getSystemModule() : nodes[k];
             ASSERT(parent!=NULL);
             std::string name = stringf("node%d",i);
             ev << "CREATING NODE " << parent->getFullPath() << "." << name << "\n";
@@ -120,7 +131,7 @@ void Tester::activity()
         {
             // subscribe a random module or channel to a random signal
             int k = intuniform(0, nodes.size()+connections.size()-1);
-            cComponent *c = k<nodes.size() ? (cComponent*)nodes[k] : (cComponent*)(connections[k-nodes.size()]->getChannel());
+            cComponent *c = k<(int)nodes.size() ? (cComponent*)nodes[k] : (cComponent*)(connections[k-nodes.size()]->getChannel());
             simsignal_t signalID = signalIDs[intuniform(0,numSignalIDs-1)];
             ev << "SUBSCRIBING MODULE/CHANNEL " << c->getFullPath() << " to signal " << signalID << "\n";
             c->subscribe(signalID, new cListener());
@@ -130,7 +141,7 @@ void Tester::activity()
         {
             // unsubscribe a randomly chosen listener
             int k = intuniform(0, nodes.size()+connections.size()-1);
-            cComponent *c = k<nodes.size() ? (cComponent*)nodes[k] : (cComponent*)(connections[k-nodes.size()]->getChannel());
+            cComponent *c = k<(int)nodes.size() ? (cComponent*)nodes[k] : (cComponent*)(connections[k-nodes.size()]->getChannel());
             std::vector<int> signals = c->getLocalListenedSignals();
             if (!signals.empty()) {
                 simsignal_t signalID = signals[intrand(signals.size())];
