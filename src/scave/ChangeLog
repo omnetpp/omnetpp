@@ -1,10 +1,16 @@
+2012-03-28  Andras Varga
+
+	* scaveutils.cc: fixed #546: parseDouble() now understands
+	MSVC's 1.#INF syntax (as well as all other sane syntaxes for
+	infinity and NaN)
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
 
 2011-12-08  Rudolf Hornig
 
-    * implemented export function for histograms
+	* implemented export function for histograms
 
 2011-10-28  ------ omnetpp-4.2 released ------
 
@@ -16,17 +22,17 @@
 
 2011-01-21  Tamas Borbely
 
-    * added -g option to 'scavetool scalar' command. The user can specify
-      how the scalars are grouped into columns/variables. The default is also changed:
-      each scalar value is written into one column (csv) or variable. This
-      allows the user to import the csv into a spreadsheet and use the
-      'pivot table' functionality to group the scalars as he likes.
-      Old behaviour can be obtained by '-g name'.
+	* added -g option to 'scavetool scalar' command. The user can specify
+	how the scalars are grouped into columns/variables. The default is also changed:
+	each scalar value is written into one column (csv) or variable. This
+	allows the user to import the csv into a spreadsheet and use the
+	'pivot table' functionality to group the scalars as he likes.
+	Old behaviour can be obtained by '-g name'.
 
 2010-07-13  Tamas Borbely
 
 	* added "substractFirstValue" filter, it substracts the first finite value
-	  from the first and all subsequent values. 
+	  from the first and all subsequent values.
 
 2010-06-11  ------ omnetpp-4.1 released ------
 
@@ -36,8 +42,8 @@
 
 2010-04-20  Andras Varga
 
-	* fixed "timeavg" filter not to assume an initial (0,0) data point, 
-	and to suppress potential initial 0/0 = NaN (or NaNs) 
+	* fixed "timeavg" filter not to assume an initial (0,0) data point,
+	and to suppress potential initial 0/0 = NaN (or NaNs)
 
 	* fixed "integrate" filter not to assume an initial (0,0) data point
 
@@ -45,18 +51,18 @@
 
 2009-09-04  Tamas Borbely
 
-        * added 'sum' function to 'aggregator' node.
+	* added 'sum' function to 'aggregator' node.
 
 2009-05-15  Tamas Borbely
 
-        * added 'aggregator' node for computing average/minimum/maximum of
-        several vectors. It simply aggregates the values at the same simulation
-        time (i.e. ignores interpolation-mode of the vectors).
+	* added 'aggregator' node for computing average/minimum/maximum of
+	several vectors. It simply aggregates the values at the same simulation
+	time (i.e. ignores interpolation-mode of the vectors).
 
 2009-05-11  Tamas Borbely
 
-        * added 'timewinavg' node. It computes the average of data points
-        in fixed, equal length time intervals.
+	* added 'timewinavg' node. It computes the average of data points
+	in fixed, equal length time intervals.
 
 2009-03-12  ------ omnetpp-4.0 released ------
 
@@ -80,13 +86,12 @@
 	"scatter(module,scalar,...)" where
 	  - module,scalar: identifies the scalar selected for the X axis
 	  - additional arguments identifies the iso attributes, they are
-            module, scalar pairs or names of run attributes
+	    module, scalar pairs or names of run attributes
 
 2009-02-19  Tamas Borbely
 
 	* 'filter' command of scavetool had been split into 'vector' and
 	'scalar' commands.
-
 
 2008-12-12  ------ omnetpp-4.0rc1 released ------
 
@@ -102,3 +107,4 @@
 	Analysis tool in IDE. A command-line tool scavetool is also provided.
 	Initial code was taken from the 3.x Plove and Scalars tools, then
 	it was significantly expanded by Tamas Borbely.
+

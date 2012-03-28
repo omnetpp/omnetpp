@@ -54,14 +54,17 @@ bool parseDouble(const char *s, double& dest)
     {
         return true;
     }
-    if (strncasecmp(s, "inf", 3) == 0 ||
-                (*s && strncasecmp(s+1, "inf", 3) == 0))
+
+    // infinity: GCC: "inf" or "-inf"; MSVC: "1.#INF" or "-1.#INF"
+    if (strstr(s, "inf") || strstr(s, "Inf") || strstr(s, "INF"))
     {
         dest = POSITIVE_INFINITY;  // +INF or -INF
         if (*s=='-') dest = -dest;
         return true;
     }
-    if (strstr(s, "IND") || strcasecmp(s,"nan")==0)
+
+    // not-a-number: GCC: "nan"; MSVC: "1.#IND"
+    if (strstr(s, "nan") || strstr(s, "NaN") || strstr(s, "NAN") || strstr(s, "IND"))
     {
         dest = NaN;
         return true;
