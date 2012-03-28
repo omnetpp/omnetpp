@@ -138,49 +138,7 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                 IFile iniFile = null;
                 String configName = null;
 
-                if (resource instanceof IContainer) {
-                    IContainer folder = (IContainer)resource;
-
-                    // collect all ini files in this folder
-                    List<IniSection> candidates = collectInifileConfigsForFolder(folder);
-                    if (candidates.isEmpty()) {
-                        // collect networks, and let user create an inifile for one of them
-                        List<INedTypeInfo> networks = collectNetworksForFolder(folder);
-                        if (networks.isEmpty()) {
-                            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + folder.getFullPath().toString() + "' does not contain ini files or networks.");
-                            return;
-                        }
-                        INedTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
-                        IniSection newIni = askAndCreateInifile(network);
-                        if (newIni == null)
-                            return; // user cancelled
-
-                        // now we have an inifile
-                        candidates.add(newIni);
-                    }
-
-                    // choose executable to launch (note: we don't do this if there's no inifile!)
-                    exeFile = chooseExecutable(resource.getProject());
-                    if (exeFile == null)
-                        return; // user cancelled
-                    if (exeFile == IFILE_OPP_RUN)
-                        exeFile = null;
-
-                    // choose one
-                    IniSection iniFileAndConfig;
-                    if (candidates.size() == 1)
-                        iniFileAndConfig = candidates.get(0);
-                    else
-                        iniFileAndConfig = chooseInifileConfigFromDialog(candidates, folder);
-
-                    if (iniFileAndConfig == null)
-                        return; // user cancelled
-
-                    iniFile = iniFileAndConfig.iniFile;
-                    configName = iniFileAndConfig.configName;
-                    launchName = folder.getName();
-                }
-                else if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
+                if (resource instanceof IFile && "ini".equals(resource.getFileExtension())) {
                     // choose executable to launch
                     exeFile = chooseExecutable(resource.getProject());
                     if (exeFile == null)
@@ -240,7 +198,46 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             nedFile.getParent().getName();
                 }
                 else {
-                    return; // resource not supported
+                    IContainer folder = (resource instanceof IContainer) ? (IContainer)resource : resource.getParent();
+
+                    // collect all ini files in this folder
+                    List<IniSection> candidates = collectInifileConfigsForFolder(folder);
+                    if (candidates.isEmpty()) {
+                        // collect networks, and let user create an inifile for one of them
+                        List<INedTypeInfo> networks = collectNetworksForFolder(folder);
+                        if (networks.isEmpty()) {
+                            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot launch simulation: '" + folder.getFullPath().toString() + "' does not contain ini files or networks.");
+                            return;
+                        }
+                        INedTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
+                        IniSection newIni = askAndCreateInifile(network);
+                        if (newIni == null)
+                            return; // user cancelled
+
+                        // now we have an inifile
+                        candidates.add(newIni);
+                    }
+
+                    // choose executable to launch (note: we don't do this if there's no inifile!)
+                    exeFile = chooseExecutable(resource.getProject());
+                    if (exeFile == null)
+                        return; // user cancelled
+                    if (exeFile == IFILE_OPP_RUN)
+                        exeFile = null;
+
+                    // choose one
+                    IniSection iniFileAndConfig;
+                    if (candidates.size() == 1)
+                        iniFileAndConfig = candidates.get(0);
+                    else
+                        iniFileAndConfig = chooseInifileConfigFromDialog(candidates, folder);
+
+                    if (iniFileAndConfig == null)
+                        return; // user cancelled
+
+                    iniFile = iniFileAndConfig.iniFile;
+                    configName = iniFileAndConfig.configName;
+                    launchName = folder.getName();
                 }
 
                 // create launch config based on the above data
