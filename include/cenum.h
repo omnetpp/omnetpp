@@ -58,7 +58,19 @@ class SIM_API cEnum : public cOwnedObject
     /**
      * Constructor.
      */
-    cEnum(const char *name=NULL);
+    explicit cEnum(const char *name=NULL);
+
+    /**
+     * FIXME document properly:
+     * arglist: (enumname, string1, value1, string2, value2, ..., NULL)
+     *
+     * Example:
+     * <pre>
+     * enum State { IDLE=0, BUSY };
+     * cEnum stateEnum("state", "IDLE", IDLE, "BUSY", BUSY, NULL);
+     * </pre>
+     */
+    cEnum(const char *name, const char *str, ...);
 
     /**
      * Copy constructor.

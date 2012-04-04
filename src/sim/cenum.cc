@@ -42,6 +42,23 @@ cEnum::cEnum(const char *name) : cOwnedObject(name, false)
 {
 }
 
+cEnum::cEnum(const char *name, const char *str, ...) : cOwnedObject(name, false)
+{
+    va_list va;
+    va_start(va, str);
+
+    const char *s = str;
+    int v;
+    while (s)
+    {
+        v = va_arg(va, int);
+        insert(v, s);
+        s = va_arg(va, const char *);
+    }
+
+    va_end(va);
+}
+
 cEnum::~cEnum()
 {
 }
