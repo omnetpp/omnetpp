@@ -24,7 +24,8 @@
 #define JB_ARRAY_H
 
 #include <iostream>
-#include <deque>
+#include <vector>
+
 
 namespace JsonBox {
     class Value;
@@ -35,7 +36,7 @@ namespace JsonBox {
      * easily output in a stream.
      * @see JsonBox::Value
      */
-    typedef std::deque<Value> Array;
+    typedef std::vector<Value> Array;
 
     /**
      * Output operator overload for the JSON array. Outputs in standard JSON

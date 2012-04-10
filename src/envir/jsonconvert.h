@@ -25,7 +25,7 @@
 
 
 #include <string>
-#include <stdint.h>
+#include "intxtypes.h" //<stdint.h>
 
 
 namespace JsonBox {
