@@ -27,6 +27,8 @@
 #include <map>
 #include <string>
 
+#include "envirdefs.h"
+
 namespace JsonBox {
     class Value;
 

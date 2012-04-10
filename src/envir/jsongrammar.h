@@ -25,6 +25,8 @@
 
 #include <string>
 
+#include "envirdefs.h"
+
 namespace JsonBox {
     // Structural characters.
     namespace Structural {

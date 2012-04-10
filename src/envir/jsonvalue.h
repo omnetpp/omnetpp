@@ -26,6 +26,7 @@
 #include <string>
 #include <iostream>
 
+#include "envirdefs.h"
 #include "jsonarray.h"
 #include "jsonobject.h"
 

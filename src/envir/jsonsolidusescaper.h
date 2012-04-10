@@ -25,6 +25,8 @@
 
 #include <streambuf>
 
+#include "envirdefs.h"
+
 namespace JsonBox {
     class SolidusEscaper {
     public:

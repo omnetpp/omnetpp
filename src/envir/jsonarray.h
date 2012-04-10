@@ -26,6 +26,7 @@
 #include <iostream>
 #include <vector>
 
+#include "envirdefs.h"
 
 namespace JsonBox {
     class Value;

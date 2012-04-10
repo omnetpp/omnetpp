@@ -24,9 +24,10 @@
 #define JB_OUTPUT_FILTER_H
 
 #include <cassert>
-
 #include <limits>
 #include <streambuf>
+
+#include "envirdefs.h"
 
 namespace JsonBox {
     /**

@@ -25,6 +25,8 @@
 
 #include <streambuf>
 
+#include "envirdefs.h"
+
 namespace JsonBox {
     /**
      * Adds a level of indentation to a streambuf.
