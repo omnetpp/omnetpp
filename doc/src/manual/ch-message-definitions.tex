@@ -918,7 +918,7 @@ class FooPacket : public FooPacket_Base
     FooPacket(const FooPacket& other) : FooPacket_Base(other) {}
     FooPacket& operator=(const FooPacket& other)
         {FooPacket_Base::operator=(other); return *this;}
-    virtual FooPacket *dup() {return new FooPacket(*this);}
+    virtual FooPacket *dup() const {return new FooPacket(*this);}
 };
 
 Register_Class(FooPacket);
