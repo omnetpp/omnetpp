@@ -215,7 +215,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Must be redefined in subclasses to return the array size of a field
      * in the client object. If the field is not an array, it should return 0.
      */
-    virtual int getArraySize(void *object, int field) const = 0;
+    virtual int getFieldArraySize(void *object, int field) const = 0;
 
     /**
      * Must be redefined in subclasses to return the value of the given field

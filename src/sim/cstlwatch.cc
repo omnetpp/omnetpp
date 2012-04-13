@@ -38,7 +38,7 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     virtual unsigned int getFieldTypeFlags(void *object, int field) const;
     virtual const char *getFieldTypeString(void *object, int field) const;
     virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
-    virtual int getArraySize(void *object, int field) const;
+    virtual int getFieldArraySize(void *object, int field) const;
 
     virtual std::string getFieldAsString(void *object, int field, int i) const;
     virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
@@ -99,7 +99,7 @@ const char *cStdVectorWatcherDescriptor::getFieldProperty(void *object, int fiel
     return NULL;
 }
 
-int cStdVectorWatcherDescriptor::getArraySize(void *object, int field) const
+int cStdVectorWatcherDescriptor::getFieldArraySize(void *object, int field) const
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
