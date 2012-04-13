@@ -148,7 +148,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
             const char *fieldType = descriptor->getFieldTypeString(object, fieldIndex);
             const char *fieldName = descriptor->getFieldName(object, fieldIndex);
 
-            int size = isArray ? descriptor->getArraySize(object, fieldIndex) : 1;
+            int size = isArray ? descriptor->getFieldArraySize(object, fieldIndex) : 1;
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
                 void *fieldValue = isCompound ? descriptor->getFieldStructPointer(object, fieldIndex, elementIndex) : NULL;
 

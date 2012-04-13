@@ -2381,7 +2381,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
       char buf[20];
-      sprintf(buf, "%d", sd->getArraySize(object, fld));
+      sprintf(buf, "%d", sd->getFieldArraySize(object, fld));
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
