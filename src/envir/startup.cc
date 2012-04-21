@@ -94,7 +94,7 @@ int setupUserInterface(int argc, char *argv[])
 
         // args
         args = new ArgList();
-        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGv");
+        args->parse(argc, argv, "h?f:u:l:c:r:p:n:x:X:agGvw");
 
         //
         // First, load the ini file. It might contain the name of the user interface

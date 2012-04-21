@@ -34,8 +34,25 @@
 #include "timeutil.h"
 #include "stringutil.h"
 #include "cconfigoption.h"
+#include "checkandcast.h"
 #include "cproperties.h"
 #include "cproperty.h"
+#include "cenum.h"
+#include "cscheduler.h"
+#include "stringtokenizer.h"
+#include "jsonvalue.h"
+#include "cresultfilter.h"
+#include "cresultrecorder.h"
+#include "visitor.h"
+#include "cclassdescriptor.h"
+#include "cqueue.h"
+#include "cchannel.h"
+#include "coutvector.h"
+#include "ccompoundmodule.h"
+#include "cstatistic.h"
+#include "cdensityestbase.h"
+#include "cwatch.h"
+
 
 USING_NAMESPACE
 
@@ -56,6 +73,12 @@ Register_PerRunConfigOption(CFGID_PERFORMANCE_DISPLAY, "cmdenv-performance-displ
 Register_PerObjectConfigOption(CFGID_CMDENV_EV_OUTPUT, "cmdenv-ev-output", KIND_MODULE, CFG_BOOL, "true", "When cmdenv-express-mode=false: whether Cmdenv should print debug messages (ev<<) from the selected modules.")
 
 
+/*TODO:
+notifyListeners(LF_ON_SIMULATION_START);
+notifyListeners(LF_ON_SIMULATION_SUCCESS);
+notifyListeners(LF_ON_SIMULATION_ERROR);
+*/
+
 //
 // Register the Cmdenv user interface
 //
@@ -69,6 +92,7 @@ extern "C" CMDENV_API void cmdenv_lib() {}
 // on some compilers (e.g. linux gcc 4.2) the functions are generated without _
 extern "C" CMDENV_API void _cmdenv_lib() {}
 
+#define SPEEDOMETER_UPDATEMILLISECS 1000
 
 #define LL  INT64_PRINTF_FORMAT
 
@@ -93,6 +117,63 @@ char *timeToStr(timeval t, char *buf=NULL)
    return b;
 }
 
+static cEnum stateEnum("State",
+        "nonetwork", Cmdenv::SIM_NONETWORK,
+        "ready", Cmdenv::SIM_READY,
+        "running", Cmdenv::SIM_RUNNING,
+        "terminated", Cmdenv::SIM_TERMINATED,
+        "error", Cmdenv::SIM_ERROR,
+        "finishcalled", Cmdenv::SIM_FINISHCALLED,
+        NULL);
+
+static cEnum runModeEnum("RunMode",
+        "normal", Cmdenv::RUNMODE_NORMAL,
+        "fast", Cmdenv::RUNMODE_FAST,
+        "express", Cmdenv::RUNMODE_EXPRESS,
+        NULL);
+
+//TODO into some utility class
+static char hexToChar(char first, char second)
+{
+    int digit;
+    digit = (first >= 'A' ? ((first & 0xDF) - 'A') + 10 : (first - '0'));
+    digit *= 16;
+    digit += (second >= 'A' ? ((second & 0xDF) - 'A') + 10 : (second - '0'));
+    return static_cast<char>(digit);
+}
+
+//TODO into some utility class
+static std::string urldecode(const std::string& src)
+{
+    std::string result;
+    std::string::const_iterator iter;
+    char c;
+
+    for (iter = src.begin(); iter != src.end(); ++iter)
+    {
+        switch(*iter)
+        {
+            case '+':
+                result.append(1, ' ');
+                break;
+            case '%':
+                if (std::distance(iter, src.end()) >= 2 && opp_isdigit(*(iter + 1)) && opp_isxdigit(*(iter + 2))) {
+                    c = *++iter;
+                    result.append(1, hexToChar(c, *++iter));
+                }
+                else {
+                    result.append(1, '%');
+                }
+                break;
+
+            default:
+                result.append(1, *iter);
+                break;
+        }
+    }
+
+    return result;
+}
 
 Cmdenv::Cmdenv()
 {
@@ -106,6 +187,13 @@ Cmdenv::Cmdenv()
 
     // init config variables that are used even before readOptions()
     opt_autoflush = true;
+
+    opt_updatefreq_fast = 500;
+    opt_updatefreq_express = 1000;
+
+    isConfigRun = false; //TODO check all other new vars too
+
+    lastId = 0;
 }
 
 Cmdenv::~Cmdenv()
@@ -185,152 +273,780 @@ void Cmdenv::askParameter(cPar *par, bool unassigned)
 
 void Cmdenv::run()
 {
-    // '-c' and '-r' option: configuration to activate, and run numbers to run.
-    // Both command-line options take precedence over inifile settings.
-    // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
-    // invokes readOptions()).
+    state = SIM_NONETWORK; //TODO into ctor
+    command = CMD_NONE;
 
-    const char *configname = args->optionValue('c');
-    if (configname)
-        opt_configname = configname;
-    if (opt_configname.empty())
-        opt_configname = "General";
+    httpServer->addHttpRequestHandler(this); //FIXME should go into setup()?
 
-    const char *runstoexec = args->optionValue('r');
-    if (runstoexec)
-        opt_runstoexec = runstoexec;
-
-    // if the list of runs is not given explicitly, must execute all runs
-    if (opt_runstoexec.empty())
+    if (args->optionGiven('w'))
     {
-        int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
-        if (n==0) {
-            ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt_configname.c_str());
+        // interactive mode: wait for commands
+        processHttpRequests(true);
+    }
+    else
+    {
+        // '-c' and '-r' option: configuration to activate, and run numbers to run.
+        // Both command-line options take precedence over inifile settings.
+        // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
+        // invokes readOptions()).
+
+        const char *configname = args->optionValue('c');
+        if (configname)
+            opt_configname = configname;
+        if (opt_configname.empty())
+            opt_configname = "General";
+
+        const char *runstoexec = args->optionValue('r');
+        if (runstoexec)
+            opt_runstoexec = runstoexec;
+
+        // if the list of runs is not given explicitly, must execute all runs
+        if (opt_runstoexec.empty())
+        {
+            int n = cfg->getNumRunsInConfig(opt_configname.c_str());  //note: may throw exception
+            if (n==0) {
+                ev.printfmsg("Error: Configuration `%s' generates 0 runs", opt_configname.c_str());
+                exitcode = 1;
+                return;
+            }
+
+            char buf[32];
+            sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
+            opt_runstoexec = buf;
+        }
+
+        EnumStringIterator runiterator(opt_runstoexec.c_str());
+        if (runiterator.hasError())
+        {
+            ev.printfmsg("Error parsing list of runs to execute: `%s'", opt_runstoexec.c_str());
             exitcode = 1;
             return;
         }
 
-        char buf[32];
-        sprintf(buf, (n==0 ? "" : n==1 ? "%d" : "0..%d"), n-1);
-        opt_runstoexec = buf;
-    }
+        // we'll return nonzero exitcode if any run was terminated with error
+        bool had_error = false;
 
-    EnumStringIterator runiterator(opt_runstoexec.c_str());
-    if (runiterator.hasError())
-    {
-        ev.printfmsg("Error parsing list of runs to execute: `%s'", opt_runstoexec.c_str());
-        exitcode = 1;
-        return;
-    }
-
-    // we'll return nonzero exitcode if any run was terminated with error
-    bool had_error = false;
-
-    for (; runiterator()!=-1; runiterator++)
-    {
-        int runnumber = runiterator();
-        bool setupnetwork_done = false;
-        bool startrun_done = false;
-        try
+        for (; runiterator()!=-1; runiterator++)
         {
-            ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runnumber);
-            ::fflush(fout);
-
-            cfg->activateConfig(opt_configname.c_str(), runnumber);
-
-            const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
-            if (itervars && strlen(itervars)>0)
-                ::fprintf(fout, "Scenario: %s\n", itervars);
-            ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
-
-            //cfg->dump();
-
-            readPerRunOptions();
-
-            // find network
-            cModuleType *network = resolveNetwork(opt_network_name.c_str());
-            ASSERT(network);
-
-            // set up network
-            ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
-            ::fflush(fout);
-
-            setupNetwork(network);
-            setupnetwork_done = true;
-
-            // prepare for simulation run
-            ::fprintf(fout, "Initializing...\n");
-            ::fflush(fout);
-
-            disable_tracing = opt_expressmode;
-            startRun();
-            startrun_done = true;
-
-            // run the simulation
-            ::fprintf(fout, "\nRunning simulation...\n");
-            ::fflush(fout);
-
-            // simulate() should only throw exception if error occurred and
-            // finish() should not be called.
-            notifyListeners(LF_ON_SIMULATION_START);
-            simulate();
-            disable_tracing = false;
-
-            ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
-            ::fflush(fout);
-            simulation.callFinish();
-            flushLastLine();
-
-            checkFingerprint();
-
-            notifyListeners(LF_ON_SIMULATION_SUCCESS);
-        }
-        catch (std::exception& e)
-        {
-            had_error = true;
-            disable_tracing = false;
-            stoppedWithException(e);
-            notifyListeners(LF_ON_SIMULATION_ERROR);
-            displayException(e);
-        }
-
-        // call endRun()
-        if (startrun_done)
-        {
+            int runnumber = runiterator();
+            bool setupnetwork_done = false;
+            bool startrun_done = false;
             try
             {
-                endRun();
+                ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runnumber);
+                ::fflush(fout);
+
+                cfg->activateConfig(opt_configname.c_str(), runnumber);
+
+                const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
+                if (itervars && strlen(itervars)>0)
+                    ::fprintf(fout, "Scenario: %s\n", itervars);
+                ::fprintf(fout, "Assigned runID=%s\n", cfg->getVariable(CFGVAR_RUNID));
+
+                //cfg->dump();
+
+                readPerRunOptions();
+
+                // find network
+                cModuleType *network = resolveNetwork(opt_network_name.c_str());
+                ASSERT(network);
+
+                // set up network
+                ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
+                ::fflush(fout);
+
+                setupNetwork(network);
+                setupnetwork_done = true;
+
+                // prepare for simulation run
+                ::fprintf(fout, "Initializing...\n");
+                ::fflush(fout);
+
+                disable_tracing = opt_expressmode;
+                startRun();
+                startrun_done = true;
+
+                // run the simulation
+                ::fprintf(fout, "\nRunning simulation...\n");
+                ::fflush(fout);
+
+                // simulate() should only throw exception if error occurred and
+                // finish() should not be called.
+                notifyListeners(LF_ON_SIMULATION_START);
+                simulate();
+                disable_tracing = false;
+
+                ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
+                ::fflush(fout);
+                simulation.callFinish();
+                flushLastLine();
+
+                checkFingerprint();
+
+                notifyListeners(LF_ON_SIMULATION_SUCCESS);
             }
             catch (std::exception& e)
             {
                 had_error = true;
-                displayException(e);
-            }
-        }
-
-        // delete network
-        if (setupnetwork_done)
-        {
-            try
-            {
-                simulation.deleteNetwork();
-            }
-            catch (std::exception& e)
-            {
-                had_error = true;
+                disable_tracing = false;
+                stoppedWithException(e);
                 notifyListeners(LF_ON_SIMULATION_ERROR);
                 displayException(e);
             }
+
+            // call endRun()
+            if (startrun_done)
+            {
+                try
+                {
+                    endRun();
+                }
+                catch (std::exception& e)
+                {
+                    had_error = true;
+                    notifyListeners(LF_ON_SIMULATION_ERROR);
+                    displayException(e);
+                }
+            }
+
+            // delete network
+            if (setupnetwork_done)
+            {
+                try
+                {
+                    simulation.deleteNetwork();
+                }
+                catch (std::exception& e)
+                {
+                    had_error = true;
+                    notifyListeners(LF_ON_SIMULATION_ERROR);
+                    displayException(e);
+                }
+            }
+
+            // skip further runs if signal was caught
+            if (sigint_received)
+                break;
         }
 
-        // skip further runs if signal was caught
-        if (sigint_received)
-            break;
+        ::fflush(fout);
+
+        exitcode = had_error ? 1 : sigint_received ? 2 : 0;
+    }
+}
+
+void Cmdenv::processHttpRequests(bool blocking)
+{
+    //FIXME observe "blocking" flag!
+    //FIXME handle exceptions! (store them, and return them when status is requested)
+    for (;;)
+    {
+        while (command == CMD_NONE) {
+            bool didSomething = httpServer->handleOneRequest(blocking);
+            if (!blocking && !didSomething)
+                return;
+        }
+
+        int currentCommand = command;
+        command = CMD_NONE;
+
+        printf("command=%d\n", currentCommand);
+        if (currentCommand == CMD_QUIT) {
+            return; //XXX set some "should_exit" flag like Tkenv?
+        }
+        else if (currentCommand == CMD_SETUPNETWORK) {
+            const char *networkName = commandArgs["network"].c_str();
+            newNetwork(networkName);
+        }
+        else if (currentCommand == CMD_SETUPRUN) {
+            const char *configName = commandArgs["config"].c_str();
+            int runNumber = atoi(commandArgs["run"].c_str());
+            newRun(configName, runNumber);
+        }
+        else if (currentCommand == CMD_REBUILD) {
+            rebuildSim();
+        }
+        else if (currentCommand == CMD_STEP) {
+            doOneStep();
+        }
+        else if (currentCommand == CMD_RUN) {
+            //TODO exception handling!
+            RunMode mode = (RunMode)runModeEnum.lookup(commandArgs["mode"].c_str(), RUNMODE_NONE);
+            simtime_t untilTime = commandArgs["utime"]=="" ? 0 : STR_SIMTIME(commandArgs["utime"].c_str());
+            eventnumber_t untilEventnum = commandArgs["uevent"]=="" ? 0 : opp_atol(commandArgs["uevent"].c_str());
+            cMessage *untilMsg = commandArgs["umsg"]=="" ? NULL : check_and_cast<cMessage*>(getObjectById(opp_atol(commandArgs["umsg"].c_str())));
+            cModule *untilModule = commandArgs["umod"]=="" ? NULL : check_and_cast<cModule*>(getObjectById(opp_atol(commandArgs["umod"].c_str())));
+            runSimulation(mode, untilTime, untilEventnum, untilMsg, untilModule);
+        }
+        else if (currentCommand == CMD_STOP) {
+            setStopSimulationFlag();
+        }
+        else if (currentCommand == CMD_FINISH) {
+            finishSimulation();
+        }
+        else {
+            ASSERT(false);
+        }
+    }
+}
+
+bool Cmdenv::handle(cHttpRequest *request)
+{
+    printf("%s %s %s\n", request->getRequestMethod(), request->getUri(), request->getQueryString());
+
+    //TODO: rewrite HttpServer so it directly uses mongoose's url-based callback registration...
+    if (strcmp(request->getRequestMethod(), "GET") != 0 || strncmp(request->getUri(), "/sim", 4) !=0)
+        return false;
+
+    //TODO: parse request args into std::map, etc
+    const char *uri = request->getUri();
+    const char *query = request->getQueryString();
+    ASSERT2(command == CMD_NONE, "previous command not marked as done yet");
+
+    // parse query string into commandArgs[]
+    commandArgs.clear();
+    StringTokenizer tokenizer(request->getQueryString(), "&");
+    while (tokenizer.hasMoreTokens())
+    {
+        const char *token = tokenizer.nextToken();
+        const char *eqPtr = strchr(token, '=');
+        if (!eqPtr)
+            commandArgs[token] = "";
+        else
+            commandArgs[std::string(token, eqPtr-token)] = urldecode(eqPtr + 1);
     }
 
-    ::fflush(fout);
+    const char *OK_STATUS = "HTTP/1.0 200 OK\n";
 
-    exitcode = had_error ? 1 : sigint_received ? 2 : 0;
+    //XXX why beginswith?
+    if (opp_stringbeginswith(uri, "/sim/setupNetwork")) {
+        //TODO check state!
+        command = CMD_SETUPNETWORK;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/setupRun")) {
+        //TODO check state!
+        command = CMD_SETUPRUN;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/rebuild")) {
+        //TODO check state!
+        command = CMD_REBUILD;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/step")) {
+        //TODO check state!
+        command = CMD_STEP;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/run")) {
+        //TODO check state!
+        command = CMD_RUN;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/stop")) {
+        //TODO check state!
+        command = CMD_STOP;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/callFinish")) {
+        //TODO check state!
+        command = CMD_FINISH;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/quit")) {
+        //TODO check state!
+        command = CMD_QUIT;
+        request->print(OK_STATUS);
+    }
+    else if (opp_stringbeginswith(uri, "/sim/status")) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        JsonBox::Object result;
+        result["pid"] = JsonBox::Value(getpid());
+        result["state"] = JsonBox::Value(stateEnum.getStringFor(state));
+        if (state != SIM_NONETWORK) {
+            ASSERT(simulation.getSystemModule());
+            cConfigurationEx *cfg = getConfigEx();
+            result["config"] = JsonBox::Value(cfg->getActiveConfigName());
+            result["run"] = JsonBox::Value(cfg->getActiveRunNumber());
+            result["network"] = JsonBox::Value(simulation.getNetworkType()->getName());
+            result["eventnumber"] = JsonBox::Value((int)simulation.getEventNumber()); //FIXME lossy conversion! int64 -> int
+            result["simtime"] = JsonBox::Value(SIMTIME_STR(simTime())); //FIXME goes through as string!
+        }
+
+        std::stringstream ss;
+        JsonBox::Value(result).writeToStream(ss, true, false);  //TODO add .str() to JSON classes...
+        request->print(ss.str().c_str());
+    }
+    else if (opp_stringbeginswith(uri, "/sim/enumerateConfigs")) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        JsonBox::Array result;
+        cConfigurationEx *cfg = getConfigEx();
+        std::vector<std::string> configNames = cfg->getConfigNames();
+        for (int i = 0; i < (int)configNames.size(); i++) {
+            JsonBox::Object jconfig;
+            std::string configName = configNames[i];
+            jconfig["name"] = JsonBox::Value(configName);
+            jconfig["description"] = JsonBox::Value(cfg->getConfigDescription(configName.c_str()));
+            jconfig["numRuns"] = JsonBox::Value(cfg->getNumRunsInConfig(configName.c_str()));
+            JsonBox::Array jbaseConfigs;
+            std::vector<std::string> baseConfigs = cfg->getBaseConfigs(configName.c_str());
+            for (int j = 0; (int)j < baseConfigs.size(); j++)
+                jbaseConfigs.push_back(baseConfigs[j]);
+            jconfig["extends"] = jbaseConfigs;
+            result.push_back(jconfig);
+        }
+
+        std::stringstream ss;
+        JsonBox::Value(result).writeToStream(ss, true, false);  //TODO add .str() to JSON classes...
+        request->print(ss.str().c_str());
+    }
+    else if (opp_stringbeginswith(uri, "/sim/getRootObjectIds")) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        JsonBox::Object result;
+        result["simulation"] = JsonBox::Value(getIdForObject(&simulation));
+        result["fes"] = JsonBox::Value(getIdForObject(&simulation.msgQueue));
+        result["systemModule"] = JsonBox::Value(getIdForObject(simulation.getSystemModule()));
+        result["defaultList"] = JsonBox::Value(getIdForObject(&defaultList));
+        result["componentTypes"] = JsonBox::Value(getIdForObject(componentTypes.getInstance()));
+        result["nedFunctions"] = JsonBox::Value(getIdForObject(nedFunctions.getInstance()));
+        result["classes"] = JsonBox::Value(getIdForObject(classes.getInstance()));
+        result["enums"] = JsonBox::Value(getIdForObject(enums.getInstance()));
+        result["classDescriptors"] = JsonBox::Value(getIdForObject(classDescriptors.getInstance()));
+        result["configOptions"] = JsonBox::Value(getIdForObject(configOptions.getInstance()));
+        result["resultFilters"] = JsonBox::Value(getIdForObject(resultFilters.getInstance()));
+        result["resultRecorders"] = JsonBox::Value(getIdForObject(resultRecorders.getInstance()));
+
+        std::stringstream ss;
+        JsonBox::Value(result).writeToStream(ss, true, false);
+        request->print(ss.str().c_str());
+    }
+    else if (opp_stringbeginswith(uri, "/sim/getObjectInfo")) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        std::string ids = commandArgs["ids"];
+        JsonBox::Object result;
+        StringTokenizer tokenizer(ids.c_str(), ",");
+        while (tokenizer.hasMoreTokens())
+        {
+             std::string id = tokenizer.nextToken();
+             cObject *obj = getObjectById(atol(id.c_str()));
+             if (obj)
+             {
+                 JsonBox::Object tmp;
+                 tmp["name"] = JsonBox::Value(obj->getName());
+                 tmp["fullName"] = JsonBox::Value(obj->getFullName());
+                 tmp["fullPath"] = JsonBox::Value(obj->getFullPath());
+                 tmp["className"] = JsonBox::Value(obj->getClassName());
+                 tmp["knownBaseClass"] = JsonBox::Value(getKnownBaseClass(obj));
+                 tmp["info"] = JsonBox::Value(obj->info());
+                 tmp["owner"] = JsonBox::Value(getIdForObject(obj->getOwner()));
+                 cClassDescriptor *desc = obj->getDescriptor();
+                 const char *icon = desc ? desc->getProperty("icon") : NULL;
+                 tmp["icon"] = JsonBox::Value(icon ? icon : "");
+                 result[id] = tmp;
+             }
+        }
+
+        std::stringstream ss;
+        JsonBox::Value(result).writeToStream(ss, true, false);
+        request->print(ss.str().c_str());
+    }
+    else if (opp_stringbeginswith(uri, "/sim/getObjectChildren")) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        std::string ids = commandArgs["ids"];
+        JsonBox::Object result;
+        StringTokenizer tokenizer(ids.c_str(), ",");
+        while (tokenizer.hasMoreTokens())
+        {
+             std::string id = tokenizer.nextToken();
+             cObject *obj = getObjectById(atol(id.c_str()));
+             if (obj)
+             {
+                 cCollectChildrenVisitor visitor(obj);
+                 visitor.process(obj);
+
+                 JsonBox::Array tmp;
+                 for (int i = 0; i < visitor.getArraySize(); i++)
+                     tmp.push_back(JsonBox::Value(getIdForObject(visitor.getArray()[i])));
+                 result[id] = tmp;
+             }
+        }
+
+        std::stringstream ss;
+        JsonBox::Value(result).writeToStream(ss, true, false);
+        request->print(ss.str().c_str());
+    }
+    else if (opp_stringbeginswith(uri, "/sim/getObjectFields")) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        std::string ids = commandArgs["ids"];
+        JsonBox::Object result;
+        StringTokenizer tokenizer(ids.c_str(), ",");
+        while (tokenizer.hasMoreTokens())
+        {
+             std::string id = tokenizer.nextToken();
+             cObject *obj = getObjectById(atol(id.c_str()));
+             if (obj)
+             {
+                 cClassDescriptor *desc = obj->getDescriptor();
+                 if (desc)
+                 {
+                     JsonBox::Object jObject;
+                     JsonBox::Array jFields;
+                     //TODO serialize baseclass, properties, etc too
+                     for (int fld = 0; fld < desc->getFieldCount(obj); fld++)
+                     {
+                         JsonBox::Object jField;
+                         jField["name"] = JsonBox::Value(desc->getFieldName(obj, fld));
+                         jField["type"] = JsonBox::Value(desc->getFieldTypeString(obj, fld));
+                         jField["declaredOn"] = JsonBox::Value(desc->getFieldDeclaredOn(obj, fld));
+                         if (desc->getFieldIsArray(obj, fld))
+                             jField["isArray"] = 1;
+                         if (desc->getFieldIsCompound(obj, fld))
+                             jField["isCompound"] = 1;
+                         if (desc->getFieldIsPointer(obj, fld))
+                             jField["isPointer"] = 1;
+                         if (desc->getFieldIsCObject(obj, fld))
+                             jField["isCObject"] = 1;
+                         if (desc->getFieldIsCObject(obj, fld))
+                             jField["isCObject"] = 1;
+                         if (desc->getFieldIsCOwnedObject(obj, fld))
+                             jField["isCOwnedObject"] = 1;
+                         if (desc->getFieldIsEditable(obj, fld))
+                             jField["isEditable"] = 1;
+                         if (desc->getFieldStructName(obj, fld))
+                             jField["structName"] = JsonBox::Value(desc->getFieldStructName(obj, fld));
+                         //TODO: virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0; -- use known property names?
+                         //TODO virtual const char *getFieldStructName(void *object, int field) const = 0;
+                         //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
+                         if (!desc->getFieldIsArray(obj, fld)) {
+                             if (!desc->getFieldIsCompound(obj, fld))
+                                 jField["value"] = JsonBox::Value(desc->getFieldAsString(obj, fld, 0));
+                             else {
+                                 void *ptr = desc->getFieldStructPointer(obj, fld, 0);
+                                 if (desc->getFieldIsCObject(obj, fld)) {
+                                     cObject *o = (cObject *)ptr;
+                                     jField["value"] = JsonBox::Value(getIdForObject(o));
+                                 }
+                                 else {
+                                     jField["value"] = JsonBox::Value("...some struct..."); //XXX look up using getFieldStructName() -- recursive!
+                                 }
+                             }
+                         } else {
+                             int n = desc->getFieldArraySize(obj, fld);
+                             JsonBox::Array jValues;
+                             for (int i = 0; i < n; i++) {
+                                 if (!desc->getFieldIsCompound(obj, fld))
+                                     jValues.push_back(JsonBox::Value(desc->getFieldAsString(obj, fld, i)));
+                                 else {
+                                     void *ptr = desc->getFieldStructPointer(obj, fld, i);
+                                     if (desc->getFieldIsCObject(obj, fld)) {
+                                         cObject *o = (cObject *)ptr;
+                                         jValues.push_back(JsonBox::Value(getIdForObject(o)));
+                                     }
+                                     else {
+                                         jValues.push_back(JsonBox::Value("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
+                                     }
+                                 }
+                             }
+                             jField["value"] = jValues;
+                         }
+                         jFields.push_back(jField);
+                     }
+                     jObject["fields"] = jFields;
+                     result[id] = jObject;
+                 }
+             }
+        }
+
+        std::stringstream ss;
+        JsonBox::Value(result).writeToStream(ss, true, false);
+        request->print(ss.str().c_str());
+    }
+    else {
+        return false;
+    }
+
+    return true; // handled
+}
+
+const char *Cmdenv::getKnownBaseClass(cObject *object)
+{
+    if (dynamic_cast<cModule *>(object) && ((cModule *)object)->isPlaceholder())
+        return"cPlaceholderModule";
+    else if (dynamic_cast<cSimpleModule *>(object))
+        return "cSimpleModule";
+    else if (dynamic_cast<cCompoundModule *>(object))
+        return "cCompoundModule";
+    else if (dynamic_cast<cPacket *>(object))
+        return "cPacket";
+    else if (dynamic_cast<cMessage *>(object))
+        return "cMessage";
+    else if (dynamic_cast<cArray *>(object))
+        return "cArray";
+    else if (dynamic_cast<cQueue *>(object))
+        return "cQueue";
+    else if (dynamic_cast<cGate *>(object))
+        return "cGate";
+    else if (dynamic_cast<cPar *>(object))
+        return "cPar";
+    else if (dynamic_cast<cChannel *>(object))
+        return "cChannel";
+    else if (dynamic_cast<cOutVector *>(object))
+        return "cOutVector";
+    else if (dynamic_cast<cDensityEstBase *>(object))
+        return "cDensityEstBase";
+    else if (dynamic_cast<cStatistic *>(object))
+        return "cStatistic";
+    else if (dynamic_cast<cMessageHeap *>(object))
+        return "cMessageHeap";
+    else if (dynamic_cast<cWatchBase *>(object))
+        return "cWatchBase";
+    else if (dynamic_cast<cOwnedObject*>(object))
+        return "cOwnedObject";
+    else if (dynamic_cast<cNamedObject*>(object))
+        return "cNamedObject";
+    else
+        return "cdObject";
+}
+
+void Cmdenv::newNetwork(const char *networkname)
+{
+    try
+    {
+        // finish & cleanup previous run if we haven't done so yet
+        if (state != SIM_NONETWORK)
+        {
+            if (state != SIM_FINISHCALLED)
+                endRun();
+            simulation.deleteNetwork();
+            state = SIM_NONETWORK;
+        }
+
+        cModuleType *network = resolveNetwork(networkname);
+        ASSERT(network);
+
+        // set up new network with config General.
+        getConfigEx()->activateConfig("General", 0);
+        readPerRunOptions();
+        opt_network_name = network->getName();  // override config setting
+        setupNetwork(network);
+        startRun();
+
+        state = SIM_READY;
+        isConfigRun = false;
+    }
+    catch (std::exception& e)
+    {
+        notifyListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+        state = SIM_ERROR;
+    }
+}
+
+void Cmdenv::newRun(const char *configname, int runnumber)
+{
+    try
+    {
+        // finish & cleanup previous run if we haven't done so yet
+        if (state != SIM_NONETWORK)
+        {
+            if (state != SIM_FINISHCALLED)
+                endRun();
+            simulation.deleteNetwork();
+            state = SIM_NONETWORK;
+        }
+
+        // set up new network
+        getConfigEx()->activateConfig(configname, runnumber);
+        readPerRunOptions();
+
+        if (opt_network_name.empty())
+        {
+            //TODO confirm("No network specified in the configuration.");
+            return;
+        }
+
+        cModuleType *network = resolveNetwork(opt_network_name.c_str());
+        ASSERT(network);
+
+        setupNetwork(network);
+        startRun();
+
+        state = SIM_READY;
+        isConfigRun = true;
+    }
+    catch (std::exception& e)
+    {
+        notifyListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+        state = SIM_ERROR;
+    }
+}
+
+void Cmdenv::rebuildSim()
+{
+    if (isConfigRun)
+         newRun(std::string(getConfigEx()->getActiveConfigName()).c_str(), getConfigEx()->getActiveRunNumber());
+    else if (simulation.getNetworkType()!=NULL)
+         newNetwork(simulation.getNetworkType()->getName());
+    else
+         /*nothing*/;
+}
+
+void Cmdenv::doOneStep()
+{
+    ASSERT(state==SIM_READY);
+
+    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+
+    state = SIM_RUNNING;
+    startClock();
+    notifyListeners(LF_ON_SIMULATION_RESUME);
+    try
+    {
+        cEvent *event = simulation.takeNextEvent();
+        if (event) {
+//            if (opt_eventbanners)
+//                if (!event->isMessage() || static_cast<cMessage*>(event)->getArrivalModule()->isEvEnabled())
+//                    printEventBanner(event);
+            simulation.executeEvent(event);
+        }
+
+        state = SIM_READY;
+        notifyListeners(LF_ON_SIMULATION_PAUSE);
+    }
+    catch (cTerminationException& e)
+    {
+        state = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
+        notifyListeners(LF_ON_SIMULATION_SUCCESS);
+        displayException(e);
+    }
+    catch (std::exception& e)
+    {
+        state = SIM_ERROR;
+        stoppedWithException(e);
+        notifyListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+    stopClock();
+    stopsimulation_flag = false;
+
+    if (state == SIM_TERMINATED)
+    {
+        // call wrapper around simulation.callFinish() and simulation.endRun()
+        //
+        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
+        // called yet, because we want to allow the user to force finish() from
+        // the GUI -- and finish() has to precede endRun(). endRun() will be called
+        // just before a new network gets set up, or on Tkenv shutdown.
+        //
+        finishSimulation();
+    }
+}
+
+/*
+ * TODO:
+ * futtatasi modok:
+ *   EXPRESS: mint most (EV logging off, idokozonkent processHttpRequests)
+ *   FAST:    EV logging on, x eventenkent / masodpercenkent processHttpRequests()
+ *   NORMAL:  EV logging on, minden event utan processHttpRequests()
+ * nem fontos hogy kozben lehessen valtogatni! stop + run szinten muxik!
+ * UI update idejere megallitjuk (eleve until darabkakkal kell futtatni!)
+ * until-t mindegyik tamogatja (simtime, eventnumber, msg, module, PLUS: elapsed!!! [i.e. run for 2s])
+ */
+void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
+{
+    ASSERT(state==SIM_READY);
+
+    runMode = mode;
+    rununtil_time = until_time;
+    rununtil_eventnum = until_eventnum;
+    rununtil_msg = until_msg;
+    rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+
+    stopsimulation_flag = false;
+
+    state = SIM_RUNNING;
+    startClock();
+    notifyListeners(LF_ON_SIMULATION_RESUME);
+    try
+    {
+        // funky while loop to handle switching to and from EXPRESS mode....
+        bool cont = true;
+        while (cont)
+        {
+            if (runMode == RUNMODE_EXPRESS)
+                cont = doRunSimulationExpress();
+            else
+                cont = doRunSimulation();
+        }
+        state = SIM_READY;
+        notifyListeners(LF_ON_SIMULATION_PAUSE);
+    }
+    catch (cTerminationException& e)
+    {
+        state = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
+        notifyListeners(LF_ON_SIMULATION_SUCCESS);
+        displayException(e);
+    }
+    catch (std::exception& e)
+    {
+        state = SIM_ERROR;
+        stoppedWithException(e);
+        notifyListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+    stopClock();
+    stopsimulation_flag = false;
+
+    disable_tracing = false;
+    rununtil_msg = NULL;
+
+    if (state==SIM_TERMINATED)
+    {
+        // call wrapper around simulation.callFinish() and simulation.endRun()
+        //
+        // NOTE: if the simulation is in SIM_ERROR, we don't want endRun() to be
+        // called yet, because we want to allow the user to force finish() from
+        // the GUI -- and finish() has to precede endRun(). endRun() will be called
+        // just before a new network gets set up, or on Tkenv shutdown.
+        //
+        finishSimulation();
+    }
+}
+
+void Cmdenv::setSimulationRunMode(RunMode mode)
+{
+    // This function (and the next one too) is called while runSimulation() is
+    // underway, from Tcl code that gets a chance to run via the
+    // Tcl_Eval(interp, "update") commands
+    runMode = mode;
+}
+
+void Cmdenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
+{
+    rununtil_time = until_time;
+    rununtil_eventnum = until_eventnum;
+    rununtil_msg = until_msg;
+}
+
+void Cmdenv::setSimulationRunUntilModule(cModule *until_module)
+{
+    rununtil_module = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -344,7 +1060,240 @@ inline bool elapsed(long millis, struct timeval& since)
     return ret;
 }
 
-void Cmdenv::simulate()
+inline void resetElapsedTime(struct timeval& t)
+{
+    gettimeofday(&t, NULL);
+}
+
+static bool moduleContains(cModule *potentialparent, cModule *mod)
+{
+   while (mod)
+   {
+       if (mod == potentialparent)
+           return true;
+       mod = mod->getParentModule();
+   }
+   return false;
+}
+
+bool Cmdenv::doRunSimulation()
+{
+    //
+    // IMPORTANT:
+    // The following variables may change during execution (as a result of user interaction
+    // during Tcl_Eval("update"):
+    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - stopsimulation_flag
+    //
+    Speedometer speedometer;
+    speedometer.start(simulation.getSimTime());
+    disable_tracing = false;
+    bool firstevent = true;
+
+    struct timeval last_update;
+    gettimeofday(&last_update, NULL);
+
+    while(1)
+    {
+        if (runMode == RUNMODE_EXPRESS)
+            return true;  // should continue, but in a different mode
+
+        cEvent *event = simulation.takeNextEvent();
+        if (!event) break; // scheduler interrupted (parsim)
+
+        // "run until message": stop if desired event was reached
+        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+
+        // if stepping locally in module, we stop both immediately
+        // *before* and *after* executing the event in that module,
+        // but we always execute at least one event
+        cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
+        bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
+        if (untilmodule_reached && !firstevent)
+            break;
+        firstevent = false;
+
+        bool frequent_updates = (runMode==RUNMODE_NORMAL);
+
+        speedometer.addEvent(simulation.getSimTime());
+
+        // do a simulation step
+//        if (opt_event_banners)
+//            printEventBanner(simulation.msgQueue.peekFirst(), mod);
+
+        simulation.executeEvent(event);
+
+        // flush so that output from different modules don't get mixed
+        flushLastLine();
+
+        // display update
+        if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, last_update)))
+        {
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
+            {
+                speedometer.beginNewInterval();
+//                updatePerformanceDisplay(speedometer);
+            }
+//            Tcl_Eval(interp, "update");
+            processHttpRequests(false);
+            resetElapsedTime(last_update); // exclude UI update time [bug #52]
+        }
+
+        // exit conditions
+        if (untilmodule_reached) break;
+        if (stopsimulation_flag) break;
+        if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
+        if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
+
+        checkTimeLimits();
+    }
+    return false;
+}
+
+bool Cmdenv::doRunSimulationExpress()
+{
+    //
+    // IMPORTANT:
+    // The following variables may change during execution (as a result of user interaction
+    // during Tcl_Eval("update"):
+    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - stopsimulation_flag
+    //  - opt_expressmode_autoupdate
+    //
+    // EXPRESS does not support rununtil_module!
+    //
+
+    // update, just to get the above notice displayed
+//    Tcl_Eval(interp, "update");
+
+    // OK, let's begin
+    Speedometer speedometer;
+    speedometer.start(simulation.getSimTime());
+    disable_tracing = true;
+
+    struct timeval last_update;
+    gettimeofday(&last_update, NULL);
+
+    do
+    {
+        cEvent *event = simulation.takeNextEvent();
+        if (!event) break; // scheduler interrupted (parsim)
+
+        // "run until message": stop if desired event was reached
+        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+
+        speedometer.addEvent(simulation.getSimTime());
+
+        simulation.executeEvent(event);
+
+        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, last_update))
+        {
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
+            {
+                speedometer.beginNewInterval();
+//                updatePerformanceDisplay(speedometer);
+            }
+//            Tcl_Eval(interp, "update");
+            processHttpRequests(false);
+            resetElapsedTime(last_update); // exclude UI update time [bug #52]
+            if (runMode != RUNMODE_EXPRESS)
+                return true;  // should continue, but in a different mode
+        }
+        checkTimeLimits();
+    }
+    while( !stopsimulation_flag &&
+           (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
+           (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
+         );
+    return false;
+}
+
+void Cmdenv::finishSimulation()
+{
+    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
+    ASSERT(state==SIM_READY || state==SIM_TERMINATED || state==SIM_ERROR);
+
+    if (state == SIM_READY)
+    {
+        cTerminationException e("The user has finished the simulation");
+        stoppedWithTerminationException(e);
+    }
+
+//    logBuffer.addInfo("{** Calling finish() methods of modules\n}");
+//    printLastLogLine();
+
+    // now really call finish()
+    try
+    {
+        simulation.callFinish();
+        flushLastLine();
+
+        checkFingerprint();
+    }
+    catch (std::exception& e)
+    {
+        stoppedWithException(e);
+        notifyListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+
+    // then endrun
+    try
+    {
+        endRun();
+    }
+    catch (std::exception& e)
+    {
+        notifyListeners(LF_ON_SIMULATION_ERROR);
+        displayException(e);
+    }
+    state = SIM_FINISHCALLED;
+}
+
+
+cObject *Cmdenv::getObjectById(long id)
+{
+    if (id == 0)
+        return NULL;
+    std::map<long,cObject*>::iterator it = idToObjectMap.find(id);
+    return it == idToObjectMap.end() ? NULL : it->second;
+}
+
+long Cmdenv::getIdForObject(cObject *obj)
+{
+    if (obj == NULL)
+        return 0;
+
+    std::map<cObject*,long>::iterator it = objectToIdMap.find(obj);
+    if (it == objectToIdMap.end())
+    {
+        int id = ++lastId;
+        ::printf("%ld --> (%s)%s\n", id, obj->getClassName(), obj->getFullPath().c_str());
+        objectToIdMap[obj] = id;
+        idToObjectMap[id] = obj;
+        return id;
+    }
+    else
+        return it->second;
+}
+
+void Cmdenv::objectDeleted(cObject *obj)
+{
+    EnvirBase::objectDeleted(obj);
+
+    if (!objectToIdMap.empty()) // this method has to have minimal overhead if there are no object queries (maps are empty)
+    {
+        std::map<cObject*,long>::iterator it = objectToIdMap.find(obj);
+        if (it != objectToIdMap.end())
+        {
+            long id = it->second;
+            objectToIdMap.erase(it);
+            idToObjectMap.erase(idToObjectMap.find(id)); //XXX this lookup could be eliminated if objectToIdMap contained idToObjectMap::iterator as value!
+        }
+    }
+}
+
+void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesting bits to other methods!
 {
     // implement graceful exit when Ctrl-C is hit during simulation. We want
     // to finish the current event, then normally exit via callFinish() etc
@@ -386,6 +1335,10 @@ void Cmdenv::simulate()
                 checkTimeLimits();
                 if (sigint_received)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
+
+                //TODO probably not after each event!
+                while (httpServer && httpServer->handleOneRequest(false))
+                    ;
             }
         }
         else
@@ -416,6 +1369,10 @@ void Cmdenv::simulate()
                 checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
                 if (sigint_received)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
+
+                //TODO probably not after each event!
+                while (httpServer && httpServer->handleOneRequest(false))
+                    ;
             }
         }
     }
@@ -685,6 +1642,8 @@ void Cmdenv::simulationEvent(cEvent *event)
 void Cmdenv::printUISpecificHelp()
 {
     ev << "Cmdenv-specific options:\n";
+    ev << "  -w            Wait for commands over HTTP instead of starting a simulation\n";
+    ev << "                interactively. Overrides -c, -r, -a, -x, -g, -G, -X options.\n";
     ev << "  -c <configname>\n";
     ev << "                Select a given configuration for execution. With inifile-based\n";
     ev << "                configuration database, this selects the [Config <configname>]\n";

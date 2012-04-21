@@ -18,8 +18,10 @@
 #ifndef __CMDENV_H
 #define __CMDENV_H
 
+#include <map>
 #include "csimulation.h"
 #include "envirbase.h"
+#include "httpserver.h"
 
 NAMESPACE_BEGIN
 
@@ -28,9 +30,47 @@ class Speedometer;
 /**
  * Command line user interface.
  */
-class CMDENV_API Cmdenv : public EnvirBase
+class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
 {
-   protected:
+    public:
+       /**
+        * Application state.
+        * State transitions:
+        *    NONETWORK -> READY <-> RUNNING -> TERMINATED -> FINISHCALLED -> NONETWORK
+        * plus:
+        *    READY -> FINISHCALLED
+        *    (any-state) -> ERROR -> NONET
+        * TODO: BUSY needed?
+        */
+       enum State {
+           SIM_NONETWORK = 0,
+           SIM_READY,
+           SIM_RUNNING,
+           SIM_TERMINATED,
+           SIM_ERROR,
+           SIM_FINISHCALLED
+       };
+
+       enum RunMode {
+           RUNMODE_NONE,
+           RUNMODE_NORMAL,
+           RUNMODE_FAST,
+           RUNMODE_EXPRESS
+       };
+
+       enum Command {
+           CMD_NONE = 0,
+           CMD_SETUPNETWORK,
+           CMD_SETUPRUN,
+           CMD_REBUILD,
+           CMD_STEP,
+           CMD_RUN,
+           CMD_STOP,
+           CMD_FINISH,
+           CMD_QUIT
+       };
+
+    protected:
      // new simulation options:
      opp_string opt_configname;
      opp_string opt_runstoexec;
@@ -46,6 +86,30 @@ class CMDENV_API Cmdenv : public EnvirBase
      bool opt_messagetrace; // if normal mode
      long opt_status_frequency_ms; // if express mode
      bool opt_perfdisplay; // if express mode
+
+     long opt_updatefreq_express; //XXX from Tkenv
+     long opt_updatefreq_fast; //XXX from Tkenv
+
+     typedef std::map<std::string,std::string> StringMap;
+
+     State state;                 // simulation state
+     Command command;             // command received via HTTP; set to CMD_NONE when the command has been carried out
+     StringMap commandArgs;       // command args
+
+     RunMode runMode;             // the current mode the simulation is executing under
+     bool isConfigRun;            // true after newRun(), and false after newConfig()
+     simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
+     eventnumber_t rununtil_eventnum;// event number in current "Run Until" execution, or zero
+     cMessage *rununtil_msg;      // stop before this event; also when this message gets canceled
+     cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
+
+     bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
+     timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command  XXX comment
+
+     // object<->id mapping (we don't want to return pointer values to our HTTP client)
+     std::map<cObject*,long> objectToIdMap;
+     std::map<long,cObject*> idToObjectMap;
+     long lastId;
 
      // set to true on SIGINT/SIGTERM signals
      static bool sigint_received;
@@ -69,6 +133,7 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void moduleCreated(cModule *newmodule);
      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
      virtual void simulationEvent(cEvent *event);
+     virtual void objectDeleted(cObject *object);
      virtual bool isGUI() const {return false;}
      virtual cEnvir& flush();
      virtual std::string gets(const char *prompt, const char *defaultReply);
@@ -82,6 +147,30 @@ class CMDENV_API Cmdenv : public EnvirBase
      virtual void readOptions();
      virtual void readPerRunOptions();
      virtual void askParameter(cPar *par, bool unassigned);
+
+     virtual void processHttpRequests(bool blocking);
+     virtual bool handle(cHttpRequest *request); // called back from processHttpRequests()
+
+     // from Tkenv:
+     virtual void newNetwork(const char *networkname);
+     virtual void newRun(const char *configname, int runnumber);
+     virtual void rebuildSim();
+     virtual void doOneStep();
+     virtual void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=NULL, cModule *until_module=NULL);
+     virtual void setSimulationRunMode(RunMode runmode);
+     virtual int getSimulationRunMode() const {return runMode;}
+     virtual void setStopSimulationFlag() {stopsimulation_flag = true;}
+     virtual bool getStopSimulationFlag() {return stopsimulation_flag;}
+     virtual void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
+     virtual void setSimulationRunUntilModule(cModule *until_module);
+     virtual bool doRunSimulation();
+     virtual bool doRunSimulationExpress();
+     virtual void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
+
+     cObject *getObjectById(long id);
+     long getIdForObject(cObject *obj);
+
+     const char *getKnownBaseClass(cObject *object);
 
      // new functions:
      void help();
