@@ -22,6 +22,8 @@
 
 #include <iostream>
 #include "simkerneldefs.h"
+#include "opp_string.h"
+#include "simtime_t.h"
 #include "cobject.h"
 #include "simtime_t.h"
 #include "opp_string.h"
@@ -308,6 +310,64 @@ class SIM_API cISnapshotManager : public cObject, public cISimulationLifetimeLis
     //@}
 };
 
+
+/**
+ * FIXME
+ */
+class SIM_API cHttpRequest
+{
+  public:
+    virtual ~cHttpRequest() {}
+
+    /** Returns "GET", "POST", etc. */
+    virtual const char *getRequestMethod() const = 0;
+
+    /** Returns the normalized request URI */
+    virtual const char *getUri() const = 0;
+
+    /** Returns a pointer to the query string */
+    virtual const char *getQueryString() const = 0;
+
+    /** Returns a pointer to the POST data buffer (not NUL-terminated!) */
+    virtual const char *getPostDataBuffer() const = 0;
+
+    /** Returns the length of the POST data in bytes */
+    virtual int getPostDataLength() const = 0;
+
+    /** Returns the number of HTTP request headers */
+    virtual int getNumHeaders() const = 0;
+
+    /** Returns the name of HTTP header k */
+    virtual const char *getHeaderName(int k) const = 0;
+
+    /** Returns the value of HTTP header k */
+    virtual const char *getHeaderValue(int k) const = 0;
+
+    /** Write a string to the response stream */
+    virtual int print(const char *s) = 0;
+
+    /** Write a string to the response stream */
+    virtual int printf(const char *format, ...) = 0;
+
+    /** Write a byte array to the response stream */
+    virtual int write(void *buffer, size_t bytes) = 0;
+};
+
+
+/**
+ * FIXME to be used with cEnvir; multiple handlers may be registered, 1st one that can handle the request wins
+ */
+class SIM_API cHttpRequestHandler
+{
+  public:
+    virtual ~cHttpRequestHandler() {}
+
+    /**
+     * FIXME if it can handle the request, do it and return true;
+     * otherwise return false.
+     */
+    virtual bool handle(cHttpRequest *request) = 0;
+};
 
 NAMESPACE_END
 

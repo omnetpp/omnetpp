@@ -51,6 +51,7 @@ class cParsimSynchronizer;
 // endif
 class cResultRecorder;
 class SignalSource;
+class cHttpServer;
 
 // assumed maximum length for getFullPath() string.
 // note: this maximum actually not enforced anywhere
@@ -58,7 +59,6 @@ class SignalSource;
 
 // maximum length of string passed in Enter_Method() (longer strings will be truncated)
 #define MAX_METHODCALL 1024
-
 
 /**
  * Abstract base class for the user interface. Concrete user interface
@@ -124,6 +124,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // lifetime listeners
     std::vector<cISimulationLifetimeListener*> listeners;
+
+    // Built-in web server
+    cHttpServer *httpServer;
 
     timeval simbegtime;  // real time when sim. started
     timeval simendtime;  // real time when sim. ended
@@ -226,6 +229,8 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
     virtual int getParsimProcId() const;
     virtual int getParsimNumPartitions() const;
     virtual unsigned long getUniqueNumber();
+    virtual void addHttpRequestHandler(cHttpRequestHandler *p);
+    virtual void removeHttpRequestHandler(cHttpRequestHandler *p);
     virtual bool idle();
 
     virtual void addListener(cISimulationLifetimeListener *listener);

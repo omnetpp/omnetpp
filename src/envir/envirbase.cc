@@ -51,6 +51,8 @@
 #include "cresultrecorder.h"
 #include "resultfilters.h"
 #include "statisticparser.h"
+#include "httpserver.h"
+#include "mongoosehttpserver.h" //XXX not needed if httpserver-class option is implemented
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -69,7 +71,6 @@
 #include "timeutil.h"
 #include "platmisc.h"
 #include "fileutil.h"  // splitFileName
-
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
@@ -207,6 +208,8 @@ EnvirBase::EnvirBase()
     parsimcomm = NULL;
     parsimpartition = NULL;
 #endif
+
+    httpServer = NULL;
 
     exitcode = 0;
 }
@@ -440,6 +443,11 @@ bool EnvirBase::setup()
             }
         }
         simulation.doneLoadingNedFiles();
+
+        //FIXME TODO if webserver enabled:
+        httpServer = new cMongooseHttpServer(); //TODO some factory method or something
+        httpServer->start(getConfig());
+        //FIXME TODO also shutdown
 
         // notify listeners when global setup is complete
         notifyListeners(LF_ON_STARTUP);
@@ -1674,6 +1682,18 @@ unsigned long EnvirBase::getUniqueNumber()
 {
     // TBD check for overflow
     return nextuniquenumber++;
+}
+
+void EnvirBase::addHttpRequestHandler(cHttpRequestHandler *p)
+{
+    if (httpServer)
+        httpServer->addHttpRequestHandler(p);
+}
+
+void EnvirBase::removeHttpRequestHandler(cHttpRequestHandler *p)
+{
+    if (httpServer)
+        httpServer->removeHttpRequestHandler(p);
 }
 
 void EnvirBase::displayException(std::exception& ex)

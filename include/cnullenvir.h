@@ -146,6 +146,8 @@ class SIM_API cNullEnvir : public cEnvir
     virtual int getParsimNumPartitions() const {return 1;}
     virtual unsigned long getUniqueNumber()  {return ++lastnum;}
     virtual bool idle()  {return false;}
+    virtual void addHttpRequestHandler(cHttpRequestHandler *p) {}
+    virtual void removeHttpRequestHandler(cHttpRequestHandler *p) {}
 
     // lifetime listeners
     virtual void addListener(cISimulationLifetimeListener *listener);

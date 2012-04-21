@@ -41,6 +41,7 @@ class cXMLElement;
 class cEnvir;
 class cConfiguration;
 class cConfigurationEx;
+class cHttpRequestHandler;
 
 using std::endl;
 
@@ -718,6 +719,18 @@ class SIM_API cEnvir
      * abort waiting (e.g. pushed the Stop button).
      */
     virtual bool idle() = 0;
+
+    /**
+     * FIXME
+     * If the internal web server is not enabled, this method silently ignores the request.
+     */
+    virtual void addHttpRequestHandler(cHttpRequestHandler *p) = 0;
+
+    /**
+     * FIXME
+     * If the internal web server is not enabled, this method silently ignores the request.
+     */
+    virtual void removeHttpRequestHandler(cHttpRequestHandler *p) = 0;
     //@}
 
     /** @name Lifetime listeners */
