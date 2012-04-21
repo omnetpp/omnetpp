@@ -23,14 +23,14 @@
  */
 
 #ifndef MONGOOSE_HEADER_INCLUDED
-#define	MONGOOSE_HEADER_INCLUDED
+#define MONGOOSE_HEADER_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-struct mg_context;	/* Handle for the HTTP service itself	*/
-struct mg_connection;	/* Handle for the individual connection	*/
+struct mg_context;  /* Handle for the HTTP service itself   */
+struct mg_connection;   /* Handle for the individual connection */
 
 
 /*
@@ -38,22 +38,22 @@ struct mg_connection;	/* Handle for the individual connection	*/
  * It is passed to the user-specified callback function as a parameter.
  */
 struct mg_request_info {
-	char	*request_method;	/* "GET", "POST", etc	*/
-	char	*uri;			/* Normalized URI	*/
-	char	*query_string;		/* \0 - terminated	*/
-	char	*post_data;		/* POST data buffer	*/
-	char	*remote_user;		/* Authenticated user	*/
-	long	remote_ip;		/* Client's IP address	*/
-	int	remote_port;		/* Client's port	*/
-	int	post_data_len;		/* POST buffer length	*/
-	int	http_version_major;
-	int	http_version_minor;
-	int	status_code;		/* HTTP status code	*/
-	int	num_headers;		/* Number of headers	*/
-	struct mg_header {
-		char	*name;		/* HTTP header name	*/
-		char	*value;		/* HTTP header value	*/
-	} http_headers[64];		/* Maximum 64 headers	*/
+    char    *request_method;    /* "GET", "POST", etc   */
+    char    *uri;           /* Normalized URI   */
+    char    *query_string;      /* \0 - terminated  */
+    char    *post_data;     /* POST data buffer */
+    char    *remote_user;       /* Authenticated user   */
+    long    remote_ip;      /* Client's IP address  */
+    int remote_port;        /* Client's port    */
+    int post_data_len;      /* POST buffer length   */
+    int http_version_major;
+    int http_version_minor;
+    int status_code;        /* HTTP status code */
+    int num_headers;        /* Number of headers    */
+    struct mg_header {
+        char    *name;      /* HTTP header name */
+        char    *value;     /* HTTP header value    */
+    } http_headers[64];     /* Maximum 64 headers   */
 };
 
 
@@ -62,7 +62,7 @@ struct mg_request_info {
  * or logging server messages.
  */
 typedef void (*mg_callback_t)(struct mg_connection *,
-		const struct mg_request_info *info, void *user_data);
+        const struct mg_request_info *info, void *user_data);
 
 
 /*
@@ -97,9 +97,9 @@ const char *mg_get_option(const struct mg_context *, const char *option_name);
  * one exception: if "ports" option contains SSL listening ports, a "ssl_cert"
  * option must be set BEFORE the "ports" option.
  * Return value:
- *	-1 if option is unknown
- *	0  if mg_set_option() failed
- *	1  if mg_set_option() succeeded 
+ *  -1 if option is unknown
+ *  0  if mg_set_option() failed
+ *  1  if mg_set_option() succeeded
  */
 int mg_set_option(struct mg_context *, const char *opt_name, const char *value);
 
@@ -113,11 +113,11 @@ int mg_set_option(struct mg_context *, const char *opt_name, const char *value);
  * source tree.
  * If password is not NULL, entry is added (or modified if already exists).
  * If password is NULL, entry is deleted. Return:
- *	1 on success
- *	0 on error 
+ *  1 on success
+ *  0 on error
  */
 int mg_modify_passwords_file(struct mg_context *ctx, const char *file_name,
-		const char *user_name, const char *password);
+        const char *user_name, const char *password);
 
 
 /*
@@ -128,7 +128,7 @@ int mg_modify_passwords_file(struct mg_context *ctx, const char *file_name,
  * handler for this uri_regex is removed.
  */
 void mg_set_uri_callback(struct mg_context *ctx, const char *uri_regex,
-		mg_callback_t func, void *user_data);
+        mg_callback_t func, void *user_data);
 
 
 /*
@@ -141,7 +141,7 @@ void mg_set_uri_callback(struct mg_context *ctx, const char *uri_regex,
  * the request info structure that is passed to the callback.
  */
 void mg_set_error_callback(struct mg_context *ctx, int error_code,
-		mg_callback_t func, void *user_data);
+        mg_callback_t func, void *user_data);
 
 
 /*
@@ -153,7 +153,7 @@ void mg_set_error_callback(struct mg_context *ctx, int error_code,
  * callback must call mg_authorize() if the request is authorized.
  */
 void mg_set_auth_callback(struct mg_context *ctx, const char *uri_regex,
-		mg_callback_t func, void *user_data);
+        mg_callback_t func, void *user_data);
 
 
 /*
@@ -195,6 +195,14 @@ int mg_write(struct mg_connection *, const void *buf, int len);
  */
 int mg_printf(struct mg_connection *, const char *fmt, ...);
 
+/*
+ * Like snprintf(), but never returns negative value, or the value
+ * that is larger than a supplied buffer.
+ *
+ * Made public API by Andras Varga.
+ */
+int mg_vsnprintf(struct mg_connection *conn,
+        char *buf, size_t buflen, const char *fmt, va_list ap);
 
 /*
  * Get the value of particular HTTP header.
@@ -217,10 +225,10 @@ void mg_authorize(struct mg_connection *);
  * Both query string (whatever comes after '?' in the URL) and a POST buffer
  * are scanned. If a variable is specified in both query string and POST
  * buffer, POST buffer wins. Return value:
- *	NULL      if the variable is not found
- *	non-NULL  if found. NOTE: this returned value is dynamically allocated
- *		  and is subject to mg_free() when no longer needed. It is
- *		  an application's responsibility to mg_free() the variable. 
+ *  NULL      if the variable is not found
+ *  non-NULL  if found. NOTE: this returned value is dynamically allocated
+ *        and is subject to mg_free() when no longer needed. It is
+ *        an application's responsibility to mg_free() the variable.
  */
 char *mg_get_var(const struct mg_connection *, const char *var_name);
 
@@ -230,6 +238,15 @@ char *mg_get_var(const struct mg_connection *, const char *var_name);
  */
 void mg_free(char *var);
 
+/*
+ * Process a request from the queue and return TRUE. If the queue is empty,
+ * with blocking=FALSE it will immediately return FALSE, and with blocking=TRUE
+ * it will block waiting for requests for some time, and only return FALSE
+ * after that.
+ *
+ * Author Andras
+ */
+int/*bool*/ mg_process_socket(struct mg_context *ctx, int/*bool*/ blocking);
 
 /*
  * Return Mongoose version.
@@ -247,3 +264,4 @@ void mg_show_usage_string(FILE *fp);
 #endif /* __cplusplus */
 
 #endif /* MONGOOSE_HEADER_INCLUDED */
+
