@@ -40,6 +40,10 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/envirbase.o $O/fsutils.o
       $O/eventlogfilemgr.o $O/runattributes.o $O/intervals.o \
       $O/statisticparser.o $O/visitor.o
 
+#TODO make configurable; put into separate lib? (src/httpserver)
+OBJS += $O/httpserver.o $O/mongoosehttpserver.o $O/mongoose.o \
+        $O/jsonarray.o $O/jsonconvert.o $O/jsonescaper.o $O/jsonindentcanceller.o \
+        $O/jsonindenter.o $O/jsonobject.o $O/jsonsolidusescaper.o $O/jsonvalue.o
 
 #
 # Automatic rules

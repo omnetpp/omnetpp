@@ -34,8 +34,10 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/envirbase.obj $O
       $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj \
       $O/statisticparser.obj $O/visitor.obj
 
-#TODO make configurable
-OBJS= $(OBJS) $O/mongoose.obj
+#TODO make configurable; put into separate lib? (src/httpserver)
+OBJS= $(OBJS) $O/httpserver.obj $O/mongoosehttpserver.obj $O/mongoose.obj \
+              $O/jsonarray.obj $O/jsonconvert.obj $O/jsonescaper.obj $O/jsonindentcanceller.obj \
+              $O/jsonindenter.obj $O/jsonobject.obj $O/jsonsolidusescaper.obj $O/jsonvalue.obj
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DENVIR_EXPORT
