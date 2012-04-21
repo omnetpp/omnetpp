@@ -28,7 +28,7 @@
 #include "envirdefs.h"
 
 namespace JsonBox {
-    class SolidusEscaper {
+    class ENVIR_API SolidusEscaper {
     public:
         SolidusEscaper();
 
@@ -41,3 +41,4 @@ namespace JsonBox {
 }
 
 #endif
+

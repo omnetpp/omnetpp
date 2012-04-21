@@ -32,7 +32,7 @@ namespace JsonBox {
      * Cancels indentations to a streambuf.
      * @see JsonBox::OutputFilter
      */
-    class IndentCanceller {
+    class ENVIR_API IndentCanceller {
     public:
         /**
          * Default constructor.
@@ -55,3 +55,4 @@ namespace JsonBox {
 }
 
 #endif
+

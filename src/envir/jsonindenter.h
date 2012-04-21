@@ -32,7 +32,7 @@ namespace JsonBox {
      * Adds a level of indentation to a streambuf.
      * @see JsonBox::OutputFilter
      */
-    class Indenter {
+    class ENVIR_API Indenter {
     public:
         /**
          * Default constructor.
@@ -55,3 +55,4 @@ namespace JsonBox {
 }
 
 #endif
+

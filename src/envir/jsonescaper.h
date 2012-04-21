@@ -28,7 +28,7 @@
 #include "envirdefs.h"
 
 namespace JsonBox {
-    class Escaper {
+    class ENVIR_API Escaper {
     public:
         Escaper();
 
@@ -41,3 +41,4 @@ namespace JsonBox {
 }
 
 #endif
+

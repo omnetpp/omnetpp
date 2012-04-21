@@ -41,7 +41,7 @@ namespace JsonBox {
      * @see JsonBox::Array
      * @see JsonBox::Object
      */
-    class Value {
+    class ENVIR_API Value {
         /**
          * Output operator overload. Outputs the value as valid JSON. Does not
          * do any indentation.
