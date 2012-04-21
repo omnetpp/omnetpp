@@ -32,7 +32,7 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/envirbase.obj $O
       $O/speedometer.obj $O/matchableobject.obj $O/matchablefield.obj \
       $O/akaroarng.obj $O/cxmldoccache.obj $O/eventlogwriter.obj $O/objectprinter.obj \
       $O/eventlogfilemgr.obj $O/runattributes.obj $O/intervals.obj \
-      $O/statisticparser.obj
+      $O/statisticparser.obj $O/visitor.obj
 
 
 !if "$(LIB_SUFFIX)"==".dll"

@@ -38,7 +38,7 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/envirbase.o $O/fsutils.o
       $O/speedometer.o $O/matchableobject.o $O/matchablefield.o \
       $O/akaroarng.o $O/cxmldoccache.o $O/eventlogwriter.o $O/objectprinter.o \
       $O/eventlogfilemgr.o $O/runattributes.o $O/intervals.o \
-      $O/statisticparser.o
+      $O/statisticparser.o $O/visitor.o
 
 
 #

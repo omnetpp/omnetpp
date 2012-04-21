@@ -33,7 +33,6 @@
 
 #include "patternmatcher.h"
 #include "visitor.h"
-#include "tkutil.h"
 
 USING_NAMESPACE
 
@@ -175,6 +174,13 @@ void cCountChildrenVisitor::visit(cObject *obj)
 
 //----------------------------------------------------------------
 // utilities for sorting objects:
+
+static const char *getObjectShortTypeName(cObject *object)
+{
+    if (dynamic_cast<cComponent*>(object))
+        return ((cComponent*)object)->getComponentType()->getName();
+    return object->getClassName();
+}
 
 #define OBJPTR(a) (*(cObject **)a)
 static int qsort_cmp_byname(const void *a, const void *b)

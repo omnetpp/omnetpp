@@ -17,16 +17,15 @@
 #ifndef __VISITOR_H
 #define __VISITOR_H
 
+#include "envirdefs.h"
 #include "cenvir.h"
 #include "cobject.h"
 #include "cvisitor.h"
-#include "tkenv.h"
 #include "patternmatcher.h"
 #include "matchexpression.h"
 #include "matchableobject.h"
 
 NAMESPACE_BEGIN
-
 
 
 /**
@@ -37,7 +36,7 @@ NAMESPACE_BEGIN
  *   v.visit(object);
  *   cObject **objs = v.getArray();
  */
-class cCollectObjectsVisitor : public cVisitor
+class ENVIR_API cCollectObjectsVisitor : public cVisitor
 {
   private:
     int sizelimit;
@@ -74,7 +73,7 @@ class cCollectObjectsVisitor : public cVisitor
  * "categories" (see CATEGORY_... constants) and their getClassName()
  * and/or getFullPath() matches a pattern. Used by the Tkenv "Object Filter" dialog.
  */
-class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
+class ENVIR_API cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
   private:
     unsigned int category;
@@ -97,7 +96,7 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 /**
  * Visitor to collect the children of an object only (depth==1).
  */
-class cCollectChildrenVisitor : public cCollectObjectsVisitor
+class ENVIR_API cCollectChildrenVisitor : public cCollectObjectsVisitor
 {
   private:
     cObject *parent;
@@ -110,7 +109,7 @@ class cCollectChildrenVisitor : public cCollectObjectsVisitor
 /**
  * Visitor to count the number of children of an object.
  */
-class cCountChildrenVisitor : public cVisitor
+class ENVIR_API cCountChildrenVisitor : public cVisitor
 {
   private:
     cObject *parent;
@@ -126,9 +125,9 @@ class cCountChildrenVisitor : public cVisitor
 //----------------------------------------------------------------
 // utilities for sorting objects:
 
-void sortObjectsByName(cObject **objs, int n);
-void sortObjectsByFullPath(cObject **objs, int n);
-void sortObjectsByShortTypeName(cObject **objs, int n);
+void ENVIR_API sortObjectsByName(cObject **objs, int n);
+void ENVIR_API sortObjectsByFullPath(cObject **objs, int n);
+void ENVIR_API sortObjectsByShortTypeName(cObject **objs, int n);
 
 NAMESPACE_END
 
