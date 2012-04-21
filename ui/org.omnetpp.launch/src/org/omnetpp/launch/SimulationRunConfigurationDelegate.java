@@ -20,10 +20,13 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 
@@ -41,6 +44,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
         OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
         // we must use the updated configuration in 'launch' instead the original passed to us
         ILaunchConfiguration newConfig = launch.getLaunchConfiguration();
+        final String name = newConfig.getName();
 
         if (monitor == null) {
             monitor = new NullProgressMonitor();
@@ -76,6 +80,26 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
 
         job.schedule();
         monitor.done();
+
+        // open simulation front-end
+        boolean openSimulationEditor = true; //FIXME from launch configuration!!! also portNumber, hostName, etc! "Run" dialog should support custom "Env" with same HTTP support as Cmdenv
+        if (openSimulationEditor) {
+            final Job launcherjob = job;
+            Display.getDefault().asyncExec(new Runnable() {
+                public void run() {
+                    IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                    IEditorInput input = new SimulationEditorInput(name, "localhost", 4242, launcherjob); //FIXME portNumber to be configurable
+                    String SIMULATION_EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor"; //TODO make constant
+                    try {
+                        IDE.openEditor(workbenchPage, input, SIMULATION_EDITOR_ID);
+                    }
+                    catch (PartInitException e) {
+                        e.printStackTrace(); //FIXME dialog + log!
+                    }
+                    //TODO offer switching to "Simulation" perspective!
+                }
+            });
+        }
     }
 
     @Override

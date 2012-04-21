@@ -24,7 +24,7 @@ import org.eclipse.ui.part.ViewPart;
 /**
  * Base class for Views that may occasionally need to display an informative message
  * (like "No data available") instead of the normal contents .
- * Subclasses can call displayMessage()/hideMessage() for this functionality.
+ * Subclasses can call showMessage()/hideMessage() for this functionality.
  *
  * @author Andras
  */

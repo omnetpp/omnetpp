@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: OMNeT++ Simulation Front-end
+Bundle-SymbolicName: org.omnetpp.simulation; singleton:=true
+Bundle-Version: 4.2.1.qualifier
+Bundle-Activator: org.omnetpp.simulation.SimulationPlugin
+Require-Bundle: org.apache.commons.httpclient,
+ org.apache.commons.logging,
+ org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.editors,
+ org.omnetpp.common
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: OpenSim Ltd.

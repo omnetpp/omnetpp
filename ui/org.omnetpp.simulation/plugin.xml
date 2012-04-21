@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Simulation"
+            extensions="sim"
+            icon="icons/sample.gif"
+            class="org.omnetpp.simulation.editors.SimulationEditor"
+            id="org.omnetpp.simulation.editors.SimulationEditor">
+      </editor>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="false"
+            category="org.omnetpp.views"
+            class="org.omnetpp.simulation.views.ObjectTreeView"
+            icon="icons/eview16/objecttree.png"
+            id="org.omnetpp.simulation.views.ObjectTreeView"
+            name="Simulation Object Tree">
+      </view>
+   </extension>
+
+</plugin>
