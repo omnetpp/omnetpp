@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+
+    <p><a href="http://localhost:4242/sim/status" target="results">Status</a></p>
+
+    <p><a href="http://localhost:4242/sim/enumerateConfigs" target="results">Enumerate Configs</a></p>
+
+    <p>
+      <form method="get" action="http://localhost:4242/sim/setupRun" target="results">
+        Setup Run:
+        <input name="config" type="text" size="15">
+        <input name="run" type="text" size="5">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+
+    <p>
+      <form method="get" action="http://localhost:4242/sim/setupNetwork" target="results">
+        Setup Network:
+        <input name="network" type="text" size="15">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+
+    <p><a href="http://localhost:4242/sim/rebuild" target="results">Rebuild Network</a></p>
+
+    <p><a href="http://localhost:4242/sim/step" target="results">Step</a></p>
+
+    <p>
+      <form method="get" action="http://localhost:4242/sim/run" target="results">
+        Run:
+        <select name="mode">
+          <option value="normal">normal</option>
+          <option value="fast">fast</option>
+          <option value="express">express</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;until t=<input name="utime" type="text" size="8">
+        event#<input name="uevent" type="text" size="5">
+        msg:<input name="umsg" type="text" size="4">
+        module:<input name="umod" type="text" size="4">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+
+    <p><a href="http://localhost:4242/sim/stop" target="results">Stop</a></p>
+
+    <p><a href="http://localhost:4242/sim/callFinish" target="results">Call Finish</a></p>
+
+    <p><a href="http://localhost:4242/sim/quit" target="results">Quit</a></p>
+
+    <p><a href="http://localhost:4242/sim/getRootObjectIds" target="results">Get Root Object Ids</a></p>
+
+    <p>
+      <form method="get" action="http://localhost:4242/sim/getObjectChildren" target="results">
+        Get Object Children (comma-separated IDs):
+        <input name="ids" type="text" size="15">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+
+    <p>
+      <form method="get" action="http://localhost:4242/sim/getObjectInfo" target="results">
+        Get Object Info (comma-separated IDs):
+        <input name="ids" type="text" size="15">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+
+    <p>
+      <form method="get" action="http://localhost:4242/sim/getObjectFields" target="results">
+        Get Object Fields (comma-separated IDs):
+        <input name="ids" type="text" size="15">
+        <input type="submit" value="Submit">
+      </form>
+    </p>
+
+  </body>
+</html>
+
