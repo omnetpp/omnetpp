@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.views;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -65,11 +66,16 @@ public class ObjectTreeView extends ViewWithMessagePart {
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
 	        if (element instanceof SimObjectRef) {
-	            SimObject simObject = ((SimObjectRef)element).get();
+	            SimObject simObject = ((SimObjectRef)element).safeGet();
 	            if (simObject == null)
 	                return new Object[0]; 
                 long[] childObjectIds = simObject.childObjectIds;
-                ((SimObjectRef)element).controller.loadObjects(Arrays.asList(ArrayUtils.toObject(childObjectIds))); //XXX nice casts!!!
+                try {
+                    ((SimObjectRef)element).controller.loadObjects(Arrays.asList(ArrayUtils.toObject(childObjectIds)));
+                }
+                catch (IOException e) {
+                    SimulationPlugin.logError("Could not retrieve objects from simulation process", e);
+                }
 	            return SimObjectRef.wrap(childObjectIds, ((SimObjectRef)element).controller);
 	        }
 	        return new Object[0];
@@ -81,7 +87,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
 	    public Object getParent(Object element) {
             if (element instanceof SimObjectRef) {
-                SimObject simObject = ((SimObjectRef)element).get();
+                SimObject simObject = ((SimObjectRef)element).safeGet();
                 if (simObject == null)
                     return null; 
                 long owner = simObject.ownerId;
@@ -92,7 +98,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
 	    public boolean hasChildren(Object element) {
             if (element instanceof SimObjectRef) {
-                SimObject simObject = ((SimObjectRef)element).get();
+                SimObject simObject = ((SimObjectRef)element).safeGet();
                 if (simObject == null)
                     return false; 
                 return simObject.childObjectIds.length > 0;
@@ -121,7 +127,9 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
         public StyledString getStyledText(Object element) {
             if (element instanceof SimObjectRef) {
-                SimObject obj = ((SimObjectRef)element).get();
+                SimObject obj = ((SimObjectRef)element).safeGet();
+                if (obj == null)
+                    return new StyledString("<n/a>"); // deleted or error
                 StyledString styledString = new StyledString(obj.fullName);
                 styledString.append(" (" + obj.className + ")", greyStyle); //TODO use Simkernel.getObjectShortTypeName(obj);
                 styledString.append("  " + obj.info, brownStyle);
@@ -132,7 +140,9 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
         public Image getImage(Object element) {
             if (element instanceof SimObjectRef) {
-                SimObject obj = ((SimObjectRef)element).get();
+                SimObject obj = ((SimObjectRef)element).safeGet();
+                if (obj == null)
+                    return null; // deleted or error TODO return error icon 
                 String icon = obj.icon; // note: may be empty
                 return SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_DIR + icon + ".png", SimulationUIConstants.IMG_OBJ_COGWHEEL);
             }
@@ -260,12 +270,12 @@ public class ObjectTreeView extends ViewWithMessagePart {
         SimulationController controller = ((SimulationEditor)editor).getSimulationController();
         controller.addSimulationStateListener(simulationListener);
 
-        if (controller.getState() == SimState.DISCONNECTED) {
+        if (controller.getState() == SimState.DISCONNECTED || !controller.hasRootObjects()) {
             showMessage("No simulation process.");
         }
         else {
             hideMessage();
-            long simulationObjectId = controller.getRootObjectId("simulation");
+            long simulationObjectId = controller.getRootObjectId(SimulationController.ROOTOBJ_SIMULATION);
             viewer.setInput(new SimObjectRef(simulationObjectId, controller));
             viewer.refresh();
         }

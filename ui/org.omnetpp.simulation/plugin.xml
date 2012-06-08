@@ -25,4 +25,24 @@
       </view>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.dialogs"
+            defaultHandler="org.omnetpp.simulation.actions.AttachToSimulationHandler"
+            id="org.omnetpp.simulation.commands.AttachToSimulationCommand"
+            name="Attach to Simulation...">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.run?after=breakpointGroup">
+         <command
+               commandId="org.omnetpp.simulation.commands.AttachToSimulationCommand"
+               id="attachtosimulation">
+         </command>
+      </menuContribution>
+   </extension>
+
 </plugin>

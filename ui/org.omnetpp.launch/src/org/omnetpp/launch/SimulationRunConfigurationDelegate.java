@@ -8,6 +8,9 @@
 package org.omnetpp.launch;
 
 
+import java.net.ServerSocket;
+import java.net.SocketException;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
@@ -19,9 +22,11 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.debug.ui.IDebugUIConstants;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -39,24 +44,24 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  */
 public class SimulationRunConfigurationDelegate extends LaunchConfigurationDelegate {
 
-    public void launch(ILaunchConfiguration oldConfig, String mode, ILaunch launch, IProgressMonitor monitor)
-            throws CoreException {
+    public void launch(ILaunchConfiguration oldConfig, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
         OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
+
         // we must use the updated configuration in 'launch' instead the original passed to us
-        ILaunchConfiguration newConfig = launch.getLaunchConfiguration();
-        final String name = newConfig.getName();
+        ILaunchConfiguration configuration = launch.getLaunchConfiguration();
+        final String name = configuration.getName();
 
         if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
         monitor.beginTask("Launching Simulation", 1);
 
-        int runs[] = OmnetppLaunchUtils.parseRuns(newConfig.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
-                                                OmnetppLaunchUtils.getMaxNumberOfRuns(newConfig));
+        int runs[] = OmnetppLaunchUtils.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
+                                                OmnetppLaunchUtils.getMaxNumberOfRuns(configuration));
         Assert.isTrue(runs != null && runs.length > 0);
 
         // show the debug view if option is checked
-        if (newConfig.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {
+        if (configuration.getAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, false)) {
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
                     IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -69,37 +74,62 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
             });
         }
 
-        int numProcesses = newConfig.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
-        boolean reportProgress = StringUtils.contains(newConfig.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
+        boolean openSimulationEditor = runs.length == 1  /*TODO && requestedByUser */;
+        final int port = openSimulationEditor ? findFirstAvailableTcpPort(6000, 7000) : -1; //TODO let user specify a port manually, via the "-p" option
+
+        int numProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);
+        boolean reportProgress = StringUtils.contains(configuration.getAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_ARGUMENTS, ""), "-u Cmdenv");
         // start a single or batched launch job
         Job job;
-        if (runs.length == 1 )
-            job = new SimulationLauncherJob(newConfig, launch, runs[0], reportProgress);
+        if (runs.length == 1)
+            job = new SimulationLauncherJob(configuration, launch, runs[0], reportProgress, port);
         else
-            job = new BatchedSimulationLauncherJob(newConfig, launch, runs, numProcesses);
+            job = new BatchedSimulationLauncherJob(configuration, launch, runs, numProcesses);
 
         job.schedule();
         monitor.done();
 
         // open simulation front-end
-        boolean openSimulationEditor = true; //FIXME from launch configuration!!! also portNumber, hostName, etc! "Run" dialog should support custom "Env" with same HTTP support as Cmdenv
         if (openSimulationEditor) {
             final Job launcherjob = job;
             Display.getDefault().asyncExec(new Runnable() {
                 public void run() {
-                    IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                    IEditorInput input = new SimulationEditorInput(name, "localhost", 4242, launcherjob); //FIXME portNumber to be configurable
-                    String SIMULATION_EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor"; //TODO make constant
+                    IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                    IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
+                    IEditorInput input = new SimulationEditorInput(name, "localhost", port, launcherjob);
+                    String SIMULATION_EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";
                     try {
                         IDE.openEditor(workbenchPage, input, SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {
-                        e.printStackTrace(); //FIXME dialog + log!
+                        ErrorDialog.openError(workbenchWindow.getShell(), "Error", "Could not open animation window for the running simulation.", e.getStatus());
+                        LaunchPlugin.logError(e);
                     }
                     //TODO offer switching to "Simulation" perspective!
                 }
             });
         }
+    }
+
+    /**
+     * Searches for the first free TCP port number on localhost, and returns it.
+     * Returns -1 if no available TCP port was found.
+     */
+    protected int findFirstAvailableTcpPort(int startPort, int endPort) {
+        for (int port = startPort; port <= endPort; port++) {
+            try {
+                ServerSocket sock = new ServerSocket(port);
+                sock.close();
+                return port;
+            }
+            catch (SocketException e) {
+                // ignore, and go on to next port
+            }
+            catch (Exception e) {
+                return -1; // unexpected error -- give up
+            }
+        }
+        return -1;  // no available port found
     }
 
     @Override

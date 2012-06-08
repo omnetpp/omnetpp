@@ -13,7 +13,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class CallFinishAction extends AbstractSimulationAction {
-    public CallFinishAction() {
+    public CallFinishAction(SimulationController controller) {
+        super(controller);
         setText("Finalize");
         setToolTipText("Invokes the finish() method on all components in the simulation");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_FINISH));
@@ -22,7 +23,7 @@ public class CallFinishAction extends AbstractSimulationAction {
     @Override
     public void run() {
         try {
-            SimulationController controller = getActiveSimulationController();
+            SimulationController controller = getSimulationController();
 
             // make sure state is not RUNNING, NONETWORK, or FINISHCALLED
             if (!ensureNotRunning(controller))
@@ -52,5 +53,11 @@ public class CallFinishAction extends AbstractSimulationAction {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
             SimulationPlugin.logError(e);
         }
+    }
+    
+    @Override
+    public void updateState() {
+        SimState state = getSimulationController().getState();
+        setEnabled(state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR); // we also allow it in ERROR case, see SimulationController method
     }
 }

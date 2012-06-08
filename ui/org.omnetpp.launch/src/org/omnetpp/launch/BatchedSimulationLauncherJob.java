@@ -78,7 +78,7 @@ public class BatchedSimulationLauncherJob extends Job implements IJobChangeListe
 
         // create a list of jobs that later can be scheduled
         for (int run : runs) {
-            SimulationLauncherJob launchJob = new SimulationLauncherJob(configuration, launch, run, true);
+            SimulationLauncherJob launchJob = new SimulationLauncherJob(configuration, launch, run, true, -1);
             launchJob.addJobChangeListener(this);
             launchJob.setPriority(Job.LONG);
             runJobs.add(launchJob);

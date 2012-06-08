@@ -19,6 +19,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.ConfigDescription;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Setup Inifile Config action.
@@ -31,7 +32,8 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
     private static Image IMAGE_CONFIG_REPEAT = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIG_REPEAT);
     private static Image IMAGE_RUN = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIGRUN);
 
-    public SetupIniConfigAction() {
+    public SetupIniConfigAction(SimulationController controller) {
+        super(controller);
         setText("Set Up...");
         setToolTipText("Set Up...");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_NEWRUN));
@@ -180,7 +182,7 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
     @Override
     public void run() {
         try {
-            SimulationController controller = getActiveSimulationController();
+            SimulationController controller = getSimulationController();
             if (!ensureNotRunning(controller))
                 return;
 
@@ -200,5 +202,11 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error: " + e.toString());
             SimulationPlugin.logError(e);
         }
+    }
+
+    @Override
+    public void updateState() {
+        SimState state = getSimulationController().getState();
+        setEnabled(state != SimState.DISCONNECTED && state != SimState.RUNNING);
     }
 }

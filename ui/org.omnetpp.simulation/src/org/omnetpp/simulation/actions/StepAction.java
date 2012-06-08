@@ -5,6 +5,8 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.SimulationController.RunMode;
+import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Step action.
@@ -12,7 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController;
  * @author Andras
  */
 public class StepAction extends AbstractSimulationAction {
-    public StepAction() {
+    public StepAction(SimulationController controller) {
+        super(controller, AS_CHECK_BOX);
         setText("Step");
         setToolTipText("Step");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_STEP));
@@ -21,7 +24,7 @@ public class StepAction extends AbstractSimulationAction {
     @Override
     public void run() {
         try {
-            SimulationController controller = getActiveSimulationController();
+            SimulationController controller = getSimulationController();
             if (!ensureNetworkReady(controller))
                 return;
             
@@ -31,5 +34,18 @@ public class StepAction extends AbstractSimulationAction {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
             SimulationPlugin.logError(e);
         }
+        finally {
+            updateState();
+        }
+}
+    
+    @Override
+    public void updateState() {
+        SimState state = getSimulationController().getState();
+        setEnabled(state == SimState.READY || state == SimState.RUNNING);
+
+        RunMode runMode = getSimulationController().getCurrentRunMode();
+        setChecked(runMode == RunMode.STEP);
     }
+    
 }

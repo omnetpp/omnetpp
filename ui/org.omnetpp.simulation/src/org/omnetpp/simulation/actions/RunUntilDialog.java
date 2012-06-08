@@ -28,6 +28,7 @@ import org.omnetpp.simulation.controller.SimulationController.RunMode;
 
 
 /**
+ * Implements the "Run Until..." dialog.
  * 
  * @author Andras
  */

@@ -48,13 +48,15 @@ public class SimulationLauncherJob extends Job {
     ILaunch launch;
     Integer runNo;
     boolean reportProgress;
+    int port;
 
-    public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean reportProgress) {
+    public SimulationLauncherJob(ILaunchConfiguration configuration, ILaunch launch, Integer runNo, boolean reportProgress, int port) {
         super("Run #"+runNo+" - Scheduled");
         this.configuration = configuration;
         this.launch = launch;
         this.runNo = runNo;
         this.reportProgress = reportProgress;
+        this.port = port;
     }
 
     /* (non-Javadoc)
@@ -71,12 +73,13 @@ public class SimulationLauncherJob extends Job {
     protected IStatus run(IProgressMonitor monitor) {
         IStatus status;
         try {
-        SubMonitor smon = SubMonitor.convert(monitor, "", 1);
-        status = launchSimulation(configuration, launch, smon.newChild(1), runNo);
+            SubMonitor smon = SubMonitor.convert(monitor, "", 1);
+            status = launchSimulation(smon.newChild(1));
         }
         catch (CoreException e) {
             return e.getStatus();
-        } finally {
+        } 
+        finally {
             monitor.done();
         }
         return status;
@@ -85,8 +88,7 @@ public class SimulationLauncherJob extends Job {
     /**
      * Launches a single instance of the simulation process
      */
-    private IStatus launchSimulation(ILaunchConfiguration configuration, ILaunch launch, final SubMonitor monitor, final Integer runNo)
-            throws CoreException {
+    private IStatus launchSimulation(final SubMonitor monitor) throws CoreException {
         // check for cancellation
         if (monitor.isCanceled())
             return new Status(IStatus.CANCEL, LaunchPlugin.PLUGIN_ID, IStatus.CANCEL, "Run #"+runNo+" - Cancelled", null);
@@ -97,6 +99,8 @@ public class SimulationLauncherJob extends Job {
         monitor.setWorkRemaining(100);
 
         String additionalArgs = " -r "+runNo;
+        if (port != -1)
+            additionalArgs += " -p "+port;
 
         // calculate the command-line for display purposes (dump to the console before start)
         String[] cmdLineArgs = OmnetppLaunchUtils.createCommandLine(configuration, additionalArgs);

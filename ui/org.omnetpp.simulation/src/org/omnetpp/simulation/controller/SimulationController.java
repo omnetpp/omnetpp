@@ -7,8 +7,10 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -32,6 +34,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
@@ -42,61 +45,77 @@ import org.omnetpp.simulation.SimulationPlugin;
  * 
  * @author Andras
  */
-//TODO errors in the simulation should be turned into SimulationException thrown from these methods?
-//TODO status should send processID or random identifier to determine we're talking to the right process over HTTP
+// TODO errors in the simulation should be turned into SimulationException thrown from these methods?
+// TODO cmdenv: implement "runUntil" parameter "wallclocktimelimit", to be used with Express (or Fast too)
+// TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
+// TODO finish the "displayerror" and "askparameter" stuff
 public class SimulationController {
+    // root object IDs
+    public static final String ROOTOBJ_SIMULATION = "simulation";
+    public static final String ROOTOBJ_FES = "fes";
+    public static final String ROOTOBJ_SYSTEMMODULE = "systemModule";
+    public static final String ROOTOBJ_DEFAULTLIST = "defaultList";
+    public static final String ROOTOBJ_COMPONENTTYPES = "componentTypes";
+    public static final String ROOTOBJ_NEDFUNCTIONS = "nedFunctions";
+    public static final String ROOTOBJ_CLASSES = "classes";
+    public static final String ROOTOBJ_ENUMS = "enums";
+    public static final String ROOTOBJ_CLASSDESCRIPTORS = "classDescriptors";
+    public static final String ROOTOBJ_CONFIGOPTIONS = "configOptions";
+    public static final String ROOTOBJ_RESULTFILTERS = "resultFilters";
+    public static final String ROOTOBJ_RESULTRECORDERS = "resultRecorders";
+
     /**
      * See Cmdenv for state transitions
      */
     public enum SimState {
         DISCONNECTED, // no simulation process, e.g. it has terminated
-        NONETWORK,
-        NEW,
-        READY,
-        RUNNING,
-        TERMINATED,
-        FINISHCALLED,
-        ERROR,
-        BUSY  // busy doing active wait
+        NONETWORK, READY, RUNNING, TERMINATED, ERROR, FINISHCALLED  // as defined in cmdenv.h
     };
 
     public enum RunMode {
-        NOTRUNNING,
-        STEP,
-        NORMAL,
-        FAST,
-        EXPRESS
+        NOTRUNNING, STEP, NORMAL, FAST, EXPRESS
     }
 
     private String urlBase;
-    
-    private Job launcherJob;  // we want to be notified when the launcher job exits (== simulation process exits); may be null
+
+    private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
     private IJobChangeListener jobChangeListener;
 
+    private ISimulationCallback simulationCallback;
     private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
-    
+
     // simulation status (as returned by the GET "/sim/status" request)
+    private String hostName;
+    private long processId;
     private SimState state = SimState.NONETWORK;
     private String configName;
     private int runNumber;
     private String networkName;
     private long eventNumber;
     private BigDecimal simulationTime;
+    private String eventlogFile;
 
+    // run state
+    private RunMode currentRunMode = RunMode.NOTRUNNING; // UI state (simulation might be in READY, since UI runs it in increments of n events)
+    private BigDecimal runUntilSimTime = null;
+    private long runUntilEventNumber = 0;
     private boolean stopRequested;
 
-    // cached objects
-    private Map<String,Long> rootObjectIds = new HashMap<String, Long>(); // keys: "simulation", "network", etc
-    private Map<Long,SimObject> cachedObjects = new HashMap<Long, SimObject>();
+    // object cache
+    private long refreshSerial;
+    private Map<String, Long> rootObjectIds = new HashMap<String, Long>(); // keys: "simulation", "network", etc
+    private Map<Long, SimObject> cachedObjects = new HashMap<Long, SimObject>();
+    private static final long MAX_AGE = 1; // unaccessed objects are removed from the cached after this many refresh cycles
 
-
-
+    /**
+     * Constructor.
+     */
     public SimulationController(String hostName, int portNumber, Job launcherJob) {
-        this.urlBase = "http://" +  hostName + ":" + portNumber + "/";
-        
-        // if simulation was launched via a local launcher job (see SimulationLauncherJob), 
-        // set up simulationProcessTerminated() to be called when the launcher job exits
+        this.urlBase = "http://" + hostName + ":" + portNumber + "/";
         this.launcherJob = launcherJob;
+        
+        // if simulation was launched via a local launcher job (see SimulationLauncherJob),
+        // set up simulationProcessTerminated() to be called when the launcher job exits
         if (launcherJob != null) {
             Job.getJobManager().addJobChangeListener(jobChangeListener = new JobChangeAdapter() {
                 @Override
@@ -122,6 +141,26 @@ public class SimulationController {
             Job.getJobManager().removeJobChangeListener(jobChangeListener);
     }
 
+    public boolean canCancelLaunch() {
+        return launcherJob != null && launcherJob.getState() != Job.NONE;
+    }
+    
+    /**
+     * Terminates the simulation; may only be called if canCancelLaunch() returns true
+     */
+    public void cancelLaunch() {
+        if (launcherJob != null)
+            launcherJob.cancel();
+    }
+    
+    public void setSimulationCallback(ISimulationCallback simulationCallback) {
+        this.simulationCallback = simulationCallback;
+    }
+
+    public ISimulationCallback getSimulationCallback() {
+        return simulationCallback;
+    }
+    
     public void addSimulationStateListener(ISimulationStateListener listener) {
         simulationListeners.add(listener);
     }
@@ -129,15 +168,15 @@ public class SimulationController {
     public void removeSimulationStateListener(ISimulationStateListener listener) {
         simulationListeners.remove(listener);
     }
-    
+
     protected void notifyListeners() {
         for (final Object listener : simulationListeners.getListeners()) {
             SafeRunner.run(new ISafeRunnable() {
                 @Override
                 public void run() throws Exception {
-                    ((ISimulationStateListener)listener).simulationStateChanged(SimulationController.this);
+                    ((ISimulationStateListener) listener).simulationStateChanged(SimulationController.this);
                 }
-                
+
                 @Override
                 public void handleException(Throwable e) {
                     SimulationPlugin.logError(e);
@@ -146,10 +185,36 @@ public class SimulationController {
         }
     }
 
+    /**
+     * Host where the simulation that we are talking to runs.
+     */
+    public String getHostName() {
+        return hostName;
+    }
+    
+    /**
+     * Process ID of the simulation we are talking to.
+     */
+    public long getProcessId() {
+        return processId;
+    }
+    
     public SimState getState() {
-    	return state;
+        if (state == SimState.READY && currentRunMode != RunMode.NOTRUNNING)
+            return SimState.RUNNING; // a well-meant lie
+        else
+            return state;
     }
 
+    public RunMode getCurrentRunMode() {
+        return currentRunMode;
+    }
+    
+    public boolean isRunUntilActive() {
+        // whether a "Run Until" is active
+        return currentRunMode != RunMode.NOTRUNNING && (runUntilSimTime != null || runUntilEventNumber != 0);
+    }
+    
     public String getConfigName() {
         return configName;
     }
@@ -157,7 +222,7 @@ public class SimulationController {
     public int getRunNumber() {
         return runNumber;
     }
-    
+
     public String getNetworkName() {
         return networkName;
     }
@@ -170,6 +235,10 @@ public class SimulationController {
         return simulationTime;
     }
 
+    public String getEventlogFile() {
+        return eventlogFile;
+    }
+    
     protected String encode(String s) {
         try {
             return URLEncoder.encode(s, "US-ASCII");
@@ -178,161 +247,364 @@ public class SimulationController {
             throw new RuntimeException(e);
         }
     }
+
+    @SuppressWarnings("rawtypes")
+    public void refreshStatus() throws IOException {
+        boolean again;
+        do {
+            Assert.isNotNull(simulationCallback);  // simulationCallback must be set
+
+            //TODO merge "status" and "getRootObjectIds" into one! also "getObjectInfo" and "getObjectChildren"
+
+            // refresh basic simulation state
+            Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
+            Map responseMap = (Map) responseJSON;
+            hostName = (String) responseMap.get("hostname");
+            processId = ((Number) responseMap.get("processid")).longValue();
+            state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
+            simulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("simtime"), "0"));
+            eventNumber = defaultLongIfNull((Number) responseMap.get("eventnumber"), 0);
+            configName = (String) responseMap.get("config");
+            runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
+            networkName = (String) responseMap.get("network");
+            eventlogFile = (String) responseMap.get("eventlogfile");
+
+            // remember action requested by the simulation
+            Map errorInfo = (Map) responseMap.get("errorInfo");
+            Map askParameter = (Map) responseMap.get("askParameter");
+
+            // refresh root object IDs
+            Object json = getPageContentAsJSON(urlBase + "/sim/getRootObjectIds");
+            for (Object key : ((Map) json).keySet()) {
+                long objectId = ((Number) ((Map) json).get(key)).longValue();
+                rootObjectIds.put((String) key, objectId);
+            }
+
+            /*
+             * Refresh cached objects. Strategy: Maintain a refreshSerial, and for
+             * each object also maintain the refreshSerial when they were last
+             * accessed. In each refresh() cycle, reload the cached objects that
+             * have been accessed recently (say, sometime during the last 3 refresh
+             * cycles); evoke the others from the cache as they are unlikely to be
+             * accessed in the immediate future. When non-cached objects are
+             * requested, load+cache them immediately.
+             */
+            refreshSerial++;
+
+            List<Long> garbage = new ArrayList<Long>();
+            for (Long id : cachedObjects.keySet()) {
+                if (cachedObjects.get(id).lastAccessSerial - refreshSerial > MAX_AGE)
+                    garbage.add(id);
+            }
+            cachedObjects.keySet().removeAll(garbage);
+
+            doLoadObjects(cachedObjects.keySet());
+
+            notifyListeners();
+
+            // carry out action requested by the simulation
+            again = false;
+            if (askParameter != null) {
+                String paramName = (String) askParameter.get("paramName");
+                String ownerFullPath = (String) askParameter.get("ownerFullPath");
+                String paramType = (String) askParameter.get("paramType");
+                String prompt = (String) askParameter.get("prompt");
+                String defaultValue = (String) askParameter.get("defaultValue");
+                String unit = (String) askParameter.get("unit");
+                String[] choices = null; //TODO
+
+                // parameter value prompt
+                String value = simulationCallback.askParameter(paramName, ownerFullPath, paramType, prompt, defaultValue, unit, choices);
+                getPageContent(urlBase + "sim/askParameterResp?v=" + encode(value)); //TODO how to post "cancel"?
+
+                // we need to refresh again
+                again = true;
+            }
+            if (errorInfo != null) {
+                // display error message
+                String message = (String) errorInfo.get("message");
+                simulationCallback.displayError(message);
+
+                // we need to refresh again
+                again = true;
+            }
+        } while (again);
+    }
+
+    public boolean hasRootObjects() {
+        return !rootObjectIds.isEmpty();
+    }
     
-    @SuppressWarnings("rawtypes")
-    public void refreshStatus() {
-        Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
-
-        Map responseMap = (Map)responseJSON;
-
-        state = SimState.valueOf(((String)responseMap.get("state")).toUpperCase());
-        simulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String)responseMap.get("simtime"), "0"));
-        eventNumber = defaultIfNull((Long)responseMap.get("eventnumber"), 0);
-        configName = (String)responseMap.get("config");
-        runNumber = (int)defaultIfNull((Long)responseMap.get("run"), -1);
-        networkName = (String)responseMap.get("network");
-        
-        refreshCachedObjects(); //XXX not sure it belongs here
-        
-        notifyListeners();
+    /**
+     * Use ROOTOBJ_xxx constants as keys.
+     */
+    public long getRootObjectId(String key) {
+        Assert.isTrue(!rootObjectIds.isEmpty(), "refresh() needs to be called before getRootObjectId() can be invoked");
+        return rootObjectIds.get(key);
     }
 
-    private long defaultIfNull(Long l, long defaultValue) {
-        return l==null ? defaultValue : l;
+    public boolean isCachedObject(long id) {
+        return cachedObjects.containsKey(id);
+    }
+    
+    /**
+     * Loads the object if necessary. When you need several objects, it is more
+     * efficient to call loadObjects() beforehand, as it will only issue a
+     * single HTTP request into the simulation process.
+     */
+    public SimObject getCachedObject(long id) throws IOException {
+        SimObject obj = cachedObjects.get(id);
+        if (obj != null)
+            obj.lastAccessSerial = refreshSerial;
+        else {
+            // load it
+            Set<Long> ids = new HashSet<Long>();
+            ids.add(id);
+            doLoadObjects(ids);
+            obj = cachedObjects.get(id);
+            //TODO: result is null for invalid or stale object IDs -- remember those too so we won't ask the simulation again and again
+        }
+        return obj;
+    }
+
+    public void loadObjects(Collection<Long> ids) throws IOException {
+        // load objects not yet in the cache
+        if (!cachedObjects.keySet().containsAll(ids)) {
+            Set<Long> missing = new HashSet<Long>(ids);
+            missing.removeAll(cachedObjects.keySet());
+            doLoadObjects(missing);
+        }
     }
 
     @SuppressWarnings("rawtypes")
-    public List<ConfigDescription> getConfigDescriptions() {
+    protected void doLoadObjects(Collection<Long> ids) throws IOException {
+        String idsArg = StringUtils.join(ids, ",");
+        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?ids=" + idsArg);
+
+        // process response; objects not in the response no longer exist, purge their IDs from the cache
+        List<Long> garbage = new ArrayList<Long>();
+        for (long id : ids) {
+            Map objectInfo = (Map) ((Map) json).get(String.valueOf(id));
+            if (objectInfo == null) {
+                garbage.add(id); // calling remove() here would cause ConcurrentModificationException
+            }
+            else {
+                SimObject object = cachedObjects.get(id);
+                if (object == null)
+                    cachedObjects.put(id, object = new SimObject(id));
+                Assert.isTrue(object.id == id);
+                object.className = (String) objectInfo.get("className");
+                object.name = (String) objectInfo.get("name");
+                object.fullName = (String) objectInfo.get("fullName");
+                object.fullPath = (String) objectInfo.get("fullPath");
+                object.icon = (String) objectInfo.get("icon");
+                object.info = (String) objectInfo.get("info");
+                object.ownerId = ((Number) objectInfo.get("owner")).longValue();
+            }
+        }
+        cachedObjects.keySet().removeAll(garbage);
+
+        // query and store object children
+        json = getPageContentAsJSON(urlBase + "/sim/getObjectChildren?ids=" + idsArg);
+
+        for (long id : ids) {
+            SimObject object = cachedObjects.get(id);
+            List childObjectIds = (List) ((Map) json).get(String.valueOf(id));
+            if (childObjectIds == null || childObjectIds.isEmpty()) {
+                if (object != null)
+                    object.childObjectIds = ArrayUtils.EMPTY_LONG_ARRAY;
+            }
+            else {
+                Assert.isTrue(object.id == id);
+                long[] tmp = new long[childObjectIds.size()];
+                for (int i = 0; i < tmp.length; i++)
+                    tmp[i] = ((Number) childObjectIds.get(i)).longValue();
+                object.childObjectIds = tmp;
+            }
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    public List<ConfigDescription> getConfigDescriptions() throws IOException {
         Object json = getPageContentAsJSON(urlBase + "/sim/enumerateConfigs");
         List<ConfigDescription> result = new ArrayList<ConfigDescription>();
-        
-        for (Object jitem : (List)json) {
-            Map jmap = (Map)jitem;
+
+        for (Object jitem : (List) json) {
+            Map jmap = (Map) jitem;
             ConfigDescription config = new ConfigDescription();
-            config.name = (String)jmap.get("name"); 
-            config.description = (String)jmap.get("description"); 
-            config.numRuns = (int)(long)(Long)jmap.get("numRuns");
-            List jextends = (List)jmap.get("extends");
+            config.name = (String) jmap.get("name");
+            config.description = (String) jmap.get("description");
+            config.numRuns = ((Number) jmap.get("numRuns")).intValue();
+            List jextends = (List) jmap.get("extends");
             String[] tmp = new String[jextends.size()];
             for (int i = 0; i < tmp.length; i++)
-                tmp[i] = (String)jextends.get(i);
+                tmp[i] = (String) jextends.get(i);
             config.extendsList = tmp;
             result.add(config);
         }
         return result;
     }
-    
-	public void newRun(String configName, int runNumber) {
+
+    public void newRun(String configName, int runNumber) throws IOException {
         getPageContent(urlBase + "sim/setupRun?config=" + encode(configName) + "&run=" + runNumber);
         refreshStatus();
-	}
+    }
 
-	public void newNetwork(String networkName) {
-	    getPageContent(urlBase + "sim/setupNetwork?network=" + encode(networkName));
+    public void newNetwork(String networkName) throws IOException {
+        getPageContent(urlBase + "sim/setupNetwork?network=" + encode(networkName));
         refreshStatus();
-	}
+    }
 
     public boolean isNetworkPresent() {
         return state != SimState.DISCONNECTED && state != SimState.NONETWORK;
     }
 
     public boolean isSimulationOK() {
-    	return state == SimState.NEW || state == SimState.RUNNING || state == SimState.READY;
+        return state == SimState.READY || state == SimState.RUNNING;
     }
 
     public boolean isRunning() {
-    	return state == SimState.RUNNING || state == SimState.BUSY;
+        return state == SimState.RUNNING || (state == SimState.READY && currentRunMode != RunMode.NOTRUNNING);
     }
 
-	public void step() {
-	    Assert.isTrue(state == SimState.NEW || state == SimState.READY);
-        getPageContent(urlBase + "sim/step");
-        refreshStatus();
-	}
-
-	public void rebuildNetwork() {
+    public void rebuildNetwork() throws IOException {
         getPageContent(urlBase + "sim/rebuild");
         refreshStatus();
-	}
-
-	public void run() {
-	    Assert.isTrue(state == SimState.NEW || state == SimState.READY);
-	    stopRequested = false;
-	    doRun();
-	}
-	    
-	public void doRun() {
-	    //NOTE: within doRun(), status is still READY not RUNNING!!! because we do single steps
-
-	    if (stopRequested) {
-	        stopRequested = false;
-	        return;
-	    }
-
-	    getPageContent(urlBase + "sim/step");
-	    refreshStatus();
-
-	    Display.getCurrent().asyncExec(new Runnable() {
-	        @Override
-	        public void run() {
-	            doRun();
-	        }
-	    });
-	}
-
-    public void fastRun() {
-        run(RunMode.FAST);
     }
-
-    public void expressRun() {
-        run(RunMode.EXPRESS);
-    }
-
-    public void run(RunMode mode) {
-        getPageContent(urlBase + "sim/run?mode=" + mode.name().toLowerCase());
-        refreshStatus();
-    }
-
-    public void runUntil(RunMode mode, BigDecimal simTime, long eventNumber) {
-        String args = "mode=" + mode.name().toLowerCase();
-        if (!simTime.equals(BigDecimal.getZero()))
-            args += "&utime=" + simTime.toString();
-        if (eventNumber > 0)
-            args += "&uevent=" + eventNumber;
-        getPageContent(urlBase + "sim/run?" + args);
-        refreshStatus();
-    }
-
-    public void stop() {
-        stopRequested = true;
-        if (state==SimState.RUNNING) {
-            getPageContent(urlBase + "sim/stop");
+    
+    public void step() throws IOException {
+        Assert.isTrue(state == SimState.READY);
+        if (currentRunMode == RunMode.NOTRUNNING) {
+            currentRunMode = RunMode.STEP;
+            notifyListeners(); // because currentRunMode has changed
+            getPageContent(urlBase + "sim/step");
+            currentRunMode = RunMode.NOTRUNNING;
             refreshStatus();
+        }
+        else {
+            stop(); // if already running, just stop it
         }
     }
 
-    public void callFinish() {
-	    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
-	    Assert.isTrue(state == SimState.NEW || state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR);
-	    getPageContent(urlBase + "sim/callFinish");
-	    refreshStatus();
-	}
+    public void run() throws IOException {
+        run(RunMode.NORMAL);
+    }
 
-    protected String getPageContent(String url) {
+    public void fastRun() throws IOException {
+        run(RunMode.FAST);
+    }
+
+    public void expressRun() throws IOException {
+        run(RunMode.EXPRESS);
+    }
+
+    public void run(RunMode mode) throws IOException {
+        runUntil(mode, null, 0);
+    }
+
+    public void runUntil(RunMode mode, BigDecimal simTime, long eventNumber) throws IOException {
+        runUntilSimTime = simTime;  //TODO if time/event already passed, don't do anything
+        runUntilEventNumber = eventNumber;
+        
+        if (currentRunMode == RunMode.NOTRUNNING) {
+            Assert.isTrue(state == SimState.READY);
+            stopRequested = false;
+            currentRunMode = mode;
+            notifyListeners(); // because currentRunMode has changed
+            doRun();
+        }
+        else {
+            // asyncExec() already scheduled, just change the runMode for it
+            currentRunMode = mode;
+        }
+    }
+
+    protected void doRun() throws IOException {
+        if (stopRequested) {
+            stopRequested = false;
+            currentRunMode = RunMode.NOTRUNNING;
+            notifyListeners(); // because currentRunMode has changed
+            return;
+        }
+
+        //TODO exit if "until" limit has been reached
+        
+        long eventDelta = -1;
+        switch (currentRunMode) {
+            case NORMAL: eventDelta = 1; break;
+            case FAST: eventDelta = 10; break;
+            case EXPRESS: eventDelta = 1000; break;  //TODO: express should rather use wall-clock seconds as limit!!!
+            default: Assert.isTrue(false);
+        }
+
+        long untilEvent = runUntilEventNumber == 0 ? eventNumber+eventDelta : Math.min(runUntilEventNumber, eventNumber+eventDelta);
+        String untilArgs = "&uevent=" + untilEvent;
+        if (runUntilSimTime != null)
+            untilArgs += "&utime=" + runUntilSimTime.toString();
+
+        getPageContent(urlBase + "sim/run?mode=" + currentRunMode.name().toLowerCase() + untilArgs);
+        refreshStatus(); // note: state will be READY here again
+
+        Display.getCurrent().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    doRun();
+                }
+                catch (IOException e) {
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", "An error occurred: " + e.getMessage());
+                    SimulationPlugin.logError("Error running simulation", e);
+                }
+            }
+        });
+    }
+
+    public void stop() throws IOException {
+        stopRequested = true;
+        if (state == SimState.RUNNING) {
+            try {
+                getPageContent(urlBase + "sim/stop");
+            } finally {
+                refreshStatus();
+            }
+        }
+    }
+
+    public void callFinish() throws IOException {
+        // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR but it comes handy in practice...
+        Assert.isTrue(state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR);
+        getPageContent(urlBase + "sim/callFinish");
+        refreshStatus();
+    }
+
+    protected Object getPageContentAsJSON(String url) throws IOException {
+        String response = getPageContent(url);
+        if (response == null)
+            return new HttpException("Received empty document in response to GET " + url);
+
+        // parse
+        Object jsonTree = new JSONReader().read(response);
+        System.out.println("  got: " + jsonTree.toString());
+        return jsonTree;
+    }
+
+    protected String getPageContent(String url) throws IOException {
+        System.out.println("GET " + url);
+
         if (getState() == SimState.DISCONNECTED)
-            throw new IllegalStateException("Simulation process already terminated");
+            throw new IllegalStateException("Simulation process already terminated"); //TODO not good, as we catch IOException always
 
         // turn off log messages from Apache HttpClient if we can...
         Log log = LogFactory.getLog("org.apache.commons.httpclient");
         if (log instanceof Jdk14Logger)
-            ((Jdk14Logger)log).getLogger().setLevel(Level.OFF);
+            ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
 
         HttpClient client = new HttpClient();
-        client.getParams().setSoTimeout(60*1000);
+        client.getParams().setSoTimeout(60 * 1000);
 
         // do not retry
         HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
-            public boolean retryMethod(final HttpMethod method,final IOException exception, int executionCount) {
+            public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
                 return false;
             }
         };
@@ -344,111 +616,27 @@ public class SimulationController {
 
         try {
             int status = client.executeMethod(method);
+            if (status != HttpStatus.SC_OK)
+                throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
             String responseBody = method.getResponseBodyAsString();
-            return status == HttpStatus.SC_OK ? responseBody : null;
-        } catch (HttpException e) {
-            e.printStackTrace();
-            return null;
-        } catch (ConnectException e) {
-            e.printStackTrace(); //TODO this is a "Connection Refused" -- likely fatal!!!
-            return null;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        } finally {
+            return responseBody;
+        }
+        catch (ConnectException e) {
+            connectionRefused(e);
+            throw e;
+        }
+        finally {
             method.releaseConnection();
         }
     }
 
-    protected Object getPageContentAsJSON(String url) {
-        String response = getPageContent(url);
-        if (response == null)
-            return null; //TODO throw error?
-            
-        // parse
-        //TODO how to handle exceptions?
-        Object jsonTree = new JSONReader().read(response);
-        System.out.println("GET " + url + " -->\n" + jsonTree.toString());
-        return jsonTree;
-    }    
-
-    @SuppressWarnings("rawtypes")
-    protected void refreshRootObjectIds() {
-        // refresh root object IDs
-        Object json = getPageContentAsJSON(urlBase + "/sim/getRootObjectIds");
-        for (Object key : ((Map)json).keySet()) {
-            long objectId = (Long)((Map)json).get(key);
-            rootObjectIds.put((String)key, objectId);
-        }
-        
-        loadObjects(rootObjectIds.values()); //XXX maybe not here...
+    protected void connectionRefused(ConnectException e) {
+        state = SimState.DISCONNECTED;
+        notifyListeners();
     }
 
-    public long getRootObjectId(String key) { //TODO use enum for key!
-        if (rootObjectIds.isEmpty())
-            refreshRootObjectIds();
-        return rootObjectIds.get(key);
-    }
-    
-    protected void refreshCachedObjects() {
-        refreshCachedObjects(cachedObjects.keySet());
-    }
-    
-    public SimObject getCachedObject(long id) {
-        return cachedObjects.get(id);
-    }
-
-    @SuppressWarnings("rawtypes")
-    protected void refreshCachedObjects(Collection<Long> ids) {
-        // refresh cached objects
-        String idsArg = StringUtils.join(ids, ",");
-        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?ids=" + idsArg);
-
-        List<Long> garbage = new ArrayList<Long>();
-        for (long id : ids) {
-            Map objectInfo = (Map)((Map)json).get(String.valueOf(id));
-            if (objectInfo == null) {
-                garbage.add(id); // calling remove() here would cause ConcurrentModificationException
-            }
-            else {
-                SimObject object = cachedObjects.get(id);
-                if (object == null)
-                    cachedObjects.put(id, object = new SimObject(id));
-                Assert.isTrue(object.id==id);
-                object.className = (String)objectInfo.get("className");
-                object.name = (String)objectInfo.get("name");
-                object.fullName = (String)objectInfo.get("fullName");
-                object.fullPath = (String)objectInfo.get("fullPath");
-                object.icon = (String)objectInfo.get("icon");
-                object.info = (String)objectInfo.get("info");
-                object.ownerId = (Long)objectInfo.get("owner");
-            }
-        }
-        for (Long id : garbage)
-            cachedObjects.remove(id);
-
-        json = getPageContentAsJSON(urlBase + "/sim/getObjectChildren?ids=" + idsArg);
-        
-        for (long id : ids) {
-            SimObject object = cachedObjects.get(id);
-            List childObjectIds = (List)((Map)json).get(String.valueOf(id));
-            if (childObjectIds == null || childObjectIds.isEmpty()) {
-                if (object != null)
-                    object.childObjectIds = ArrayUtils.EMPTY_LONG_ARRAY;
-            }
-            else {
-                Assert.isTrue(object.id==id);
-                long[] tmp = new long[childObjectIds.size()];
-                for (int i=0; i<tmp.length; i++)
-                    tmp[i] = (Long)childObjectIds.get(i);
-                object.childObjectIds = tmp;
-            }
-        }
-    }
-
-    public void loadObjects(Collection<Long> ids) {
-        //FIXME this should be done in a background job, and fire a "changed" event when done 
-        refreshCachedObjects(ids);
+    private long defaultLongIfNull(Number l, long defaultValue) {
+        return l == null ? defaultValue : l.longValue();
     }
 
 }

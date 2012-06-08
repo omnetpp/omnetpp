@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Stop action.
@@ -12,7 +13,8 @@ import org.omnetpp.simulation.controller.SimulationController;
  * @author Andras
  */
 public class StopAction extends AbstractSimulationAction {
-    public StopAction() {
+    public StopAction(SimulationController controller) {
+        super(controller);
         setText("Stop");
         setToolTipText("Stop");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_STOP));
@@ -21,7 +23,7 @@ public class StopAction extends AbstractSimulationAction {
     @Override
     public void run() {
         try {
-            SimulationController controller = getActiveSimulationController();
+            SimulationController controller = getSimulationController();
             if (!haveSimulation(controller))
                 return;
             
@@ -31,5 +33,10 @@ public class StopAction extends AbstractSimulationAction {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
             SimulationPlugin.logError(e);
         }
+    }
+
+    @Override
+    public void updateState() {
+        setEnabled(getSimulationController().getState() == SimState.RUNNING);
     }
 }

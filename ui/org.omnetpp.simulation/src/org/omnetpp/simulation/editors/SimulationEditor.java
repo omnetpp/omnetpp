@@ -2,6 +2,8 @@ package org.omnetpp.simulation.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -19,6 +21,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
 import org.omnetpp.simulation.actions.FastRunAction;
@@ -29,6 +32,7 @@ import org.omnetpp.simulation.actions.SetupIniConfigAction;
 import org.omnetpp.simulation.actions.SetupNetworkAction;
 import org.omnetpp.simulation.actions.StepAction;
 import org.omnetpp.simulation.actions.StopAction;
+import org.omnetpp.simulation.controller.ISimulationCallback;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
@@ -37,8 +41,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  *
  * @author Andras
  */
-public class SimulationEditor extends EditorPart {
-    public static final String EDITOR_ID = "org.omnetpp.simulation.SimulationEditor"; //FIXME use this in LaunchDelegate too
+public class SimulationEditor extends EditorPart implements ISimulationCallback {
+    public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
     
     protected SimulationController simulationController;
 
@@ -58,6 +62,7 @@ public class SimulationEditor extends EditorPart {
         
         SimulationEditorInput simInput = (SimulationEditorInput)input;
         simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
+        simulationController.setSimulationCallback(this);
 
         site.setSelectionProvider(new SelectionProvider());
     }
@@ -73,18 +78,18 @@ public class SimulationEditor extends EditorPart {
         controlArea.setLayout(new GridLayout(4, false));
         
         ToolBar toolbar1 = new ToolBar(controlArea, SWT.NONE);
-        new ActionContributionItem(new SetupIniConfigAction()).fill(toolbar1, -1);
-        new ActionContributionItem(new SetupNetworkAction()).fill(toolbar1, -1);
-        new ActionContributionItem(new RebuildNetworkAction()).fill(toolbar1, -1);
+        new ActionContributionItem(new SetupIniConfigAction(simulationController)).fill(toolbar1, -1);
+        new ActionContributionItem(new SetupNetworkAction(simulationController)).fill(toolbar1, -1);
+        new ActionContributionItem(new RebuildNetworkAction(simulationController)).fill(toolbar1, -1);
         ToolBar toolbar2 = new ToolBar(controlArea, SWT.NONE);
-        new ActionContributionItem(new StepAction()).fill(toolbar2, -1);
-        new ActionContributionItem(new RunAction()).fill(toolbar2, -1);
-        new ActionContributionItem(new FastRunAction()).fill(toolbar2, -1);
-        new ActionContributionItem(new ExpressRunAction()).fill(toolbar2, -1);
-        new ActionContributionItem(new RunUntilAction()).fill(toolbar2, -1);
+        new ActionContributionItem(new StepAction(simulationController)).fill(toolbar2, -1);
+        new ActionContributionItem(new RunAction(simulationController)).fill(toolbar2, -1);
+        new ActionContributionItem(new FastRunAction(simulationController)).fill(toolbar2, -1);
+        new ActionContributionItem(new ExpressRunAction(simulationController)).fill(toolbar2, -1);
+        new ActionContributionItem(new RunUntilAction(simulationController)).fill(toolbar2, -1);
         ToolBar toolbar3 = new ToolBar(controlArea, SWT.NONE);
-        new ActionContributionItem(new StopAction()).fill(toolbar3, -1);
-        new ActionContributionItem(new CallFinishAction()).fill(toolbar3, -1);
+        new ActionContributionItem(new StopAction(simulationController)).fill(toolbar3, -1);
+        new ActionContributionItem(new CallFinishAction(simulationController)).fill(toolbar3, -1);
 
         statusLabel = new Label(controlArea, SWT.NONE);
         statusLabel.setText("n/a");
@@ -97,7 +102,8 @@ public class SimulationEditor extends EditorPart {
         canvas = new FigureCanvas(sc, SWT.DOUBLE_BUFFERED);
         sc.setContent(canvas);
         canvas.setBackground(new Color(null, 235, 235, 235));
-        
+
+        // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
             @Override
             public void simulationStateChanged(SimulationController controller) {
@@ -110,13 +116,30 @@ public class SimulationEditor extends EditorPart {
             }
         });
         
-        simulationController.refreshStatus();
+        // obtain initial status query
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    simulationController.refreshStatus();
+                } catch (Exception e) {
+                    MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());
+                    SimulationPlugin.logError(e);
+                }
+            }
+        });
+        
     }
 
     @Override
     public void dispose() {
-        //TODO
     	super.dispose();
+    	
+    	if (simulationController.canCancelLaunch()) {
+    	    boolean ans = MessageDialog.openQuestion(getSite().getShell(), "Terminate?", "Do you want to terminate the simulation process?");
+    	    if (ans)
+    	        simulationController.cancelLaunch();
+    	}
     }
 
     @Override
@@ -130,19 +153,34 @@ public class SimulationEditor extends EditorPart {
 
     protected void updateStatusDisplay() {
         SimulationController controller = getSimulationController();
-        String status = "   " + controller.getState().name(); 
+        String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
+        status += "   " + controller.getState().name();
 
         if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
             status +=  
             "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() + 
             "   (" + controller.getNetworkName() + ")" + 
-            "  -  t=" + controller.getSimulationTime() + "s" + 
-            "   Event #" + controller.getEventNumber();
+            "  -  Event #" + controller.getEventNumber() +
+            "   t=" + controller.getSimulationTime() + "s"; 
         statusLabel.setText(status);
     }
 
     public void openInspector(Object element) {
         MessageDialog.openConfirm(getSite().getShell(), "Confirm", "openInspector('" + element + "') invoked");
+    }
+
+    @Override
+    public String askParameter(String paramName, String ownerFullPath, String paramType, String prompt, String defaultValue, String unit, String[] choices) {
+        String dialogMessage = "Enter parameter " + paramName + "." + ownerFullPath; //TODO refine (use prompt, paramType, etc)
+        InputDialog dialog = new InputDialog(getSite().getShell(), "Enter Parameter", dialogMessage, defaultValue, null);
+        if (dialog.open() == Dialog.CANCEL)
+            return null;
+        return dialog.getValue();
+    }
+
+    @Override
+    public void displayError(String errorMessage) {
+        MessageDialog.openError(getSite().getShell(), "Error", errorMessage);
     }
 
 	@Override

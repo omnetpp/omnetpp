@@ -1,5 +1,9 @@
 package org.omnetpp.simulation.controller;
 
+import java.io.IOException;
+
+import org.omnetpp.simulation.SimulationPlugin;
+
 
 /**
  * Reference to a cObject in the simulation. Should be used instead of 
@@ -16,13 +20,32 @@ public class SimObjectRef {
         this.id = id;
     }
 
+    public boolean isCached() {
+        return controller.isCachedObject(id);
+    }
+    
     /**
-     * Returns null for invalid and state IDs (IDs that refer to deleted objects)
+     * Returns null for invalid and stale IDs (IDs that refer to deleted objects); throws exception
+     * if there was an error retrieving the object
      */
-    public SimObject get() {
+    public SimObject get() throws IOException {
         return controller.getCachedObject(id);
     }
 
+    /**
+     * Like get(), but exceptions are caught and null is returned instead.
+     */
+    public SimObject safeGet() {
+        try {
+            return controller.getCachedObject(id);
+        }
+        catch (IOException e) {
+            SimulationPlugin.logError("Could not retrieve object #" + id + " from simulation process", e);
+            return null;
+        }
+    }
+
+    
     public static SimObjectRef[] wrap(long[] ids, SimulationController controller) {
         SimObjectRef[] result = new SimObjectRef[ids.length];
         for (int i = 0; i < ids.length; i++)
@@ -49,6 +72,11 @@ public class SimObjectRef {
 
     @Override
     public String toString() {
-        return "#" + id + " " + get();  // note: get() may return null
+        try {
+            return "#" + id + " " + get(); // note: get() may return null
+        }
+        catch (IOException e) {
+            return "#" + id + " <ERROR>";
+        }  
     }
 }
