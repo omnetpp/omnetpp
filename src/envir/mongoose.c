@@ -1701,6 +1701,13 @@ convert_uri_to_file_name(struct mg_connection *conn, const char *uri,
 #endif /* _WIN32 */
 }
 
+static int g_last_port = 0;
+
+int mg_get_last_port()
+{
+    return g_last_port;
+}
+
 /*
  * Setup listening socket on given address, return socket.
  * Address format: [local_ip_address:]port_number
@@ -1710,10 +1717,12 @@ mg_open_listening_port(struct mg_context *ctx, const char *str, struct usa *usa)
 {
     SOCKET      sock;
     int     on = 1, a, b, c, d, port;
+    bool_t      try_subsequent_ports;
 
     /* MacOS needs that. If we do not zero it, bind() will fail. */
     (void) memset(usa, 0, sizeof(*usa));
 
+    try_subsequent_ports = str[0] && str[strlen(str)-1]=='+';
     if (sscanf(str, "%d.%d.%d.%d:%d", &a, &b, &c, &d, &port) == 5) {
         /* IP address to bind to is specified */
         usa->u.sin.sin_addr.s_addr =
@@ -1725,6 +1734,7 @@ mg_open_listening_port(struct mg_context *ctx, const char *str, struct usa *usa)
         return (INVALID_SOCKET);
     }
 
+retry:
     usa->len            = sizeof(usa->u.sin);
     usa->u.sin.sin_family       = AF_INET;
     usa->u.sin.sin_port     = htons((uint16_t) port);
@@ -1736,7 +1746,13 @@ mg_open_listening_port(struct mg_context *ctx, const char *str, struct usa *usa)
         listen(sock, 128) == 0) {
         /* Success */
         set_close_on_exec(sock);
+        g_last_port = port;
     } else {
+        /* Try next port if that is asked from us */
+        if (try_subsequent_ports && port != 65535) {
+            port++;
+            goto retry; /* sorry about using goto! */
+        }
         /* Error */
         cry(fc(ctx), "%s(%d): %s", __func__, port, strerror(ERRNO));
         if (sock != INVALID_SOCKET)
@@ -3733,7 +3749,7 @@ set_ports_option(struct mg_context *ctx, const char *list)
 
         if (ctx->num_listeners >=
             (int) (ARRAY_SIZE(ctx->listeners) - 1)) {
-            cry(fc(ctx), "%s", "Too many listeninig sockets");
+            cry(fc(ctx), "%s", "Too many listening sockets");
             return (FALSE);
         } else if ((sock = mg_open_listening_port(ctx,
             vec.ptr, &listener->lsa)) == INVALID_SOCKET) {

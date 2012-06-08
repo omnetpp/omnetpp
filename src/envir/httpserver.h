@@ -29,7 +29,7 @@ class ENVIR_API cHttpServer
 {
   public:
     virtual ~cHttpServer() {}
-    virtual void start(cConfiguration *cfg) = 0;
+    virtual void start(const char *portSpec) = 0;
     virtual void stop() = 0;
     virtual void addHttpRequestHandler(cHttpRequestHandler *p) = 0;
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p) = 0;

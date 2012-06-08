@@ -37,7 +37,7 @@ class ENVIR_API cMongooseHttpServer : public cHttpServer
 
   public:
     cMongooseHttpServer();
-    virtual void start(cConfiguration *cfg);
+    virtual void start(const char *portSpec);
     virtual void stop();
     virtual void addHttpRequestHandler(cHttpRequestHandler *p);
     virtual void removeHttpRequestHandler(cHttpRequestHandler *p);

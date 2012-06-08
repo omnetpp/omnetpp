@@ -29,15 +29,13 @@ cMongooseHttpServer::cMongooseHttpServer()
     ctx = NULL;
 }
 
-void cMongooseHttpServer::start(cConfiguration *cfg)
+void cMongooseHttpServer::start(const char *portSpec)
 {
     if ((ctx = mg_start()) == NULL)
         throw cRuntimeError("Cannot initialize embedded HTTP server");
 
-    mg_set_option(ctx, "ports", "4242");
-    //TODO configure mongoose (http-options: support mongoose command-line options...)
-    //TODO throw error if cannot bind!
-    //TODO option: bind to 1st free port sterting from X; and print port number in parseable form
+    if (!mg_set_option(ctx, "ports", portSpec))
+        throw cRuntimeError("Embedded HTTP server could not bind to port %s", portSpec);
 
     mg_set_uri_callback(ctx, "*", uri_callback, this);
 
@@ -48,7 +46,7 @@ void cMongooseHttpServer::start(cConfiguration *cfg)
     // main thread anyway.
     mg_set_option(ctx, "max_threads", "0");
 
-    ::printf("Embedded web server started on port(s) [%s]\n", mg_get_option(ctx, "ports"));
+    ::printf("Embedded web server started on port %d\n", mg_get_last_port()); // note: mg_get_option(ctx, "ports") would return "80+" even if mongoose actually listens on, say, port 83
 }
 
 void cMongooseHttpServer::stop()
@@ -93,6 +91,8 @@ void cMongooseHttpServer::uri_callback(struct mg_connection *conn, const struct 
     cMongooseHttpRequest req(conn, info);
     cMongooseHttpServer *self = (cMongooseHttpServer *)user_data;
 
+    ::printf("[http] %s %s?%s\n", req.getRequestMethod(), req.getUri(), req.getQueryString());
+
     bool handled = false;
     for (int i=0; i<(int)self->handlers.size(); i++)
         if (handled = self->handlers[i]->handle(&req))
@@ -112,7 +112,8 @@ void cMongooseHttpServer::uri_callback(struct mg_connection *conn, const struct 
     }
 
     double consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
-    ::printf("%s %s: took %lgs\n", req.getRequestMethod(), req.getUri(), consumedCPU);
+    ::printf("[http] processing took %lgs\n", consumedCPU);
+    fflush(stdout); // needed for sensible output in the IDE console
 }
 
 //----

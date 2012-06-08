@@ -444,9 +444,15 @@ bool EnvirBase::setup()
         }
         simulation.doneLoadingNedFiles();
 
-        //FIXME TODO if webserver enabled:
-        httpServer = new cMongooseHttpServer(); //TODO some factory method or something
-        httpServer->start(getConfig());
+        // initialize built-in web server
+        const char *portSpec = args->optionValue('p',0);
+        if (!portSpec)
+            portSpec = "8000+"; // default value
+        if (strcmp(portSpec, "-") != 0)
+        {
+            httpServer = new cMongooseHttpServer();
+            httpServer->start(portSpec);
+        }
         //FIXME TODO also shutdown
 
         // notify listeners when global setup is complete
@@ -478,6 +484,14 @@ void EnvirBase::printHelp()
     ev << "                (it will be appended automatically.) The loaded module may\n";
     ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
     ev << "                can be present.\n";
+    ev << "  -p <port>     Port number for the built-in web server.\n";
+    ev << "                If the port is not available, the program will exit with an\n";
+    ev << "                error message unless the number is suffixed with the plus\n";
+    ev << "                sign. The plus sign causes the program to search for the\n";
+    ev << "                first available port number above the given one, and not stop\n";
+    ev << "                with an error even if no available port was found. A plain\n";
+    ev << "                minus sign will turn off the built-in web server.\n";
+    ev << "                The default value is \"8000+\".\n";
     ev << "  --<configuration-key>=<value>\n";
     ev << "                Any configuration option can be specified on the command\n";
     ev << "                line, and it takes precedence over settings specified in the\n";
@@ -1421,11 +1435,7 @@ void EnvirBase::processFileName(opp_string& fname)
           text.erase(index);
         }
 
-        const char *hostname=getenv("HOST");
-        if (!hostname)
-            hostname=getenv("HOSTNAME");
-        if (!hostname)
-            hostname=getenv("COMPUTERNAME");
+        const char *hostname = opp_gethostname();
         if (!hostname)
             throw cRuntimeError("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
                                 "or COMPUTERNAME (Windows) environment variable",

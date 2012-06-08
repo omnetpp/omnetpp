@@ -249,6 +249,15 @@ void mg_free(char *var);
 int/*bool*/ mg_process_socket(struct mg_context *ctx, int/*bool*/ blocking);
 
 /*
+ * Returns the (last) port that Mongoose successfully listens on. Needed
+ * because Mongoose now accepts a plus sign after the port number (e.g.
+ * "80+"), meaning "bind to the first accessible port after the given one."
+ *
+ * Author Andras
+ */
+int mg_get_last_port();
+
+/*
  * Return Mongoose version.
  */
 const char *mg_version(void);
