@@ -38,6 +38,24 @@ void setPosixLocale()
 
 //----
 
+const char *opp_gethostname()
+{
+#ifdef _WIN32
+    // Windows also has gethostname(), but we don't want to pull in winsock2 just for that
+    return getenv("COMPUTERNAME");
+#else
+    static char buf[128];
+    if (gethostname(buf, sizeof(buf)) == 0)
+        return buf;
+    else if (getenv("HOST") != NULL)
+        return getenv("HOST");
+    else
+        return getenv("HOSTNAME");
+#endif
+}
+
+//----
+
 int DebugCall::depth;
 
 DebugCall::DebugCall(const char *fmt,...)
@@ -52,7 +70,7 @@ DebugCall::~DebugCall()
 {
     std::cout << std::setw(--depth*2) << "" << " -- " << funcname;
     if (!result.empty())
-    	std::cout << ", result: " << result;
+        std::cout << ", result: " << result;
     std::cout << std::endl;
 }
 

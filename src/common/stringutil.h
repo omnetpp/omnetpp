@@ -272,6 +272,18 @@ COMMON_API const char *opp_findmatchingquote(const char *s);
  */
 COMMON_API const char *opp_findmatchingparen(const char *s);
 
+/**
+ * Decode an URL-encoded string.
+ */
+COMMON_API std::string opp_urldecode(const std::string& src);
+
+/**
+ * Locates the first occurrence of the null-terminated string needle in the
+ * string haystack, where not more than n characters are searched. Characters
+ * that appear after a '\0' character are not searched.
+ */
+COMMON_API const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive);
+
 //NAMESPACE_END
 
 

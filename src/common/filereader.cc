@@ -24,6 +24,7 @@
 #include "commonutil.h"
 #include "filereader.h"
 #include "exception.h"
+#include "stringutil.h"
 
 USING_NAMESPACE
 
@@ -526,25 +527,11 @@ char *FileReader::getLastLineBufferPointer()
     return getPreviousLineBufferPointer();
 }
 
-const char *strnistr(const char *haystack, const char *needle, int n, bool caseSensitive)
-{
-    int needleLen = strlen(needle);
-    if (n == 0)
-        n = strlen(haystack);
-
-    int slen = n - needleLen;
-
-    for (const char *s = haystack; slen>0 && *s; s++, slen--)
-        if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
-            return s;
-    return NULL;
-}
-
 char *FileReader::findNextLineBufferPointer(const char *search, bool caseSensitive)
 {
     char *line;
     while ((line = getNextLineBufferPointer()) != NULL)
-        if (strnistr(line, search, getCurrentLineLength(), caseSensitive))
+        if (opp_strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
     return NULL;
 }
@@ -553,7 +540,7 @@ char *FileReader::findPreviousLineBufferPointer(const char *search, bool caseSen
 {
     char *line;
     while ((line = getPreviousLineBufferPointer()) != NULL)
-        if (strnistr(line, search, getCurrentLineLength(), caseSensitive))
+        if (opp_strnistr(line, search, getCurrentLineLength(), caseSensitive))
             return line;
     return NULL;
 }

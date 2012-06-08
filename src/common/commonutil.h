@@ -71,6 +71,11 @@ inline bool isNegativeInfinity(double d) { return d==NEGATIVE_INFINITY; }
 COMMON_API void setPosixLocale();
 
 /**
+ * A more convenient gethostname(). Does its best, but when it fails the result will be NULL.
+ */
+COMMON_API const char *opp_gethostname();
+
+/**
  * Debugging aid: prints a message on entering/leaving methods; message
  * gets indented according to call depth. See TRACE macro.
  */
@@ -94,12 +99,12 @@ class COMMON_API DebugCall
 
 template <class T> struct ToString
 {
-	static std::string toString(const T x) { std::ostringstream s; s << x; return s.str();}
+    static std::string toString(const T x) { std::ostringstream s; s << x; return s.str();}
 };
 
 template <class T> struct ToString<T*>
 {
-	static std::string toString(const T* x) { std::ostringstream s; s << ((void*)x); return s.str(); }
+    static std::string toString(const T* x) { std::ostringstream s; s << ((void*)x); return s.str(); }
 };
 
 #define TRACE  DebugCall __x

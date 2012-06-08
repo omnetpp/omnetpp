@@ -549,3 +549,57 @@ const char *opp_findmatchingparen(const char *s)
     return parens>0 ? NULL : s;
 }
 
+inline char hexToChar(char first, char second)
+{
+    int digit;
+    digit = (first >= 'A' ? ((first & 0xDF) - 'A') + 10 : (first - '0'));
+    digit *= 16;
+    digit += (second >= 'A' ? ((second & 0xDF) - 'A') + 10 : (second - '0'));
+    return static_cast<char>(digit);
+}
+
+std::string opp_urldecode(const std::string& src)
+{
+    std::string result;
+    std::string::const_iterator iter;
+    char c;
+
+    for (iter = src.begin(); iter != src.end(); ++iter)
+    {
+        switch(*iter)
+        {
+            case '+':
+                result.append(1, ' ');
+                break;
+            case '%':
+                if (std::distance(iter, src.end()) >= 2 && opp_isdigit(*(iter + 1)) && opp_isxdigit(*(iter + 2))) {
+                    c = *++iter;
+                    result.append(1, hexToChar(c, *++iter));
+                }
+                else {
+                    result.append(1, '%');
+                }
+                break;
+
+            default:
+                result.append(1, *iter);
+                break;
+        }
+    }
+
+    return result;
+}
+
+const char *opp_strnistr(const char *haystack, const char *needle, int n, bool caseSensitive)
+{
+    int needleLen = strlen(needle);
+    if (n == 0)
+        n = strlen(haystack);
+
+    int slen = n - needleLen;
+
+    for (const char *s = haystack; slen>0 && *s; s++, slen--)
+        if (!(caseSensitive ? strncmp(s, needle, needleLen) : strncasecmp(s, needle, needleLen)))
+            return s;
+    return NULL;
+}
