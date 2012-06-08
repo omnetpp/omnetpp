@@ -98,12 +98,15 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
 
      RunMode runMode;             // the current mode the simulation is executing under
      bool isConfigRun;            // true after newRun(), and false after newConfig()
-     simtime_t rununtil_time;     // time limit in current "Run Until" execution, or zero
-     eventnumber_t rununtil_eventnum;// event number in current "Run Until" execution, or zero
-     cMessage *rununtil_msg;      // stop before this event; also when this message gets canceled
-     cModule *rununtil_module;    // stop before and after events in this module; ignored with EXPRESS mode
 
-     bool stopsimulation_flag;    // indicates that the simulation should be stopped (STOP button pressed in the UI)
+     struct {
+         simtime_t simTime;       // time limit in current "Run Until" execution, or zero
+         eventnumber_t eventNumber;// event number in current "Run Until" execution, or zero
+         cMessage *msg;           // stop before this event; also when this message gets canceled
+         cModule *module;         // stop before and after events in this module; FIXME currently ignored with EXPRESS mode
+     } runUntil;
+
+     bool stopSimulationFlag;     // indicates that the simulation should be stopped (STOP button pressed in the UI)
      timeval idleLastUICheck;     // gettimeofday() time when idle() last run the Tk "update" command  XXX comment
 
      // object<->id mapping (we don't want to return pointer values to our HTTP client)
@@ -111,8 +114,39 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      std::map<long,cObject*> idToObjectMap;
      long lastId;
 
+     // error data to be displayed on remote UI
+     struct {
+         bool isValid;
+         std::string message; //TODO all other details: module, etc.
+     } errorInfo;
+
+     // question to be displayed on the remote UI
+     struct {
+         bool isValid;
+         std::string prompt; //TODO all other details
+         std::string reply;
+     } askParamInfo;  //TODO maybe just: getsInfo?  what about askYesNo?
+
+     // error data to be displayed on remote UI
+     struct {
+         bool isValid;
+         std::string message; //TODO dialog type: error/warning/info
+     } printfmsgInfo;
+
+     struct {
+         bool isValid;
+         std::string message;
+         std::string reply;
+     } getsInfo;
+
+     struct {
+         bool isValid;
+         std::string message;
+         bool reply;
+     } askyesnoInfo;
+
      // set to true on SIGINT/SIGTERM signals
-     static bool sigint_received;
+     static bool sigintReceived;
 
      // stream to write output to
      FILE *fout;
@@ -141,6 +175,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual unsigned getExtraStackForEnvir() const;
 
    protected:
+     virtual void displayException(std::exception& ex);
      virtual void run();
      virtual void printUISpecificHelp();
 
@@ -156,11 +191,11 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void newRun(const char *configname, int runnumber);
      virtual void rebuildSim();
      virtual void doOneStep();
-     virtual void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, cMessage *until_msg=NULL, cModule *until_module=NULL);
+     virtual void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, long realtimemillis=0, cMessage *until_msg=NULL, cModule *until_module=NULL);
      virtual void setSimulationRunMode(RunMode runmode);
      virtual int getSimulationRunMode() const {return runMode;}
-     virtual void setStopSimulationFlag() {stopsimulation_flag = true;}
-     virtual bool getStopSimulationFlag() {return stopsimulation_flag;}
+     virtual void setStopSimulationFlag() {stopSimulationFlag = true;}
+     virtual bool getStopSimulationFlag() {return stopSimulationFlag;}
      virtual void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
      virtual void setSimulationRunUntilModule(cModule *until_module);
      virtual bool doRunSimulation();

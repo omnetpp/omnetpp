@@ -22,6 +22,8 @@
 #include <signal.h>
 
 #include "opp_ctype.h"
+#include "commonutil.h"
+#include "fileutil.h"
 #include "cmddefs.h"
 #include "cmdenv.h"
 #include "enumstr.h"
@@ -98,7 +100,7 @@ extern "C" CMDENV_API void _cmdenv_lib() {}
 
 static char buffer[1024];
 
-bool Cmdenv::sigint_received;
+bool Cmdenv::sigintReceived;
 
 
 // utility function for printing elapsed time
@@ -132,48 +134,6 @@ static cEnum runModeEnum("RunMode",
         "express", Cmdenv::RUNMODE_EXPRESS,
         NULL);
 
-//TODO into some utility class
-static char hexToChar(char first, char second)
-{
-    int digit;
-    digit = (first >= 'A' ? ((first & 0xDF) - 'A') + 10 : (first - '0'));
-    digit *= 16;
-    digit += (second >= 'A' ? ((second & 0xDF) - 'A') + 10 : (second - '0'));
-    return static_cast<char>(digit);
-}
-
-//TODO into some utility class
-static std::string urldecode(const std::string& src)
-{
-    std::string result;
-    std::string::const_iterator iter;
-    char c;
-
-    for (iter = src.begin(); iter != src.end(); ++iter)
-    {
-        switch(*iter)
-        {
-            case '+':
-                result.append(1, ' ');
-                break;
-            case '%':
-                if (std::distance(iter, src.end()) >= 2 && opp_isdigit(*(iter + 1)) && opp_isxdigit(*(iter + 2))) {
-                    c = *++iter;
-                    result.append(1, hexToChar(c, *++iter));
-                }
-                else {
-                    result.append(1, '%');
-                }
-                break;
-
-            default:
-                result.append(1, *iter);
-                break;
-        }
-    }
-
-    return result;
-}
 
 Cmdenv::Cmdenv()
 {
@@ -194,6 +154,9 @@ Cmdenv::Cmdenv()
     isConfigRun = false; //TODO check all other new vars too
 
     lastId = 0;
+
+    errorInfo.isValid = false;
+    askParamInfo.isValid = false;
 }
 
 Cmdenv::~Cmdenv()
@@ -324,12 +287,12 @@ void Cmdenv::run()
         }
 
         // we'll return nonzero exitcode if any run was terminated with error
-        bool had_error = false;
+        bool hadError = false;
 
         for (; runiterator()!=-1; runiterator++)
         {
             int runnumber = runiterator();
-            bool setupnetwork_done = false;
+            bool networkSetupDone = false;
             bool startrun_done = false;
             try
             {
@@ -356,7 +319,7 @@ void Cmdenv::run()
                 ::fflush(fout);
 
                 setupNetwork(network);
-                setupnetwork_done = true;
+                networkSetupDone = true;
 
                 // prepare for simulation run
                 ::fprintf(fout, "Initializing...\n");
@@ -387,7 +350,7 @@ void Cmdenv::run()
             }
             catch (std::exception& e)
             {
-                had_error = true;
+                hadError = true;
                 disable_tracing = false;
                 stoppedWithException(e);
                 notifyListeners(LF_ON_SIMULATION_ERROR);
@@ -403,14 +366,14 @@ void Cmdenv::run()
                 }
                 catch (std::exception& e)
                 {
-                    had_error = true;
+                    hadError = true;
                     notifyListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
             }
 
             // delete network
-            if (setupnetwork_done)
+            if (networkSetupDone)
             {
                 try
                 {
@@ -418,20 +381,20 @@ void Cmdenv::run()
                 }
                 catch (std::exception& e)
                 {
-                    had_error = true;
+                    hadError = true;
                     notifyListeners(LF_ON_SIMULATION_ERROR);
                     displayException(e);
                 }
             }
 
             // skip further runs if signal was caught
-            if (sigint_received)
+            if (sigintReceived)
                 break;
         }
 
         ::fflush(fout);
 
-        exitcode = had_error ? 1 : sigint_received ? 2 : 0;
+        exitcode = hadError ? 1 : sigintReceived ? 2 : 0;
     }
 }
 
@@ -442,7 +405,7 @@ void Cmdenv::processHttpRequests(bool blocking)
     for (;;)
     {
         while (command == CMD_NONE) {
-            bool didSomething = httpServer->handleOneRequest(blocking);
+            bool didSomething = httpServer->handleOneRequest(blocking);  // ends up in handle(cHttpRequest*)
             if (!blocking && !didSomething)
                 return;
         }
@@ -450,7 +413,7 @@ void Cmdenv::processHttpRequests(bool blocking)
         int currentCommand = command;
         command = CMD_NONE;
 
-        printf("command=%d\n", currentCommand);
+        ::printf("[cmdenv] command=%d\n", currentCommand);
         if (currentCommand == CMD_QUIT) {
             return; //XXX set some "should_exit" flag like Tkenv?
         }
@@ -474,9 +437,10 @@ void Cmdenv::processHttpRequests(bool blocking)
             RunMode mode = (RunMode)runModeEnum.lookup(commandArgs["mode"].c_str(), RUNMODE_NONE);
             simtime_t untilTime = commandArgs["utime"]=="" ? 0 : STR_SIMTIME(commandArgs["utime"].c_str());
             eventnumber_t untilEventnum = commandArgs["uevent"]=="" ? 0 : opp_atol(commandArgs["uevent"].c_str());
+            long realTimeMillis = commandArgs["rtlimit"]=="" ? 0 : opp_atof(commandArgs["rtlimit"].c_str());
             cMessage *untilMsg = commandArgs["umsg"]=="" ? NULL : check_and_cast<cMessage*>(getObjectById(opp_atol(commandArgs["umsg"].c_str())));
             cModule *untilModule = commandArgs["umod"]=="" ? NULL : check_and_cast<cModule*>(getObjectById(opp_atol(commandArgs["umod"].c_str())));
-            runSimulation(mode, untilTime, untilEventnum, untilMsg, untilModule);
+            runSimulation(mode, untilTime, untilEventnum, realTimeMillis, untilMsg, untilModule);
         }
         else if (currentCommand == CMD_STOP) {
             setStopSimulationFlag();
@@ -492,8 +456,6 @@ void Cmdenv::processHttpRequests(bool blocking)
 
 bool Cmdenv::handle(cHttpRequest *request)
 {
-    printf("%s %s %s\n", request->getRequestMethod(), request->getUri(), request->getQueryString());
-
     //TODO: rewrite HttpServer so it directly uses mongoose's url-based callback registration...
     if (strcmp(request->getRequestMethod(), "GET") != 0 || strncmp(request->getUri(), "/sim", 4) !=0)
         return false;
@@ -513,59 +475,60 @@ bool Cmdenv::handle(cHttpRequest *request)
         if (!eqPtr)
             commandArgs[token] = "";
         else
-            commandArgs[std::string(token, eqPtr-token)] = urldecode(eqPtr + 1);
+            commandArgs[std::string(token, eqPtr-token)] = opp_urldecode(eqPtr + 1);
     }
 
     const char *OK_STATUS = "HTTP/1.0 200 OK\n";
 
-    //XXX why beginswith?
-    if (opp_stringbeginswith(uri, "/sim/setupNetwork")) {
+    if (strcmp(uri, "/sim/setupNetwork") == 0) {
         //TODO check state!
         command = CMD_SETUPNETWORK;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/setupRun")) {
+    else if (strcmp(uri, "/sim/setupRun") == 0) {
         //TODO check state!
         command = CMD_SETUPRUN;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/rebuild")) {
+    else if (strcmp(uri, "/sim/rebuild") == 0) {
         //TODO check state!
         command = CMD_REBUILD;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/step")) {
+    else if (strcmp(uri, "/sim/step") == 0) {
         //TODO check state!
         command = CMD_STEP;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/run")) {
+    else if (strcmp(uri, "/sim/run") == 0) {
         //TODO check state!
         command = CMD_RUN;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/stop")) {
+    else if (strcmp(uri, "/sim/stop") == 0) {
         //TODO check state!
         command = CMD_STOP;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/callFinish")) {
+    else if (strcmp(uri, "/sim/callFinish") == 0) {
         //TODO check state!
         command = CMD_FINISH;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/quit")) {
+    else if (strcmp(uri, "/sim/quit") == 0) {
         //TODO check state!
         command = CMD_QUIT;
         request->print(OK_STATUS);
     }
-    else if (opp_stringbeginswith(uri, "/sim/status")) {
+    else if (strcmp(uri, "/sim/status") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
         JsonBox::Object result;
-        result["pid"] = JsonBox::Value(getpid());
+        result["hostname"] = JsonBox::Value(opp_gethostname());
+        result["processid"] = JsonBox::Value(getpid());
         result["state"] = JsonBox::Value(stateEnum.getStringFor(state));
+        result["eventlogfile"] = JsonBox::Value(toAbsolutePath(eventlogmgr->getFileName()));
         if (state != SIM_NONETWORK) {
             ASSERT(simulation.getSystemModule());
             cConfigurationEx *cfg = getConfigEx();
@@ -576,11 +539,17 @@ bool Cmdenv::handle(cHttpRequest *request)
             result["simtime"] = JsonBox::Value(SIMTIME_STR(simTime())); //FIXME goes through as string!
         }
 
+        if (errorInfo.isValid) {
+            JsonBox::Object info;
+            info["message"] = errorInfo.message;
+            result["errorInfo"] = info;
+            errorInfo.isValid = false;
+        }
         std::stringstream ss;
         JsonBox::Value(result).writeToStream(ss, true, false);  //TODO add .str() to JSON classes...
         request->print(ss.str().c_str());
     }
-    else if (opp_stringbeginswith(uri, "/sim/enumerateConfigs")) {
+    else if (strcmp(uri, "/sim/enumerateConfigs") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
@@ -605,7 +574,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         JsonBox::Value(result).writeToStream(ss, true, false);  //TODO add .str() to JSON classes...
         request->print(ss.str().c_str());
     }
-    else if (opp_stringbeginswith(uri, "/sim/getRootObjectIds")) {
+    else if (strcmp(uri, "/sim/getRootObjectIds") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
@@ -627,7 +596,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         JsonBox::Value(result).writeToStream(ss, true, false);
         request->print(ss.str().c_str());
     }
-    else if (opp_stringbeginswith(uri, "/sim/getObjectInfo")) {
+    else if (strcmp(uri, "/sim/getObjectInfo") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
@@ -659,7 +628,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         JsonBox::Value(result).writeToStream(ss, true, false);
         request->print(ss.str().c_str());
     }
-    else if (opp_stringbeginswith(uri, "/sim/getObjectChildren")) {
+    else if (strcmp(uri, "/sim/getObjectChildren") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
@@ -686,7 +655,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         JsonBox::Value(result).writeToStream(ss, true, false);
         request->print(ss.str().c_str());
     }
-    else if (opp_stringbeginswith(uri, "/sim/getObjectFields")) {
+    else if (strcmp(uri, "/sim/getObjectFields") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
@@ -909,7 +878,7 @@ void Cmdenv::doOneStep()
 {
     ASSERT(state==SIM_READY);
 
-    rununtil_msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
+    runUntil.msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
 
     state = SIM_RUNNING;
     startClock();
@@ -918,9 +887,7 @@ void Cmdenv::doOneStep()
     {
         cEvent *event = simulation.takeNextEvent();
         if (event) {
-//            if (opt_eventbanners)
-//                if (!event->isMessage() || static_cast<cMessage*>(event)->getArrivalModule()->isEvEnabled())
-//                    printEventBanner(event);
+            printEventBanner(event);
             simulation.executeEvent(event);
         }
 
@@ -942,7 +909,7 @@ void Cmdenv::doOneStep()
         displayException(e);
     }
     stopClock();
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
     if (state == SIM_TERMINATED)
     {
@@ -967,17 +934,17 @@ void Cmdenv::doOneStep()
  * UI update idejere megallitjuk (eleve until darabkakkal kell futtatni!)
  * until-t mindegyik tamogatja (simtime, eventnumber, msg, module, PLUS: elapsed!!! [i.e. run for 2s])
  */
-void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg, cModule *until_module)
+void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, long realtimemillis, cMessage *until_msg, cModule *until_module)
 {
     ASSERT(state==SIM_READY);
 
     runMode = mode;
-    rununtil_time = until_time;
-    rununtil_eventnum = until_eventnum;
-    rununtil_msg = until_msg;
-    rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runUntil.simTime = until_time;
+    runUntil.eventNumber = until_eventnum;
+    runUntil.msg = until_msg;
+    runUntil.module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
     state = SIM_RUNNING;
     startClock();
@@ -1011,10 +978,10 @@ void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unt
         displayException(e);
     }
     stopClock();
-    stopsimulation_flag = false;
+    stopSimulationFlag = false;
 
     disable_tracing = false;
-    rununtil_msg = NULL;
+    runUntil.msg = NULL;
 
     if (state==SIM_TERMINATED)
     {
@@ -1039,14 +1006,14 @@ void Cmdenv::setSimulationRunMode(RunMode mode)
 
 void Cmdenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
 {
-    rununtil_time = until_time;
-    rununtil_eventnum = until_eventnum;
-    rununtil_msg = until_msg;
+    runUntil.simTime = until_time;
+    runUntil.eventNumber = until_eventnum;
+    runUntil.msg = until_msg;
 }
 
 void Cmdenv::setSimulationRunUntilModule(cModule *until_module)
 {
-    rununtil_module = until_module;
+    runUntil.module = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -1082,7 +1049,7 @@ bool Cmdenv::doRunSimulation()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - runmode, runUntil.simTime, runUntil.eventNumber, runUntil.msg, runUntil.module;
     //  - stopsimulation_flag
     //
     Speedometer speedometer;
@@ -1102,13 +1069,13 @@ bool Cmdenv::doRunSimulation()
         if (!event) break; // scheduler interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+        if (runUntil.msg && simulation.msgQueue.peekFirst()==runUntil.msg) break;
 
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
         cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
-        bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
+        bool untilmodule_reached = runUntil.module && moduleContains(runUntil.module,mod);
         if (untilmodule_reached && !firstevent)
             break;
         firstevent = false;
@@ -1118,8 +1085,12 @@ bool Cmdenv::doRunSimulation()
         speedometer.addEvent(simulation.getSimTime());
 
         // do a simulation step
-//        if (opt_event_banners)
-//            printEventBanner(simulation.msgQueue.peekFirst(), mod);
+        printEventBanner(event);
+
+        // flush *between* printing event banner and event processing, so that
+        // if event processing crashes, it can be seen which event it was
+        if (opt_autoflush)
+            ::fflush(fout);
 
         simulation.executeEvent(event);
 
@@ -1141,9 +1112,9 @@ bool Cmdenv::doRunSimulation()
 
         // exit conditions
         if (untilmodule_reached) break;
-        if (stopsimulation_flag) break;
-        if (rununtil_time>0 && simulation.guessNextSimtime()>=rununtil_time) break;
-        if (rununtil_eventnum>0 && simulation.getEventNumber()>=rununtil_eventnum) break;
+        if (stopSimulationFlag) break;
+        if (runUntil.simTime>0 && simulation.guessNextSimtime()>=runUntil.simTime) break;
+        if (runUntil.eventNumber>0 && simulation.getEventNumber()>=runUntil.eventNumber) break;
 
         checkTimeLimits();
     }
@@ -1156,11 +1127,11 @@ bool Cmdenv::doRunSimulationExpress()
     // IMPORTANT:
     // The following variables may change during execution (as a result of user interaction
     // during Tcl_Eval("update"):
-    //  - runmode, rununtil_time, rununtil_eventnum, rununtil_msg, rununtil_module;
+    //  - runmode, runUntil.simTime, runUntil.eventNumber, runUntil.msg, runUntil.module;
     //  - stopsimulation_flag
     //  - opt_expressmode_autoupdate
     //
-    // EXPRESS does not support rununtil_module!
+    // EXPRESS does not support runUntil.module!
     //
 
     // update, just to get the above notice displayed
@@ -1171,8 +1142,8 @@ bool Cmdenv::doRunSimulationExpress()
     speedometer.start(simulation.getSimTime());
     disable_tracing = true;
 
-    struct timeval last_update;
-    gettimeofday(&last_update, NULL);
+    struct timeval lastUpdateTime;
+    gettimeofday(&lastUpdateTime, NULL);
 
     do
     {
@@ -1180,13 +1151,13 @@ bool Cmdenv::doRunSimulationExpress()
         if (!event) break; // scheduler interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (rununtil_msg && simulation.msgQueue.peekFirst()==rununtil_msg) break;
+        if (runUntil.msg && simulation.msgQueue.peekFirst()==runUntil.msg) break;
 
         speedometer.addEvent(simulation.getSimTime());
 
         simulation.executeEvent(event);
 
-        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, last_update))
+        if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, lastUpdateTime))
         {
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
             {
@@ -1195,15 +1166,15 @@ bool Cmdenv::doRunSimulationExpress()
             }
 //            Tcl_Eval(interp, "update");
             processHttpRequests(false);
-            resetElapsedTime(last_update); // exclude UI update time [bug #52]
+            resetElapsedTime(lastUpdateTime); // exclude UI update time [bug #52]
             if (runMode != RUNMODE_EXPRESS)
                 return true;  // should continue, but in a different mode
         }
         checkTimeLimits();
     }
-    while( !stopsimulation_flag &&
-           (rununtil_time<=0 || simulation.guessNextSimtime() < rununtil_time) &&
-           (rununtil_eventnum<=0 || simulation.getEventNumber() < rununtil_eventnum)
+    while( !stopSimulationFlag &&
+           (runUntil.simTime<=0 || simulation.guessNextSimtime() < runUntil.simTime) &&
+           (runUntil.eventNumber<=0 || simulation.getEventNumber() < runUntil.eventNumber)
          );
     return false;
 }
@@ -1301,7 +1272,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
     installSignalHandler();
 
     startClock();
-    sigint_received = false;
+    sigintReceived = false;
 
     Speedometer speedometer;  // only used by Express mode, but we need it in catch blocks too
 
@@ -1333,7 +1304,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
                 flushLastLine();
 
                 checkTimeLimits();
-                if (sigint_received)
+                if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
 
                 //TODO probably not after each event!
@@ -1367,7 +1338,7 @@ void Cmdenv::simulate() //XXX probably not needed anymore -- take over interesti
                 simulation.executeEvent(event);
 
                 checkTimeLimits();  //XXX potential performance hog (maybe check every 256 events, unless "cmdenv-strict-limits" is on?)
-                if (sigint_received)
+                if (sigintReceived)
                     throw cTerminationException("SIGINT or SIGTERM received, exiting");
 
                 //TODO probably not after each event!
@@ -1501,6 +1472,17 @@ const char *Cmdenv::progressPercentage()
     }
 }
 
+void Cmdenv::displayException(std::exception& ex)
+{
+    EnvirBase::displayException(ex);
+
+    //TODO display the exception in the UI
+    errorInfo.message = ex.what();
+    errorInfo.isValid = true;
+    while (errorInfo.isValid)
+        processHttpRequests(true);  // status() will reset isValid
+}
+
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
 {
     if (!opt_expressmode && opt_eventbanners && component->isEvEnabled())
@@ -1511,7 +1493,7 @@ void Cmdenv::componentInitBegin(cComponent *component, int stage)
 void Cmdenv::signalHandler(int signum)
 {
     if (signum == SIGINT || signum == SIGTERM)
-        sigint_received = true;
+        sigintReceived = true;
 }
 
 void Cmdenv::installSignalHandler()
@@ -1606,7 +1588,7 @@ bool Cmdenv::askyesno(const char *question)
 
 bool Cmdenv::idle()
 {
-    return sigint_received;
+    return sigintReceived;
 }
 
 void Cmdenv::moduleCreated(cModule *mod)

@@ -128,6 +128,7 @@ class ENVIR_API EventlogFileManager : public cISimulationLifetimeListener
     virtual void recordConnections(cModule *module);
 
     virtual void flush();
+    virtual const char *getFileName() const { return filename.c_str(); }
 
     /** @name Functions called from cEnvir's similar functions */
     //@{
