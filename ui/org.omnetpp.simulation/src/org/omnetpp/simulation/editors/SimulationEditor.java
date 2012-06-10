@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.editors;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -20,6 +22,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPosition;
+import org.omnetpp.animation.eventlog.controller.EventLogAnimationCoordinateSystem;
+import org.omnetpp.animation.eventlog.editors.EventLogAnimationContributor;
+import org.omnetpp.animation.eventlog.providers.EventLogAnimationPrimitiveProvider;
+import org.omnetpp.animation.eventlog.widgets.EventLogAnimationCanvas;
+import org.omnetpp.animation.eventlog.widgets.EventLogAnimationParameters;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.SelectionProvider;
@@ -157,7 +166,8 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
 
     private void setEventlogFileName(String fileName) {
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(fileName));
-        if (file != null && file.isAccessible() && (animationCanvas.getInput() == null || !animationCanvas.getInput().getFile().equals(file))) {
+        // TODO refresh if file exists but IFile.isAccessible() returns true! 
+        if (file != null && new File(fileName).isFile() && (animationCanvas.getInput() == null || !animationCanvas.getInput().getFile().equals(file))) {
             IEventLog eventLog = new EventLog(new FileReader(file.getLocation().toOSString(), false));
             EventLogInput eventLogInput = new EventLogInput(file, eventLog);
             EventLogAnimationPrimitiveProvider animationPrimitiveProvider = new EventLogAnimationPrimitiveProvider(eventLogInput, new EventLogAnimationParameters());
