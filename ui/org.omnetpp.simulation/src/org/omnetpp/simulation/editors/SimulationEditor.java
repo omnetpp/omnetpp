@@ -11,9 +11,12 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -29,6 +32,7 @@ import org.omnetpp.animation.eventlog.editors.EventLogAnimationContributor;
 import org.omnetpp.animation.eventlog.providers.EventLogAnimationPrimitiveProvider;
 import org.omnetpp.animation.eventlog.widgets.EventLogAnimationCanvas;
 import org.omnetpp.animation.eventlog.widgets.EventLogAnimationParameters;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.SelectionProvider;
@@ -84,32 +88,50 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
 
     @Override
     public void createPartControl(Composite parent) {
-        GridLayout layout = new GridLayout(1, true);
-        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0;
-        parent.setLayout(layout);
+        parent.setLayout(removeSpacing(new GridLayout(1, true)));
 
-        Composite controlArea = new Composite(parent, SWT.BORDER);
-        controlArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        controlArea.setLayout(new GridLayout(4, false));
+        // create toolbars
+        CTabFolder tabFolder = new CTabFolder(parent, SWT.HORIZONTAL);
+        tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        CTabItem simulationTab = new CTabItem(tabFolder, SWT.NONE);
+        simulationTab.setText("Simulate");
+        CTabItem animationTab = new CTabItem(tabFolder, SWT.NONE);
+        animationTab.setText("Playback");
+        
+        Composite simulationControls = new Composite(tabFolder, SWT.NONE);
+        simulationTab.setControl(simulationControls);
+        simulationControls.setLayout(removeSpacing(new GridLayout(1, false)));
+        
+        Composite simulationToolbars = new Composite(simulationControls, SWT.NONE);
+        simulationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        simulationToolbars.setLayout(new GridLayout(4, false));
 
-        ToolBar toolbar1 = new ToolBar(controlArea, SWT.NONE);
+        ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(new SetupIniConfigAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupNetworkAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new RebuildNetworkAction(simulationController)).fill(toolbar1, -1);
-        ToolBar toolbar2 = new ToolBar(controlArea, SWT.NONE);
+        ToolBar toolbar2 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(new StepAction(simulationController)).fill(toolbar2, -1);
         new ActionContributionItem(new RunAction(simulationController)).fill(toolbar2, -1);
         new ActionContributionItem(new FastRunAction(simulationController)).fill(toolbar2, -1);
         new ActionContributionItem(new ExpressRunAction(simulationController)).fill(toolbar2, -1);
         new ActionContributionItem(new RunUntilAction(simulationController)).fill(toolbar2, -1);
-        ToolBar toolbar3 = new ToolBar(controlArea, SWT.NONE);
+        ToolBar toolbar3 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(new StopAction(simulationController)).fill(toolbar3, -1);
         new ActionContributionItem(new CallFinishAction(simulationController)).fill(toolbar3, -1);
 
-        statusLabel = new Label(controlArea, SWT.NONE);
+        statusLabel = new Label(simulationControls, SWT.BORDER);
         statusLabel.setText("n/a");
         statusLabel.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false));
 
+        Canvas futureEventsTimeline = new Canvas(simulationControls, SWT.BORDER);
+        futureEventsTimeline.setBackground(ColorFactory.BEIGE);
+        GridData l = new GridData(SWT.FILL, SWT.END, true, false);
+        l.heightHint = 20;
+        futureEventsTimeline.setLayoutData(l);
+                
+        tabFolder.setSelection(simulationTab);
+        
 //        sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 //        sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
@@ -183,11 +205,17 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
             animationController.gotoInitialAnimationPosition();
         }
     }
+    
+    private GridLayout removeSpacing(GridLayout l) {
+        l.horizontalSpacing = l.verticalSpacing = l.marginHeight = l.marginWidth = 0;
+        return l;
+    }
 
     @Override
     public void dispose() {
     	super.dispose();
-    	
+
+    	//TODO when platform is shutting down, just cancel the launcherJob without asking!
     	if (simulationController.canCancelLaunch()) {
     	    boolean ans = MessageDialog.openQuestion(getSite().getShell(), "Terminate?", "Do you want to terminate the simulation process?");
     	    if (ans)
