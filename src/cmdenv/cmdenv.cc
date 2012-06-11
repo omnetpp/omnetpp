@@ -537,6 +537,10 @@ bool Cmdenv::handle(cHttpRequest *request)
             result["network"] = JsonBox::Value(simulation.getNetworkType()->getName());
             result["eventnumber"] = JsonBox::Value((int)simulation.getEventNumber()); //FIXME lossy conversion! int64 -> int
             result["simtime"] = JsonBox::Value(SIMTIME_STR(simTime())); //FIXME goes through as string!
+            if (simulation.guessNextModule())
+                result["nextEventModuleId"] = JsonBox::Value(simulation.guessNextModule()->getId());
+            if (simulation.guessNextEvent())
+                result["nextEventMessageId"] = JsonBox::Value(simulation.guessNextEvent()->getId());
         }
 
         if (errorInfo.isValid) {

@@ -42,13 +42,14 @@ import org.omnetpp.simulation.SimulationPlugin;
 
 /**
  * Interacts with a simulation process over HTTP.
- * 
+ *
  * @author Andras
  */
 // TODO errors in the simulation should be turned into SimulationException thrown from these methods?
 // TODO cmdenv: implement "runUntil" parameter "wallclocktimelimit", to be used with Express (or Fast too)
 // TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
 // TODO finish the "displayerror" and "askparameter" stuff
+// TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
 public class SimulationController {
     // root object IDs
     public static final String ROOTOBJ_SIMULATION = "simulation";
@@ -93,6 +94,8 @@ public class SimulationController {
     private String networkName;
     private long eventNumber;
     private BigDecimal simulationTime;
+    private long nextEventModuleId;  //TODO display on UI
+    private long nextEventMessageId; //TODO display on UI
     private String eventlogFile;
 
     // run state
@@ -113,7 +116,7 @@ public class SimulationController {
     public SimulationController(String hostName, int portNumber, Job launcherJob) {
         this.urlBase = "http://" + hostName + ":" + portNumber + "/";
         this.launcherJob = launcherJob;
-        
+
         // if simulation was launched via a local launcher job (see SimulationLauncherJob),
         // set up simulationProcessTerminated() to be called when the launcher job exits
         if (launcherJob != null) {
@@ -144,7 +147,7 @@ public class SimulationController {
     public boolean canCancelLaunch() {
         return launcherJob != null && launcherJob.getState() != Job.NONE;
     }
-    
+
     /**
      * Terminates the simulation; may only be called if canCancelLaunch() returns true
      */
@@ -152,7 +155,7 @@ public class SimulationController {
         if (launcherJob != null)
             launcherJob.cancel();
     }
-    
+
     public void setSimulationCallback(ISimulationCallback simulationCallback) {
         this.simulationCallback = simulationCallback;
     }
@@ -160,7 +163,7 @@ public class SimulationController {
     public ISimulationCallback getSimulationCallback() {
         return simulationCallback;
     }
-    
+
     public void addSimulationStateListener(ISimulationStateListener listener) {
         simulationListeners.add(listener);
     }
@@ -191,14 +194,14 @@ public class SimulationController {
     public String getHostName() {
         return hostName;
     }
-    
+
     /**
      * Process ID of the simulation we are talking to.
      */
     public long getProcessId() {
         return processId;
     }
-    
+
     public SimState getState() {
         if (state == SimState.READY && currentRunMode != RunMode.NOTRUNNING)
             return SimState.RUNNING; // a well-meant lie
@@ -209,12 +212,12 @@ public class SimulationController {
     public RunMode getCurrentRunMode() {
         return currentRunMode;
     }
-    
+
     public boolean isRunUntilActive() {
         // whether a "Run Until" is active
         return currentRunMode != RunMode.NOTRUNNING && (runUntilSimTime != null || runUntilEventNumber != 0);
     }
-    
+
     public String getConfigName() {
         return configName;
     }
@@ -238,7 +241,7 @@ public class SimulationController {
     public String getEventlogFile() {
         return eventlogFile;
     }
-    
+
     protected String encode(String s) {
         try {
             return URLEncoder.encode(s, "US-ASCII");
@@ -267,6 +270,8 @@ public class SimulationController {
             configName = (String) responseMap.get("config");
             runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
             networkName = (String) responseMap.get("network");
+            nextEventModuleId = defaultLongIfNull((Number) responseMap.get("nextEventModuleId"), 0);
+            nextEventMessageId = defaultLongIfNull((Number) responseMap.get("nextEventMessageId"), 0);
             eventlogFile = (String) responseMap.get("eventlogfile");
 
             // remember action requested by the simulation
@@ -334,7 +339,7 @@ public class SimulationController {
     public boolean hasRootObjects() {
         return !rootObjectIds.isEmpty();
     }
-    
+
     /**
      * Use ROOTOBJ_xxx constants as keys.
      */
@@ -346,7 +351,7 @@ public class SimulationController {
     public boolean isCachedObject(long id) {
         return cachedObjects.containsKey(id);
     }
-    
+
     /**
      * Loads the object if necessary. When you need several objects, it is more
      * efficient to call loadObjects() beforehand, as it will only issue a
@@ -471,7 +476,7 @@ public class SimulationController {
         getPageContent(urlBase + "sim/rebuild");
         refreshStatus();
     }
-    
+
     public void step() throws IOException {
         Assert.isTrue(state == SimState.READY);
         if (currentRunMode == RunMode.NOTRUNNING) {
@@ -505,7 +510,7 @@ public class SimulationController {
     public void runUntil(RunMode mode, BigDecimal simTime, long eventNumber) throws IOException {
         runUntilSimTime = simTime;  //TODO if time/event already passed, don't do anything
         runUntilEventNumber = eventNumber;
-        
+
         if (currentRunMode == RunMode.NOTRUNNING) {
             Assert.isTrue(state == SimState.READY);
             stopRequested = false;
@@ -528,7 +533,7 @@ public class SimulationController {
         }
 
         //TODO exit if "until" limit has been reached
-        
+
         long eventDelta = -1;
         switch (currentRunMode) {
             case NORMAL: eventDelta = 1; break;
@@ -633,6 +638,10 @@ public class SimulationController {
     protected void connectionRefused(ConnectException e) {
         state = SimState.DISCONNECTED;
         notifyListeners();
+    }
+
+    private int defaultIntegerIfNull(Number i, int defaultValue) {
+        return i== null ? defaultValue : i.intValue();
     }
 
     private long defaultLongIfNull(Number l, long defaultValue) {
