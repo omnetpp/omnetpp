@@ -842,6 +842,7 @@ void EnvirBase::shutdown()
 void EnvirBase::setupNetwork(cModuleType *network)
 {
     simulation.setupNetwork(network);
+    eventlogmgr->flush();
 }
 
 void EnvirBase::startRun()
