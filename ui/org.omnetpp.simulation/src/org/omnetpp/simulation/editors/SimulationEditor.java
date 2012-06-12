@@ -6,6 +6,8 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -26,6 +28,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.controller.BlankAnimationCoordinateSystem;
 import org.omnetpp.animation.editors.AnimationContributorBase;
 import org.omnetpp.animation.eventlog.controller.EventLogAnimationCoordinateSystem;
@@ -35,12 +38,17 @@ import org.omnetpp.animation.eventlog.widgets.EventLogAnimationParameters;
 import org.omnetpp.animation.providers.EmptyAnimationPrimitiveProvider;
 import org.omnetpp.animation.widgets.AnimationCanvas;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
+import org.omnetpp.common.simulation.MessageModel;
+import org.omnetpp.common.simulation.ModuleModel;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.common.util.BinarySearchUtils.BoundKind;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.IEventLog;
+import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
@@ -63,10 +71,9 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  */
 public class SimulationEditor extends EditorPart implements ISimulationCallback {
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
-    
+
     protected SimulationController simulationController;
 
-//    protected ScrolledComposite sc;
     protected EventLogAnimationCanvas animationCanvas;
 
     private Label statusLabel;
@@ -98,11 +105,11 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         simulationTab.setText("Simulate");
         CTabItem animationTab = new CTabItem(tabFolder, SWT.NONE);
         animationTab.setText("Playback");
-        
+
         Composite simulationControls = new Composite(tabFolder, SWT.NONE);
         simulationTab.setControl(simulationControls);
         simulationControls.setLayout(removeSpacing(new GridLayout(1, false)));
-        
+
         Composite simulationToolbars = new Composite(simulationControls, SWT.NONE);
         simulationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         simulationToolbars.setLayout(new GridLayout(4, false));
@@ -130,9 +137,9 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         GridData l = new GridData(SWT.FILL, SWT.END, true, false);
         l.heightHint = 20;
         futureEventsTimeline.setLayoutData(l);
-                
+
         tabFolder.setSelection(simulationTab);
-        
+
         // create canvas
         animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
         animationCanvas.setBackground(new Color(null, 235, 235, 235));
@@ -157,22 +164,39 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
                     @Override
                     public void run() {
                         updateStatusDisplay();
-                        setEventlogFileName(controller.getEventlogFile());
-//                        AnimationController animationController = animationCanvas.getAnimationController();
-//                        if (animationController != null) {
-//                            long eventNumber = animationController.getCurrentEventNumber();
-//                            AnimationPosition animationPosition = animationController.getCurrentAnimationPosition();
-//                            animationController.clearInternalState();
-//                            if (animationCanvas.getInput() != null)
-//                                animationCanvas.getInput().synchronize(animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges());
-//                            animationController.gotoEndAnimationPosition();
-//                            System.out.println(animationController.getEndAnimationPosition());
-//                            animationController.gotoEventNumber(eventNumber);
-//                            animationController.gotoAnimationPosition(animationPosition);
-//                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getSimulationTime(), BoundKind.UPPER_BOUND);
-//                            System.out.println("FROM: " + animationPosition + " STOP: " + stopAnimationPosition);
-//                            animationController.startAnimation(true, stopAnimationPosition);
-//                        }
+                        if (controller.getEventlogFile() != null)
+                            setEventlogFileName(controller.getEventlogFile());
+                        if (animationCanvas.getInput() != null) {
+                            AnimationController animationController = animationCanvas.getAnimationController();
+                            int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
+                            AnimationPosition currentAnimationPosition = animationController.getCurrentAnimationPosition();
+                            // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
+                            if (currentAnimationPosition.getSimulationTime() != null)
+                                currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
+                            animationController.clearInternalState();
+                            animationCanvas.getInput().synchronize(fileChange);
+                            if (currentAnimationPosition.isCompletelySpecified()) {
+                                animationController.gotoAnimationPosition(currentAnimationPosition);
+                                AnimationPosition boundAnimationPosition = new AnimationPosition(controller.getEventNumber() - 1, controller.getSimulationTime(), Double.MAX_VALUE, Double.MAX_VALUE);
+                                AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
+                                System.out.println("GOTO FROM: " + currentAnimationPosition + " BOUND: " + boundAnimationPosition + " STOP: " + stopAnimationPosition);
+                                animationController.startAnimation(true, stopAnimationPosition);
+                            }
+                            else {
+                                System.out.println("GOTO INITIAL");
+                                animationController.gotoInitialAnimationPosition();
+                            }
+                            // KLUDGE: mark next module
+                            SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationCanvas.getFigure(new ModuleModel(null, controller.getNextEventModuleId()), SubmoduleFigure.class);
+                            if (submoduleFigure != null)
+                                submoduleFigure.setBorder(new LineBorder(ColorFactory.RED));
+                            // KLUDGE: mark next message
+                            MessageModel message = new MessageModel();
+                            message.setId((int)controller.getNextEventMessageId());
+                            Figure figure = (Figure)animationCanvas.getFigure(message, Figure.class);
+                            if (figure != null)
+                                figure.setBorder(new LineBorder(ColorFactory.RED));
+                        }
                     }
                 });
             }
@@ -183,6 +207,8 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
             @Override
             public void run() {
                 try {
+                    // KLUDGE: TODO: this is necessary, because connection timeout does not work as expected (apache HttpClient ignores the provided value)
+                    Thread.sleep(1000);
                     simulationController.refreshStatus();
                 } catch (Exception e) {
                     MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());
@@ -195,24 +221,19 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
 
     private void setEventlogFileName(String fileName) {
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(fileName));
-        // TODO refresh if file exists but IFile.isAccessible() returns true! 
+        // TODO refresh if file exists but IFile.isAccessible() returns true!
         if (file != null && new File(fileName).isFile() && (animationCanvas.getInput() == null || !animationCanvas.getInput().getFile().equals(file))) {
             IEventLog eventLog = new EventLog(new FileReader(file.getLocation().toOSString(), false));
             EventLogInput eventLogInput = new EventLogInput(file, eventLog);
+            // TODO: we need a way to include the upcoming event in the animation
             EventLogAnimationPrimitiveProvider animationPrimitiveProvider = new EventLogAnimationPrimitiveProvider(eventLogInput, new EventLogAnimationParameters());
-
             AnimationController animationController = animationCanvas.getAnimationController();
-            
             animationController.setProviders(new EventLogAnimationCoordinateSystem(eventLogInput), animationPrimitiveProvider);
             animationPrimitiveProvider.setAnimationController(animationController); //TODO animationController.setProviders() should already do that
-
             animationCanvas.setInput(eventLogInput);  //TODO should not be necessary (canvas should not know about input)
-
-            //animationController.gotoInitialAnimationPosition();
-//            animationController.gotoAnimationPosition(new AnimationPosition(0L, BigDecimal.getZero(), 0.0, 0.0));
         }
     }
-    
+
     private GridLayout removeSpacing(GridLayout l) {
         l.horizontalSpacing = l.verticalSpacing = l.marginHeight = l.marginWidth = 0;
         return l;
@@ -244,17 +265,19 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
     }
 
     protected void updateStatusDisplay() {
-        SimulationController controller = getSimulationController();
-        String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
-        status += "   " + controller.getState().name();
+        if (!statusLabel.isDisposed()) {
+            SimulationController controller = getSimulationController();
+            String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
+            status += "   " + controller.getState().name();
 
-        if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
-            status +=
-            "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() +
-            "   (" + controller.getNetworkName() + ")" +
-            "  -  Event #" + controller.getEventNumber() +
-            "   t=" + controller.getSimulationTime() + "s";
-        statusLabel.setText(status);
+            if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
+                status +=
+                "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() +
+                "   (" + controller.getNetworkName() + ")" +
+                "  -  Event #" + controller.getEventNumber() +
+                "   t=" + controller.getSimulationTime() + "s";
+            statusLabel.setText(status);
+        }
     }
 
     public void openInspector(Object element) {
