@@ -14,6 +14,7 @@ Require-Bundle: org.apache.commons.httpclient,
  org.eclipse.draw2d,
  org.omnetpp.common,
  org.omnetpp.animation.core,
- org.omnetpp.animation.eventlog
+ org.omnetpp.animation.eventlog,
+ org.omnetpp.figures
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: OpenSim Ltd.
