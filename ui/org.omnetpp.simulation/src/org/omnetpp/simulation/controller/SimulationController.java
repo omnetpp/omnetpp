@@ -94,7 +94,7 @@ public class SimulationController {
     private String networkName;
     private long eventNumber;
     private BigDecimal simulationTime;
-    private long nextEventModuleId;  //TODO display on UI
+    private int nextEventModuleId;  //TODO display on UI
     private long nextEventMessageId; //TODO display on UI
     private String eventlogFile;
 
@@ -230,6 +230,14 @@ public class SimulationController {
         return networkName;
     }
 
+    public int getNextEventModuleId() {
+        return nextEventModuleId;
+    }
+
+    public long getNextEventMessageId() {
+        return nextEventMessageId;
+    }
+
     public long getEventNumber() {
         return eventNumber;
     }
@@ -270,7 +278,7 @@ public class SimulationController {
             configName = (String) responseMap.get("config");
             runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
             networkName = (String) responseMap.get("network");
-            nextEventModuleId = defaultLongIfNull((Number) responseMap.get("nextEventModuleId"), 0);
+            nextEventModuleId = defaultIntegerIfNull((Number) responseMap.get("nextEventModuleId"), 0);
             nextEventMessageId = defaultLongIfNull((Number) responseMap.get("nextEventMessageId"), 0);
             eventlogFile = (String) responseMap.get("eventlogfile");
 
@@ -605,7 +613,10 @@ public class SimulationController {
             ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
 
         HttpClient client = new HttpClient();
-        client.getParams().setSoTimeout(60 * 1000);
+        client.getParams().setSoTimeout(10 * 1000);
+        client.getParams().setConnectionManagerTimeout(10 * 1000);
+        client.getHttpConnectionManager().getParams().setSoTimeout(10 * 1000);
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(10 * 1000);
 
         // do not retry
         HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
