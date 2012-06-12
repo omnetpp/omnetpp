@@ -47,6 +47,7 @@ void cMongooseHttpServer::start(const char *portSpec)
     mg_set_option(ctx, "max_threads", "0");
 
     ::printf("Embedded web server started on port %d\n", mg_get_last_port()); // note: mg_get_option(ctx, "ports") would return "80+" even if mongoose actually listens on, say, port 83
+    ::fflush(stdout);
 }
 
 void cMongooseHttpServer::stop()
