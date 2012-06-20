@@ -36,6 +36,7 @@ public class SimulationUIConstants {
     public static final String IMG_TOOL_NEWRUN = IMG_ETOOL_DIR + "newrun.png";
     public static final String IMG_TOOL_PARENT = IMG_ETOOL_DIR + "parent.png";
     public static final String IMG_TOOL_PASTE = IMG_ETOOL_DIR + "paste.png";
+    public static final String IMG_TOOL_PROCESSINFO = IMG_ETOOL_DIR + "processinfo.png";
     public static final String IMG_TOOL_PROPS = IMG_ETOOL_DIR + "props.png";
     public static final String IMG_TOOL_REDO = IMG_ETOOL_DIR + "redo.png";
     public static final String IMG_TOOL_REDRAW = IMG_ETOOL_DIR + "redraw.png";

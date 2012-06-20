@@ -86,6 +86,7 @@ public class SimulationController {
 
     // simulation status (as returned by the GET "/sim/status" request)
     private String hostName;
+    private int portNumber;
     private long processId;
     private SimState state = SimState.NONETWORK;
     private String configName;
@@ -115,6 +116,8 @@ public class SimulationController {
      * Constructor.
      */
     public SimulationController(String hostName, int portNumber, Job launcherJob) {
+        this.hostName = hostName;
+        this.portNumber = portNumber;
         this.urlBase = "http://" + hostName + ":" + portNumber + "/";
         this.launcherJob = launcherJob;
         this.cancelJobOnDispose = launcherJob != null;
@@ -200,6 +203,14 @@ public class SimulationController {
         return hostName;
     }
 
+    public int getPortNumber() {
+        return portNumber;
+    }
+
+    public String getUrlBase() {
+        return urlBase;
+    }
+    
     /**
      * Process ID of the simulation we are talking to.
      */

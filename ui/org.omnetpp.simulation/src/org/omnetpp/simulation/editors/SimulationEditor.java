@@ -59,6 +59,7 @@ import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
 import org.omnetpp.simulation.actions.FastRunAction;
 import org.omnetpp.simulation.actions.LinkWithSimulationAction;
+import org.omnetpp.simulation.actions.ProcessInfoAction;
 import org.omnetpp.simulation.actions.RebuildNetworkAction;
 import org.omnetpp.simulation.actions.RunAction;
 import org.omnetpp.simulation.actions.RunUntilAction;
@@ -139,6 +140,7 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
 
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(new LinkWithSimulationAction(simulationController)).fill(toolbar1, -1);
+        new ActionContributionItem(new ProcessInfoAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupIniConfigAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupNetworkAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new RebuildNetworkAction(simulationController)).fill(toolbar1, -1);
