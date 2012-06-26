@@ -333,6 +333,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/cmsgpar.h \
   ../../include/ccomponent.h \
   parsim/cplaceholdermod.h \
+  ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/cdelaychannel.h \
   ../../include/cchannel.h \
@@ -360,6 +361,7 @@ $O/ccomponenttype.o: ccomponenttype.cc \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
   ../../include/cexception.h \
+  ../../include/cproperty.h \
   ../../include/platdep/intxtypes.h \
   ../../include/ccomponenttype.h
 $O/ccompoundmodule.o: ccompoundmodule.cc \
@@ -439,9 +441,15 @@ $O/cconfiguration.o: cconfiguration.cc \
 $O/ccoroutine.o: ccoroutine.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/opp_string.h \
   ../../include/simkerneldefs.h \
+  ../../include/errmsg.h \
   task.h \
   ../../include/platdep/platmisc.h \
+  ../../include/simutil.h \
+  ../../include/cexception.h \
   ../../include/platdep/intxtypes.h
 $O/cdataratechannel.o: cdataratechannel.cc \
   ../../include/regmacros.h \
@@ -1060,6 +1068,14 @@ $O/clongparimpl.o: clongparimpl.cc \
   ../../include/simutil.h \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h
+$O/cmatchexpression.o: cmatchexpression.cc \
+  ../../include/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/matchexpression.h \
+  ../../include/cmatchexpression.h \
+  ../../include/simkerneldefs.h \
+  ../common/exception.h \
+  ../../include/platdep/intxtypes.h
 $O/cmersennetwister.o: cmersennetwister.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
@@ -1582,6 +1598,13 @@ $O/cparsimcomm.o: cparsimcomm.cc \
   ../../include/cexception.h \
   ../../include/platdep/intxtypes.h \
   ../../include/cparsimcomm.h
+$O/cpatternmatcher.o: cpatternmatcher.cc \
+  ../../include/platdep/platdefs.h \
+  ../common/commondefs.h \
+  ../common/patternmatcher.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cpatternmatcher.h \
+  ../../include/platdep/intxtypes.h
 $O/cproperties.o: cproperties.cc \
   ../../include/regmacros.h \
   ../../include/platdep/platdefs.h \
@@ -2579,6 +2602,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/cexpression.h \
   ../../include/ccompoundmodule.h \
   ../../include/ccomponent.h \
+  ../../include/cmatchexpression.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
   ../../include/cenum.h \
@@ -2632,8 +2656,8 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/cgate.h \
   ../../include/simtime.h \
   ../../include/cmodelchange.h \
-  ../../include/cstringparimpl.h \
   ../../include/carray.h \
+  ../../include/cstringparimpl.h \
   ../../include/cenvir.h \
   ../../include/simtime_t.h \
   ../../include/mersennetwister.h \
@@ -2650,6 +2674,7 @@ $O/sim_std_m.o: sim_std_m.cc \
   ../../include/csimulation.h \
   ../../include/chistogram.h \
   ../../include/cdisplaystring.h \
+  ../../include/cpatternmatcher.h \
   ../../include/cobject.h \
   ../../include/cnullenvir.h \
   ../../include/cnedfunction.h \
