@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.IXYDataset.InterpolationMode;
+import org.omnetpp.scave.charting.properties.ChartProperties;
+import org.omnetpp.scave.charting.properties.ScatterChartProperties;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Dataset;
@@ -52,6 +54,8 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 	};
 
 	public static final String TAB_CONTENT = "Content";
+
+	private Button xAxisLogCheckbox;
 
 	private Combo xModuleAndDataCombo;
 	private Tree isoLineSelectionTree;
@@ -115,11 +119,13 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 		super.populateTabItem(item);
 		String name = item.getText();
 		Composite panel = (Composite)item.getControl();
-		Group group;
-		GridData gridData;
-		if (TAB_CONTENT.equals(name)) {
+		if (TAB_AXES.equals(name)) {
+		    Group group = getAxisOptionsGroup();
+		    xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", group, getYAxisLogCheckbox());
+		}
+		else if (TAB_CONTENT.equals(name)) {
 			// x data
-			group = createGroup("X data", panel, 2, 2);
+			Group group = createGroup("X data", panel, 2, 2);
 			createLabel("Select the scalar whose values displayed on the X axis.",
 					group, 2);
 			String[] items = new String [xData.length];
@@ -135,7 +141,7 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 					group, 1);
 			isoLineSelectionTree = new Tree(group,
 					SWT.BORDER | SWT.CHECK | SWT.HIDE_SELECTION | SWT.V_SCROLL);
-			gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
 			int itemsVisible = Math.max(Math.min(isoData.length, 15), 3);
 			gridData.heightHint = itemsVisible * isoLineSelectionTree.getItemHeight();
 			isoLineSelectionTree.setLayoutData(gridData);
@@ -231,4 +237,19 @@ public class ScatterChartEditForm extends BaseLineChartEditForm {
 			break;
 		}
 	}
+
+   @Override
+    protected void collectProperties(ChartProperties newProps) {
+        super.collectProperties(newProps);
+
+        ScatterChartProperties newProperties = (ScatterChartProperties)newProps;
+        newProperties.setXAxisLogarithmic(xAxisLogCheckbox.getSelection());
+    }
+
+   @Override
+   protected void setProperties(ChartProperties props) {
+       super.setProperties(props);
+       ScatterChartProperties properties = (ScatterChartProperties)props;
+       xAxisLogCheckbox.setSelection(properties.getXAxisLogarithmic());
+   }
 }

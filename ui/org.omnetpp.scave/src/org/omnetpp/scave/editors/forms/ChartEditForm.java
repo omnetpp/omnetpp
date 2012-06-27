@@ -110,6 +110,7 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	private Label maxBoundLabel;
 	private Text yAxisMinText;
 	private Text yAxisMaxText;
+	private Group axisOptionsGroup;
 	private Button yAxisLogCheckbox;
 	private Combo showGridCombo;
 
@@ -229,8 +230,8 @@ public class ChartEditForm implements IScaveObjectEditForm {
 			maxBoundLabel = createLabel("Max", axisBoundsGroup);
 			yAxisMinText = createTextField("Y axis", axisBoundsGroup);
 			yAxisMaxText = createTextField(null, axisBoundsGroup);
-			group = createGroup("Axis options", panel, 1);
-			yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", group);
+			axisOptionsGroup = createGroup("Axis options", panel, 1);
+			yAxisLogCheckbox = createCheckboxField("Logarithmic Y axis", axisOptionsGroup);
 			group = createGroup("Grid", panel, 1);
 			showGridCombo = createComboField("Show grid", group, ShowGrid.class, false);
 		}
@@ -257,6 +258,14 @@ public class ChartEditForm implements IScaveObjectEditForm {
 
 	protected Label getMaxBoundLabel() {
 		return maxBoundLabel;
+	}
+
+	protected Group getAxisOptionsGroup() {
+	    return axisOptionsGroup;
+	}
+
+	protected Button getYAxisLogCheckbox() {
+	    return yAxisLogCheckbox;
 	}
 
 	private TabFolder createTabFolder(Composite parent) {
@@ -296,7 +305,29 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return group;
 	}
 
-	protected Label createLabel(String text, Composite parent) {
+	/**
+	 * Moves {@code child} before {@code nextSibling} in the children
+	 * list of their common parent.
+	 */
+	protected void moveChildBefore(Control child, Control nextSibling) {
+	    if (nextSibling != null)
+	        child.moveAbove(nextSibling); // above in Z order = before in child order
+	    else
+	        child.moveBelow(null); // no next = last child, smallest Z
+	}
+
+    /**
+     * Moves {@code child} after {@code nextSibling} in the children
+     * list of their common parent.
+     */
+    protected void moveChildAfter(Control child, Control prevSibling) {
+        if (prevSibling != null)
+            child.moveBelow(prevSibling);
+        else
+            child.moveAbove(null);
+    }
+
+    protected Label createLabel(String text, Composite parent) {
 		Label label = new Label(parent, SWT.NONE);
 		label.setText(text);
 		return label;
@@ -318,11 +349,11 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
 		if (label != null) {
-			label.moveBelow(prevSibling);
-			text.moveBelow(label);
+		    moveChildAfter(label, prevSibling);
+		    moveChildAfter(text, label);
 		}
 		else {
-			text.moveBelow(prevSibling);
+		    moveChildAfter(text, prevSibling);
 		}
 		return text;
 	}
@@ -355,11 +386,16 @@ public class ChartEditForm implements IScaveObjectEditForm {
 		return createCheckboxField(labelText, parent, null);
 	}
 
-	protected Button createCheckboxField(String labelText, Composite parent, Object value) {
+	protected Button createCheckboxField(String labelText, Composite parent, Control nextSibling) {
+	    return createCheckboxField(labelText, parent, nextSibling, null);
+	}
+
+	protected Button createCheckboxField(String labelText, Composite parent, Control nextSibling, Object value) {
 		Button checkbox = new Button(parent, SWT.CHECK);
 		checkbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		checkbox.setText(labelText);
 		checkbox.setData(USER_DATA_KEY, value);
+		moveChildBefore(checkbox, nextSibling);
 		return checkbox;
 	}
 

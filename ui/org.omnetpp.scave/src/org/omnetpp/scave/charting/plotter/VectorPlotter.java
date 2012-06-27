@@ -30,7 +30,7 @@ public abstract class VectorPlotter implements IVectorPlotter {
 		int n = dataset.getItemCount(series);
 		Rectangle clip = GraphicsUtils.getClip(graphics);
 		double left = plot.inverseTransformX(mapping.fromCanvasX(clip.x));
-		double right = plot.inverseTransformY(mapping.fromCanvasX(clip.x+clip.width));
+		double right = plot.inverseTransformX(mapping.fromCanvasX(clip.x+clip.width));
 		int first = DatasetUtils.findXLowerLimit(dataset, series, left);
 		int last = DatasetUtils.findXUpperLimit(dataset, series, right);
 		first = first<=0 ? 0 : first-1;

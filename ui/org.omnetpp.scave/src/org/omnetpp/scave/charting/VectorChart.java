@@ -13,6 +13,7 @@ import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_LINE_S
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SHOW_GRID;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_TITLE;
+import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.ChartDefaults.DEFAULT_Y_AXIS_TITLE;
 import static org.omnetpp.scave.charting.properties.ChartProperties.PROP_AXIS_TITLE_FONT;
@@ -28,6 +29,7 @@ import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_COL
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_LINE_TYPE;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_SIZE;
 import static org.omnetpp.scave.charting.properties.LineProperties.PROP_SYMBOL_TYPE;
+import static org.omnetpp.scave.charting.properties.ScatterChartProperties.PROP_X_AXIS_LOGARITHMIC;
 import static org.omnetpp.scave.charting.properties.VectorChartProperties.PROP_X_AXIS_MAX;
 import static org.omnetpp.scave.charting.properties.VectorChartProperties.PROP_X_AXIS_MIN;
 
@@ -81,7 +83,7 @@ public class VectorChart extends ChartCanvas {
 	private List<LineProperties> lineProperties;
 	private LineProperties defaultProperties;
 
-	private LinearAxis xAxis = new LinearAxis(false, false, true);
+	private LinearAxis xAxis = new LinearAxis(false, DEFAULT_X_AXIS_LOGARITHMIC, true);
 	private LinearAxis yAxis = new LinearAxis(true, DEFAULT_Y_AXIS_LOGARITHMIC, true);
 	private CrossHair crosshair;
 	private LinePlot plot;
@@ -426,6 +428,8 @@ public class VectorChart extends ChartCanvas {
 			setXMin(Converter.stringToDouble(value));
 		else if (PROP_X_AXIS_MAX.equals(name))
 			setXMax(Converter.stringToDouble(value));
+        else if (PROP_X_AXIS_LOGARITHMIC.equals(name))
+            setLogarithmicX(Converter.stringToBoolean(value));
 		else if (PROP_Y_AXIS_LOGARITHMIC.equals(name))
 			setLogarithmicY(Converter.stringToBoolean(value));
 		else if (PROP_XY_GRID.equals(name))
@@ -504,6 +508,14 @@ public class VectorChart extends ChartCanvas {
 		props.setSymbolSize(size);
 		chartChanged();
 	}
+
+   public void setLogarithmicX(Boolean value) {
+        boolean logarithmic = value != null ? value : DEFAULT_X_AXIS_LOGARITHMIC;
+        xAxis.setLogarithmic(logarithmic);
+        chartArea = calculatePlotArea();
+        updateArea();
+        chartChanged();
+    }
 
 	public void setLogarithmicY(Boolean value) {
 		boolean logarithmic = value != null ? value : DEFAULT_Y_AXIS_LOGARITHMIC;

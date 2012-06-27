@@ -90,8 +90,22 @@ class LinePlot implements ILinePlot {
 					int n = dataset.getItemCount(series);
 					if (n > 0) {
 						// X must be increasing
-						area.minX = Math.min(area.minX, chart.transformX(dataset.getX(series, 0)));
-						area.maxX = Math.max(area.maxX, chart.transformX(dataset.getX(series, n-1)));
+						for (int i = 0; i < n; i++) {
+						    double x = chart.transformX(dataset.getX(series,i));
+						    if (!Double.isNaN(x) && !Double.isInfinite(x))
+						    {
+						        area.minX = Math.min(area.minX, x);
+						        break;
+						    }
+						}
+                        for (int i = n-1; i >= 0; i--) {
+                            double x = chart.transformX(dataset.getX(series,i));
+                            if (!Double.isNaN(x) && !Double.isInfinite(x))
+                            {
+                                area.maxX = Math.max(area.maxX, x);
+                                break;
+                            }
+                        }
 						for (int i = 0; i < n; i++) {
 							double y = chart.transformY(dataset.getY(series, i));
 							if (!Double.isNaN(y) && !Double.isInfinite(y)) {
