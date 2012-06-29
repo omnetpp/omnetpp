@@ -92,7 +92,7 @@ using std::endl;
  *
  * The default implementation of cEnvir can be customized by subclassing
  * the classes declared in the envirext.h header (e.g. cConfiguration,
- * cRNG, cOutputVectorManager, cOutputScalarManager), and selecting the
+ * cRNG, cIOutputVectorManager, cIOutputScalarManager), and selecting the
  * new classes from <tt>omnetpp.ini</tt>.
  *
  * @ingroup Envir
@@ -602,7 +602,7 @@ class SIM_API cEnvir
      * These are functions cOutVector internally relies on.
      *
      * The behavior of these functions can be changed by plugging in a different
-     * cOutputVectorManager object into the user interface library. (Or alternatively,
+     * cIOutputVectorManager object into the user interface library. (Or alternatively,
      * by reimplementing the whole cEnvir of course).
      */
     //@{
@@ -639,7 +639,7 @@ class SIM_API cEnvir
      * The method cComponent::recordScalar() function internally relies on.
      *
      * The behavior of this function can be changed by plugging in a different
-     * cOutputScalarManager object into the user interface library. (Or alternatively,
+     * cIOutputScalarManager object into the user interface library. (Or alternatively,
      * by reimplementing the whole cEnvir of course).
      */
     //@{
@@ -659,7 +659,7 @@ class SIM_API cEnvir
     /** @name Management of streams where snapshots can be written.
      *
      * The behavior of these functions can be changed by plugging in a different
-     * cSnapshotManager object into the user interface library. (Or alternatively,
+     * cISnapshotManager object into the user interface library. (Or alternatively,
      * by reimplementing the whole cEnvir of course).
      */
     //@{

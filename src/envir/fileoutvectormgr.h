@@ -29,13 +29,13 @@ NAMESPACE_BEGIN
 
 
 /**
- * A cOutputVectorManager that uses a line-oriented text file as output.
+ * A cIOutputVectorManager that uses a line-oriented text file as output.
  * The file consists of vector declarations lines and data lines.
  * Each data line contains a vector id, time, value triplet.
  *
  * @ingroup Envir
  */
-class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
+class ENVIR_API cFileOutputVectorManager : public cIOutputVectorManager
 {
   protected:
 
@@ -87,7 +87,7 @@ class ENVIR_API cFileOutputVectorManager : public cOutputVectorManager
     static void getOutVectorConfig(const char *modname, const char *vecname,
                                    bool& outEnabled, bool& outRecordEventNumbers, Intervals &outIntervals);
 
-    /** @name Redefined cOutputVectorManager member functions. */
+    /** @name Redefined cIOutputVectorManager member functions. */
     //@{
 
     /**

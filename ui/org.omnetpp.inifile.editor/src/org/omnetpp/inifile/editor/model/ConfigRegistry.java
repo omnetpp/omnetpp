@@ -373,12 +373,12 @@ public class ConfigRegistry {
         "outputscalarmanager-class", CFG_STRING, "cFileOutputScalarManager",
         "Part of the Envir plugin mechanism: selects the output scalar manager class " +
         "to be used to record data passed to recordScalar(). The class has to " +
-        "implement the cOutputScalarManager interface.");
+        "implement the cIOutputScalarManager interface.");
     public static final ConfigOption CFGID_OUTPUTVECTORMANAGER_CLASS = addGlobalOption(
         "outputvectormanager-class", CFG_STRING, "cIndexedFileOutputVectorManager",
         "Part of the Envir plugin mechanism: selects the output vector manager class " +
         "to be used to record data from output vectors. The class has to implement " +
-        "the cOutputVectorManager interface.");
+        "the cIOutputVectorManager interface.");
     public static final ConfigOption CFGID_PARALLEL_SIMULATION = addGlobalOption(
         "parallel-simulation", CFG_BOOL, "false",
         "Enables parallel distributed simulation.");
@@ -550,7 +550,7 @@ public class ConfigRegistry {
         "snapshotmanager-class", CFG_STRING, "cFileSnapshotManager",
         "Part of the Envir plugin mechanism: selects the class to handle streams to " +
         "which snapshot() writes its output. The class has to implement the " +
-        "cSnapshotManager interface.");
+        "cISnapshotManager interface.");
     public static final ConfigOption CFGID_TKENV_DEFAULT_CONFIG = addGlobalOption(
         "tkenv-default-config", CFG_STRING, null,
         "Specifies which config Tkenv should set up automatically on startup. The " +

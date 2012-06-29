@@ -79,7 +79,7 @@
  *
  * @ingroup Envir
  */
-class cMySQLOutputVectorManager : public cOutputVectorManager
+class cMySQLOutputVectorManager : public cIOutputVectorManager
 {
   protected:
     struct sVectorData {
@@ -150,7 +150,7 @@ class cMySQLOutputVectorManager : public cOutputVectorManager
     virtual ~cMySQLOutputVectorManager();
     //@}
 
-    /** @name Redefined cOutputVectorManager member functions. */
+    /** @name Redefined cIOutputVectorManager member functions. */
     //@{
 
     /**

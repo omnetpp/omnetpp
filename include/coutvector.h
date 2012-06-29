@@ -40,7 +40,7 @@ class cEnum;
 /**
  * Responsible for recording vector simulation results (an output vector).
  * A cOutVector object can write doubles to the output vector file
- * (or any another device determined by the current cOutputVectorManager).
+ * (or any another device determined by the current cIOutputVectorManager).
  *
  * @ingroup Statistics
  */

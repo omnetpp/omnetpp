@@ -28,11 +28,11 @@
 NAMESPACE_BEGIN
 
 /**
- * A cOutputScalarManager that uses a line-oriented text file as output.
+ * A cIOutputScalarManager that uses a line-oriented text file as output.
  *
  * @ingroup Envir
  */
-class ENVIR_API cFileOutputScalarManager : public cOutputScalarManager
+class ENVIR_API cFileOutputScalarManager : public cIOutputScalarManager
 {
   protected:
     sRunData run;      // holds data of the current run

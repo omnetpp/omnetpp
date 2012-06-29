@@ -64,7 +64,7 @@
  *
  * @ingroup Envir
  */
-class cMySQLOutputScalarManager : public cOutputScalarManager
+class cMySQLOutputScalarManager : public cIOutputScalarManager
 {
   protected:
     MYSQL *mysql;

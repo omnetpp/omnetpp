@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cOutputVectorManager  : actually records for cOutVector objects
+//    cIOutputVectorManager  : actually records for cOutVector objects
 //
 //==========================================================================
 
@@ -32,14 +32,14 @@ class cStatistic;
 
 /**
  * Abstract base class for output vector managers for cEnvir.
- * cOutputVectorManagers are plugins into the Envir user
+ * cIOutputVectorManagers are plugins into the Envir user
  * interface library (src/envir) that handle recording the output for
  * cOutVectors.
  *
  * The default output vector manager is cFileOutputVectorManager, defined in the
  * Envir library.
  *
- * To change the way output vectors are written, subclass cOutputVectorManager,
+ * To change the way output vectors are written, subclass cIOutputVectorManager,
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
@@ -50,12 +50,12 @@ class cStatistic;
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cOutputVectorManager : public cObject
+class SIM_API cIOutputVectorManager : public cObject
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cOutputVectorManager(const cOutputVectorManager&);
-    cOutputVectorManager& operator=(const cOutputVectorManager&);
+    cIOutputVectorManager(const cIOutputVectorManager&);
+    cIOutputVectorManager& operator=(const cIOutputVectorManager&);
 
   public:
     /** @name Constructor, destructor */
@@ -64,12 +64,12 @@ class SIM_API cOutputVectorManager : public cObject
     /**
      * Constructor.
      */
-    explicit cOutputVectorManager() {}
+    explicit cIOutputVectorManager() {}
 
     /**
      * Destructor.
      */
-    virtual ~cOutputVectorManager() {}
+    virtual ~cIOutputVectorManager() {}
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */
@@ -130,14 +130,14 @@ class SIM_API cOutputVectorManager : public cObject
 
 /**
  * Abstract base class for handling recording of output scalar data.
- * cOutputScalarManagers are plugins into the Envir user interface
+ * cIOutputScalarManagers are plugins into the Envir user interface
  * library (src/envir) that ultimately handle calls to the
  * cComponent::recordScalar() family of functions.
  *
  * The default output scalar manager is cFileOutputScalarManager, defined
  * in the Envir library.
  *
- * To change the way scalar results are recorded, subclass cOutputScalarManager,
+ * To change the way scalar results are recorded, subclass cIOutputScalarManager,
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
@@ -148,12 +148,12 @@ class SIM_API cOutputVectorManager : public cObject
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cOutputScalarManager : public cObject
+class SIM_API cIOutputScalarManager : public cObject
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cOutputScalarManager(const cOutputScalarManager&);
-    cOutputScalarManager& operator=(const cOutputScalarManager&);
+    cIOutputScalarManager(const cIOutputScalarManager&);
+    cIOutputScalarManager& operator=(const cIOutputScalarManager&);
 
   public:
     /** @name Constructor, destructor */
@@ -162,12 +162,12 @@ class SIM_API cOutputScalarManager : public cObject
     /**
      * Constructor.
      */
-    explicit cOutputScalarManager() {}
+    explicit cIOutputScalarManager() {}
 
     /**
      * Destructor.
      */
-    virtual ~cOutputScalarManager() {}
+    virtual ~cIOutputScalarManager() {}
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */
@@ -213,14 +213,14 @@ class SIM_API cOutputScalarManager : public cObject
 
 
 /**
- * Abstract base class for snapshot managers. cSnapshotManagers are plugins
+ * Abstract base class for snapshot managers. cISnapshotManagers are plugins
  * into the Envir user interface library (src/envir) that provide an output
  * stream into which snapshots are written (see cSimulation::snapshot()).
  *
  * The default output snapshot manager is cFileSnapshotManager, defined in the
  * Envir library.
  *
- * To create your own snaphot manager class, subclass cSnapshotManager,
+ * To create your own snaphot manager class, subclass cISnapshotManager,
  * register your new class with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *
@@ -231,12 +231,12 @@ class SIM_API cOutputScalarManager : public cObject
  *
  * @ingroup EnvirExtensions
  */
-class SIM_API cSnapshotManager : public cObject
+class SIM_API cISnapshotManager : public cObject
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
-    cSnapshotManager(const cSnapshotManager&);
-    cSnapshotManager& operator=(const cSnapshotManager&);
+    cISnapshotManager(const cISnapshotManager&);
+    cISnapshotManager& operator=(const cISnapshotManager&);
 
   public:
     /** @name Constructor, destructor */
@@ -245,12 +245,12 @@ class SIM_API cSnapshotManager : public cObject
     /**
      * Constructor.
      */
-    explicit cSnapshotManager() {}
+    explicit cISnapshotManager() {}
 
     /**
      * Destructor.
      */
-    virtual ~cSnapshotManager() {}
+    virtual ~cISnapshotManager() {}
     //@}
 
     /** @name Controlling the beginning and end of collecting data. */

@@ -20,13 +20,13 @@ The following plug-in interfaces are supported:
    \item{\cclass{cConfigurationEx}. Configuration provider plug-in.
      This plug-in interface lets you replace \ffilename{omnetpp.ini}
      with some other implementation, for example a database.}
-   \item{\cclass{cOutputScalarManager}. It handles recording the scalar output data.
+   \item{\cclass{cIOutputScalarManager}. It handles recording the scalar output data.
      The default output scalar manager is \cclass{cFileOutputScalarManager},
      defined in the Envir library.}
-   \item{\cclass{cOutputVectorManager}. It handles recording the output
+   \item{\cclass{cIOutputVectorManager}. It handles recording the output
      from \cclass{cOutVector} objects. The default output vector manager is
      \cclass{cIndexedFileOutputVectorManager}, defined in the Envir library.}
-   \item{\cclass{cSnapshotManager}. It provides an output stream to which
+   \item{\cclass{cISnapshotManager}. It provides an output stream to which
      snapshots are written (see section \ref{sec:ch-sim-lib:snapshots}).
      The default snapshot manager is \cclass{cFileSnapshotManager},
      defined in the Envir library.}
@@ -191,7 +191,7 @@ Register_Class(DatabaseConfigurationReader);
 \subsection{Defining a New Output Scalar Manager}
 \label{sec:plugin-exts:outputscalarmanager}
 
-\cclass{cOutputScalarManager} handles recording the scalar output data.
+\cclass{cIOutputScalarManager} handles recording the scalar output data.
 The default output scalar manager is \cclass{cFileOutputScalarManager},
 defined in the Envir library.
 
@@ -202,7 +202,7 @@ configuration option.
 \subsection{Defining a New Output Vector Manager}
 \label{sec:plugin-exts:outputvectormanager}
 
-\cclass{cOutputVectorManager} handles recording the output from \cclass{cOutVector} objects.
+\cclass{cIOutputVectorManager} handles recording the output from \cclass{cOutVector} objects.
 The default output vector manager is \cclass{cIndexedFileOutputVectorManager},
 defined in the Envir library.
 
@@ -213,7 +213,7 @@ configuration option.
 \subsection{Defining a New Snapshot Manager}
 \label{sec:plugin-exts:snapshotmanager}
 
-\cclass{cSnapshotManager} provides an output stream to which snapshots are written
+\cclass{cISnapshotManager} provides an output stream to which snapshots are written
 (see section \ref{sec:ch-sim-lib:snapshots}). The default snapshot manager
 is \cclass{cFileSnapshotManager}, defined in the Envir library.
 

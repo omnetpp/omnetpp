@@ -114,9 +114,9 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
 
     // Output file managers
     EventlogFileManager *eventlogmgr;  // NULL if no eventlog is being written, must be non NULL if record_eventlog is true
-    cOutputVectorManager *outvectormgr;
-    cOutputScalarManager *outscalarmgr;
-    cSnapshotManager *snapshotmgr;
+    cIOutputVectorManager *outvectormgr;
+    cIOutputScalarManager *outscalarmgr;
+    cISnapshotManager *snapshotmgr;
 
     // Data for getUniqueNumber()
     unsigned long nextuniquenumber;

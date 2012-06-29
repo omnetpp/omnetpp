@@ -26,11 +26,11 @@
 NAMESPACE_BEGIN
 
 /**
- * The default cSnapshotManager.
+ * The default cISnapshotManager.
  *
  * @ingroup Envir
  */
-class ENVIR_API cFileSnapshotManager : public cSnapshotManager
+class ENVIR_API cFileSnapshotManager : public cISnapshotManager
 {
   protected:
     opp_string fname;  // output file name

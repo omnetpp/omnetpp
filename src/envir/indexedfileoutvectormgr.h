@@ -110,7 +110,7 @@ class ENVIR_API cIndexedFileOutputVectorManager : public cFileOutputVectorManage
     explicit cIndexedFileOutputVectorManager();
     //@}
 
-    /** @name Redefined cOutputVectorManager member functions. */
+    /** @name Redefined cIOutputVectorManager member functions. */
     //@{
 
     /**
