@@ -24,6 +24,14 @@
             id="org.omnetpp.simulation.views.ObjectTreeView"
             name="Simulation Object Tree">
       </view>
+      <view
+            allowMultiple="false"
+            category="org.omnetpp.views"
+            class="org.omnetpp.simulation.views.ModuleOutputView"
+            icon="icons/eview16/moduleoutput.png"
+            id="org.omnetpp.simulation.views.ModuleOutputView"
+            name="Module Output">
+      </view>
    </extension>
 
    <extension

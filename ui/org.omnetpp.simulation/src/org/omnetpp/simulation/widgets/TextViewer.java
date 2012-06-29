@@ -46,6 +46,10 @@ import org.omnetpp.common.ui.SelectionProvider;
  * 
  * @author Andras
  */
+//TODO cannot move cursor to linestart below content!
+//TODO asserts on empty content!
+//TODO "copy to clipboard" loses newlines!
+
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO revealCaret doesn't scroll horizontally
 //TODO finish horiz scrolling!
@@ -953,7 +957,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         int numVisibleLines = getNumVisibleLines();
 
         Assert.isTrue(topLineIndex >= 0 && topLineIndex <= Math.max(0,numLines-numVisibleLines));
-        Assert.isTrue(caretLineIndex >= 0 && caretLineIndex < numLines);
+        Assert.isTrue(numLines==0 || (caretLineIndex >= 0 && caretLineIndex < numLines));
       
         int x = leftMargin - horizontalScrollOffset;
         int lineIndex = topLineIndex;
@@ -970,8 +974,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         String line = "N/A";
         try { 
             line = content.getLine(lineIndex);
-        } catch (Exception e) { //XXX only for debugging!!
-            System.out.println("EXCEPTION in TextViewer.drawLine(): line=" + lineIndex + "; numLines=" + getContent().getLineCount() + " -- " + e.getMessage());
+        } catch (Exception e) { 
+            e.printStackTrace(); //XXX only for debugging!!
         }
         Color color = content.getLineColor(lineIndex);
         if (color == null)

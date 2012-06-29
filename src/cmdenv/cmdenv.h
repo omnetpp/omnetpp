@@ -22,6 +22,7 @@
 #include "csimulation.h"
 #include "envirbase.h"
 #include "httpserver.h"
+#include "jsonvalue.h"
 
 NAMESPACE_BEGIN
 
@@ -99,6 +100,9 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      RunMode runMode;             // the current mode the simulation is executing under
      bool isConfigRun;            // true after newRun(), and false after newConfig()
 
+     bool collectJsonLog;
+     JsonBox::Array jsonLog; // animLog entries from the last event
+
      struct {
          simtime_t simTime;       // time limit in current "Run Until" execution, or zero
          eventnumber_t eventNumber;// event number in current "Run Until" execution, or zero
@@ -168,6 +172,28 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void messageSent_OBSOLETE(cMessage *msg, cGate *directToGate);
      virtual void simulationEvent(cEvent *event);
      virtual void objectDeleted(cObject *object);
+
+     virtual void bubble(cComponent *component, const char *text);
+     virtual void messageScheduled(cMessage *msg);
+     virtual void messageCancelled(cMessage *msg);
+     virtual void beginSend(cMessage *msg);
+     virtual void messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+     virtual void messageSendHop(cMessage *msg, cGate *srcGate);
+     virtual void messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay);
+     virtual void endSend(cMessage *msg);
+     virtual void messageCreated(cMessage *msg);
+     virtual void messageCloned(cMessage *msg, cMessage *clone);
+     virtual void messageDeleted(cMessage *msg);
+     virtual void moduleReparented(cModule *module, cModule *oldparent);
+     virtual void componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent);
+     virtual void componentMethodEnd();
+     virtual void moduleDeleted(cModule *module);
+     virtual void gateCreated(cGate *newgate);
+     virtual void gateDeleted(cGate *gate);
+     virtual void connectionCreated(cGate *srcgate);
+     virtual void connectionDeleted(cGate *srcgate);
+     virtual void displayStringChanged(cComponent *component);
+
      virtual bool isGUI() const {return false;}
      virtual cEnvir& flush();
      virtual std::string gets(const char *prompt, const char *defaultReply);

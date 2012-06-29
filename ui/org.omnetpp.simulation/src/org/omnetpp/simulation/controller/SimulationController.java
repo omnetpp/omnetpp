@@ -41,6 +41,7 @@ import org.omnetpp.animation.controller.AnimationStateAdapter;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.LogBuffer.EventEntry;
 import org.omnetpp.simulation.model.SimObject;
 
 /**
@@ -116,6 +117,9 @@ public class SimulationController {
     private Map<Long, SimObject> cachedObjects = new HashMap<Long, SimObject>();
     private static final long MAX_AGE = 1; // unaccessed objects are removed from the cached after this many refresh cycles
 
+    // module logs
+    private LogBuffer logBuffer = new LogBuffer();
+    
     /**
      * Constructor.
      */
@@ -305,6 +309,10 @@ public class SimulationController {
         }
     }
 
+    public LogBuffer getLogBuffer() {
+        return logBuffer;
+    }
+    
     @SuppressWarnings("rawtypes")
     public void refreshStatus() throws IOException {
         boolean again;
@@ -315,6 +323,7 @@ public class SimulationController {
 
             // refresh basic simulation state
             Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
+            System.out.println(responseJSON.toString());
             Map responseMap = (Map) responseJSON;
             hostName = (String) responseMap.get("hostname");
             processId = ((Number) responseMap.get("processid")).longValue();
@@ -341,6 +350,46 @@ public class SimulationController {
                 rootObjectIds.put((String) key, objectId);
             }
 
+            // load the log
+            List logEntries = (List) responseMap.get("log");
+            EventEntry lastEventEntry = null;
+            List<String> logLines = new ArrayList<String>();
+            for (Object e : logEntries) {
+                Map logEntry = (Map)e;
+                String type = (String)logEntry.get("@");
+                if (type.equals("E")) {
+                    if (!logLines.isEmpty()) {
+                        if (lastEventEntry == null)
+                            logBuffer.addEventEntry(lastEventEntry = new EventEntry());
+                        lastEventEntry.logLines = logLines.toArray(new String[]{});
+                        logLines.clear();
+                    }
+
+                    lastEventEntry = new EventEntry();
+                    lastEventEntry.eventNumber = ((Number)logEntry.get("#")).longValue();
+                    lastEventEntry.simulationTime = BigDecimal.parse((String)logEntry.get("t"));
+                    lastEventEntry.moduleId = ((Number)logEntry.get("m")).intValue();
+                    //TODO lastEventEntry.moduleFullPath = 
+                    //TODO lastEventEntry.moduleNedType = 
+                    lastEventEntry.messageName = (String)logEntry.get("msgn");
+                    lastEventEntry.messageClassName = (String)logEntry.get("msgt");
+                    logBuffer.addEventEntry(lastEventEntry);
+                }
+                else if (type.equals("L")) {
+                    String line = (String)logEntry.get("txt");
+                    logLines.add(line);
+                }
+                else if (type.equals("MB")) {
+                    //TODO
+                }
+                else if (type.equals("ME")) {
+                    //TODO
+                }
+                else {
+                    throw new RuntimeException("type: '" + type + "'");
+                }
+            }
+            
             /*
              * Refresh cached objects. Strategy: Maintain a refreshSerial, and for
              * each object also maintain the refreshSerial when they were last

@@ -42,7 +42,6 @@
 #include "cenum.h"
 #include "cscheduler.h"
 #include "stringtokenizer.h"
-#include "jsonvalue.h"
 #include "cresultfilter.h"
 #include "cresultrecorder.h"
 #include "visitor.h"
@@ -157,6 +156,8 @@ Cmdenv::Cmdenv()
 
     errorInfo.isValid = false;
     askParamInfo.isValid = false;
+
+    collectJsonLog = true; //FIXME
 }
 
 Cmdenv::~Cmdenv()
@@ -542,8 +543,14 @@ bool Cmdenv::handle(cHttpRequest *request)
             result["nextEventSimTime"] = JsonBox::Value(SIMTIME_STR(simulation.guessNextSimtime())); //FIXME goes through as string!
             if (simulation.guessNextModule())
                 result["nextEventModuleId"] = JsonBox::Value(simulation.guessNextModule()->getId());
-            if (simulation.guessNextEvent())
-                result["nextEventMessageId"] = JsonBox::Value(simulation.guessNextEvent()->getId());
+            cEvent *guessNextEvent = simulation.guessNextEvent();
+            if (guessNextEvent && guessNextEvent->isMessage())
+                result["nextEventMessageId"] = JsonBox::Value(static_cast<cMessage*>(guessNextEvent)->getId());
+        }
+
+        if (collectJsonLog) {
+            result["log"] = jsonLog;
+            jsonLog.clear();
         }
 
         if (errorInfo.isValid) {
@@ -1537,6 +1544,14 @@ void Cmdenv::sputn(const char *s, int n)
         if (opt_autoflush)
             ::fflush(fout);
     }
+
+    if (collectJsonLog)
+    {
+        JsonBox::Object entry;
+        entry["@"] = "L";
+        entry["txt"] = std::string(s, n);
+        jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+    }
 }
 
 cEnvir& Cmdenv::flush()
@@ -1620,12 +1635,152 @@ void Cmdenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (!opt_expressmode && opt_messagetrace)
+    if (!opt_expressmode)
     {
-        ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  //TODO can go out!
-        if (opt_autoflush)
-            ::fflush(fout);
+        if (opt_messagetrace)
+        {
+            ::fprintf(fout, "DELIVD: %s\n", event->info().c_str());  //TODO can go out!
+            if (opt_autoflush)
+                ::fflush(fout);
+        }
+
+        if (collectJsonLog && event->isMessage())  //TODO also record non-message events
+        {
+            cMessage *msg = static_cast<cMessage*>(event);
+            JsonBox::Object entry;
+            entry["@"] = "E";
+            entry["#"] = (long)simulation.getEventNumber();
+            entry["t"] = SIMTIME_STR(simulation.getSimTime());
+            entry["m"] = simulation.getContextModule()->getId(); //XXX
+            entry["msgt"] = msg->getClassName();
+            entry["msgn"] = msg->getName();
+            jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+        }
     }
+}
+
+void Cmdenv::bubble(cComponent *component, const char *text)
+{
+    EnvirBase::bubble(component, text);
+}
+
+void Cmdenv::beginSend(cMessage *msg)
+{
+    EnvirBase::beginSend(msg);
+}
+
+void Cmdenv::messageScheduled(cMessage *msg)
+{
+    EnvirBase::messageScheduled(msg);
+}
+
+void Cmdenv::messageCancelled(cMessage *msg)
+{
+    EnvirBase::messageCancelled(msg);
+}
+
+void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+}
+
+void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
+{
+    EnvirBase::messageSendHop(msg, srcGate);
+}
+
+void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
+{
+    EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+}
+
+void Cmdenv::endSend(cMessage *msg)
+{
+    EnvirBase::endSend(msg);
+}
+
+void Cmdenv::messageCreated(cMessage *msg)
+{
+    EnvirBase::messageCreated(msg);
+}
+
+void Cmdenv::messageCloned(cMessage *msg, cMessage *clone)
+{
+    EnvirBase::messageCloned(msg, clone);
+}
+
+void Cmdenv::messageDeleted(cMessage *msg)
+{
+    EnvirBase::messageDeleted(msg);
+}
+
+void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
+{
+    EnvirBase::componentMethodBegin(from, to, methodFmt, va, silent);
+
+    if (collectJsonLog)
+    {
+        const char *methodText = "";  // for the Enter_Method_Silent case
+        if (methodFmt) {
+            static char methodTextBuf[MAX_METHODCALL];
+            vsnprintf(methodTextBuf, MAX_METHODCALL, methodFmt, va);
+            methodTextBuf[MAX_METHODCALL-1] = '\0';
+            methodText = methodTextBuf;
+        }
+        JsonBox::Object entry;
+        entry["@"] = "MB";
+        entry["sm"] = ((cModule *)from)->getId();
+        entry["tm"] = ((cModule *)to)->getId();
+        entry["m"] = methodText;
+        jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+    }
+}
+
+void Cmdenv::componentMethodEnd()
+{
+    EnvirBase::componentMethodEnd();
+
+    if (collectJsonLog)
+    {
+        JsonBox::Object entry;
+        entry["@"] = "ME";
+        jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+    }
+}
+
+void Cmdenv::moduleDeleted(cModule *module)
+{
+    EnvirBase::moduleDeleted(module);
+}
+
+void Cmdenv::moduleReparented(cModule *module, cModule *oldparent)
+{
+    EnvirBase::moduleReparented(module, oldparent);
+}
+
+void Cmdenv::gateCreated(cGate *newgate)
+{
+    EnvirBase::gateCreated(newgate);
+}
+
+void Cmdenv::gateDeleted(cGate *gate)
+{
+    EnvirBase::gateDeleted(gate);
+}
+
+void Cmdenv::connectionCreated(cGate *srcgate)
+{
+    EnvirBase::connectionCreated(srcgate);
+}
+
+void Cmdenv::connectionDeleted(cGate *srcgate)
+{
+    EnvirBase::connectionDeleted(srcgate);
+}
+
+void Cmdenv::displayStringChanged(cComponent *component)
+{
+    EnvirBase::displayStringChanged(component);
 }
 
 void Cmdenv::printUISpecificHelp()
