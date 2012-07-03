@@ -119,11 +119,11 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         CTabFolder tabFolder = new CTabFolder(parent, SWT.HORIZONTAL);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        // make tab colors nicer; see Scave's FormToolkit2.setColors() for the original 
+        // make tab colors nicer; see Scave's FormToolkit2.setColors() for the original
         Color blue = new Color(null, 183, 202, 232);
         Color lighterBlue = new Color(null, 233, 239, 245);
         tabFolder.setSelectionBackground(new Color[]{blue, lighterBlue}, new int[] {25}, true);
-        
+
         // create tabs
         CTabItem simulationTab = new CTabItem(tabFolder, SWT.NONE);
         simulationTab.setText("Simulate");
@@ -273,7 +273,7 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         animationPositionControl.setAnimationController(animationController);
 
         // animationCanvas.setInput(eventLogInput);
-        
+
         animationCanvas.setAnimationContributor(contributor);
 
         animationPlaybackController.addPlaybackStateListener(new IAnimationPlaybackStateListener() {
@@ -282,7 +282,7 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
                 animationLever.setSecondaryAnimationSpeed(animationPlaybackController.getPlaybackSpeed());
             }
         });
-        
+
         getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
 
         // update status display when something happens to the simulation
@@ -293,21 +293,22 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
                     setEventlogFileName(controller.getEventlogFile());
                 if (animationCanvas.getInput() != null) {
                     AnimationController animationController = animationCanvas.getAnimationController();
-                    int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
-                    System.out.println("fileChange: " + fileChange);
                     AnimationPosition currentAnimationPosition = animationController.getCurrentAnimationPosition();
-                    // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
-                    if (currentAnimationPosition.getSimulationTime() != null)
-                        currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
-                    animationController.clearInternalState();
-                    animationCanvas.getInput().synchronize(fileChange);
-                    if (currentAnimationPosition.isCompletelySpecified()) {
-                        AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
-                        animationController.gotoAnimationPosition(currentAnimationPosition);
-                        animationController.startAnimation(true, stopAnimationPosition);
+                    int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
+                    if (!currentAnimationPosition.isCompletelySpecified() || fileChange != FileReader.FileChangedState.UNCHANGED) {
+                        // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
+                        if (currentAnimationPosition.getSimulationTime() != null)
+                            currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
+                        animationController.clearInternalState();
+                        animationCanvas.getInput().synchronize(fileChange);
+                        if (currentAnimationPosition.isCompletelySpecified()) {
+                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
+                            animationController.gotoAnimationPosition(currentAnimationPosition);
+                            animationController.startAnimation(true, stopAnimationPosition);
+                        }
+                        else
+                            animationController.gotoInitialAnimationPosition();
                     }
-                    else
-                        animationController.gotoInitialAnimationPosition();
                 }
                 updateStatusDisplay();
             }
@@ -353,11 +354,11 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
     @Override
     public void dispose() {
         super.dispose();
-        
+
         simulationController.dispose();
         simulationController = null;
     }
-    
+
     @Override
     public void setFocus() {
         animationCanvas.setFocus();
