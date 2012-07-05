@@ -40,11 +40,11 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
-import org.omnetpp.simulation.controller.SimObject;
-import org.omnetpp.simulation.controller.SimObjectRef;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.model.SimObject;
+import org.omnetpp.simulation.model.SimObjectRef;
 
 /**
  *

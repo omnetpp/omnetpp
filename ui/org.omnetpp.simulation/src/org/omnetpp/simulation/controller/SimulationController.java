@@ -41,6 +41,7 @@ import org.omnetpp.animation.controller.AnimationStateAdapter;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.model.SimObject;
 
 /**
  * Interacts with a simulation process over HTTP.
@@ -450,17 +451,7 @@ public class SimulationController {
                 garbage.add(id); // calling remove() here would cause ConcurrentModificationException
             }
             else {
-                SimObject object = cachedObjects.get(id);
-                if (object == null)
-                    cachedObjects.put(id, object = new SimObject(id));
-                Assert.isTrue(object.id == id);
-                object.className = (String) objectInfo.get("className");
-                object.name = (String) objectInfo.get("name");
-                object.fullName = (String) objectInfo.get("fullName");
-                object.fullPath = (String) objectInfo.get("fullPath");
-                object.icon = (String) objectInfo.get("icon");
-                object.info = (String) objectInfo.get("info");
-                object.ownerId = ((Number) objectInfo.get("owner")).longValue();
+                fillObjectFromJSON(id, objectInfo);
             }
         }
         cachedObjects.keySet().removeAll(garbage);
@@ -483,6 +474,25 @@ public class SimulationController {
                 object.childObjectIds = tmp;
             }
         }
+    }
+
+    protected void fillObjectFromJSON(long id, Map objectInfo) {
+        SimObject object = cachedObjects.get(id);
+        if (object == null)
+            cachedObjects.put(id, object = new SimObject(id));
+        Assert.isTrue(object.id == id);
+
+        String knownBaseClassStr = (String) objectInfo.get("knownBaseClass");
+        SimObject.KnownBaseClass knownBaseClass = SimObject.KnownBaseClass.valueOf(knownBaseClassStr);
+        //TODO use json tree
+        
+        object.className = (String) objectInfo.get("className");
+        object.name = (String) objectInfo.get("name");
+        object.fullName = (String) objectInfo.get("fullName");
+        object.fullPath = (String) objectInfo.get("fullPath");
+        object.icon = (String) objectInfo.get("icon");
+        object.info = (String) objectInfo.get("info");
+        object.ownerId = ((Number) objectInfo.get("owner")).longValue();
     }
 
     @SuppressWarnings("rawtypes")

@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.controller;
+package org.omnetpp.simulation.model;
 
 /**
  * Represents a cObject in the simulation.
@@ -6,6 +6,12 @@ package org.omnetpp.simulation.controller;
  */
 //TODO wrap members into getters (setters are only important for SimulationController)
 public class SimObject {
+    public enum KnownBaseClass {
+        cPlaceholderModule, cSimpleModule, cCompoundModule, cPacket, cMessage,
+        cArray, cQueue, cGate, cPar, cChannel, cOutVector, cDensityEstBase, cStatistic, 
+        cMessageHeap, cWatchBase, cOwnedObject, cNamedObject, cObject,
+    };
+    
     public long id;
     public String className;
     public String name;

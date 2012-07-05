@@ -1,8 +1,9 @@
-package org.omnetpp.simulation.controller;
+package org.omnetpp.simulation.model;
 
 import java.io.IOException;
 
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.SimulationController;
 
 
 /**
