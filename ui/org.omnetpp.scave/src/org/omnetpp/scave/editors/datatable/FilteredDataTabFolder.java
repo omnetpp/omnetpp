@@ -192,10 +192,10 @@ public class FilteredDataTabFolder extends TabFolder {
     }
 
     public void refreshPanelTitles() {
-        setPanelTitle(allTab, "All");
-        setPanelTitle(vectorsTab, "Vectors");
-        setPanelTitle(scalarsTab, "Scalars");
-        setPanelTitle(histogramsTab, "Histograms");
+        setPanelTitle(allTab, "&All");
+        setPanelTitle(vectorsTab, "&Vectors");
+        setPanelTitle(scalarsTab, "&Scalars");
+        setPanelTitle(histogramsTab, "&Histograms");
     }
 
     private void setPanelTitle(TabItem tab, String title) {
