@@ -760,23 +760,6 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			((ScaveEditorPage)page).pageActivated();
 		}
 
-		// open to default view
-		String viewID = null;
-		if (page == datasetsPage || page instanceof DatasetPage)
-            viewID = DatasetView.ID;
-		else if (page == browseDataPage)
-		    viewID = VectorBrowserView.ID;
-		if (viewID != null) {
-            try {
-                IWorkbenchPage workbenchPage = getSite().getPage();
-                if (workbenchPage.getPerspective() != null)
-                    workbenchPage.showView(viewID, null, IWorkbenchPage.VIEW_VISIBLE);
-            }
-            catch (PartInitException e) {
-                // unimportant
-            }
-		}
-
 		fakeSelectionChange();
 	}
 
