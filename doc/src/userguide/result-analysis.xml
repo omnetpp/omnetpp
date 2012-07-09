@@ -100,6 +100,9 @@
           filtering is possible with combo boxes, or when that is not enough, the user can write arbitrarily
           complex filters using a generic pattern-matching expression language. Selected or filtered data can
           be immediately plotted, or remembered in named datasets for further processing.</para>
+          <tip>You can switch between the ``All'', ``Vectors'', ``Scalars'' and ``Histograms'' pages using the 
+            underlined keys (<keycap>Alt+KEY</keycap> combination) or the <keycap>Ctrl+PgUp</keycap> and 
+            <keycap>Ctrl+PgDown</keycap> keys.</tip>
         <para> Pressing the ``Advanced'' button switches to advanced filter mode. In the text field, you can
           enter a complex filter pattern.</para>
         <tip>
@@ -124,6 +127,8 @@
           Dataset...'' if you want to add all items displayed in the table. Select ``Add Filter Selected Data
           to Dataset...'' if you want to add the selected items only. You can add the items to an existing
           dataset, or you can create a new dataset in the opening dialog.</para>
+          <tip>You can switch between the ``Inputs'', ``Browse Data'' and ``Dataset'' pages using the 
+            <keycap>Alt+PgUp</keycap> and <keycap>Alt+PgDown</keycap> keys.</tip>
       </sect3>
       <sect3>
         <title>Filter expressions</title>
@@ -437,9 +442,6 @@
           <para> The data is exported as a Matlab script file. It can be loaded into Matlab/Octave with the
             source() function.</para>
         </formalpara>
-        <note>
-          <para>Histograms can not be exported yet.</para>
-        </note>
       </sect3>
       <sect3>
         <title>Chart sheets</title>
