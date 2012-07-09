@@ -487,7 +487,11 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
 		if (chartArea == null)
 			return;
 
-		RectangularArea area = transformArea(userDefinedArea).intersect(chartArea);
+		RectangularArea area = transformArea(userDefinedArea);
+		area.minX = Double.isInfinite(area.minX) ? chartArea.minX : area.minX;
+		area.minY = Double.isInfinite(area.minY) ? chartArea.minY : area.minY;
+		area.maxX = Double.isInfinite(area.maxX) ? chartArea.maxX : area.maxX;
+		area.maxY = Double.isInfinite(area.maxY) ? chartArea.maxY : area.maxY;
 
 		if (!area.equals(getArea())) {
 			if (debug) Debug.format("Update area: %s --> %s%n", getArea(), area);
