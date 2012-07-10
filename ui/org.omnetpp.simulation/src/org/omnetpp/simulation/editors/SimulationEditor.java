@@ -74,6 +74,9 @@ import org.omnetpp.simulation.controller.ISimulationCallback;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.inspectors.InfoTextInspectorPart;
+import org.omnetpp.simulation.inspectors.SimulationCanvas;
+import org.omnetpp.simulation.model.c.cObject;
 
 /**
  *
@@ -92,6 +95,7 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
     protected SimulationController simulationController;
 
     protected EventLogAnimationCanvas animationCanvas;
+    protected SimulationCanvas simulationCanvas;
 
     private Label statusLabel;
 
@@ -207,7 +211,14 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         AnimationPositionControl animationPositionControl = new AnimationPositionControl(animationRibbon, SWT.NONE);
         animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        // create canvas
+        // create simulation canvas (TODO: on the same tab as the controls!)
+        simulationCanvas = new SimulationCanvas(simulationController, parent, SWT.DOUBLE_BUFFERED | SWT.BORDER);
+        simulationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        
+        simulationCanvas.addInspectorPart(new InfoTextInspectorPart(new cObject("dummy1")));
+        simulationCanvas.addInspectorPart(new InfoTextInspectorPart(new cObject("dummy2")));
+
+        // create animation canvas
         animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
             private Figure messageFigure;
             private ArrayList<SubmoduleFigure> submoduleFigures = new ArrayList<SubmoduleFigure>();
@@ -372,6 +383,10 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         return animationCanvas;
     }
 
+    public SimulationCanvas getSimulationCanvas() {
+        return simulationCanvas;
+    }
+    
     protected void updateStatusDisplay() {
         if (!statusLabel.isDisposed()) {
             SimulationController controller = getSimulationController();
