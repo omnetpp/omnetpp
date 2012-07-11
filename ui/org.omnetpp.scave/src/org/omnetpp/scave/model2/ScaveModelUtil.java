@@ -636,7 +636,7 @@ public class ScaveModelUtil {
 		Assert.isNotNull(nodeTypeName);
 		Assert.isNotNull(category);
 		NodeType nodeType = getNodeType(nodeTypeName);
-		return nodeType != null ? hasCategory(nodeType, category) : null;
+		return nodeType != null ? hasCategory(nodeType, category) : false;
 	}
 
 	public static boolean hasCategory(NodeType nodeType, String category) {
