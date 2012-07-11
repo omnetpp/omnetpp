@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.model.c.cObject;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  *

@@ -1,8 +1,9 @@
-package org.omnetpp.simulation.model.c;
+package org.omnetpp.simulation.model.property;
 
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.simulation.model.cGate;
 
 public class GateModelPropertySource extends PropertySource {
     private static final String PROPERTY_ID           = "Id";
@@ -12,9 +13,9 @@ public class GateModelPropertySource extends PropertySource {
     private static final String PROPERTY_OWNER_MODULE = "OwnerModule";
 
     private IPropertySourceProvider propertySourceProvider;
-    private GateModel simulationGate;
+    private cGate simulationGate;
 
-    public GateModelPropertySource(IPropertySourceProvider propertySourceProvider, GateModel simulationGate) {
+    public GateModelPropertySource(IPropertySourceProvider propertySourceProvider, cGate simulationGate) {
         this.propertySourceProvider = propertySourceProvider;
         this.simulationGate = simulationGate;
     }

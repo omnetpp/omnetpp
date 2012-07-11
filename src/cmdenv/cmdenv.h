@@ -230,6 +230,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
 
      cObject *getObjectById(long id);
      long getIdForObject(cObject *obj);
+     std::string getIdStringForObject(cObject *obj);
 
      const char *getKnownBaseClass(cObject *object);
 

@@ -21,7 +21,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.auth.BasicScheme;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +41,7 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.LogBuffer.EventEntry;
-import org.omnetpp.simulation.model.SimObject;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  * Interacts with a simulation process over HTTP.
@@ -113,8 +112,8 @@ public class SimulationController {
 
     // object cache
     private long refreshSerial;
-    private Map<String, Long> rootObjectIds = new HashMap<String, Long>(); // keys: "simulation", "network", etc
-    private Map<Long, SimObject> cachedObjects = new HashMap<Long, SimObject>();
+    private Map<String, cObject> rootObjects = new HashMap<String, cObject>(); // keys: "simulation", "network", etc.
+    private Map<Long, cObject> cachedObjects = new HashMap<Long, cObject>();
     private static final long MAX_AGE = 1; // unaccessed objects are removed from the cached after this many refresh cycles
 
     // module logs
@@ -346,8 +345,9 @@ public class SimulationController {
             // refresh root object IDs
             Object json = getPageContentAsJSON(urlBase + "/sim/getRootObjectIds");
             for (Object key : ((Map) json).keySet()) {
-                long objectId = ((Number) ((Map) json).get(key)).longValue();
-                rootObjectIds.put((String) key, objectId);
+                String rootRef = (String) ((Map) json).get(key);
+                cObject rootObj = getObjectByJSONRef(rootRef);
+                rootObjects.put((String) key, rootObj);
             }
 
             // load the log
@@ -401,6 +401,7 @@ public class SimulationController {
              */
             refreshSerial++;
 
+            //XXX this 'garbage removal' stuff is simply WRONG now -- objects can still remain in memory via references from other objects 
             List<Long> garbage = new ArrayList<Long>();
             for (Long id : cachedObjects.keySet()) {
                 if (cachedObjects.get(id).lastAccessSerial - refreshSerial > MAX_AGE)
@@ -408,7 +409,11 @@ public class SimulationController {
             }
             cachedObjects.keySet().removeAll(garbage);
 
-            doLoadObjects(cachedObjects.keySet());
+            List<cObject> filledObjects = new ArrayList<cObject>();
+            for (cObject obj : cachedObjects.values())
+                if (obj.isFilledIn())
+                    filledObjects.add(obj);
+            doLoadObjects(filledObjects);
 
             System.out.println("refreshStatus notifyListeners() follows:");
             notifyListeners();
@@ -443,107 +448,109 @@ public class SimulationController {
     }
 
     public boolean hasRootObjects() {
-        return !rootObjectIds.isEmpty();
+        return !rootObjects.isEmpty();
     }
 
     /**
      * Use ROOTOBJ_xxx constants as keys.
      */
-    public long getRootObjectId(String key) {
-        Assert.isTrue(!rootObjectIds.isEmpty(), "refresh() needs to be called before getRootObjectId() can be invoked");
-        return rootObjectIds.get(key);
+    public cObject getRootObject(String key) {
+        Assert.isTrue(!rootObjects.isEmpty(), "refresh() needs to be called before getRootObjectId() can be invoked");
+        return rootObjects.get(key);
     }
-
-    public boolean isCachedObject(long id) {
-        return cachedObjects.containsKey(id);
+    
+    public void loadObject(cObject object) throws IOException {
+        Set<cObject> objects = new HashSet<cObject>();
+        objects.add(object);
+        doLoadObjects(objects);
     }
-
-    /**
-     * Loads the object if necessary. When you need several objects, it is more
-     * efficient to call loadObjects() beforehand, as it will only issue a
-     * single HTTP request into the simulation process.
-     */
-    public SimObject getCachedObject(long id) throws IOException {
-        SimObject obj = cachedObjects.get(id);
-        if (obj != null)
-            obj.lastAccessSerial = refreshSerial;
-        else {
-            // load it
-            Set<Long> ids = new HashSet<Long>();
-            ids.add(id);
-            doLoadObjects(ids);
-            obj = cachedObjects.get(id);
-            //TODO: result is null for invalid or stale object IDs -- remember those too so we won't ask the simulation again and again
+    
+    public void loadUnfilledObjects(Collection<? extends cObject> objects) throws IOException {
+        // load objects that are not yet filled in
+        Set<cObject> missing = new HashSet<cObject>();
+        for (cObject obj : objects) {
+            if (!obj.isFilledIn())
+                missing.add(obj);
         }
-        return obj;
-    }
-
-    public void loadObjects(Collection<Long> ids) throws IOException {
-        // load objects not yet in the cache
-        if (!cachedObjects.keySet().containsAll(ids)) {
-            Set<Long> missing = new HashSet<Long>(ids);
-            missing.removeAll(cachedObjects.keySet());
-            doLoadObjects(missing);
-        }
+        doLoadObjects(missing);
     }
 
     @SuppressWarnings("rawtypes")
-    protected void doLoadObjects(Collection<Long> ids) throws IOException {
-        String idsArg = StringUtils.join(ids, ",");
-        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?ids=" + idsArg);
+    protected void doLoadObjects(Collection<? extends cObject> objects) throws IOException {
+        if (objects.isEmpty())
+            return;
+        StringBuilder buf = new StringBuilder();
+        for (cObject obj: objects)
+            buf.append(obj.getObjectId()).append(',');
+        String idsArg = buf.substring(0, buf.length()-1);  // trim trailing comma
+        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?what=ic&ids=" + idsArg);
 
-        // process response; objects not in the response no longer exist, purge their IDs from the cache
+        // process response; objects not in the response no longer exist, purge them from the cache
         List<Long> garbage = new ArrayList<Long>();
-        for (long id : ids) {
-            Map objectInfo = (Map) ((Map) json).get(String.valueOf(id));
-            if (objectInfo == null) {
-                garbage.add(id); // calling remove() here would cause ConcurrentModificationException
+        for (cObject obj: objects) {
+            Map jsonObjectInfo = (Map) ((Map) json).get(String.valueOf(obj.getObjectId()));
+            if (jsonObjectInfo == null) {
+                garbage.add(obj.getObjectId()); // calling remove() here would cause ConcurrentModificationException
+                obj.markAsDisposed();
             }
             else {
-                fillObjectFromJSON(id, objectInfo);
+                obj.fillFromJSON(jsonObjectInfo);
             }
         }
         cachedObjects.keySet().removeAll(garbage);
+    }
 
-        // query and store object children
-        json = getPageContentAsJSON(urlBase + "/sim/getObjectChildren?ids=" + idsArg);
-
-        for (long id : ids) {
-            SimObject object = cachedObjects.get(id);
-            List childObjectIds = (List) ((Map) json).get(String.valueOf(id));
-            if (childObjectIds == null || childObjectIds.isEmpty()) {
-                if (object != null)
-                    object.childObjectIds = ArrayUtils.EMPTY_LONG_ARRAY;
-            }
-            else {
-                Assert.isTrue(object.id == id);
-                long[] tmp = new long[childObjectIds.size()];
-                for (int i = 0; i < tmp.length; i++)
-                    tmp[i] = ((Number) childObjectIds.get(i)).longValue();
-                object.childObjectIds = tmp;
-            }
+    public cObject getObjectByJSONRef(String idAndType) {
+        if (idAndType.equals("0"))
+            return null;
+        int colonPos = idAndType.indexOf(':');
+        if (colonPos == -1)
+            throw new RuntimeException("argument should be in the form \"<id>:<classname>\": " + idAndType);
+        long id = Long.valueOf(idAndType.substring(0, colonPos));
+        cObject obj = cachedObjects.get(id);
+        if (obj != null) {
+            return obj;
+        }
+        else {
+            String className = idAndType.substring(colonPos+1);
+            obj = createBlankObject(id, className);
+            cachedObjects.put(id, obj);
+            return obj;
         }
     }
 
-    protected void fillObjectFromJSON(long id, Map objectInfo) {
-        SimObject object = cachedObjects.get(id);
-        if (object == null)
-            cachedObjects.put(id, object = new SimObject(id));
-        Assert.isTrue(object.id == id);
-
-        String knownBaseClassStr = (String) objectInfo.get("knownBaseClass");
-        SimObject.KnownBaseClass knownBaseClass = SimObject.KnownBaseClass.valueOf(knownBaseClassStr);
-        //TODO use json tree
-        
-        object.className = (String) objectInfo.get("className");
-        object.name = (String) objectInfo.get("name");
-        object.fullName = (String) objectInfo.get("fullName");
-        object.fullPath = (String) objectInfo.get("fullPath");
-        object.icon = (String) objectInfo.get("icon");
-        object.info = (String) objectInfo.get("info");
-        object.ownerId = ((Number) objectInfo.get("owner")).longValue();
+    protected cObject createBlankObject(long id, String knownBaseClass) {
+        try {
+            String name = "org.omnetpp.simulation.model." + knownBaseClass;
+            Class clazz = Class.forName(name);
+            return (cObject)clazz.getConstructors()[0].newInstance(this, id);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("internal error: support for known C++ base class " + knownBaseClass, e);
+        }
+//        
+//        if (knownBaseClass.equals("cObject")) //TODO more classes; could use reflection
+//            return new cObject(this, id);
+//        else if (knownBaseClass.equals("cPacket"))
+//            return new cPacket(this, id);
+//        else if (knownBaseClass.equals("cMessage"))
+//            return new cMessage(this, id);
+//        else if (knownBaseClass.equals("cModule"))
+//            return new cModule(this, id);
+//        else if (knownBaseClass.equals("cGate"))
+//            return new cGate(this, id);
+//        else if (knownBaseClass.equals("cQueue"))
+//            return new cQueue(this, id);
+//        else if (knownBaseClass.equals("cSimulation"))
+//            return new cSimulation(this, id);
+//        else if (knownBaseClass.equals("cRegistrationList"))
+//            return new cRegistrationList(this, id);
+//        else if (knownBaseClass.equals("cMessageHeap"))
+//            return new cRegistrationList(this, id);
+//        else //TODO: all others from cmdenv.cc
+//            throw new RuntimeException("unsupported class " + knownBaseClass);
     }
-
+    
     @SuppressWarnings("rawtypes")
     public List<ConfigDescription> getConfigDescriptions() throws IOException {
         Object json = getPageContentAsJSON(urlBase + "/sim/enumerateConfigs");

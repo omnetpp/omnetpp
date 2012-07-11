@@ -7,7 +7,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
-import org.omnetpp.simulation.model.c.cObject;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  *
@@ -18,6 +18,10 @@ public class InfoTextInspectorPart extends InspectorPart {
 
 	public InfoTextInspectorPart(cObject object) {
 		super(object);
+
+		if (object.isFilledIn())
+            object.safeLoad();
+		
 		figure = new InfoTextInspectorFigure();
 		figure.setInspectorPart(this);
 
@@ -34,7 +38,7 @@ public class InfoTextInspectorPart extends InspectorPart {
 	public void refresh() {
 		super.refresh();
 		if (!isDisposed()) {
-			((InfoTextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.info());
+			((InfoTextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.getInfo());
 		}
 	}
 

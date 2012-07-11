@@ -1,7 +1,7 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.swt.widgets.Composite;
-import org.omnetpp.simulation.model.c.cObject;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  * Represents a container for inspectors. The container handles selection,

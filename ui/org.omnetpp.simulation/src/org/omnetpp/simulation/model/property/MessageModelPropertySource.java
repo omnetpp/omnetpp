@@ -1,9 +1,10 @@
-package org.omnetpp.simulation.model.c;
+package org.omnetpp.simulation.model.property;
 
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.simulation.model.cMessage;
 
 public class MessageModelPropertySource extends PropertySource {
     private static final String PROPERTY_NAME                   = "Name";
@@ -29,9 +30,9 @@ public class MessageModelPropertySource extends PropertySource {
     private static final String PROPERTY_ARRIVAL_TIME           = "ArrivalTime";
 
     private IPropertySourceProvider propertySourceProvider;
-    private MessageModel simulationMessage;
+    private cMessage simulationMessage;
 
-    public MessageModelPropertySource(IPropertySourceProvider propertySourceProvider, MessageModel simulationMessage) {
+    public MessageModelPropertySource(IPropertySourceProvider propertySourceProvider, cMessage simulationMessage) {
         this.simulationMessage = simulationMessage;
         this.propertySourceProvider = propertySourceProvider;
     }
@@ -53,23 +54,23 @@ public class MessageModelPropertySource extends PropertySource {
     @org.omnetpp.common.properties.Property(id = PROPERTY_PRIORITY)
     public short getPriority() { return simulationMessage.getSchedulingPriority(); }
 
-    @org.omnetpp.common.properties.Property(id = PROPERTY_BIT_LENGTH)
-    public long getBitLength() { return simulationMessage.getBitLength(); }
-
-    @org.omnetpp.common.properties.Property(id = PROPERTY_BIT_ERROR)
-    public boolean getBitError() { return simulationMessage.hasBitError(); }
-
-    @org.omnetpp.common.properties.Property(id = PROPERTY_ID, category = "Id")
-    public int getId() { return simulationMessage.getId(); }
-
-    @org.omnetpp.common.properties.Property(id = PROPERTY_TREE_ID, category = "Id")
-    public int getTreeId() { return simulationMessage.getTreeId(); }
-
-    @org.omnetpp.common.properties.Property(id = PROPERTY_ENCAPSULATION_ID, category = "Id")
-    public int getEncapsulationId() { return simulationMessage.getEncapsulationId(); }
-
-    @org.omnetpp.common.properties.Property(id = PROPERTY_ENCAPSULATIUON_TREE_ID, category = "Id")
-    public int getEncapsulationTreeId() { return simulationMessage.getEncapsulationTreeId(); }
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_BIT_LENGTH)
+//    public long getBitLength() { return simulationMessage.getBitLength(); }
+//
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_BIT_ERROR)
+//    public boolean getBitError() { return simulationMessage.hasBitError(); }
+//
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_ID, category = "Id")
+//    public int getId() { return simulationMessage.getId(); }
+//
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_TREE_ID, category = "Id")
+//    public int getTreeId() { return simulationMessage.getTreeId(); }
+//
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_ENCAPSULATION_ID, category = "Id")
+//    public int getEncapsulationId() { return simulationMessage.getEncapsulationId(); }
+//
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_ENCAPSULATIUON_TREE_ID, category = "Id")
+//    public int getEncapsulationTreeId() { return simulationMessage.getEncapsulationTreeId(); }
 
     @org.omnetpp.common.properties.Property(id = PROPERTY_SENDING_TIME, category = "Time")
     public BigDecimal getSendingTime() { return simulationMessage.getSendingTime(); }

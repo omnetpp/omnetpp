@@ -1,16 +1,17 @@
-package org.omnetpp.simulation.model.c;
+package org.omnetpp.simulation.model.property;
 
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.simulation.model.cSimulation;
 
 public class SimulationModelPropertySource extends PropertySource {
     private static final String PROPERTY_ROOT_MODULE = "rootModule";
 
     private IPropertySourceProvider propertySourceProvider;
-    private SimulationModel simulation;
+    private cSimulation simulation;
 
-    public SimulationModelPropertySource(IPropertySourceProvider propertySourceProvider, SimulationModel simulation) {
+    public SimulationModelPropertySource(IPropertySourceProvider propertySourceProvider, cSimulation simulation) {
         this.propertySourceProvider = propertySourceProvider;
         this.simulation = simulation;
     }

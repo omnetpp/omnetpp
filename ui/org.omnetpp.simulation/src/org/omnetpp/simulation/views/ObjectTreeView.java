@@ -3,7 +3,6 @@ package org.omnetpp.simulation.views;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
@@ -43,8 +42,7 @@ import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
-import org.omnetpp.simulation.model.SimObject;
-import org.omnetpp.simulation.model.SimObjectRef;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  *
@@ -65,18 +63,18 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
 	class ViewContentProvider implements ITreeContentProvider {
 	    public Object[] getChildren(Object element) {
-	        if (element instanceof SimObjectRef) {
-	            SimObject simObject = ((SimObjectRef)element).safeGet();
-	            if (simObject == null)
-	                return new Object[0]; 
-                long[] childObjectIds = simObject.childObjectIds;
+	        if (element instanceof cObject) {
+	            cObject object = (cObject)element;
+	            if (!object.isFilledIn())
+	                object.safeLoad(); //FIXME return if failed!
+                cObject[] childObjects = object.getChildObjects();
                 try {
-                    ((SimObjectRef)element).controller.loadObjects(Arrays.asList(ArrayUtils.toObject(childObjectIds)));
+                    object.getController().loadUnfilledObjects(Arrays.asList(childObjects)); //FIXME return if failed??
                 }
                 catch (IOException e) {
                     SimulationPlugin.logError("Could not retrieve objects from simulation process", e);
                 }
-	            return SimObjectRef.wrap(childObjectIds, ((SimObjectRef)element).controller);
+	            return childObjects;
 	        }
 	        return new Object[0];
 	    }
@@ -86,22 +84,22 @@ public class ObjectTreeView extends ViewWithMessagePart {
 	    }
 
 	    public Object getParent(Object element) {
-            if (element instanceof SimObjectRef) {
-                SimObject simObject = ((SimObjectRef)element).safeGet();
-                if (simObject == null)
-                    return null; 
-                long owner = simObject.ownerId;
-                return new SimObjectRef(owner, ((SimObjectRef)element).controller);
+            if (element instanceof cObject) {
+                cObject object = (cObject)element;
+                if (!object.isFilledIn())
+                    object.safeLoad(); //FIXME return if failed!
+                if (!object.isDisposed())
+                    return object.getOwner();
             }
-            return null;
+            return null;  // we don't know
 	    }
 
 	    public boolean hasChildren(Object element) {
-            if (element instanceof SimObjectRef) {
-                SimObject simObject = ((SimObjectRef)element).safeGet();
-                if (simObject == null)
-                    return false; 
-                return simObject.childObjectIds.length > 0;
+            if (element instanceof cObject) {
+                cObject object = (cObject)element;
+                if (!object.isFilledIn())
+                    object.safeLoad();  //FIXME return if failed!
+                return object.getChildObjects().length > 0;
             }
             return false;
 	    }
@@ -126,24 +124,26 @@ public class ObjectTreeView extends ViewWithMessagePart {
         private Styler brownStyle = new ColorStyler(ColorFactory.BURLYWOOD4);
 
         public StyledString getStyledText(Object element) {
-            if (element instanceof SimObjectRef) {
-                SimObject obj = ((SimObjectRef)element).safeGet();
-                if (obj == null)
+            if (element instanceof cObject) {
+                cObject object = (cObject)element;
+                if (!object.isFilledIn())
+                    object.safeLoad(); //FIXME return if failed!
+                if (object.isDisposed())
                     return new StyledString("<n/a>"); // deleted or error
-                StyledString styledString = new StyledString(obj.fullName);
-                styledString.append(" (" + obj.className + ")", greyStyle); //TODO use Simkernel.getObjectShortTypeName(obj);
-                styledString.append("  " + obj.info, brownStyle);
+                StyledString styledString = new StyledString(object.getFullName());
+                styledString.append(" (" + object.getClassName() + ")", greyStyle); //TODO use Simkernel.getObjectShortTypeName(obj);
+                styledString.append("  " + object.getInfo(), brownStyle);
                 return styledString;
             } 
             return new StyledString(element.toString());
         }
 
         public Image getImage(Object element) {
-            if (element instanceof SimObjectRef) {
-                SimObject obj = ((SimObjectRef)element).safeGet();
-                if (obj == null)
-                    return null; // deleted or error TODO return error icon 
-                String icon = obj.icon; // note: may be empty
+            if (element instanceof cObject) {
+                cObject object = (cObject)element;
+                if (!object.isFilledIn())
+                    object.safeLoad();
+                String icon = object.getIcon(); // note: may be empty
                 return SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_DIR + icon + ".png", SimulationUIConstants.IMG_OBJ_COGWHEEL);
             }
             return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
@@ -183,7 +183,8 @@ public class ObjectTreeView extends ViewWithMessagePart {
         viewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
-                associatedSimulationEditor.openInspector(element);
+                if (element instanceof cObject)
+                    associatedSimulationEditor.openInspector((cObject)element);
             }
         });
 
@@ -250,6 +251,13 @@ public class ObjectTreeView extends ViewWithMessagePart {
             showMessage("No simulation process.");
         else {
             hideMessage();
+
+            if (controller.hasRootObjects()) {
+                cObject input = controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+                if (!input.equals(viewer.getInput()))
+                    viewer.setInput(input);
+            }
+
             viewer.refresh();
         }
     }
@@ -275,8 +283,8 @@ public class ObjectTreeView extends ViewWithMessagePart {
         }
         else {
             hideMessage();
-            long simulationObjectId = controller.getRootObjectId(SimulationController.ROOTOBJ_SIMULATION);
-            viewer.setInput(new SimObjectRef(simulationObjectId, controller));
+            cObject input = controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+            viewer.setInput(input);
             viewer.refresh();
         }
     }

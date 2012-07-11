@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
-import org.omnetpp.simulation.model.c.cObject;
+import org.omnetpp.simulation.model.cObject;
 
 public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 

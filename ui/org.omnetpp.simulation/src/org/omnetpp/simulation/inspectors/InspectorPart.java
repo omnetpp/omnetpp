@@ -4,7 +4,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.omnetpp.simulation.model.c.cObject;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
@@ -56,8 +56,8 @@ public abstract class InspectorPart implements IInspectorPart {
 		Assert.isTrue(object != null, "inspector already disposed");
 
 		// automatically close the inspector when the underlying object gets deleted
-		if (object.isZombie()) {
-	    	System.out.println("object became zombie - auto-closing inspector: ");
+		if (object.isDisposed()) {
+	    	System.out.println("object disposed - auto-closing inspector: ");
 			getContainer().close(this);
 		}
 	}
@@ -82,8 +82,8 @@ public abstract class InspectorPart implements IInspectorPart {
 
     //@Override
     public String toString() {
-    	if (object.isZombie())
-    		return getClass().getSimpleName() + ":<deleted-object>";
+    	if (object.isDisposed())
+    		return getClass().getSimpleName() + ":<disposed>";
     	else
     		return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
     }

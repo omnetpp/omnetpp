@@ -53,6 +53,7 @@
 #include "cstatistic.h"
 #include "cdensityestbase.h"
 #include "cwatch.h"
+#include "cdisplaystring.h"
 
 
 USING_NAMESPACE
@@ -593,18 +594,18 @@ bool Cmdenv::handle(cHttpRequest *request)
         request->print("\n");
 
         JsonBox::Object result;
-        result["simulation"] = JsonBox::Value(getIdForObject(&simulation));
-        result["fes"] = JsonBox::Value(getIdForObject(&simulation.msgQueue));
-        result["systemModule"] = JsonBox::Value(getIdForObject(simulation.getSystemModule()));
-        result["defaultList"] = JsonBox::Value(getIdForObject(&defaultList));
-        result["componentTypes"] = JsonBox::Value(getIdForObject(componentTypes.getInstance()));
-        result["nedFunctions"] = JsonBox::Value(getIdForObject(nedFunctions.getInstance()));
-        result["classes"] = JsonBox::Value(getIdForObject(classes.getInstance()));
-        result["enums"] = JsonBox::Value(getIdForObject(enums.getInstance()));
-        result["classDescriptors"] = JsonBox::Value(getIdForObject(classDescriptors.getInstance()));
-        result["configOptions"] = JsonBox::Value(getIdForObject(configOptions.getInstance()));
-        result["resultFilters"] = JsonBox::Value(getIdForObject(resultFilters.getInstance()));
-        result["resultRecorders"] = JsonBox::Value(getIdForObject(resultRecorders.getInstance()));
+        result["simulation"] = JsonBox::Value(getIdStringForObject(&simulation));
+        result["fes"] = JsonBox::Value(getIdStringForObject(&simulation.msgQueue));
+        result["systemModule"] = JsonBox::Value(getIdStringForObject(simulation.getSystemModule()));
+        result["defaultList"] = JsonBox::Value(getIdStringForObject(&defaultList));
+        result["componentTypes"] = JsonBox::Value(getIdStringForObject(componentTypes.getInstance()));
+        result["nedFunctions"] = JsonBox::Value(getIdStringForObject(nedFunctions.getInstance()));
+        result["classes"] = JsonBox::Value(getIdStringForObject(classes.getInstance()));
+        result["enums"] = JsonBox::Value(getIdStringForObject(enums.getInstance()));
+        result["classDescriptors"] = JsonBox::Value(getIdStringForObject(classDescriptors.getInstance()));
+        result["configOptions"] = JsonBox::Value(getIdStringForObject(configOptions.getInstance()));
+        result["resultFilters"] = JsonBox::Value(getIdStringForObject(resultFilters.getInstance()));
+        result["resultRecorders"] = JsonBox::Value(getIdStringForObject(resultRecorders.getInstance()));
 
         std::stringstream ss;
         JsonBox::Value(result).writeToStream(ss, true, false);
@@ -615,141 +616,193 @@ bool Cmdenv::handle(cHttpRequest *request)
         request->print("\n");
 
         std::string ids = commandArgs["ids"];
+        std::string what = commandArgs["what"];
         JsonBox::Object result;
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())
         {
-             std::string id = tokenizer.nextToken();
-             cObject *obj = getObjectById(atol(id.c_str()));
+             std::string objectId = tokenizer.nextToken();
+             cObject *obj = getObjectById(atol(objectId.c_str()));
              if (obj)
              {
-                 JsonBox::Object tmp;
-                 tmp["name"] = JsonBox::Value(obj->getName());
-                 tmp["fullName"] = JsonBox::Value(obj->getFullName());
-                 tmp["fullPath"] = JsonBox::Value(obj->getFullPath());
-                 tmp["className"] = JsonBox::Value(obj->getClassName());
-                 tmp["knownBaseClass"] = JsonBox::Value(getKnownBaseClass(obj));
-                 tmp["info"] = JsonBox::Value(obj->info());
-                 tmp["owner"] = JsonBox::Value(getIdForObject(obj->getOwner()));
-                 cClassDescriptor *desc = obj->getDescriptor();
-                 const char *icon = desc ? desc->getProperty("icon") : NULL;
-                 tmp["icon"] = JsonBox::Value(icon ? icon : "");
-                 result[id] = tmp;
-             }
-        }
+                 JsonBox::Object jfields;
+                 if (what=="" || what.find('i') != std::string::npos) {  // "info"
+                     jfields["name"] = JsonBox::Value(obj->getName());
+                     jfields["fullName"] = JsonBox::Value(obj->getFullName());
+                     jfields["fullPath"] = JsonBox::Value(obj->getFullPath());
+                     jfields["className"] = JsonBox::Value(obj->getClassName());
+                     jfields["knownBaseClass"] = JsonBox::Value(getKnownBaseClass(obj));
+                     jfields["info"] = JsonBox::Value(obj->info());
+                     jfields["owner"] = JsonBox::Value(getIdStringForObject(obj->getOwner()));
+                     cClassDescriptor *desc = obj->getDescriptor();
+                     const char *icon = desc ? desc->getProperty("icon") : NULL;
+                     jfields["icon"] = JsonBox::Value(icon ? icon : "");
 
-        std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, true, false);
-        request->print(ss.str().c_str());
-    }
-    else if (strcmp(uri, "/sim/getObjectChildren") == 0) {
-        request->print(OK_STATUS);
-        request->print("\n");
+                     // cComponent
+                     if (dynamic_cast<cComponent *>(obj)) {
+                         cComponent *component = (cComponent *)obj;
 
-        std::string ids = commandArgs["ids"];
-        JsonBox::Object result;
-        StringTokenizer tokenizer(ids.c_str(), ",");
-        while (tokenizer.hasMoreTokens())
-        {
-             std::string id = tokenizer.nextToken();
-             cObject *obj = getObjectById(atol(id.c_str()));
-             if (obj)
-             {
-                 cCollectChildrenVisitor visitor(obj);
-                 visitor.process(obj);
+                         jfields["parentModule"] = JsonBox::Value(getIdStringForObject(component->getParentModule()));
+                         jfields["nedTypeName"] = JsonBox::Value(component->getNedTypeName());
+                         jfields["displayString"] = JsonBox::Value(component->getDisplayString().str());
 
-                 JsonBox::Array tmp;
-                 for (int i = 0; i < visitor.getArraySize(); i++)
-                     tmp.push_back(JsonBox::Value(getIdForObject(visitor.getArray()[i])));
-                 result[id] = tmp;
-             }
-        }
+                         JsonBox::Array jparameters;
+                         for (int i = 0; i < component->getNumParams(); i++) {
+                             cPar *par = &component->par(i);
+                             jparameters.push_back(JsonBox::Value(getIdStringForObject(par)));
+                         }
+                         jfields["parameters"] = jparameters;
+                     }
 
-        std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, true, false);
-        request->print(ss.str().c_str());
-    }
-    else if (strcmp(uri, "/sim/getObjectFields") == 0) {
-        request->print(OK_STATUS);
-        request->print("\n");
+                     // cModule
+                     if (dynamic_cast<cModule *>(obj)) {
+                         cModule *mod = (cModule *)obj;
+                         jfields["moduleId"] = JsonBox::Value(mod->getId());
+                         jfields["index"] = JsonBox::Value(mod->getIndex());
+                         jfields["vectorSize"] = JsonBox::Value(mod->isVector() ? mod->getVectorSize() : -1);
 
-        std::string ids = commandArgs["ids"];
-        JsonBox::Object result;
-        StringTokenizer tokenizer(ids.c_str(), ",");
-        while (tokenizer.hasMoreTokens())
-        {
-             std::string id = tokenizer.nextToken();
-             cObject *obj = getObjectById(atol(id.c_str()));
-             if (obj)
-             {
-                 cClassDescriptor *desc = obj->getDescriptor();
-                 if (desc)
-                 {
-                     JsonBox::Object jObject;
-                     JsonBox::Array jFields;
-                     //TODO serialize baseclass, properties, etc too
-                     for (int fld = 0; fld < desc->getFieldCount(obj); fld++)
+                         JsonBox::Array jgates;
+                         for (cModule::GateIterator i(mod); !i.end(); i++) {
+                             cGate *gate = i();
+                             jgates.push_back(JsonBox::Value(getIdStringForObject(gate)));
+                         }
+                         jfields["gates"] = jgates;
+
+                         JsonBox::Array jsubmodules;
+                         for (cModule::SubmoduleIterator i(mod); !i.end(); i++) {
+                             cModule *submod = i();
+                             jsubmodules.push_back(JsonBox::Value(getIdStringForObject(submod)));
+                         }
+                         jfields["submodules"] = jsubmodules;
+                     }
+
+                     // cGate
+                     if (dynamic_cast<cGate *>(obj)) {
+                         cGate *gate = (cGate *)obj;
+                         jfields["type"] = JsonBox::Value(cGate::getTypeName(gate->getType()));
+                         jfields["gateId"] = JsonBox::Value(gate->getId());
+                         jfields["index"] = JsonBox::Value(gate->getIndex());
+                         jfields["vectorSize"] = JsonBox::Value(gate->isVector() ? gate->getVectorSize() : -1);
+                         jfields["ownerModule"] = JsonBox::Value(getIdStringForObject(gate->getOwnerModule()));
+                         jfields["nextGate"] = JsonBox::Value(getIdStringForObject(gate->getNextGate()));
+                         jfields["previousGate"] = JsonBox::Value(getIdStringForObject(gate->getPreviousGate()));
+                         jfields["channel"] = JsonBox::Value(getIdStringForObject(gate->getChannel()));
+                     }
+
+                     // cChannel
+                     if (dynamic_cast<cChannel *>(obj)) {
+                         cChannel *channel = (cChannel *)obj;
+                         jfields["isTransmissionChannel"] = JsonBox::Value(channel->isTransmissionChannel());
+                         jfields["sourceGate"] = JsonBox::Value(getIdStringForObject(channel->getSourceGate()));
+                     }
+
+                     // cMessage
+                     if (dynamic_cast<cMessage *>(obj)) {
+                         cMessage *msg = (cMessage *)obj;
+                         jfields->put("kind", jsonWrap(msg->getKind()));
+                         jfields->put("priority", jsonWrap(msg->getSchedulingPriority()));
+                         jfields->put("id", jsonWrap(msg->getId()));
+                         jfields->put("treeId", jsonWrap(msg->getTreeId()));
+                         jfields->put("senderModule", jsonWrap(getIdStringForObject(msg->getSenderModule())));
+                         jfields->put("senderGate", jsonWrap(getIdStringForObject(msg->getSenderGate())));
+                         jfields->put("arrivalModule", jsonWrap(getIdStringForObject(msg->getArrivalModule())));
+                         jfields->put("arrivalGate", jsonWrap(getIdStringForObject(msg->getArrivalGate())));
+                         jfields->put("sendingTime", jsonWrap(msg->getSendingTime()));
+                         jfields->put("arrivalTime", jsonWrap(msg->getArrivalTime()));
+                     }
+
+                     // cPacket
+                     if (dynamic_cast<cPacket *>(obj)) {
+                         cPacket *msg = (cPacket *)obj;
+                         jfields->put("bitLength", jsonWrap((long)msg->getBitLength()));  //XXX lossy!
+                         jfields->put("bitError", jsonWrap(msg->hasBitError()));
+                         jfields->put("duration", jsonWrap(msg->getDuration()));
+                         jfields->put("isReceptionStart", jsonWrap(msg->isReceptionStart()));
+                         jfields->put("encapsulatedPacket", jsonWrap(getIdStringForObject(msg->getEncapsulatedPacket())));
+                         jfields->put("encapsulationId", jsonWrap(msg->getEncapsulationId()));
+                         jfields->put("encapsulationTreeId", jsonWrap(msg->getEncapsulationTreeId()));
+                     }
+
+                 }
+                 if (what=="" || what.find('c') != std::string::npos) {  // "children"
+                     cCollectChildrenVisitor visitor(obj);
+                     visitor.process(obj);
+
+                     JsonBox::Array jchildren;
+                     for (int i = 0; i < visitor.getArraySize(); i++)
+                         jchildren.push_back(JsonBox::Value(getIdStringForObject(visitor.getArray()[i])));
+                     jfields["children"] = jchildren;
+                 }
+                 if (what=="" || what.find('d') != std::string::npos) {  // "details"
+                     cClassDescriptor *desc = obj->getDescriptor();
+                     if (desc)
                      {
-                         JsonBox::Object jField;
-                         jField["name"] = JsonBox::Value(desc->getFieldName(obj, fld));
-                         jField["type"] = JsonBox::Value(desc->getFieldTypeString(obj, fld));
-                         jField["declaredOn"] = JsonBox::Value(desc->getFieldDeclaredOn(obj, fld));
-                         if (desc->getFieldIsArray(obj, fld))
-                             jField["isArray"] = 1;
-                         if (desc->getFieldIsCompound(obj, fld))
-                             jField["isCompound"] = 1;
-                         if (desc->getFieldIsPointer(obj, fld))
-                             jField["isPointer"] = 1;
-                         if (desc->getFieldIsCObject(obj, fld))
-                             jField["isCObject"] = 1;
-                         if (desc->getFieldIsCObject(obj, fld))
-                             jField["isCObject"] = 1;
-                         if (desc->getFieldIsCOwnedObject(obj, fld))
-                             jField["isCOwnedObject"] = 1;
-                         if (desc->getFieldIsEditable(obj, fld))
-                             jField["isEditable"] = 1;
-                         if (desc->getFieldStructName(obj, fld))
-                             jField["structName"] = JsonBox::Value(desc->getFieldStructName(obj, fld));
-                         //TODO: virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0; -- use known property names?
-                         //TODO virtual const char *getFieldStructName(void *object, int field) const = 0;
-                         //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
-                         if (!desc->getFieldIsArray(obj, fld)) {
-                             if (!desc->getFieldIsCompound(obj, fld))
-                                 jField["value"] = JsonBox::Value(desc->getFieldAsString(obj, fld, 0));
-                             else {
-                                 void *ptr = desc->getFieldStructPointer(obj, fld, 0);
-                                 if (desc->getFieldIsCObject(obj, fld)) {
-                                     cObject *o = (cObject *)ptr;
-                                     jField["value"] = JsonBox::Value(getIdForObject(o));
-                                 }
-                                 else {
-                                     jField["value"] = JsonBox::Value("...some struct..."); //XXX look up using getFieldStructName() -- recursive!
-                                 }
-                             }
-                         } else {
-                             int n = desc->getFieldArraySize(obj, fld);
-                             JsonBox::Array jValues;
-                             for (int i = 0; i < n; i++) {
+                         JsonBox::Array jdetailFields;
+                         //TODO serialize baseclass, properties, etc too
+                         for (int fld = 0; fld < desc->getFieldCount(obj); fld++)
+                         {
+                             JsonBox::Object jdetailField;
+                             jdetailField["name"] = JsonBox::Value(desc->getFieldName(obj, fld));
+                             jdetailField["type"] = JsonBox::Value(desc->getFieldTypeString(obj, fld));
+                             jdetailField["declaredOn"] = JsonBox::Value(desc->getFieldDeclaredOn(obj, fld));
+                             if (desc->getFieldIsArray(obj, fld))
+                                 jdetailField["isArray"] = 1;
+                             if (desc->getFieldIsCompound(obj, fld))
+                                 jdetailField["isCompound"] = 1;
+                             if (desc->getFieldIsPointer(obj, fld))
+                                 jdetailField["isPointer"] = 1;
+                             if (desc->getFieldIsCObject(obj, fld))
+                                 jdetailField["isCObject"] = 1;
+                             if (desc->getFieldIsCObject(obj, fld))
+                                 jdetailField["isCObject"] = 1;
+                             if (desc->getFieldIsCOwnedObject(obj, fld))
+                                 jdetailField["isCOwnedObject"] = 1;
+                             if (desc->getFieldIsEditable(obj, fld))
+                                 jdetailField["isEditable"] = 1;
+                             if (desc->getFieldStructName(obj, fld))
+                                 jdetailField["structName"] = JsonBox::Value(desc->getFieldStructName(obj, fld));
+                             //TODO: virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0; -- use known property names?
+                             //TODO virtual const char *getFieldStructName(void *object, int field) const = 0;
+                             //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
+                             if (!desc->getFieldIsArray(obj, fld)) {
                                  if (!desc->getFieldIsCompound(obj, fld))
-                                     jValues.push_back(JsonBox::Value(desc->getFieldAsString(obj, fld, i)));
+                                     jdetailField["value"] = JsonBox::Value(desc->getFieldAsString(obj, fld, 0));
                                  else {
-                                     void *ptr = desc->getFieldStructPointer(obj, fld, i);
+                                     void *ptr = desc->getFieldStructPointer(obj, fld, 0);
                                      if (desc->getFieldIsCObject(obj, fld)) {
                                          cObject *o = (cObject *)ptr;
-                                         jValues.push_back(JsonBox::Value(getIdForObject(o)));
+                                         jdetailField["value"] = JsonBox::Value(getIdStringForObject(o));
                                      }
                                      else {
-                                         jValues.push_back(JsonBox::Value("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
+                                         jdetailField["value"] = JsonBox::Value("...some struct..."); //XXX look up using getFieldStructName() -- recursive!
                                      }
                                  }
+                             } else {
+                                 int n = desc->getFieldArraySize(obj, fld);
+                                 JsonBox::Array jValues;
+                                 for (int i = 0; i < n; i++) {
+                                     if (!desc->getFieldIsCompound(obj, fld))
+                                         jValues.push_back(JsonBox::Value(desc->getFieldAsString(obj, fld, i)));
+                                     else {
+                                         void *ptr = desc->getFieldStructPointer(obj, fld, i);
+                                         if (desc->getFieldIsCObject(obj, fld)) {
+                                             cObject *o = (cObject *)ptr;
+                                             jValues.push_back(JsonBox::Value(getIdStringForObject(o)));
+                                         }
+                                         else {
+                                             jValues.push_back(JsonBox::Value("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
+                                         }
+                                     }
+                                 }
+                                 jdetailField["value"] = jValues;
                              }
-                             jField["value"] = jValues;
+                             jdetailFields.push_back(jdetailField);
                          }
-                         jFields.push_back(jField);
+                         jfields["fields"] = jdetailFields;
                      }
-                     jObject["fields"] = jFields;
-                     result[id] = jObject;
+
                  }
+                 result[objectId] = jfields;
              }
         }
 
@@ -792,16 +845,20 @@ const char *Cmdenv::getKnownBaseClass(cObject *object)
         return "cDensityEstBase";
     else if (dynamic_cast<cStatistic *>(object))
         return "cStatistic";
+    else if (dynamic_cast<cSimulation*>(object))
+        return "cSimulation";
     else if (dynamic_cast<cMessageHeap *>(object))
         return "cMessageHeap";
     else if (dynamic_cast<cWatchBase *>(object))
         return "cWatchBase";
-    else if (dynamic_cast<cOwnedObject*>(object))
-        return "cOwnedObject";
-    else if (dynamic_cast<cNamedObject*>(object))
-        return "cNamedObject";
+    else if (dynamic_cast<cRegistrationList*>(object))
+        return "cRegistrationList";
+//    else if (dynamic_cast<cOwnedObject*>(object))   -- not interesting -- no new data members etc
+//        return "cOwnedObject";
+//    else if (dynamic_cast<cNamedObject*>(object))
+//        return "cNamedObject";
     else
-        return "cdObject";
+        return "cObject";
 }
 
 void Cmdenv::newNetwork(const char *networkname)
@@ -1260,6 +1317,15 @@ long Cmdenv::getIdForObject(cObject *obj)
     }
     else
         return it->second;
+}
+
+std::string Cmdenv::getIdStringForObject(cObject *obj)
+{
+    if (!obj)
+        return "0";
+    std::stringstream out;
+    out << getIdForObject(obj) << ":" << getKnownBaseClass(obj);
+    return out.str();
 }
 
 void Cmdenv::objectDeleted(cObject *obj)

@@ -4,12 +4,12 @@
   </head>
   <body>
 
-    <p><a href="http://localhost:4242/sim/status" target="results">Status</a></p>
+    <p><a href="http://localhost:8000/sim/status" target="results">Status</a></p>
 
-    <p><a href="http://localhost:4242/sim/enumerateConfigs" target="results">Enumerate Configs</a></p>
+    <p><a href="http://localhost:8000/sim/enumerateConfigs" target="results">Enumerate Configs</a></p>
 
     <p>
-      <form method="get" action="http://localhost:4242/sim/setupRun" target="results">
+      <form method="get" action="http://localhost:8000/sim/setupRun" target="results">
         Setup Run:
         <input name="config" type="text" size="15">
         <input name="run" type="text" size="5">
@@ -18,19 +18,19 @@
     </p>
 
     <p>
-      <form method="get" action="http://localhost:4242/sim/setupNetwork" target="results">
+      <form method="get" action="http://localhost:8000/sim/setupNetwork" target="results">
         Setup Network:
         <input name="network" type="text" size="15">
         <input type="submit" value="Submit">
       </form>
     </p>
 
-    <p><a href="http://localhost:4242/sim/rebuild" target="results">Rebuild Network</a></p>
+    <p><a href="http://localhost:8000/sim/rebuild" target="results">Rebuild Network</a></p>
 
-    <p><a href="http://localhost:4242/sim/step" target="results">Step</a></p>
+    <p><a href="http://localhost:8000/sim/step" target="results">Step</a></p>
 
     <p>
-      <form method="get" action="http://localhost:4242/sim/run" target="results">
+      <form method="get" action="http://localhost:8000/sim/run" target="results">
         Run:
         <select name="mode">
           <option value="normal">normal</option>
@@ -45,34 +45,18 @@
       </form>
     </p>
 
-    <p><a href="http://localhost:4242/sim/stop" target="results">Stop</a></p>
+    <p><a href="http://localhost:8000/sim/stop" target="results">Stop</a></p>
 
-    <p><a href="http://localhost:4242/sim/callFinish" target="results">Call Finish</a></p>
+    <p><a href="http://localhost:8000/sim/callFinish" target="results">Call Finish</a></p>
 
-    <p><a href="http://localhost:4242/sim/quit" target="results">Quit</a></p>
+    <p><a href="http://localhost:8000/sim/quit" target="results">Quit</a></p>
 
-    <p><a href="http://localhost:4242/sim/getRootObjectIds" target="results">Get Root Object Ids</a></p>
-
-    <p>
-      <form method="get" action="http://localhost:4242/sim/getObjectChildren" target="results">
-        Get Object Children (comma-separated IDs):
-        <input name="ids" type="text" size="15">
-        <input type="submit" value="Submit">
-      </form>
-    </p>
+    <p><a href="http://localhost:8000/sim/getRootObjectIds" target="results">Get Root Object Ids</a></p>
 
     <p>
-      <form method="get" action="http://localhost:4242/sim/getObjectInfo" target="results">
-        Get Object Info (comma-separated IDs):
-        <input name="ids" type="text" size="15">
-        <input type="submit" value="Submit">
-      </form>
-    </p>
-
-    <p>
-      <form method="get" action="http://localhost:4242/sim/getObjectFields" target="results">
-        Get Object Fields (comma-separated IDs):
-        <input name="ids" type="text" size="15">
+      <form method="get" action="http://localhost:8000/sim/getObjectInfo" target="results">
+        Get Object Info (comma-separated IDs):<input name="ids" type="text" size="15">,
+        flags (i=info,c=children,d=details):<input name="what" type="text" size="5">
         <input type="submit" value="Submit">
       </form>
     </p>

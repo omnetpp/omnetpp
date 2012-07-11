@@ -15,8 +15,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.figures.QueueInspectorFigure;
-import org.omnetpp.simulation.model.c.cObject;
-import org.omnetpp.simulation.model.c.cQueue;
+import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.model.cQueue;
 
 /**
  * Experimental graphical inspector for queues
@@ -32,6 +32,10 @@ public class QueueInspectorPart extends InspectorPart {
 	
 	public QueueInspectorPart(cObject object) {
 		super(object);
+
+		if (object.isFilledIn())
+            object.safeLoad();
+		
 		figure = new QueueInspectorFigure();
 		figure.setInspectorPart(this);
 
@@ -63,7 +67,7 @@ public class QueueInspectorPart extends InspectorPart {
 			QueueInspectorFigure queueFigure = (QueueInspectorFigure)figure;
 
 			// only rebuild everything if queue contents has changed
-			cObject[] childObjects = queue.getChildObjects();
+			cObject[] childObjects = new cObject[0]; //FIXME queue.getChildObjects();
 			if (!Arrays.equals(childObjects, prevObjects)) {
 				// clear and re-add message figures
 				prevObjects = childObjects;

@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.figures.FigureUtils;
-import org.omnetpp.simulation.model.c.cObject;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  * Base class for inspectors that contain SWT widgets.

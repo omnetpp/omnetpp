@@ -1,8 +1,8 @@
-package org.omnetpp.simulation.model.c;
+package org.omnetpp.simulation.model.property;
 
-import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.simulation.model.cQueue;
 
 public class QueueModelPropertySource extends PropertySource {
     private static final String PROPERTY_NAME         = "Id";
@@ -32,6 +32,6 @@ public class QueueModelPropertySource extends PropertySource {
     @org.omnetpp.common.properties.Property(id = PROPERTY_COUNT)
     public int getCount() { return simulationQueue.getCount(); }
 
-    @org.omnetpp.common.properties.Property(id = PROPERTY_OWNER_MODULE)
-    public IPropertySource getOwnerModule() { return propertySourceProvider.getPropertySource(simulationQueue.getOwnerModule()); }
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_OWNER_MODULE)
+//    public IPropertySource getOwnerModule() { return propertySourceProvider.getPropertySource(simulationQueue.getOwnerModule()); }
 }

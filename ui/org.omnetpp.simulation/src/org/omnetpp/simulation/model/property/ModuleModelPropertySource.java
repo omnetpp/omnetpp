@@ -1,8 +1,9 @@
-package org.omnetpp.simulation.model.c;
+package org.omnetpp.simulation.model.property;
 
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.IPropertySourceProvider;
 import org.omnetpp.common.properties.PropertySource;
+import org.omnetpp.simulation.model.cModule;
 
 public class ModuleModelPropertySource extends PropertySource {
     private static final String PROPERTY_ID             = "Id";
@@ -15,9 +16,9 @@ public class ModuleModelPropertySource extends PropertySource {
     private static final String PROPERTY_PARENT         = "Parent";
 
     private IPropertySourceProvider propertySourceProvider;
-    private ModuleModel simulationModule;
+    private cModule simulationModule;
 
-    public ModuleModelPropertySource(IPropertySourceProvider propertySourceProvider, ModuleModel simulationModule) {
+    public ModuleModelPropertySource(IPropertySourceProvider propertySourceProvider, cModule simulationModule) {
         this.propertySourceProvider = propertySourceProvider;
         this.simulationModule = simulationModule;
     }
@@ -36,8 +37,8 @@ public class ModuleModelPropertySource extends PropertySource {
     @org.omnetpp.common.properties.Property(id = PROPERTY_FULL_PATH, category = "Name")
     public String getFullPath() { return simulationModule.getFullPath(); }
 
-    @org.omnetpp.common.properties.Property(id = PROPERTY_TYPE_NAME, category = "Name")
-    public String getTypeName() { return simulationModule.getTypeName(); }
+//    @org.omnetpp.common.properties.Property(id = PROPERTY_TYPE_NAME, category = "Name")
+//    public String getTypeName() { return simulationModule.getTypeName(); }
 
     @org.omnetpp.common.properties.Property(id = PROPERTY_CLASS_NAME, category = "Name")
     public String getClassName() { return simulationModule.getClassName(); }
