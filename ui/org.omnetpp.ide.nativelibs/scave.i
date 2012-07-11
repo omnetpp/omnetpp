@@ -586,6 +586,7 @@ namespace std {
 %ignore MatlabStructExport;
 %ignore MatlabScriptExport;
 %ignore OctaveTextExport;
+%ignore ScaveExport::saveVectors;
 %rename(EOL)    CsvExport::eol;
 %newobject ExporterFactory::createExporter;
 %include "export.h"
