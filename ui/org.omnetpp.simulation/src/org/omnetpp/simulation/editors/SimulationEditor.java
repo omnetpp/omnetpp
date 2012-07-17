@@ -1,14 +1,6 @@
 package org.omnetpp.simulation.editors;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.draw2d.Figure;
-import org.eclipse.draw2d.LineBorder;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -29,34 +21,12 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.omnetpp.animation.controller.AnimationController;
-import org.omnetpp.animation.controller.AnimationPlaybackController;
-import org.omnetpp.animation.controller.AnimationPosition;
-import org.omnetpp.animation.controller.BlankAnimationCoordinateSystem;
-import org.omnetpp.animation.controller.IAnimationPlaybackStateListener;
-import org.omnetpp.animation.editors.IAnimationCanvasProvider;
-import org.omnetpp.animation.eventlog.controller.EventLogAnimationCoordinateSystem;
-import org.omnetpp.animation.eventlog.providers.EventLogAnimationPrimitiveProvider;
-import org.omnetpp.animation.eventlog.widgets.EventLogAnimationCanvas;
-import org.omnetpp.animation.eventlog.widgets.EventLogAnimationParameters;
-import org.omnetpp.animation.providers.EmptyAnimationPrimitiveProvider;
-import org.omnetpp.animation.widgets.AnimationCanvas;
 import org.omnetpp.animation.widgets.AnimationLever;
 import org.omnetpp.animation.widgets.AnimationPositionControl;
 import org.omnetpp.animation.widgets.AnimationStatus;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.eventlog.EventLogInput;
-import org.omnetpp.common.simulation.MessageModel;
-import org.omnetpp.common.simulation.ModuleModel;
 import org.omnetpp.common.simulation.SimulationEditorInput;
-import org.omnetpp.common.simulation.SimulationModel;
 import org.omnetpp.common.ui.SelectionProvider;
-import org.omnetpp.common.util.BinarySearchUtils.BoundKind;
-import org.omnetpp.eventlog.engine.EventLog;
-import org.omnetpp.eventlog.engine.FileReader;
-import org.omnetpp.eventlog.engine.IEventLog;
-import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
@@ -89,12 +59,12 @@ import org.omnetpp.simulation.model.c.cObject;
 //TODO why animation toolbar cannot mirror the simulation toolbar, only with green buttons?
 //TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
 //TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
-public class SimulationEditor extends EditorPart implements IAnimationCanvasProvider, ISimulationCallback {
+public class SimulationEditor extends EditorPart implements /*TODO IAnimationCanvasProvider,*/ ISimulationCallback {
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
 
     protected SimulationController simulationController;
 
-    protected EventLogAnimationCanvas animationCanvas;
+//    protected EventLogAnimationCanvas animationCanvas;
     protected SimulationCanvas simulationCanvas;
 
     private Label statusLabel;
@@ -218,109 +188,111 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         simulationCanvas.addInspectorPart(new InfoTextInspectorPart(new cObject("dummy1")));
         simulationCanvas.addInspectorPart(new InfoTextInspectorPart(new cObject("dummy2")));
 
-        // create animation canvas
-        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
-            private Figure messageFigure;
-            private ArrayList<SubmoduleFigure> submoduleFigures = new ArrayList<SubmoduleFigure>();
-
-            @Override
-            public void animationPositionChanged(AnimationPosition animationPosition) {
-                super.animationPositionChanged(animationPosition);
-                if (animationController.isAtEndAnimationPosition()) {
-                    highlightNextEventModule((SimulationModel)animationController.getRootModel(), simulationController.getNextEventModuleId());
-                    highlightNextEventMessage();
-                }
-                else {
-                    // KLUDGE: this might accidentally remove a border not set here
-                    for (SubmoduleFigure submoduleFigure : submoduleFigures)
-                        submoduleFigure.setBorder(null);
-                    submoduleFigures.clear();
-                    if (messageFigure != null)
-                        messageFigure.setBorder(null);
-                }
-            }
-
-            private void highlightNextEventModule(SimulationModel simulation, int moduleId) {
-                ModuleModel module = simulation.getModuleById(moduleId);
-                highlightNextModule(simulation, module, false);
-            }
-
-            private void highlightNextModule(SimulationModel simulation, ModuleModel module, boolean isAncestor) {
-                SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationCanvas.getFigure(module, SubmoduleFigure.class);
-                if (submoduleFigure != null) {
-                    // KLUDGE: mark next module
-                    submoduleFigure.setBorder(new LineBorder(ColorFactory.RED, isAncestor ? 1 : 2));
-                    submoduleFigures.add(submoduleFigure);
-                }
-                ModuleModel parentModule = module.getParentModule();
-                if (parentModule != null)
-                    highlightNextModule(simulation, parentModule, true);
-            }
-
-            private void highlightNextEventMessage() {
-                MessageModel message = new MessageModel();
-                message.setId((int)simulationController.getNextEventMessageId());
-                messageFigure = (Figure)animationCanvas.getFigure(message, Figure.class);
-                if (messageFigure != null) {
-                    // KLUDGE: mark next message
-                    messageFigure.setBorder(new LineBorder(ColorFactory.RED));
-                }
-            }
-        };
-        animationCanvas.setBackground(new Color(null, 235, 235, 235));
-        animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        animationCanvas.setWorkbenchPart(this);
-
-        AnimationController animationController = new AnimationController(new BlankAnimationCoordinateSystem(), new EmptyAnimationPrimitiveProvider());
-        animationCanvas.setAnimationController(animationController);
-        animationController.setAnimationCanvas(animationCanvas);
-
-        final AnimationPlaybackController animationPlaybackController = new AnimationPlaybackController(animationController);
-        animationCanvas.setAnimationPlaybackController(animationPlaybackController);
-        simulationController.setAnimationPlaybackController(animationPlaybackController);
-
-        animationLever.setAnimationPlaybackController(animationPlaybackController);
-        animationStatus.setAnimationController(animationController);
-        animationPositionControl.setAnimationController(animationController);
-
-        // animationCanvas.setInput(eventLogInput);
-
-        animationCanvas.setAnimationContributor(contributor);
-
-        animationPlaybackController.addPlaybackStateListener(new IAnimationPlaybackStateListener() {
-            @Override
-            public void playbackStateChanged(AnimationPlaybackController controller) {
-                animationLever.setSecondaryAnimationSpeed(animationPlaybackController.getPlaybackSpeed());
-            }
-        });
-
-        getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
-
+//        // create animation canvas
+//        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
+//            private Figure messageFigure;
+//            private ArrayList<SubmoduleFigure> submoduleFigures = new ArrayList<SubmoduleFigure>();
+//
+//            @Override
+//            public void animationPositionChanged(AnimationPosition animationPosition) {
+//                super.animationPositionChanged(animationPosition);
+//                if (animationController.isAtEndAnimationPosition()) {
+//                    highlightNextEventModule((SimulationModel)animationController.getRootModel(), simulationController.getNextEventModuleId());
+//                    highlightNextEventMessage();
+//                }
+//                else {
+//                    // KLUDGE: this might accidentally remove a border not set here
+//                    for (SubmoduleFigure submoduleFigure : submoduleFigures)
+//                        submoduleFigure.setBorder(null);
+//                    submoduleFigures.clear();
+//                    if (messageFigure != null)
+//                        messageFigure.setBorder(null);
+//                }
+//            }
+//
+//            private void highlightNextEventModule(SimulationModel simulation, int moduleId) {
+//                ModuleModel module = simulation.getModuleById(moduleId);
+//                highlightNextModule(simulation, module, false);
+//            }
+//
+//            private void highlightNextModule(SimulationModel simulation, ModuleModel module, boolean isAncestor) {
+//                SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationCanvas.getFigure(module, SubmoduleFigure.class);
+//                if (submoduleFigure != null) {
+//                    // KLUDGE: mark next module
+//                    submoduleFigure.setBorder(new LineBorder(ColorFactory.RED, isAncestor ? 1 : 2));
+//                    submoduleFigures.add(submoduleFigure);
+//                }
+//                ModuleModel parentModule = module.getParentModule();
+//                if (parentModule != null)
+//                    highlightNextModule(simulation, parentModule, true);
+//            }
+//
+//            private void highlightNextEventMessage() {
+//                MessageModel message = new MessageModel();
+//                message.setId((int)simulationController.getNextEventMessageId());
+//                messageFigure = (Figure)animationCanvas.getFigure(message, Figure.class);
+//                if (messageFigure != null) {
+//                    // KLUDGE: mark next message
+//                    messageFigure.setBorder(new LineBorder(ColorFactory.RED));
+//                }
+//            }
+//        };
+//        animationCanvas.setBackground(new Color(null, 235, 235, 235));
+//        animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//        animationCanvas.setWorkbenchPart(this);
+//
+//        AnimationController animationController = new AnimationController(new BlankAnimationCoordinateSystem(), new EmptyAnimationPrimitiveProvider());
+//        animationCanvas.setAnimationController(animationController);
+//        animationController.setAnimationCanvas(animationCanvas);
+//
+//        final AnimationPlaybackController animationPlaybackController = new AnimationPlaybackController(animationController);
+//        animationCanvas.setAnimationPlaybackController(animationPlaybackController);
+//        simulationController.setAnimationPlaybackController(animationPlaybackController);
+//
+//        animationLever.setAnimationPlaybackController(animationPlaybackController);
+//        animationStatus.setAnimationController(animationController);
+//        animationPositionControl.setAnimationController(animationController);
+//
+//        // animationCanvas.setInput(eventLogInput);
+//
+//        animationCanvas.setAnimationContributor(contributor);
+//
+//        animationPlaybackController.addPlaybackStateListener(new IAnimationPlaybackStateListener() {
+//            @Override
+//            public void playbackStateChanged(AnimationPlaybackController controller) {
+//                animationLever.setSecondaryAnimationSpeed(animationPlaybackController.getPlaybackSpeed());
+//            }
+//        });
+//
+//        getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
+//
         // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
             @Override
             public void simulationStateChanged(final SimulationController controller) {
-                if (controller.getEventlogFile() != null)
-                    setEventlogFileName(controller.getEventlogFile());
-                if (animationCanvas.getInput() != null) {
-                    AnimationController animationController = animationCanvas.getAnimationController();
-                    AnimationPosition currentAnimationPosition = animationController.getCurrentAnimationPosition();
-                    int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
-                    if (!currentAnimationPosition.isCompletelySpecified() || fileChange != FileReader.FileChangedState.UNCHANGED) {
-                        // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
-                        if (currentAnimationPosition.getSimulationTime() != null)
-                            currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
-                        animationController.clearInternalState();
-                        animationCanvas.getInput().synchronize(fileChange);
-                        if (currentAnimationPosition.isCompletelySpecified()) {
-                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
-                            animationController.gotoAnimationPosition(currentAnimationPosition);
-                            animationController.startAnimation(true, stopAnimationPosition);
-                        }
-                        else
-                            animationController.gotoInitialAnimationPosition();
-                    }
-                }
+//                if (controller.getState() == SimState.DISCONNECTED || controller.getState() == SimState.NONETWORK)
+//                    return; //FIXME this is a hack because animationController doesn't like empty eventlogs
+//                if (controller.getEventlogFile() != null)
+//                    setEventlogFileName(controller.getEventlogFile());
+//                if (animationCanvas.getInput() != null) {
+//                    AnimationController animationController = animationCanvas.getAnimationController();
+//                    AnimationPosition currentAnimationPosition = animationController.getCurrentAnimationPosition();
+//                    int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
+//                    if (!currentAnimationPosition.isCompletelySpecified() || fileChange != FileReader.FileChangedState.UNCHANGED) {
+//                        // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
+//                        if (currentAnimationPosition.getSimulationTime() != null)
+//                            currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
+//                        animationController.clearInternalState();
+//                        animationCanvas.getInput().synchronize(fileChange);
+//                        if (currentAnimationPosition.isCompletelySpecified()) {
+//                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
+//                            animationController.gotoAnimationPosition(currentAnimationPosition);
+//                            animationController.startAnimation(true, stopAnimationPosition);
+//                        }
+//                        else
+//                            animationController.gotoInitialAnimationPosition();
+//                    }
+//                }
                 updateStatusDisplay();
             }
         });
@@ -342,20 +314,20 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
 
     }
 
-    private void setEventlogFileName(String fileName) {
-        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(fileName));
-        // TODO refresh if file exists but IFile.isAccessible() returns true!
-        if (file != null && new File(fileName).isFile() && (animationCanvas.getInput() == null || !animationCanvas.getInput().getFile().equals(file))) {
-            IEventLog eventLog = new EventLog(new FileReader(file.getLocation().toOSString(), false));
-            EventLogInput eventLogInput = new EventLogInput(file, eventLog);
-            // TODO: we need a way to include the upcoming event in the animation
-            EventLogAnimationPrimitiveProvider animationPrimitiveProvider = new EventLogAnimationPrimitiveProvider(eventLogInput, new EventLogAnimationParameters());
-            AnimationController animationController = animationCanvas.getAnimationController();
-            animationController.setProviders(new EventLogAnimationCoordinateSystem(eventLogInput), animationPrimitiveProvider);
-            animationPrimitiveProvider.setAnimationController(animationController); //TODO animationController.setProviders() should already do that
-            animationCanvas.setInput(eventLogInput);  //TODO should not be necessary (canvas should not know about input)
-        }
-    }
+//    private void setEventlogFileName(String fileName) {
+//        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(fileName));
+//        // TODO refresh if file exists but IFile.isAccessible() returns true!
+//        if (file != null && new File(fileName).isFile() && (animationCanvas.getInput() == null || !animationCanvas.getInput().getFile().equals(file))) {
+//            IEventLog eventLog = new EventLog(new FileReader(file.getLocation().toOSString(), false));
+//            EventLogInput eventLogInput = new EventLogInput(file, eventLog);
+//            // TODO: we need a way to include the upcoming event in the animation
+//            EventLogAnimationPrimitiveProvider animationPrimitiveProvider = new EventLogAnimationPrimitiveProvider(eventLogInput, new EventLogAnimationParameters());
+//            AnimationController animationController = animationCanvas.getAnimationController();
+//            animationController.setProviders(new EventLogAnimationCoordinateSystem(eventLogInput), animationPrimitiveProvider);
+//            animationPrimitiveProvider.setAnimationController(animationController); //TODO animationController.setProviders() should already do that
+//            animationCanvas.setInput(eventLogInput);  //TODO should not be necessary (canvas should not know about input)
+//        }
+//    }
 
     private GridLayout removeSpacing(GridLayout l) {
         l.horizontalSpacing = l.verticalSpacing = l.marginHeight = l.marginWidth = 0;
@@ -372,16 +344,16 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
 
     @Override
     public void setFocus() {
-        animationCanvas.setFocus();
+        simulationCanvas.setFocus();
     }
 
     public SimulationController getSimulationController() {
         return simulationController;
     }
 
-    public AnimationCanvas getAnimationCanvas() {
-        return animationCanvas;
-    }
+//    public AnimationCanvas getAnimationCanvas() {
+//        return animationCanvas;
+//    }
 
     public SimulationCanvas getSimulationCanvas() {
         return simulationCanvas;
@@ -393,8 +365,10 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
             String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
             status += "   " + controller.getState().name();
 
-            SimulationModel simulationModel = (SimulationModel)animationCanvas.getAnimationController().getRootModel();
-            ModuleModel module = simulationModel != null ? simulationModel.getModuleById(controller.getNextEventModuleId()) : null;
+            cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+            cModule module = simulation.getModuleById(controller.getNextEventModuleId());
+            if (module != null && !module.isFilledIn())
+                module.safeLoad();
 
             if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
                 status +=
@@ -403,7 +377,7 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
                 "  -  Event #" + controller.getEventNumber() +
                 "   t=" + controller.getSimulationTime() + "s" +
                 "   next=" + controller.getNextSimulationTime() + "s" +
-                " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getTypeName() + ")");
+                " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getClassName() /*FIXME*/ + ")");
             statusLabel.setText(status);
         }
     }

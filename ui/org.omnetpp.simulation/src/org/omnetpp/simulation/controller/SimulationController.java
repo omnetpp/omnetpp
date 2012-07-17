@@ -36,8 +36,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.animation.controller.AnimationPlaybackController;
-import org.omnetpp.animation.controller.AnimationStateAdapter;
+//import org.omnetpp.animation.controller.AnimationAdapter;
+//import org.omnetpp.animation.controller.AnimationPlaybackController;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
@@ -87,7 +87,7 @@ public class SimulationController {
 
     private ISimulationCallback simulationCallback;
     private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
-    private AnimationPlaybackController animationPlaybackController; //TODO get rid of this reference in this class if possible
+//    private AnimationPlaybackController animationPlaybackController; //TODO get rid of this reference in this class if possible
 
     // simulation status (as returned by the GET "/sim/status" request)
     private String hostName;
@@ -180,15 +180,15 @@ public class SimulationController {
         return simulationCallback;
     }
     
-    public void setAnimationPlaybackController(AnimationPlaybackController animationPlaybackController) {
-        this.animationPlaybackController = animationPlaybackController;
-        this.animationPlaybackController.getAnimationController().addAnimationListener(new AnimationStateAdapter() {
-            @Override
-            public void animationStopped() {
-                SimulationController.this.animationStopped();
-            }
-        });
-    }
+//    public void setAnimationPlaybackController(AnimationPlaybackController animationPlaybackController) {
+//        this.animationPlaybackController = animationPlaybackController;
+//        this.animationPlaybackController.getAnimationController().addAnimationListener(new AnimationAdapter() {
+//            @Override
+//            public void animationStopped() {
+//                SimulationController.this.animationStopped();
+//            }
+//        });
+//    }
 
     public void addSimulationStateListener(ISimulationStateListener listener) {
         simulationListeners.add(listener);
@@ -595,7 +595,7 @@ public class SimulationController {
     public void step() throws IOException {
         Assert.isTrue(state == SimState.READY);
         if (currentRunMode == RunMode.NOTRUNNING) {
-            animationPlaybackController.jumpToEnd();
+//            animationPlaybackController.jumpToEnd();
             
             currentRunMode = RunMode.STEP;
             notifyListeners(); // because currentRunMode has changed
@@ -603,8 +603,9 @@ public class SimulationController {
             refreshStatus();
             
             // animate it
-            animationPlaybackController.play();
+//            animationPlaybackController.play();
             // Note: currentRunMode = RunMode.NOTRUNNING will be done in animationStopped()!
+            animationStopped(); //TODO remove this line when animation is reactivated!
         }
         else {
             stop(); // if already running, just stop it
@@ -647,7 +648,7 @@ public class SimulationController {
         runUntilSimTime = simTime;  //TODO if time/event already passed, don't do anything
         runUntilEventNumber = eventNumber;
 
-        animationPlaybackController.jumpToEnd();
+//        animationPlaybackController.jumpToEnd();
         
         if (currentRunMode == RunMode.NOTRUNNING) {
             Assert.isTrue(state == SimState.READY);
@@ -693,14 +694,15 @@ public class SimulationController {
             public void run() {
                 try {
                     if (currentRunMode == RunMode.FAST || currentRunMode == RunMode.EXPRESS) {
-                        animationPlaybackController.stop();  // in case it was running
-                        animationPlaybackController.jumpToEnd(); // show current state on animation canvas
+//                        animationPlaybackController.stop();  // in case it was running
+//                        animationPlaybackController.jumpToEnd(); // show current state on animation canvas
                         doRun();
                     }
                     else if (currentRunMode == RunMode.NORMAL) {
                         // animate it
-                        animationPlaybackController.play();
+//                        animationPlaybackController.play();
                         // Note: next doRun() will be called from animationStopped()!
+                        doRun(); //note: remove this line if animation is put back into the code!
                     }
                 }
                 catch (IOException e) {
@@ -774,6 +776,8 @@ public class SimulationController {
             if (status != HttpStatus.SC_OK)
                 throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
             String responseBody = method.getResponseBodyAsString();
+            if (responseBody.length() > 1024)
+                System.out.println("  response: ~" + ((responseBody.length()+511)/1024) + "KiB");
             return responseBody;
         }
         catch (ConnectException e) {
