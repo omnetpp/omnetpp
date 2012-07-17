@@ -464,7 +464,17 @@ public class SimulationController {
         objects.add(object);
         doLoadObjects(objects);
     }
-    
+
+    public void loadUnfilledObjects(cObject[] objects) throws IOException {
+        // load objects that are not yet filled in
+        Set<cObject> missing = new HashSet<cObject>();
+        for (cObject obj : objects) {
+            if (!obj.isFilledIn())
+                missing.add(obj);
+        }
+        doLoadObjects(missing);
+    }
+
     public void loadUnfilledObjects(Collection<? extends cObject> objects) throws IOException {
         // load objects that are not yet filled in
         Set<cObject> missing = new HashSet<cObject>();

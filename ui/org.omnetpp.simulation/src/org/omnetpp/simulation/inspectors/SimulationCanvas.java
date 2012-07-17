@@ -15,10 +15,14 @@ import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.model.cQueue;
+import org.omnetpp.simulation.model.cSimpleModule;
 
 /**
  *
@@ -114,6 +118,60 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 	public void close(IInspectorPart inspectorPart) {
 		removeInspectorPart(inspectorPart);
 	}
+
+	protected IInspectorPart findInspectorFor(cObject object) {
+	    for (IInspectorPart inspector : inspectors)
+	        if (inspector.getObject() == object)
+	            return inspector;
+	    return null;
+    }
+	
+	public void inspect(cObject object) {
+	    Assert.isNotNull(object);
+
+	    IInspectorPart inspector = findInspectorFor(object);
+	    if (inspector != null) {
+	        reveal(inspector);
+	    }
+	    else {	        
+	        inspector = createInspectorFor(object);
+	        addInspectorPart(inspector);
+	        
+	        // Note: the following layout() call doesn't work to reveal the inspector (looks like 
+	        // it doesn't cause the scrollbar or getContents().getBounds() to be updated); as a 
+	        // workaround, we call reveal() in an asyncExec().
+	        //getContents().getLayoutManager().layout(getContents());  
+            //reveal(finalInspector);
+	        
+	        final IInspectorPart finalInspector = inspector;
+	        Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    reveal(finalInspector);
+                }
+            });
+	    }
+	}
+
+    protected IInspectorPart createInspectorFor(cObject object) {
+        //TODO more dynamic inspector type selection
+	    //TODO move inspector creation out of SimulationCanvas!!!
+        IInspectorPart inspector = null;
+        if (object instanceof cModule && !(object instanceof cSimpleModule))
+            inspector = new GraphicalModulePart((cModule)object);
+//        else if (object instanceof cMessage)
+//            inspectorPart = new MessageInspectorPart((cMessage)object);
+        else if (object instanceof cQueue)
+            inspector = new QueueInspectorPart((cQueue)object);
+        else // fallback
+            inspector = new InfoTextInspectorPart(object);
+        return inspector;
+    }
+	
+    public void reveal(IInspectorPart inspector) {
+        Rectangle bounds = inspector.getFigure().getBounds();
+        scrollSmoothTo(bounds.x, bounds.y);  // scrolls so that inspector is at the top of the screen (behavior could be improved)
+    }
 
 // TODO revive this block!
 //    

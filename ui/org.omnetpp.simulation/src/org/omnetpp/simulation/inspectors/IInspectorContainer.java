@@ -47,4 +47,10 @@ public interface IInspectorContainer {
 	 * Remove all objects from the selection.
 	 */
 	void deselectAll();
+	
+	/**
+	 * TEMPORARY: open an inspector for this object
+	 * todo what kind, etc
+	 */
+	void inspect(cObject object);
 }

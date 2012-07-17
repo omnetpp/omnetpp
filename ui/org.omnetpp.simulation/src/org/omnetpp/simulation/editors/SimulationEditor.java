@@ -44,14 +44,9 @@ import org.omnetpp.simulation.controller.ISimulationCallback;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
-import org.omnetpp.simulation.inspectors.GraphicalModulePart;
-import org.omnetpp.simulation.inspectors.IInspectorPart;
-import org.omnetpp.simulation.inspectors.InfoTextInspectorPart;
-import org.omnetpp.simulation.inspectors.QueueInspectorPart;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cQueue;
 import org.omnetpp.simulation.model.cSimulation;
 
 /**
@@ -386,17 +381,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     }
 
     public void openInspector(cObject object) {
-        //TODO more dynamic inspector type selection
-        IInspectorPart inspectorPart = null;
-        if (object instanceof cModule)
-            inspectorPart = new GraphicalModulePart((cModule)object, (cSimulation) simulationController.getRootObject(SimulationController.ROOTOBJ_SIMULATION));
-//        else if (object instanceof cMessage)
-//            inspectorPart = new MessageInspectorPart((cMessage)object);
-        else if (object instanceof cQueue)
-            inspectorPart = new QueueInspectorPart((cQueue)object);
-        else // fallback
-            inspectorPart = new InfoTextInspectorPart(object);
-        simulationCanvas.addInspectorPart(inspectorPart);
+        simulationCanvas.inspect(object);  //FIXME probably inspector creation should be brought out of SimulationCanvas!!!
     }
 
     @Override

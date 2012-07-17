@@ -15,7 +15,6 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -32,7 +31,6 @@ import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cSimulation;
 
 /**
  * An inspector that displays a compound module graphically.
@@ -42,7 +40,6 @@ import org.omnetpp.simulation.model.cSimulation;
 public class GraphicalModulePart extends InspectorPart {
 	protected static final DisplayString EMPTY_DISPLAYSTRING = new DisplayString(""); 
 	
-	protected cSimulation simulation;
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
     protected float canvasScale = 1.0f;  //TODO properly do it
@@ -53,9 +50,8 @@ public class GraphicalModulePart extends InspectorPart {
     /**
      * Constructor.
      */
-    public GraphicalModulePart(cModule module, cSimulation simulation) {
+    public GraphicalModulePart(cModule module) {
     	super(module);
-    	this.simulation = simulation;
     	
         if (module.isFilledIn())
             module.safeLoad();
@@ -180,7 +176,6 @@ public class GraphicalModulePart extends InspectorPart {
                 // create figure
                 SubmoduleFigureEx submoduleFigure = new SubmoduleFigureEx();
                 submoduleFigure.setFont(getContainer().getControl().getFont()); // to speed up figure's getFont()
-                submoduleFigure.setModuleID(submodule.getId());
                 submoduleFigure.setPinVisible(false);
                 moduleFigure.getSubmoduleLayer().add(submoduleFigure);
                 submoduleFigure.setRangeFigureLayer(((CompoundModuleFigureEx)figure).getInternalModuleFigure().getBackgroundDecorationLayer());
@@ -212,6 +207,13 @@ public class GraphicalModulePart extends InspectorPart {
 			cModule module = i < submodules2.length ? submodules2[i] : parentModule;
 			if (module==parentModule)
 				atParent = true;
+			try {
+                module.getController().loadUnfilledObjects(module.getGates());
+            }
+            catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             for (cGate gate : module.getGates()) {
                 if (gate.getType()==(atParent ? cGate.Type.INPUT : cGate.Type.OUTPUT) && gate.getNextGate() != null) {
                     if (!connections.containsKey(gate)) {
@@ -278,21 +280,30 @@ public class GraphicalModulePart extends InspectorPart {
     }
 
     protected IDisplayString getDisplayStringFrom(cComponent component) {
-    	if (component!=null)
-    		return component.getDisplayString();
-    	else
-    		return EMPTY_DISPLAYSTRING;
+    	if (component == null)
+    	    return EMPTY_DISPLAYSTRING;
+    	if (!component.isFilledIn())
+    	    component.safeLoad();  //XXX maybe not here...
+    	return component.getDisplayString();
     }
     
+    protected cModule findSubmoduleFor(SubmoduleFigureEx submoduleFigure) {
+        for (cModule submodule : submodules.keySet())
+            if (submodules.get(submodule) == submoduleFigure)
+                return submodule;
+        return null;
+    }
+
     protected void handleMouseDoubleClick(MouseEvent me) {
     	SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
 		System.out.println("clicked submodule: " + submoduleFigure);
 		if (submoduleFigure != null) {
-			int submoduleID = submoduleFigure.getModuleID();
-            cModule submodule = simulation.getModuleById(submoduleID);
-//            RuntimePlugin.openInspector2(submodule, true); //XXX maybe rather: go into?
+		    cModule submodule = findSubmoduleFor(submoduleFigure);
+		    if (submodule != null)
+		        inspectorContainer.inspect(submodule);
 		}
     }
+
 
     protected void handleMousePressed(MouseEvent me) {
     	SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
@@ -304,8 +315,7 @@ public class GraphicalModulePart extends InspectorPart {
             	inspectorContainer.select(getObject(), true);
 		}
 		else {
-			int submoduleID = submoduleFigure.getModuleID();
-            cModule submodule = simulation.getModuleById(submoduleID);
+            cModule submodule = findSubmoduleFor(submoduleFigure);
             if ((me.getState()& SWT.CONTROL) != 0)
             	inspectorContainer.toggleSelection(submodule);
             else
@@ -324,16 +334,16 @@ public class GraphicalModulePart extends InspectorPart {
         return (SubmoduleFigureEx)target;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
-    @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
     	super.selectionChanged(selection);
 
     	// update selection border around submodules
     	List list = selection.toList();
-        for (SubmoduleFigureEx f : submodules.values()) {
-			cModule module = simulation.getModuleById(f.getModuleID());
-			f.setSelectionBorderShown(list.contains(module));
+        for (cModule submodule : submodules.keySet()) {
+            SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
+            submoduleFigure.setSelectionBorderShown(list.contains(submodule));
         }
     }
 
@@ -442,8 +452,7 @@ public class GraphicalModulePart extends InspectorPart {
 	}
 
 	protected void populateSubmoduleContextMenu(MenuManager contextMenuManager, SubmoduleFigureEx submoduleFigure, Point p) {
-		int submoduleID = submoduleFigure.getModuleID();
-		final cModule module = simulation.getModuleById(submoduleID);
+		final cModule module = findSubmoduleFor(submoduleFigure);
 
 		//XXX factor out actions
 		contextMenuManager.add(new Action("Go into") {
@@ -456,16 +465,16 @@ public class GraphicalModulePart extends InspectorPart {
 		contextMenuManager.add(new Action("Open in New Canvas") {
 		    @Override
 		    public void run() {
-                MessageDialog.openInformation(null,  "Open", "TODO: open module " + module.getFullPath());
-//TODO		        RuntimePlugin.openInspector2(module, true);
+                //MessageDialog.openInformation(null,  "Open", "TODO: open module " + module.getFullPath());
+		        inspectorContainer.inspect(module);  //TODO on new canvas!
 		    }
 		});
 
 		contextMenuManager.add(new Action("Add to Canvas") {
 		    @Override
 		    public void run() {
-		        MessageDialog.openInformation(null,  "Open", "TODO: open module " + module.getFullPath());
-//TODO		        RuntimePlugin.openInspector2(module, false);
+		        //MessageDialog.openInformation(null,  "Open", "TODO: open module " + module.getFullPath());
+		        inspectorContainer.inspect(module); //TODO on same canvas!
 		    }
 		});
 	}
