@@ -239,23 +239,58 @@ namespace std {
 // addComputedVector
 //
 
-%typemap(jni)    ComputationNode "jobject"
-%typemap(jtype)  ComputationNode "Object"
-%typemap(jstype) ComputationNode "Object"
-%typemap(javain) ComputationNode "$javainput"
-%typemap(javaout) ComputationNode {
+%typemap(jni)    IComputation* "jobject"
+%typemap(jtype)  IComputation* "Object"
+%typemap(jstype) IComputation* "Object"
+%typemap(javain) IComputation* "$javainput"
+%typemap(javaout) IComputation* {
    return $jnicall;
 }
 
-%typemap(in) ComputationNode {
-  $1 = (ComputationNode)jenv->NewGlobalRef($input);
+%{
+class Computation : public IComputation {
+  JavaVM *jvm;
+  jobject ref;
+  private:
+    Computation(const Computation &other); // unimplemented
+    Computation &operator=(const Computation &other); // unimplemented
+    JNIEnv *getJNIEnv() const
+    {
+      JNIEnv *env;
+      jint error = jvm->AttachCurrentThread((void**)&env, NULL);
+      if (error)
+        throw opp_runtime_error("Can not access JNIEnv from the current thread.");
+      return env;
+    }
+  public:
+    Computation(JNIEnv *jenv, jobject computation)
+    {
+        jint error = jenv->GetJavaVM(&jvm);
+        if (error)
+          throw opp_runtime_error("Can not access JVM.");
+        ref = jenv->NewGlobalRef(computation);
+    }
+
+    virtual IComputation *dup() { return new Computation(getJNIEnv(), ref); }
+    virtual ~Computation() { getJNIEnv()->DeleteGlobalRef(ref); }
+
+    virtual bool operator==(const IComputation &other) const
+    {
+      Computation &o = dynamic_cast<Computation&>(const_cast<IComputation&>(other));
+      return getJNIEnv()->IsSameObject(this->ref, o.ref);
+    }
+
+    jobject getJavaObject() const { return getJNIEnv()->NewLocalRef(ref);; }
+};
+%}
+
+%typemap(in) IComputation* {
+  $1 = (IComputation*)new Computation(jenv, $input);
 }
 
-// XXX call DeleteGlobalRef
-
-%typemap(out) ComputationNode {
-  if ($1)
-    $result = (jobject)$1;
+%typemap(out) IComputation* {
+  if (dynamic_cast<Computation*>($1))
+    $result = dynamic_cast<Computation*>($1)->getJavaObject();
   else
     $result = $null;
 }
@@ -294,8 +329,10 @@ int strdictcmp(const char *s1, const char *s2);
 %include "idlist.i"
 
 /* ------------- resultfilemanager.h  ----------------- */
+%ignore IComputation;
 %ignore ResultFileManager::dump;
 %ignore VectorResult::stat;
+%ignore HistogramResult::stat;
 %ignore ResultFile::id;
 %ignore ResultFile::scalarResults;
 %ignore ResultFile::vectorResults;
@@ -325,6 +362,17 @@ int strdictcmp(const char *s1, const char *s2);
 //%ignore ResultFileManager::getUniqueNames;
 //%ignore ResultFileManager::getUniqueAttributeValues;
 //%ignore ResultFileManager::getFileAndRunNumberFilterHints;
+
+%extend ResultFileManager {
+    IDList getComputedScalarIDs(const IComputation *computation) const
+    {
+        IDList result = $self->getComputedScalarIDs(computation);
+        // KLUDGE: computation is allocated in the SWIG generated JNI code
+        // unfortunately it isn't easy to delete this there without affecting other generated code
+        delete computation;
+        return result;
+    }
+}
 
 %newobject ResultItem::getEnum() const;
 

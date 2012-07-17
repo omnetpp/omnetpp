@@ -11,10 +11,12 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.ComputeScalar;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.Except;
 import org.omnetpp.scave.model.Group;
@@ -48,7 +50,7 @@ public class ScaveObjectEditFormFactory {
 	 */
 	public IScaveObjectEditForm createForm(EObject object, Map<String,Object> formParameters, ResultFileManager manager) {
 		Assert.isTrue(object != null && object.eContainer() != null);
-		return createForm(object, object.eContainer(), formParameters, manager);
+		return createForm(object, object.eContainer(), null, -1, formParameters, manager);
 	}
 
 	/**
@@ -56,7 +58,7 @@ public class ScaveObjectEditFormFactory {
 	 * @param object the edited object
 	 * @param parent the parent node of the object where it is placed or will be placed
 	 */
-	public IScaveObjectEditForm createForm(EObject object, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+	public IScaveObjectEditForm createForm(EObject object, EObject parent, EStructuralFeature feature, int index, Map<String,Object> formParameters, ResultFileManager manager) {
 
 		if (object instanceof BarChart)
 			return new BarChartEditForm((BarChart)object, parent, formParameters, manager);
@@ -76,6 +78,8 @@ public class ScaveObjectEditFormFactory {
 			return new InputFileEditForm((InputFile)object, parent);
 		else if (object instanceof ProcessingOp)
 			return new ProcessingOperationEditForm((ProcessingOp)object, parent, manager);
+		else if (object instanceof ComputeScalar)
+		    return new ComputeScalarEditForm((ComputeScalar)object, parent, feature, index);
 		else if (object instanceof SetOperation)
 			return new SetOperationEditForm((SetOperation)object, parent, manager);
 		else if (object instanceof Except)

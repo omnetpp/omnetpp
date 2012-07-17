@@ -177,7 +177,7 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
             case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
                 return getIsoDataPattern();
             case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
-                return isAverageReplications() ? Boolean.TRUE : Boolean.FALSE;
+                return isAverageReplications();
         }
         return super.eGet(featureID, resolve, coreType);
     }
@@ -199,7 +199,7 @@ public class ScatterChartImpl extends ChartImpl implements ScatterChart {
                 getIsoDataPattern().addAll((Collection<? extends String>)newValue);
                 return;
             case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
-                setAverageReplications(((Boolean)newValue).booleanValue());
+                setAverageReplications((Boolean)newValue);
                 return;
         }
         super.eSet(featureID, newValue);

@@ -20,12 +20,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.common.command.CompoundCommand;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.Enumerator;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.EStructuralFeature.Setting;
@@ -661,4 +665,27 @@ public class ScaveModelUtil {
 		Assert.isTrue(false, "Unexpected operation: "+operation.getOperation());
 		return null; // not reached
 	}
+
+	public static IScaveEditorContext getScaveEditorContextFor(EObject object)
+	{
+	    Resource resource = object.eResource();
+	    Adapter adapter = null;
+	    synchronized (resource) {
+	        adapter = EcoreUtil.getRegisteredAdapter(resource, IScaveEditorContext.class);
+	    }
+	    return adapter instanceof IScaveEditorContext ? (IScaveEditorContext)adapter : null;
+	}
+
+	public static ResultFileManager getResultFileManagerFor(EObject object)
+	{
+	    IScaveEditorContext provider = getScaveEditorContextFor(object);
+	    return provider != null ? provider.getResultFileManager() : null;
+	}
+
+    public static IFile getFileOfEObject(EObject object) {
+        URI uri = object.eResource().getURI();
+        if (uri.isPlatformResource())
+            return (IFile) ResourcesPlugin.getWorkspace().getRoot().findMember(uri.toPlatformString(true));
+        return null;
+    }
 }

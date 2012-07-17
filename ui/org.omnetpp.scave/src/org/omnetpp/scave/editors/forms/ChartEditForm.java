@@ -61,7 +61,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @author tomi
  */
 // TODO use validator for font and number fields
-public class ChartEditForm implements IScaveObjectEditForm {
+public class ChartEditForm extends BaseScaveObjectEditForm {
 	public static final String TAB_MAIN = "Main";
 	public static final String TAB_TITLES = "Titles";
 	public static final String TAB_AXES = "Axes";
@@ -131,25 +131,12 @@ public class ChartEditForm implements IScaveObjectEditForm {
 	protected static final String USER_DATA_KEY = "ChartEditForm";
 
 	public ChartEditForm(Chart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+	    super(chart, parent);
 		this.chart = chart;
 		this.parent = parent;
 		this.formParameters = formParameters;
 		this.manager = manager;
 		this.properties = ChartProperties.createPropertySource(chart, manager);
-	}
-
-	/**
-	 * Returns the title displayed on the top of the dialog.
-	 */
-	public String getTitle() {
-		return "Chart";
-	}
-
-	/**
-	 * Returns the description displayed below the title.
-	 */
-	public String getDescription() {
-		return "Modify properties of the chart.";
 	}
 
 	/**

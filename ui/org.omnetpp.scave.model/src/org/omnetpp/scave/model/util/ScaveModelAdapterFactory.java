@@ -187,6 +187,10 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
                 return createScatterChartAdapter();
             }
             @Override
+            public Adapter caseComputeScalar(ComputeScalar object) {
+                return createComputeScalarAdapter();
+            }
+            @Override
             public Adapter defaultCase(EObject object) {
                 return createEObjectAdapter();
             }
@@ -585,6 +589,20 @@ public class ScaveModelAdapterFactory extends AdapterFactoryImpl {
     }
 
 	/**
+     * Creates a new adapter for an object of class '{@link org.omnetpp.scave.model.ComputeScalar <em>Compute Scalar</em>}'.
+     * <!-- begin-user-doc -->
+     * This default implementation returns null so that we can easily ignore cases;
+     * it's useful to ignore a case when inheritance will catch all the cases anyway.
+     * <!-- end-user-doc -->
+     * @return the new adapter.
+     * @see org.omnetpp.scave.model.ComputeScalar
+     * @generated
+     */
+    public Adapter createComputeScalarAdapter() {
+        return null;
+    }
+
+    /**
      * Creates a new adapter for the default case.
      * <!-- begin-user-doc -->
 	 * This default implementation returns null.

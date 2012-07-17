@@ -34,7 +34,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public class SetOperationEditForm implements IScaveObjectEditForm {
+public class SetOperationEditForm extends BaseScaveObjectEditForm {
 
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getSetOperation_FilterPattern(),
@@ -71,6 +71,7 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 	private Text filterText;
 
 	public SetOperationEditForm(SetOperation setOperation, EObject parent, ResultFileManager manager) {
+	    super(setOperation, parent);
 		this.setOperation = setOperation;
 		this.parent = parent;
 		this.manager = manager;
@@ -82,14 +83,6 @@ public class SetOperationEditForm implements IScaveObjectEditForm {
 		for (Dataset ds : datasets)
 			if (!ds.equals(dataset))
 				sourceDatasets.add(ds);
-	}
-
-	public String getTitle() {
-		return String.format("%s operation", setOperation.eClass().getName());
-	}
-
-	public String getDescription() {
-		return "Modify the properties of the operation.";
 	}
 
 	public EStructuralFeature[] getFeatures() {

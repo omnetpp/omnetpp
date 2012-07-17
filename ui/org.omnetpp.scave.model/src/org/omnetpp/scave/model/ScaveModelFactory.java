@@ -222,6 +222,15 @@ public interface ScaveModelFactory extends EFactory {
 	ScatterChart createScatterChart();
 
 	/**
+     * Returns a new object of class '<em>Compute Scalar</em>'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return a new object of class '<em>Compute Scalar</em>'.
+     * @generated
+     */
+    ComputeScalar createComputeScalar();
+
+    /**
      * Returns the package supported by this factory.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

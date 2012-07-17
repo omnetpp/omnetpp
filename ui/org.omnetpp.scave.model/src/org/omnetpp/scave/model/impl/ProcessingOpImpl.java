@@ -294,7 +294,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
             case ScaveModelPackage.PROCESSING_OP__COMPUTED_FILE:
                 return getComputedFile();
             case ScaveModelPackage.PROCESSING_OP__COMPUTATION_HASH:
-                return new Long(getComputationHash());
+                return getComputationHash();
             case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
                 return getGroupBy();
         }
@@ -325,7 +325,7 @@ public abstract class ProcessingOpImpl extends DatasetItemImpl implements Proces
                 setComputedFile((String)newValue);
                 return;
             case ScaveModelPackage.PROCESSING_OP__COMPUTATION_HASH:
-                setComputationHash(((Long)newValue).longValue());
+                setComputationHash((Long)newValue);
                 return;
             case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
                 getGroupBy().clear();

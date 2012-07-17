@@ -41,6 +41,7 @@ class SCAVE_API Statistics
         Statistics() : _count(0), _min(POSITIVE_INFINITY), _max(NEGATIVE_INFINITY), _sum(0.0), _sumSqr(0.0) {}
         Statistics(long count, double min, double max, double sum, double sumSqr)
             :_count(count), _min(min), _max(max), _sum(sum), _sumSqr(sumSqr) {}
+        Statistics(const Statistics &s) : _count(s._count), _min(s._min), _max(s._max), _sum(s._sum), _sumSqr(s._sumSqr) {}
 
         long getCount() const { return _count; }
         double getMin() const { return _min; }

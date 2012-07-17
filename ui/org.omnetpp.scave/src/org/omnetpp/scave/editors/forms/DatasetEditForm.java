@@ -28,7 +28,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public class DatasetEditForm implements IScaveObjectEditForm {
+public class DatasetEditForm extends BaseScaveObjectEditForm {
 
 	/**
 	 * Features edited on this panel.
@@ -41,7 +41,7 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 	/**
 	 * The edited dataset.
 	 */
-	//private Dataset dataset;
+	private Dataset dataset;
 
 	/**
 	 * List of datasets that the edited dataset can be the based on.
@@ -60,7 +60,8 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 
 
 	public DatasetEditForm(Dataset dataset, EObject parent) {
-		//this.dataset = dataset;
+	    super(dataset, parent);
+		this.dataset = dataset;
 		// collect datasets that can be the base of this dataset
 		// XXX: circularity check is missing
 		baseDatasets = new ArrayList<Dataset>();
@@ -68,20 +69,6 @@ public class DatasetEditForm implements IScaveObjectEditForm {
 		for (Dataset ds : ScaveModelUtil.findObjects(parent.eResource(), Dataset.class))
 			if (ds != dataset)
 				baseDatasets.add(ds);
-	}
-
-	/**
-	 * Returns the title displayed on the top of the dialog.
-	 */
-	public String getTitle() {
-		return "Dataset";
-	}
-
-	/**
-	 * Returns the description displayed below the title.
-	 */
-	public String getDescription() {
-		return "Modify dataset properties.";
 	}
 
 	/**

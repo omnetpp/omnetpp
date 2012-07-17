@@ -481,7 +481,7 @@ public class ScaveModelEditor
                             if (delta.getResource().getType() == IResource.FILE) {
                                 if (delta.getKind() == IResourceDelta.REMOVED ||
                                     delta.getKind() == IResourceDelta.CHANGED && delta.getFlags() != IResourceDelta.MARKERS) {
-                                    Resource resource = resourceSet.getResource(URI.createURI(delta.getFullPath().toString()), false);
+                                    Resource resource = resourceSet.getResource(URI.createPlatformResourceURI(delta.getFullPath().toString(), true), false);
                                     if (resource != null) {
                                         if (delta.getKind() == IResourceDelta.REMOVED) {
                                             removedResources.add(resource);
@@ -505,31 +505,31 @@ public class ScaveModelEditor
                         }
                     }
 
-                    ResourceDeltaVisitor visitor = new ResourceDeltaVisitor();
+                    final ResourceDeltaVisitor visitor = new ResourceDeltaVisitor();
                     delta.accept(visitor);
 
                     if (!visitor.getRemovedResources().isEmpty()) {
-                        removedResources.addAll(visitor.getRemovedResources());
-                        if (!isDirty()) {
-                            getSite().getShell().getDisplay().asyncExec
-                                (new Runnable() {
-                                     public void run() {
+                        getSite().getShell().getDisplay().asyncExec
+                            (new Runnable() {
+                                 public void run() {
+                                     removedResources.addAll(visitor.getRemovedResources());
+                                     if (!isDirty()) {
                                          getSite().getPage().closeEditor(ScaveModelEditor.this, false);
                                      }
-                                 });
-                        }
+                                 }
+                             });
                     }
 
                     if (!visitor.getChangedResources().isEmpty()) {
-                        changedResources.addAll(visitor.getChangedResources());
-                        if (getSite().getPage().getActiveEditor() == ScaveModelEditor.this) {
-                            getSite().getShell().getDisplay().asyncExec
-                                (new Runnable() {
-                                     public void run() {
+                        getSite().getShell().getDisplay().asyncExec
+                            (new Runnable() {
+                                 public void run() {
+                                     changedResources.addAll(visitor.getChangedResources());
+                                     if (getSite().getPage().getActiveEditor() == ScaveModelEditor.this) {
                                          handleActivate();
                                      }
-                                 });
-                        }
+                                 }
+                             });
                     }
                 }
                 catch (CoreException exception) {
@@ -762,11 +762,6 @@ public class ScaveModelEditor
         // Make sure it's okay.
         //
         if (theSelection != null && !theSelection.isEmpty()) {
-            // I don't know if this should be run this deferred
-            // because we might have to give the editor a chance to process the viewer update events
-            // and hence to update the views first.
-            //
-            //
             Runnable runnable =
                 new Runnable() {
                     public void run() {
@@ -777,7 +772,7 @@ public class ScaveModelEditor
                         }
                     }
                 };
-            runnable.run();
+            getSite().getShell().getDisplay().asyncExec(runnable);
         }
     }
 
@@ -1503,7 +1498,7 @@ public class ScaveModelEditor
 
 	/**
      * This returns whether something has been persisted to the URI of the specified resource.
-     * The implementation uses the URI converter from the editor's resource set to try to open an input stream.
+     * The implementation uses the URI converter from the editor's resource set to try to open an input stream. 
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated

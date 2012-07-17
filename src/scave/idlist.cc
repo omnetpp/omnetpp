@@ -268,20 +268,20 @@ CMP(ModuleLess, less(*(uncheckedGetItem(a).moduleNameRef), *(uncheckedGetItem(b)
 CMP(NameLess, less(*(uncheckedGetItem(a).nameRef), *(uncheckedGetItem(b).nameRef)))
 CMP(ValueLess, uncheckedGetScalar(a).value < uncheckedGetScalar(b).value)
 CMP(VectorIdLess, uncheckedGetVector(a).vectorId < uncheckedGetVector(b).vectorId)
-CMP(VectorCountLess, uncheckedGetVector(a).getCount() < uncheckedGetVector(b).getCount())
-CMP(VectorMeanLess, uncheckedGetVector(a).getMean() < uncheckedGetVector(b).getMean())
-CMP(VectorStddevLess, uncheckedGetVector(a).getStddev() < uncheckedGetVector(b).getStddev())
-CMP(VectorMinLess, uncheckedGetVector(a).getMin() < uncheckedGetVector(b).getMin())
-CMP(VectorMaxLess, uncheckedGetVector(a).getMax() < uncheckedGetVector(b).getMax())
-CMP(VectorVarianceLess, uncheckedGetVector(a).getVariance() < uncheckedGetVector(b).getVariance())
+CMP(VectorCountLess, uncheckedGetVector(a).stat.getCount() < uncheckedGetVector(b).stat.getCount())
+CMP(VectorMeanLess, uncheckedGetVector(a).stat.getMean() < uncheckedGetVector(b).stat.getMean())
+CMP(VectorStddevLess, uncheckedGetVector(a).stat.getStddev() < uncheckedGetVector(b).stat.getStddev())
+CMP(VectorMinLess, uncheckedGetVector(a).stat.getMin() < uncheckedGetVector(b).stat.getMin())
+CMP(VectorMaxLess, uncheckedGetVector(a).stat.getMax() < uncheckedGetVector(b).stat.getMax())
+CMP(VectorVarianceLess, uncheckedGetVector(a).stat.getVariance() < uncheckedGetVector(b).stat.getVariance())
 CMP(StartTimeLess, uncheckedGetVector(a).startTime < uncheckedGetVector(b).startTime)
 CMP(EndTimeLess, uncheckedGetVector(a).endTime < uncheckedGetVector(b).endTime)
-CMP(HistogramCountLess, uncheckedGetHistogram(a).getCount() < uncheckedGetHistogram(b).getCount())
-CMP(HistogramMeanLess, uncheckedGetHistogram(a).getMean() < uncheckedGetHistogram(b).getMean())
-CMP(HistogramStddevLess, uncheckedGetHistogram(a).getStddev() < uncheckedGetHistogram(b).getStddev())
-CMP(HistogramMinLess, uncheckedGetHistogram(a).getMin() < uncheckedGetHistogram(b).getMin())
-CMP(HistogramMaxLess, uncheckedGetHistogram(a).getMax() < uncheckedGetHistogram(b).getMax())
-CMP(HistogramVarianceLess, uncheckedGetHistogram(a).getVariance() < uncheckedGetHistogram(b).getVariance())
+CMP(HistogramCountLess, uncheckedGetHistogram(a).stat.getCount() < uncheckedGetHistogram(b).stat.getCount())
+CMP(HistogramMeanLess, uncheckedGetHistogram(a).stat.getMean() < uncheckedGetHistogram(b).stat.getMean())
+CMP(HistogramStddevLess, uncheckedGetHistogram(a).stat.getStddev() < uncheckedGetHistogram(b).stat.getStddev())
+CMP(HistogramMinLess, uncheckedGetHistogram(a).stat.getMin() < uncheckedGetHistogram(b).stat.getMin())
+CMP(HistogramMaxLess, uncheckedGetHistogram(a).stat.getMax() < uncheckedGetHistogram(b).stat.getMax())
+CMP(HistogramVarianceLess, uncheckedGetHistogram(a).stat.getVariance() < uncheckedGetHistogram(b).stat.getVariance())
 
 template <class T>
 void IDList::sortBy(ResultFileManager *mgr, bool ascending, T& comparator)
@@ -514,6 +514,15 @@ bool IDList::areAllHistograms() const
 {
     int types = getItemTypes();
     return !types || types==ResultFileManager::HISTOGRAM;
+}
+
+IDList IDList::filterByTypes(int typeMask) const
+{
+    IDList result;
+    for (V::const_iterator i=v->begin(); i!=v->end(); ++i)
+        if ((ResultFileManager::_type(*i) & typeMask) != 0)
+            result.v->push_back(*i);
+    return result;
 }
 
 void IDList::toByteArray(char *array, int n) const

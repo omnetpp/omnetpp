@@ -7,15 +7,26 @@
 
 package org.omnetpp.scave.editors.treeproviders;
 
+import static org.apache.commons.lang.StringUtils.abbreviate;
 import static org.apache.commons.lang.StringUtils.defaultIfEmpty;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.IWrapperItemProvider;
+import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Apply;
@@ -24,7 +35,9 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Compute;
+import org.omnetpp.scave.model.ComputeScalar;
 import org.omnetpp.scave.model.Dataset;
+import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Datasets;
 import org.omnetpp.scave.model.Deselect;
 import org.omnetpp.scave.model.Discard;
@@ -40,6 +53,7 @@ import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScatterChart;
 import org.omnetpp.scave.model.Select;
 import org.omnetpp.scave.model.SetOperation;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Label provider for model objects. We use this instead
@@ -47,7 +61,7 @@ import org.omnetpp.scave.model.SetOperation;
  *
  * @author andras
  */
-public class ScaveModelLabelProvider extends LabelProvider {
+public class ScaveModelLabelProvider extends LabelProvider implements IColorProvider {
 
 	ILabelProvider fallback;
 
@@ -151,6 +165,18 @@ public class ScaveModelLabelProvider extends LabelProvider {
 
 			return sb.toString();
 		}
+		else if (element instanceof ComputeScalar) {
+		    ComputeScalar o = (ComputeScalar) element;
+		    StringBuilder sb = new StringBuilder();
+		    sb.append("compute scalar: ");
+		    if (!isEmpty(o.getScalarName()))
+		        sb.append(o.getScalarName());
+		    else
+		        sb.append("<unnamed>");
+            if (!isEmpty(o.getValueExpr()))
+                sb.append(" = ").append(o.getValueExpr());
+		    return abbreviate(sb.toString(), 200);
+		}
 		else if (element instanceof Group) {
 			Group o = (Group) element;
 			return isEmpty(o.getName()) ? "group" : "group "+o.getName();
@@ -187,4 +213,43 @@ public class ScaveModelLabelProvider extends LabelProvider {
 		}
 		return element.toString(); // fallback
 	}
+
+	public String getTooltipText(Object element, SizeConstraint outPreferredSize) {
+        if (element instanceof DatasetItem) {
+            DatasetItem datasetItem = (DatasetItem)element;
+            IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
+            if (file != null && hasError(file, datasetItem)) {
+                outPreferredSize.preferredWidth = 200;
+                return "Errors, see Problems View";
+            }
+        }
+        return null;
+	}
+
+    public Color getForeground(Object element) {
+        if (element instanceof DatasetItem) {
+            DatasetItem datasetItem = (DatasetItem)element;
+            IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
+            if (file != null && hasError(file, datasetItem))
+                return ColorFactory.RED;
+        }
+        return null;
+    }
+
+    public Color getBackground(Object element) {
+        return null;
+    }
+
+    private boolean hasError(IFile file, EObject object) {
+        try {
+            IMarker problems[] = file.findMarkers(Markers.ANALYSISFILE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
+            for (IMarker problem : problems) {
+                if (problem.getAttribute(Markers.EOBJECT_MARKERATTR_ID) == object)
+                    return true;
+            }
+            return false;
+        } catch (CoreException e) {
+            return false;
+        }
+    }
 }

@@ -13,6 +13,7 @@ import org.omnetpp.scave.engine.HistogramResult;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
+import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.model2.DatasetManager;
 
 public class HistogramDataset implements IHistogramDataset {
@@ -54,7 +55,8 @@ public class HistogramDataset implements IHistogramDataset {
 			System.arraycopy(bins.toArray(), 0, cellBreaks, 0, size);
 			cellBreaks[size] = Double.POSITIVE_INFINITY;
 			double[] cellValues = histogram.getValues().toArray();
-			histograms[i] = new HistogramData(keys[i], isIntegerType, histogram.getCount(), histogram.getMin(), histogram.getMax(), cellBreaks, cellValues);
+			Statistics stat = histogram.getStatistics();
+			histograms[i] = new HistogramData(keys[i], isIntegerType, stat.getCount(), stat.getMin(), stat.getMax(), cellBreaks, cellValues);
 		}
 	}
 

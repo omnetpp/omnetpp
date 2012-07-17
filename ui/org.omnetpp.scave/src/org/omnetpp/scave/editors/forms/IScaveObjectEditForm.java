@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.editors.forms;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.swt.widgets.Composite;
 
@@ -56,4 +57,30 @@ public interface IScaveObjectEditForm {
 	 * Sets the value of the control associated with the specified feature.
 	 */
 	void setValue(EStructuralFeature feature, Object value);
+
+	/**
+	 * Validates the content of the form.
+	 * Returns a status object, that can be a simple {@link IStatus},
+	 * or a {@link org.eclipse.core.runtime.MultiStatus MultiStatus}
+	 * containing multiple errors and warnings.
+	 */
+	IStatus validate();
+
+	/**
+	 * Add a listener to the listener list.
+	 * Listeners receive notifications when some field in the form changes.
+	 */
+	void addChangeListener(Listener listener);
+
+	/**
+	 * Removes a listener from the listener list.
+	 */
+	void removeChangeListener(Listener listener);
+
+	/**
+	 * Interface to receive change notifications.
+	 */
+	interface Listener {
+	    void editFormChanged(IScaveObjectEditForm form);
+	}
 }

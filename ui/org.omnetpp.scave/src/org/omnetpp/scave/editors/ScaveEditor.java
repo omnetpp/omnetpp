@@ -9,6 +9,7 @@ package org.omnetpp.scave.editors;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,19 +17,27 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
+import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
+import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.edit.command.AddCommand;
+import org.eclipse.emf.edit.provider.IChangeNotifier;
 import org.eclipse.emf.edit.provider.INotifyChangedListener;
+import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -59,8 +68,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.util.DetailedPartInitException;
+import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.ChartCanvas;
+import org.omnetpp.scave.computed.ComputedScalarManager;
 import org.omnetpp.scave.editors.ui.BrowseDataPage;
 import org.omnetpp.scave.editors.ui.ChartPage;
 import org.omnetpp.scave.editors.ui.ChartSheetPage;
@@ -73,13 +84,13 @@ import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
+import org.omnetpp.scave.model.ComputeScalar;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
 import org.omnetpp.scave.model.ScaveModelFactory;
 import org.omnetpp.scave.model.ScaveModelPackage;
-import org.omnetpp.scave.views.DatasetView;
-import org.omnetpp.scave.views.VectorBrowserView;
+import org.omnetpp.scave.model2.IScaveEditorContext;
 
 /**
  * OMNeT++ Analysis tool.
@@ -112,6 +123,11 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	private ResultFilesTracker tracker;
 
 	/**
+	 *
+	 */
+	private ComputedScalarManager computedScalarManager;
+
+	/**
 	 * Updates pages when the model changed.
 	 */
 	private INotifyChangedListener pageUpdater = new INotifyChangedListener() {
@@ -137,13 +153,45 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 
 	/**
+	 * Implements IScaveEditorContext to provide access to some
+	 * components of this editor.
+	 * The class implemented as an Adapter, so it can be associated with
+	 * model objects (EObjects).
+	 */
+	class ScaveEditorContextAdapter extends AdapterImpl implements IScaveEditorContext
+	{
+        public ResultFileManagerEx getResultFileManager() {
+            return ScaveEditor.this.getResultFileManager();
+        }
+
+        public ComputedScalarManager getComputedScalarManager() {
+            return ScaveEditor.this.getComputedScalarManager();
+        }
+
+        public IChangeNotifier getChangeNotifier() {
+            return (IChangeNotifier)ScaveEditor.this.getAdapterFactory();
+        }
+
+        public ILabelProvider getScaveModelLavelProvider() {
+            return new AdapterFactoryLabelProvider(ScaveEditor.this.getAdapterFactory());
+        }
+	}
+
+	private ScaveEditorContextAdapter editorContextAdapter = new ScaveEditorContextAdapter();
+
+	/**
 	 * The constructor.
 	 */
 	public ScaveEditor() {
+	    computedScalarManager = new ComputedScalarManager();
 	}
 
 	public ResultFileManagerEx getResultFileManager() {
 		return manager;
+	}
+
+	public ComputedScalarManager getComputedScalarManager() {
+	    return computedScalarManager;
 	}
 
 	public InputsPage getInputsPage() {
@@ -200,6 +248,9 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		if (tracker != null) adapterFactory.removeListener(tracker);
 		adapterFactory.removeListener(pageUpdater);
 
+		computedScalarManager.removeMarkers();
+		computedScalarManager.dispose();
+
 		if (manager != null) {
 			// deactivate the tracker explicitly, because it might receive a notification
 			// in case of the ScaveEditor.dispose() was called from a notification.
@@ -235,8 +286,22 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 		// create resource for temporary charts and datasets
 		tempResource = createTempResource();
 
+        // create an adapter factory, that associates editorContextAdapter to Resource objects.
+        // Therefore the editor context can be accessed from model objects by calling
+        // EcoreUtil.getRegisteredAdapter(eObject.eResource(), IScaveEditorContext.class),
+        // or simply ScaveModelUtil.getEditorContextFor(eObject).
+        editingDomain.getResourceSet().getAdapterFactories().add(new AdapterFactoryImpl() {
+            @Override
+            public boolean isFactoryForType(Object type) { return type == IScaveEditorContext.class; }
+            @Override
+            protected Adapter createAdapter(Notifier target) { return target instanceof Resource ? editorContextAdapter : null; }
+        });
+
+
 		IFile inputFile = ((IFileEditorInput)getEditorInput()).getFile();
 		tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
+
+		computedScalarManager.init(editorContextAdapter, inputFile);
 
 		// listen to model changes
 		adapterFactory.addListener(tracker);
@@ -932,6 +997,27 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 			markNavigationLocation();
 		}
 	}
+
+	/*
+	 * IGotoMarker
+	 */
+	@Override
+	public void gotoMarker(IMarker marker) {
+        try {
+            if (marker.getType().equals(Markers.COMPUTESCALAR_PROBLEMMARKER_ID)) {
+                Object object = marker.getAttribute(Markers.EOBJECT_MARKERATTR_ID);
+                if (object instanceof EObject && datasetsPage != null) {
+                    gotoObject(object);
+                    setSelectionToViewer(Collections.singleton(editingDomain.getWrapper(object)));
+                }
+            }
+            else
+                super.gotoMarker(marker);
+        }
+        catch (CoreException exception) {
+            ScavePlugin.logError(exception);
+        }
+    }
 }
 
 

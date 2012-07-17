@@ -37,6 +37,7 @@ import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 
 /**
@@ -59,7 +60,7 @@ public class DataTree extends Tree implements IDataControl {
         }
     };
     protected IResultFilesChangeListener resultFilesChangeListener = new IResultFilesChangeListener() {
-        public void resultFileManagerChanged(ResultFileManager manager) {
+        public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
             refreshJob.restartTimer();
         }
     };

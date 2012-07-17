@@ -39,7 +39,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
      */
 	public static ScaveModelFactory init() {
         try {
-            ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.omnetpp.org/omnetpp/scave");
+            ScaveModelFactory theScaveModelFactory = (ScaveModelFactory)EPackage.Registry.INSTANCE.getEFactory("http://www.omnetpp.org/omnetpp/scave"); 
             if (theScaveModelFactory != null) {
                 return theScaveModelFactory;
             }
@@ -89,6 +89,7 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
             case ScaveModelPackage.LINE_CHART: return createLineChart();
             case ScaveModelPackage.HISTOGRAM_CHART: return createHistogramChart();
             case ScaveModelPackage.SCATTER_CHART: return createScatterChart();
+            case ScaveModelPackage.COMPUTE_SCALAR: return createComputeScalar();
             default:
                 throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -335,6 +336,16 @@ public class ScaveModelFactoryImpl extends EFactoryImpl implements ScaveModelFac
     }
 
 	/**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public ComputeScalar createComputeScalar() {
+        ComputeScalarImpl computeScalar = new ComputeScalarImpl();
+        return computeScalar;
+    }
+
+    /**
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated

@@ -42,6 +42,7 @@ import org.omnetpp.scave.editors.treeproviders.InputsRunFileViewContentProvider;
 import org.omnetpp.scave.editors.treeproviders.InputsViewLabelProvider;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.model.Analysis;
 import org.omnetpp.scave.model.InputFile;
 import org.omnetpp.scave.model.Inputs;
@@ -105,26 +106,31 @@ public class InputsPage extends ScaveEditorPage {
         getLogicalDataTreeViewer().setLabelProvider(new InputsViewLabelProvider());
 
         scaveEditor.getResultFileManager().addChangeListener(new IResultFilesChangeListener() {
-			public void resultFileManagerChanged(final ResultFileManager manager) {
-				if (scheduledUpdate == null) {
-					scheduledUpdate = new Runnable() {
-						public void run() {
-							scheduledUpdate = null;
-							if (!isDisposed()) {
-								ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-									public Object call()  {
-										getFileRunTreeViewer().setInput(manager); // force refresh
-										getRunFileTreeViewer().setInput(manager);
-										getLogicalDataTreeViewer().setInput(manager);
-										return null;
-									}
-								});
-							}
-						}
-					};
-					getDisplay().asyncExec(scheduledUpdate);
-				}
-			}
+            public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
+                switch (event.getChangeType()) {
+                case LOAD:
+                case UNLOAD:
+                    final ResultFileManager manager = event.getResultFileManager();
+                    if (scheduledUpdate == null) {
+                        scheduledUpdate = new Runnable() {
+                            public void run() {
+                                scheduledUpdate = null;
+                                if (!isDisposed()) {
+                                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                                        public Object call()  {
+                                            getFileRunTreeViewer().setInput(manager); // force refresh
+                                            getRunFileTreeViewer().setInput(manager);
+                                            getLogicalDataTreeViewer().setInput(manager);
+                                            return null;
+                                        }
+                                    });
+                                }
+                            }
+                        };
+                        getDisplay().asyncExec(scheduledUpdate);
+                    }
+                }
+            }
         });
 
         getFileRunTreeViewer().addSelectionChangedListener(scaveEditor.getSelectionChangedListener());

@@ -7,6 +7,7 @@
 
 package org.omnetpp.scave.model2;
 
+import static org.omnetpp.common.util.Triplet.triplet;
 import static org.omnetpp.scave.engine.ResultItemField.FILE;
 import static org.omnetpp.scave.engine.ResultItemField.MODULE;
 import static org.omnetpp.scave.engine.ResultItemField.NAME;
@@ -18,7 +19,9 @@ import static org.omnetpp.scave.engine.RunAttribute.RUNNUMBER;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
@@ -28,6 +31,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.Pair;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.common.util.Triplet;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.dataset.CompoundXYDataset;
 import org.omnetpp.scave.charting.dataset.HistogramDataset;
@@ -37,6 +41,7 @@ import org.omnetpp.scave.charting.dataset.ScalarDataset;
 import org.omnetpp.scave.charting.dataset.ScalarScatterPlotDataset;
 import org.omnetpp.scave.charting.dataset.VectorDataset;
 import org.omnetpp.scave.charting.dataset.VectorScatterPlotDataset;
+import org.omnetpp.scave.computed.ComputedScalarManager;
 import org.omnetpp.scave.engine.DataSorter;
 import org.omnetpp.scave.engine.DataflowManager;
 import org.omnetpp.scave.engine.IDList;
@@ -61,6 +66,7 @@ import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.BarChart;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Compute;
+import org.omnetpp.scave.model.ComputeScalar;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Deselect;
@@ -115,13 +121,18 @@ public class DatasetManager {
 			this.warnings = new ArrayList<IStatus>();
 		}
 
-		public IDList getIDList() {
-			return idlist != null ? idlist : new IDList();
-		}
+        public IDList getIDList() {
+            // When generating scalars, we have added vectors and histograms to idlist too,
+            // because they can be the input of scalar computations.
+            // Now they are removed.
+            return idlist == null ? new IDList() :
+                   type == ResultType.SCALAR_LITERAL ? idlist.filterByTypes(ResultFileManager.SCALAR) :
+                   idlist;
+        }
 
 		@Override
         public Object caseAdd(Add add) {
-			if (type == null || add.getType() == type) {
+			if (type == null || add.getType() == type || type == ResultType.SCALAR_LITERAL) {
 				idlist.merge(select(null, add));
 			}
 			return this;
@@ -129,7 +140,7 @@ public class DatasetManager {
 
 		@Override
         public Object caseDiscard(Discard discard) {
-			if (type == null || discard.getType() == type)
+			if (type == null || discard.getType() == type || type == ResultType.SCALAR_LITERAL)
 				idlist.substract(select(idlist, discard));
 			return this;
 		}
@@ -144,6 +155,34 @@ public class DatasetManager {
         public Object caseCompute(Compute compute) {
 			caseProcessingOp(compute, false);
 			return this;
+		}
+
+		@Override
+		public Object caseComputeScalar(ComputeScalar op) {
+		    if (!StringUtils.isEmpty(op.getScalarName()) && (type == null || type == ResultType.SCALAR_LITERAL))
+		    {
+		        IDList selectedItems = select(idlist, op.getFilters(), null);
+		        IDList computedScalars = ComputedScalarManager.instanceFor(op).getOrCreateComputedScalars(op, selectedItems);
+		        // collect 'shadowed' result items; i.e. those having the same run/module/name as a computed scalar
+		        Set<Triplet<String,String,String>> runModuleNameSet = new HashSet<Triplet<String,String,String>>();
+		        for (int i = 0; i < computedScalars.size(); ++i) {
+		            ScalarResult scalar = manager.getScalar(computedScalars.get(i));
+		            runModuleNameSet.add(triplet(scalar.getFileRun().getRun().getRunName(),
+		                                        scalar.getModuleName(),
+		                                        scalar.getName()));
+		        }
+		        // remove 'shadowed' inputs
+		        for (Triplet<String,String,String> runModuleName : runModuleNameSet) {
+		            IDList ids = manager.filterIDList(idlist, runModuleName.first, runModuleName.second, runModuleName.third);
+		            // remove one-by-one, because idlist.substract(ids) would change the order of ids in idlist
+		            for (int i = 0; i < ids.size(); ++i)
+		                idlist.substract(ids.get(i));
+		        }
+		        // add new scalars
+		        for (int i = 0; i < computedScalars.size(); ++i)
+		            idlist.add(computedScalars.get(i));
+		    }
+		    return this;
 		}
 
 		private Object caseProcessingOp(ProcessingOp op, boolean removeInputs) {
@@ -517,7 +556,7 @@ public class DatasetManager {
 		else
 			return nameFormatUsingFields(differentFields);
 	}
-	
+
 	public static String defaultResultItemTitleFormat(ResultItem[] items) {
 	    String format = defaultNameFormat(items);
         return format.replace("${name}", "${title_or_name}");

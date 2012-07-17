@@ -23,7 +23,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *
  * @author andras
  */
-public class GroupEditForm implements IScaveObjectEditForm {
+public class GroupEditForm extends BaseScaveObjectEditForm {
 
 	/**
 	 * Features edited on this panel.
@@ -41,21 +41,8 @@ public class GroupEditForm implements IScaveObjectEditForm {
 	private Text nameText;
 
 	public GroupEditForm(Group group, EObject parent) {
+	    super(group, parent);
 		//this.group = group;
-	}
-
-	/**
-	 * Returns the title displayed on the top of the dialog.
-	 */
-	public String getTitle() {
-		return "Group";
-	}
-
-	/**
-	 * Returns the description displayed below the title.
-	 */
-	public String getDescription() {
-		return "Modify properties of the Group";
 	}
 
 	/**

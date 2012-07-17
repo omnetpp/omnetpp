@@ -24,6 +24,7 @@ import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringSet;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent.ChangeType;
 
 /**
  * ResultFileManager with notification capability. Also re-wraps
@@ -45,9 +46,9 @@ public class ResultFileManagerEx extends ResultFileManager {
 		changeListeners.remove(listener);
 	}
 
-	protected void notifyChangeListeners() {
+	protected void notifyChangeListeners(ResultFileManagerChangeEvent event) {
 		for (Object listener : changeListeners.getListeners())
-			((IResultFilesChangeListener)listener).resultFileManagerChanged(this);
+			((IResultFilesChangeListener)listener).resultFileManagerChanged(event);
 	}
 
 	public void addDisposeListener(IResultFileManagerDisposeListener listener) {
@@ -77,7 +78,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		try {
 			checkNotDeleted();
 			ResultFile file = super.loadFile(filename);
-			notifyChangeListeners();
+			notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
 			return file;
 		}
 		finally {
@@ -91,7 +92,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		try {
 			checkNotDeleted();
 			ResultFile file = super.loadFile(filename, osFileName);
-			notifyChangeListeners();
+			notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
 			return file;
 		}
 		finally {
@@ -105,7 +106,7 @@ public class ResultFileManagerEx extends ResultFileManager {
 		try {
 			checkNotDeleted();
 			ResultFile file = super.loadFile(filename, osFileName, reload);
-			notifyChangeListeners();
+			notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.LOAD, filename));
 			return file;
 		}
 		finally {
@@ -118,8 +119,9 @@ public class ResultFileManagerEx extends ResultFileManager {
 		getWriteLock().lock();
 		try {
 			checkNotDeleted();
+			String filename = file.getFilePath();
 			super.unloadFile(file);
-			notifyChangeListeners();
+			notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.UNLOAD, filename));
 		}
 		finally {
 			getWriteLock().unlock();
@@ -133,13 +135,44 @@ public class ResultFileManagerEx extends ResultFileManager {
 		try {
 			checkNotDeleted();
 			long id = super.addComputedVector(vectorId, name, file, attributes, computationID, input, processingOp);
-			notifyChangeListeners();
+			notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.COMPUTED_ITEM_ADDED, id));
 			return id;
 		}
 		finally {
 			getWriteLock().unlock();
 		}
 	}
+
+    @Override
+    public long addComputedScalar(String name, String module, String runName, double value, StringMap attributes, Object computeScalarNode) {
+        checkNotDeleted();
+        getWriteLock().lock();
+        try {
+            checkNotDeleted();
+            long id = super.addComputedScalar(name, module, runName, value, attributes, computeScalarNode);
+            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.COMPUTED_ITEM_ADDED, id));
+            return id;
+        }
+        finally {
+            getWriteLock().unlock();
+        }
+    }
+
+    @Override
+    public void clearComputedScalars() {
+        checkNotDeleted();
+        getWriteLock().lock();
+        try {
+            checkNotDeleted();
+            super.clearComputedScalars();
+            notifyChangeListeners(new ResultFileManagerChangeEvent(this, ChangeType.COMPUTED_SCALARS_CLEARED));
+        }
+        finally {
+            getWriteLock().unlock();
+        }
+    }
+
+
 
 	/*-------------------------------------------
 	 *               Reader methods
@@ -399,6 +432,18 @@ public class ResultFileManagerEx extends ResultFileManager {
 		checkNotDeleted();
 		return super.getComputedID(computationID, inputID);
 	}
+
+    @Override
+    public ResultFile getComputedScalarFile() {
+        checkNotDeleted();
+        return super.getComputedScalarFile();
+    }
+
+    @Override
+    public IDList getComputedScalarIDs(Object node) {
+        checkNotDeleted();
+        return wrap(super.getComputedScalarIDs(node));
+    }
 
 	@Override
 	public boolean hasStaleID(IDList ids) {

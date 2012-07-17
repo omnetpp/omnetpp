@@ -10,6 +10,7 @@ package org.omnetpp.scave.wizard;
 import java.util.Collection;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -25,6 +26,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.editors.forms.IScaveObjectEditForm;
 import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
@@ -200,28 +202,38 @@ public class NewScaveObjectWizard extends Wizard {
 	class EditFieldsWizardPage extends WizardPage {
 
 		IScaveObjectEditForm form;
+		IScaveObjectEditForm.Listener listener;
 
 		protected EditFieldsWizardPage(String pageName) {
 			super(pageName);
 			setPageComplete(false);
+            listener = new IScaveObjectEditForm.Listener() {
+                public void editFormChanged(IScaveObjectEditForm form) {
+                    updateButtonsAndErrorMessage();
+                }
+            };
 		}
 
-		/**
-		 * Creates the controls of this page.
-		 */
-		public void createControl(Composite parentComposite) {
-			EClass eclass = ((EObject)newChildDescriptor.value).eClass();
-			setTitle("Create '" + eclass.getName()+"' Object");
-			setDescription("Fill out fields of the "+eclass.getName()+" to be created.");
+        /**
+         * Creates the controls of this page.
+         */
+        public void createControl(Composite parentComposite) {
+            ScaveObjectEditFormFactory factory = ScaveObjectEditFormFactory.instance();
+            form = factory.createForm(newChildDescriptor.getEValue(),
+                                        parent, newChildDescriptor.getEStructuralFeature(), newChildDescriptor.getIndex(),
+                                        null, editor.getResultFileManager());
+            setTitle(form.getTitle());
+            setDescription(form.getDescription());
 
-			Composite panel = new Composite(parentComposite, SWT.NONE);
-			panel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			ScaveObjectEditFormFactory factory = ScaveObjectEditFormFactory.instance();
-			form = factory.createForm((EObject)newChildDescriptor.value, parent, null, editor.getResultFileManager());
-			form.populatePanel(panel);
-			setControl(panel);
-			setPageComplete(true);
-		}
+            Composite panel = new Composite(parentComposite, SWT.NONE);
+            GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+            panel.setLayoutData(gridData);
+            form.populatePanel(panel);
+            setControl(panel);
+
+            form.addChangeListener(listener);
+            updateButtonsAndErrorMessage();
+        }
 
 		/**
 		 * This method called when the type of the child has changed,
@@ -230,11 +242,42 @@ public class NewScaveObjectWizard extends Wizard {
 		 * is called again to generate it.
 		 */
 		void clearControl() {
+            if (form != null)
+                form.removeChangeListener(listener);
 			setControl(null);
 			setPageComplete(false);
 		}
 
-		/**
+        /**
+         * Update button state and error message.
+         * Called when a form field changes.
+         */
+        void updateButtonsAndErrorMessage() {
+            IStatus status = form.validate();
+            setPageComplete(!status.matches(IStatus.ERROR));
+            setErrorMessage(status);
+        }
+
+        private void setErrorMessage(IStatus status) {
+            String message = null;
+            if (status.matches(IStatus.ERROR)) {
+                message = "There are errors:\n\t";
+                IStatus error = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.ERROR);
+                Assert.isNotNull(error);
+                message += status.isMultiStatus() ? status.getMessage() + ": " : "";
+                message += error.getMessage();
+            }
+            else if (status.matches(IStatus.WARNING)) {
+                message = "There are warnings:\n\t";
+                IStatus warning = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.WARNING);
+                Assert.isNotNull(warning);
+                message += status.isMultiStatus() ? status.getMessage() + ": " : "";
+                message += warning.getMessage();
+            }
+            setErrorMessage(message);
+        }
+
+        /**
 		 * Copies the values on the form to the created object.
 		 * Called when the Finish button pressed.
 		 */

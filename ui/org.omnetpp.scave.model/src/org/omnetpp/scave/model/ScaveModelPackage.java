@@ -1428,6 +1428,115 @@ public interface ScaveModelPackage extends EPackage {
 	int SCATTER_CHART_FEATURE_COUNT = CHART_FEATURE_COUNT + 3;
 
 	/**
+     * The meta object id for the '{@link org.omnetpp.scave.model.impl.ComputeScalarImpl <em>Compute Scalar</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.omnetpp.scave.model.impl.ComputeScalarImpl
+     * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getComputeScalar()
+     * @generated
+     */
+    int COMPUTE_SCALAR = 27;
+
+    /**
+     * The feature id for the '<em><b>Filters</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__FILTERS = DATASET_ITEM_FEATURE_COUNT + 0;
+
+    /**
+     * The feature id for the '<em><b>Scalar Name</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__SCALAR_NAME = DATASET_ITEM_FEATURE_COUNT + 1;
+
+    /**
+     * The feature id for the '<em><b>Value Expr</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__VALUE_EXPR = DATASET_ITEM_FEATURE_COUNT + 2;
+
+    /**
+     * The feature id for the '<em><b>Module Expr</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__MODULE_EXPR = DATASET_ITEM_FEATURE_COUNT + 3;
+
+    /**
+     * The feature id for the '<em><b>Group By Expr</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__GROUP_BY_EXPR = DATASET_ITEM_FEATURE_COUNT + 4;
+
+    /**
+     * The feature id for the '<em><b>Average Replications</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__AVERAGE_REPLICATIONS = DATASET_ITEM_FEATURE_COUNT + 5;
+
+    /**
+     * The feature id for the '<em><b>Compute Stddev</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__COMPUTE_STDDEV = DATASET_ITEM_FEATURE_COUNT + 6;
+
+    /**
+     * The feature id for the '<em><b>Compute Confidence Interval</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__COMPUTE_CONFIDENCE_INTERVAL = DATASET_ITEM_FEATURE_COUNT + 7;
+
+    /**
+     * The feature id for the '<em><b>Confidence Level</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__CONFIDENCE_LEVEL = DATASET_ITEM_FEATURE_COUNT + 8;
+
+    /**
+     * The feature id for the '<em><b>Compute Min Max</b></em>' attribute.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR__COMPUTE_MIN_MAX = DATASET_ITEM_FEATURE_COUNT + 9;
+
+    /**
+     * The number of structural features of the '<em>Compute Scalar</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     * @ordered
+     */
+    int COMPUTE_SCALAR_FEATURE_COUNT = DATASET_ITEM_FEATURE_COUNT + 10;
+
+    /**
      * The meta object id for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -1435,7 +1544,7 @@ public interface ScaveModelPackage extends EPackage {
      * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getResultType()
      * @generated
      */
-	int RESULT_TYPE = 27;
+	int RESULT_TYPE = 28;
 
 
 	/**
@@ -2215,6 +2324,126 @@ public interface ScaveModelPackage extends EPackage {
 	EAttribute getScatterChart_AverageReplications();
 
 	/**
+     * Returns the meta object for class '{@link org.omnetpp.scave.model.ComputeScalar <em>Compute Scalar</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Compute Scalar</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar
+     * @generated
+     */
+    EClass getComputeScalar();
+
+    /**
+     * Returns the meta object for the containment reference list '{@link org.omnetpp.scave.model.ComputeScalar#getFilters <em>Filters</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the containment reference list '<em>Filters</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#getFilters()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EReference getComputeScalar_Filters();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#getScalarName <em>Scalar Name</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Scalar Name</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#getScalarName()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ScalarName();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#getValueExpr <em>Value Expr</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Value Expr</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#getValueExpr()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ValueExpr();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#getModuleExpr <em>Module Expr</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Module Expr</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#getModuleExpr()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ModuleExpr();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#getGroupByExpr <em>Group By Expr</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Group By Expr</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#getGroupByExpr()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_GroupByExpr();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#isAverageReplications <em>Average Replications</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Average Replications</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#isAverageReplications()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_AverageReplications();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#isComputeStddev <em>Compute Stddev</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Compute Stddev</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#isComputeStddev()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ComputeStddev();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#isComputeConfidenceInterval <em>Compute Confidence Interval</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Compute Confidence Interval</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#isComputeConfidenceInterval()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ComputeConfidenceInterval();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#getConfidenceLevel <em>Confidence Level</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Confidence Level</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#getConfidenceLevel()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ConfidenceLevel();
+
+    /**
+     * Returns the meta object for the attribute '{@link org.omnetpp.scave.model.ComputeScalar#isComputeMinMax <em>Compute Min Max</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for the attribute '<em>Compute Min Max</em>'.
+     * @see org.omnetpp.scave.model.ComputeScalar#isComputeMinMax()
+     * @see #getComputeScalar()
+     * @generated
+     */
+    EAttribute getComputeScalar_ComputeMinMax();
+
+    /**
      * Returns the meta object for enum '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}'.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -2885,6 +3114,96 @@ public interface ScaveModelPackage extends EPackage {
 		EAttribute SCATTER_CHART__AVERAGE_REPLICATIONS = eINSTANCE.getScatterChart_AverageReplications();
 
 		/**
+         * The meta object literal for the '{@link org.omnetpp.scave.model.impl.ComputeScalarImpl <em>Compute Scalar</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.omnetpp.scave.model.impl.ComputeScalarImpl
+         * @see org.omnetpp.scave.model.impl.ScaveModelPackageImpl#getComputeScalar()
+         * @generated
+         */
+        EClass COMPUTE_SCALAR = eINSTANCE.getComputeScalar();
+
+        /**
+         * The meta object literal for the '<em><b>Filters</b></em>' containment reference list feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EReference COMPUTE_SCALAR__FILTERS = eINSTANCE.getComputeScalar_Filters();
+
+        /**
+         * The meta object literal for the '<em><b>Scalar Name</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__SCALAR_NAME = eINSTANCE.getComputeScalar_ScalarName();
+
+        /**
+         * The meta object literal for the '<em><b>Value Expr</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__VALUE_EXPR = eINSTANCE.getComputeScalar_ValueExpr();
+
+        /**
+         * The meta object literal for the '<em><b>Module Expr</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__MODULE_EXPR = eINSTANCE.getComputeScalar_ModuleExpr();
+
+        /**
+         * The meta object literal for the '<em><b>Group By Expr</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__GROUP_BY_EXPR = eINSTANCE.getComputeScalar_GroupByExpr();
+
+        /**
+         * The meta object literal for the '<em><b>Average Replications</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__AVERAGE_REPLICATIONS = eINSTANCE.getComputeScalar_AverageReplications();
+
+        /**
+         * The meta object literal for the '<em><b>Compute Stddev</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__COMPUTE_STDDEV = eINSTANCE.getComputeScalar_ComputeStddev();
+
+        /**
+         * The meta object literal for the '<em><b>Compute Confidence Interval</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__COMPUTE_CONFIDENCE_INTERVAL = eINSTANCE.getComputeScalar_ComputeConfidenceInterval();
+
+        /**
+         * The meta object literal for the '<em><b>Confidence Level</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__CONFIDENCE_LEVEL = eINSTANCE.getComputeScalar_ConfidenceLevel();
+
+        /**
+         * The meta object literal for the '<em><b>Compute Min Max</b></em>' attribute feature.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @generated
+         */
+        EAttribute COMPUTE_SCALAR__COMPUTE_MIN_MAX = eINSTANCE.getComputeScalar_ComputeMinMax();
+
+        /**
          * The meta object literal for the '{@link org.omnetpp.scave.model.ResultType <em>Result Type</em>}' enum.
          * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->

@@ -28,6 +28,7 @@ import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.ChartSheet;
 import org.omnetpp.scave.model.ChartSheets;
 import org.omnetpp.scave.model.Compute;
+import org.omnetpp.scave.model.ComputeScalar;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.Datasets;
@@ -248,6 +249,13 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 	/**
      * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    private EClass computeScalarEClass = null;
+
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated
      */
@@ -280,20 +288,10 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 	private static boolean isInited = false;
 
 	/**
-     * Creates, registers, and initializes the <b>Package</b> for this
-     * model, and for any others upon which it depends.  Simple
-     * dependencies are satisfied by calling this method on all
-     * dependent packages before doing anything else.  This method drives
-     * initialization for interdependent packages directly, in parallel
-     * with this package, itself.
-     * <p>Of this package and its interdependencies, all packages which
-     * have not yet been registered by their URI values are first created
-     * and registered.  The packages are then initialized in two steps:
-     * meta-model objects for all of the packages are created before any
-     * are initialized, since one package's meta-model objects may refer to
-     * those of another.
-     * <p>Invocation of this method will not affect any packages that have
-     * already been initialized.
+     * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
+     * 
+     * <p>This method is used to initialize {@link ScaveModelPackage#eINSTANCE} when that field is accessed.
+     * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @see #eNS_URI
@@ -305,7 +303,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         if (isInited) return (ScaveModelPackage)EPackage.Registry.INSTANCE.getEPackage(ScaveModelPackage.eNS_URI);
 
         // Obtain or create and register package
-        ScaveModelPackageImpl theScaveModelPackage = (ScaveModelPackageImpl)(EPackage.Registry.INSTANCE.getEPackage(eNS_URI) instanceof ScaveModelPackageImpl ? EPackage.Registry.INSTANCE.getEPackage(eNS_URI) : new ScaveModelPackageImpl());
+        ScaveModelPackageImpl theScaveModelPackage = (ScaveModelPackageImpl)(EPackage.Registry.INSTANCE.get(eNS_URI) instanceof ScaveModelPackageImpl ? EPackage.Registry.INSTANCE.get(eNS_URI) : new ScaveModelPackageImpl());
 
         isInited = true;
 
@@ -318,6 +316,9 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         // Mark meta-data to indicate it can't be changed
         theScaveModelPackage.freeze();
 
+  
+        // Update the registry and return the package
+        EPackage.Registry.INSTANCE.put(ScaveModelPackage.eNS_URI, theScaveModelPackage);
         return theScaveModelPackage;
     }
 
@@ -980,6 +981,105 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
 	/**
      * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EClass getComputeScalar() {
+        return computeScalarEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getComputeScalar_Filters() {
+        return (EReference)computeScalarEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ScalarName() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ValueExpr() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(2);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ModuleExpr() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(3);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_GroupByExpr() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(4);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_AverageReplications() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(5);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ComputeStddev() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(6);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ComputeConfidenceInterval() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(7);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ConfidenceLevel() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(8);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EAttribute getComputeScalar_ComputeMinMax() {
+        return (EAttribute)computeScalarEClass.getEStructuralFeatures().get(9);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated
      */
@@ -1115,6 +1215,18 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         createEAttribute(scatterChartEClass, SCATTER_CHART__ISO_DATA_PATTERN);
         createEAttribute(scatterChartEClass, SCATTER_CHART__AVERAGE_REPLICATIONS);
 
+        computeScalarEClass = createEClass(COMPUTE_SCALAR);
+        createEReference(computeScalarEClass, COMPUTE_SCALAR__FILTERS);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__SCALAR_NAME);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__VALUE_EXPR);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__MODULE_EXPR);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__GROUP_BY_EXPR);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__AVERAGE_REPLICATIONS);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__COMPUTE_STDDEV);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__COMPUTE_CONFIDENCE_INTERVAL);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__CONFIDENCE_LEVEL);
+        createEAttribute(computeScalarEClass, COMPUTE_SCALAR__COMPUTE_MIN_MAX);
+
         // Create enums
         resultTypeEEnum = createEEnum(RESULT_TYPE);
     }
@@ -1163,6 +1275,7 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         lineChartEClass.getESuperTypes().add(this.getChart());
         histogramChartEClass.getESuperTypes().add(this.getChart());
         scatterChartEClass.getESuperTypes().add(this.getChart());
+        computeScalarEClass.getESuperTypes().add(this.getDatasetItem());
 
         // Initialize classes and features; add operations and parameters
         initEClass(datasetEClass, Dataset.class, "Dataset", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -1264,6 +1377,18 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         initEAttribute(getScatterChart_XDataPattern(), ecorePackage.getEString(), "xDataPattern", null, 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getScatterChart_IsoDataPattern(), ecorePackage.getEString(), "isoDataPattern", null, 0, -1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
         initEAttribute(getScatterChart_AverageReplications(), ecorePackage.getEBoolean(), "averageReplications", "true", 0, 1, ScatterChart.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+        initEClass(computeScalarEClass, ComputeScalar.class, "ComputeScalar", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getComputeScalar_Filters(), this.getSelectDeselectOp(), null, "filters", null, 0, -1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ScalarName(), ecorePackage.getEString(), "scalarName", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ValueExpr(), ecorePackage.getEString(), "valueExpr", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ModuleExpr(), ecorePackage.getEString(), "moduleExpr", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_GroupByExpr(), ecorePackage.getEString(), "groupByExpr", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_AverageReplications(), ecorePackage.getEBoolean(), "averageReplications", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ComputeStddev(), ecorePackage.getEBoolean(), "computeStddev", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ComputeConfidenceInterval(), ecorePackage.getEBoolean(), "computeConfidenceInterval", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ConfidenceLevel(), ecorePackage.getEDoubleObject(), "confidenceLevel", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEAttribute(getComputeScalar_ComputeMinMax(), ecorePackage.getEBoolean(), "computeMinMax", null, 0, 1, ComputeScalar.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Initialize enums and add enum literals
         initEEnum(resultTypeEEnum, ResultType.class, "ResultType");

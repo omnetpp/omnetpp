@@ -49,6 +49,21 @@
 
 USING_NAMESPACE
 
+ResultItem& ResultItem::operator=(const ResultItem &rhs)
+{
+    if (this == &rhs)
+        return *this;
+
+    fileRunRef = rhs.fileRunRef;
+    moduleNameRef = rhs.moduleNameRef;
+    nameRef = rhs.nameRef;
+    attributes = rhs.attributes;
+    if (computation)
+        delete computation;
+    computation = rhs.computation ? rhs.computation->dup() : NULL;
+    return *this;
+}
+
 ResultItem::Type ResultItem::getType() const
 {
     StringMap::const_iterator it = attributes.find("type");
@@ -121,6 +136,7 @@ void HistogramResult::addBin(double lower_bound, double value)
 
 ResultFileManager::ResultFileManager()
 {
+    computedScalarFile = NULL;
 }
 
 ResultFileManager::~ResultFileManager()
@@ -365,7 +381,7 @@ void ResultFileManager::collectIDs(IDList &out, std::vector<T> ResultFile::* vec
                 bool isField = type == SCALAR ? ((ScalarResult&)v[i]).isField : false;
 
                 if ((!isField || includeFields) && (!isComputed || includeComputed))
-                    out.uncheckedAdd(_mkID(false, isField, type, k, i));
+                    out.uncheckedAdd(_mkID(isComputed, isField, type, k, i));
             }
         }
     }
@@ -674,6 +690,39 @@ IDList ResultFileManager::filterIDList(const IDList& idlist,
     return out;
 }
 
+IDList ResultFileManager::filterIDList(const IDList &idlist, const char *runName, const char *moduleName, const char *name) const
+{
+    READER_MUTEX
+
+    // iterate over all values and add matching ones to "out".
+    // we can exploit the fact that ResultFileManager contains the data in the order
+    // they were read from file, i.e. grouped by runs
+    IDList result;
+    FileRun *lastFileRunRef = NULL;
+    bool lastFileRunMatched = false;
+    int sz = idlist.size();
+    for (int i=0; i<sz; i++)
+    {
+        ID id = idlist.get(i);
+        const ResultItem& d = getItem(id);
+
+        if (runName && d.fileRunRef->runRef->runName != runName)
+            continue;
+
+        if (moduleName && (*d.moduleNameRef) != moduleName)
+            continue;
+
+        if (name && (*d.nameRef != name))
+            continue;
+
+        // everything matched, insert it.
+        // (note: uncheckedAdd() is fine: if input IDList didn't contain duplicates,
+        // the result won't either)
+        result.uncheckedAdd(id);
+    }
+    return result;
+}
+
 class MatchableResultItem : public MatchExpression::Matchable
 {
     const ResultItem& item;
@@ -761,10 +810,9 @@ ResultFile *ResultFileManager::addFile(const char *fileName, const char *fileSys
     return file;
 }
 
-Run *ResultFileManager::addRun()
+Run *ResultFileManager::addRun(bool computed)
 {
-    Run *run = new Run();
-    run->resultFileManager = this;
+    Run *run = new Run(computed, this);
     run->runNumber = 0;
     runList.push_back(run);
     return run;
@@ -826,7 +874,7 @@ int ResultFileManager::addHistogram(FileRun *fileRunRef, const char *moduleName,
 
 // create a file for each dataset?
 ID ResultFileManager::addComputedVector(int vectorId, const char *name, const char *file,
-        const StringMap &attributes, ComputationID computationID, ID input, ComputationNode computation)
+        const StringMap &attributes, ComputationID computationID, ID input, IComputation *computation)
 {
     WRITER_MUTEX
 
@@ -867,6 +915,67 @@ ID ResultFileManager::getComputedID(ComputationID computationID, ID input) const
       return it->second;
     else
         return -1;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+// Computed Scalars
+//---------------------------------------------------------------------------------------------------------------------
+
+ID ResultFileManager::addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap &attributes, IComputation *node)
+{
+    WRITER_MUTEX
+
+    if (!computedScalarFile)
+        computedScalarFile = addFile("", "", true);
+    Run *run = getRunByName(runName);
+    if (!run)
+    {
+        run = addRun(true);
+        run->runName = runName;
+        run->attributes = attributes;
+    }
+    FileRun *fileRun = getFileRun(computedScalarFile, run);
+    if (!fileRun)
+        fileRun = addFileRun(computedScalarFile, run);
+
+    ScalarResult scalar;
+    scalar.nameRef = computedScalarNames.insert(name);
+    scalar.moduleNameRef = computedModuleNames.insert(module);
+    scalar.fileRunRef = fileRun;
+    scalar.computation = node;
+    scalar.isField = false;
+    scalar.value = value;
+
+    int id = computedScalarFile->scalarResults.size();
+    computedScalarFile->scalarResults.push_back(scalar);
+    return _mkID(true, false, SCALAR, computedScalarFile->id, id);
+}
+
+IDList ResultFileManager::getComputedScalarIDs(const IComputation *node) const
+{
+   READER_MUTEX
+
+   IDList result;
+   if (computedScalarFile && node)
+   {
+       const ScalarResults &scalars = computedScalarFile->scalarResults;
+       for (int i = 0; i < (int)scalars.size(); ++i)
+       {
+           const ScalarResult &scalar = scalars[i];
+           if ((*scalar.computation) == (*node))
+               result.add(_mkID(true, false, SCALAR, computedScalarFile->id, i));
+       }
+   }
+   return result;
+}
+
+
+void ResultFileManager::clearComputedScalars()
+{
+    WRITER_MUTEX
+
+    if (computedScalarFile)
+        unloadFile(computedScalarFile);
 }
 
 /*
@@ -916,7 +1025,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
         if (!runRef)
         {
             // not yet: add it
-            runRef = addRun();
+            runRef = addRun(false);
             runRef->runName = vec[1];
         }
         // associate Run with this file
@@ -942,7 +1051,7 @@ void ResultFileManager::processLine(char **vec, int numTokens, sParseContext &ct
     if (ctx.fileRunRef==NULL)
     {
         // fake a new Run
-        Run *runRef = addRun();
+        Run *runRef = addRun(false);
         ctx.fileRunRef = addFileRun(ctx.fileRef, runRef);
         runRef->runNumber = 0;
 
@@ -1211,7 +1320,7 @@ void ResultFileManager::loadVectorsFromIndex(const char *filename, ResultFile *f
     Run *runRef = getRunByName(index->run.runName.c_str());
     if (!runRef)
     {
-        runRef = addRun();
+        runRef = addRun(false);
         runRef->runName = index->run.runName;
     }
     runRef->runNumber = index->run.runNumber;
@@ -1273,6 +1382,14 @@ void ResultFileManager::unloadFile(ResultFile *file)
             fileRunList.erase(fileRunList.begin()+i);
             i--;
         }
+    }
+
+    // Computed names only refered from computedScalarFile, so clear them now.
+    if (file == computedScalarFile)
+    {
+        computedScalarFile = NULL;
+        computedScalarNames.clear();
+        computedModuleNames.clear();
     }
 
     // delete ResultFile entry. Note that the fileList array will have a hole.

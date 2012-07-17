@@ -566,6 +566,29 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
 	/**
+     * This keeps track of the one adapter used for all {@link org.omnetpp.scave.model.ComputeScalar} instances.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    protected ComputeScalarItemProvider computeScalarItemProvider;
+
+    /**
+     * This creates an adapter for a {@link org.omnetpp.scave.model.ComputeScalar}.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    public Adapter createComputeScalarAdapter() {
+        if (computeScalarItemProvider == null) {
+            computeScalarItemProvider = new ComputeScalarItemProvider(this);
+        }
+
+        return computeScalarItemProvider;
+    }
+
+    /**
      * This returns the root adapter factory that contains this factory.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -615,7 +638,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
 	public Object adapt(Object object, Object type) {
         if (isFactoryForType(type)) {
             Object adapter = super.adapt(object, type);
-            if (!(type instanceof Class) || (((Class<?>)type).isInstance(adapter))) {
+            if (!(type instanceof Class<?>) || (((Class<?>)type).isInstance(adapter))) {
                 return adapter;
             }
         }
@@ -658,7 +681,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
     }
 
 	/**
-     * This disposes all of the item providers created by this factory.
+     * This disposes all of the item providers created by this factory. 
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
      * @generated
@@ -685,6 +708,7 @@ public class ScaveModelItemProviderAdapterFactory extends ScaveModelAdapterFacto
         if (lineChartItemProvider != null) lineChartItemProvider.dispose();
         if (histogramChartItemProvider != null) histogramChartItemProvider.dispose();
         if (scatterChartItemProvider != null) scatterChartItemProvider.dispose();
+        if (computeScalarItemProvider != null) computeScalarItemProvider.dispose();
     }
 
 }

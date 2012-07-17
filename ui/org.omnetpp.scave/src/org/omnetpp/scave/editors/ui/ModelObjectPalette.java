@@ -32,10 +32,12 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.editors.ScaveEditor;
 import org.omnetpp.scave.engine.ResultFileManager;
@@ -76,6 +78,7 @@ public class ModelObjectPalette {
 		addToolItem(parent, factory.createDiscard(), labelProvider);
 		addToolItem(parent, factory.createApply(), labelProvider);
 		addToolItem(parent, factory.createCompute(), labelProvider);
+		addToolItem(parent, factory.createComputeScalar(), labelProvider);
 		addToolItem(parent, factory.createGroup(), labelProvider);
 		addSeparator(parent);
 		addToolItem(parent, factory.createSelect(), labelProvider);
@@ -162,25 +165,30 @@ public class ModelObjectPalette {
 			// add "element" to "target" as child or as sibling.
 			final EObject element = EcoreUtil.copy(elementPrototype);
 			Command command = AddCommand.create(editor.getEditingDomain(), target, null, element);
+			NewScaveObjectWizard wizard = null;
 			if (command.canExecute()) {
 				// try to add as child
-				NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, target, target.eContents().size(), element);
-				WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
-				if (dialog.open() == Window.OK)
-					editor.executeCommand(command);
+				wizard = new NewScaveObjectWizard(editor, target, target.eContents().size(), element);
 			}
 			else {
 				// add as sibling
 				EObject parent = target.eContainer();
 				int index = ECollections.indexOf(parent.eContents(), target, 0) + 1;  //+1: *after* selected element
 				command = AddCommand.create(editor.getEditingDomain(), parent, null, element, index);
-
 				if (command.canExecute()) {
-					NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent, index, element);
-					WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
-					if (dialog.open() == Window.OK)
-						editor.executeCommand(command);
+					wizard = new NewScaveObjectWizard(editor, parent, index, element);
 				}
+			}
+
+			if (wizard != null) {
+                WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard) {
+                    @Override
+                    protected Point getInitialSize() {
+                        return getShell().computeSize(800, SWT.DEFAULT, true);
+                    }
+                };
+                if (dialog.open() == Window.OK)
+                    editor.executeCommand(command);
 			}
 
 			// if it got inserted (has parent now), select it in the viewer.
@@ -215,11 +223,11 @@ public class ModelObjectPalette {
 		if (c == e.getDiscard())
 			return "Discard operations remove (a subset of) previously added scalars, vectors or histograms from the dataset.";
 		if (c == e.getApply())
-			return "An Apply operation replaces (a subset of the) data in the dataset with the result of some transformation. " +
-					"Currently all operations operate on vector data only."; //XXX implement scalar operations
+			return "An Apply operation replaces (a subset of the) vectors in the dataset with the result of some transformation.";
 		if (c == e.getCompute())
-			return "A Compute operation performs a calculation on (a subset of the) data in the dataset, and adds the result to the dataset. " +
-					"Currently all operations operate on vector data only."; //XXX implement scalar operations
+			return "A Compute operation performs a calculation on (a subset of the) vectors in the dataset, and adds the result to the dataset.";
+		if (c == e.getComputeScalar())
+		    return "A Compute Scalar operation performs a calculation on (a subset of the) data in the dataset, and adds the scalar results to the dataset";
 		if (c == e.getGroup())
 			return "A Group object creates a local copy of the dataset (conceptually), and lets you apply various processing steps without affecting the dataset's main flow.";
 

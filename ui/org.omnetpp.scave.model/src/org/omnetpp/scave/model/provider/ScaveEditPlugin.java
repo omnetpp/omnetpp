@@ -96,7 +96,7 @@ public final class ScaveEditPlugin extends EMFPlugin {
          */
 		public Implementation() {
             super();
-
+    
             // Remember the static instance.
             //
             plugin = this;

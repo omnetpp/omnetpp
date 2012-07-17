@@ -28,7 +28,7 @@ import org.omnetpp.scave.model2.FilterHints;
  *
  * @author tomi
  */
-public class ExceptEditForm implements IScaveObjectEditForm {
+public class ExceptEditForm extends BaseScaveObjectEditForm {
 
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getExcept_FilterPattern(),
@@ -55,17 +55,10 @@ public class ExceptEditForm implements IScaveObjectEditForm {
 	private Text filterText;
 
 	public ExceptEditForm(Except except, EObject parent, ResultFileManager manager) {
+	    super(except, parent);
 		this.except = except;
 		this.parent = parent;
 		this.manager = manager;
-	}
-
-	public String getTitle() {
-		return String.format("Except operation");
-	}
-
-	public String getDescription() {
-		return "Modify the properties of the operation.";
 	}
 
 	public EStructuralFeature[] getFeatures() {

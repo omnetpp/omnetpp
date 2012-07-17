@@ -83,6 +83,10 @@ class SCAVE_API IDList
         bool areAllScalars() const;
         bool areAllVectors() const;
         bool areAllHistograms() const;
+
+        // filtering
+        IDList filterByTypes(int typeMask) const;
+
         // sorting
         // TODO: there's a duplication between vector and histogram sorting due to not having a proper superclass with the statistics inside
         void sortByFileAndRun(ResultFileManager *mgr, bool ascending);

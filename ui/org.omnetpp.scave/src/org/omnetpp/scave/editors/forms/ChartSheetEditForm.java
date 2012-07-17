@@ -34,7 +34,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public class ChartSheetEditForm implements IScaveObjectEditForm {
+public class ChartSheetEditForm extends BaseScaveObjectEditForm {
 
 	/**
 	 * Features edited on this form.
@@ -66,23 +66,10 @@ public class ChartSheetEditForm implements IScaveObjectEditForm {
 	};
 
 	public ChartSheetEditForm(ChartSheet chartSheet, EObject parent) {
+	    super(chartSheet, parent);
 		//this.chartSheet = chartSheet;
 		allCharts = ScaveModelUtil.findObjects(parent.eResource(), Chart.class);
 		Collections.sort(allCharts, comparator);
-	}
-
-	/**
-	 * Returns the title displayed on the top of the dialog.
-	 */
-	public String getTitle() {
-		return "Chart sheet";
-	}
-
-	/**
-	 * Returns the description displayed below the title.
-	 */
-	public String getDescription() {
-		return "Modify properties and content of a chart sheet.";
 	}
 
 	/**

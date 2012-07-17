@@ -134,6 +134,16 @@
            pattern="*.vci"
            selected="false"/>
   </extension>
+
+  <extension id="analysisfileproblem" point="org.eclipse.core.resources.markers" name="Analysis File Problem">
+    <super type="org.eclipse.core.resources.problemmarker"/>
+    <persistent value="false"/>
+  </extension>
+  <extension id="computescalarproblem" point="org.eclipse.core.resources.markers" name="Compute Scalars Problem">
+    <super type="org.omnetpp.scave.analysisfileproblem"/>
+    <persistent value="false"/>
+  </extension>
+
   <extension
          point="org.eclipse.ui.perspectiveExtensions">
      <perspectiveExtension

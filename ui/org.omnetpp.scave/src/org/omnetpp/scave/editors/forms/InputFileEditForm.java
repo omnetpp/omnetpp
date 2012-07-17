@@ -23,7 +23,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *
  * @author tomi
  */
-public class InputFileEditForm implements IScaveObjectEditForm {
+public class InputFileEditForm extends BaseScaveObjectEditForm {
 
 	/**
 	 * Features edited on this panel.
@@ -41,21 +41,8 @@ public class InputFileEditForm implements IScaveObjectEditForm {
 	private Text nameText;
 
 	public InputFileEditForm(InputFile inputFile, EObject parent) {
+	    super(inputFile, parent);
 		//this.inputFile = inputFile;
-	}
-
-	/**
-	 * Returns the title displayed on the top of the dialog.
-	 */
-	public String getTitle() {
-		return "Input file";
-	}
-
-	/**
-	 * Returns the description displayed below the title.
-	 */
-	public String getDescription() {
-		return "Modify input file properties.";
 	}
 
 	/**

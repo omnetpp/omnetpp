@@ -17,6 +17,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.BaseLabelProvider;
@@ -27,7 +28,10 @@ import org.eclipse.jface.viewers.LabelProviderChangedEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.scave.Markers;
+import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.InputFile;
+import org.omnetpp.scave.model2.ScaveModelUtil;
 
 /**
  * Decorates icons according to the markers on the associated resource.
@@ -53,21 +57,30 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
     }
 
 	public Image decorateImage(Image image, Object element) {
+	    int severity = -1;
 		if (element instanceof InputFile) {
 			InputFile inputFile = (InputFile)element;
 			String resourcePath = inputFile.getName();
 			if (resourcePath != null && !containsWildcard(resourcePath)) {
 				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 				IResource resource = root.findMember(resourcePath);
-				if (resource instanceof IFile) {
-					IFile file = (IFile)resource;
-					int severity = maxSeverityLevel(file);
-					DecorationOverlayIcon decoratedIcon = createDecoratedIcon(image, severity);
-					if (decoratedIcon != null)
-						return resourceManager.createImage(decoratedIcon);
-				}
+				if (resource instanceof IFile)
+					severity = maxSeverityLevel((IFile)resource);
 			}
 		}
+        else if (element instanceof DatasetItem) {
+            DatasetItem datasetItem = (DatasetItem)element;
+            IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
+            if (file != null && hasError(file, datasetItem))
+                severity = IMarker.SEVERITY_ERROR;
+        }
+
+        if (severity != -1) {
+            DecorationOverlayIcon decoratedIcon = createDecoratedIcon(image, severity);
+            if (decoratedIcon != null)
+                return resourceManager.createImage(decoratedIcon);
+        }
+
 		return null;
 	}
 
@@ -95,6 +108,19 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         }
         return maxLevel;
 	}
+
+    private boolean hasError(IFile file, EObject object) {
+        try {
+            IMarker problems[] = file.findMarkers(Markers.ANALYSISFILE_PROBLEMMARKER_ID, true, IResource.DEPTH_ZERO);
+            for (IMarker problem : problems) {
+                if (problem.getAttribute(Markers.EOBJECT_MARKERATTR_ID) == object)
+                    return true;
+            }
+            return false;
+        } catch (CoreException e) {
+            return false;
+        }
+    }
 
 	private DecorationOverlayIcon createDecoratedIcon(Image base, int severity) {
 		if (severity == IMarker.SEVERITY_ERROR)

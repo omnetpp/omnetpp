@@ -141,6 +141,16 @@ public class GroupItemProvider
     }
 
 	/**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected boolean shouldComposeCreationImage() {
+        return true;
+    }
+
+    /**
      * This returns the label text for the adapted class.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -231,6 +241,11 @@ public class GroupItemProvider
             (createChildParameter
                 (ScaveModelPackage.Literals.GROUP__ITEMS,
                  ScaveModelFactory.eINSTANCE.createScatterChart()));
+
+        newChildDescriptors.add
+            (createChildParameter
+                (ScaveModelPackage.Literals.GROUP__ITEMS,
+                 ScaveModelFactory.eINSTANCE.createComputeScalar()));
     }
 
 }

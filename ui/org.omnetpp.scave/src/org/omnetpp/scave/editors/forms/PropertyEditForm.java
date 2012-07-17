@@ -23,7 +23,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  *
  * @author andras
  */
-public class PropertyEditForm implements IScaveObjectEditForm {
+public class PropertyEditForm extends BaseScaveObjectEditForm {
 
 	/**
 	 * Features edited on this panel.
@@ -43,21 +43,8 @@ public class PropertyEditForm implements IScaveObjectEditForm {
 	private Text valueText;
 
 	public PropertyEditForm(Property property, EObject parent) {
+	    super(property, parent);
 		//this.property = property;
-	}
-
-	/**
-	 * Returns the title displayed on the top of the dialog.
-	 */
-	public String getTitle() {
-		return "Property";
-	}
-
-	/**
-	 * Returns the description displayed below the title.
-	 */
-	public String getDescription() {
-		return "Modify Property";
 	}
 
 	/**

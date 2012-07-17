@@ -123,6 +123,16 @@ public class ChartSheetsItemProvider
     }
 
 	/**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @Override
+    protected boolean shouldComposeCreationImage() {
+        return true;
+    }
+
+    /**
      * This returns the label text for the adapted class.
      * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -167,34 +177,6 @@ public class ChartSheetsItemProvider
             (createChildParameter
                 (ScaveModelPackage.Literals.CHART_SHEETS__CHART_SHEETS,
                  ScaveModelFactory.eINSTANCE.createChartSheet()));
-    }
-
-	/**
-     * This returns the icon image for {@link org.eclipse.emf.edit.command.CreateChildCommand}.
-     * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-     * @generated
-     */
-	@Override
-	public Object getCreateChildImage(Object owner, Object feature, Object child, Collection<?> selection) {
-        if (feature instanceof EStructuralFeature && FeatureMapUtil.isFeatureMap((EStructuralFeature)feature)) {
-            FeatureMap.Entry entry = (FeatureMap.Entry)child;
-            feature = entry.getEStructuralFeature();
-            child = entry.getValue();
-        }
-
-        if (feature instanceof EReference && child instanceof EObject) {
-            String name = "full/obj16/" + ((EObject)child).eClass().getName();
-
-            try {
-                return getResourceLocator().getImage(name);
-            }
-            catch (Exception e) {
-                ScaveEditPlugin.INSTANCE.log(e);
-            }
-        }
-
-        return super.getCreateChildImage(owner, feature, child, selection);
     }
 
 	/**

@@ -531,31 +531,27 @@ public class DataTable extends Table implements IDataControl {
 					return String.valueOf(vector.getVectorId());
 				}
 				else if (COL_COUNT.equals(column)) {
-					int count = vector.getCount();
+					int count = vector.getStatistics().getCount();
 					return count >= 0 ? String.valueOf(count) : "n.a.";
 				}
 				else if (COL_MEAN.equals(column)) {
-					double mean = vector.getMean();
+					double mean = vector.getStatistics().getMean();
 					return Double.isNaN(mean) ? "n.a." : String.valueOf(mean);
 				}
 				else if (COL_STDDEV.equals(column)) {
-					double stddev = vector.getStddev();
+					double stddev = vector.getStatistics().getStddev();
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
-                else if (COL_STDDEV.equals(column)) {
-                    double variance = vector.getVariance();
-                    return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
-                }
                 else if (COL_VARIANCE.equals(column)) {
-                    double variance = vector.getVariance();
+                    double variance = vector.getStatistics().getVariance();
                     return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
                 }
 				else if (COL_MIN.equals(column)) {
-					double min = vector.getMin();
+					double min = vector.getStatistics().getMin();
 					return Double.isNaN(min) ? "n.a." : String.valueOf(min);
 				}
 				else if (COL_MAX.equals(column)) {
-					double max = vector.getMax();
+					double max = vector.getStatistics().getMax();
 					return Double.isNaN(max) ? "n.a." : String.valueOf(max);
 				}
 				else if (COL_MIN_TIME.equals(column)) {
@@ -570,27 +566,27 @@ public class DataTable extends Table implements IDataControl {
 			else if (type == ResultType.HISTOGRAM_LITERAL) {
 				HistogramResult histogram = (HistogramResult)result;
 				if (COL_COUNT.equals(column)) {
-					int count = histogram.getCount();
+					int count = histogram.getStatistics().getCount();
 					return count >= 0 ? String.valueOf(count) : "n.a.";
 				}
 				else if (COL_MEAN.equals(column)) {
-					double mean = histogram.getMean();
+					double mean = histogram.getStatistics().getMean();
 					return Double.isNaN(mean) ? "n.a." : String.valueOf(mean);
 				}
 				else if (COL_STDDEV.equals(column)) {
-					double stddev = histogram.getStddev();
+					double stddev = histogram.getStatistics().getStddev();
 					return Double.isNaN(stddev) ? "n.a." : String.valueOf(stddev);
 				}
                 else if (COL_VARIANCE.equals(column)) {
-                    double variance = histogram.getVariance();
+                    double variance = histogram.getStatistics().getVariance();
                     return Double.isNaN(variance) ? "n.a." : String.valueOf(variance);
                 }
 				else if (COL_MIN.equals(column)) {
-					double min = histogram.getMin();
+					double min = histogram.getStatistics().getMin();
 					return Double.isNaN(min) ? "n.a." : String.valueOf(min);
 				}
 				else if (COL_MAX.equals(column)) {
-					double max = histogram.getMax();
+					double max = histogram.getStatistics().getMax();
 					return Double.isNaN(max) ? "n.a." : String.valueOf(max);
 				}
 			}

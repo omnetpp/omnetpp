@@ -47,7 +47,17 @@ class ResultFileManager;
 typedef std::map<std::string, std::string> StringMap;
 
 typedef int64 ComputationID;
-typedef void* ComputationNode;
+
+struct SCAVE_API IComputation {
+    IComputation() {}
+    virtual ~IComputation() {}
+    virtual IComputation *dup() = 0;
+    virtual bool operator==(const IComputation &other) const = 0;
+    virtual bool operator!=(const IComputation &other) const { return !(*this == other);}
+private:
+    IComputation(const IComputation &); // unimplemented
+    IComputation &operator=(const IComputation &); // unimplemented
+};
 
 /**
  * Item in an output scalar or output vector file. Represents common properties
@@ -61,9 +71,14 @@ struct SCAVE_API ResultItem
     const std::string *moduleNameRef; // points into ResultFileManager's StringSet
     const std::string *nameRef; // scalarname or vectorname; points into ResultFileManager's StringSet
     StringMap attributes; // metadata in key/value form
-    ComputationNode computation;
+    IComputation *computation;
 
     ResultItem() : fileRunRef(NULL), moduleNameRef(NULL), nameRef(NULL), computation(NULL) {}
+    ResultItem(const ResultItem &o)
+        : fileRunRef(o.fileRunRef), moduleNameRef(o.moduleNameRef), nameRef(o.nameRef),
+          attributes(o.attributes), computation(o.computation ? o.computation->dup() : NULL) {}
+    ResultItem& operator=(const ResultItem &rhs);
+    virtual ~ResultItem() { delete computation; }
 
     const char *getAttribute(const char *attrName) const {
         StringMap::const_iterator it = attributes.find(attrName);
@@ -109,12 +124,7 @@ struct SCAVE_API VectorResult : public ResultItem
 
     VectorResult() : vectorId(-1), startEventNum(-1), endEventNum(-1), startTime(0.0), endTime(0.0) {}
 
-    long getCount()      const { return stat.getCount(); }
-    double getMin()      const { return stat.getMin(); }
-    double getMax()      const { return stat.getMax(); }
-    double getMean()     const { return stat.getMean(); }
-    double getVariance() const { return stat.getVariance(); }
-    double getStddev()   const { return stat.getStddev(); }
+    Statistics getStatistics() const { return stat; }
 
     /**
      * Returns the value of the "interpolation-mode" attribute as an InterpolationMode,
@@ -133,12 +143,7 @@ struct SCAVE_API HistogramResult : public ResultItem
     std::vector<double> bins;
     std::vector<double> values;
 
-    long getCount()      const { return stat.getCount(); }
-    double getMin()      const { return stat.getMin(); }
-    double getMax()      const { return stat.getMax(); }
-    double getMean()     const { return stat.getMean(); }
-    double getVariance() const { return stat.getVariance(); }
-    double getStddev()   const { return stat.getStddev(); }
+    Statistics getStatistics() const { return stat; }
 
     void addBin(double lower_bound, double value);
 };
@@ -187,6 +192,10 @@ struct SCAVE_API Run
 
     // module parameters: maps wildcard pattern to value
     StringMap moduleParams;
+
+    bool computed;
+
+    Run(bool computed, ResultFileManager *manager) : resultFileManager(manager), computed(computed) {}
 
     // utility methods to non-disruptive access to the maps (note that evaluating
     // attributes["nonexisting-key"] would create a blank entry with that key!)
@@ -257,6 +266,10 @@ class SCAVE_API ResultFileManager
     StringPool names;
     StringPool classNames; // currently not used
 
+    ResultFile *computedScalarFile; // this computed file contains all computed scalars
+    StringPool computedModuleNames; // computed modules, cleared when the computed scalar file is unloaded
+    StringPool computedScalarNames; // computed scalar names, cleared when the computed scalar file is unloaded
+
     ComputedIDCache computedIDCache;
 #ifdef THREADED
     ReentrantReadWriteLock lock;
@@ -312,7 +325,7 @@ class SCAVE_API ResultFileManager
 
     // utility functions called while loading a result file
     ResultFile *addFile(const char *fileName, const char *fileSystemFileName, bool computed);
-    Run *addRun();
+    Run *addRun(bool computed);
     FileRun *addFileRun(ResultFile *file, Run *run);  // associates a ResultFile with a Run
 
     void processLine(char **vec, int numTokens, sParseContext &ctx);
@@ -396,15 +409,27 @@ class SCAVE_API ResultFileManager
     IDList filterIDList(const IDList &idlist, const char *pattern) const;
 
     /**
+     * Get a filtered subset of the input set.
+     * All three filter parameters may be null, if given they are
+     * matched exactly.
+     */
+    IDList filterIDList(const IDList &idlist, const char *runName, const char *moduleName, const char *name) const;
+
+    /**
      * Checks that the given pattern is syntactically correct.
      * If not, an exception is thrown, with a (more-or-less useful)
      * message.
      */
     static void checkPattern(const char *pattern);
 
-    // computed data
+    // computed vectors
     ID getComputedID(ComputationID computationID, ID inputID) const;
-    ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap &attributes, ComputationID computationID, ID inputID, ComputationNode node);
+    ID addComputedVector(int vectorId, const char *name, const char *file, const StringMap &attributes, ComputationID computationID, ID inputID, IComputation *node);
+    // computedScalars
+    ResultFile *getComputedScalarFile() const { return computedScalarFile; }
+    IDList getComputedScalarIDs(const IComputation *node) const;
+    ID addComputedScalar(const char *name, const char *module, const char *runName, double value, const StringMap &attributes, IComputation *node);
+    void clearComputedScalars();
 
     /**
      * loading files. fileName is the file path in the Eclipse workspace;

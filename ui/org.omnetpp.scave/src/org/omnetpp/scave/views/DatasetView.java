@@ -71,9 +71,13 @@ import org.omnetpp.scave.editors.treeproviders.ScaveModelLabelProvider;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.AddDiscardOp;
+import org.omnetpp.scave.model.Apply;
 import org.omnetpp.scave.model.BarChart;
+import org.omnetpp.scave.model.Compute;
+import org.omnetpp.scave.model.ComputeScalar;
 import org.omnetpp.scave.model.Dataset;
 import org.omnetpp.scave.model.DatasetItem;
 import org.omnetpp.scave.model.HistogramChart;
@@ -272,17 +276,22 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			ScaveEditor scaveEditor = (ScaveEditor)editor;
 			scaveEditor.getResultFileManager().addChangeListener(resultFilesChangeListener =
 				new IResultFilesChangeListener() {
-				public void resultFileManagerChanged(ResultFileManager manager) {
-					if (scheduledUpdate == null) {
-						scheduledUpdate = new Runnable() {
-							public void run() {
-								scheduledUpdate = null;
-								updateDataControl();
-							}
-						};
-						Display.getDefault().asyncExec(scheduledUpdate);
-					}
-				}
+                    public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
+                        switch (event.getChangeType()) {
+                        case LOAD:
+                        case UNLOAD:
+                        case COMPUTED_SCALARS_CLEARED:
+                            if (scheduledUpdate == null) {
+                                scheduledUpdate = new Runnable() {
+                                    public void run() {
+                                        scheduledUpdate = null;
+                                        updateDataControl();
+                                    }
+                                };
+                                Display.getDefault().asyncExec(scheduledUpdate);
+                            }
+                        }
+                    }
 			});
 
 			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
@@ -390,7 +399,7 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 			else {
                 tabFolder.setResultFileManager(null);
 				labelProvider = null;
-				showMessage("No active scave editor.");
+				showMessage("No active Analysis Editor.");
 			}
 		}
 	}
@@ -406,8 +415,8 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 	}
 
     private void setActivePanel(DatasetItem item) {
+        // determine type of selected item, if we can
         ResultType type = null;
-
         if (item instanceof AddDiscardOp)
             type = ((AddDiscardOp)item).getType();
         else if (item instanceof BarChart || item instanceof ScatterChart)
@@ -416,39 +425,28 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             type = ResultType.VECTOR_LITERAL;
         else if (item instanceof HistogramChart)
             type = ResultType.HISTOGRAM_LITERAL;
-// TODO:
-//        else if (item instanceof Group)
-//            type = ;
-//        else if (item instanceof Apply)
-//            type = ((Apply)item).;
-//        else if (item instanceof Compute)
-//            type = ((Compute)item).;
+        else if (item instanceof Apply)
+            type = ResultType.VECTOR_LITERAL;
+        else if (item instanceof Compute)
+            type = ResultType.VECTOR_LITERAL;
+        else if (item instanceof ComputeScalar)
+            type = ResultType.SCALAR_LITERAL;
 
+        // if we figured out the type, switch to its tab, otherwise just stay on the current tab
         if (type != null)
             tabFolder.setActivePanel(type);
-        else
-            tabFolder.setActivePanel(tabFolder.getAllPanel());
     }
 
 	private void updateContentDescription() {
 		if (labelProvider != null && selectedDataset != null) {
-			ResultType visibleType = tabFolder.getActivePanelType();
-			String type = (visibleType == ResultType.SCALAR_LITERAL ? "scalars" :
-				 		   visibleType == ResultType.VECTOR_LITERAL ? "vectors" :
-				 		   visibleType == ResultType.HISTOGRAM_LITERAL ? "histograms" : null);
+            String datasetName = labelProvider.getText(selectedDataset);
 
-			String desc = "";
-			if (type != null)
-				desc += type;
-			if (selectedItem != null) {
-				if (desc.length() > 0) desc += " at ";
-				desc += "'" + labelProvider.getText(selectedItem) + "'";
-			}
-			if (desc.length() > 0)
-				desc += " from ";
-			else
-				desc += "content of";
-			desc += labelProvider.getText(selectedDataset);
+            String desc;
+			if (selectedItem instanceof DatasetItem)
+				desc = "Data at '" + labelProvider.getText(selectedItem) + "' from " + datasetName;
+			else 
+				desc = "Content of " + datasetName;
+			
 			hideMessage();
 			setContentDescription(desc);
 		}

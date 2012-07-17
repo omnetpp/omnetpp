@@ -78,7 +78,7 @@ abstract class ProcessDatasetSwitch extends ScaveModelSwitch<Object> {
 	 * effects outside the group.)
 	 */
 	public Object caseGroup(Group group) {
-		if (EcoreUtil.isAncestor(group, target))
+		if (group != target && EcoreUtil.isAncestor(group, target))
 			for (Object item : group.getItems())
 				doSwitch((EObject)item);
 		return this;

@@ -9,6 +9,8 @@ package org.omnetpp.scave.editors.ui;
 
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.emf.common.command.CompoundCommand;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
@@ -17,9 +19,11 @@ import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.util.StatusUtil;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ScaveEditor;
@@ -66,6 +70,11 @@ public class EditDialog extends TitleAreaDialog {
 		this.object = object;
 		this.features = features;
 		this.form = createForm(object, features, editor.getResultFileManager(), formParameters);
+
+        this.form.addChangeListener(new IScaveObjectEditForm.Listener() {
+            public void editFormChanged(IScaveObjectEditForm form) {
+                updateButtonsAndErrorMessage();
+            }});
 	}
 
 	@Override
@@ -139,6 +148,37 @@ public class EditDialog extends TitleAreaDialog {
 	protected void applyPressed() {
 		applyChanges();
 	}
+
+    protected void updateButtonsAndErrorMessage() {
+        IStatus status = form.validate();
+        boolean enabled = !status.matches(IStatus.ERROR);
+        Button okButton = getButton(IDialogConstants.OK_ID);
+        if (okButton != null)
+            okButton.setEnabled(enabled);
+        Button applyButton = getButton(IDialogConstants.APPLY_ID);
+        if (applyButton != null)
+            applyButton.setEnabled(enabled);
+        setErrorMessage(status);
+    }
+
+    private void setErrorMessage(IStatus status) {
+        String message = null;
+        if (status.matches(IStatus.ERROR)) {
+            message = "There are errors:\n\t";
+            IStatus error = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.ERROR);
+            Assert.isNotNull(error);
+            message += status.isMultiStatus() ? status.getMessage() + ": " : "";
+            message += error.getMessage();
+        }
+        else if (status.matches(IStatus.WARNING)) {
+            message = "There are warnings:\n\t";
+            IStatus warning = StatusUtil.getFirstDescendantWithSeverity(status, IStatus.WARNING);
+            Assert.isNotNull(warning);
+            message += status.isMultiStatus() ? status.getMessage() + ": " : "";
+            message += warning.getMessage();
+        }
+        setErrorMessage(message);
+    }
 
 	private void applyChanges() {
 		if (features == null)

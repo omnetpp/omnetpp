@@ -55,7 +55,7 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public class ProcessingOperationEditForm implements IScaveObjectEditForm {
+public class ProcessingOperationEditForm extends BaseScaveObjectEditForm {
 
 	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
 		ScaveModelPackage.eINSTANCE.getProcessingOp_Operation(),
@@ -93,6 +93,7 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		COLUMN_DESC = 2;
 
 	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent, ResultFileManager manager) {
+	    super(processingOp, parent);
 		this.processingOp = processingOp;
 		NodeTypeVector types = NodeTypeRegistry.getInstance().getNodeTypes();
 		List<NodeType> filterTypes = new ArrayList<NodeType>();
@@ -111,13 +112,6 @@ public class ProcessingOperationEditForm implements IScaveObjectEditForm {
 		this.fields = DatasetManager.getSelectableGroupByFields(processingOp, manager);
 	}
 
-	public String getTitle() {
-		return processingOp instanceof Apply ? "Apply" : "Compute";
-	}
-
-	public String getDescription() {
-		return "Select the operation and set the parameters.";
-	}
 	public EStructuralFeature[] getFeatures() {
 		return features;
 	}

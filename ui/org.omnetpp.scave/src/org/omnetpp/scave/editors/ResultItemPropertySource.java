@@ -167,12 +167,12 @@ public class ResultItemPropertySource implements IPropertySource {
                 else if (resultItem instanceof VectorResult) {
                     VectorResult vector = (VectorResult)resultItem;
                     if (propertyId.equals(PROP_KIND)) return "vector";
-                    if (propertyId.equals(PROP_COUNT)) return vector.getCount();
-                    if (propertyId.equals(PROP_MIN)) return vector.getMin();
-                    if (propertyId.equals(PROP_MAX)) return vector.getMax();
-                    if (propertyId.equals(PROP_MEAN)) return vector.getMean();
-                    if (propertyId.equals(PROP_STDDEV)) return vector.getStddev();
-                    if (propertyId.equals(PROP_VARIANCE)) return vector.getVariance();
+                    if (propertyId.equals(PROP_COUNT)) return vector.getStatistics().getCount();
+                    if (propertyId.equals(PROP_MIN)) return vector.getStatistics().getMin();
+                    if (propertyId.equals(PROP_MAX)) return vector.getStatistics().getMax();
+                    if (propertyId.equals(PROP_MEAN)) return vector.getStatistics().getMean();
+                    if (propertyId.equals(PROP_STDDEV)) return vector.getStatistics().getStddev();
+                    if (propertyId.equals(PROP_VARIANCE)) return vector.getStatistics().getVariance();
                     if (propertyId.equals(PROP_START_EVENT_NUM)) return vector.getStartEventNum();
                     if (propertyId.equals(PROP_END_EVENT_NUM)) return vector.getEndEventNum();
                     if (propertyId.equals(PROP_START_TIME)) return vector.getStartTime();
@@ -182,12 +182,12 @@ public class ResultItemPropertySource implements IPropertySource {
                 else if (resultItem instanceof HistogramResult) {
                     HistogramResult histogram = (HistogramResult)resultItem;
                     if (propertyId.equals(PROP_KIND)) return "histogram";
-                    if (propertyId.equals(PROP_COUNT)) return histogram.getCount();
-                    if (propertyId.equals(PROP_MIN)) return histogram.getMin();
-                    if (propertyId.equals(PROP_MAX)) return histogram.getMax();
-                    if (propertyId.equals(PROP_MEAN)) return histogram.getMean();
-                    if (propertyId.equals(PROP_STDDEV)) return histogram.getStddev();
-                    if (propertyId.equals(PROP_VARIANCE)) return histogram.getVariance();
+                    if (propertyId.equals(PROP_COUNT)) return histogram.getStatistics().getCount();
+                    if (propertyId.equals(PROP_MIN)) return histogram.getStatistics().getMin();
+                    if (propertyId.equals(PROP_MAX)) return histogram.getStatistics().getMax();
+                    if (propertyId.equals(PROP_MEAN)) return histogram.getStatistics().getMean();
+                    if (propertyId.equals(PROP_STDDEV)) return histogram.getStatistics().getStddev();
+                    if (propertyId.equals(PROP_VARIANCE)) return histogram.getStatistics().getVariance();
                 }
                 else {
                     if (propertyId.equals(PROP_KIND)) return "other";

@@ -27,6 +27,7 @@ import org.omnetpp.scave.engine.ResultItem;
 import org.omnetpp.scave.engine.Run;
 import org.omnetpp.scave.engine.RunAttribute;
 import org.omnetpp.scave.engine.ScalarResult;
+import org.omnetpp.scave.engine.Statistics;
 import org.omnetpp.scave.engine.StringMap;
 import org.omnetpp.scave.engine.StringVector;
 import org.omnetpp.scave.engine.VectorResult;
@@ -202,12 +203,13 @@ public class ResultFileManagerTreeContentProvider {
                                 }
                                 else if (resultItem instanceof VectorResult) {
                                     VectorResult vector = (VectorResult)resultItem;
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(vector.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(vector.getMin(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(vector.getMax(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(vector.getMean())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(vector.getStddev())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(vector.getVariance())), id);
+                                    Statistics stat = vector.getStatistics();
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Start event number", String.valueOf(vector.getStartEventNum())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("End event number", String.valueOf(vector.getEndEventNum())), id);
                                     nodeIdsMap.put(new ResultItemAttributeNode("Start time", String.valueOf(vector.getStartTime())), id);
@@ -215,12 +217,13 @@ public class ResultFileManagerTreeContentProvider {
                                 }
                                 else if (resultItem instanceof HistogramResult) {
                                     HistogramResult histogram = (HistogramResult)resultItem;
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(histogram.getCount())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(histogram.getMin(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(histogram.getMax(), isIntegerType)), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(histogram.getMean())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(histogram.getStddev())), id);
-                                    nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(histogram.getVariance())), id);
+                                    Statistics stat = histogram.getStatistics();
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Count", String.valueOf(stat.getCount())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Min", toIntegerAwareString(stat.getMin(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Max", toIntegerAwareString(stat.getMax(), isIntegerType)), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Mean", String.valueOf(stat.getMean())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("StdDev", String.valueOf(stat.getStddev())), id);
+                                    nodeIdsMap.put(new ResultItemAttributeNode("Variance", String.valueOf(stat.getVariance())), id);
                                     DoubleVector bins = histogram.getBins();
                                     DoubleVector values = histogram.getValues();
                                     if (bins != null && values != null && bins.size() > 0 && values.size() > 0) {
@@ -322,11 +325,13 @@ public class ResultFileManagerTreeContentProvider {
         }
         else if (resultItem instanceof VectorResult) {
             VectorResult vector = (VectorResult)resultItem;
-            return String.valueOf(vector.getMean()) + " (" + String.valueOf(vector.getCount()) + ")";
+            Statistics stat = vector.getStatistics();
+            return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
         }
         else if (resultItem instanceof HistogramResult) {
             HistogramResult histogram = (HistogramResult)resultItem;
-            return String.valueOf(histogram.getMean()) + " (" + String.valueOf(histogram.getCount()) + ")";
+            Statistics stat = histogram.getStatistics();
+            return String.valueOf(stat.getMean()) + " (" + String.valueOf(stat.getCount()) + ")";
         }
         else
             throw new IllegalArgumentException();
@@ -350,7 +355,7 @@ public class ResultFileManagerTreeContentProvider {
         }
 
         public String getRunAttribute(String key) {
-            return manager.getRunAttribute(id, key);
+            return StringUtils.defaultString(manager.getRunAttribute(id, key), "?");
         }
 
         public ResultItem getResultItem() {

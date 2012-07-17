@@ -34,6 +34,7 @@ import org.omnetpp.scave.editors.datatable.IDataListener;
 import org.omnetpp.scave.engine.IDList;
 import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.engineext.IResultFilesChangeListener;
+import org.omnetpp.scave.engineext.ResultFileManagerChangeEvent;
 import org.omnetpp.scave.engineext.ResultFileManagerEx;
 import org.omnetpp.scave.model.ResultType;
 
@@ -168,24 +169,29 @@ public class BrowseDataPage extends ScaveEditorPage {
 		// asynchronously update the page contents on result file changes (ie. input file load/unload)
 		if (fileChangeListener == null) {
 			fileChangeListener = new IResultFilesChangeListener() {
-				public void resultFileManagerChanged(final ResultFileManager manager) {
-					if (scheduledUpdate == null) {
-						scheduledUpdate = new Runnable() {
-							public void run() {
-								scheduledUpdate = null;
-								if (!isDisposed()) {
-									ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-										public Object call() {
-											refreshPage(manager);
-											return null;
-										}
-									});
-								}
-							}
-						};
-						getDisplay().asyncExec(scheduledUpdate);
-					}
-				}
+                public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
+                    switch (event.getChangeType()) {
+                    case LOAD:
+                    case UNLOAD:
+                        final ResultFileManager manager = event.getResultFileManager();
+                        if (scheduledUpdate == null) {
+                            scheduledUpdate = new Runnable() {
+                                public void run() {
+                                    scheduledUpdate = null;
+                                    if (!isDisposed()) {
+                                        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                                            public Object call() {
+                                                refreshPage(manager);
+                                                return null;
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            getDisplay().asyncExec(scheduledUpdate);
+                        }
+                    }
+                }
 			};
 			scaveEditor.getResultFileManager().addChangeListener(fileChangeListener);
 		}
