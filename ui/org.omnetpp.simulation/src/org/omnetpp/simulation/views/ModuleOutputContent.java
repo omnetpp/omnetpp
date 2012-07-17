@@ -66,14 +66,14 @@ public class ModuleOutputContent implements ITextViewerContent {
     }
     
     protected int getNumLines(LogBuffer.EventEntry entry) {
-        return 1 + entry.logLines.length;   // header plus lines
+        return 1 + entry.logItems.length;   // header plus lines
     }
     
     protected int getTextLength(LogBuffer.EventEntry entry) {
         // for offset computation
         int result = getBannerLine(entry).length();
-        for (int i = 0; i < entry.logLines.length; i++)
-            result += entry.logLines[i].length();
+        for (int i = 0; i < entry.logItems.length; i++)
+            result += entry.logItems[i].toString().length();
         return result;
     }
 
@@ -81,14 +81,16 @@ public class ModuleOutputContent implements ITextViewerContent {
         if (lineNumber == 0)
             return getBannerLine(entry);
         else 
-            return entry.logLines[lineNumber-1];
+            return entry.logItems[lineNumber-1].toString();
     }
 
     protected Color getEntryLineColor(LogBuffer.EventEntry entry, int lineNumber) {
         if (lineNumber == 0)
             return ColorFactory.BLUE;
-        else 
+        else if (entry.logItems[lineNumber-1] instanceof String)
             return null;
+        else
+            return ColorFactory.GREY50;
     }
 
     protected int getEntryLineByOffset(LogBuffer.EventEntry entry, int offset) {
@@ -104,7 +106,10 @@ public class ModuleOutputContent implements ITextViewerContent {
     }
 
     protected String getBannerLine(LogBuffer.EventEntry entry) {
-        return "Event #" + entry.eventNumber + " t=" + entry.simulationTime.toString() + " ...\n";  //TODO
+        if (entry.moduleId == 0)
+            return "Log lines:\n";
+        else
+            return "Event #" + entry.eventNumber + " t=" + entry.simulationTime.toString() + " at " + entry.moduleFullPath + " on " + entry.messageName + " (" + entry.messageClassName + ")\n";
     }
 
     @Override

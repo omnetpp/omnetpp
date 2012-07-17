@@ -35,12 +35,13 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-//import org.omnetpp.animation.controller.AnimationAdapter;
-//import org.omnetpp.animation.controller.AnimationPlaybackController;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.LogBuffer.EventEntry;
+import org.omnetpp.simulation.liveanimation.LiveAnimationController;
+import org.omnetpp.simulation.model.cGate;
+import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -89,6 +90,7 @@ public class SimulationController {
     private ISimulationCallback simulationCallback;
     private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
 //    private AnimationPlaybackController animationPlaybackController; //TODO get rid of this reference in this class if possible
+    private LiveAnimationController liveAnimationController;
 
     // simulation status (as returned by the GET "/sim/status" request)
     private String hostName;
@@ -191,6 +193,10 @@ public class SimulationController {
 //        });
 //    }
 
+    public void setLiveAnimationController(LiveAnimationController liveAnimationController) {
+        this.liveAnimationController = liveAnimationController;
+    }
+    
     public void addSimulationStateListener(ISimulationStateListener listener) {
         simulationListeners.add(listener);
     }
@@ -355,41 +361,78 @@ public class SimulationController {
             // load the log
             List logEntries = (List) responseMap.get("log");
             EventEntry lastEventEntry = null;
-            List<String> logLines = new ArrayList<String>();
+            List<Object> logItems = new ArrayList<Object>();
             for (Object e : logEntries) {
                 Map logEntry = (Map)e;
                 String type = (String)logEntry.get("@");
                 if (type.equals("E")) {
-                    if (!logLines.isEmpty()) {
+                    if (!logItems.isEmpty()) {
                         if (lastEventEntry == null)
                             logBuffer.addEventEntry(lastEventEntry = new EventEntry());
-                        lastEventEntry.logLines = logLines.toArray(new String[]{});
-                        logLines.clear();
+                        lastEventEntry.logItems = logItems.toArray(new Object[]{});
+                        logItems.clear();
                     }
 
                     lastEventEntry = new EventEntry();
                     lastEventEntry.eventNumber = ((Number)logEntry.get("#")).longValue();
                     lastEventEntry.simulationTime = BigDecimal.parse((String)logEntry.get("t"));
                     lastEventEntry.moduleId = ((Number)logEntry.get("m")).intValue();
-                    //TODO lastEventEntry.moduleFullPath = 
-                    //TODO lastEventEntry.moduleNedType = 
+                    lastEventEntry.moduleFullPath = "TODO.foo.bar[12]"; //TODO look up in cSimulation 
+                    lastEventEntry.moduleNedType = "TODOModule"; //TODO look up in cSimulation
                     lastEventEntry.messageName = (String)logEntry.get("msgn");
                     lastEventEntry.messageClassName = (String)logEntry.get("msgt");
                     logBuffer.addEventEntry(lastEventEntry);
                 }
                 else if (type.equals("L")) {
                     String line = (String)logEntry.get("txt");
-                    logLines.add(line);
+                    logItems.add(line);
                 }
                 else if (type.equals("MB")) {
-                    //TODO
+                    Anim.ComponentMethodBeginEntry item = new Anim.ComponentMethodBeginEntry();
+                    item.srcModuleId = ((Number)logEntry.get("sm")).intValue();
+                    item.destModuleId = ((Number)logEntry.get("tm")).intValue();
+                    item.txt = (String) (String)logEntry.get("m");
+                    logItems.add(item);
                 }
                 else if (type.equals("ME")) {
-                    //TODO
+                    Anim.ComponentMethodEndEntry item = new Anim.ComponentMethodEndEntry();
+                    logItems.add(item);
+                }
+                else if (type.equals("BS")) {  //TODO no need for the simulation to send these entries (BS..ES) in Fast mode! (and of course not in Express mode)
+                    Anim.BeginSendEntry item = new Anim.BeginSendEntry();
+                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
+                    logItems.add(item);
+                }
+                else if (type.equals("SH")) {
+                    Anim.MessageSendHopEntry item = new Anim.MessageSendHopEntry();
+                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
+                    item.srcGate = (cGate) getObjectByJSONRef((String)logEntry.get("srcGate"));
+                    item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
+                    item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
+                    logItems.add(item);
+                }
+                else if (type.equals("SD")) {
+                    Anim.MessageSendDirectEntry item = new Anim.MessageSendDirectEntry();
+                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
+                    item.destGate = (cGate) getObjectByJSONRef((String)logEntry.get("destGate"));
+                    item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
+                    item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
+                    logItems.add(item);
+                }
+                else if (type.equals("ES")) {
+                    Anim.EndSendEntry item = new Anim.EndSendEntry();
+                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
+                    logItems.add(item);
                 }
                 else {
                     throw new RuntimeException("type: '" + type + "'");
                 }
+            }
+            if (!logItems.isEmpty()) {
+                if (lastEventEntry == null)
+                    logBuffer.addEventEntry(lastEventEntry = new EventEntry());
+                lastEventEntry.logItems = logItems.toArray(new Object[]{});
+                logItems.clear();
             }
             
             /*
@@ -623,15 +666,16 @@ public class SimulationController {
             
             // animate it
 //            animationPlaybackController.play();
+            liveAnimationController.startAnimatingLastEvent();
             // Note: currentRunMode = RunMode.NOTRUNNING will be done in animationStopped()!
-            animationStopped(); //TODO remove this line when animation is reactivated!
         }
         else {
             stop(); // if already running, just stop it
         }
     }
 
-    protected void animationStopped() {
+    // XXX called from outside
+    public void animationStopped() {
         if (currentRunMode == RunMode.STEP) {
             currentRunMode = RunMode.NOTRUNNING;
             notifyListeners();
@@ -720,8 +764,8 @@ public class SimulationController {
                     else if (currentRunMode == RunMode.NORMAL) {
                         // animate it
 //                        animationPlaybackController.play();
+                        liveAnimationController.startAnimatingLastEvent();
                         // Note: next doRun() will be called from animationStopped()!
-                        doRun(); //note: remove this line if animation is put back into the code!
                     }
                 }
                 catch (IOException e) {
@@ -816,8 +860,12 @@ public class SimulationController {
         notifyListeners();
     }
 
+    private BigDecimal defaultBigDecimalIfNull(String txt, BigDecimal defaultValue) {
+        return txt == null ? defaultValue : BigDecimal.parse(txt);
+    }
+
     private int defaultIntegerIfNull(Number i, int defaultValue) {
-        return i== null ? defaultValue : i.intValue();
+        return i == null ? defaultValue : i.intValue();
     }
 
     private long defaultLongIfNull(Number l, long defaultValue) {

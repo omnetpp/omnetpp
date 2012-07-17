@@ -119,14 +119,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 		removeInspectorPart(inspectorPart);
 	}
 
-	protected IInspectorPart findInspectorFor(cObject object) {
+	public IInspectorPart findInspectorFor(cObject object) {
 	    for (IInspectorPart inspector : inspectors)
 	        if (inspector.getObject() == object)
 	            return inspector;
 	    return null;
     }
 	
-	public void inspect(cObject object) {
+	public IInspectorPart inspect(cObject object) {
 	    Assert.isNotNull(object);
 
 	    IInspectorPart inspector = findInspectorFor(object);
@@ -151,6 +151,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
                 }
             });
 	    }
+	    return inspector;
 	}
 
     protected IInspectorPart createInspectorFor(cObject object) {

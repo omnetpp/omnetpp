@@ -46,6 +46,7 @@ import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
+import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cSimulation;
@@ -188,6 +189,10 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationCanvas = new SimulationCanvas(simulationController, parent, SWT.DOUBLE_BUFFERED | SWT.BORDER);
         simulationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        // create animation controller for the simulation canvas
+        LiveAnimationController liveAnimationController = new LiveAnimationController(simulationCanvas, simulationController);
+        simulationController.setLiveAnimationController(liveAnimationController);
+        
 //        // create animation canvas
 //        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
 //            private Figure messageFigure;

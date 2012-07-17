@@ -120,6 +120,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
             if (!(viewer.getContent() instanceof ModuleOutputContent))
                 viewer.setContent(new ModuleOutputContent(controller.getLogBuffer()));
             ((ModuleOutputContent)viewer.getContent()).refresh();  //TODO ModuleOutputContent itself should listen, and should notify the viewer about content changes!!!
+            viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
         }
     }
@@ -147,6 +148,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
             hideMessage();
             ModuleOutputContent content = new ModuleOutputContent(controller.getLogBuffer());
             viewer.setContent(content);
+            viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
         }
     }

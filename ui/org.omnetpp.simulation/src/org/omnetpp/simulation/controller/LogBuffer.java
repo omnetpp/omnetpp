@@ -12,7 +12,7 @@ import org.omnetpp.common.engine.BigDecimal;
  */
 //FIXME making it possible to change module name and parent after creation is a REALLY BAD IDEA -- makes our job much more difficult in the IDE!!!
 public class LogBuffer {
-    public static final String[] EMPTY_STRING_ARRAY = new String[0];
+    public static final Object[] EMPTY_ARRAY = new Object[0];
     
     public static class EventEntry {
         public long eventNumber;
@@ -22,7 +22,7 @@ public class LogBuffer {
         public String moduleFullPath; //XXX we assume that the module's fullPath doesn't change during its lifetime
         public String messageClassName;
         public String messageName;
-        public String[] logLines = EMPTY_STRING_ARRAY; //TODO store method calls too which affect the context
+        public Object[] logItems = EMPTY_ARRAY; //TODO store method calls too which affect the context
     }
     
     private List<EventEntry> eventEntries = new ArrayList<EventEntry>();
@@ -40,5 +40,9 @@ public class LogBuffer {
     
     public EventEntry getEventEntry(int index) {
         return eventEntries.get(index);
+    }
+    
+    public EventEntry getLastEventEntry() {
+        return eventEntries.isEmpty() ? null : eventEntries.get(eventEntries.size()-1);
     }
 }

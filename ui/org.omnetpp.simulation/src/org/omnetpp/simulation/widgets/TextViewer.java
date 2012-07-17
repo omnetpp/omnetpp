@@ -49,7 +49,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO cannot move cursor to linestart below content!
 //TODO asserts on empty content!
 //TODO "copy to clipboard" loses newlines!
-
+//TODO Module Output view-nak kovetnie kellene az uj kiirasokat (scroll to end), ha eleve a vegen allt a cursor
 //TODO minor glitches with word selection (esp with single-letter words)
 //TODO revealCaret doesn't scroll horizontally
 //TODO finish horiz scrolling!

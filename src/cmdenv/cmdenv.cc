@@ -1701,7 +1701,7 @@ void Cmdenv::simulationEvent(cEvent *event)
 {
     EnvirBase::simulationEvent(event);
 
-    if (!opt_expressmode)
+    if (!disable_tracing)
     {
         if (opt_messagetrace)
         {
@@ -1733,6 +1733,14 @@ void Cmdenv::bubble(cComponent *component, const char *text)
 void Cmdenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
+
+    if (collectJsonLog)
+    {
+        JsonBox::Object entry;
+        entry["@"] = "BS";
+        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
+        jsonLog.push_back(entry);
+    }
 }
 
 void Cmdenv::messageScheduled(cMessage *msg)
@@ -1748,21 +1756,63 @@ void Cmdenv::messageCancelled(cMessage *msg)
 void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
+
+    if (collectJsonLog)
+    {
+        JsonBox::Object entry;
+        entry["@"] = "SD";
+        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
+        entry["destGate"] = JsonBox::Value(getIdStringForObject(toGate));
+        entry["propagationDelay"] = JsonBox::Value(SIMTIME_STR(propagationDelay));
+        entry["transmissionDelay"] = JsonBox::Value(SIMTIME_STR(transmissionDelay));
+        jsonLog.push_back(entry);
+    }
 }
 
 void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
+
+    if (collectJsonLog)
+    {
+        JsonBox::Object entry;
+        entry["@"] = "SH";
+        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
+        entry["srcGate"] = JsonBox::Value(getIdStringForObject(srcGate));
+        jsonLog.push_back(entry);
+    }
 }
 
 void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagationDelay, simtime_t transmissionDelay)
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
+
+    if (collectJsonLog) //TODO we won't animate in fast mode, so BS/SH/ES entries won't be needed then!
+    {
+        // Note: the link or even the gate may be deleted by the time the client receives
+        // this JSON info (so there won't be enough info for animation), but we ignore
+        // that rare case to keep the implementation simple
+        JsonBox::Object entry;
+        entry["@"] = "SH";
+        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
+        entry["srcGate"] = JsonBox::Value(getIdStringForObject(srcGate));
+        entry["propagationDelay"] = JsonBox::Value(SIMTIME_STR(propagationDelay));
+        entry["transmissionDelay"] = JsonBox::Value(SIMTIME_STR(transmissionDelay));
+        jsonLog.push_back(entry);
+    }
 }
 
 void Cmdenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
+
+    if (collectJsonLog)
+    {
+        JsonBox::Object entry;
+        entry["@"] = "ES";
+        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
+        jsonLog.push_back(entry);
+    }
 }
 
 void Cmdenv::messageCreated(cMessage *msg)
@@ -1795,7 +1845,7 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
         }
         JsonBox::Object entry;
         entry["@"] = "MB";
-        entry["sm"] = ((cModule *)from)->getId();
+        entry["sm"] = ((cModule *)from)->getId();  //FIXME may be a channel too!!!
         entry["tm"] = ((cModule *)to)->getId();
         entry["m"] = methodText;
         jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)

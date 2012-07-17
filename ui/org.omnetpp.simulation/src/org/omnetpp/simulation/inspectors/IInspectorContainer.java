@@ -51,6 +51,7 @@ public interface IInspectorContainer {
 	/**
 	 * TEMPORARY: open an inspector for this object
 	 * todo what kind, etc
+	 * @return 
 	 */
-	void inspect(cObject object);
+	IInspectorPart inspect(cObject object);
 }

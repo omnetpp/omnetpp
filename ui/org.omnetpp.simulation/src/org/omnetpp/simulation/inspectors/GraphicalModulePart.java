@@ -20,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.ConnectionFigure;
+import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
@@ -130,17 +131,30 @@ public class GraphicalModulePart extends InspectorPart {
 		refresh();
 	}
 
-    @Override
-	public void refresh() {
-		super.refresh();
-    	if (!isDisposed()) {
-    		refreshChildren();
-    		refreshConnections();
-    		refreshVisuals();
-		}
+	@Override
+	public CompoundModuleFigureEx getFigure() {
+	    return (CompoundModuleFigureEx) super.getFigure();
+	}
+
+    public SubmoduleFigure getSubmoduleFigure(cModule submodule) {
+        return submodules.get(submodule);
     }
 
-	protected void refreshChildren() {
+    public ConnectionFigure getConnectionFigure(cGate srcGate) {
+        return connections.get(srcGate);
+    }
+    
+    @Override
+    public void refresh() {
+        super.refresh();
+        if (!isDisposed()) {
+            refreshChildren();
+            refreshConnections();
+            refreshVisuals();
+        }
+    }
+
+    protected void refreshChildren() {
         //TODO only call this function if there were any moduleCreated/moduleDeleted notifications from the simkernel
     	CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         List<cModule> toBeRemoved = null;
