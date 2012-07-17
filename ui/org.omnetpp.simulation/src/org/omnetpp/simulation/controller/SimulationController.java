@@ -78,6 +78,8 @@ public class SimulationController {
         NOTRUNNING, STEP, NORMAL, FAST, EXPRESS
     }
 
+    private static final int MONGOOSE_MAX_REQUEST_URI_SIZE = 256*1024-1000; // see MAX_REQUEST_SIZE in mongoose.h
+
     private String urlBase;
 
     private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
@@ -761,6 +763,8 @@ public class SimulationController {
 
     protected String getPageContent(String url) throws IOException {
         System.out.println("GET " + url);
+        if (url.length() > MONGOOSE_MAX_REQUEST_URI_SIZE)
+            throw new RuntimeException("Request URL length " + url.length() + "exceeds Mongoose limit " + MONGOOSE_MAX_REQUEST_URI_SIZE); 
 
         if (getState() == SimState.DISCONNECTED)
             throw new IllegalStateException("Simulation process already terminated"); //TODO not good, as we catch IOException always
@@ -771,10 +775,11 @@ public class SimulationController {
             ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
 
         HttpClient client = new HttpClient();
-        client.getParams().setSoTimeout(10 * 1000);
-        client.getParams().setConnectionManagerTimeout(10 * 1000);
-        client.getHttpConnectionManager().getParams().setSoTimeout(10 * 1000);
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(10 * 1000);
+        int timeoutMillis = 30 * 1000;
+        client.getParams().setSoTimeout(timeoutMillis);
+        client.getParams().setConnectionManagerTimeout(timeoutMillis);
+        client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMillis);
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMillis);
 
         // do not retry
         HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {

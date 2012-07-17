@@ -200,7 +200,7 @@ typedef int SOCKET;
 #define PASSWORDS_FILE_NAME ".htpasswd"
 #define CGI_ENVIRONMENT_SIZE    4096
 #define MAX_CGI_ENVIR_VARS  64
-#define MAX_REQUEST_SIZE    8192
+//moved to mongoose.h: #define MAX_REQUEST_SIZE    8192
 #define MAX_LISTENING_SOCKETS   10
 #define MAX_CALLBACKS       20
 #define ARRAY_SIZE(array)   (sizeof(array) / sizeof(array[0]))

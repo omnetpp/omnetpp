@@ -21,8 +21,6 @@
 
 USING_NAMESPACE
 
-// copied from mongoose.c
-#define MAX_REQUEST_SIZE    8192
 
 cMongooseHttpServer::cMongooseHttpServer()
 {

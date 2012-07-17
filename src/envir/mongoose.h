@@ -29,6 +29,8 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define MAX_REQUEST_SIZE    (256*1024)
+
 struct mg_context;  /* Handle for the HTTP service itself   */
 struct mg_connection;   /* Handle for the individual connection */
 
