@@ -109,14 +109,22 @@ class ENVIR_API JsonArray : public JsonNode, public std::vector<JsonNode*>
         virtual ~JsonArray() { clear(); }
 };
 
-class ENVIR_API JsonMap : public JsonNode, public std::map<std::string, JsonNode*>
+class ENVIR_API JsonMap : public JsonNode, public std::map<const char *, JsonNode*>
 {
     public:
         void put(const char *s, JsonNode *node) { (*this)[s] = node; }
-        void put(const std::string& s, JsonNode *node) { (*this)[s] = node; }
         virtual void printOn(std::ostream& out);
         void clear() { for (JsonMap::iterator it = begin(); it != end(); ++it) delete it->second; }
         virtual ~JsonMap() { clear(); }
+};
+
+class ENVIR_API JsonMap2 : public JsonNode, public std::map<std::string, JsonNode*>
+{
+    public:
+        void put(const std::string& s, JsonNode *node) { (*this)[s] = node; }
+        virtual void printOn(std::ostream& out);
+        void clear() { for (JsonMap2::iterator it = begin(); it != end(); ++it) delete it->second; }
+        virtual ~JsonMap2() { clear(); }
 };
 
 inline JsonNode *jsonWrap(bool b) { return new JsonBool(b); }

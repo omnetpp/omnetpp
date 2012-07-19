@@ -541,7 +541,7 @@ bool Cmdenv::handle(cHttpRequest *request)
             result->put("network", jsonWrap(simulation.getNetworkType()->getName()));
             // TODO: eventnumber is immediately incremented after handling a message
             result->put("eventNumber", jsonWrap((int)simulation.getEventNumber() - 1));
-            result->put("simTime", jsonWrap(simTime())); //FIXME goes through as string!
+            result->put("simTime", jsonWrap(simTime()));
             result->put("nextEventNumber", jsonWrap((long)simulation.getEventNumber())); //FIXME lossy conversion! int64 -> long
             result->put("nextEventSimTime", jsonWrap(simulation.guessNextSimtime()));
             if (simulation.guessNextModule())
@@ -625,7 +625,7 @@ bool Cmdenv::handle(cHttpRequest *request)
 
         std::string ids = commandArgs["ids"];
         std::string what = commandArgs["what"];
-        JsonMap *result = new JsonMap();
+        JsonMap2 *result = new JsonMap2();
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())
         {

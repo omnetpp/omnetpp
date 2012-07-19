@@ -17,6 +17,7 @@
 
 #include "json.h"
 
+
 inline void writeStr(std::ostream& out, const std::string& s)
 {
     if (opp_needsquotes(s.c_str()))
@@ -60,11 +61,32 @@ void JsonMap::printOn(std::ostream& out)
     {
         if (it != begin())
             out << ", ";
-        writeStr(out, it->first);
+        const char *key = it->first;
+        if (opp_needsquotes(key))
+            out << opp_quotestr(key);
+        else
+            out << "\"" << key << "\"";
         out << ": ";
         it->second->printOn(out);
     }
     out << " }";
 }
 
+void JsonMap2::printOn(std::ostream& out)
+{
+    out << "{ ";
+    for (JsonMap2::iterator it = begin(); it != end(); ++it)
+    {
+        if (it != begin())
+            out << ", ";
+        const char *key = it->first.c_str();
+        if (opp_needsquotes(key))
+            out << opp_quotestr(key);
+        else
+            out << "\"" << key << "\"";
+        out << ": ";
+        it->second->printOn(out);
+    }
+    out << " }";
+}
 
