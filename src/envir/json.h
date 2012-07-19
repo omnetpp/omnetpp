@@ -31,13 +31,6 @@ class ENVIR_API JsonNode
     public:
         virtual void printOn(std::ostream& out) = 0;
         virtual ~JsonNode() {}
-    protected:
-        static void writeStr(std::ostream& out, const std::string& s) {
-            if (opp_needsquotes(s.c_str()))
-                out << opp_quotestr(s.c_str());
-            else
-                out << "\"" + s + "\"";
-        }
 };
 
 class ENVIR_API JsonNull : public JsonNode
@@ -83,8 +76,18 @@ class ENVIR_API JsonString : public JsonNode
     public:
         JsonString(const char *s) { value = s ? s : ""; }
         JsonString(const std::string& s) { value = s; }
-        std::string get() {return value;}
-        virtual void printOn(std::ostream& out) { writeStr(out, value); }
+        const std::string& get() {return value;}
+        virtual void printOn(std::ostream& out);
+};
+
+class ENVIR_API JsonConstantString : public JsonNode
+{
+    private:
+        const char *value;
+    public:
+        JsonConstantString(const char *s) { value = s; } // note: stores the pointer -- string must persist until this object is disposed!
+        const char *get() {return value;}
+        virtual void printOn(std::ostream& out);
 };
 
 class ENVIR_API JsonArray : public JsonNode, public std::vector<JsonNode*>
@@ -109,9 +112,8 @@ inline JsonNode *jsonWrap(bool b) { return new JsonBool(b); }
 inline JsonNode *jsonWrap(int i) { return new JsonLong(i); }
 inline JsonNode *jsonWrap(long l) { return new JsonLong(l); }
 inline JsonNode *jsonWrap(double d) { return new JsonDouble(d); }
-inline JsonNode *jsonWrap(const char *s) { return new JsonString(s); }
+inline JsonNode *jsonWrap(const char *s) { return new JsonConstantString(s); }
 inline JsonNode *jsonWrap(const std::string& s) { return new JsonString(s); }
-
 
 #endif
 

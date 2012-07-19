@@ -17,12 +17,36 @@
 
 #include "json.h"
 
+inline void writeStr(std::ostream& out, const std::string& s)
+{
+    if (opp_needsquotes(s.c_str()))
+        out << opp_quotestr(s.c_str());
+    else
+        out << "\"" << s << "\"";
+}
 
-void JsonArray::printOn(std::ostream& out) {
+void JsonString::printOn(std::ostream& out)
+{
+    writeStr(out, value);
+}
+
+void JsonConstantString::printOn(std::ostream& out)
+{
+    if (!value)
+        out << "\"\"";
+    else if (opp_needsquotes(value))
+        out << opp_quotestr(value);
+    else
+        out << "\"" << value << "\"";
+}
+
+void JsonArray::printOn(std::ostream& out)
+{
     out << "[ ";
     size_t n = size();
-    for (int i = 0; i < n; i++) {
-        if (i > 0)
+    for (int i = 0; i < n; i++)
+    {
+        if (i != 0)
             out << ", ";
         (*this)[i]->printOn(out);
     }
@@ -32,7 +56,8 @@ void JsonArray::printOn(std::ostream& out) {
 void JsonMap::printOn(std::ostream& out)
 {
     out << "{ ";
-    for (JsonMap::iterator it = begin(); it != end(); ++it) {
+    for (JsonMap::iterator it = begin(); it != end(); ++it)
+    {
         if (it != begin())
             out << ", ";
         writeStr(out, it->first);

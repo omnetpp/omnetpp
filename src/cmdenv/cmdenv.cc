@@ -103,6 +103,9 @@ static char buffer[1024];
 bool Cmdenv::sigintReceived;
 
 
+inline JsonNode *jsonWrap(SimTime t) { return new JsonString(t.str()); }
+
+
 // utility function for printing elapsed time
 char *timeToStr(timeval t, char *buf=NULL)
 {
@@ -540,10 +543,10 @@ bool Cmdenv::handle(cHttpRequest *request)
             result->put("run", jsonWrap(cfg->getActiveRunNumber()));
             result->put("network", jsonWrap(simulation.getNetworkType()->getName()));
             // TODO: eventnumber is immediately incremented after handling a message
-            result->put("eventNumber", jsonWrap((int)simulation.getEventNumber() - 1)); //FIXME lossy conversion! int64 -> int
-            result->put("simTime", jsonWrap(SIMTIME_STR(simTime()))); //FIXME goes through as string!
-            result->put("nextEventNumber", jsonWrap((int)simulation.getEventNumber())); //FIXME lossy conversion! int64 -> int
-            result->put("nextEventSimTime", jsonWrap(SIMTIME_STR(simulation.guessNextSimtime()))); //FIXME goes through as string!
+            result->put("eventNumber", jsonWrap((int)simulation.getEventNumber() - 1));
+            result->put("simTime", jsonWrap(simTime())); //FIXME goes through as string!
+            result->put("nextEventNumber", jsonWrap((long)simulation.getEventNumber())); //FIXME lossy conversion! int64 -> long
+            result->put("nextEventSimTime", jsonWrap(simulation.guessNextSimtime()));
             if (simulation.guessNextModule())
                 result["nextEventModuleId"] = jsonWrap(simulation.guessNextModule()->getId());
             cEvent *guessNextEvent = simulation.guessNextEvent();
@@ -1734,7 +1737,7 @@ void Cmdenv::simulationEvent(cEvent *event)
             JsonMap *entry = new JsonMap();
             entry->put("@", jsonWrap("E"));
             entry->put("#", jsonWrap((long)simulation.getEventNumber())); //XXX overflow?
-            entry->put("t", jsonWrap(SIMTIME_STR(simulation.getSimTime())));
+            entry->put("t", jsonWrap(simulation.getSimTime()));
             entry->put("m", jsonWrap(simulation.getContextModule()->getId())); //XXX
             entry->put("msgt", jsonWrap(msg->getClassName()));
             entry->put("msgn", jsonWrap(msg->getName()));
@@ -1781,8 +1784,8 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
         entry->put("@", jsonWrap("SD"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         entry->put("destGate", jsonWrap(getIdStringForObject(toGate)));
-        entry->put("propagationDelay", jsonWrap(SIMTIME_STR(propagationDelay)));
-        entry->put("transmissionDelay", jsonWrap(SIMTIME_STR(transmissionDelay)));
+        entry->put("propagationDelay", jsonWrap(propagationDelay));
+        entry->put("transmissionDelay", jsonWrap(transmissionDelay));
         jsonLog->push_back(entry);
     }
 }
@@ -1814,8 +1817,8 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
         entry->put("@", jsonWrap("SH"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
-        entry->put("propagationDelay", jsonWrap(SIMTIME_STR(propagationDelay)));
-        entry->put("transmissionDelay", jsonWrap(SIMTIME_STR(transmissionDelay)));
+        entry->put("propagationDelay", jsonWrap(propagationDelay));
+        entry->put("transmissionDelay", jsonWrap(transmissionDelay));
         jsonLog->push_back(entry);
     }
 }
