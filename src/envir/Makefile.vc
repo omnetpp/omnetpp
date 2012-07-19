@@ -35,9 +35,7 @@ OBJS= $O/appreg.obj $O/args.obj $O/startup.obj $O/evmain.obj $O/envirbase.obj $O
       $O/statisticparser.obj $O/visitor.obj
 
 #TODO make configurable; put into separate lib? (src/httpserver)
-OBJS= $(OBJS) $O/httpserver.obj $O/mongoosehttpserver.obj $O/mongoose.obj \
-              $O/jsonarray.obj $O/jsonconvert.obj $O/jsonescaper.obj $O/jsonindentcanceller.obj \
-              $O/jsonindenter.obj $O/jsonobject.obj $O/jsonsolidusescaper.obj $O/jsonvalue.obj
+OBJS= $(OBJS) $O/httpserver.obj $O/mongoosehttpserver.obj $O/mongoose.obj $O/json.obj 
 
 !if "$(LIB_SUFFIX)"==".dll"
 COPTS= $(COPTS) -DENVIR_EXPORT
@@ -292,6 +290,7 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/simutil.h \
   ../../include/cconfigoption.h \
   ../../include/cobject.h \
+  httpserver.h \
   ../../include/cstddev.h \
   ../../include/errmsg.h \
   ../nedxml/nedparser.h \
@@ -317,12 +316,14 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/cxmlelement.h \
   ../../include/cstringpool.h \
   ../../include/cvisitor.h \
+  mongoosehttpserver.h \
   args.h \
   statisticparser.h \
-  ../../include/onstartup.h \
+  mongoose.h \
   ../../include/cnedvalue.h \
-  cxmldoccache.h \
+  ../../include/onstartup.h \
   ../nedxml/nedelement.h \
+  cxmldoccache.h \
   ../../include/simtime_t.h \
   envirdefs.h \
   ../../include/cdensityestbase.h \
@@ -337,8 +338,8 @@ $O/envirbase.obj: envirbase.cc \
   ../../include/opp_string.h \
   ../../include/envirext.h \
   ../../include/cexception.h \
-  ../../include/cnamedobject.h \
   ../../include/cdynamicexpression.h \
+  ../../include/cnamedobject.h \
   ../../include/cnedmathfunction.h \
   ../../include/cresultrecorder.h \
   ../../include/platdep/platdefs.h \
@@ -433,6 +434,26 @@ $O/eventlogwriter.obj: eventlogwriter.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/cpar.h \
+  ../../include/regmacros.h
+$O/evmain.obj: evmain.cc \
+  ../../include/simtime.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
+  ../../include/cobject.h \
+  ../../include/errmsg.h \
+  startup.h \
+  ../../include/cownedobject.h \
+  ../common/ver.h \
+  ../../include/cvisitor.h \
+  ../../include/cstringpool.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
 $O/fileoutscalarmgr.obj: fileoutscalarmgr.cc \
   envirbase.h \
@@ -588,6 +609,24 @@ $O/fsutils.obj: fsutils.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
+$O/httpserver.obj: httpserver.cc \
+  ../../include/cconfiguration.h \
+  ../../include/simtime.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cobject.h \
+  httpserver.h \
+  ../../include/errmsg.h \
+  ../../include/cvisitor.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/opp_string.h \
+  ../../include/envirext.h \
+  ../../include/cexception.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/regmacros.h
 $O/indexedfileoutvectormgr.obj: indexedfileoutvectormgr.cc \
   envirbase.h \
   intervals.h \
@@ -688,26 +727,11 @@ $O/intervals.obj: intervals.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h
-$O/main.obj: main.cc \
-  ../../include/simtime.h \
-  ../../include/simkerneldefs.h \
-  ../../include/simutil.h \
-  ../../include/cobject.h \
-  ../../include/errmsg.h \
-  startup.h \
-  ../../include/cownedobject.h \
-  ../common/ver.h \
-  ../../include/cvisitor.h \
-  ../../include/cstringpool.h \
-  ../../include/simtime_t.h \
+$O/json.obj: json.cc \
   envirdefs.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/platdep/platmisc.h \
-  ../../include/opp_string.h \
-  ../../include/cexception.h \
-  ../../include/cnamedobject.h \
-  ../../include/platdep/platdefs.h \
-  ../../include/regmacros.h
+  json.h
+$O/main.obj: main.cc \
+  envirdefs.h
 $O/matchablefield.obj: matchablefield.cc \
   ../../include/cclassdescriptor.h \
   ../../include/simtime.h \
@@ -748,6 +772,26 @@ $O/matchableobject.obj: matchableobject.cc \
   ../../include/cnamedobject.h \
   ../../include/platdep/platdefs.h \
   ../../include/regmacros.h
+$O/mongoosehttpserver.obj: mongoosehttpserver.cc \
+  ../../include/cconfiguration.h \
+  ../../include/simtime.h \
+  ../../include/simkerneldefs.h \
+  ../../include/simutil.h \
+  ../../include/cobject.h \
+  httpserver.h \
+  ../../include/errmsg.h \
+  ../../include/cvisitor.h \
+  mongoosehttpserver.h \
+  mongoose.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/opp_string.h \
+  ../../include/envirext.h \
+  ../../include/cexception.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/regmacros.h
 $O/objectprinter.obj: objectprinter.cc \
   ../../include/carray.h \
   ../../include/cgate.h \
@@ -786,7 +830,9 @@ $O/objectprinter.obj: objectprinter.cc \
   ../../include/cpar.h \
   objectprinter.h \
   ../../include/regmacros.h
-$O/opp_run.obj: opp_run.cc
+$O/opp_run.obj: opp_run.cc \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platmisc.h
 $O/runattributes.obj: runattributes.cc \
   envirbase.h \
   intervals.h \
@@ -955,6 +1001,52 @@ $O/valueiterator.obj: valueiterator.cc \
   ../../include/opp_string.h \
   ../../include/cexception.h \
   ../../include/platdep/platdefs.h
+$O/visitor.obj: visitor.cc \
+  ../../include/carray.h \
+  ../../include/cgate.h \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/csimulation.h \
+  ../../include/simtime.h \
+  ../../include/simutil.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cwatch.h \
+  ../../include/cmsgpar.h \
+  ../../include/cobject.h \
+  ../../include/cfsm.h \
+  ../../include/errmsg.h \
+  ../../include/ccomponenttype.h \
+  ../../include/cstatistic.h \
+  matchableobject.h \
+  ../../include/cexpression.h \
+  ../../include/cownedobject.h \
+  ../../include/cobjectfactory.h \
+  ../../include/clistener.h \
+  ../../include/cchannel.h \
+  ../../include/cqueue.h \
+  ../../include/ccomponent.h \
+  visitor.h \
+  ../../include/ctimestampedvalue.h \
+  ../../include/cregistrationlist.h \
+  ../../include/cstringpool.h \
+  ../../include/cvisitor.h \
+  ../../include/coutvector.h \
+  ../../include/onstartup.h \
+  ../../include/simtime_t.h \
+  envirdefs.h \
+  ../../include/cmessageheap.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/globals.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cdefaultlist.h \
+  ../../include/opp_string.h \
+  ../../include/cexception.h \
+  ../../include/cnamedobject.h \
+  ../../include/cnedmathfunction.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cpar.h \
+  ../../include/regmacros.h
 $O/xgridspec.obj: xgridspec.cc \
   envirbase.h \
   intervals.h \

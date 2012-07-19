@@ -159,10 +159,12 @@ Cmdenv::Cmdenv()
     askParamInfo.isValid = false;
 
     collectJsonLog = true; //FIXME
+    jsonLog = new JsonArray();
 }
 
 Cmdenv::~Cmdenv()
 {
+    delete jsonLog;
 }
 
 void Cmdenv::readOptions()
@@ -526,89 +528,93 @@ bool Cmdenv::handle(cHttpRequest *request)
         request->print(OK_STATUS);
         request->print("\n");
 
-        JsonBox::Object result;
-        result["hostname"] = JsonBox::Value(opp_gethostname());
-        result["processid"] = JsonBox::Value(getpid());
-        result["state"] = JsonBox::Value(stateEnum.getStringFor(state));
-        result["eventlogfile"] = JsonBox::Value(toAbsolutePath(eventlogmgr->getFileName()));
+        JsonMap *result = new JsonMap();
+        result->put("hostname", jsonWrap(opp_gethostname()));
+        result->put("processid", jsonWrap(getpid()));
+        result->put("state", jsonWrap(stateEnum.getStringFor(state)));
+        result->put("eventlogfile", jsonWrap(toAbsolutePath(eventlogmgr->getFileName())));
         if (state != SIM_NONETWORK) {
             ASSERT(simulation.getSystemModule());
             cConfigurationEx *cfg = getConfigEx();
-            result["config"] = JsonBox::Value(cfg->getActiveConfigName());
-            result["run"] = JsonBox::Value(cfg->getActiveRunNumber());
-            result["network"] = JsonBox::Value(simulation.getNetworkType()->getName());
+            result->put("config", jsonWrap(cfg->getActiveConfigName()));
+            result->put("run", jsonWrap(cfg->getActiveRunNumber()));
+            result->put("network", jsonWrap(simulation.getNetworkType()->getName()));
             // TODO: eventnumber is immediately incremented after handling a message
-            result["eventNumber"] = JsonBox::Value((int)simulation.getEventNumber() - 1); //FIXME lossy conversion! int64 -> int
-            result["simTime"] = JsonBox::Value(SIMTIME_STR(simTime())); //FIXME goes through as string!
-            result["nextEventNumber"] = JsonBox::Value((int)simulation.getEventNumber()); //FIXME lossy conversion! int64 -> int
-            result["nextEventSimTime"] = JsonBox::Value(SIMTIME_STR(simulation.guessNextSimtime())); //FIXME goes through as string!
+            result->put("eventNumber", jsonWrap((int)simulation.getEventNumber() - 1)); //FIXME lossy conversion! int64 -> int
+            result->put("simTime", jsonWrap(SIMTIME_STR(simTime()))); //FIXME goes through as string!
+            result->put("nextEventNumber", jsonWrap((int)simulation.getEventNumber())); //FIXME lossy conversion! int64 -> int
+            result->put("nextEventSimTime", jsonWrap(SIMTIME_STR(simulation.guessNextSimtime()))); //FIXME goes through as string!
             if (simulation.guessNextModule())
-                result["nextEventModuleId"] = JsonBox::Value(simulation.guessNextModule()->getId());
+                result["nextEventModuleId"] = jsonWrap(simulation.guessNextModule()->getId());
             cEvent *guessNextEvent = simulation.guessNextEvent();
             if (guessNextEvent && guessNextEvent->isMessage())
-                result["nextEventMessageId"] = JsonBox::Value(static_cast<cMessage*>(guessNextEvent)->getId());
+                result->put("nextEventMessageId", jsonWrap(static_cast<cMessage*>(guessNextEvent)->getId()));
         }
 
         if (collectJsonLog) {
-            result["log"] = jsonLog;
-            jsonLog.clear();
+            result->put("log", jsonLog);
+            jsonLog = new JsonArray();  // previous one is now owned by result
         }
 
         if (errorInfo.isValid) {
-            JsonBox::Object info;
-            info["message"] = errorInfo.message;
-            result["errorInfo"] = info;
+            JsonMap *info = new JsonMap();
+            info->put("message", jsonWrap(errorInfo.message));
+            result->put("errorInfo", info);
             errorInfo.isValid = false;
         }
+
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
+        result->printOn(ss);
+        delete result;
         request->print(ss.str().c_str());
     }
     else if (strcmp(uri, "/sim/enumerateConfigs") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
-        JsonBox::Array result;
+        JsonArray *result = new JsonArray();
         cConfigurationEx *cfg = getConfigEx();
         std::vector<std::string> configNames = cfg->getConfigNames();
         for (int i = 0; i < (int)configNames.size(); i++) {
-            JsonBox::Object jconfig;
+            JsonMap *jconfig = new JsonMap();
             std::string configName = configNames[i];
-            jconfig["name"] = JsonBox::Value(configName);
-            jconfig["description"] = JsonBox::Value(cfg->getConfigDescription(configName.c_str()));
-            jconfig["numRuns"] = JsonBox::Value(cfg->getNumRunsInConfig(configName.c_str()));
-            JsonBox::Array jbaseConfigs;
+            jconfig->put("name", jsonWrap(configName));
+            jconfig->put("description", jsonWrap(cfg->getConfigDescription(configName.c_str())));
+            jconfig->put("numRuns", jsonWrap(cfg->getNumRunsInConfig(configName.c_str())));
+            JsonArray *jbaseConfigs = new JsonArray();
             std::vector<std::string> baseConfigs = cfg->getBaseConfigs(configName.c_str());
             for (int j = 0; (int)j < baseConfigs.size(); j++)
-                jbaseConfigs.push_back(baseConfigs[j]);
-            jconfig["extends"] = jbaseConfigs;
-            result.push_back(jconfig);
+                jbaseConfigs->push_back(jsonWrap(baseConfigs[j]));
+            jconfig->put("extends", jbaseConfigs);
+            result->push_back(jconfig);
         }
 
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
+        result->printOn(ss);
+        delete result;
         request->print(ss.str().c_str());
     }
     else if (strcmp(uri, "/sim/getRootObjectIds") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
 
-        JsonBox::Object result;
-        result["simulation"] = JsonBox::Value(getIdStringForObject(&simulation));
-        result["fes"] = JsonBox::Value(getIdStringForObject(&simulation.msgQueue));
-        result["systemModule"] = JsonBox::Value(getIdStringForObject(simulation.getSystemModule()));
-        result["defaultList"] = JsonBox::Value(getIdStringForObject(&defaultList));
-        result["componentTypes"] = JsonBox::Value(getIdStringForObject(componentTypes.getInstance()));
-        result["nedFunctions"] = JsonBox::Value(getIdStringForObject(nedFunctions.getInstance()));
-        result["classes"] = JsonBox::Value(getIdStringForObject(classes.getInstance()));
-        result["enums"] = JsonBox::Value(getIdStringForObject(enums.getInstance()));
-        result["classDescriptors"] = JsonBox::Value(getIdStringForObject(classDescriptors.getInstance()));
-        result["configOptions"] = JsonBox::Value(getIdStringForObject(configOptions.getInstance()));
-        result["resultFilters"] = JsonBox::Value(getIdStringForObject(resultFilters.getInstance()));
-        result["resultRecorders"] = JsonBox::Value(getIdStringForObject(resultRecorders.getInstance()));
+        JsonMap *result = new JsonMap();
+        result->put("simulation", jsonWrap(getIdStringForObject(&simulation)));
+        result->put("fes", jsonWrap(getIdStringForObject(&simulation.msgQueue)));
+        result->put("systemModule", jsonWrap(getIdStringForObject(simulation.getSystemModule())));
+        result->put("defaultList", jsonWrap(getIdStringForObject(&defaultList)));
+        result->put("componentTypes", jsonWrap(getIdStringForObject(componentTypes.getInstance())));
+        result->put("nedFunctions", jsonWrap(getIdStringForObject(nedFunctions.getInstance())));
+        result->put("classes", jsonWrap(getIdStringForObject(classes.getInstance())));
+        result->put("enums", jsonWrap(getIdStringForObject(enums.getInstance())));
+        result->put("classDescriptors", jsonWrap(getIdStringForObject(classDescriptors.getInstance())));
+        result->put("configOptions", jsonWrap(getIdStringForObject(configOptions.getInstance())));
+        result->put("resultFilters", jsonWrap(getIdStringForObject(resultFilters.getInstance())));
+        result->put("resultRecorders", jsonWrap(getIdStringForObject(resultRecorders.getInstance())));
 
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
+        result->printOn(ss);
+        delete result;
         request->print(ss.str().c_str());
     }
     else if (strcmp(uri, "/sim/getObjectInfo") == 0) {
@@ -619,7 +625,7 @@ bool Cmdenv::handle(cHttpRequest *request)
 
         std::string ids = commandArgs["ids"];
         std::string what = commandArgs["what"];
-        JsonBox::Object result;
+        JsonMap *result = new JsonMap();
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())
         {
@@ -627,75 +633,75 @@ bool Cmdenv::handle(cHttpRequest *request)
              cObject *obj = getObjectById(atol(objectId.c_str()));
              if (obj)
              {
-                 JsonBox::Object jfields;
+                 JsonMap *jfields = new JsonMap();
                  if (what=="" || what.find('i') != std::string::npos) {  // "info"
-                     jfields["name"] = JsonBox::Value(obj->getName());
-                     jfields["fullName"] = JsonBox::Value(obj->getFullName());
-                     jfields["fullPath"] = JsonBox::Value(obj->getFullPath());
-                     jfields["className"] = JsonBox::Value(obj->getClassName());
-                     jfields["knownBaseClass"] = JsonBox::Value(getKnownBaseClass(obj));
-                     jfields["info"] = JsonBox::Value(obj->info());
-                     jfields["owner"] = JsonBox::Value(getIdStringForObject(obj->getOwner()));
+                     jfields->put("name", jsonWrap(obj->getName()));
+                     jfields->put("fullName", jsonWrap(obj->getFullName()));
+                     jfields->put("fullPath", jsonWrap(obj->getFullPath()));
+                     jfields->put("className", jsonWrap(obj->getClassName()));
+                     jfields->put("knownBaseClass", jsonWrap(getKnownBaseClass(obj)));
+                     jfields->put("info", jsonWrap(obj->info()));
+                     jfields->put("owner", jsonWrap(getIdStringForObject(obj->getOwner())));
                      cClassDescriptor *desc = obj->getDescriptor();
                      const char *icon = desc ? desc->getProperty("icon") : NULL;
-                     jfields["icon"] = JsonBox::Value(icon ? icon : "");
+                     jfields->put("icon", jsonWrap(icon ? icon : ""));
 
                      // cComponent
                      if (dynamic_cast<cComponent *>(obj)) {
                          cComponent *component = (cComponent *)obj;
 
-                         jfields["parentModule"] = JsonBox::Value(getIdStringForObject(component->getParentModule()));
-                         jfields["nedTypeName"] = JsonBox::Value(component->getNedTypeName());
-                         jfields["displayString"] = JsonBox::Value(component->getDisplayString().str());
+                         jfields->put("parentModule", jsonWrap(getIdStringForObject(component->getParentModule())));
+                         jfields->put("nedTypeName", jsonWrap(component->getNedTypeName()));
+                         jfields->put("displayString", jsonWrap(component->getDisplayString().str()));
 
-                         JsonBox::Array jparameters;
+                         JsonArray *jparameters = new JsonArray();
                          for (int i = 0; i < component->getNumParams(); i++) {
                              cPar *par = &component->par(i);
-                             jparameters.push_back(JsonBox::Value(getIdStringForObject(par)));
+                             jparameters->push_back(jsonWrap(getIdStringForObject(par)));
                          }
-                         jfields["parameters"] = jparameters;
+                         jfields->put("parameters", jparameters);
                      }
 
                      // cModule
                      if (dynamic_cast<cModule *>(obj)) {
                          cModule *mod = (cModule *)obj;
-                         jfields["moduleId"] = JsonBox::Value(mod->getId());
-                         jfields["index"] = JsonBox::Value(mod->getIndex());
-                         jfields["vectorSize"] = JsonBox::Value(mod->isVector() ? mod->getVectorSize() : -1);
+                         jfields->put("moduleId", jsonWrap(mod->getId()));
+                         jfields->put("index", jsonWrap(mod->getIndex()));
+                         jfields->put("vectorSize", jsonWrap(mod->isVector() ? mod->getVectorSize() : -1));
 
-                         JsonBox::Array jgates;
+                         JsonArray *jgates = new JsonArray();
                          for (cModule::GateIterator i(mod); !i.end(); i++) {
                              cGate *gate = i();
-                             jgates.push_back(JsonBox::Value(getIdStringForObject(gate)));
+                             jgates->push_back(jsonWrap(getIdStringForObject(gate)));
                          }
-                         jfields["gates"] = jgates;
+                         jfields->put("gates", jgates);
 
-                         JsonBox::Array jsubmodules;
+                         JsonArray *jsubmodules = new JsonArray();
                          for (cModule::SubmoduleIterator i(mod); !i.end(); i++) {
                              cModule *submod = i();
-                             jsubmodules.push_back(JsonBox::Value(getIdStringForObject(submod)));
+                             jsubmodules->push_back(jsonWrap(getIdStringForObject(submod)));
                          }
-                         jfields["submodules"] = jsubmodules;
+                         jfields->put("submodules", jsubmodules);
                      }
 
                      // cGate
                      if (dynamic_cast<cGate *>(obj)) {
                          cGate *gate = (cGate *)obj;
-                         jfields["type"] = JsonBox::Value(cGate::getTypeName(gate->getType()));
-                         jfields["gateId"] = JsonBox::Value(gate->getId());
-                         jfields["index"] = JsonBox::Value(gate->getIndex());
-                         jfields["vectorSize"] = JsonBox::Value(gate->isVector() ? gate->getVectorSize() : -1);
-                         jfields["ownerModule"] = JsonBox::Value(getIdStringForObject(gate->getOwnerModule()));
-                         jfields["nextGate"] = JsonBox::Value(getIdStringForObject(gate->getNextGate()));
-                         jfields["previousGate"] = JsonBox::Value(getIdStringForObject(gate->getPreviousGate()));
-                         jfields["channel"] = JsonBox::Value(getIdStringForObject(gate->getChannel()));
+                         jfields->put("type", jsonWrap(cGate::getTypeName(gate->getType())));
+                         jfields->put("gateId", jsonWrap(gate->getId()));
+                         jfields->put("index", jsonWrap(gate->getIndex()));
+                         jfields->put("vectorSize", jsonWrap(gate->isVector() ? gate->getVectorSize() : -1));
+                         jfields->put("ownerModule", jsonWrap(getIdStringForObject(gate->getOwnerModule())));
+                         jfields->put("nextGate", jsonWrap(getIdStringForObject(gate->getNextGate())));
+                         jfields->put("previousGate", jsonWrap(getIdStringForObject(gate->getPreviousGate())));
+                         jfields->put("channel", jsonWrap(getIdStringForObject(gate->getChannel())));
                      }
 
                      // cChannel
                      if (dynamic_cast<cChannel *>(obj)) {
                          cChannel *channel = (cChannel *)obj;
-                         jfields["isTransmissionChannel"] = JsonBox::Value(channel->isTransmissionChannel());
-                         jfields["sourceGate"] = JsonBox::Value(getIdStringForObject(channel->getSourceGate()));
+                         jfields->put("isTransmissionChannel", jsonWrap(channel->isTransmissionChannel()));
+                         jfields->put("sourceGate", jsonWrap(getIdStringForObject(channel->getSourceGate())));
                      }
 
                      // cMessage
@@ -730,81 +736,81 @@ bool Cmdenv::handle(cHttpRequest *request)
                      cCollectChildrenVisitor visitor(obj);
                      visitor.process(obj);
 
-                     JsonBox::Array jchildren;
+                     JsonArray *jchildren = new JsonArray();
                      for (int i = 0; i < visitor.getArraySize(); i++)
-                         jchildren.push_back(JsonBox::Value(getIdStringForObject(visitor.getArray()[i])));
-                     jfields["children"] = jchildren;
+                         jchildren->push_back(jsonWrap(getIdStringForObject(visitor.getArray()[i])));
+                     jfields->put("children", jchildren);
                  }
                  if (what=="" || what.find('d') != std::string::npos) {  // "details"
                      cClassDescriptor *desc = obj->getDescriptor();
                      if (desc)
                      {
-                         JsonBox::Array jdetailFields;
+                         JsonArray *jdetailFields = new JsonArray();
                          //TODO serialize baseclass, properties, etc too
                          for (int fld = 0; fld < desc->getFieldCount(obj); fld++)
                          {
-                             JsonBox::Object jdetailField;
-                             jdetailField["name"] = JsonBox::Value(desc->getFieldName(obj, fld));
-                             jdetailField["type"] = JsonBox::Value(desc->getFieldTypeString(obj, fld));
-                             jdetailField["declaredOn"] = JsonBox::Value(desc->getFieldDeclaredOn(obj, fld));
+                             JsonMap *jdetailField = new JsonMap();
+                             jdetailField->put("name", jsonWrap(desc->getFieldName(obj, fld)));
+                             jdetailField->put("type", jsonWrap(desc->getFieldTypeString(obj, fld)));
+                             jdetailField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(obj, fld)));
                              if (desc->getFieldIsArray(obj, fld))
-                                 jdetailField["isArray"] = 1;
+                                 jdetailField->put("isArray", jsonWrap(1));
                              if (desc->getFieldIsCompound(obj, fld))
-                                 jdetailField["isCompound"] = 1;
+                                 jdetailField->put("isCompound", jsonWrap(1));
                              if (desc->getFieldIsPointer(obj, fld))
-                                 jdetailField["isPointer"] = 1;
+                                 jdetailField->put("isPointer", jsonWrap(1));
                              if (desc->getFieldIsCObject(obj, fld))
-                                 jdetailField["isCObject"] = 1;
+                                 jdetailField->put("isCObject", jsonWrap(1));
                              if (desc->getFieldIsCObject(obj, fld))
-                                 jdetailField["isCObject"] = 1;
+                                 jdetailField->put("isCObject", jsonWrap(1));
                              if (desc->getFieldIsCOwnedObject(obj, fld))
-                                 jdetailField["isCOwnedObject"] = 1;
+                                 jdetailField->put("isCOwnedObject", jsonWrap(1));
                              if (desc->getFieldIsEditable(obj, fld))
-                                 jdetailField["isEditable"] = 1;
+                                 jdetailField->put("isEditable", jsonWrap(1));
                              if (desc->getFieldStructName(obj, fld))
-                                 jdetailField["structName"] = JsonBox::Value(desc->getFieldStructName(obj, fld));
+                                 jdetailField->put("structName", jsonWrap(desc->getFieldStructName(obj, fld)));
                              //TODO: virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0; -- use known property names?
                              //TODO virtual const char *getFieldStructName(void *object, int field) const = 0;
                              //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
                              if (!desc->getFieldIsArray(obj, fld)) {
                                  if (!desc->getFieldIsCompound(obj, fld))
-                                     jdetailField["value"] = JsonBox::Value(desc->getFieldAsString(obj, fld, 0));
+                                     jdetailField->put("value", jsonWrap(desc->getFieldAsString(obj, fld, 0)));
                                  else {
                                      void *ptr = desc->getFieldStructPointer(obj, fld, 0);
                                      if (desc->getFieldIsCObject(obj, fld)) {
                                          cObject *o = (cObject *)ptr;
-                                         jdetailField["value"] = JsonBox::Value(getIdStringForObject(o));
+                                         jdetailField->put("value", jsonWrap(getIdStringForObject(o)));
                                      }
                                      else {
-                                         jdetailField["value"] = JsonBox::Value("...some struct..."); //XXX look up using getFieldStructName() -- recursive!
+                                         jdetailField->put("value", jsonWrap("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
                                      }
                                  }
                              } else {
                                  int n = desc->getFieldArraySize(obj, fld);
-                                 JsonBox::Array jValues;
+                                 JsonArray *jValues = new JsonArray();
                                  for (int i = 0; i < n; i++) {
                                      if (!desc->getFieldIsCompound(obj, fld))
-                                         jValues.push_back(JsonBox::Value(desc->getFieldAsString(obj, fld, i)));
+                                         jValues->push_back(jsonWrap(desc->getFieldAsString(obj, fld, i)));
                                      else {
                                          void *ptr = desc->getFieldStructPointer(obj, fld, i);
                                          if (desc->getFieldIsCObject(obj, fld)) {
                                              cObject *o = (cObject *)ptr;
-                                             jValues.push_back(JsonBox::Value(getIdStringForObject(o)));
+                                             jValues->push_back(jsonWrap(getIdStringForObject(o)));
                                          }
                                          else {
-                                             jValues.push_back(JsonBox::Value("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
+                                             jValues->push_back(jsonWrap("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
                                          }
                                      }
                                  }
-                                 jdetailField["value"] = jValues;
+                                 jdetailField->put("value", jValues);
                              }
-                             jdetailFields.push_back(jdetailField);
+                             jdetailFields->push_back(jdetailField);
                          }
-                         jfields["fields"] = jdetailFields;
+                         jfields->put("fields", jdetailFields);
                      }
 
                  }
-                 result[objectId] = jfields;
+                 result->put(objectId, jfields);
              }
         }
 
@@ -814,7 +820,8 @@ bool Cmdenv::handle(cHttpRequest *request)
         startTime = clock();
 
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
+        result->printOn(ss);
+        delete result;
 
         consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
         ::printf("[http] json tree serialization took %lgs\n", consumedCPU);
@@ -1624,10 +1631,10 @@ void Cmdenv::sputn(const char *s, int n)
 
     if (collectJsonLog)
     {
-        JsonBox::Object entry;
-        entry["@"] = "L";
-        entry["txt"] = std::string(s, n);
-        jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("L"));
+        entry->put("txt", jsonWrap(std::string(s, n)));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1724,14 +1731,14 @@ void Cmdenv::simulationEvent(cEvent *event)
         if (collectJsonLog && event->isMessage())  //TODO also record non-message events
         {
             cMessage *msg = static_cast<cMessage*>(event);
-            JsonBox::Object entry;
-            entry["@"] = "E";
-            entry["#"] = (long)simulation.getEventNumber();
-            entry["t"] = SIMTIME_STR(simulation.getSimTime());
-            entry["m"] = simulation.getContextModule()->getId(); //XXX
-            entry["msgt"] = msg->getClassName();
-            entry["msgn"] = msg->getName();
-            jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+            JsonMap *entry = new JsonMap();
+            entry->put("@", jsonWrap("E"));
+            entry->put("#", jsonWrap((long)simulation.getEventNumber())); //XXX overflow?
+            entry->put("t", jsonWrap(SIMTIME_STR(simulation.getSimTime())));
+            entry->put("m", jsonWrap(simulation.getContextModule()->getId())); //XXX
+            entry->put("msgt", jsonWrap(msg->getClassName()));
+            entry->put("msgn", jsonWrap(msg->getName()));
+            jsonLog->push_back(entry);
         }
     }
 }
@@ -1747,10 +1754,10 @@ void Cmdenv::beginSend(cMessage *msg)
 
     if (collectJsonLog)
     {
-        JsonBox::Object entry;
-        entry["@"] = "BS";
-        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
-        jsonLog.push_back(entry);
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("BS"));
+        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1770,13 +1777,13 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
 
     if (collectJsonLog)
     {
-        JsonBox::Object entry;
-        entry["@"] = "SD";
-        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
-        entry["destGate"] = JsonBox::Value(getIdStringForObject(toGate));
-        entry["propagationDelay"] = JsonBox::Value(SIMTIME_STR(propagationDelay));
-        entry["transmissionDelay"] = JsonBox::Value(SIMTIME_STR(transmissionDelay));
-        jsonLog.push_back(entry);
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("SD"));
+        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("destGate", jsonWrap(getIdStringForObject(toGate)));
+        entry->put("propagationDelay", jsonWrap(SIMTIME_STR(propagationDelay)));
+        entry->put("transmissionDelay", jsonWrap(SIMTIME_STR(transmissionDelay)));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1786,11 +1793,11 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
     if (collectJsonLog)
     {
-        JsonBox::Object entry;
-        entry["@"] = "SH";
-        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
-        entry["srcGate"] = JsonBox::Value(getIdStringForObject(srcGate));
-        jsonLog.push_back(entry);
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("SH"));
+        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1803,13 +1810,13 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
         // Note: the link or even the gate may be deleted by the time the client receives
         // this JSON info (so there won't be enough info for animation), but we ignore
         // that rare case to keep the implementation simple
-        JsonBox::Object entry;
-        entry["@"] = "SH";
-        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
-        entry["srcGate"] = JsonBox::Value(getIdStringForObject(srcGate));
-        entry["propagationDelay"] = JsonBox::Value(SIMTIME_STR(propagationDelay));
-        entry["transmissionDelay"] = JsonBox::Value(SIMTIME_STR(transmissionDelay));
-        jsonLog.push_back(entry);
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("SH"));
+        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
+        entry->put("propagationDelay", jsonWrap(SIMTIME_STR(propagationDelay)));
+        entry->put("transmissionDelay", jsonWrap(SIMTIME_STR(transmissionDelay)));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1819,10 +1826,10 @@ void Cmdenv::endSend(cMessage *msg)
 
     if (collectJsonLog)
     {
-        JsonBox::Object entry;
-        entry["@"] = "ES";
-        entry["msg"] = JsonBox::Value(getIdStringForObject(msg));
-        jsonLog.push_back(entry);
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("ES"));
+        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1854,12 +1861,12 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
             methodTextBuf[MAX_METHODCALL-1] = '\0';
             methodText = methodTextBuf;
         }
-        JsonBox::Object entry;
-        entry["@"] = "MB";
-        entry["sm"] = ((cModule *)from)->getId();  //FIXME may be a channel too!!!
-        entry["tm"] = ((cModule *)to)->getId();
-        entry["m"] = methodText;
-        jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("MB"));
+        entry->put("sm", jsonWrap(((cModule *)from)->getId()));  //FIXME may be a channel too!!!
+        entry->put("tm", jsonWrap(((cModule *)to)->getId()));
+        entry->put("m", jsonWrap(methodText));
+        jsonLog->push_back(entry);
     }
 }
 
@@ -1869,9 +1876,9 @@ void Cmdenv::componentMethodEnd()
 
     if (collectJsonLog)
     {
-        JsonBox::Object entry;
-        entry["@"] = "ME";
-        jsonLog.push_back(entry);  //FIXME this means copying the whole std::map! JsonBox needs a rewrite (should use pointers)
+        JsonMap *entry = new JsonMap();
+        entry->put("@", jsonWrap("ME"));
+        jsonLog->push_back(entry);
     }
 }
 

@@ -156,6 +156,7 @@ $O/fileglobber.obj: fileglobber.cc \
   commondefs.h
 $O/filereader.obj: filereader.cc \
   filereader.h \
+  stringutil.h \
   exception.h \
   commondefs.h \
   commonutil.h

@@ -22,7 +22,7 @@
 #include "csimulation.h"
 #include "envirbase.h"
 #include "httpserver.h"
-#include "jsonvalue.h"
+#include "json.h"
 
 NAMESPACE_BEGIN
 
@@ -101,7 +101,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      bool isConfigRun;            // true after newRun(), and false after newConfig()
 
      bool collectJsonLog;
-     JsonBox::Array jsonLog; // animLog entries from the last event
+     JsonArray *jsonLog;          // animLog entries from the last event
 
      struct {
          simtime_t simTime;       // time limit in current "Run Until" execution, or zero
