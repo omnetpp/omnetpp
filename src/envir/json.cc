@@ -18,27 +18,25 @@
 #include "json.h"
 
 
-inline void writeStr(std::ostream& out, const std::string& s)
+inline void writeStr(std::ostream& out, const char *s)
 {
-    if (opp_needsquotes(s.c_str()))
-        out << opp_quotestr(s.c_str());
+    if (opp_needsquotes(s))
+        out << opp_quotestr(s);
     else
         out << "\"" << s << "\"";
 }
 
 void JsonString::printOn(std::ostream& out)
 {
-    writeStr(out, value);
+    writeStr(out, value.c_str());
 }
 
 void JsonConstantString::printOn(std::ostream& out)
 {
     if (!value)
         out << "\"\"";
-    else if (opp_needsquotes(value))
-        out << opp_quotestr(value);
     else
-        out << "\"" << value << "\"";
+        writeStr(out, value);
 }
 
 void JsonArray::printOn(std::ostream& out)
@@ -61,11 +59,7 @@ void JsonMap::printOn(std::ostream& out)
     {
         if (it != begin())
             out << ", ";
-        const char *key = it->first;
-        if (opp_needsquotes(key))
-            out << opp_quotestr(key);
-        else
-            out << "\"" << key << "\"";
+        writeStr(out, it->first);
         out << ": ";
         it->second->printOn(out);
     }
@@ -79,11 +73,7 @@ void JsonMap2::printOn(std::ostream& out)
     {
         if (it != begin())
             out << ", ";
-        const char *key = it->first.c_str();
-        if (opp_needsquotes(key))
-            out << opp_quotestr(key);
-        else
-            out << "\"" << key << "\"";
+        writeStr(out, it->first.c_str());
         out << ": ";
         it->second->printOn(out);
     }
