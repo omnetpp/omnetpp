@@ -322,6 +322,7 @@ public class SimulationController {
     
     @SuppressWarnings("rawtypes")
     public void refreshStatus() throws IOException {
+        long startTime = System.currentTimeMillis();
         boolean again;
         do {
             Assert.isNotNull(simulationCallback);  // simulationCallback must be set
@@ -330,7 +331,7 @@ public class SimulationController {
 
             // refresh basic simulation state
             Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
-            System.out.println(responseJSON.toString());
+            //System.out.println(responseJSON.toString());
             Map responseMap = (Map) responseJSON;
             hostName = (String) responseMap.get("hostname");
             processId = ((Number) responseMap.get("processid")).longValue();
@@ -490,6 +491,7 @@ public class SimulationController {
                 again = true;
             }
         } while (again);
+        System.out.println("\n*** SimulationController.refreshStatus(): " + (System.currentTimeMillis() - startTime) + "ms\n");
     }
 
     public boolean hasRootObjects() {
@@ -795,13 +797,17 @@ public class SimulationController {
     }
 
     protected Object getPageContentAsJSON(String url) throws IOException {
+        long startTime = System.currentTimeMillis();
         String response = getPageContent(url);
         if (response == null)
             return new HttpException("Received empty document in response to GET " + url);
+        System.out.println("  - HTTP GET took " + (System.currentTimeMillis() - startTime) + "ms");
 
         // parse
+        startTime = System.currentTimeMillis();
         Object jsonTree = new JSONReader().read(response);
 //        System.out.println("  got: " + jsonTree.toString());
+        System.out.println("  - JSON parsing took " + (System.currentTimeMillis() - startTime) + "ms");
         return jsonTree;
     }
 

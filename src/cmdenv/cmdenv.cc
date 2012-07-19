@@ -561,7 +561,7 @@ bool Cmdenv::handle(cHttpRequest *request)
             errorInfo.isValid = false;
         }
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, true, false);  //TODO add .str() to JSON classes...
+        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
         request->print(ss.str().c_str());
     }
     else if (strcmp(uri, "/sim/enumerateConfigs") == 0) {
@@ -586,7 +586,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         }
 
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, true, false);  //TODO add .str() to JSON classes...
+        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
         request->print(ss.str().c_str());
     }
     else if (strcmp(uri, "/sim/getRootObjectIds") == 0) {
@@ -608,12 +608,14 @@ bool Cmdenv::handle(cHttpRequest *request)
         result["resultRecorders"] = JsonBox::Value(getIdStringForObject(resultRecorders.getInstance()));
 
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, true, false);
+        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
         request->print(ss.str().c_str());
     }
     else if (strcmp(uri, "/sim/getObjectInfo") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
+
+        clock_t startTime = clock();
 
         std::string ids = commandArgs["ids"];
         std::string what = commandArgs["what"];
@@ -806,8 +808,17 @@ bool Cmdenv::handle(cHttpRequest *request)
              }
         }
 
+        double consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
+        ::printf("[http] json tree assembly took %lgs\n", consumedCPU);
+
+        startTime = clock();
+
         std::stringstream ss;
-        JsonBox::Value(result).writeToStream(ss, true, false);
+        JsonBox::Value(result).writeToStream(ss, false /*indent*/, false /*escapeall*/);  //TODO add .str() to JSON classes...
+
+        consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
+        ::printf("[http] json tree serialization took %lgs\n", consumedCPU);
+
         request->print(ss.str().c_str());
     }
     else {
