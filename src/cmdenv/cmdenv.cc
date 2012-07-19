@@ -103,9 +103,6 @@ static char buffer[1024];
 bool Cmdenv::sigintReceived;
 
 
-inline JsonNode *jsonWrap(SimTime t) { return new JsonString(t.str()); }
-
-
 // utility function for printing elapsed time
 char *timeToStr(timeval t, char *buf=NULL)
 {

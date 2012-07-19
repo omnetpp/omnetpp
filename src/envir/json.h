@@ -24,6 +24,7 @@
 #include <iostream>
 #include "envirdefs.h"
 #include "stringutil.h"
+#include "simtime.h"
 
 
 class ENVIR_API JsonNode
@@ -69,6 +70,16 @@ class ENVIR_API JsonDouble : public JsonNode
         virtual void printOn(std::ostream& out) { out << value; }
 };
 
+class ENVIR_API JsonSimTime : public JsonNode
+{
+    private:
+        SimTime value;
+    public:
+        JsonSimTime(SimTime t) { value = t; }
+        const SimTime& get() {return value;}
+        virtual void printOn(std::ostream& out) { out << "\"" << value << "\""; }
+};
+
 class ENVIR_API JsonString : public JsonNode
 {
     private:
@@ -112,6 +123,7 @@ inline JsonNode *jsonWrap(bool b) { return new JsonBool(b); }
 inline JsonNode *jsonWrap(int i) { return new JsonLong(i); }
 inline JsonNode *jsonWrap(long l) { return new JsonLong(l); }
 inline JsonNode *jsonWrap(double d) { return new JsonDouble(d); }
+inline JsonNode *jsonWrap(SimTime t) { return new JsonSimTime(t); }
 inline JsonNode *jsonWrap(const char *s) { return new JsonConstantString(s); }
 inline JsonNode *jsonWrap(const std::string& s) { return new JsonString(s); }
 
