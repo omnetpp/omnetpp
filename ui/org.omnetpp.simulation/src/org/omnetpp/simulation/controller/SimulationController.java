@@ -40,9 +40,11 @@ import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.LogBuffer.EventEntry;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
+import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.model.cPar;
 
 /**
  * Interacts with a simulation process over HTTP.
@@ -457,7 +459,7 @@ public class SimulationController {
 
             List<cObject> filledObjects = new ArrayList<cObject>();
             for (cObject obj : cachedObjects.values())
-                if (obj.isFilledIn())
+                if (obj.isFilledIn() && !(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
                     filledObjects.add(obj);
             doLoadObjects(filledObjects);
 
