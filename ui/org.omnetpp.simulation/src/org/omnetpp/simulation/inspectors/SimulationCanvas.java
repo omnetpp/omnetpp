@@ -4,12 +4,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Color;
@@ -31,11 +39,14 @@ import org.omnetpp.simulation.model.cSimpleModule;
 //XXX snap to grid for the move/resize?
 //FIXME how to evaluate "$PARNAME" references in display strings???
 //NOTE: see ModelCanvas in the old topic/guienv2 branch for scrollable version (using ScrolledComposite)
-public class SimulationCanvas extends FigureCanvas implements IInspectorContainer {
+public class SimulationCanvas extends FigureCanvas implements IInspectorContainer, ISelectionProvider {
     public static final String EDITOR_ID = "org.omnetpp.simulation.inspectors.SimulationCanvas";
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
     protected SimulationController simulationController; //XXX temporary
 	protected ISimulationStateListener simulationListener;
+    protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
+    protected IStructuredSelection currentSelection = new StructuredSelection();
+    
 
 	public SimulationCanvas(SimulationController simulationController, Composite parent, int style) {
 	    super(parent, style);
@@ -174,73 +185,75 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         scrollSmoothTo(bounds.x, bounds.y);  // scrolls so that inspector is at the top of the screen (behavior could be improved)
     }
 
-// TODO revive this block!
-//    
-//	@SuppressWarnings("unchecked")
-//	public void select(cObject object, boolean removeOthers) {
-//		if (removeOthers) {
-//			fireSelectionChange(new StructuredSelection(object));
-//		}
-//		else {
-//			IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
-//			if (!selection.toList().contains(object)) {
-//				List list = new ArrayList(selection.toList());
-//				list.add(object);
-//				fireSelectionChange(new StructuredSelection(list));
-//			}
-//		}
-//	}
-//
-//	public void toggleSelection(cObject object) {
-//		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
-//		if (selection.toList().contains(object))
-//			deselect(object);
-//		else
-//			select(object, false);
-//	}
-//
-//	@SuppressWarnings("unchecked")
-//	public void deselect(cObject object) {
-//		IStructuredSelection selection = (IStructuredSelection)getSite().getSelectionProvider().getSelection();
-//		if (selection.toList().contains(object)) {
-//			List list = new ArrayList(selection.toList());
-//			list.remove(object);
-//			fireSelectionChange(new StructuredSelection(list));
-//		}
-//	}
-//
-//	//@Override
-//	public void deselectAll() {
-//		fireSelectionChange(new StructuredSelection());
-//	}
-//
-//    protected void fireSelectionChange(IStructuredSelection selection) {
-//    	System.out.println("SimulationCanvas: distributing selection " + selection);
-//    	getSite().getSelectionProvider().setSelection(selection);
-//    	for (IInspectorPart inspector : inspectors)
-//    		inspector.selectionChanged(selection);
-//    }
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    public void select(cObject object, boolean removeOthers) {
+		if (removeOthers) {
+			setSelection(new StructuredSelection(object));
+		}
+		else {
+			IStructuredSelection selection = getSelection();
+			if (!selection.toList().contains(object)) {
+				List list = new ArrayList(selection.toList());
+				list.add(object);
+				setSelection(new StructuredSelection(list));
+			}
+		}
+	}
 
-    public void deselect(cObject object) {
-        //TODO
+	public void toggleSelection(cObject object) {
+		if (getSelection().toList().contains(object))
+			deselect(object);
+		else
+			select(object, false);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void deselect(cObject object) {
+		if (getSelection().toList().contains(object)) {
+			List list = new ArrayList(getSelection().toList());
+			list.remove(object);
+			setSelection(new StructuredSelection(list));
+		}
+	}
+
+	public void deselectAll() {
+		setSelection(new StructuredSelection());
+	}
+
+    public IStructuredSelection getSelection() {
+        return currentSelection;
     }
 
-    @Override
-    public void select(cObject object, boolean deselectOthers) {
-        // TODO Auto-generated method stub
-        
+    public void setSelection(ISelection selection) {
+        if (!selection.equals(currentSelection)) {
+            Assert.isTrue(selection instanceof StructuredSelection);
+            this.currentSelection = (StructuredSelection)selection;
+            fireSelectionChange();
+        }
     }
 
-    @Override
-    public void toggleSelection(cObject object) {
-        // TODO Auto-generated method stub
-        
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.add(listener);
+    }
+    
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangedListeners.remove(listener);
     }
 
-    @Override
-    public void deselectAll() {
-        // TODO Auto-generated method stub
-        
+    protected void fireSelectionChange() {
+        for (IInspectorPart inspector : inspectors)
+            inspector.selectionChanged(currentSelection);
+
+        Object[] listeners = selectionChangedListeners.getListeners();
+        final SelectionChangedEvent event = new SelectionChangedEvent(this, currentSelection);
+        for (int i = 0; i < listeners.length; ++i) {
+            final ISelectionChangedListener l = (ISelectionChangedListener) listeners[i];
+            SafeRunnable.run(new SafeRunnable() {
+                public void run() {
+                    l.selectionChanged(event);
+                }
+            });
+        }
     }
 
 }
