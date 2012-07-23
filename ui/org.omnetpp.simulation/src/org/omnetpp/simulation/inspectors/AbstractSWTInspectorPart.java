@@ -6,7 +6,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.ToolbarLayout;
-import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
@@ -27,7 +26,8 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 
 	public class ContainerFigure extends RoundedRectangle implements IInspectorFigure {
 		protected IInspectorPart inspectorPart;
-		protected Insets insets = new Insets(6, 10, 6, 10);
+//		protected Insets insets = new Insets(6, 10, 6, 10);
+//		protected Insets insets = new Insets(26, 10, 6, 10);
 
 		public ContainerFigure() {
 			setBackgroundColor(ColorFactory.LIGHT_BLUE2);
@@ -35,10 +35,10 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 			setSelectionBorder(false);
 		}
 
-		@Override
-		public Insets getInsets() {
-			return insets;
-		}
+//		@Override
+//		public Insets getInsets() {
+//			return insets;
+//		}
 
 		//@Override
 		public IInspectorPart getInspectorPart() {
@@ -106,7 +106,14 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 	protected void adjustControlBounds() {
 		Rectangle r = figure.getBounds().getCopy();
 		figure.translateToAbsolute(r);
-		r.shrink(5, 5); // leave room for resize handles
+		r.shrink(10, 10); // leave room for resize handles
 		control.setBounds(new org.eclipse.swt.graphics.Rectangle(r.x, r.y, r.width, r.height));
+	}
+	
+	@Override
+	public void dispose() {
+	    super.dispose();
+	    control.dispose();
+	    control = null;
 	}
 }
