@@ -60,6 +60,16 @@ class ENVIR_API JsonLong : public JsonNode
         virtual void printOn(std::ostream& out) { out << value; }
 };
 
+class ENVIR_API JsonInt64 : public JsonNode
+{
+    private:
+        int64_t value;
+    public:
+        JsonInt64(int64_t l) { value = l; }
+        int64_t get() {return value;}
+        virtual void printOn(std::ostream& out) { out << value; }
+};
+
 class ENVIR_API JsonDouble : public JsonNode
 {
     private:
@@ -109,27 +119,30 @@ class ENVIR_API JsonArray : public JsonNode, public std::vector<JsonNode*>
         virtual ~JsonArray() { clear(); }
 };
 
-class ENVIR_API JsonMap : public JsonNode, public std::vector<std::pair<const char *, JsonNode*> >
+// key must be a string constant
+class ENVIR_API JsonObject : public JsonNode, public std::vector<std::pair<const char *, JsonNode*> >
 {
     public:
         void put(const char *s, JsonNode *node) { push_back(std::pair<const char *, JsonNode*>(s, node)); }
         virtual void printOn(std::ostream& out);
-        void clear() { for (JsonMap::iterator it = begin(); it != end(); ++it) delete it->second; }
-        virtual ~JsonMap() { clear(); }
+        void clear() { for (JsonObject::iterator it = begin(); it != end(); ++it) delete it->second; }
+        virtual ~JsonObject() { clear(); }
 };
 
-class ENVIR_API JsonMap2 : public JsonNode, public std::vector<std::pair<std::string, JsonNode*> >
+// key can be any string (it is copied)
+class ENVIR_API JsonObject2 : public JsonNode, public std::vector<std::pair<std::string, JsonNode*> >
 {
     public:
         void put(const std::string& s, JsonNode *node) { push_back(std::pair<std::string, JsonNode*>(s, node)); }
         virtual void printOn(std::ostream& out);
-        void clear() { for (JsonMap2::iterator it = begin(); it != end(); ++it) delete it->second; }
-        virtual ~JsonMap2() { clear(); }
+        void clear() { for (JsonObject2::iterator it = begin(); it != end(); ++it) delete it->second; }
+        virtual ~JsonObject2() { clear(); }
 };
 
 inline JsonNode *jsonWrap(bool b) { return new JsonBool(b); }
 inline JsonNode *jsonWrap(int i) { return new JsonLong(i); }
 inline JsonNode *jsonWrap(long l) { return new JsonLong(l); }
+inline JsonNode *jsonWrap(int64_t l) { return new JsonInt64(l); }
 inline JsonNode *jsonWrap(double d) { return new JsonDouble(d); }
 inline JsonNode *jsonWrap(SimTime t) { return new JsonSimTime(t); }
 inline JsonNode *jsonWrap(const char *s) { return new JsonConstantString(s); }

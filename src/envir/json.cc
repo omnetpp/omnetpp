@@ -52,10 +52,10 @@ void JsonArray::printOn(std::ostream& out)
     out << " ]";
 }
 
-void JsonMap::printOn(std::ostream& out)
+void JsonObject::printOn(std::ostream& out)
 {
     out << "{ ";
-    for (JsonMap::iterator it = begin(); it != end(); ++it)
+    for (JsonObject::iterator it = begin(); it != end(); ++it)
     {
         if (it != begin())
             out << ", ";
@@ -66,10 +66,10 @@ void JsonMap::printOn(std::ostream& out)
     out << " }";
 }
 
-void JsonMap2::printOn(std::ostream& out)
+void JsonObject2::printOn(std::ostream& out)
 {
     out << "{ ";
-    for (JsonMap2::iterator it = begin(); it != end(); ++it)
+    for (JsonObject2::iterator it = begin(); it != end(); ++it)
     {
         if (it != begin())
             out << ", ";

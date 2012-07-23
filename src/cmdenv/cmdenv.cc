@@ -528,7 +528,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         request->print(OK_STATUS);
         request->print("\n");
 
-        JsonMap *result = new JsonMap();
+        JsonObject *result = new JsonObject();
         result->put("hostname", jsonWrap(opp_gethostname()));
         result->put("processid", jsonWrap(getpid()));
         result->put("state", jsonWrap(stateEnum.getStringFor(state)));
@@ -540,9 +540,9 @@ bool Cmdenv::handle(cHttpRequest *request)
             result->put("run", jsonWrap(cfg->getActiveRunNumber()));
             result->put("network", jsonWrap(simulation.getNetworkType()->getName()));
             // TODO: eventnumber is immediately incremented after handling a message
-            result->put("eventNumber", jsonWrap((int)simulation.getEventNumber() - 1));
+            result->put("eventNumber", jsonWrap(simulation.getEventNumber() - 1));
             result->put("simTime", jsonWrap(simTime()));
-            result->put("nextEventNumber", jsonWrap((long)simulation.getEventNumber())); //FIXME lossy conversion! int64 -> long
+            result->put("nextEventNumber", jsonWrap(simulation.getEventNumber()));
             result->put("nextEventSimTime", jsonWrap(simulation.guessNextSimtime()));
             if (simulation.guessNextModule())
                 result["nextEventModuleId"] = jsonWrap(simulation.guessNextModule()->getId());
@@ -557,7 +557,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         }
 
         if (errorInfo.isValid) {
-            JsonMap *info = new JsonMap();
+            JsonObject *info = new JsonObject();
             info->put("message", jsonWrap(errorInfo.message));
             result->put("errorInfo", info);
             errorInfo.isValid = false;
@@ -576,7 +576,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         cConfigurationEx *cfg = getConfigEx();
         std::vector<std::string> configNames = cfg->getConfigNames();
         for (int i = 0; i < (int)configNames.size(); i++) {
-            JsonMap *jconfig = new JsonMap();
+            JsonObject *jconfig = new JsonObject();
             std::string configName = configNames[i];
             jconfig->put("name", jsonWrap(configName));
             jconfig->put("description", jsonWrap(cfg->getConfigDescription(configName.c_str())));
@@ -598,7 +598,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         request->print(OK_STATUS);
         request->print("\n");
 
-        JsonMap *result = new JsonMap();
+        JsonObject *result = new JsonObject();
         result->put("simulation", jsonWrap(getIdStringForObject(&simulation)));
         result->put("fes", jsonWrap(getIdStringForObject(&simulation.msgQueue)));
         result->put("systemModule", jsonWrap(getIdStringForObject(simulation.getSystemModule())));
@@ -625,7 +625,7 @@ bool Cmdenv::handle(cHttpRequest *request)
 
         std::string ids = commandArgs["ids"];
         std::string what = commandArgs["what"];
-        JsonMap2 *result = new JsonMap2();
+        JsonObject2 *result = new JsonObject2();
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())
         {
@@ -633,7 +633,7 @@ bool Cmdenv::handle(cHttpRequest *request)
              cObject *obj = getObjectById(atol(objectId.c_str()));
              if (obj)
              {
-                 JsonMap *jfields = new JsonMap();
+                 JsonObject *jfields = new JsonObject();
                  if (what=="" || what.find('i') != std::string::npos) {  // "info"
                      jfields->put("name", jsonWrap(obj->getName()));
                      jfields->put("fullName", jsonWrap(obj->getFullName()));
@@ -722,7 +722,7 @@ bool Cmdenv::handle(cHttpRequest *request)
                      // cPacket
                      if (dynamic_cast<cPacket *>(obj)) {
                          cPacket *msg = (cPacket *)obj;
-                         jfields->put("bitLength", jsonWrap((long)msg->getBitLength()));  //XXX lossy!
+                         jfields->put("bitLength", jsonWrap(msg->getBitLength()));
                          jfields->put("bitError", jsonWrap(msg->hasBitError()));
                          jfields->put("duration", jsonWrap(msg->getDuration()));
                          jfields->put("isReceptionStart", jsonWrap(msg->isReceptionStart()));
@@ -749,24 +749,23 @@ bool Cmdenv::handle(cHttpRequest *request)
                          //TODO serialize baseclass, properties, etc too
                          for (int fld = 0; fld < desc->getFieldCount(obj); fld++)
                          {
-                             JsonMap *jdetailField = new JsonMap();
+                             JsonObject *jdetailField = new JsonObject();
                              jdetailField->put("name", jsonWrap(desc->getFieldName(obj, fld)));
                              jdetailField->put("type", jsonWrap(desc->getFieldTypeString(obj, fld)));
                              jdetailField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(obj, fld)));
+                             //TODO: merge this into a single "flags" field!
                              if (desc->getFieldIsArray(obj, fld))
-                                 jdetailField->put("isArray", jsonWrap(1));
+                                 jdetailField->put("isArray", jsonWrap(true));
                              if (desc->getFieldIsCompound(obj, fld))
-                                 jdetailField->put("isCompound", jsonWrap(1));
+                                 jdetailField->put("isCompound", jsonWrap(true));
                              if (desc->getFieldIsPointer(obj, fld))
-                                 jdetailField->put("isPointer", jsonWrap(1));
+                                 jdetailField->put("isPointer", jsonWrap(true));
                              if (desc->getFieldIsCObject(obj, fld))
-                                 jdetailField->put("isCObject", jsonWrap(1));
-                             if (desc->getFieldIsCObject(obj, fld))
-                                 jdetailField->put("isCObject", jsonWrap(1));
+                                 jdetailField->put("isCObject", jsonWrap(true));
                              if (desc->getFieldIsCOwnedObject(obj, fld))
-                                 jdetailField->put("isCOwnedObject", jsonWrap(1));
+                                 jdetailField->put("isCOwnedObject", jsonWrap(true));
                              if (desc->getFieldIsEditable(obj, fld))
-                                 jdetailField->put("isEditable", jsonWrap(1));
+                                 jdetailField->put("isEditable", jsonWrap(true));
                              if (desc->getFieldStructName(obj, fld))
                                  jdetailField->put("structName", jsonWrap(desc->getFieldStructName(obj, fld)));
                              //TODO: virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0; -- use known property names?
@@ -1631,7 +1630,7 @@ void Cmdenv::sputn(const char *s, int n)
 
     if (collectJsonLog)
     {
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("L"));
         entry->put("txt", jsonWrap(std::string(s, n)));
         jsonLog->push_back(entry);
@@ -1731,9 +1730,9 @@ void Cmdenv::simulationEvent(cEvent *event)
         if (collectJsonLog && event->isMessage())  //TODO also record non-message events
         {
             cMessage *msg = static_cast<cMessage*>(event);
-            JsonMap *entry = new JsonMap();
+            JsonObject *entry = new JsonObject();
             entry->put("@", jsonWrap("E"));
-            entry->put("#", jsonWrap((long)simulation.getEventNumber())); //XXX overflow?
+            entry->put("#", jsonWrap(simulation.getEventNumber()));
             entry->put("t", jsonWrap(simulation.getSimTime()));
             entry->put("m", jsonWrap(simulation.getContextModule()->getId())); //XXX
             entry->put("msgt", jsonWrap(msg->getClassName()));
@@ -1754,7 +1753,7 @@ void Cmdenv::beginSend(cMessage *msg)
 
     if (collectJsonLog)
     {
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("BS"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         jsonLog->push_back(entry);
@@ -1777,7 +1776,7 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
 
     if (collectJsonLog)
     {
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("SD"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         entry->put("destGate", jsonWrap(getIdStringForObject(toGate)));
@@ -1793,7 +1792,7 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
 
     if (collectJsonLog)
     {
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("SH"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
@@ -1810,7 +1809,7 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
         // Note: the link or even the gate may be deleted by the time the client receives
         // this JSON info (so there won't be enough info for animation), but we ignore
         // that rare case to keep the implementation simple
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("SH"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
@@ -1826,7 +1825,7 @@ void Cmdenv::endSend(cMessage *msg)
 
     if (collectJsonLog)
     {
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("ES"));
         entry->put("msg", jsonWrap(getIdStringForObject(msg)));
         jsonLog->push_back(entry);
@@ -1861,7 +1860,7 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
             methodTextBuf[MAX_METHODCALL-1] = '\0';
             methodText = methodTextBuf;
         }
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("MB"));
         entry->put("sm", jsonWrap(((cModule *)from)->getId()));  //FIXME may be a channel too!!!
         entry->put("tm", jsonWrap(((cModule *)to)->getId()));
@@ -1876,7 +1875,7 @@ void Cmdenv::componentMethodEnd()
 
     if (collectJsonLog)
     {
-        JsonMap *entry = new JsonMap();
+        JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("ME"));
         jsonLog->push_back(entry);
     }
