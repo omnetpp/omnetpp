@@ -533,6 +533,7 @@ public class SimulationController {
         doLoadObjects(objects, ContentToLoadEnum.FIELDS);
     }
 
+    //TODO we need a loadUnfilledObjectsAndTheirFields() too!!!  btw, why not 1 method and 2 flags: "unfilled objects only", "load fields too" ????
     public void loadUnfilledObjects(cObject[] objects) throws IOException {
         // load objects that are not yet filled in
         Set<cObject> missing = new HashSet<cObject>();

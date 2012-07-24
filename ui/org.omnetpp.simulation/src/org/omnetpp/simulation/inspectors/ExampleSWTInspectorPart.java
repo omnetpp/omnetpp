@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.action.MenuManager;
@@ -10,8 +11,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
+import org.omnetpp.simulation.model.Field;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cObject.Field;
+import org.omnetpp.simulation.model.cPacket;
 
 public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 
@@ -49,27 +51,46 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 	public void refresh() {
 		super.refresh();
 		if (!isDisposed()) {
-            if (!object.isFilledIn())
-                object.safeLoad();
-		    if (!object.isFieldsFilledIn())
-		        object.safeLoadFields();
+		    List listbox = (List)getControl();
+		    listbox.setItems(new String[0]);  // clear listbox
 		    
-			List listbox = (List)getControl();
-			listbox.setItems(new String[0]);  // clear listbox
-
-			listbox.add("\"" + object.getFullName() + "\" (" + object.getClassName() + ")");
-			
-			for (Field field : object.getFields()) {
-			    String txt = field.declaredOn + "::" + field.name + " = ";
-			    if (field.values == null)
-			        txt += field.value;  // prints "null" if value==null
-			    else
-			        txt += "[ " + StringUtils.join(field.values, ", ") + " ]";
-			    txt += " (" + field.type + ")";
-			    
-                listbox.add(txt);
-			}
+		    listbox.add("\"" + object.getFullName() + "\" (" + object.getClassName() + ")");
+		    
+            cObject o = object;
+            while (o instanceof cPacket) {
+                addObjectDetails(listbox, o);
+                o = ((cPacket)o).getEncapsulatedPacket();
+            }
 		}
 	}
+
+    private void addObjectDetails(List listbox, cObject object) {
+        load(object);
+        
+        String[] builtinClasses = StringUtils.split("cObject cNamedObject cOwnedObject cMessage cPacket");
+
+        listbox.add(object.getClassName() + " - 11.22.33.44 -> 99.88.77.66");
+        
+        for (Field field : object.getFields()) {
+            if (!ArrayUtils.contains(builtinClasses, field.declaredOn)) {
+//                String txt = "   " + field.declaredOn + "::" + field.name + " = ";
+                String txt = "   " + field.name + " = ";
+                if (field.values == null)
+                    txt += field.value;  // prints "null" if value==null
+                else
+                    txt += "[ " + StringUtils.join(field.values, ", ") + " ]";
+//                txt += " (" + field.type + ")";
+
+                listbox.add(txt);
+            }
+        }
+    }
+
+    private void load(cObject object) {
+        if (!object.isFilledIn())
+            object.safeLoad();
+        if (!object.isFieldsFilledIn())
+            object.safeLoadFields();
+    }
 
 }

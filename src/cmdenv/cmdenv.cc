@@ -753,6 +753,18 @@ bool Cmdenv::handle(cHttpRequest *request)
                              jdetailField->put("name", jsonWrap(desc->getFieldName(obj, fld)));
                              jdetailField->put("type", jsonWrap(desc->getFieldTypeString(obj, fld)));
                              jdetailField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(obj, fld)));
+                             const char *property = desc->getFieldProperty(obj, fld, "group");
+                             if (property)
+                                 jdetailField->put("@group", jsonWrap(property));
+                             property = desc->getFieldProperty(obj, fld, "label");
+                             if (property)
+                                 jdetailField->put("@label", jsonWrap(property));
+                             property = desc->getFieldProperty(obj, fld, "hint");
+                             if (property)
+                                 jdetailField->put("@hint", jsonWrap(property));
+                             property = desc->getFieldProperty(obj, fld, "enum");
+                             if (property)
+                                 jdetailField->put("@enum", jsonWrap(property));
                              //TODO: merge this into a single "flags" field!
                              if (desc->getFieldIsArray(obj, fld))
                                  jdetailField->put("isArray", jsonWrap(true));
@@ -768,8 +780,7 @@ bool Cmdenv::handle(cHttpRequest *request)
                                  jdetailField->put("isEditable", jsonWrap(true));
                              if (desc->getFieldStructName(obj, fld))
                                  jdetailField->put("structName", jsonWrap(desc->getFieldStructName(obj, fld)));
-                             //TODO: virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0; -- use known property names?
-                             //TODO virtual const char *getFieldStructName(void *object, int field) const = 0;
+                             //TODO send symbolic names if @enum() exists!!!
                              //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
                              if (!desc->getFieldIsArray(obj, fld)) {
                                  if (!desc->getFieldIsCompound(obj, fld))

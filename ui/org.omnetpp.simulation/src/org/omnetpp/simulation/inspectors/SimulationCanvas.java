@@ -176,7 +176,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         else if (object instanceof cQueue)
             inspector = new QueueInspectorPart((cQueue)object);
         else // fallback
-            inspector = new ExampleSWTInspectorPart(object);
+            inspector = new ObjectFieldsInspectorPart(object);
 //            inspector = new InfoTextInspectorPart(object);
         return inspector;
     }
