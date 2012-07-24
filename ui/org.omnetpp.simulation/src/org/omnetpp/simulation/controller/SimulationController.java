@@ -82,6 +82,8 @@ public class SimulationController {
 
     private static final int MONGOOSE_MAX_REQUEST_URI_SIZE = 256*1024-1000; // see MAX_REQUEST_SIZE in mongoose.h
 
+    private enum ContentToLoadEnum { OBJECT, FIELDS };
+
     private String urlBase;
 
     private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
@@ -458,12 +460,22 @@ public class SimulationController {
             }
             cachedObjects.keySet().removeAll(garbage);
 
+            //TODO add the objects referenced by the new logBuffer entries too
             List<cObject> filledObjects = new ArrayList<cObject>();
-            for (cObject obj : cachedObjects.values())
+            for (cObject obj : cachedObjects.values()) {
                 if (obj.isFilledIn() && !(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
                     filledObjects.add(obj);
-            doLoadObjects(filledObjects);
+            }
+            doLoadObjects(filledObjects, ContentToLoadEnum.OBJECT);
 
+            // refresh the detail fields of loaded objects too (where filled in)
+            List<cObject> objectsWithFieldsLoaded = new ArrayList<cObject>();
+            for (cObject obj : cachedObjects.values()) {
+                if (obj.isFieldsFilledIn())
+                    objectsWithFieldsLoaded.add(obj);
+            }
+            doLoadObjects(objectsWithFieldsLoaded, ContentToLoadEnum.FIELDS);
+                    
             //System.out.println("refreshStatus notifyListeners() follows:");
             notifyListeners();
 
@@ -512,7 +524,13 @@ public class SimulationController {
     public void loadObject(cObject object) throws IOException {
         Set<cObject> objects = new HashSet<cObject>();
         objects.add(object);
-        doLoadObjects(objects);
+        doLoadObjects(objects, ContentToLoadEnum.OBJECT);
+    }
+
+    public void loadObjectFields(cObject object) throws IOException {
+        Set<cObject> objects = new HashSet<cObject>();
+        objects.add(object);
+        doLoadObjects(objects, ContentToLoadEnum.FIELDS);
     }
 
     public void loadUnfilledObjects(cObject[] objects) throws IOException {
@@ -522,7 +540,7 @@ public class SimulationController {
             if (!obj.isFilledIn())
                 missing.add(obj);
         }
-        doLoadObjects(missing);
+        doLoadObjects(missing, ContentToLoadEnum.OBJECT);
     }
 
     public void loadUnfilledObjects(Collection<? extends cObject> objects) throws IOException {
@@ -532,18 +550,18 @@ public class SimulationController {
             if (!obj.isFilledIn())
                 missing.add(obj);
         }
-        doLoadObjects(missing);
+        doLoadObjects(missing, ContentToLoadEnum.OBJECT);
     }
-
+    
     @SuppressWarnings("rawtypes")
-    protected void doLoadObjects(Collection<? extends cObject> objects) throws IOException {
+    protected void doLoadObjects(Collection<? extends cObject> objects, ContentToLoadEnum what) throws IOException {
         if (objects.isEmpty())
             return;
         StringBuilder buf = new StringBuilder();
         for (cObject obj: objects)
             buf.append(obj.getObjectId()).append(',');
         String idsArg = buf.substring(0, buf.length()-1);  // trim trailing comma
-        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?what=ic&ids=" + idsArg);
+        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?what=" + (what==ContentToLoadEnum.OBJECT ? "ic" : "d") + "&ids=" + idsArg);
 
         // process response; objects not in the response no longer exist, purge them from the cache
         List<Long> garbage = new ArrayList<Long>();
@@ -554,7 +572,10 @@ public class SimulationController {
                 obj.markAsDisposed();
             }
             else {
-                obj.fillFromJSON(jsonObjectInfo);
+                if (what==ContentToLoadEnum.OBJECT)
+                    obj.fillFromJSON(jsonObjectInfo);
+                else
+                    obj.fillFieldsFromJSON(jsonObjectInfo);
             }
         }
         cachedObjects.keySet().removeAll(garbage);
@@ -582,7 +603,7 @@ public class SimulationController {
     protected cObject createBlankObject(long id, String knownBaseClass) {
         try {
             String name = "org.omnetpp.simulation.model." + knownBaseClass;
-            Class clazz = Class.forName(name);
+            Class<?> clazz = Class.forName(name);
             return (cObject)clazz.getConstructors()[0].newInstance(this, id);
         }
         catch (Exception e) {
@@ -800,16 +821,16 @@ public class SimulationController {
     }
 
     protected Object getPageContentAsJSON(String url) throws IOException {
-        long startTime = System.currentTimeMillis();
+        //long startTime = System.currentTimeMillis();
         String response = getPageContent(url);
         if (response == null)
             return new HttpException("Received empty document in response to GET " + url);
         //System.out.println("  - HTTP GET took " + (System.currentTimeMillis() - startTime) + "ms");
 
         // parse
-        startTime = System.currentTimeMillis();
+        //startTime = System.currentTimeMillis();
         Object jsonTree = new JSONReader().read(response);
-//        System.out.println("  got: " + jsonTree.toString());
+        //System.out.println("  got: " + jsonTree.toString());
         //System.out.println("  - JSON parsing took " + (System.currentTimeMillis() - startTime) + "ms");
         return jsonTree;
     }

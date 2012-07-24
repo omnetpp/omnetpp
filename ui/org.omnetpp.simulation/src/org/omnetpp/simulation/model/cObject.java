@@ -1,6 +1,7 @@
 package org.omnetpp.simulation.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ public class cObject {
     private SimulationController controller;
     private long objectId;
     private boolean isFilledIn = false;
+    private boolean isFieldsFilledIn = false;
     private boolean isDisposed = false;
 
     public long lastAccessSerial; // SimulationController's refreshSerial when this object was last accessed; XXX obsolete, should be removed!
@@ -29,6 +31,23 @@ public class cObject {
     private cObject owner;
     private cObject[] childObjects;
 
+    public static class Field {
+        public String name;
+        public String type;
+        public String declaredOn;
+        public boolean isArray;
+        public boolean isCompound;
+        public boolean isPointer;
+        public boolean isCObject;
+        public boolean isCOwnedObject;
+        public boolean isEditable;
+        public String structName;
+        public Object value;
+        public Object[] values;
+    }
+    
+    private Field[] fields;  //XXX temporary
+    
     public cObject(SimulationController controller, long id) {
         this.controller = controller;
         this.objectId = id;
@@ -88,6 +107,60 @@ public class cObject {
         }
     }
 
+    public void loadFields() throws IOException {
+        if (isDisposed) 
+            throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
+        controller.loadObjectFields(this);
+    }
+    
+    public void safeLoadFields() {
+        // convenience method
+        try {
+            loadFields();
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    //FIXME revise
+    public void fillFieldsFromJSON(Map jsonObject) {
+        List<Field> fields = new ArrayList<Field>();
+        for (Object o: (List)jsonObject.get("fields")) {
+            Map jfield = (Map)o;
+            Field f = new Field();
+            f.name = (String) jfield.get("name");
+            f.type = (String) jfield.get("type");
+            f.declaredOn = (String) jfield.get("declaredOn");
+            f.isArray = Boolean.TRUE.equals((Boolean)jfield.get("isArray"));
+            f.isCompound = Boolean.TRUE.equals((Boolean)jfield.get("isCompound"));
+            f.isPointer = Boolean.TRUE.equals((Boolean)jfield.get("isPointer"));
+            f.isCObject = Boolean.TRUE.equals((Boolean)jfield.get("isCObject"));
+            f.isCOwnedObject = Boolean.TRUE.equals((Boolean)jfield.get("isCOwnedObject"));
+            f.isEditable = Boolean.TRUE.equals((Boolean)jfield.get("isEditable"));
+            f.structName = (String) jfield.get("declaredOn");
+            f.value = f.isArray ? null : jfield.get("value");
+            f.values = f.isArray ? ((List) jfield.get("value")).toArray() : null;
+            fields.add(f);
+        }
+        this.fields = fields.toArray(new Field[]{});
+        isFieldsFilledIn = true;
+    }
+
+    //FIXME revise, rename, move,...
+    public boolean isFieldsFilledIn() {
+        return isFieldsFilledIn;
+    }
+
+    //FIXME revise
+    public Field[] getFields() {
+        checkState();
+        if (!isFieldsFilledIn) 
+            throw new InvalidSimulationObjectException("fields of object " + getObjectId() + "-" + getClass().getSimpleName() + " not yet filled in");
+        return fields;
+    }
+    
     public void markAsDisposed() {
         isDisposed = true;
     }
@@ -163,6 +236,6 @@ public class cObject {
         else if (isDisposed)
             return "[id=" + objectId + ",disposed]";
         else
-            return "(" + className + ") " + fullName + " - " + info + "  [id=" + objectId + "]";
+            return "(" + className + ") " + fullName + "[id=" + objectId + "]";
     }
 }

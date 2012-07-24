@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
@@ -10,6 +11,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.model.cObject.Field;
 
 public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 
@@ -19,8 +21,8 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 
 	@Override
 	protected Control createContents(Composite parent) {
-		List listbox = new List(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED);
-		listbox.setItems("one two three four five six seven eight nine ten eleven twelve".split(" "));
+		List listbox = new List(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL);
+		listbox.setItems("no content yet".split(" ")); //XXX
 
 		Point p = listbox.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	 	figure.setPreferredSize(new Dimension(100, 120)); //XXX
@@ -47,9 +49,26 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 	public void refresh() {
 		super.refresh();
 		if (!isDisposed()) {
-			((List)getControl()).setItem(0, object.getFullPath());
-			((List)getControl()).setItem(1, object.getClassName());
-			((List)getControl()).setItem(2, object.getInfo());
+            if (!object.isFilledIn())
+                object.safeLoad();
+		    if (!object.isFieldsFilledIn())
+		        object.safeLoadFields();
+		    
+			List listbox = (List)getControl();
+			listbox.setItems(new String[0]);  // clear listbox
+
+			listbox.add("\"" + object.getFullName() + "\" (" + object.getClassName() + ")");
+			
+			for (Field field : object.getFields()) {
+			    String txt = field.declaredOn + "::" + field.name + " = ";
+			    if (field.values == null)
+			        txt += field.value;  // prints "null" if value==null
+			    else
+			        txt += "[ " + StringUtils.join(field.values, ", ") + " ]";
+			    txt += " (" + field.type + ")";
+			    
+                listbox.add(txt);
+			}
 		}
 	}
 
