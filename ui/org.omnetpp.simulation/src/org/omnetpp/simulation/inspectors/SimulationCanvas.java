@@ -105,7 +105,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     	System.out.println("removeInspectorPart: " + inspectorPart);
     	Assert.isTrue(inspectors.contains(inspectorPart));
     	inspectors.remove(inspectorPart);
-    	getContents().remove(inspectorPart.getFigure());  //XXX maybe do it in the inspector??
     	inspectorPart.dispose();
     }
 
