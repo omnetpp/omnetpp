@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
-import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cQueue;
@@ -42,15 +41,13 @@ import org.omnetpp.simulation.model.cSimpleModule;
 public class SimulationCanvas extends FigureCanvas implements IInspectorContainer, ISelectionProvider {
     public static final String EDITOR_ID = "org.omnetpp.simulation.inspectors.SimulationCanvas";
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
-    protected SimulationController simulationController; //XXX temporary
 	protected ISimulationStateListener simulationListener;
     protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
     protected IStructuredSelection currentSelection = new StructuredSelection();
     
 
-	public SimulationCanvas(SimulationController simulationController, Composite parent, int style) {
+	public SimulationCanvas(Composite parent, int style) {
 	    super(parent, style);
-	    this.simulationController = simulationController;
 	      
         setBackground(new Color(null, 235, 235, 235));
         setContents(new Figure());
@@ -71,15 +68,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         });
 
         FigureUtils.addTooltipSupport(this, this.getContents());
-
-		// update inspectors when something happens in the simulation
-		simulationController.addSimulationStateListener(simulationListener = new ISimulationStateListener() {
-            @Override
-            public void simulationStateChanged(SimulationController controller) {
-                refreshInspectors();
-            }
-        });
-    }
+   }
 
 	@Override
 	public Composite getControl() {
@@ -88,7 +77,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 	
     @Override
     public void dispose() {
-    	simulationController.removeSimulationStateListener(simulationListener);
     	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
     		removeInspectorPart(inspectorPart);
     	super.dispose();
@@ -121,7 +109,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     	inspectorPart.dispose();
     }
 
-    protected void refreshInspectors() {
+    public void refreshInspectors() {
     	for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
     		inspectorPart.refresh();
     }

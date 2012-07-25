@@ -186,9 +186,17 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         // create simulation canvas (TODO: on the same tab as the controls!)
-        simulationCanvas = new SimulationCanvas(simulationController, parent, SWT.DOUBLE_BUFFERED | SWT.BORDER);
+        simulationCanvas = new SimulationCanvas(parent, SWT.DOUBLE_BUFFERED | SWT.BORDER);
         simulationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        // update inspectors when something happens in the simulation
+        simulationController.addSimulationStateListener(new ISimulationStateListener() {
+            @Override
+            public void simulationStateChanged(SimulationController controller) {
+                simulationCanvas.refreshInspectors();
+            }
+        });
+        
         // create animation controller for the simulation canvas
         LiveAnimationController liveAnimationController = new LiveAnimationController(simulationCanvas, simulationController);
         simulationController.setLiveAnimationController(liveAnimationController);
