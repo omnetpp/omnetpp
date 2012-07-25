@@ -86,6 +86,9 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 				adjustControlBounds();
 			}
 		});
+
+        // add move/resize/selection support
+        new InspectorMouseListener(this); //XXX revise this 
 	}
 
 	/**

@@ -69,6 +69,9 @@ public class GraphicalModulePart extends InspectorPart {
 
         ((CompoundModuleFigureEx)figure).setDisplayString(getDisplayStringFrom(module));
 
+        // add move/resize/selection support
+        new InspectorMouseListener(this); //XXX revise this 
+
         // mouse handling
         figure.addMouseListener(new MouseListener() {
             //@Override

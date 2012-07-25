@@ -39,6 +39,9 @@ public class QueueInspectorPart extends InspectorPart {
 		figure = new QueueInspectorFigure();
 		figure.setInspectorPart(this);
 
+        // add move/resize/selection support
+        new InspectorMouseListener(this); //XXX revise this 
+		
         // mouse handling
 		//XXX near copy-paste from GraphicalModulePart, factor out!
         figure.addMouseListener(new MouseListener() {

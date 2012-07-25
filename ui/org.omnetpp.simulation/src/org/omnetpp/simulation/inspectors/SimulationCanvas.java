@@ -140,17 +140,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     public void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
-        final IFigure moduleFigure = inspectorPart.getFigure();
-        getInspectorsLayer().add(moduleFigure);
-        getInspectorsLayer().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));
+        final IFigure inspectorFigure = inspectorPart.getFigure();
+        getInspectorsLayer().add(inspectorFigure);
+        getInspectorsLayer().setConstraint(inspectorFigure, new Rectangle(x, y, -1, -1));
 
         // register the inspector
         inspectors.add(inspectorPart);
         inspectorPart.setContainer(this);
         inspectorPart.refresh();
-
-        // add move/resize/selection support
-        new InspectorMouseListener(inspectorPart); //XXX
     }
 
     public void removeInspectorPart(IInspectorPart inspectorPart) {

@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.inspectors;
 
+import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.Layer;
 import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.simulation.model.cObject;
 
@@ -15,8 +17,15 @@ import org.omnetpp.simulation.model.cObject;
  * @author Andras
  */
 public interface IInspectorContainer {
-	/**
-	 * Closes the inspector.
+    /**
+     * TEMPORARY: open an inspector for this object
+     * todo what kind, etc
+     * @return 
+     */
+    IInspectorPart inspect(cObject object);
+
+    /**
+	 * Closes the given inspector.
 	 */
 	void close(IInspectorPart inspector);
 
@@ -25,8 +34,20 @@ public interface IInspectorContainer {
 	 * inspector figures. This can be useful for adding SWT listeners
 	 * or creating inspectors that contain SWT controls.
 	 */
-	Composite getControl();
+	Composite getControl(); //XXX maybe Canvas getCanvas() ?
 
+	/**
+	 * Return the layer to which inspector figures are added.
+	 */
+    Figure getInspectorsLayer();
+    
+    /**
+     * Return the layer to which inspectors should add transient controls 
+     * (close button, toolbar, etc) that appear when the mouse hovers over 
+     * the inspector. 
+     */
+    Layer getControlsLayer();
+	
 	/**
 	 * Request selecting this object, and optionally deselecting all others.
 	 */
@@ -46,12 +67,5 @@ public interface IInspectorContainer {
 	/**
 	 * Remove all objects from the selection.
 	 */
-	void deselectAll();
-	
-	/**
-	 * TEMPORARY: open an inspector for this object
-	 * todo what kind, etc
-	 * @return 
-	 */
-	IInspectorPart inspect(cObject object);
+	void deselectAll();	
 }

@@ -25,6 +25,9 @@ public class InfoTextInspectorPart extends InspectorPart {
 		figure = new InfoTextInspectorFigure();
 		figure.setInspectorPart(this);
 
+        // add move/resize/selection support
+        new InspectorMouseListener(this); //XXX revise this 
+		
 		// add mouse selection support
         figure.addMouseListener(new MouseListener.Stub() {
 			@Override
