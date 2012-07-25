@@ -8,6 +8,8 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Layer;
+import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
@@ -20,7 +22,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -40,6 +41,10 @@ import org.omnetpp.simulation.model.cSimpleModule;
 //NOTE: see ModelCanvas in the old topic/guienv2 branch for scrollable version (using ScrolledComposite)
 public class SimulationCanvas extends FigureCanvas implements IInspectorContainer, ISelectionProvider {
     public static final String EDITOR_ID = "org.omnetpp.simulation.inspectors.SimulationCanvas";
+
+    private Figure inspectorsLayer;
+    private Layer controlsLayer;
+    
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
 	protected ISimulationStateListener simulationListener;
     protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
@@ -49,9 +54,30 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 	public SimulationCanvas(Composite parent, int style) {
 	    super(parent, style);
 	      
-        setBackground(new Color(null, 235, 235, 235));
-        setContents(new Figure());
-        getContents().setLayoutManager(new XYLayout());
+	    //setBackground(new Color(null, 235, 235, 235));
+	    
+        Layer layeredPane = new Layer();
+        layeredPane.setLayoutManager(new StackLayout());
+
+        inspectorsLayer = new Figure();
+        inspectorsLayer.setLayoutManager(new XYLayout());
+        layeredPane.add(inspectorsLayer);
+
+        
+        controlsLayer = new Layer(); //XXX {
+//            public void paint(org.eclipse.draw2d.Graphics graphics) {
+//                graphics.setAlpha(128);
+//                super.paint(graphics);
+//            }
+//        };
+        controlsLayer.setLayoutManager(new XYLayout());
+        layeredPane.add(controlsLayer);
+        
+//        Button button = new Button("Hello World");
+//        controlsLayer.add(button);
+//        controlsLayer.getLayoutManager().setConstraint(button, new Rectangle(10,10,100,100));
+
+        setContents(layeredPane);
 
         // create context menu
         final MenuManager contextMenuManager = new MenuManager("#popup");
@@ -74,6 +100,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 	public Composite getControl() {
 	    return this;
 	}
+
+	public Figure getInspectorsLayer() {
+	    return inspectorsLayer;
+	}
+	
+	public Layer getControlsLayer() {
+        return controlsLayer;
+    }
 	
     @Override
     public void dispose() {
@@ -83,14 +117,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     public void addInspectorPart(IInspectorPart inspectorPart) {
-        int lastY = getContents().getPreferredSize().height;
+        int lastY = getInspectorsLayer().getPreferredSize().height;
         addInspectorPart(inspectorPart, 0, lastY+5);
     }
 
     public void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
         final IFigure moduleFigure = inspectorPart.getFigure();
-        getContents().add(moduleFigure);
-        getContents().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));
+        getInspectorsLayer().add(moduleFigure);
+        getInspectorsLayer().setConstraint(moduleFigure, new Rectangle(x, y, -1, -1));
 
         // register the inspector
         inspectors.add(inspectorPart);
