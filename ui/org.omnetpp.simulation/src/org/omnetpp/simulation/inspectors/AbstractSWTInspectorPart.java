@@ -1,6 +1,8 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.CoordinateListener;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.LineBorder;
@@ -69,26 +71,39 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
 	    ContainerFigure figure = new ContainerFigure();
 
 	    // create and set up the SWT control
-	    Composite canvas = getContainer().getControl();
+	    FigureCanvas canvas = getContainer().getControl();
         Assert.isTrue(canvas.getLayout()==null); // must NOT have a layouter (we'll place children manually)
 
         control = createControl(canvas);
 
+        // set figure to same size as SWT control
         Point controlSize = control.getSize();
         figure.setPreferredSize(controlSize.x, controlSize.y);
         
-        if (arrowCursor == null) 
-            arrowCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-        control.setCursor(arrowCursor);  // otherwise border's resize cursor will remain in effect
+        // set a cursor to the control, otherwise border's resize cursor will remain in effect
+        if (control.getCursor() == null) {
+            if (arrowCursor == null) 
+                arrowCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
+            control.setCursor(arrowCursor);  
+        }
         
+        // need to adjust control's bounds when figure is moved or resized
         figure.addFigureListener(new FigureListener() {
             @Override
-            public void figureMoved(IFigure source) { // actually, moved or resized...
+            public void figureMoved(IFigure source) { 
+                if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 adjustControlBounds();
             }
         });
         
-        //TODO: also when FigureCanvas is scrolled!!!
+        // also also when FigureCanvas is scrolled
+        getContainer().getControl().getViewport().addCoordinateListener(new CoordinateListener() {
+            @Override
+            public void coordinateSystemChanged(IFigure source) {
+                if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                adjustControlBounds();
+            }
+        });
 	    
 	    return figure;
 	}

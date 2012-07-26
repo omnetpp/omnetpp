@@ -1,8 +1,8 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.draw2d.Figure;
+import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.Layer;
-import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -30,11 +30,11 @@ public interface IInspectorContainer {
 	void close(IInspectorPart inspector);
 
 	/**
-	 * Returns the SWT control (likely a canvas) that contains the
+	 * Returns the SWT control (a FigureCanvas) that contains the
 	 * inspector figures. This can be useful for adding SWT listeners
 	 * or creating inspectors that contain SWT controls.
 	 */
-	Composite getControl(); //XXX maybe Canvas getCanvas() ?
+	FigureCanvas getControl();
 
 	/**
 	 * Return the layer to which inspector figures are added.

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.Graphics;
@@ -88,13 +89,9 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 //                super.paint(graphics);
 //            }
 //        };
-        controlsLayer.setLayoutManager(new XYLayout());
+        controlsLayer.setLayoutManager(new DelegatingLayout());
         layeredPane.add(controlsLayer);
         
-//        Button button = new Button("Hello World");
-//        controlsLayer.add(button);
-//        controlsLayer.getLayoutManager().setConstraint(button, new Rectangle(10,10,100,100));
-
         setContents(layeredPane);
 
         // create context menu
@@ -111,11 +108,11 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             }
         });
 
-        FigureUtils.addTooltipSupport(this, this.getContents());
+        FigureUtils.addTooltipSupport(this, this.getContents());  //TODO make use of this!!!
    }
 
 	@Override
-	public Composite getControl() {
+	public FigureCanvas getControl() {
 	    return this;
 	}
 
