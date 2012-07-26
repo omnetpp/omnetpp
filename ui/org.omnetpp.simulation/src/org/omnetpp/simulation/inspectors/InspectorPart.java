@@ -17,9 +17,27 @@ public abstract class InspectorPart implements IInspectorPart {
 
 	public InspectorPart(cObject object) {
 		this.object = object;
+		
+		figure = createFigure();
+		figure.setInspectorPart(this);
+		addMoveResizeSupport();
+		addFloatingControls();
 	}
 
-	public void dispose() {
+    protected abstract IInspectorFigure createFigure();
+
+    protected void addMoveResizeSupport() {
+        // add move/resize/selection support
+        new InspectorMouseListener(this); //XXX revise this listener! 
+    }
+
+    protected void addFloatingControls() {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    public void dispose() {
 		System.out.println("disposing inspector: " + object);
 		if (figure != null && figure.getParent() != null)
 		    figure.getParent().remove(figure);

@@ -34,13 +34,7 @@ public class QueueInspectorPart extends InspectorPart {
 		super(object);
 
 		if (object.isFilledIn())
-            object.safeLoad();
-		
-		figure = new QueueInspectorFigure();
-		figure.setInspectorPart(this);
-
-        // add move/resize/selection support
-        new InspectorMouseListener(this); //XXX revise this 
+            object.safeLoad(); //XXX why not in refresh()?
 		
         // mouse handling
 		//XXX near copy-paste from GraphicalModulePart, factor out!
@@ -62,6 +56,12 @@ public class QueueInspectorPart extends InspectorPart {
         });
 	}
 
+	@Override
+	protected IInspectorFigure createFigure() {
+	    QueueInspectorFigure figure = new QueueInspectorFigure();
+	    return figure;
+	}
+	
 	@Override
 	public void refresh() {
 		super.refresh();

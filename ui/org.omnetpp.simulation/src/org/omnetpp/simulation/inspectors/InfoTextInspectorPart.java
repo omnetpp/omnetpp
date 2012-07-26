@@ -19,14 +19,8 @@ public class InfoTextInspectorPart extends InspectorPart {
 	public InfoTextInspectorPart(cObject object) {
 		super(object);
 
-		if (object.isFilledIn())
+		if (object.isFilledIn())  //XXX why not in refresh?
             object.safeLoad();
-		
-		figure = new InfoTextInspectorFigure();
-		figure.setInspectorPart(this);
-
-        // add move/resize/selection support
-        new InspectorMouseListener(this); //XXX revise this 
 		
 		// add mouse selection support
         figure.addMouseListener(new MouseListener.Stub() {
@@ -37,6 +31,12 @@ public class InfoTextInspectorPart extends InspectorPart {
         });
 	}
 
+	@Override
+	protected IInspectorFigure createFigure() {
+	    InfoTextInspectorFigure figure = new InfoTextInspectorFigure();
+        return figure;
+	}
+	
 	@Override
 	public void refresh() {
 		super.refresh();

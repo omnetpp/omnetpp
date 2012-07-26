@@ -65,11 +65,15 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 
 	public AbstractSWTInspectorPart(cObject object) {
 		super(object);
-		figure = new ContainerFigure();
-		figure.setInspectorPart(this);
-		// we defer the SWT part to when IInspectorContainer gets set.
 	}
 
+	@Override
+	protected IInspectorFigure createFigure() {
+	    ContainerFigure figure = new ContainerFigure();
+        // we defer the SWT part to when IInspectorContainer gets set.
+	    return figure;
+	}
+	
 	@Override
 	public void setContainer(IInspectorContainer container) {
 		super.setContainer(container);
@@ -86,9 +90,6 @@ public abstract class AbstractSWTInspectorPart extends InspectorPart {
 				adjustControlBounds();
 			}
 		});
-
-        // add move/resize/selection support
-        new InspectorMouseListener(this); //XXX revise this 
 	}
 
 	/**

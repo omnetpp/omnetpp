@@ -54,24 +54,6 @@ public class GraphicalModulePart extends InspectorPart {
     public GraphicalModulePart(cModule module) {
     	super(module);
     	
-        if (module.isFilledIn())
-            module.safeLoad();
-        try {
-            Collection<? extends cObject> submodsList = Arrays.asList(module.getSubmodules());
-            module.getController().loadUnfilledObjects(submodsList);
-        }
-        catch (IOException e) {  //FIXME ez itt valahogy nem tul jo!
-            SimulationPlugin.logError(e);   
-        }
-
-        figure = new CompoundModuleFigureEx();
-        figure.setInspectorPart(this);
-
-        ((CompoundModuleFigureEx)figure).setDisplayString(getDisplayStringFrom(module));
-
-        // add move/resize/selection support
-        new InspectorMouseListener(this); //XXX revise this 
-
         // mouse handling
         figure.addMouseListener(new MouseListener() {
             //@Override
@@ -91,6 +73,12 @@ public class GraphicalModulePart extends InspectorPart {
         });
     }
 
+    @Override
+    protected IInspectorFigure createFigure() {
+        CompoundModuleFigureEx figure = new CompoundModuleFigureEx();
+        return figure;
+    }
+    
 	//@Override
 	public boolean isMaximizable() {
 		return false;
@@ -151,6 +139,21 @@ public class GraphicalModulePart extends InspectorPart {
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
+            cModule module = (cModule) object;
+            if (module.isFilledIn())
+                module.safeLoad();
+            try {
+                Collection<? extends cObject> submodsList = Arrays.asList(module.getSubmodules());
+                module.getController().loadUnfilledObjects(submodsList);
+            }
+            catch (IOException e) {  //FIXME ez itt valahogy nem tul jo!
+                SimulationPlugin.logError(e);   
+            }
+
+//            CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
+//            moduleFigure.setDisplayString(getDisplayStringFrom(module)); //XXX needed? the same is in refreshVisuals()!!!
+
+            
             refreshChildren();
             refreshConnections();
             refreshVisuals();
