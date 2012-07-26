@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.StackLayout;
@@ -22,10 +23,13 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.figures.misc.FigureUtils;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
@@ -40,7 +44,7 @@ import org.omnetpp.simulation.model.cSimpleModule;
 //FIXME how to evaluate "$PARNAME" references in display strings???
 //NOTE: see ModelCanvas in the old topic/guienv2 branch for scrollable version (using ScrolledComposite)
 public class SimulationCanvas extends FigureCanvas implements IInspectorContainer, ISelectionProvider {
-    public static final String EDITOR_ID = "org.omnetpp.simulation.inspectors.SimulationCanvas";
+    private final Image BACKGROUND_IMAGE = SimulationPlugin.getCachedImage("icons/misc/paper.png"); //XXX bg.png
 
     private Figure inspectorsLayer;
     private Layer controlsLayer;
@@ -49,7 +53,20 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 	protected ISimulationStateListener simulationListener;
     protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
     protected IStructuredSelection currentSelection = new StructuredSelection();
-    
+
+    class ImagePatternFigure extends Figure {
+        private Pattern pattern;
+        
+        public ImagePatternFigure(Image image) {
+            pattern = new Pattern(Display.getCurrent(), image);
+        }
+        
+        protected void paintFigure(Graphics graphics) {
+            graphics.setBackgroundPattern(pattern);
+            graphics.fillRectangle(getBounds());
+            graphics.setBackgroundPattern(null);
+        }
+    }
 
 	public SimulationCanvas(Composite parent, int style) {
 	    super(parent, style);
@@ -59,7 +76,8 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         Layer layeredPane = new Layer();
         layeredPane.setLayoutManager(new StackLayout());
 
-        inspectorsLayer = new Figure();
+
+        inspectorsLayer = new ImagePatternFigure(BACKGROUND_IMAGE);
         inspectorsLayer.setLayoutManager(new XYLayout());
         layeredPane.add(inspectorsLayer);
 
