@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.inspectors;
 
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -19,12 +18,12 @@ import org.omnetpp.simulation.model.cPacket;
 public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private ObjectFieldsViewer viewer;
     
-	public ObjectFieldsInspectorPart(cObject object) {
-		super(object);
+	public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
+		super(parent, object);
 	}
 
 	@Override
-	protected Control createContents(Composite parent) {
+	protected Control createControl(Composite parent) {
 	    if (!object.isFilledIn())
 	        object.safeLoad(); // for getClassName() in next line
 	    boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
@@ -32,7 +31,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         viewer.setMode(isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET : ObjectFieldsViewer.Mode.GROUPED);
         viewer.setInput(object);
 
-	 	figure.setPreferredSize(new Dimension(300, 200));
+	 	viewer.getTree().setSize(300, 200);
 	 	
 	 	viewer.getTree().addSelectionListener(new SelectionAdapter() {
             @Override

@@ -38,7 +38,7 @@ import org.omnetpp.simulation.model.cObject;
  * @author Andras
  */
 //TODO ConnectionFigure must be fixed too!
-public class GraphicalModulePart extends InspectorPart {
+public class GraphicalModulePart extends AbstractInspectorPart {
 	protected static final DisplayString EMPTY_DISPLAYSTRING = new DisplayString(""); 
 	
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
@@ -51,8 +51,8 @@ public class GraphicalModulePart extends InspectorPart {
     /**
      * Constructor.
      */
-    public GraphicalModulePart(cModule module) {
-    	super(module);
+    public GraphicalModulePart(IInspectorContainer parent, cModule module) {
+    	super(parent, module);
     	
         // mouse handling
         figure.addMouseListener(new MouseListener() {

@@ -14,10 +14,10 @@ import org.omnetpp.simulation.model.cObject;
  * @author Andras
  */
 //XXX make more options what to display: class+name/fullpath, info, detailedinfo; change color, shape etc
-public class InfoTextInspectorPart extends InspectorPart {
+public class InfoTextInspectorPart extends AbstractInspectorPart {
 
-	public InfoTextInspectorPart(cObject object) {
-		super(object);
+	public InfoTextInspectorPart(IInspectorContainer parent, cObject object) {
+		super(parent, object);
 
 		if (object.isFilledIn())  //XXX why not in refresh?
             object.safeLoad();

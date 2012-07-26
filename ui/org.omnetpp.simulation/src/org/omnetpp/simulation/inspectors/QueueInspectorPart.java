@@ -25,13 +25,13 @@ import org.omnetpp.simulation.model.cQueue;
 //XXX add tooltip for message items
 //XXX add similar context menu as GraphicalModulePart has
 //XXX lots of stuff common with GraphicalModulePart -- factor them out? 
-public class QueueInspectorPart extends InspectorPart {
+public class QueueInspectorPart extends AbstractInspectorPart {
 	private Map<cObject,IFigure> objectToFigureMap = new HashMap<cObject, IFigure>();
 	private Map<IFigure,cObject> figureToObjectMap = new HashMap<IFigure, cObject>();
 	private cObject[] prevObjects = null; // just to detect changes...
 	
-	public QueueInspectorPart(cObject object) {
-		super(object);
+	public QueueInspectorPart(IInspectorContainer parent, cObject object) {
+		super(parent, object);
 
 		if (object.isFilledIn())
             object.safeLoad(); //XXX why not in refresh()?

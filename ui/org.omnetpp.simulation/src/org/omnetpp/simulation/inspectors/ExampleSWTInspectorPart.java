@@ -2,7 +2,6 @@ package org.omnetpp.simulation.inspectors;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -17,17 +16,16 @@ import org.omnetpp.simulation.model.cPacket;
 
 public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 
-	public ExampleSWTInspectorPart(cObject object) {
-		super(object);
+	public ExampleSWTInspectorPart(IInspectorContainer parent, cObject object) {
+		super(parent, object);
 	}
 
 	@Override
-	protected Control createContents(Composite parent) {
+	protected Control createControl(Composite parent) {
 		List listbox = new List(parent, SWT.BORDER | SWT.DOUBLE_BUFFERED | SWT.V_SCROLL);
 		listbox.setItems("no content yet".split(" ")); //XXX
 
-		Point p = listbox.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	 	figure.setPreferredSize(new Dimension(100, 120)); //XXX
+        listbox.setSize(300, 200);
 	 	
 	 	listbox.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -38,12 +36,12 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 		return listbox;
 	}
 
-	//@Override
+	@Override
 	public boolean isMaximizable() {
 		return false;
 	}
 
-	//@Override
+	@Override
 	public void populateContextMenu(MenuManager contextMenuManager, Point p) {
 	}
 

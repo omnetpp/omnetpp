@@ -9,14 +9,15 @@ import org.omnetpp.simulation.model.cObject;
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
  */
-public abstract class InspectorPart implements IInspectorPart {
+public abstract class AbstractInspectorPart implements IInspectorPart {
 	protected cObject object;
 	protected IInspectorFigure figure;
 	protected IInspectorContainer inspectorContainer;
 	protected boolean isSelected;
 
-	public InspectorPart(cObject object) {
+	public AbstractInspectorPart(IInspectorContainer parent, cObject object) {
 		this.object = object;
+		this.inspectorContainer = parent;
 		
 		figure = createFigure();
 		figure.setInspectorPart(this);
@@ -81,11 +82,6 @@ public abstract class InspectorPart implements IInspectorPart {
 	    	System.out.println("object disposed - auto-closing inspector: ");
 			getContainer().close(this);
 		}
-	}
-
-	@Override
-	public void setContainer(IInspectorContainer container) {
-		this.inspectorContainer = container;
 	}
 
 	@Override

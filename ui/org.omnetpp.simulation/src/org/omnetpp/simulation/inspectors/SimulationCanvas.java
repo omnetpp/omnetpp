@@ -105,7 +105,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             public void menuDetected(MenuDetectEvent e) {
                 contextMenuManager.removeAll();
                 Point p = toControl(e.x, e.y);
-                IInspectorPart inspectorPart = InspectorPart.findInspectorPartAt(SimulationCanvas.this, p.x, p.y);
+                IInspectorPart inspectorPart = AbstractInspectorPart.findInspectorPartAt(SimulationCanvas.this, p.x, p.y);
                 if (inspectorPart != null)
                 	inspectorPart.populateContextMenu(contextMenuManager, p);
             }
@@ -146,7 +146,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         // register the inspector
         inspectors.add(inspectorPart);
-        inspectorPart.setContainer(this);
         inspectorPart.refresh();
     }
 
@@ -206,14 +205,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 	    //TODO move inspector creation out of SimulationCanvas!!!
         IInspectorPart inspector = null;
         if (object instanceof cModule && !(object instanceof cSimpleModule))
-            inspector = new GraphicalModulePart((cModule)object);
+            inspector = new GraphicalModulePart(this, (cModule)object);
 //        else if (object instanceof cMessage)
-//            inspectorPart = new MessageInspectorPart((cMessage)object);
+//            inspectorPart = new MessageInspectorPart(this, (cMessage)object);
         else if (object instanceof cQueue)
-            inspector = new QueueInspectorPart((cQueue)object);
+            inspector = new QueueInspectorPart(this, (cQueue)object);
         else // fallback
-            inspector = new ObjectFieldsInspectorPart(object);
-//            inspector = new InfoTextInspectorPart(object);
+            inspector = new ObjectFieldsInspectorPart(this, object);
+//            inspector = new InfoTextInspectorPart(this, object);
         return inspector;
     }
 	
