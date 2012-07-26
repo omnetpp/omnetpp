@@ -5,9 +5,7 @@ import org.eclipse.draw2d.CoordinateListener;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.LineBorder;
-import org.eclipse.draw2d.RoundedRectangle;
-import org.eclipse.draw2d.ToolbarLayout;
+import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
@@ -15,8 +13,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -29,15 +25,14 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
 	protected static Cursor arrowCursor;
 	protected Control control;
 
-	public class ContainerFigure extends RoundedRectangle implements IInspectorFigure {
+	// Note: this is a Layer because it needs to be transparent. (It is not a good idea
+	// to visually mix Figures and SWT controls, because SWT controls are always on
+	// top so "slicing" can occur if such inspector overlaps with another).
+	public class ContainerFigure extends Layer implements IInspectorFigure {
 		protected IInspectorPart inspectorPart;
 
 		public ContainerFigure() {
-			setBackgroundColor(ColorFactory.LIGHT_BLUE2);
-			setLayoutManager(new ToolbarLayout());
-			setSelectionBorder(false);
 		}
-
 
 		@Override
 		public IInspectorPart getInspectorPart() {
@@ -51,13 +46,12 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
 
 		@Override
 		public int getDragOperation(int x, int y) {
-	    	return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
+		    return 0;  // we do it on the SWT control
 		}
 
 		@Override
 		public void setSelectionBorder(boolean isSelected) {
-	        //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
-	        setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
+		    // nothing (we do it in SWT)
 		}
 
 	}
@@ -104,7 +98,9 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
                 adjustControlBounds();
             }
         });
-	    
+	
+        addFloatingControlsSupportTo(control);
+        
 	    return figure;
 	}
 
@@ -121,14 +117,13 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
 	protected void adjustControlBounds() {
 		Rectangle r = figure.getBounds().getCopy();
 		figure.translateToAbsolute(r);
-		r.shrink(10, 10); // leave room for resize handles
 		control.setBounds(new org.eclipse.swt.graphics.Rectangle(r.x, r.y, r.width, r.height));
 	}
 	
 	@Override
 	public void dispose() {
-	    super.dispose();
 	    control.dispose();
 	    control = null;
+	    super.dispose();
 	}
 }

@@ -5,8 +5,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
 
@@ -15,7 +18,10 @@ import org.omnetpp.simulation.model.cPacket;
  * @author Andras
  */
 //TODO icon buttons to switch mode, ordering, etc.
+//TODO add title, resize border, etc.
 public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
+    private Composite frame;
+    private Label label;
     private ObjectFieldsViewer viewer;
     
 	public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
@@ -27,11 +33,18 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 	    if (!object.isFilledIn())
 	        object.safeLoad(); // for getClassName() in next line
 	    boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
-        viewer = new ObjectFieldsViewer(parent, SWT.BORDER | SWT.V_SCROLL);
+	    
+	    frame = new Composite(parent, SWT.BORDER);
+        frame.setSize(300, 200);
+	    frame.setLayout(new GridLayout(1, false));
+	    
+	    label = new Label(frame, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+	    
+        viewer = new ObjectFieldsViewer(frame, SWT.BORDER | SWT.V_SCROLL);
+        viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setMode(isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET : ObjectFieldsViewer.Mode.GROUPED);
         viewer.setInput(object);
-
-	 	viewer.getTree().setSize(300, 200);
 	 	
 	 	viewer.getTree().addSelectionListener(new SelectionAdapter() {
             @Override
@@ -39,7 +52,10 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
                 inspectorContainer.select(object, true);
             }
         });
-		return viewer.getTree();
+	 	
+	 	frame.layout();
+	 	
+		return frame;
 	}
 
 	@Override
@@ -54,6 +70,11 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 	@Override
 	public void refresh() {
 		super.refresh();
+		
+		String text = "(" + object.getClassName() + ") " + object.getFullPath() + " - " + object.getInfo();
+		label.setText(text);
+		label.setToolTipText(text); // because label text is usually not fully visible
+		
 		viewer.refresh();
 	}
 }

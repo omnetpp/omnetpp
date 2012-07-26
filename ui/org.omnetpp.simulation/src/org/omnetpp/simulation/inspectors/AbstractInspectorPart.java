@@ -11,6 +11,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -154,9 +155,32 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
             }
         }
     };
+
+    protected void addFloatingControlsSupportTo(Control control) {
+        MouseTrackAdapter listener = new MouseTrackAdapter() {
+            @Override
+            public void mouseHover(MouseEvent e) {
+                if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls == null) {
+                    floatingControls = createFloatingControls();
+                    relocateFloatingControls();
+                }
+            }
+        };
+
+        addMouseTrackListenerRec(control, listener);
+    }
+    
+    protected static void addMouseTrackListenerRec(Control control, MouseTrackListener listener) {
+        control.addMouseTrackListener(listener);
+        if (control instanceof Composite)
+            for (Control child : ((Composite) control).getChildren())
+                addMouseTrackListenerRec(child, listener);
+    }
+    
     protected void addFloatingControlsSupport() {
         Composite canvas = getContainer().getControl();
-        canvas.addMouseTrackListener(new MouseTrackListener() {
+        canvas.addMouseTrackListener(new MouseTrackAdapter() {
             @Override
             public void mouseHover(MouseEvent e) {
                 if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
@@ -164,14 +188,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                     floatingControls = createFloatingControls();
                     relocateFloatingControls();
                 }
-            }
-            
-            @Override
-            public void mouseExit(MouseEvent e) {
-            }
-            
-            @Override
-            public void mouseEnter(MouseEvent e) {
             }
         });
         canvas.addMouseMoveListener(new MouseMoveListener() {
