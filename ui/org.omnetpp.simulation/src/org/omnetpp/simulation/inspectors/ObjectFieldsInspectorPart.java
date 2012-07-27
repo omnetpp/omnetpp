@@ -122,6 +122,17 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     }
 
     @Override
+    protected void disposeFloatingControls() {
+        super.disposeFloatingControls();
+        
+        packetModeTool = null;
+        childrenModeTool = null;
+        groupedModeTool = null;
+        inheritaceModeTool = null;
+        flatModeTool = null;
+    }
+    
+    @Override
 	public void refresh() {
 		super.refresh();
 		

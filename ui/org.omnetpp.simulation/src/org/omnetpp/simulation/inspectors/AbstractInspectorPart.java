@@ -152,10 +152,8 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         public void run() {
             System.out.println("removeFloatingControlsTimer expired");
             isRemoveFloatingControlsTimerActive = false;
-            if (floatingControls != null && !floatingControls.isDisposed() && !containsMouse(floatingControls)) {
-                floatingControls.dispose();
-                floatingControls = null;
-            }
+            if (floatingControls != null && !floatingControls.isDisposed() && !containsMouse(floatingControls))
+                disposeFloatingControls();
         }
     };
 
@@ -328,13 +326,21 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         Point controlsSize = floatingControls.getSize();
         floatingControls.setLocation(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);        
     }
+
+    public boolean isFloatingControlsDisplayed() {
+        return floatingControls != null;
+    }
+    
+    protected void disposeFloatingControls() {
+        floatingControls.dispose();
+        floatingControls = null;
+    }
     
     public void dispose() {
 		System.out.println("disposing inspector: " + object);
 
 		if (floatingControls != null) {
-            floatingControls.dispose();
-            floatingControls = null;        
+            disposeFloatingControls();        
         }
 
 		if (figure != null) {
