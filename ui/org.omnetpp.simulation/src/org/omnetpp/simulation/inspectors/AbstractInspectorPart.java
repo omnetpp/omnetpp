@@ -34,6 +34,7 @@ import org.omnetpp.simulation.model.cObject;
  */
 //TODO normal resize for SWT inspectors, module inspectors, etc
 //TODO floating controls misplaced if canvas is scrolled
+//TODO floating controls to appear inside if inspector is at the top (y coordinate would be negative)
 public abstract class AbstractInspectorPart implements IInspectorPart {
 	protected cObject object;
 	protected IInspectorFigure figure;
@@ -241,33 +242,30 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         Composite panel = new Composite(getContainer().getControl(), SWT.BORDER);
         panel.setLayout(new FillLayout());
         
-        ToolBar toolbar = new ToolBar(panel, SWT.VERTICAL);
+        ToolBar toolbar = new ToolBar(panel, SWT.HORIZONTAL);
 
         // add icons to the toolbar
-        ToolItem closeButton = new ToolItem(toolbar, SWT.PUSH);
-        closeButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
-        closeButton.setToolTipText("Close");
+
+        addIconsToFloatingToolbar(toolbar);
+
+        new ToolItem(toolbar, SWT.SEPARATOR);
 
         final Label dragHandle = new Label(toolbar, SWT.NONE);
-        dragHandle.setAlignment(SWT.CENTER);
+        dragHandle.setAlignment(SWT.LEFT);
         dragHandle.setImage(SimulationPlugin.getCachedImage("icons/etool16/draghandle.png"));
         dragHandle.setToolTipText("Drag handle");
         ToolItem dragHandleWrapperItem = new ToolItem(toolbar, SWT.SEPARATOR);
         dragHandleWrapperItem.setControl(dragHandle);
-
-        new ToolItem(toolbar, SWT.SEPARATOR);
         
-        ToolItem startButton = new ToolItem(toolbar, SWT.PUSH);
-        startButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
-        startButton.setToolTipText("Start Foo");
-        
-        ToolItem stopButton = new ToolItem(toolbar, SWT.PUSH);
-        stopButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_PASTE));
-        stopButton.setToolTipText("Stop Foo");
+        ToolItem closeButton = new ToolItem(toolbar, SWT.PUSH);
+        closeButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
+        closeButton.setToolTipText("Close");
 
         // set the size of the toolbar
         panel.layout();
         panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        
+        panel.moveAbove(null);
         
         // add action to buttons
         closeButton.addSelectionListener(new SelectionAdapter() {
@@ -308,13 +306,25 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         
         return panel;
     }
+
+    // expected to be redefined from subclasses
+    protected void addIconsToFloatingToolbar(ToolBar toolbar) {
+        ToolItem startButton = new ToolItem(toolbar, SWT.PUSH);
+        startButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
+        startButton.setToolTipText("Whatever");
+        
+        ToolItem stopButton = new ToolItem(toolbar, SWT.DROP_DOWN);
+        stopButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_PASTE));
+        stopButton.setToolTipText("Mode");
+    }
     
     protected void relocateFloatingControls() {
         IFigure reference = AbstractInspectorPart.this.figure;
         Rectangle targetBounds = new Rectangle(reference.getBounds());
         reference.translateToAbsolute(targetBounds);
         Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y); 
-        floatingControls.setLocation(targetTopRightCorner.x + 3, targetTopRightCorner.y);        
+        Point controlsSize = floatingControls.getSize();
+        floatingControls.setLocation(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);        
     }
     
     public void dispose() {
