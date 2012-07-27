@@ -162,6 +162,11 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 		removeInspectorPart(inspectorPart);
 	}
 
+	@Override
+	public List<IInspectorPart> getInspectors() {
+	    return inspectors;
+	}
+	
 	public IInspectorPart findInspectorFor(cObject object) {
 	    for (IInspectorPart inspector : inspectors)
 	        if (inspector.getObject() == object)

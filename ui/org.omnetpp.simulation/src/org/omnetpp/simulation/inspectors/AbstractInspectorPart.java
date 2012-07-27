@@ -35,10 +35,8 @@ import org.omnetpp.simulation.model.cObject;
  * Default implementation for IInspectorPart, base class for inspector classes
  */
 //TODO drag icon is rendered badly
-//TODO mozgatasnal, resize-nal hozzuk elore az ablakot!
 //TODO normal resize for SWT inspectors, module inspectors, etc
 //TODO floating controls misplaced if canvas is scrolled
-//TODO floating controls to appear inside if inspector is at the top (y coordinate would be negative)
 public abstract class AbstractInspectorPart implements IInspectorPart {
 	protected cObject object;
 	protected IInspectorFigure figure;
@@ -156,7 +154,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
             System.out.println("removeFloatingControlsTimer expired");
             isRemoveFloatingControlsTimerActive = false;
             if (floatingControls != null && !floatingControls.isDisposed() && !containsMouse(floatingControls))
-                disposeFloatingControls();
+                closeFloatingControls();
         }
     };
 
@@ -167,7 +165,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
             public void mouseEnter(MouseEvent e) {
                 if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 if (floatingControls == null) {
-                    createFloatingControls();
+                    openFloatingControls();
                 }
                 if (floatingControls != null) {
                     if (isRemoveFloatingControlsTimerActive) {
@@ -199,7 +197,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                 // plus one second elapses without moving back within inspector bounds.
                 // We do the same, except ignore the 10 pixels distance.
                 if (floatingControls == null && figure.containsPoint(e.x, e.y)) {
-                    createFloatingControls();
+                    openFloatingControls();
                 }
                 if (floatingControls != null) {
                     //NOTE: ONCE THE MOUSE ENTERS FLOATINGCONTROLS, WE STOP RECEIVING NOTIFICATIONS SO CANNOT CANCEL THE TIMER!
@@ -245,18 +243,25 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
     private int moveOffsetX, moveOffsetY;
     private static Cursor dragCursor = null;
     
-    protected void createFloatingControls() {
+    protected void openFloatingControls() {
+        Assert.isTrue(floatingControls == null);
+        
+        // close floating controls of all other inspectors
+        for (IInspectorPart inspector : getContainer().getInspectors())
+            if (inspector.getFloatingControls() != null)
+                inspector.closeFloatingControls();
+                
         Composite panel = new Composite(getContainer().getControl(), SWT.BORDER);
         panel.setLayout(new FillLayout());
         
         ToolBar toolbar = new ToolBar(panel, SWT.HORIZONTAL);
 
         // add icons to the toolbar
-
         addIconsToFloatingToolbar(toolbar);
 
         new ToolItem(toolbar, SWT.SEPARATOR);
 
+        // plus the drag handle and the close button
         final Label dragHandle = new Label(toolbar, SWT.NONE);
         dragHandle.setAlignment(SWT.LEFT);
         dragHandle.setImage(SimulationPlugin.getCachedImage("icons/etool16/draghandle.png"));
@@ -366,7 +371,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         return floatingControls;
     }
     
-    protected void disposeFloatingControls() {
+    public void closeFloatingControls() {
         floatingControls.dispose();
         floatingControls = null;
     }
@@ -385,9 +390,8 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
     public void dispose() {
 		System.out.println("disposing inspector: " + object);
 
-		if (floatingControls != null) {
-            disposeFloatingControls();        
-        }
+		if (floatingControls != null)
+            closeFloatingControls();        
 
 		if (figure != null) {
 		    if (figure.getParent() != null)

@@ -3,6 +3,7 @@ package org.omnetpp.simulation.inspectors;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.model.cObject;
 
 
@@ -16,8 +17,13 @@ import org.omnetpp.simulation.model.cObject;
  * inspected object) as well.
  */
 public interface IInspectorPart {
+    /**
+     * Returns container for the inspector. The container handles selection,
+     * closing / maximizing / changing Z-order of inspectors, and other tasks.
+     */
+    IInspectorContainer getContainer();
 
-	/**
+    /**
 	 * Returns the inspected object.
 	 */
 	cObject getObject();
@@ -36,12 +42,30 @@ public interface IInspectorPart {
 	 */
 	void dispose();
 
+	boolean isDisposed();
+
+	/**
+	 * TODO
+	 * Returns null if not open
+	 */
+	Control getFloatingControls();
+    
+    /**
+     * TODO
+     */
+    void closeFloatingControls();
+
+    /**
+     * Brings this inspector to the front of all inspectors in Z-order.
+     */
+    void raiseToTop();
+
     /**
      * Returns the corresponding figure. Clients are responsible
      * for inserting the figure into a draw2d canvas.
      */
     IInspectorFigure getFigure();
-
+    
     /**
      * Returns whether this inspector can be maximized to fill the canvas.
      */
@@ -53,12 +77,6 @@ public interface IInspectorPart {
     boolean isSelected();
 
     /**
-     * Returns container for the inspector. The container handles selection,
-     * closing / maximizing / changing Z-order of inspectors, and other tasks.
-     */
-    IInspectorContainer getContainer();
-
-    /**
      * Called when the canvas selection changes. The inspector part should
      * look at the objects in the selection, and highlight the relevant ones
      * (the ones it displays) on the canvas
@@ -66,4 +84,5 @@ public interface IInspectorPart {
     void selectionChanged(IStructuredSelection selection);
 
     void populateContextMenu(MenuManager contextMenuManager, Point p);
+    
 }

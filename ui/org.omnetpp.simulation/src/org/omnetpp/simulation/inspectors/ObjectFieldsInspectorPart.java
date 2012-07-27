@@ -122,8 +122,8 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     }
 
     @Override
-    protected void disposeFloatingControls() {
-        super.disposeFloatingControls();
+    public void closeFloatingControls() {
+        super.closeFloatingControls();
         
         packetModeTool = null;
         childrenModeTool = null;

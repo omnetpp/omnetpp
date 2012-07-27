@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.inspectors;
 
+import java.util.List;
+
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.Layer;
@@ -29,7 +31,13 @@ public interface IInspectorContainer {
 	 */
 	void close(IInspectorPart inspector);
 
-	/**
+    /**
+     * Returns the list of all currently open inspectors. The list must not
+     * be modified by the caller.
+     */
+    List<IInspectorPart> getInspectors();
+
+    /**
 	 * Returns the SWT control (a FigureCanvas) that contains the
 	 * inspector figures. This can be useful for adding SWT listeners
 	 * or creating inspectors that contain SWT controls.
@@ -47,7 +55,7 @@ public interface IInspectorContainer {
      * the inspector. 
      */
     Layer getControlsLayer();
-	
+
 	/**
 	 * Request selecting this object, and optionally deselecting all others.
 	 */
@@ -67,5 +75,5 @@ public interface IInspectorContainer {
 	/**
 	 * Remove all objects from the selection.
 	 */
-	void deselectAll();	
+	void deselectAll();
 }
