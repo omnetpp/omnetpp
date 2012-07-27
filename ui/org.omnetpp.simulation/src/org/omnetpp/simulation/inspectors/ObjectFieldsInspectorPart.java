@@ -17,8 +17,10 @@ import org.omnetpp.simulation.model.cPacket;
  * 
  * @author Andras
  */
+//TODO cObjects should be double-clickable
 //TODO icon buttons to switch mode, ordering, etc.
 //TODO add title, resize border, etc.
+//TODO adaptive label: display the most useful info that fits in the available space
 public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private Composite frame;
     private Label label;
@@ -71,10 +73,12 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 	public void refresh() {
 		super.refresh();
 		
-		String text = "(" + object.getClassName() + ") " + object.getFullPath() + " - " + object.getInfo();
-		label.setText(text);
-		label.setToolTipText(text); // because label text is usually not fully visible
-		
-		viewer.refresh();
+		if (!isDisposed()) {
+		    String text = "(" + object.getClassName() + ") " + object.getFullPath() + " - " + object.getInfo();
+		    label.setText(text);
+		    label.setToolTipText(text); // because label text is usually not fully visible
+
+		    viewer.refresh();
+		}
 	}
 }

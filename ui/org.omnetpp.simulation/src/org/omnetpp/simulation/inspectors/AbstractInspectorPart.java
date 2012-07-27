@@ -156,10 +156,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         }
     };
 
+    //TODO: only 1 floating controls in the canvas
     protected void addFloatingControlsSupportTo(Control control) {
-        MouseTrackAdapter listener = new MouseTrackAdapter() {
+        MouseTrackAdapter listener = new MouseTrackAdapter() { //TODO also: cancel 1s timer!
             @Override
-            public void mouseHover(MouseEvent e) {
+            public void mouseEnter(MouseEvent e) {
                 if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 if (floatingControls == null) {
                     floatingControls = createFloatingControls();
@@ -180,16 +181,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
     
     protected void addFloatingControlsSupport() {
         Composite canvas = getContainer().getControl();
-        canvas.addMouseTrackListener(new MouseTrackAdapter() {
-            @Override
-            public void mouseHover(MouseEvent e) {
-                if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
-                if (figure.containsPoint(e.x, e.y) && floatingControls == null) {
-                    floatingControls = createFloatingControls();
-                    relocateFloatingControls();
-                }
-            }
-        });
         canvas.addMouseMoveListener(new MouseMoveListener() {
             @Override
             public void mouseMove(MouseEvent e) {
@@ -198,6 +189,10 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                 // when user moves at least 10 pixels away from the inspector's bounding box, 
                 // plus one second elapses without moving back within inspector bounds.
                 // We do the same, except ignore the 10 pixels distance.
+                if (floatingControls == null && figure.containsPoint(e.x, e.y)) {
+                    floatingControls = createFloatingControls();
+                    relocateFloatingControls();
+                }
                 if (floatingControls != null) {
                     //NOTE: ONCE THE MOUSE ENTERS FLOATINGCONTROLS, WE STOP RECEIVING NOTIFICATIONS SO CANNOT CANCEL THE TIMER!
                     if (figure.containsPoint(e.x, e.y)) {
