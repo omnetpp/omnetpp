@@ -66,9 +66,12 @@ std::string cProperties::info() const
     if (propv.empty())
         return "";
     std::stringstream out;
-    //out << "size=" << propv.size();
-    for (int i = 0; i < (int)propv.size(); i++)
-        out << (i==0 ? "" : " ") << propv[i]->info();
+    int numProperties = (int)propv.size();
+    int numDisplayed = std::min(3, numProperties);
+    for (int i = 0; i < numDisplayed; i++)
+        out << (i==0 ? "@" : ", @") << propv[i]->getFullName();
+    if (numDisplayed != numProperties)
+        out << "... (and " << (numProperties - numDisplayed) << " more)";
     return out.str();
 }
 
