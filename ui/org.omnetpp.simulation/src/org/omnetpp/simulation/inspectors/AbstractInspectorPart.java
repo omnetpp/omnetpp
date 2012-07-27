@@ -146,6 +146,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 //    }
 
     private Control floatingControls = null;
+    private Point floatingControlsDisplacement;  // relative to its normal location (= right-aligned just above the inspector) 
     private boolean isRemoveFloatingControlsTimerActive = false;
     private Runnable removeFloatingControlsTimer = new Runnable() {
         @Override
@@ -164,8 +165,13 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
             public void mouseEnter(MouseEvent e) {
                 if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 if (floatingControls == null) {
-                    floatingControls = createFloatingControls();
-                    relocateFloatingControls();
+                    createFloatingControls();
+                }
+                if (floatingControls != null) {
+                    if (isRemoveFloatingControlsTimerActive) {
+                        Display.getCurrent().timerExec(-1, removeFloatingControlsTimer); // cancel timer
+                        isRemoveFloatingControlsTimerActive = false;
+                    }
                 }
             }
         };
@@ -191,8 +197,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                 // plus one second elapses without moving back within inspector bounds.
                 // We do the same, except ignore the 10 pixels distance.
                 if (floatingControls == null && figure.containsPoint(e.x, e.y)) {
-                    floatingControls = createFloatingControls();
-                    relocateFloatingControls();
+                    createFloatingControls();
                 }
                 if (floatingControls != null) {
                     //NOTE: ONCE THE MOUSE ENTERS FLOATINGCONTROLS, WE STOP RECEIVING NOTIFICATIONS SO CANNOT CANCEL THE TIMER!
@@ -238,7 +243,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
     private int moveOffsetX, moveOffsetY;
     private static Cursor dragCursor = null;
     
-    protected Control createFloatingControls() {
+    protected void createFloatingControls() {
         Composite panel = new Composite(getContainer().getControl(), SWT.BORDER);
         panel.setLayout(new FillLayout());
         
@@ -264,8 +269,29 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         // set the size of the toolbar
         panel.layout();
         panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-        
+
+        // raise to the top
         panel.moveAbove(null);
+
+        // created!
+        floatingControls = panel;
+        
+        // we may need to displace it by some vector compared to its normal location, 
+        // to ensure it is fully visible (i.e. appears within canvas bounds)
+        Point naturalLoc = computeFloatingControlsNaturalLocation();
+        Point adjustedLoc = new Point(naturalLoc.x, naturalLoc.y);
+        if (adjustedLoc.x + panel.getSize().x > getContainer().getControl().getBounds().width)
+            adjustedLoc.x = getContainer().getControl().getBounds().width - panel.getSize().x;
+        if (adjustedLoc.x < 0)
+            adjustedLoc.x = 0;
+        if (adjustedLoc.y + panel.getSize().y > getContainer().getControl().getBounds().width)
+            adjustedLoc.y = getContainer().getControl().getBounds().height - panel.getSize().y;
+        if (adjustedLoc.y < 0)
+            adjustedLoc.y = 0;
+        floatingControlsDisplacement = new Point(adjustedLoc.x - naturalLoc.x, adjustedLoc.y - naturalLoc.y);
+        
+        // move it to the correct location
+        relocateFloatingControls();
         
         // add action to buttons
         closeButton.addSelectionListener(new SelectionAdapter() {
@@ -303,8 +329,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                 }
             }
         });
-        
-        return panel;
     }
 
     // expected to be redefined from subclasses
@@ -319,14 +343,19 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
     }
     
     protected void relocateFloatingControls() {
+        Point naturalLoc = computeFloatingControlsNaturalLocation();
+        floatingControls.setLocation(naturalLoc.x + floatingControlsDisplacement.x, naturalLoc.y + floatingControlsDisplacement.y);        
+    }
+
+    protected Point computeFloatingControlsNaturalLocation() {
         IFigure reference = AbstractInspectorPart.this.figure;
         Rectangle targetBounds = new Rectangle(reference.getBounds());
         reference.translateToAbsolute(targetBounds);
         Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y); 
         Point controlsSize = floatingControls.getSize();
-        floatingControls.setLocation(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);        
+        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);        
     }
-
+    
     public boolean isFloatingControlsDisplayed() {
         return floatingControls != null;
     }
