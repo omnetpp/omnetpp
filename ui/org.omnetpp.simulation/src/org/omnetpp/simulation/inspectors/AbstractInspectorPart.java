@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.inspectors;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.CoordinateListener;
 import org.eclipse.draw2d.FigureCanvas;
@@ -313,6 +315,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                 moveOffsetX = figureBounds.x - p.x;
                 moveOffsetY = figureBounds.y - p.y;
                 dragHandle.setCursor(dragCursor);
+                raiseToTop();
             }
             public void mouseUp(MouseEvent e) {
                 mouse1Down = false;
@@ -356,13 +359,27 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);        
     }
     
-    public boolean isFloatingControlsDisplayed() {
-        return floatingControls != null;
+    /**
+     * Returns null if not displayed.
+     */
+    public Control getFloatingControls() {
+        return floatingControls;
     }
     
     protected void disposeFloatingControls() {
         floatingControls.dispose();
         floatingControls = null;
+    }
+    
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void raiseToTop() {
+        // there's no public API in draw2d for changing the order (Z-order) of children, but 
+        // Randy Hudson himself suggests just to change the list returned by getChildren()...
+        // http://dev.eclipse.org/mhonarc/lists/gef-dev/msg00914.html
+        List siblings = figure.getParent().getChildren();
+        siblings.remove(figure);
+        siblings.add(figure);
+        figure.getParent().invalidate();
     }
     
     public void dispose() {

@@ -121,6 +121,14 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
 	}
 	
 	@Override
+	public void raiseToTop() {
+	    super.raiseToTop();
+	    
+	    control.moveAbove(null);
+	    getFloatingControls().moveAbove(control);
+	}
+	
+	@Override
 	public void dispose() {
 	    control.dispose();
 	    control = null;
