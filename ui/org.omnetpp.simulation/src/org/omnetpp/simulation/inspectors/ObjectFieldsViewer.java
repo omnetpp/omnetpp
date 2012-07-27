@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -35,9 +36,10 @@ import org.omnetpp.simulation.model.cPacket;
  * @author Andras
  */
 //TODO implement ordering and filtering of fields
-//TODO Field, FieldArrayElement should be adaptable to cObject? that should make it easier to implement inspect-on-doubleclick 
+//TODO Field, FieldArrayElement should be adaptable to cObject? that should make it easier to implement inspect-on-doubleclick
+//TODO implement CHILDREN view
 public class ObjectFieldsViewer {
-    public enum Mode { PACKET, GROUPED, BY_DECLARING_CLASS, FLAT };
+    public enum Mode { PACKET, CHILDREN, GROUPED, INHERITANCE, FLAT };
     public enum Ordering { NATURAL, ALPHABETICAL };
 
     private TreeViewer treeViewer;
@@ -191,7 +193,17 @@ public class ObjectFieldsViewer {
 
         protected Object[] groupFieldsOf(cObject object) {
             //TODO observe ordering, possibly filtering!
-            if (mode == Mode.FLAT) {
+            if (mode == Mode.CHILDREN) {
+                cObject[] children = object.getChildObjects();
+                try {
+                    object.getController().loadUnfilledObjects(children);
+                }
+                catch (IOException e) {
+                    e.printStackTrace();  //TODO how to handle exceptions properly... 
+                }
+                return children;
+            }
+            else if (mode == Mode.FLAT) {
                 return object.getFields();
             }
             else if (mode == Mode.GROUPED) {
@@ -210,7 +222,7 @@ public class ObjectFieldsViewer {
                         result.add(new FieldGroup(object, groupName, groups.get(groupName).toArray(new Field[]{})));
                 return result.toArray();
             }
-            else if (mode == Mode.BY_DECLARING_CLASS) {
+            else if (mode == Mode.INHERITANCE) {
                 //XXX this is a copypasta of the above, only groupProperty is replaced by declaredOn
                 Field[] fields = object.getFields();
                 Map<String,List<Field>> groups = new LinkedHashMap<String, List<Field>>();

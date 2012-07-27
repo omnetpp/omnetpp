@@ -32,6 +32,8 @@ import org.omnetpp.simulation.model.cObject;
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
  */
+//TODO drag icon is rendered badly
+//TODO mozgatasnal, resize-nal hozzuk elore az ablakot!
 //TODO normal resize for SWT inspectors, module inspectors, etc
 //TODO floating controls misplaced if canvas is scrolled
 //TODO floating controls to appear inside if inspector is at the top (y coordinate would be negative)
