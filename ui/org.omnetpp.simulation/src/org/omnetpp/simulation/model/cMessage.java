@@ -6,33 +6,33 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.simulation.controller.SimulationController;
 
 public class cMessage extends cObject {
-	private short kind;
-	private short priority;
+    private short kind;
+    private short priority;
 
-	private long id;
-	private long treeId;
+    private long id;
+    private long treeId;
 
-	private cModule senderModule;
-	private cGate senderGate;
-	private cModule arrivalModule;
-	private cGate arrivalGate;
+    private cModule senderModule;
+    private cGate senderGate;
+    private cModule arrivalModule;
+    private cGate arrivalGate;
 
-	private BigDecimal sendingTime;
-	private BigDecimal arrivalTime;
+    private BigDecimal sendingTime;
+    private BigDecimal arrivalTime;
 
     public cMessage(SimulationController controller, long id) {
         super(controller, id);
     }
-	
-	public short getKind() {
-	    checkState();
-		return kind;
-	}
 
-	public short getSchedulingPriority() {
+    public short getKind() {
         checkState();
-		return priority;
-	}
+        return kind;
+    }
+
+    public short getSchedulingPriority() {
+        checkState();
+        return priority;
+    }
 
     public long getId() {
         checkState();
@@ -44,59 +44,59 @@ public class cMessage extends cObject {
         return treeId;
     }
 
-	public boolean isSelfMessage() {
+    public boolean isSelfMessage() {
         checkState();
-		return arrivalGate == null;
-	}
+        return arrivalGate == null;
+    }
 
-	public cModule getSenderModule() {
+    public cModule getSenderModule() {
         checkState();
-		return senderModule;
-	}
+        return senderModule;
+    }
 
-	public cGate getSenderGate() {
+    public cGate getSenderGate() {
         checkState();
-		return senderGate;
-	}
+        return senderGate;
+    }
 
-	public cModule getArrivalModule() {
+    public cModule getArrivalModule() {
         checkState();
-		return arrivalModule;
-	}
+        return arrivalModule;
+    }
 
-	public cGate getArrivalGate() {
+    public cGate getArrivalGate() {
         checkState();
-		return arrivalGate;
-	}
+        return arrivalGate;
+    }
 
-	public BigDecimal getSendingTime()  {
+    public BigDecimal getSendingTime()  {
         checkState();
-		return sendingTime;
-	}
+        return sendingTime;
+    }
 
-	public BigDecimal getArrivalTime() {
+    public BigDecimal getArrivalTime() {
         checkState();
-		return arrivalTime;
-	}
+        return arrivalTime;
+    }
 
-	@Override
-	@SuppressWarnings("rawtypes")
-	protected void doFillFromJSON(Map jsonObject) {
-	    super.doFillFromJSON(jsonObject);
+    @Override
+    @SuppressWarnings("rawtypes")
+    protected void doFillFromJSON(Map jsonObject) {
+        super.doFillFromJSON(jsonObject);
 
-	    kind = ((Number)jsonObject.get("kind")).shortValue();
-	    priority = ((Number)jsonObject.get("priority")).shortValue();
-	    
-	    id = ((Number)jsonObject.get("id")).longValue();
-	    treeId = ((Number)jsonObject.get("treeId")).longValue();
+        kind = ((Number)jsonObject.get("kind")).shortValue();
+        priority = ((Number)jsonObject.get("priority")).shortValue();
 
-	    senderModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("senderModule"));
-	    senderGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("senderGate"));
-	    arrivalModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("arrivalModule"));
-	    arrivalGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("arrivalGate"));
-	    
-	    sendingTime = BigDecimal.parse((String) jsonObject.get("sendingTime"));
-	    arrivalTime = BigDecimal.parse((String) jsonObject.get("arrivalTime"));
-	}
+        id = ((Number)jsonObject.get("id")).longValue();
+        treeId = ((Number)jsonObject.get("treeId")).longValue();
+
+        senderModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("senderModule"));
+        senderGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("senderGate"));
+        arrivalModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("arrivalModule"));
+        arrivalGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("arrivalGate"));
+
+        sendingTime = BigDecimal.parse((String) jsonObject.get("sendingTime"));
+        arrivalTime = BigDecimal.parse((String) jsonObject.get("arrivalTime"));
+    }
 
 }

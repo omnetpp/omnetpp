@@ -28,7 +28,7 @@ import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * Implements the "Attach to simulation" action.
- * 
+ *
  * @author andras
  */
 public class AttachToSimulationHandler extends AbstractHandler {
@@ -37,9 +37,9 @@ public class AttachToSimulationHandler extends AbstractHandler {
         IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
         IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
         Shell shell = workbenchWindow.getShell();
-        
+
         InputDialog dialog = new InputDialog(shell, "Attach to OMNeT++ Simulation", "Enter hostname and port to connect to:", "localhost:8080", null);
-        
+
         if (dialog.open() == Dialog.OK) {
             // parse the result
             String result = dialog.getValue();

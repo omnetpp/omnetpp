@@ -19,7 +19,7 @@ import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cModule;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class LiveAnimationController {
@@ -27,9 +27,9 @@ public class LiveAnimationController {
 
     private SimulationCanvas simulationCanvas;
     private SimulationController simulationController;
-    
+
     private List<AnimationPrimitive> animationPrimitives = new ArrayList<AnimationPrimitive>();
-    
+
     private Runnable invokeTick = new Runnable() {
         @Override
         public void run() {
@@ -41,7 +41,7 @@ public class LiveAnimationController {
         this.simulationCanvas = simulationCanvas;
         this.simulationController = simulationController;
     }
-    
+
     public void startAnimatingLastEvent() {
         // add animations for last event
         addAnimationsForLastEvent();
@@ -49,15 +49,15 @@ public class LiveAnimationController {
         // start animating
         startTicking();
     }
-    
+
     protected void addAnimationsForLastEvent() {
         //animationPrimitives.add(new DummyAnimationPrimitive(50));  //TODO
         //animationPrimitives.add(new DummyMoveMessageAnimation(simulationCanvas.getContents()));  //TODO
-        
+
         LogBuffer logBuffer = simulationController.getLogBuffer();
         EventEntry event = logBuffer.getLastEventEntry();
         Assert.isNotNull(event);
-        
+
         for (Object o : event.logItems) {
             if (o instanceof Anim.MessageSendHopEntry) {
                 Anim.MessageSendHopEntry e = (Anim.MessageSendHopEntry)o;
@@ -93,11 +93,11 @@ public class LiveAnimationController {
         if (!parentModule.isFilledIn())
             parentModule.safeLoad();
     }
-    
+
     protected void startTicking() {
         tick(); // further ticks are scheduled from tick() itself
     }
-    
+
     public void cancelAnimation() {
         Display.getCurrent().timerExec(-1, invokeTick);
         animationFinished();
@@ -111,13 +111,13 @@ public class LiveAnimationController {
                 Display.getCurrent().timerExec(TICK_MILLIS, invokeTick);
             else
                 animationFinished();
-        } 
+        }
         catch (Exception e) {
             SimulationPlugin.logError("Error during animation", e);
             animationFinished();
         }
     }
-    
+
     protected boolean updateAnimations() {
         boolean needMoreTicks = false;
         for (AnimationPrimitive ap : animationPrimitives)
@@ -129,7 +129,7 @@ public class LiveAnimationController {
     protected void animationFinished() {
         // purge obsolete animation primitives
         animationPrimitives.clear(); //XXX for now...
-        
+
         // notify controller
         if (simulationController != null)
             simulationController.animationStopped();

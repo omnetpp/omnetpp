@@ -38,29 +38,29 @@ import org.omnetpp.simulation.model.cObject;
 //TODO normal resize for SWT inspectors, module inspectors, etc
 //TODO floating controls misplaced if canvas is scrolled
 public abstract class AbstractInspectorPart implements IInspectorPart {
-	protected cObject object;
-	protected IInspectorFigure figure;
-	protected IInspectorContainer inspectorContainer;
-	protected boolean isSelected;
+    protected cObject object;
+    protected IInspectorFigure figure;
+    protected IInspectorContainer inspectorContainer;
+    protected boolean isSelected;
 
-	public AbstractInspectorPart(IInspectorContainer parent, cObject object) {
-		this.object = object;
-		this.inspectorContainer = parent;
-		
-		figure = createFigure();
-		figure.setInspectorPart(this);
-		addMoveResizeSupport();
-		addFloatingControlsSupport();
-	}
+    public AbstractInspectorPart(IInspectorContainer parent, cObject object) {
+        this.object = object;
+        this.inspectorContainer = parent;
+
+        figure = createFigure();
+        figure.setInspectorPart(this);
+        addMoveResizeSupport();
+        addFloatingControlsSupport();
+    }
 
     protected abstract IInspectorFigure createFigure();
 
     protected void addMoveResizeSupport() {
         // add move/resize/selection support
-        new InspectorMouseListener(this); //XXX revise this listener! 
+        new InspectorMouseListener(this); //XXX revise this listener!
     }
 
-//XXX this is the Figure-based implementation of floating controls. Drawback: it can never appear over SWT widgets like the object fields tree    
+//XXX this is the Figure-based implementation of floating controls. Drawback: it can never appear over SWT widgets like the object fields tree
 //    class FloatingControlsLocator implements Locator {
 //        public void relocate(IFigure target) {
 //            // see RelativeLocator.relocate()
@@ -77,7 +77,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 //            target.setBounds(targetBounds);
 //        }
 //    }
-//    
+//
 ////    private long controlsDisplayedTime;
 //    protected void addFloatingControlsSupport() {
 //        //XXX experimental; TODO fade-in/fade-out effect! (layer to be turned into AlphaLayer)
@@ -102,10 +102,10 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 //
 //        // force the locator to be invoked whenever the inspector figure moves; without this, the floating
 //        // controls follow the inspector figure with a quite noticeable lag (apparently the layouter is only
-//        // invoked when the mouse rests) 
+//        // invoked when the mouse rests)
 //        figure.addFigureListener(new FigureListener() {
 //            @Override
-//            public void figureMoved(IFigure source) { 
+//            public void figureMoved(IFigure source) {
 //                getContainer().getControlsLayer().invalidate();
 //            }
 //        });
@@ -122,12 +122,12 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 //            setPreferredSize(8, 8);
 //        }
 //    }
-//        
+//
 //    protected IFigure createFloatingControls() {
 //        IFigure toolbar = new Figure();
 //        toolbar.setLayoutManager(new ToolbarLayout(true));
 //        toolbar.setBorder(new LineBorder(ColorFactory.GREY50, 1));
-//        
+//
 //        //XXX dummy buttons
 //        toolbar.add(new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_HOME_NAV)));
 //        toolbar.add(new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_SAVE_EDIT)));
@@ -135,7 +135,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 //        toolbar.add(new ToolbarSpace());
 //        ToolButton closeButton = new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
 //        toolbar.add(closeButton);
-//        
+//
 //        closeButton.addActionListener(new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent event) {
@@ -146,7 +146,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 //    }
 
     private Control floatingControls = null;
-    private Point floatingControlsDisplacement;  // relative to its normal location (= right-aligned just above the inspector) 
+    private Point floatingControlsDisplacement;  // relative to its normal location (= right-aligned just above the inspector)
     private boolean isRemoveFloatingControlsTimerActive = false;
     private Runnable removeFloatingControlsTimer = new Runnable() {
         @Override
@@ -178,14 +178,14 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 
         addMouseTrackListenerRec(control, listener);
     }
-    
+
     protected static void addMouseTrackListenerRec(Control control, MouseTrackListener listener) {
         control.addMouseTrackListener(listener);
         if (control instanceof Composite)
             for (Control child : ((Composite) control).getChildren())
                 addMouseTrackListenerRec(child, listener);
     }
-    
+
     protected void addFloatingControlsSupport() {
         Composite canvas = getContainer().getControl();
         canvas.addMouseMoveListener(new MouseMoveListener() {
@@ -193,7 +193,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
             public void mouseMove(MouseEvent e) {
                 if (isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 // Removing floating controls. Windows 7 does the following with its desktop gadgets:
-                // when user moves at least 10 pixels away from the inspector's bounding box, 
+                // when user moves at least 10 pixels away from the inspector's bounding box,
                 // plus one second elapses without moving back within inspector bounds.
                 // We do the same, except ignore the 10 pixels distance.
                 if (floatingControls == null && figure.containsPoint(e.x, e.y)) {
@@ -216,7 +216,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                 }
             }
         });
-        
+
         // need to adjust control's bounds when figure is moved or resized
         figure.addFigureListener(new FigureListener() {
             @Override
@@ -226,7 +226,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                     relocateFloatingControls();
             }
         });
-        
+
         // also also when FigureCanvas is scrolled
         getContainer().getControl().getViewport().addCoordinateListener(new CoordinateListener() {
             @Override
@@ -236,24 +236,24 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
                     relocateFloatingControls();
             }
         });
-        
+
     }
 
     private boolean mouse1Down = false;
     private int moveOffsetX, moveOffsetY;
     private static Cursor dragCursor = null;
-    
+
     protected void openFloatingControls() {
         Assert.isTrue(floatingControls == null);
-        
+
         // close floating controls of all other inspectors
         for (IInspectorPart inspector : getContainer().getInspectors())
             if (inspector.getFloatingControls() != null)
                 inspector.closeFloatingControls();
-                
+
         Composite panel = new Composite(getContainer().getControl(), SWT.BORDER);
         panel.setLayout(new FillLayout());
-        
+
         ToolBar toolbar = new ToolBar(panel, SWT.HORIZONTAL);
 
         // add icons to the toolbar
@@ -268,7 +268,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         dragHandle.setToolTipText("Drag handle");
         ToolItem dragHandleWrapperItem = new ToolItem(toolbar, SWT.SEPARATOR);
         dragHandleWrapperItem.setControl(dragHandle);
-        
+
         ToolItem closeButton = new ToolItem(toolbar, SWT.PUSH);
         closeButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
         closeButton.setToolTipText("Close");
@@ -282,8 +282,8 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
 
         // created!
         floatingControls = panel;
-        
-        // we may need to displace it by some vector compared to its normal location, 
+
+        // we may need to displace it by some vector compared to its normal location,
         // to ensure it is fully visible (i.e. appears within canvas bounds)
         Point naturalLoc = computeFloatingControlsNaturalLocation();
         Point adjustedLoc = new Point(naturalLoc.x, naturalLoc.y);
@@ -296,10 +296,10 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         if (adjustedLoc.y < 0)
             adjustedLoc.y = 0;
         floatingControlsDisplacement = new Point(adjustedLoc.x - naturalLoc.x, adjustedLoc.y - naturalLoc.y);
-        
+
         // move it to the correct location
         relocateFloatingControls();
-        
+
         // add action to buttons
         closeButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -308,7 +308,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
             }
         });
 
-        if (dragCursor == null) 
+        if (dragCursor == null)
             dragCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_HAND);
 
         // allow panel to be moved around with the mouse
@@ -344,41 +344,41 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         ToolItem startButton = new ToolItem(toolbar, SWT.PUSH);
         startButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
         startButton.setToolTipText("Whatever");
-        
+
         ToolItem stopButton = new ToolItem(toolbar, SWT.DROP_DOWN);
         stopButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_PASTE));
         stopButton.setToolTipText("Mode");
     }
-    
+
     protected void relocateFloatingControls() {
         Point naturalLoc = computeFloatingControlsNaturalLocation();
-        floatingControls.setLocation(naturalLoc.x + floatingControlsDisplacement.x, naturalLoc.y + floatingControlsDisplacement.y);        
+        floatingControls.setLocation(naturalLoc.x + floatingControlsDisplacement.x, naturalLoc.y + floatingControlsDisplacement.y);
     }
 
     protected Point computeFloatingControlsNaturalLocation() {
         IFigure reference = AbstractInspectorPart.this.figure;
         Rectangle targetBounds = new Rectangle(reference.getBounds());
         reference.translateToAbsolute(targetBounds);
-        Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y); 
+        Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y);
         Point controlsSize = floatingControls.getSize();
-        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);        
+        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);
     }
-    
+
     /**
      * Returns null if not displayed.
      */
     public Control getFloatingControls() {
         return floatingControls;
     }
-    
+
     public void closeFloatingControls() {
         floatingControls.dispose();
         floatingControls = null;
     }
-    
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void raiseToTop() {
-        // there's no public API in draw2d for changing the order (Z-order) of children, but 
+        // there's no public API in draw2d for changing the order (Z-order) of children, but
         // Randy Hudson himself suggests just to change the list returned by getChildren()...
         // http://dev.eclipse.org/mhonarc/lists/gef-dev/msg00914.html
         List siblings = figure.getParent().getChildren();
@@ -386,25 +386,25 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         siblings.add(figure);
         figure.getParent().invalidate();
     }
-    
+
     public void dispose() {
-		System.out.println("disposing inspector: " + object);
+        System.out.println("disposing inspector: " + object);
 
-		if (floatingControls != null)
-            closeFloatingControls();        
+        if (floatingControls != null)
+            closeFloatingControls();
 
-		if (figure != null) {
-		    if (figure.getParent() != null)
-		        figure.getParent().remove(figure);
-		    figure = null;
-		}
+        if (figure != null) {
+            if (figure.getParent() != null)
+                figure.getParent().remove(figure);
+            figure = null;
+        }
 
-		object = null;
-	}
+        object = null;
+    }
 
-	public boolean isDisposed() {
-		return object == null;
-	}
+    public boolean isDisposed() {
+        return object == null;
+    }
 
     public static IInspectorPart findInspectorPartAt(FigureCanvas canvas, int x, int y) {
         IFigure target = canvas.getContents().findFigureAt(x, y);
@@ -413,52 +413,52 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         return target==null ? null : ((IInspectorFigure)target).getInspectorPart();
     }
 
-	@Override
-	public cObject getObject() {
-		return object;
-	}
+    @Override
+    public cObject getObject() {
+        return object;
+    }
 
-	@Override
-	public IInspectorFigure getFigure() {
-	    return figure;
-	}
+    @Override
+    public IInspectorFigure getFigure() {
+        return figure;
+    }
 
-	@Override
-	public boolean isSelected() {  //XXX needed? canvas holds the selection anyway, this only allows inconsistency!!!
-	    return isSelected;
-	}
+    @Override
+    public boolean isSelected() {  //XXX needed? canvas holds the selection anyway, this only allows inconsistency!!!
+        return isSelected;
+    }
 
-	@Override
-	public void refresh() {
-		Assert.isTrue(figure.getParent()!=null && inspectorContainer!=null, "inspector not yet installed");
-		Assert.isTrue(object != null, "inspector already disposed");
+    @Override
+    public void refresh() {
+        Assert.isTrue(figure.getParent()!=null && inspectorContainer!=null, "inspector not yet installed");
+        Assert.isTrue(object != null, "inspector already disposed");
 
-		// automatically close the inspector when the underlying object gets deleted
-		if (object.isDisposed()) {
-	    	System.out.println("object disposed - auto-closing inspector: ");
-			getContainer().close(this);
-		}
-	}
+        // automatically close the inspector when the underlying object gets deleted
+        if (object.isDisposed()) {
+            System.out.println("object disposed - auto-closing inspector: ");
+            getContainer().close(this);
+        }
+    }
 
-	@Override
+    @Override
     public IInspectorContainer getContainer() {
-    	return inspectorContainer;
+        return inspectorContainer;
     }
 
     @Override
     public void selectionChanged(IStructuredSelection selection) {
-    	boolean oldSelectedState = isSelected;
-    	isSelected = selection.toList().contains(object); //XXX or the inspectorPart???
-    	if (oldSelectedState != isSelected)
-    		figure.setSelectionBorder(isSelected);
+        boolean oldSelectedState = isSelected;
+        isSelected = selection.toList().contains(object); //XXX or the inspectorPart???
+        if (oldSelectedState != isSelected)
+            figure.setSelectionBorder(isSelected);
     }
 
     @Override
     public String toString() {
-    	if (object.isDisposed())
-    		return getClass().getSimpleName() + ":<disposed>";
-    	else
-    		return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
+        if (object.isDisposed())
+            return getClass().getSimpleName() + ":<disposed>";
+        else
+            return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
     }
 
     protected static boolean containsMouse(Control control) {

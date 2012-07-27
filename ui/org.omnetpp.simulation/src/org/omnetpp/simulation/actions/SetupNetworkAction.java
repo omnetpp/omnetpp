@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Setup Network action.
- *  
+ *
  * @author Andras
  */
 public class SetupNetworkAction extends AbstractSimulationAction {

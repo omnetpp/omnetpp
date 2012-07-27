@@ -10,7 +10,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Express Run action.
- *  
+ *
  * @author Andras
  */
 public class ExpressRunAction extends AbstractSimulationAction {
@@ -27,7 +27,7 @@ public class ExpressRunAction extends AbstractSimulationAction {
             SimulationController controller = getSimulationController();
             if (!ensureNetworkReady(controller))
                 return;
-            
+
             controller.expressRun();
         }
         catch (Exception e) {
@@ -38,7 +38,7 @@ public class ExpressRunAction extends AbstractSimulationAction {
             updateState();
         }
     }
-    
+
     @Override
     public void updateState() {
         SimState state = getSimulationController().getState();
@@ -47,5 +47,5 @@ public class ExpressRunAction extends AbstractSimulationAction {
         RunMode runMode = getSimulationController().getCurrentRunMode();
         setChecked(runMode == RunMode.EXPRESS);
     }
-    
+
 }

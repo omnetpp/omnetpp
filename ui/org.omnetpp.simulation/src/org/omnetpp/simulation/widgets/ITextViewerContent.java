@@ -11,9 +11,9 @@ import org.eclipse.swt.graphics.Color;
 
 
 /**
- * Clients may implement the TextViewerContent interface to provide a 
+ * Clients may implement the TextViewerContent interface to provide a
  * content for the TextViewer widget.
- * 
+ *
  * @author Andras
  */
 public interface ITextViewerContent {
@@ -28,8 +28,8 @@ public interface ITextViewerContent {
      * Return the line at the given line index without delimiters.
      * <p>
      *
-     * @param lineIndex index of the line to return. Does not include 
-     *  delimiters of preceding lines. Index 0 is the first line of the 
+     * @param lineIndex index of the line to return. Does not include
+     *  delimiters of preceding lines. Index 0 is the first line of the
      *  content.
      * @return the line text without delimiters
      */
@@ -37,7 +37,7 @@ public interface ITextViewerContent {
 
     /**
      * Return the color for the specified line.
-     * 
+     *
      * @return the color, or null to indicate using the default foreground color
      */
     public Color getLineColor(int lineIndex);
@@ -60,7 +60,7 @@ public interface ITextViewerContent {
      * <p>
      *
      * @param listener the listener which should no longer be notified
-     * 
+     *
      * @exception IllegalArgumentException <ul>
      *    <li>ERROR_NULL_ARGUMENT when listener is null</li>
      * </ul>

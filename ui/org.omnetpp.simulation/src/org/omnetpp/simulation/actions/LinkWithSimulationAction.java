@@ -8,7 +8,7 @@ import org.omnetpp.simulation.controller.SimulationController;
 
 /**
  * The "Kill simulation on editor close" action.
- *  
+ *
  * @author Andras
  */
 public class LinkWithSimulationAction extends AbstractSimulationAction {
@@ -26,7 +26,7 @@ public class LinkWithSimulationAction extends AbstractSimulationAction {
             SimulationController controller = getSimulationController();
             if (!haveSimulation(controller))
                 return;
-            
+
             controller.setCancelJobOnDispose(isChecked());
         }
         catch (Exception e) {

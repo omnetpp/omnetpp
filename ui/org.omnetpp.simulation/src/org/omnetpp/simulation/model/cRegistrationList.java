@@ -4,10 +4,10 @@ import org.omnetpp.simulation.controller.SimulationController;
 
 /**
  * Represents contents of cRegistrationList C++ objects.
- * 
+ *
  * @author Andras
  */
-//TODO finish 
+//TODO finish
 public class cRegistrationList extends cObject {
     //TODO
 

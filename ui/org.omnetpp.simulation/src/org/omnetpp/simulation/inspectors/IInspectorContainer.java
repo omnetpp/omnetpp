@@ -23,14 +23,14 @@ public interface IInspectorContainer {
     /**
      * TEMPORARY: open an inspector for this object
      * todo what kind, etc
-     * @return 
+     * @return
      */
     IInspectorPart inspect(cObject object);
 
     /**
-	 * Closes the given inspector.
-	 */
-	void close(IInspectorPart inspector);
+     * Closes the given inspector.
+     */
+    void close(IInspectorPart inspector);
 
     /**
      * Returns the list of all currently open inspectors. The list must not
@@ -39,21 +39,21 @@ public interface IInspectorContainer {
     List<IInspectorPart> getInspectors();
 
     /**
-	 * Returns the SWT control (a FigureCanvas) that contains the
-	 * inspector figures. This can be useful for adding SWT listeners
-	 * or creating inspectors that contain SWT controls.
-	 */
-	FigureCanvas getControl();
+     * Returns the SWT control (a FigureCanvas) that contains the
+     * inspector figures. This can be useful for adding SWT listeners
+     * or creating inspectors that contain SWT controls.
+     */
+    FigureCanvas getControl();
 
-	/**
-	 * Return the layer to which inspector figures are added.
-	 */
-    Figure getInspectorsLayer();
-    
     /**
-     * Return the layer to which inspectors should add transient controls 
-     * (close button, toolbar, etc) that appear when the mouse hovers over 
-     * the inspector. 
+     * Return the layer to which inspector figures are added.
+     */
+    Figure getInspectorsLayer();
+
+    /**
+     * Return the layer to which inspectors should add transient controls
+     * (close button, toolbar, etc) that appear when the mouse hovers over
+     * the inspector.
      */
     Layer getControlsLayer();
 
@@ -63,25 +63,25 @@ public interface IInspectorContainer {
      * selection.
      */
     cObject[] getObjectsFromSelection(ISelection selection);
-    
-	/**
-	 * Request selecting this object, and optionally deselecting all others.
-	 */
-	void select(cObject object, boolean deselectOthers);
 
-	/**
-	 * Select this object if it was not selected, and vica versa. Selection
-	 * state of other objects remain unchanged.
-	 */
-	void toggleSelection(cObject object);
+    /**
+     * Request selecting this object, and optionally deselecting all others.
+     */
+    void select(cObject object, boolean deselectOthers);
 
-	/**
-	 * Remove this object from the selection
-	 */
-	void deselect(cObject object);
+    /**
+     * Select this object if it was not selected, and vica versa. Selection
+     * state of other objects remain unchanged.
+     */
+    void toggleSelection(cObject object);
 
-	/**
-	 * Remove all objects from the selection.
-	 */
-	void deselectAll();
+    /**
+     * Remove this object from the selection
+     */
+    void deselect(cObject object);
+
+    /**
+     * Remove all objects from the selection.
+     */
+    void deselectAll();
 }

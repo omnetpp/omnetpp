@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Stop action.
- *  
+ *
  * @author Andras
  */
 public class StopAction extends AbstractSimulationAction {
@@ -26,7 +26,7 @@ public class StopAction extends AbstractSimulationAction {
             SimulationController controller = getSimulationController();
             if (!haveSimulation(controller))
                 return;
-            
+
             controller.stop();
         }
         catch (Exception e) {

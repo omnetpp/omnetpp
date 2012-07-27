@@ -12,7 +12,7 @@ import org.eclipse.swt.graphics.Color;
 
 /**
  * An implementation of ITextViewerContent that uses a string as input.
- * 
+ *
  * @author Andras
  */
 public class TextViewerContent implements ITextViewerContent {
@@ -20,10 +20,10 @@ public class TextViewerContent implements ITextViewerContent {
 
     public TextViewerContent(String text) {
         this.lines = text.split("\n");  // XXX split() discards trailing blank lines
-        if (lines.length == 0) 
+        if (lines.length == 0)
             lines = new String[] { "" };
     }
-    
+
     @Override
     public int getLineCount() {
         return lines.length;

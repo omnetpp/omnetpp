@@ -51,9 +51,9 @@ import org.omnetpp.simulation.model.cObject;
 //FIXME display message if no active simulation
 //FIXME better loading of objects!! (from bg, etc)
 public class ObjectTreeView extends ViewWithMessagePart {
-	public static final String ID = "org.omnetpp.simulation.views.ObjectTreeView";
+    public static final String ID = "org.omnetpp.simulation.views.ObjectTreeView";
 
-	protected TreeViewer viewer;
+    protected TreeViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
     private SimulationEditor associatedSimulationEditor;
@@ -61,12 +61,12 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
     private ISimulationStateListener simulationListener;
 
-	class ViewContentProvider implements ITreeContentProvider {
-	    public Object[] getChildren(Object element) {
-	        if (element instanceof cObject) {
-	            cObject object = (cObject)element;
-	            if (!object.isFilledIn())
-	                object.safeLoad(); //FIXME return if failed!
+    class ViewContentProvider implements ITreeContentProvider {
+        public Object[] getChildren(Object element) {
+            if (element instanceof cObject) {
+                cObject object = (cObject)element;
+                if (!object.isFilledIn())
+                    object.safeLoad(); //FIXME return if failed!
                 cObject[] childObjects = object.getChildObjects();
                 try {
                     object.getController().loadUnfilledObjects(Arrays.asList(childObjects)); //FIXME return if failed??
@@ -74,16 +74,16 @@ public class ObjectTreeView extends ViewWithMessagePart {
                 catch (IOException e) {
                     SimulationPlugin.logError("Could not retrieve objects from simulation process", e);
                 }
-	            return childObjects;
-	        }
-	        return new Object[0];
-	    }
+                return childObjects;
+            }
+            return new Object[0];
+        }
 
-	    public Object[] getElements(Object inputElement) {
-	        return getChildren(inputElement);
-	    }
+        public Object[] getElements(Object inputElement) {
+            return getChildren(inputElement);
+        }
 
-	    public Object getParent(Object element) {
+        public Object getParent(Object element) {
             if (element instanceof cObject) {
                 cObject object = (cObject)element;
                 if (!object.isFilledIn())
@@ -92,9 +92,9 @@ public class ObjectTreeView extends ViewWithMessagePart {
                     return object.getOwner();
             }
             return null;  // we don't know
-	    }
+        }
 
-	    public boolean hasChildren(Object element) {
+        public boolean hasChildren(Object element) {
             if (element instanceof cObject) {
                 cObject object = (cObject)element;
                 if (!object.isFilledIn())
@@ -102,16 +102,16 @@ public class ObjectTreeView extends ViewWithMessagePart {
                 return object.getChildObjects().length > 0;
             }
             return false;
-	    }
+        }
 
-	    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-	        // Do nothing
-	    }
-
-	    public void dispose() {
+        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
             // Do nothing
         }
-	}
+
+        public void dispose() {
+            // Do nothing
+        }
+    }
 
     class ViewLabelProvider implements IStyledLabelProvider {
         private class ColorStyler extends Styler {
@@ -134,7 +134,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
                 styledString.append(" (" + object.getClassName() + ")", greyStyle); //TODO use Simkernel.getObjectShortTypeName(obj);
                 styledString.append("  " + object.getInfo(), brownStyle);
                 return styledString;
-            } 
+            }
             return new StyledString(element.toString());
         }
 
@@ -166,13 +166,13 @@ public class ObjectTreeView extends ViewWithMessagePart {
         }
     }
 
-	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
-	 */
-	public Control createViewControl(Composite parent) {
-		viewer = new TreeViewer(parent, SWT.DOUBLE_BUFFERED | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
+    /**
+     * This is a callback that will allow us to create the viewer and initialize it.
+     */
+    public Control createViewControl(Composite parent) {
+        viewer = new TreeViewer(parent, SWT.DOUBLE_BUFFERED | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        viewer.setContentProvider(new ViewContentProvider());
+        viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 
         // create context menu
         getViewSite().registerContextMenu(contextMenuManager, viewer);
@@ -189,11 +189,11 @@ public class ObjectTreeView extends ViewWithMessagePart {
         });
 
         // export our selection to the workbench
-		getViewSite().setSelectionProvider(new SelectionProvider());
+        getViewSite().setSelectionProvider(new SelectionProvider());
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				getViewSite().getSelectionProvider().setSelection(event.getSelection());
-			}
+            public void selectionChanged(SelectionChangedEvent event) {
+                getViewSite().getSelectionProvider().setSelection(event.getSelection());
+            }
         });
 
         // listen on editor changes
@@ -218,7 +218,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
             }
         };
         getSite().getPage().addPartListener(partListener);  //TODO unhookListeners() etc -- see PinnableView!
-        
+
         simulationListener = new ISimulationStateListener() {
             @Override
             public void simulationStateChanged(final SimulationController controller) {
@@ -230,7 +230,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
                 });
             }
         };
-        
+
         // associate ourselves with the current simulation editor
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
@@ -242,11 +242,11 @@ public class ObjectTreeView extends ViewWithMessagePart {
                     showMessage("No associated simulation.");
             }
         });
-        
-        return viewer.getTree();
-	}
 
-	protected void simulationStateChanged(SimulationController controller) {
+        return viewer.getTree();
+    }
+
+    protected void simulationStateChanged(SimulationController controller) {
         if (controller.getState() == SimState.DISCONNECTED)
             showMessage("No simulation process.");
         else {
@@ -263,14 +263,14 @@ public class ObjectTreeView extends ViewWithMessagePart {
     }
 
     protected void editorActivated(IEditorPart editor) {
-	    if (editor != associatedSimulationEditor && editor instanceof SimulationEditor)
-	        associateWithEditor((SimulationEditor)editor);
-	}
+        if (editor != associatedSimulationEditor && editor instanceof SimulationEditor)
+            associateWithEditor((SimulationEditor)editor);
+    }
 
-	protected void editorClosed(IEditorPart editor) {
-	    if (editor == associatedSimulationEditor)
-	        disassociateFromEditor();
-	}
+    protected void editorClosed(IEditorPart editor) {
+        if (editor == associatedSimulationEditor)
+            disassociateFromEditor();
+    }
 
     protected void associateWithEditor(SimulationEditor editor) {
         associatedSimulationEditor = editor;
@@ -299,25 +299,25 @@ public class ObjectTreeView extends ViewWithMessagePart {
     }
 
     protected SimulationEditor getActiveSimulationEditor() {
-	    IWorkbenchPartSite site = getSite();
-	    IWorkbenchPage page = site==null ? null : site.getWorkbenchWindow().getActivePage();
-	    if (page != null) {
-	        if (page.getActiveEditor() instanceof SimulationEditor)
-	            return (SimulationEditor)page.getActiveEditor();
-	        // no active simulation editor; just return the first one we find
-	        for (IEditorReference ref : page.getEditorReferences())
-	            if (ref.getEditor(false) instanceof SimulationEditor)
-	                return (SimulationEditor)ref.getEditor(false);
-	    }
-	    return null;
-	}
+        IWorkbenchPartSite site = getSite();
+        IWorkbenchPage page = site==null ? null : site.getWorkbenchWindow().getActivePage();
+        if (page != null) {
+            if (page.getActiveEditor() instanceof SimulationEditor)
+                return (SimulationEditor)page.getActiveEditor();
+            // no active simulation editor; just return the first one we find
+            for (IEditorReference ref : page.getEditorReferences())
+                if (ref.getEditor(false) instanceof SimulationEditor)
+                    return (SimulationEditor)ref.getEditor(false);
+        }
+        return null;
+    }
 
     /**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus() {
-		viewer.getControl().setFocus();
-	}
+     * Passing the focus request to the viewer's control.
+     */
+    public void setFocus() {
+        viewer.getControl().setFocus();
+    }
 
     @Override
     public void dispose() {

@@ -33,14 +33,14 @@ import org.omnetpp.simulation.model.cPacket;
 /**
  * Based on TreeViewer, it can display fields of an object in various ways.
  * Can be used in Property View and in inspectors.
- * 
+ *
  * @author Andras
  */
 //TODO implement ordering and filtering of fields
 //TODO Field, FieldArrayElement should be adaptable to cObject? that should make it easier to implement inspect-on-doubleclick
 public class ObjectFieldsViewer {
     private static final Image IMG_FIELD = SimulationPlugin.getCachedImage("icons/obj16/field.png");
-    private static final List<String> CPACKET_BASE_CLASSES = Arrays.asList(new String[]{ "cObject", "cNamedObject", "cOwnedObject", "cMessage", "cPacket" }); 
+    private static final List<String> CPACKET_BASE_CLASSES = Arrays.asList(new String[]{ "cObject", "cNamedObject", "cOwnedObject", "cMessage", "cPacket" });
 
     public enum Mode { PACKET, CHILDREN, GROUPED, INHERITANCE, FLAT };
     public enum Ordering { NATURAL, ALPHABETICAL };
@@ -50,16 +50,16 @@ public class ObjectFieldsViewer {
     private Ordering ordering = Ordering.NATURAL;
     private boolean reverseOrder = false;
 
-    
+
     /**
      * Represents an intermediate node in the tree
      */
     protected static class FieldArrayElement implements IAdaptable {
         Field field;
         int index;
-        
+
         public FieldArrayElement(Field field, int index) {
-            this.field = field; 
+            this.field = field;
             this.index = index;
         }
 
@@ -105,13 +105,13 @@ public class ObjectFieldsViewer {
         Object parent;
         String groupName;
         Field[] fields;
-        
+
         public FieldGroup(Object parent, String groupName, Field[] fields) {
             this.parent = parent;
             this.groupName = groupName;
             this.fields = fields;
         }
-        
+
         @Override
         public String toString() {
             return parent.toString() + "/" + groupName;
@@ -198,7 +198,7 @@ public class ObjectFieldsViewer {
                         object.safeLoadFields(); //FIXME return if failed!
                     return groupFieldsOf(object);
                 }
-                
+
                 //TODO if struct, return its fields, etc
             }
             return new Object[0];
@@ -212,7 +212,7 @@ public class ObjectFieldsViewer {
                     object.getController().loadUnfilledObjects(children);
                 }
                 catch (IOException e) {
-                    e.printStackTrace();  //TODO how to handle exceptions properly... 
+                    e.printStackTrace();  //TODO how to handle exceptions properly...
                 }
                 return children;
             }
@@ -267,7 +267,7 @@ public class ObjectFieldsViewer {
                         if (!CPACKET_BASE_CLASSES.contains(f.declaredOn))
                             fields.add(f);
 
-                     // and form a new field group from it                          
+                     // and form a new field group from it
                     result.add(new FieldGroup(object, pk.getClassName(), fields.toArray(new Field[]{})));
 
                     // go down to the encapsulated packet
@@ -307,7 +307,7 @@ public class ObjectFieldsViewer {
             // Do nothing
         }
     }
-    
+
     protected class TreeLabelProvider implements IStyledLabelProvider {
 
         private class ColorStyler extends Styler {
@@ -334,8 +334,8 @@ public class ObjectFieldsViewer {
                 Field field = !isArrayElement ? (Field)element : ((FieldArrayElement)element).field;
                 Object value = !isArrayElement ? field.value : field.values[((FieldArrayElement)element).index];
 
-                // the @label property can be used to override the field name 
-                String name = field.labelProperty!=null ? field.labelProperty : field.name; 
+                // the @label property can be used to override the field name
+                String name = field.labelProperty!=null ? field.labelProperty : field.name;
 
                 // if it's an unexpanded array, return "name[size]" immediately
                 if (field.isArray && !isArrayElement) {
@@ -343,7 +343,7 @@ public class ObjectFieldsViewer {
                     result.append(" (" + field.type + ")", greyStyle);
                     return result;
                 }
-                
+
                 // when showing array elements, omit name and just show "[index]" instead
                 if (isArrayElement)
                     name = "[" + ((FieldArrayElement)element).index + "]";
@@ -351,7 +351,7 @@ public class ObjectFieldsViewer {
                 // we'll want to print the field type, except for expanded array elements
                 // (no need to repeat it, as it's printed in the "name[size]" node already)
                 String typeNameText = isArrayElement ? "" : " (" + field.type + ")";
-                
+
                 if (field.isCompound) {
                     // if it's an object, try to say something about it...
                     if (field.isCObject) {
@@ -366,20 +366,20 @@ public class ObjectFieldsViewer {
                                 valueObject.safeLoadFields();
 
                             result.append("(" + valueObject.getClassName() + ") " + valueObject.getFullName(), blueStyle);
-                            String infoTxt = valueObject.getInfo(); 
+                            String infoTxt = valueObject.getInfo();
                             if (!infoTxt.equals(""))
                                 result.append(": " + infoTxt, brownStyle);
                         }
                         result.append(typeNameText, greyStyle);
                         return result;
-                    } 
+                    }
                     else {
                         // a value can be generated via operator<<
                         result.append(name);
                         if (!value.toString().equals("")) {
                             result.append(" = ");
                             result.append(value.toString(), blueStyle);
-                        }                    
+                        }
                         result.append(typeNameText, greyStyle);
                         return result;
                     }
@@ -392,30 +392,30 @@ public class ObjectFieldsViewer {
                     }
                     if (field.type.equals("string"))
                         value = "\"" + value.toString() + "\"";
-                    
+
                     result.append(name);
                     if (!value.toString().equals("")) {
                         result.append(" = ");
                         result.append(value.toString(), blueStyle);
-                    }                    
+                    }
                     result.append(typeNameText, greyStyle);
                     return result;
                 }
             }
             else if (element instanceof FieldGroup) {
                 FieldGroup group = (FieldGroup) element;
-                return result.append(group.groupName);           
+                return result.append(group.groupName);
             }
             else {
                 return result.append(element.toString());
             }
         }
-        
+
         @Override
         public Image getImage(Object element) {
             if (element instanceof FieldGroup)
                 return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
-                        
+
             Object value = element;
             if (element instanceof Field)
                 value = ((Field) element).value;
@@ -432,7 +432,7 @@ public class ObjectFieldsViewer {
                 String icon = object.getIcon(); // note: may be empty
                 return SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_DIR + icon + ".png", SimulationUIConstants.IMG_OBJ_COGWHEEL);
             }
-            
+
             return IMG_FIELD;
         }
 
@@ -452,7 +452,7 @@ public class ObjectFieldsViewer {
         @Override
         public void removeListener(ILabelProviderListener listener) {
         }
-       
+
     }
 
     /**
@@ -462,17 +462,17 @@ public class ObjectFieldsViewer {
         treeViewer = new TreeViewer(parent, style);
         treeViewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new TreeLabelProvider(), null, null));
         treeViewer.setContentProvider(new TreeContentProvider());
-	}
+    }
 
     public void setInput(cObject object) {
         treeViewer.setInput(object);
         refresh();
     }
-    
+
     public TreeViewer getTreeViewer() {
         return treeViewer;
     }
-    
+
     public Tree getTree() {
         return getTreeViewer().getTree();
     }
@@ -503,7 +503,7 @@ public class ObjectFieldsViewer {
         this.reverseOrder = reverseOrder;
         refresh();
     }
-    
+
     public void refresh() {
         treeViewer.refresh();
     }

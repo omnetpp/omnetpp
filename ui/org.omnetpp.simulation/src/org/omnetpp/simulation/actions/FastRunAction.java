@@ -10,7 +10,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Fast Run action.
- *  
+ *
  * @author Andras
  */
 public class FastRunAction extends AbstractSimulationAction {
@@ -27,7 +27,7 @@ public class FastRunAction extends AbstractSimulationAction {
             SimulationController controller = getSimulationController();
             if (!ensureNetworkReady(controller))
                 return;
-            
+
             controller.fastRun();
         }
         catch (Exception e) {

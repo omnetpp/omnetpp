@@ -19,20 +19,20 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * Base class to factor out common code in Action classes.
- * 
+ *
  * @author andras
  */
 //TODO disable if simulationController is DETACHED
 public abstract class AbstractSimulationAction extends Action {
     private SimulationController simulationController;
-    
+
     private ISimulationStateListener listener = new ISimulationStateListener() {
         @Override
         public void simulationStateChanged(SimulationController controller) {
             updateState();
         }
     };
-    
+
     /**
      * Default constructor.
      */
@@ -53,9 +53,9 @@ public abstract class AbstractSimulationAction extends Action {
     public SimulationController getSimulationController() {
         return simulationController;
     }
-    
+
     public abstract void updateState();
-    
+
     /**
      * Utility function.
      */
@@ -107,16 +107,16 @@ public abstract class AbstractSimulationAction extends Action {
     }
 
 //    /**
-//     * Utility function: returns the active SimulationEditor's simulationController. 
-//     * Throws an exception if there is no editor or the active editor is 
+//     * Utility function: returns the active SimulationEditor's simulationController.
+//     * Throws an exception if there is no editor or the active editor is
 //     * not a SimulationEditor.
 //     */
 //    protected SimulationController getActiveSimulationController() throws CoreException {
 //        return getActiveSimulationEditor().getSimulationController();
 //    }
-//    
+//
 //    /**
-//     * Utility function: returns the active SimulationEditor. Throws an exception 
+//     * Utility function: returns the active SimulationEditor. Throws an exception
 //     * if there is no editor or the active editor is not a SimulationEditor.
 //     */
 //    protected SimulationEditor getActiveSimulationEditor() throws CoreException {

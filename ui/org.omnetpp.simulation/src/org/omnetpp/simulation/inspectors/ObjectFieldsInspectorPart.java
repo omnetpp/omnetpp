@@ -21,7 +21,7 @@ import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
 
 /**
- * 
+ *
  * @author Andras
  */
 //TODO icon buttons to switch mode, ordering, etc.
@@ -34,7 +34,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private static final Image IMG_MODE_FLAT = SimulationPlugin.getCachedImage("icons/etool16/treemode_flat.png");
     private static final Image IMG_MODE_GROUPED = SimulationPlugin.getCachedImage("icons/etool16/treemode_grouped.png");
     private static final Image IMG_MODE_INHERITANCE = SimulationPlugin.getCachedImage("icons/etool16/treemode_inher.png");
-    
+
     private Composite frame;
     private Label label;
     private ObjectFieldsViewer viewer;
@@ -45,30 +45,30 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private ToolItem inheritaceModeTool;
     private ToolItem flatModeTool;
 
-    
-	public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
-		super(parent, object);
-	}
 
-	@Override
-	protected Control createControl(Composite parent) {
-	    if (!object.isFilledIn())
-	        object.safeLoad(); // for getClassName() in next line
-	    boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
-	    
-	    frame = new Composite(parent, SWT.BORDER);
+    public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
+        super(parent, object);
+    }
+
+    @Override
+    protected Control createControl(Composite parent) {
+        if (!object.isFilledIn())
+            object.safeLoad(); // for getClassName() in next line
+        boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
+
+        frame = new Composite(parent, SWT.BORDER);
         frame.setSize(300, 200);
-	    frame.setLayout(new GridLayout(1, false));
-	    
-	    label = new Label(frame, SWT.NONE);
+        frame.setLayout(new GridLayout(1, false));
+
+        label = new Label(frame, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-	    
+
         viewer = new ObjectFieldsViewer(frame, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setMode(isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET : ObjectFieldsViewer.Mode.GROUPED);
         viewer.setInput(object);
-	 	
-	 	viewer.getTree().addSelectionListener(new SelectionListener() {
+
+        viewer.getTree().addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 inspectorContainer.select(object, true);  //XXX ???
@@ -83,43 +83,43 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
                     getContainer().inspect(object);
             }
         });
-	 	
-	 	frame.layout();
-	 	
-		return frame;
-	}
 
-	@Override
-	public boolean isMaximizable() {
-		return false;
-	}
+        frame.layout();
 
-	@Override
-	public void populateContextMenu(MenuManager contextMenuManager, Point p) {
-	}
+        return frame;
+    }
 
-	@Override
-	protected void addIconsToFloatingToolbar(ToolBar toolbar) {
-	    packetModeTool = addModeSwitcherTool(toolbar, Mode.PACKET, "Packet mode", IMG_MODE_PACKET);
-	    childrenModeTool = addModeSwitcherTool(toolbar, Mode.CHILDREN, "Children mode", IMG_MODE_CHILDREN);
-	    groupedModeTool = addModeSwitcherTool(toolbar, Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED);
-	    inheritaceModeTool = addModeSwitcherTool(toolbar, Mode.INHERITANCE, "Inheritance mode", IMG_MODE_INHERITANCE);
-	    flatModeTool = addModeSwitcherTool(toolbar, Mode.FLAT, "Flat mode", IMG_MODE_FLAT);
+    @Override
+    public boolean isMaximizable() {
+        return false;
+    }
+
+    @Override
+    public void populateContextMenu(MenuManager contextMenuManager, Point p) {
+    }
+
+    @Override
+    protected void addIconsToFloatingToolbar(ToolBar toolbar) {
+        packetModeTool = addModeSwitcherTool(toolbar, Mode.PACKET, "Packet mode", IMG_MODE_PACKET);
+        childrenModeTool = addModeSwitcherTool(toolbar, Mode.CHILDREN, "Children mode", IMG_MODE_CHILDREN);
+        groupedModeTool = addModeSwitcherTool(toolbar, Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED);
+        inheritaceModeTool = addModeSwitcherTool(toolbar, Mode.INHERITANCE, "Inheritance mode", IMG_MODE_INHERITANCE);
+        flatModeTool = addModeSwitcherTool(toolbar, Mode.FLAT, "Flat mode", IMG_MODE_FLAT);
         updateModeSwitcherToolsState();
-	}
-	
-	protected ToolItem addModeSwitcherTool(ToolBar toolbar, final Mode mode, String tooltip, Image img) {
-	    ToolItem item = new ToolItem(toolbar, SWT.CHECK);
-	    item.setImage(img);
-	    item.setToolTipText(tooltip);
-	    item.addSelectionListener(new SelectionAdapter() {
+    }
+
+    protected ToolItem addModeSwitcherTool(ToolBar toolbar, final Mode mode, String tooltip, Image img) {
+        ToolItem item = new ToolItem(toolbar, SWT.CHECK);
+        item.setImage(img);
+        item.setToolTipText(tooltip);
+        item.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
                 viewer.setMode(mode);
                 updateModeSwitcherToolsState();
             }
         });
-	    return item;
+        return item;
     }
 
     protected void updateModeSwitcherToolsState() {
@@ -134,24 +134,24 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     @Override
     public void closeFloatingControls() {
         super.closeFloatingControls();
-        
+
         packetModeTool = null;
         childrenModeTool = null;
         groupedModeTool = null;
         inheritaceModeTool = null;
         flatModeTool = null;
     }
-    
-    @Override
-	public void refresh() {
-		super.refresh();
-		
-		if (!isDisposed()) {
-		    String text = "(" + object.getClassName() + ") " + object.getFullPath() + " - " + object.getInfo();
-		    label.setText(text);
-		    label.setToolTipText(text); // because label text is usually not fully visible
 
-		    viewer.refresh();
-		}
-	}
+    @Override
+    public void refresh() {
+        super.refresh();
+
+        if (!isDisposed()) {
+            String text = "(" + object.getClassName() + ") " + object.getFullPath() + " - " + object.getInfo();
+            label.setText(text);
+            label.setToolTipText(text); // because label text is usually not fully visible
+
+            viewer.refresh();
+        }
+    }
 }

@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Display;
 
 
 /**
- * 
- * @author Andras 
+ *
+ * @author Andras
  */
 //TODO mouse cursor! (resize arrows, etc)
 public class InspectorMouseListener implements MouseListener, MouseMotionListener {
@@ -33,7 +33,7 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
     private static Cursor CURSOR_SIZESW = new Cursor(Display.getDefault(), SWT.CURSOR_SIZESW);
     private static Cursor CURSOR_SIZEALL = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEALL);
     private static Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
-    
+
     public InspectorMouseListener(IInspectorPart inspectorPart) {
         this.inspectorPart = inspectorPart;
         inspectorPart.getFigure().addMouseListener(this);
@@ -41,7 +41,7 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
     }
 
     //@Override
-    public void mouseDoubleClicked(MouseEvent me) { 
+    public void mouseDoubleClicked(MouseEvent me) {
     }
 
     //@Override
@@ -58,16 +58,16 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
 
     //@Override
     public void mouseReleased(MouseEvent me) {
-    	dragOperation = 0;
-    	dragStart = null;
+        dragOperation = 0;
+        dragStart = null;
     }
 
     private static int clip(int x, int min, int max) {
-    	if (x<min) x = min;
-    	if (x>max) x = max;
-    	return x;
+        if (x<min) x = min;
+        if (x>max) x = max;
+        return x;
     }
-    
+
     //@Override
     public void mouseDragged(MouseEvent me) {
         IFigure figure = inspectorPart.getFigure();
@@ -78,7 +78,7 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
             Dimension min = figure.getMinimumSize();
             Dimension max = figure.getMaximumSize();
             if (dragOperation == (SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM)) {
-                r.x += dx; 
+                r.x += dx;
                 r.y += dy;
             }
             else {
@@ -115,24 +115,24 @@ public class InspectorMouseListener implements MouseListener, MouseMotionListene
 
     //@Override
     public void mouseMoved(MouseEvent me) {
-    	IInspectorFigure figure = inspectorPart.getFigure();
-    	dragOperation = figure.getDragOperation(me.x, me.y);
+        IInspectorFigure figure = inspectorPart.getFigure();
+        dragOperation = figure.getDragOperation(me.x, me.y);
 
-    	Cursor cursor;
-    	switch (dragOperation) {
-    	case SWT.LEFT: cursor = CURSOR_SIZEW; break;
-    	case SWT.RIGHT: cursor = CURSOR_SIZEE; break;
-    	case SWT.TOP: cursor = CURSOR_SIZEN; break;
-    	case SWT.BOTTOM: cursor = CURSOR_SIZES; break;
-    	
-    	case SWT.LEFT|SWT.TOP: cursor = CURSOR_SIZENW; break;
-    	case SWT.RIGHT|SWT.TOP: cursor = CURSOR_SIZENE; break;
-    	case SWT.LEFT|SWT.BOTTOM: cursor = CURSOR_SIZESW; break;
-    	case SWT.RIGHT|SWT.BOTTOM: cursor = CURSOR_SIZESE; break;
-    	
-    	case SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM: cursor = CURSOR_SIZEALL; break;
-    	default: cursor = CURSOR_ARROW;
-    	}
-    	figure.setCursor(cursor);
+        Cursor cursor;
+        switch (dragOperation) {
+        case SWT.LEFT: cursor = CURSOR_SIZEW; break;
+        case SWT.RIGHT: cursor = CURSOR_SIZEE; break;
+        case SWT.TOP: cursor = CURSOR_SIZEN; break;
+        case SWT.BOTTOM: cursor = CURSOR_SIZES; break;
+
+        case SWT.LEFT|SWT.TOP: cursor = CURSOR_SIZENW; break;
+        case SWT.RIGHT|SWT.TOP: cursor = CURSOR_SIZENE; break;
+        case SWT.LEFT|SWT.BOTTOM: cursor = CURSOR_SIZESW; break;
+        case SWT.RIGHT|SWT.BOTTOM: cursor = CURSOR_SIZESE; break;
+
+        case SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM: cursor = CURSOR_SIZEALL; break;
+        default: cursor = CURSOR_ARROW;
+        }
+        figure.setCursor(cursor);
     }
 }

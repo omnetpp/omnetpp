@@ -7,12 +7,12 @@ package org.omnetpp.simulation.widgets;
 public class Pos {
     public int line;
     public int column;
-    
+
     public Pos(int line, int column) {
         this.line = line;
         this.column = column;
     }
-    
+
     public boolean lessThan(Pos other) {
         if (line != other.line)
             return line < other.line;

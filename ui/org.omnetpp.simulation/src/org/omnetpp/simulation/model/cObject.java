@@ -33,7 +33,7 @@ public class cObject {
     private cObject[] childObjects;
 
     private Field[] fields;  //XXX temporary
-    
+
     public cObject(SimulationController controller, long id) {
         this.controller = controller;
         this.objectId = id;
@@ -42,7 +42,7 @@ public class cObject {
     public SimulationController getController() {
         return controller;
     }
-    
+
     public long getObjectId() {
         return objectId;
     }
@@ -60,7 +60,7 @@ public class cObject {
         doFillFromJSON(jsonObject);
         isFilledIn = true;
     }
-    
+
     protected void doFillFromJSON(Map jsonObject) {
         className = (String) jsonObject.get("className");
         name = (String) jsonObject.get("name");
@@ -75,13 +75,13 @@ public class cObject {
         for (int i = 0; i < childObjects.length; i++)
             childObjects[i] = controller.getObjectByJSONRef((String) jsonChildren.get(i));
     }
-        
+
     public void load() throws IOException {
-        if (isDisposed) 
+        if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
         controller.loadObject(this);
     }
-    
+
     //TODO why not introduce a loadIfNeeded() method, to spare the "if"'s???
     public void safeLoad() {
         // convenience method
@@ -96,11 +96,11 @@ public class cObject {
 
     //TODO should load base AND fields together! (unless base is already loaded)
     public void loadFields() throws IOException {
-        if (isDisposed) 
+        if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
         controller.loadObjectFields(this);
     }
-    
+
     //TODO should load base AND fields together! (unless base is already loaded)
     public void safeLoadFields() {
         // convenience method
@@ -124,7 +124,7 @@ public class cObject {
             f.type = (String) jfield.get("type");
             f.declaredOn = (String) jfield.get("declaredOn");
             f.groupProperty = (String) jfield.get("@group"); // null for ungrouped
-            f.labelProperty = (String) jfield.get("@label"); 
+            f.labelProperty = (String) jfield.get("@label");
             f.hintProperty = (String) jfield.get("@hint");
             f.enumProperty = (String) jfield.get("@enum");
             f.isArray = Boolean.TRUE.equals((Boolean)jfield.get("isArray"));
@@ -136,7 +136,7 @@ public class cObject {
             f.structName = (String) jfield.get("declaredOn");
             f.value = f.isArray ? null : jfield.get("value");
             f.values = f.isArray ? ((List) jfield.get("value")).toArray() : null;
-            
+
             if (f.isCObject) {
                 // values are object references; resolve them
                 if (!f.isArray)
@@ -145,7 +145,7 @@ public class cObject {
                     for (int i = 0; i < f.values.length; i++)
                         f.values[i] = controller.getObjectByJSONRef((String)f.values[i]);
             }
-            
+
             fields.add(f);
         }
         this.fields = fields.toArray(new Field[]{});
@@ -160,52 +160,52 @@ public class cObject {
     //FIXME revise
     public Field[] getFields() {
         checkState();
-        if (!isFieldsFilledIn) 
+        if (!isFieldsFilledIn)
             throw new InvalidSimulationObjectException("fields of object " + getObjectId() + "-" + getClass().getSimpleName() + " not yet filled in");
         return fields;
     }
-    
+
     public void markAsDisposed() {
         isDisposed = true;
     }
 
     protected void checkState() {
-        if (!isFilledIn) 
+        if (!isFilledIn)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is not yet filled in");
-        if (isDisposed) 
+        if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
     }
-    
+
     public String getClassName() {
         checkState();
         return className;
     }
-    
+
     public String getIcon() {
         checkState();
         return icon;
     }
-    
+
     public String getName() {
         checkState();
         return name;
     }
-    
+
     public String getFullName() {
         checkState();
         return fullName;
     }
-    
+
     public String getFullPath() {
         checkState();
         return fullPath;
     }
-    
+
     public String getInfo() {
         checkState();
         return info;
     }
-    
+
     public cObject getOwner() {
         checkState();
         return owner;
@@ -215,7 +215,7 @@ public class cObject {
         checkState();
         return childObjects;
     }
-    
+
     @Override
     public int hashCode() {
         return (int) (objectId ^ (objectId >>> 32)) + 31*controller.hashCode();

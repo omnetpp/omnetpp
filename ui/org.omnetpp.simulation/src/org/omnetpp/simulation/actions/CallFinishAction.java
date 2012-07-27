@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Call Finish action
- * 
+ *
  * @author Andras
  */
 public class CallFinishAction extends AbstractSimulationAction {
@@ -47,14 +47,14 @@ public class CallFinishAction extends AbstractSimulationAction {
 
             //XXX busy "Invoking finish() on all modules..."
             controller.callFinish();
-            
+
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
             SimulationPlugin.logError(e);
         }
     }
-    
+
     @Override
     public void updateState() {
         SimState state = getSimulationController().getState();

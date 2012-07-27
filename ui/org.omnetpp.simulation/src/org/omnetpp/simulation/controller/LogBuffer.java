@@ -23,10 +23,10 @@ public class LogBuffer {
     public interface ILogBufferChangedListener {
         void changed(LogBuffer logBuffer);
     }
-    
+
     public LogBuffer() {
     }
-    
+
     public void addEventEntry(EventEntry e) {
         eventEntries.add(e);
     }
@@ -34,15 +34,15 @@ public class LogBuffer {
     public int getNumEntries() {
         return eventEntries.size();
     }
-    
+
     public EventEntry getEventEntry(int index) {
         return eventEntries.get(index);
     }
-    
+
     public EventEntry getLastEventEntry() {
         return eventEntries.isEmpty() ? null : eventEntries.get(eventEntries.size()-1);
     }
-    
+
     // to be called manually after a batch of addEventEntry() calls
     public void fireChangeNotification() {
         for (Object o: changeListeners.getListeners()) {
@@ -60,7 +60,7 @@ public class LogBuffer {
             });
         }
     }
-    
+
     public void addChangeListener(ILogBufferChangedListener listener) {
         changeListeners.add(listener);
     }

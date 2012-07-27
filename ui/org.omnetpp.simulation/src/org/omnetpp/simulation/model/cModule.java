@@ -10,11 +10,11 @@ import org.omnetpp.simulation.controller.SimulationController;
  * @author Andras
  */
 public class cModule extends cComponent {
-	private int moduleId;  // module ID
-	private int index;
-	private int vectorSize; // -1 if not vector
-	private cGate[] gates;
-	private cModule[] submodules;
+    private int moduleId;  // module ID
+    private int index;
+    private int vectorSize; // -1 if not vector
+    private cGate[] gates;
+    private cModule[] submodules;
 
     public cModule(SimulationController controller, long id) {
         super(controller, id);
@@ -27,58 +27,58 @@ public class cModule extends cComponent {
 
     public int getIndex() {
         checkState();
-		return index;
-	}
+        return index;
+    }
 
-	public boolean isVector() {
+    public boolean isVector() {
         checkState();
-		return vectorSize != -1;
-	}
+        return vectorSize != -1;
+    }
 
-	public int getVectorSize() {
+    public int getVectorSize() {
         checkState();
-		return vectorSize;
-	}
+        return vectorSize;
+    }
 
-	public cModule[] getSubmodules() {
+    public cModule[] getSubmodules() {
         checkState();
-		return submodules;
-	}
+        return submodules;
+    }
 
-	public cModule getSubmodule(String name) {
-		// TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-	    checkState();
-		if (submodules != null)
-			for (cModule m : submodules)
-				if (name.equals(m.getName()) && m.getVectorSize()<0)
-					return m;
+    public cModule getSubmodule(String name) {
+        // TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
+        checkState();
+        if (submodules != null)
+            for (cModule m : submodules)
+                if (name.equals(m.getName()) && m.getVectorSize()<0)
+                    return m;
 
-		return null;
-	}
+        return null;
+    }
 
-	public cModule getSubmodule(String name, int index) {
-		// TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
-	    checkState();
-		if (submodules != null)
-			for (cModule m : submodules)
-				if (name.equals(m.getName()) && m.getIndex()==index)
-					return m;
-		return null;
-	}
+    public cModule getSubmodule(String name, int index) {
+        // TODO: use more efficient data structure to avoid linear search! e.g. map of submodule vectors etc
+        checkState();
+        if (submodules != null)
+            for (cModule m : submodules)
+                if (name.equals(m.getName()) && m.getIndex()==index)
+                    return m;
+        return null;
+    }
 
-	public cGate[] getGates() {
+    public cGate[] getGates() {
         return gates;
     }
-	
-	public cGate getGate(int i) {
-        checkState();
-		return gates[i];
-	}
 
-	public int getNumGates() {
+    public cGate getGate(int i) {
         checkState();
-	    return gates.length;
-	}
+        return gates[i];
+    }
+
+    public int getNumGates() {
+        checkState();
+        return gates.length;
+    }
 
     public cGate getGateById(int id) {
         checkState();
@@ -89,45 +89,45 @@ public class cModule extends cComponent {
         return null;
     }
 
-	public cModule getCommonAncestorModule(cModule otherModule) {
+    public cModule getCommonAncestorModule(cModule otherModule) {
         checkState();
-	    if (isAncestorModuleOf(otherModule))
-	        return this;
-	    else if (otherModule.isAncestorModuleOf(this))
-	        return otherModule;
-	    else
-	        return getCommonAncestorModule(otherModule.getParentModule());
-	}
+        if (isAncestorModuleOf(otherModule))
+            return this;
+        else if (otherModule.isAncestorModuleOf(this))
+            return otherModule;
+        else
+            return getCommonAncestorModule(otherModule.getParentModule());
+    }
 
-	public boolean isAncestorModuleOf(cModule otherModule) {
+    public boolean isAncestorModuleOf(cModule otherModule) {
         checkState();
-	    while (otherModule != null) {
-	        if (otherModule.equals(this))
-	            return true;
-	        else
-	            otherModule = otherModule.getParentModule();
-	    }
-	    return false;
-	}
+        while (otherModule != null) {
+            if (otherModule.equals(this))
+                return true;
+            else
+                otherModule = otherModule.getParentModule();
+        }
+        return false;
+    }
 
-	@Override
-	@SuppressWarnings("rawtypes")
-	protected void doFillFromJSON(Map jsonObject) {
-	    super.doFillFromJSON(jsonObject);
+    @Override
+    @SuppressWarnings("rawtypes")
+    protected void doFillFromJSON(Map jsonObject) {
+        super.doFillFromJSON(jsonObject);
 
-	    moduleId = ((Number)jsonObject.get("moduleId")).intValue();
-	    index = ((Number)jsonObject.get("index")).intValue();
-	    vectorSize = ((Number)jsonObject.get("vectorSize")).intValue();
-	    
-	    List jsonGates = (List) jsonObject.get("gates");
-	    gates = new cGate[jsonGates.size()];
-	    for (int i = 0; i < gates.length; i++)
-	        gates[i] = (cGate) getController().getObjectByJSONRef((String) jsonGates.get(i));
+        moduleId = ((Number)jsonObject.get("moduleId")).intValue();
+        index = ((Number)jsonObject.get("index")).intValue();
+        vectorSize = ((Number)jsonObject.get("vectorSize")).intValue();
 
-	    List jsonSubmodules = (List) jsonObject.get("submodules");
-	    submodules = new cModule[jsonSubmodules.size()];
-	    for (int i = 0; i < submodules.length; i++)
-	        submodules[i] = (cModule) getController().getObjectByJSONRef((String) jsonSubmodules.get(i));
+        List jsonGates = (List) jsonObject.get("gates");
+        gates = new cGate[jsonGates.size()];
+        for (int i = 0; i < gates.length; i++)
+            gates[i] = (cGate) getController().getObjectByJSONRef((String) jsonGates.get(i));
 
-	}
+        List jsonSubmodules = (List) jsonObject.get("submodules");
+        submodules = new cModule[jsonSubmodules.size()];
+        for (int i = 0; i < submodules.length; i++)
+            submodules[i] = (cModule) getController().getObjectByJSONRef((String) jsonSubmodules.get(i));
+
+    }
 }

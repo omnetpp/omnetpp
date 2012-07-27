@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Setup Inifile Config action.
- *  
+ *
  * @author Andras
  */
 public class RefreshAction extends AbstractSimulationAction {

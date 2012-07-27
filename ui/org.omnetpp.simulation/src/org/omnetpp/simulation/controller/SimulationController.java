@@ -125,7 +125,7 @@ public class SimulationController {
 
     // module logs
     private LogBuffer logBuffer = new LogBuffer();
-    
+
     /**
      * Constructor.
      */
@@ -185,7 +185,7 @@ public class SimulationController {
     public ISimulationCallback getSimulationCallback() {
         return simulationCallback;
     }
-    
+
 //    public void setAnimationPlaybackController(AnimationPlaybackController animationPlaybackController) {
 //        this.animationPlaybackController = animationPlaybackController;
 //        this.animationPlaybackController.getAnimationController().addAnimationListener(new AnimationAdapter() {
@@ -199,7 +199,7 @@ public class SimulationController {
     public void setLiveAnimationController(LiveAnimationController liveAnimationController) {
         this.liveAnimationController = liveAnimationController;
     }
-    
+
     public void addSimulationStateListener(ISimulationStateListener listener) {
         simulationListeners.add(listener);
     }
@@ -238,7 +238,7 @@ public class SimulationController {
     public String getUrlBase() {
         return urlBase;
     }
-    
+
     /**
      * Process ID of the simulation we are talking to.
      */
@@ -305,11 +305,11 @@ public class SimulationController {
     public void setCancelJobOnDispose(boolean cancelJobOnDispose) {
         this.cancelJobOnDispose = cancelJobOnDispose;
     }
-    
+
     public boolean getCancelJobOnDispose() {
         return cancelJobOnDispose;
     }
-    
+
     protected String encode(String s) {
         try {
             return URLEncoder.encode(s, "US-ASCII");
@@ -322,7 +322,7 @@ public class SimulationController {
     public LogBuffer getLogBuffer() {
         return logBuffer;
     }
-    
+
     @SuppressWarnings("rawtypes")
     public void refreshStatus() throws IOException {
         long startTime = System.currentTimeMillis();
@@ -381,7 +381,7 @@ public class SimulationController {
                     lastEventEntry.eventNumber = ((Number)logEntry.get("#")).longValue();
                     lastEventEntry.simulationTime = BigDecimal.parse((String)logEntry.get("t"));
                     lastEventEntry.moduleId = ((Number)logEntry.get("moduleId")).intValue();
-                    lastEventEntry.moduleFullPath = (String) logEntry.get("moduleFullPath"); 
+                    lastEventEntry.moduleFullPath = (String) logEntry.get("moduleFullPath");
                     lastEventEntry.moduleNedType = (String) logEntry.get("moduleNedType");
                     lastEventEntry.messageName = (String)logEntry.get("messageName");
                     lastEventEntry.messageClassName = (String)logEntry.get("messageClassName");
@@ -438,9 +438,9 @@ public class SimulationController {
                 lastEventEntry.logItems = logItems.toArray(new Object[]{});
                 logItems.clear();
             }
-            
+
             logBuffer.fireChangeNotification();  // tell everyone interested about the change
-            
+
             /*
              * Refresh cached objects. Strategy: Maintain a refreshSerial, and for
              * each object also maintain the refreshSerial when they were last
@@ -452,7 +452,7 @@ public class SimulationController {
              */
             refreshSerial++;
 
-            //XXX this 'garbage removal' stuff is simply WRONG now -- objects can still remain in memory via references from other objects 
+            //XXX this 'garbage removal' stuff is simply WRONG now -- objects can still remain in memory via references from other objects
             List<Long> garbage = new ArrayList<Long>();
             for (Long id : cachedObjects.keySet()) {
                 if (cachedObjects.get(id).lastAccessSerial - refreshSerial > MAX_AGE)
@@ -475,7 +475,7 @@ public class SimulationController {
                     objectsWithFieldsLoaded.add(obj);
             }
             doLoadObjects(objectsWithFieldsLoaded, ContentToLoadEnum.FIELDS);
-                    
+
             //System.out.println("refreshStatus notifyListeners() follows:");
             notifyListeners();
 
@@ -520,7 +520,7 @@ public class SimulationController {
         Assert.isTrue(!rootObjects.isEmpty(), "refresh() needs to be called before getRootObjectId() can be invoked");
         return rootObjects.get(key);
     }
-    
+
     public void loadObject(cObject object) throws IOException {
         Set<cObject> objects = new HashSet<cObject>();
         objects.add(object);
@@ -553,7 +553,7 @@ public class SimulationController {
         }
         doLoadObjects(missing, ContentToLoadEnum.OBJECT);
     }
-    
+
     @SuppressWarnings("rawtypes")
     protected void doLoadObjects(Collection<? extends cObject> objects, ContentToLoadEnum what) throws IOException {
         if (objects.isEmpty())
@@ -610,7 +610,7 @@ public class SimulationController {
         catch (Exception e) {
             throw new RuntimeException("internal error: support for known C++ base class " + knownBaseClass, e);
         }
-//        
+//
 //        if (knownBaseClass.equals("cObject")) //TODO more classes; could use reflection
 //            return new cObject(this, id);
 //        else if (knownBaseClass.equals("cPacket"))
@@ -632,7 +632,7 @@ public class SimulationController {
 //        else //TODO: all others from cmdenv.cc
 //            throw new RuntimeException("unsupported class " + knownBaseClass);
     }
-    
+
     @SuppressWarnings("rawtypes")
     public List<ConfigDescription> getConfigDescriptions() throws IOException {
         Object json = getPageContentAsJSON(urlBase + "/sim/enumerateConfigs");
@@ -685,12 +685,12 @@ public class SimulationController {
         Assert.isTrue(state == SimState.READY);
         if (currentRunMode == RunMode.NOTRUNNING) {
 //            animationPlaybackController.jumpToEnd();
-            
+
             currentRunMode = RunMode.STEP;
             notifyListeners(); // because currentRunMode has changed
             getPageContent(urlBase + "sim/step");
             refreshStatus();
-            
+
             // animate it
 //            animationPlaybackController.play();
             liveAnimationController.startAnimatingLastEvent();
@@ -739,7 +739,7 @@ public class SimulationController {
         runUntilEventNumber = eventNumber;
 
 //        animationPlaybackController.jumpToEnd();
-        
+
         if (currentRunMode == RunMode.NOTRUNNING) {
             Assert.isTrue(state == SimState.READY);
             stopRequested = false;
@@ -839,7 +839,7 @@ public class SimulationController {
     protected String getPageContent(String url) throws IOException {
         System.out.println("GET " + url);
         if (url.length() > MONGOOSE_MAX_REQUEST_URI_SIZE)
-            throw new RuntimeException("Request URL length " + url.length() + "exceeds Mongoose limit " + MONGOOSE_MAX_REQUEST_URI_SIZE); 
+            throw new RuntimeException("Request URL length " + url.length() + "exceeds Mongoose limit " + MONGOOSE_MAX_REQUEST_URI_SIZE);
 
         if (getState() == SimState.DISCONNECTED)
             throw new IllegalStateException("Simulation process already terminated"); //TODO not good, as we catch IOException always

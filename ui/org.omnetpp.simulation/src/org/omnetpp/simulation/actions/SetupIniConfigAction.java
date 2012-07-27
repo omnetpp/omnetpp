@@ -23,7 +23,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Setup Inifile Config action.
- *  
+ *
  * @author Andras
  */
 public class SetupIniConfigAction extends AbstractSimulationAction {
@@ -85,7 +85,7 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
                 }
                 return element.toString();
             }
-            
+
             @Override
             public Image getImage(Object element) {
                 if (element instanceof ConfigDescription) {

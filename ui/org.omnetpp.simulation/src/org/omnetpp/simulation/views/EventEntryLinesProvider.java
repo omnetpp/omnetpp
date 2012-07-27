@@ -7,7 +7,7 @@ import org.omnetpp.simulation.controller.Anim;
 import org.omnetpp.simulation.controller.EventEntry;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class EventEntryLinesProvider implements IEventEntryLinesProvider {
@@ -18,7 +18,7 @@ public class EventEntryLinesProvider implements IEventEntryLinesProvider {
         for (Object item : entry.logItems)
             if (item instanceof String || item instanceof Anim.BeginSendEntry)
                 count++;
-        return count; 
+        return count;
     }
 
     @Override
@@ -26,13 +26,13 @@ public class EventEntryLinesProvider implements IEventEntryLinesProvider {
         if (entry.isEvent()) {
             if (lineIndex == 0)
                 return getBannerLine(entry);
-            else 
+            else
                 lineIndex--;
         }
         for (Object item : entry.logItems) {
             if (item instanceof String || item instanceof Anim.BeginSendEntry)
                 if (lineIndex-- == 0)
-                    return getTextForLogItem(item); 
+                    return getTextForLogItem(item);
         }
         throw new RuntimeException("log entry line index out of bounds");
     }
@@ -42,13 +42,13 @@ public class EventEntryLinesProvider implements IEventEntryLinesProvider {
         if (entry.isEvent()) {
             if (lineIndex == 0)
                 return ColorFactory.BLUE;
-            else 
+            else
                 lineIndex--;
         }
         for (Object item : entry.logItems) {
             if (item instanceof String || item instanceof Anim.BeginSendEntry)
                 if (lineIndex-- == 0)
-                    return getColorForLogItem(item); 
+                    return getColorForLogItem(item);
         }
         throw new RuntimeException("log entry line index out of bounds");
     }
@@ -65,10 +65,10 @@ public class EventEntryLinesProvider implements IEventEntryLinesProvider {
             Anim.BeginSendEntry entry = (Anim.BeginSendEntry)item;
             return "sends some message";  //TODO message name!!!
         }
-        else 
+        else
             return item.toString();
     }
-    
+
     protected Color getColorForLogItem(Object item) {
         return item instanceof String ? null : ColorFactory.GREY50;
     }

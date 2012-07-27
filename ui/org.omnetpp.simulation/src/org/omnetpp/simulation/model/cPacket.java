@@ -6,51 +6,51 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.simulation.controller.SimulationController;
 
 public class cPacket extends cMessage {
-	private long bitLength;
-	private boolean bitError;
-	private BigDecimal duration;
-	private boolean isReceptionStart;
-	private cPacket encapsulatedPacket;
-	private long encapsulationId;
-	private long encapsulationTreeId;
+    private long bitLength;
+    private boolean bitError;
+    private BigDecimal duration;
+    private boolean isReceptionStart;
+    private cPacket encapsulatedPacket;
+    private long encapsulationId;
+    private long encapsulationTreeId;
 
     public cPacket(SimulationController controller, long id) {
         super(controller, id);
     }
-	
-	public boolean hasBitError() {
-        checkState();
-		return bitError;
-	}
 
-	public long getBitLength() {
+    public boolean hasBitError() {
         checkState();
-		return bitLength;
-	}
+        return bitError;
+    }
 
-	public BigDecimal getDuration() {
+    public long getBitLength() {
+        checkState();
+        return bitLength;
+    }
+
+    public BigDecimal getDuration() {
         checkState();
         return duration;
     }
-	
-	public boolean isReceptionStart() {
+
+    public boolean isReceptionStart() {
         checkState();
         return isReceptionStart;
     }
 
-	public cPacket getEncapsulatedPacket() {
+    public cPacket getEncapsulatedPacket() {
         return encapsulatedPacket;
     }
-	
-	public long getEncapsulationId() {
-        checkState();
-		return encapsulationId;
-	}
 
-	public long getEncapsulationTreeId() {
+    public long getEncapsulationId() {
         checkState();
-		return encapsulationTreeId;
-	}
+        return encapsulationId;
+    }
+
+    public long getEncapsulationTreeId() {
+        checkState();
+        return encapsulationTreeId;
+    }
 
     @Override
     @SuppressWarnings("rawtypes")

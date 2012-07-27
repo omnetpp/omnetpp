@@ -10,7 +10,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Run Until action.
- *  
+ *
  * @author Andras
  */
 public class RunUntilAction extends AbstractSimulationAction {
@@ -27,7 +27,7 @@ public class RunUntilAction extends AbstractSimulationAction {
             SimulationController controller = getSimulationController();
             if (!ensureNetworkReady(controller))
                 return;
-            
+
             RunUntilDialog dialog = new RunUntilDialog(getShell());
             if (dialog.open() == Dialog.OK) {
                 controller.runUntil(dialog.getRunMode(), dialog.getSimTime(), dialog.getEventNumber());
@@ -41,7 +41,7 @@ public class RunUntilAction extends AbstractSimulationAction {
             updateState();
         }
     }
-    
+
     @Override
     public void updateState() {
         SimState state = getSimulationController().getState();

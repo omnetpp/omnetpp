@@ -196,14 +196,14 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 simulationCanvas.refreshInspectors();
             }
         });
-        
+
         // create animation controller for the simulation canvas
         LiveAnimationController liveAnimationController = new LiveAnimationController(simulationCanvas, simulationController);
         simulationController.setLiveAnimationController(liveAnimationController);
 
         DelegatingSelectionProvider delegatingSelectionProvider = (DelegatingSelectionProvider) getSite().getSelectionProvider();
         delegatingSelectionProvider.setSelectionProvider(simulationCanvas);  //TODO switch to "animationCanvas" when use flips to "Playback" tab
-        
+
 //        // create animation canvas
 //        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
 //            private Figure messageFigure;
@@ -374,7 +374,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     public SimulationCanvas getSimulationCanvas() {
         return simulationCanvas;
     }
-    
+
     protected void updateStatusDisplay() {
         if (!statusLabel.isDisposed()) {
             SimulationController controller = getSimulationController();
@@ -416,7 +416,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         MessageDialog.openError(getSite().getShell(), "Error", errorMessage);
     }
 
-	@Override
+    @Override
     public void doSave(IProgressMonitor monitor) {
         // Nothing
     }

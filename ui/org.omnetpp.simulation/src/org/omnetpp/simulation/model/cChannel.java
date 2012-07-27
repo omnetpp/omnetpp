@@ -6,11 +6,11 @@ import org.omnetpp.simulation.controller.SimulationController;
 
 public class cChannel extends cComponent {
     private boolean isTransmissionChannel;
-    
+
     public cChannel(SimulationController controller, long id) {
         super(controller, id);
     }
-    
+
     public boolean isTransmissionChannel() {
         checkState();
         return isTransmissionChannel;

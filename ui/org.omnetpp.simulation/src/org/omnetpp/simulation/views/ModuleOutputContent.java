@@ -16,7 +16,7 @@ import org.omnetpp.simulation.widgets.ITextViewerContent;
 
 /**
  * TODO
- * 
+ *
  * @author Andras
  */
 //TODO getters could use a fixed point plus incremental computation, exploiting the fact that painting of the lines occurs top-down
@@ -25,15 +25,15 @@ public class ModuleOutputContent implements ITextViewerContent {
     private IEventEntryLinesProvider linesProvider; //TODO rename to IEventEntryLinesProvider
     private String filterModuleFullPath;  //TODO move filter into some IEventEntryFilter class?
     private ListenerList textChangeListeners = new ListenerList();
-    
+
     // cached data
     private int lineCount = -1;
-    private int entryStartLineNumbers[] = null; // indexed by the entry's index in logBuffer  
+    private int entryStartLineNumbers[] = null; // indexed by the entry's index in logBuffer
 
     public ModuleOutputContent(LogBuffer logBuffer, IEventEntryLinesProvider labelProvider) {
         this.logBuffer = logBuffer;
         this.linesProvider = labelProvider;
-        
+
         logBuffer.addChangeListener(new ILogBufferChangedListener() {
             @Override
             public void changed(LogBuffer logBuffer) {
@@ -42,7 +42,7 @@ public class ModuleOutputContent implements ITextViewerContent {
             }
         });
     }
-    
+
     public void setFilterModuleFullPath(String filterModuleFullPath) {
         this.filterModuleFullPath = filterModuleFullPath;
         invalidateIndex();
@@ -57,7 +57,7 @@ public class ModuleOutputContent implements ITextViewerContent {
     protected boolean isIndexValid() {
         return entryStartLineNumbers != null;
     }
-    
+
     protected boolean filterMatches(EventEntry entry) {  //TODO into some IEventEntryFilter
         if (filterModuleFullPath == null)
         return true; // no filtering
@@ -95,7 +95,7 @@ public class ModuleOutputContent implements ITextViewerContent {
         Assert.isTrue(lineIndex >= 0 && lineIndex < lineCount);
         if (lineIndex == lineCount-1)  // empty last line
             return null;
-        
+
         int entryIndex = getIndexOfEntryAt(lineIndex);
         EventEntry eventEntry = logBuffer.getEventEntry(entryIndex);
         Assert.isTrue(filterMatches(eventEntry));
@@ -107,8 +107,8 @@ public class ModuleOutputContent implements ITextViewerContent {
             rebuildIndex();
         int entryIndex = Arrays.binarySearch(entryStartLineNumbers, lineIndex);
         if (entryIndex < 0) entryIndex = -entryIndex-2;
-        
-        // entryStartLineNumber[] contains one slot for ALL event entries, even those that 
+
+        // entryStartLineNumber[] contains one slot for ALL event entries, even those that
         // don't match the filter; so we have to find the LAST slot with the same line number,
         // and that will be the matching entry
         int baseLineNumber = entryStartLineNumbers[entryIndex];
@@ -119,12 +119,12 @@ public class ModuleOutputContent implements ITextViewerContent {
 
     protected void rebuildIndex() {
         //long startTime = System.currentTimeMillis();
-        
-        // recompute line numbers. note: entryStartLineNumber[] contains one slot 
+
+        // recompute line numbers. note: entryStartLineNumber[] contains one slot
         // for ALL event entries, even those that don't match the filter!
         int n = logBuffer.getNumEntries();
         entryStartLineNumbers = new int[n];
-        
+
         int currentLineNumber = 0;
         for (int i = 0; i < n; i++) {
             entryStartLineNumbers[i] = currentLineNumber;
@@ -133,12 +133,12 @@ public class ModuleOutputContent implements ITextViewerContent {
             if (filterMatches(entry))
                 currentLineNumber += linesProvider.getNumLines(entry);
         }
-        
+
         lineCount = currentLineNumber + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
 
         //System.out.println("rebuildIndex() for " + n + " log entries: " + (System.currentTimeMillis()-startTime) + "ms"); --> ~10..20ms for 1 million events
     }
-    
+
     @Override
     public void addTextChangeListener(ITextChangeListener listener) {
         textChangeListeners.add(listener);
@@ -157,7 +157,7 @@ public class ModuleOutputContent implements ITextViewerContent {
                 public void run() throws Exception {
                     listener.textChanged(ModuleOutputContent.this);
                 }
-                
+
                 @Override
                 public void handleException(Throwable e) {
                     SimulationPlugin.logError(e);

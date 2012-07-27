@@ -19,46 +19,46 @@ public class DummyMoveMessageAnimation extends AnimationPrimitive {
     private IFigure figure;
     private Point beginLocation;
     private Point endLocation;
-    
+
     private int frameNo, numFrames;
     private double dx, dy;
 
-	public DummyMoveMessageAnimation(IFigure parent, Point beginLocation, Point endLocation) {
-	    this.beginLocation = beginLocation;
-	    this.endLocation = endLocation;
-	    
-	    double distance = endLocation.getDistance(beginLocation);
-	    double time = distance/SPEED;
-	    numFrames = (int) Math.ceil(time * FRAMERATE);
-	    frameNo = 0;
+    public DummyMoveMessageAnimation(IFigure parent, Point beginLocation, Point endLocation) {
+        this.beginLocation = beginLocation;
+        this.endLocation = endLocation;
 
-	    figure = new ImageFigure(SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_MESSAGE));
-	    //figure.setSize(figure.getPreferredSize()); TODO
-	    parent.add(figure);
-	}
+        double distance = endLocation.getDistance(beginLocation);
+        double time = distance/SPEED;
+        numFrames = (int) Math.ceil(time * FRAMERATE);
+        frameNo = 0;
 
-	@Override
-	public boolean update() {
-	    int x = beginLocation.x + frameNo*(endLocation.x - beginLocation.x)/numFrames;
-	    int y = beginLocation.y + frameNo*(endLocation.y - beginLocation.y)/numFrames;
-	    Point location = new Point(x - figure.getSize().width/2, y - figure.getSize().height/2);
-	    System.out.print(" " + location.x + "," + location.y + " "); //XXX
-	    
-	    //figure.getParent().getLayoutManager().setConstraint(figure, new Rectangle(location, new Dimension(-1, -1)));
-	    figure.setLocation(location);
-	    figure.setSize(10,10);
-	    figure.getParent().revalidate();
-	    
-	    if (++frameNo == numFrames) {
-	        figure.getParent().remove(figure);
-	        return false;
-	    }
-	    else {
-	        return true;
-	    }
-	    
-	    
-//	    double alpha;
+        figure = new ImageFigure(SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_MESSAGE));
+        //figure.setSize(figure.getPreferredSize()); TODO
+        parent.add(figure);
+    }
+
+    @Override
+    public boolean update() {
+        int x = beginLocation.x + frameNo*(endLocation.x - beginLocation.x)/numFrames;
+        int y = beginLocation.y + frameNo*(endLocation.y - beginLocation.y)/numFrames;
+        Point location = new Point(x - figure.getSize().width/2, y - figure.getSize().height/2);
+        System.out.print(" " + location.x + "," + location.y + " "); //XXX
+
+        //figure.getParent().getLayoutManager().setConstraint(figure, new Rectangle(location, new Dimension(-1, -1)));
+        figure.setLocation(location);
+        figure.setSize(10,10);
+        figure.getParent().revalidate();
+
+        if (++frameNo == numFrames) {
+            figure.getParent().remove(figure);
+            return false;
+        }
+        else {
+            return true;
+        }
+
+
+//      double alpha;
 //        if (getSimulationTimeDuration().doubleValue() != 0)
 //            alpha = animationController.getCurrentSimulationTime().subtract(getBeginSimulationTime()).doubleValue() / getSimulationTimeDuration().doubleValue();
 //        else
@@ -68,5 +68,5 @@ public class DummyMoveMessageAnimation extends AnimationPrimitive {
 //        Point location = beginLocation.getScaled(1 - alpha).translate(endLocation.getScaled(alpha));
 //        figure.getParent().getLayoutManager().setConstraint(figure, new Rectangle(location, new Dimension(-1, -1)));
 //        figure.getParent().revalidate();
-	}
+    }
 }

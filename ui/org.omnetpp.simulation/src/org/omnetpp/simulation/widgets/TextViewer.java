@@ -37,13 +37,13 @@ import org.omnetpp.common.ui.SelectionProvider;
 
 
 /**
- * For efficient viewing of a large amount of text. We use this instead of 
- * StyledText plus a custom ITextViewerContent class, because StyledTextRenderer 
+ * For efficient viewing of a large amount of text. We use this instead of
+ * StyledText plus a custom ITextViewerContent class, because StyledTextRenderer
  * is very slow. Its throughput is about 20..30 events/sec, while this class
- * has about 200..300 (counting with average 2 lines/event). Also, this class 
- * has very low and constant memory consumption (StyledTextRenderer consumes 
+ * has about 200..300 (counting with average 2 lines/event). Also, this class
+ * has very low and constant memory consumption (StyledTextRenderer consumes
  * minimum 8 bytes per line, see lineWidth[] and lineHeight[] arrays).
- * 
+ *
  * @author Andras
  */
 //TODO widget should always add an extra newline to the content!!!!
@@ -97,7 +97,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         IS_MOTIF = "motif".equals(platform);
     }
 
-    
+
     public TextViewer(Composite parent, int style) {
         super(parent, style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND);
 
@@ -110,9 +110,9 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         //setFont(JFaceResources.getDefaultFont());
         //setFont(new Font(getDisplay(), "Courier New", 8, SWT.NORMAL));
         setFont(new Font(getDisplay(), "Arial", 8, SWT.NORMAL));
-        
+
         clipboard = new Clipboard(getDisplay());
-        
+
         textChangeListener = new ITextChangeListener() {
             //@Override
             public void textChanged(ITextViewerContent textViewer) {
@@ -121,9 +121,9 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         };
 
         installListeners();
-        
+
         createKeyBindings();
-        
+
         // cursor blinking
         caretBlinkTimer = new Runnable() {
             public void run() {
@@ -153,7 +153,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                     case SWT.FocusIn: handleFocusIn(event); break;
                     case SWT.FocusOut: handleFocusOut(event); break;
                 }
-            }       
+            }
         };
         addListener(SWT.Dispose, listener);
         addListener(SWT.KeyDown, listener);
@@ -189,9 +189,9 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected void createKeyBindings() {
         int nextKey = SWT.ARROW_RIGHT;
         int previousKey = SWT.ARROW_LEFT;
-        
+
         // Navigation
-        setKeyBinding(SWT.ARROW_UP, ST.LINE_UP);    
+        setKeyBinding(SWT.ARROW_UP, ST.LINE_UP);
         setKeyBinding(SWT.ARROW_DOWN, ST.LINE_DOWN);
         if (IS_CARBON) {
             setKeyBinding(previousKey | SWT.MOD1, ST.LINE_START);
@@ -216,23 +216,23 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1, ST.WINDOW_END);
         setKeyBinding(nextKey, ST.COLUMN_NEXT);
         setKeyBinding(previousKey, ST.COLUMN_PREVIOUS);
-        
+
         // Selection
-        setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);  
+        setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);
         setKeyBinding(SWT.ARROW_DOWN | SWT.MOD2, ST.SELECT_LINE_DOWN);
         if (IS_CARBON) {
             setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_LINE_START);
             setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_LINE_END);
-            setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_TEXT_START);   
+            setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_TEXT_START);
             setKeyBinding(SWT.END | SWT.MOD2, ST.SELECT_TEXT_END);
-            setKeyBinding(SWT.ARROW_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);    
+            setKeyBinding(SWT.ARROW_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);
             setKeyBinding(SWT.ARROW_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
             setKeyBinding(nextKey | SWT.MOD2 | SWT.MOD3, ST.SELECT_WORD_NEXT);
             setKeyBinding(previousKey | SWT.MOD2 | SWT.MOD3, ST.SELECT_WORD_PREVIOUS);
         } else  {
             setKeyBinding(SWT.HOME | SWT.MOD2, ST.SELECT_LINE_START);
             setKeyBinding(SWT.END | SWT.MOD2, ST.SELECT_LINE_END);
-            setKeyBinding(SWT.HOME | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);    
+            setKeyBinding(SWT.HOME | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_START);
             setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
             setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);
             setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
@@ -242,8 +242,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
         setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
         setKeyBinding(nextKey | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
-        setKeyBinding(previousKey | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);   
-                    
+        setKeyBinding(previousKey | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);
+
         // Clipboard
         setKeyBinding('C' | SWT.MOD1, ST.COPY);
     }
@@ -276,13 +276,13 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             } else {
                 keyActionMap.put(new Integer(key), new Integer(action));
             }
-        }       
+        }
     }
 
     // code from StyledText
     public int getKeyBinding(int key) {
         checkWidget();
-        Integer action = (Integer) keyActionMap.get(new Integer(key));  
+        Integer action = (Integer) keyActionMap.get(new Integer(key));
         return action == null ? SWT.NULL : action.intValue();
     }
 
@@ -352,7 +352,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             case ST.TEXT_END: doContentEnd(false); break;
             case ST.WINDOW_START: doPageStart(false); break;
             case ST.WINDOW_END: doPageEnd(false); break;
-            // Selection    
+            // Selection
             case ST.SELECT_ALL: selectAll(); break;
             case ST.SELECT_LINE_UP: doLineUp(true); break;
             case ST.SELECT_LINE_DOWN: doLineDown(true); break;
@@ -368,7 +368,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             case ST.SELECT_TEXT_END: doContentEnd(true); break;
             case ST.SELECT_WINDOW_START: doPageStart(true); break;
             case ST.SELECT_WINDOW_END: doPageEnd(true); break;
-            // Modification         
+            // Modification
             case ST.COPY: copy(); break;
         }
         revealCaret();
@@ -392,7 +392,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             alignTopLine();
         else if (caretLineIndex==topLineIndex+getNumVisibleLines()-1)
             alignBottomLine();
-        
+
         // TODO with columns too
 //        if (caretColumn < )
 //            topLineIndex = caretLineIndex;
@@ -412,7 +412,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     protected void doCursorPrevious(boolean select) {
         caretColumn = Math.min(caretColumn, content.getLineText(caretLineIndex).length());
-        if (caretColumn > 0) 
+        if (caretColumn > 0)
             caretColumn--;
         else if (caretLineIndex > 0) {
             caretLineIndex--;
@@ -455,7 +455,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         caretColumn = content.getLineText(caretLineIndex).length();
         if (!select) clearSelection();
     }
-    
+
     protected void doWordPrevious(boolean select) {
         String line = content.getLineText(caretLineIndex);
         int pos = caretColumn;
@@ -468,7 +468,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         } else {
             // go to start of current or previous word
             pos--; // move at least one character
-            while (pos > 0 && !isWordChar(line.charAt(pos-1))) 
+            while (pos > 0 && !isWordChar(line.charAt(pos-1)))
                 pos--;
             while (pos > 0 && isWordChar(line.charAt(pos-1)))
                 pos--;
@@ -491,7 +491,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             pos++; // move at least one character
             while (pos < line.length() && isWordChar(line.charAt(pos)))
                 pos++;
-            while (pos < line.length() && !isWordChar(line.charAt(pos))) 
+            while (pos < line.length() && !isWordChar(line.charAt(pos)))
                 pos++;
             caretColumn = pos;
         }
@@ -503,7 +503,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         caretColumn = 0;
         if (!select) clearSelection();
     }
-    
+
     protected void doPageEnd(boolean select) {
         caretLineIndex = Math.min(content.getLineCount()-1, topLineIndex + getNumVisibleLines());
         caretColumn = content.getLineText(caretLineIndex).length();
@@ -542,36 +542,36 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     }
 
     /**
-     * Copies the selected text to the specified clipboard.  The text will be put in the 
+     * Copies the selected text to the specified clipboard.  The text will be put in the
      * clipboard in plain text format
      * <p>
-     * The clipboardType is  one of the clipboard constants defined in class 
-     * <code>DND</code>.  The <code>DND.CLIPBOARD</code>  clipboard is 
-     * used for data that is transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) 
-     * or by menu action.  The <code>DND.SELECTION_CLIPBOARD</code> 
-     * clipboard is used for data that is transferred by selecting text and pasting 
+     * The clipboardType is  one of the clipboard constants defined in class
+     * <code>DND</code>.  The <code>DND.CLIPBOARD</code>  clipboard is
+     * used for data that is transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V)
+     * or by menu action.  The <code>DND.SELECTION_CLIPBOARD</code>
+     * clipboard is used for data that is transferred by selecting text and pasting
      * with the middle mouse button.
-     * 
+     *
      * @return true if clipboard was set, false if not
      */
     public boolean copy(int clipboardType, int approximateMaxSize) {
-        if (clipboardType != DND.CLIPBOARD && clipboardType != DND.SELECTION_CLIPBOARD) 
+        if (clipboardType != DND.CLIPBOARD && clipboardType != DND.SELECTION_CLIPBOARD)
             return false;
 
         Pos start = getSelectionStart();
         Pos end = getSelectionEnd();
         if (start.equals(end))
             return false;
-        
+
         try {
             String text = getTextRange(start, end, approximateMaxSize);
             if (text == null)
                 throw new RuntimeException("Selected text too large");
             setClipboardContent(text, clipboardType);
-            return true; 
-        } 
+            return true;
+        }
         catch (SWTError error) {
-            // Copy to clipboard failed. This happens when another application 
+            // Copy to clipboard failed. This happens when another application
             // is accessing the clipboard while we copy. Ignore the error.
             if (error.code == DND.ERROR_CANNOT_SET_CLIPBOARD)
                 return false;
@@ -617,7 +617,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         Transfer[] types = new Transfer[]{plainTextTransfer};
         clipboard.setContents(data, types, clipboardType);
     }
-    
+
     protected boolean isWordChar(char ch) {
         return Character.isLetterOrDigit(ch) || ch=='_' || ch=='@';
     }
@@ -632,12 +632,12 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             boolean select = (event.stateMask & SWT.MOD2) != 0;
             if (!select)
                 clearSelection();
-        } 
+        }
         else if (clickCount % 2 == 0) {
             // double click - select word
             doWordPrevious(false);
             doWordNext(true);
-        } 
+        }
         else {
             // triple click - select full line
             selectionAnchorLineIndex = caretLineIndex;
@@ -649,7 +649,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                 caretColumn = content.getLineText(caretLineIndex).length();
             }
         }
-        revealCaret();        
+        revealCaret();
         redraw();
     }
 
@@ -669,9 +669,9 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     }
 
     protected void handleMouseWheel(Event event) {
-        // when scrolling down (count<0), bottom line should be entirely visible; 
+        // when scrolling down (count<0), bottom line should be entirely visible;
         // when scrolling up (count>0), the top line should be entirely visible.
-        // actual scrolling seems to be taken care of automatically (by ScrolledComposite?) 
+        // actual scrolling seems to be taken care of automatically (by ScrolledComposite?)
         if (event.count > 0 || content.getLineCount() < getNumVisibleLines())
             alignTopLine();
         else {
@@ -682,17 +682,17 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     protected void alignTopLine() {
         topLineY = 0;
     }
-    
+
     protected void alignBottomLine() {
         Rectangle r = getClientArea();
         topLineY = r.height % lineHeight;
-        if (topLineY > 0) 
+        if (topLineY > 0)
             topLineY -= lineHeight;
     }
-    
-    /** 
+
+    /**
      * A mouse move event has occurred.  See if we should start autoscrolling.  If
-     * the move position is outside of the client area, initiate autoscrolling.  
+     * the move position is outside of the client area, initiate autoscrolling.
      * Otherwise, we've moved back into the widget so end autoscrolling.
      */
     protected void doAutoScroll(Event event) {
@@ -708,7 +708,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         else
             stopAutoScroll();
     }
-    
+
     protected void startOrRefineAutoScroll(final int direction, int distance) {
         autoScrollDistance = distance;
 
@@ -723,7 +723,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                     if (!isDisposed() && autoScrollDirection != SWT.NULL) {
                         // note: we could make use of use autoScrollDistance here
                         if (autoScrollDirection == SWT.UP) {
-                            invokeAction(ST.SELECT_LINE_UP); 
+                            invokeAction(ST.SELECT_LINE_UP);
                         }
                         else if (autoScrollDirection == SWT.DOWN) {
                             invokeAction(ST.SELECT_LINE_DOWN);
@@ -736,16 +736,16 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                             if (caretColumn > 0)
                                 invokeAction(ST.SELECT_COLUMN_PREVIOUS);
                         }
-                        int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 
+                        int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE;
                         Display.getCurrent().timerExec(rate, this);
                     }
                 }
             };
         }
-        
+
         // restart timer
         autoScrollDirection = direction;
-        int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE; 
+        int rate = autoScrollDirection==SWT.UP || autoScrollDirection==SWT.DOWN ? V_SCROLL_RATE : H_SCROLL_RATE;
         Display.getCurrent().timerExec(-1, autoScrollTimer);
         Display.getCurrent().timerExec(rate, autoScrollTimer);
     }
@@ -796,14 +796,14 @@ public class TextViewer extends Canvas implements ISelectionProvider {
     public ITextViewerContent getContent() {
         return content;
     }
-    
+
     public void refresh() {
         contentChanged();
     }
-    
+
     protected void contentChanged() {
         Assert.isTrue(content.getLineCount() > 0, "content must be at least one line");
-            
+
         // adjust caret and selection line index
         caretLineIndex = clip(0, content.getLineCount()-1, caretLineIndex);
         selectionAnchorLineIndex = clip(0, content.getLineCount()-1, selectionAnchorLineIndex);
@@ -812,13 +812,13 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         // column index causes no problem, but to clip it to the line length would require
         // us to ask the content provide for the line -- at that can be very COSTLY if
         // the line index is far from the currently displayed line range. (The underlying
-        // content provider was not designed for random access, it takes O(n) time to 
+        // content provider was not designed for random access, it takes O(n) time to
         // return a random line!!!)
         //
         // So, do NOT do this:
         //caretColumn = clip(0, content.getLine(caretLineIndex).length(), caretColumn);
         //selectionAnchorColumn = clip(0, content.getLine(caretLineIndex).length(), selectionAnchorColumn);
-        
+
         configureScrollbars();
         revealCaret();
         adjustScrollbars();
@@ -827,20 +827,20 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     public void setFont(Font font) {
         this.font = font;
-        
+
         GC gc = new GC(Display.getCurrent());
         gc.setFont(font);
         FontMetrics fontMetrics = gc.getFontMetrics();
         lineHeight = fontMetrics.getHeight();
         averageCharWidth = fontMetrics.getAverageCharWidth();
-        
+
         final String wideText = "wgh8";
         final String narrowText = "1l;.";
         Assert.isTrue(wideText.length() == narrowText.length());
         isMonospaceFont = gc.textExtent(wideText).x == gc.textExtent(narrowText).x;
-        
+
         gc.dispose();
-        
+
         redraw();
     }
 
@@ -886,8 +886,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         redraw();
     }
 
-    /** 
-     * Returns the caret position. 
+    /**
+     * Returns the caret position.
      */
     public Pos getCaretPosition() {
         int clippedCaretColumn = clip(0, content.getLineText(caretLineIndex).length(), caretColumn);
@@ -910,18 +910,18 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
     public void setSelectionAnchor(int lineIndex, int column) {
         selectionAnchorLineIndex = lineIndex;  //XXX assert range!
-        selectionAnchorColumn = column;        //XXX assert range! 
+        selectionAnchorColumn = column;        //XXX assert range!
         redraw();
     }
 
     public Pos getSelectionStart() {
-        Pos anchor = getSelectionAnchor(); 
+        Pos anchor = getSelectionAnchor();
         Pos caret = getCaretPosition();
         return anchor.lessThan(caret) ? anchor : caret;
     }
 
     public Pos getSelectionEnd() {
-        Pos anchor = getSelectionAnchor(); 
+        Pos anchor = getSelectionAnchor();
         Pos caret = getCaretPosition();
         return anchor.lessThan(caret) ? caret : anchor;
     }
@@ -956,7 +956,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             String line = content.getLineText(lineIndex);
             column = line.length(); // in case loop falls through
             for (int i = 0; i < line.length(); i++) {
-                if (gc.textExtent(line.substring(0, i+1)).x > x + horizontalScrollOffset + 2) { 
+                if (gc.textExtent(line.substring(0, i+1)).x > x + horizontalScrollOffset + 2) {
                     column = i;
                     break;
                 }
@@ -971,21 +971,21 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         gc.setBackground(backgroundColor);
         gc.setForeground(foregroundColor);
         gc.setFont(font);
-        
+
         Rectangle r = getClientArea();
         gc.fillRectangle(r.x, r.y, r.width, r.height);
-        
+
         int numLines = content.getLineCount();
         int numVisibleLines = getNumVisibleLines();
 
         // note: if the following asserts are triggered, odds are that content has changed without a call to our contentChanged() method
         Assert.isTrue(topLineIndex >= 0 && topLineIndex <= Math.max(0,numLines-numVisibleLines));
         Assert.isTrue(numLines==0 || (caretLineIndex >= 0 && caretLineIndex < numLines));
-      
+
         int x = leftMargin - horizontalScrollOffset;
         int lineIndex = topLineIndex;
         int startY = topLineY;
-        
+
         // draw the lines
         for (int y = startY; y < r.y+r.height && lineIndex < numLines; y += lineHeight) {
             drawLine(gc, lineIndex++, x, y);
@@ -1012,8 +1012,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
             int selEndColumn = selectionAnchorColumn;
             if (selStartLine > selEndLine || (selStartLine==selEndLine && selStartColumn > selEndColumn)) {
                 // swap so that start < end
-                int tmp = selStartLine; selStartLine = selEndLine; selEndLine = tmp; 
-                tmp = selStartColumn; selStartColumn = selEndColumn; selEndColumn = tmp; 
+                int tmp = selStartLine; selStartLine = selEndLine; selEndLine = tmp;
+                tmp = selStartColumn; selStartColumn = selEndColumn; selEndColumn = tmp;
             }
 
             // if lineIndex is in the selected region, redraw the selected part
@@ -1030,7 +1030,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
                 gc.setForeground(foregroundColor);
             }
         }
-        
+
         if (lineIndex == caretLineIndex && caretShown) {
             // draw caret
             String linePrefix = caretColumn >= line.length() ? line : line.substring(0, caretColumn);
@@ -1043,7 +1043,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         int numVisibleLines = getNumVisibleLines();
         ScrollBar vsb = getVerticalBar();
         vsb.setValues(vsb.getSelection(), 0, content.getLineCount(), numVisibleLines, 1, numVisibleLines);
-        
+
         int maxWidth = 200*averageCharWidth; //FIXME
         int width = getClientArea().width;
         ScrollBar hsb = getHorizontalBar();

@@ -3,7 +3,7 @@ package org.omnetpp.simulation.model;
 import org.eclipse.core.runtime.IAdaptable;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class Field implements IAdaptable {
@@ -18,15 +18,15 @@ public class Field implements IAdaptable {
     public boolean isArray;  //XXX actually redundant (can check which one of value/values is non-null)
     public boolean isCompound;
     public boolean isPointer;  //XXX likely redundant (what do we use it for?)
-    public boolean isCObject; 
-    public boolean isCOwnedObject; //XXX actually redundant (can do instanceof on the object) 
+    public boolean isCObject;
+    public boolean isCOwnedObject; //XXX actually redundant (can do instanceof on the object)
     public boolean isEditable;  // unused (we don't support editing, do we)
     public String structName;
     public Object value;
     public Object[] values;
     public String valueSymbolicName;  //TODO
     public String[] valueSymbolicNames; //TODO
-    
+
     @Override
     @SuppressWarnings("rawtypes")
     public Object getAdapter(Class adapter) {
@@ -140,7 +140,7 @@ public class Field implements IAdaptable {
 //        }
 //        else if (!type.equals(other.type))
 //            return false;
-//        
+//
 //        if (valueSymbolicName == null) {
 //            if (other.valueSymbolicName != null)
 //                return false;
@@ -160,7 +160,7 @@ public class Field implements IAdaptable {
 //
 //        if (!Arrays.equals(values, other.values))
 //            return false;
-        
+
         return true;
     }
 }

@@ -24,32 +24,32 @@ public interface IInspectorPart {
     IInspectorContainer getContainer();
 
     /**
-	 * Returns the inspected object.
-	 */
-	cObject getObject();
+     * Returns the inspected object.
+     */
+    cObject getObject();
 
-	/**
-	 * Refresh the inspector's contents. Should only be called when the
-	 * inspector is already installed (the figure is on a draw2d canvas,
-	 * and setContainer() was already called). The client is responsible
-	 * for calling this method frequently enough to keep the inspector's
-	 * content up to date.
-	 */
-	void refresh();
+    /**
+     * Refresh the inspector's contents. Should only be called when the
+     * inspector is already installed (the figure is on a draw2d canvas,
+     * and setContainer() was already called). The client is responsible
+     * for calling this method frequently enough to keep the inspector's
+     * content up to date.
+     */
+    void refresh();
 
-	/**
-	 * Must be called when the inspector is no longer needed
-	 */
-	void dispose();
+    /**
+     * Must be called when the inspector is no longer needed
+     */
+    void dispose();
 
-	boolean isDisposed();
+    boolean isDisposed();
 
-	/**
-	 * TODO
-	 * Returns null if not open
-	 */
-	Control getFloatingControls();
-    
+    /**
+     * TODO
+     * Returns null if not open
+     */
+    Control getFloatingControls();
+
     /**
      * TODO
      */
@@ -65,7 +65,7 @@ public interface IInspectorPart {
      * for inserting the figure into a draw2d canvas.
      */
     IInspectorFigure getFigure();
-    
+
     /**
      * Returns whether this inspector can be maximized to fill the canvas.
      */
@@ -84,5 +84,5 @@ public interface IInspectorPart {
     void selectionChanged(IStructuredSelection selection);
 
     void populateContextMenu(MenuManager contextMenuManager, Point p);
-    
+
 }

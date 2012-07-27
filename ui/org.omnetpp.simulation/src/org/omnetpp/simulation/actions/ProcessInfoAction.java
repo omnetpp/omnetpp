@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * Brings up a dialog with properties of the simulation process we are attached to.
- * 
+ *
  * @author Andras
  */
 public class ProcessInfoAction extends AbstractSimulationAction {
@@ -27,7 +27,7 @@ public class ProcessInfoAction extends AbstractSimulationAction {
 
             if (!haveSimulation(controller))
                 return;
-            
+
             String[] items = new String[] {
                     "Host", controller.getHostName(),
                     "Port", ""+controller.getPortNumber(),
@@ -42,7 +42,7 @@ public class ProcessInfoAction extends AbstractSimulationAction {
                     "Event number", ""+controller.getEventNumber(),
                     "Simulation time", controller.getSimulationTime().toString(),
             };
-            
+
             // TODO this is a quick'n'ugly solution, we need a nicer looking dialog!
             String message = "";
             for (int i=0; i<items.length; i+= 2)
@@ -54,7 +54,7 @@ public class ProcessInfoAction extends AbstractSimulationAction {
             SimulationPlugin.logError(e);
         }
     }
-    
+
     @Override
     public void updateState() {
         SimState state = getSimulationController().getState();

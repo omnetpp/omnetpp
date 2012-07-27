@@ -29,18 +29,18 @@ import org.omnetpp.simulation.controller.SimulationController.RunMode;
 
 /**
  * Implements the "Run Until..." dialog.
- * 
+ *
  * @author Andras
  */
 public class RunUntilDialog extends TrayDialog {
-	private String title;
+    private String title;
 
-	// widgets
+    // widgets
     private Combo modeCombo;
-	private Text simtimeText;
-	private Text eventNumberText;
+    private Text simtimeText;
+    private Text eventNumberText;
 
-	// the result
+    // the result
     private RunMode mode;
     private BigDecimal simtime;
     private long eventNumber;
@@ -59,13 +59,13 @@ public class RunUntilDialog extends TrayDialog {
         return UIUtils.getDialogSettings(SimulationPlugin.getDefault(), getClass().getName());
     }
 
-	protected void configureShell(Shell shell) {
-		super.configureShell(shell);
-		if (title != null)
-			shell.setText(title);
-	}
+    protected void configureShell(Shell shell) {
+        super.configureShell(shell);
+        if (title != null)
+            shell.setText(title);
+    }
 
-	@Override
+    @Override
     protected Control createDialogArea(Composite parent) {
         Composite dialogArea = (Composite) super.createDialogArea(parent);
 
@@ -75,11 +75,11 @@ public class RunUntilDialog extends TrayDialog {
 
         createLabel(composite, "Enter simulation time or event number to run until.\n\n", 2);
 
-		createLabel(composite, "Simulation time (s):", 1);
-		simtimeText = new Text(composite, SWT.BORDER);
-		simtimeText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        createLabel(composite, "Simulation time (s):", 1);
+        simtimeText = new Text(composite, SWT.BORDER);
+        simtimeText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		createLabel(composite, "Event number:", 1);
+        createLabel(composite, "Event number:", 1);
         eventNumberText = new Text(composite, SWT.BORDER);
         eventNumberText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
@@ -92,10 +92,10 @@ public class RunUntilDialog extends TrayDialog {
         modeCombo.select(1);
 
         simtimeText.setFocus();
-        
+
         //TODO set up validation!
         //TODO restore last values from preference store
-        
+
         Dialog.applyDialogFont(composite);
 
         return composite;
@@ -110,19 +110,19 @@ public class RunUntilDialog extends TrayDialog {
         return label;
     }
 
-	protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-	}
+    protected void createButtonsForButtonBar(Composite parent) {
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
 
-	protected void okPressed() {
-    	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
-	    mode = RunMode.valueOf(modeCombo.getText().toUpperCase());
+    protected void okPressed() {
+        // save dialog state into variables, so that client can retrieve them after the dialog was disposed
+        mode = RunMode.valueOf(modeCombo.getText().toUpperCase());
 
-	    //TODO error handling!!!
-	    String simtimeString = simtimeText.getText();
-        simtime = StringUtils.isBlank(simtimeString) ? BigDecimal.getZero() : BigDecimal.parse(simtimeString); 
-	    String eventNumberString = eventNumberText.getText();
+        //TODO error handling!!!
+        String simtimeString = simtimeText.getText();
+        simtime = StringUtils.isBlank(simtimeString) ? BigDecimal.getZero() : BigDecimal.parse(simtimeString);
+        String eventNumberString = eventNumberText.getText();
         eventNumber = StringUtils.isBlank(eventNumberString) ? 0 : Long.valueOf(eventNumberString);
         super.okPressed();
     }

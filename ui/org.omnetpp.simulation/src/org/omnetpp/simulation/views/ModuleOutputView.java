@@ -32,11 +32,11 @@ import org.omnetpp.simulation.widgets.TextViewerContent;
  */
 //TODO when view is closed, it should deregister its listener from LogBuffer!!! (see ModuleOutputContent's ctor)
 public class ModuleOutputView extends ViewWithMessagePart {
-	public static final String ID = "org.omnetpp.simulation.views.ModuleOutputView";
+    public static final String ID = "org.omnetpp.simulation.views.ModuleOutputView";
 
-	protected TextViewer viewer;
+    protected TextViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-    protected TextViewerContent BLANK_TEXT_CONTENT = new TextViewerContent("<blank text content>\n"); //XXX  
+    protected TextViewerContent BLANK_TEXT_CONTENT = new TextViewerContent("<blank text content>\n"); //XXX
 
     protected SimulationEditor associatedSimulationEditor;
     protected IPartListener partListener;
@@ -45,13 +45,13 @@ public class ModuleOutputView extends ViewWithMessagePart {
     protected ISelectionChangedListener selectionChangeListener;
 
 
-	/**
-	 * This is a callback that will allow us to create the viewer and initialize it.
-	 */
-	public Control createViewControl(Composite parent) {
-		viewer = new TextViewer(parent, SWT.V_SCROLL);
-		viewer.setContent(BLANK_TEXT_CONTENT);
-		viewer.setFont(JFaceResources.getTextFont());
+    /**
+     * This is a callback that will allow us to create the viewer and initialize it.
+     */
+    public Control createViewControl(Composite parent) {
+        viewer = new TextViewer(parent, SWT.V_SCROLL);
+        viewer.setContent(BLANK_TEXT_CONTENT);
+        viewer.setFont(JFaceResources.getTextFont());
 
         // create context menu
         getViewSite().registerContextMenu(contextMenuManager, viewer);
@@ -59,11 +59,11 @@ public class ModuleOutputView extends ViewWithMessagePart {
         //TODO dynamic menu based on which object is selected
 
         // export our selection to the workbench
-		getViewSite().setSelectionProvider(new SelectionProvider());
+        getViewSite().setSelectionProvider(new SelectionProvider());
         viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				getViewSite().getSelectionProvider().setSelection(event.getSelection());
-			}
+            public void selectionChanged(SelectionChangedEvent event) {
+                getViewSite().getSelectionProvider().setSelection(event.getSelection());
+            }
         });
 
         // listen on editor changes
@@ -88,7 +88,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
             }
         };
         getSite().getPage().addPartListener(partListener);  //TODO unhookListeners() etc -- see PinnableView!
-        
+
         simulationListener = new ISimulationStateListener() {
             @Override
             public void simulationStateChanged(final SimulationController controller) {
@@ -114,7 +114,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
                 }
             }
         };
-        
+
         // associate ourselves with the current simulation editor
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
@@ -128,9 +128,9 @@ public class ModuleOutputView extends ViewWithMessagePart {
         });
 
         return viewer;
-	}
+    }
 
-	protected void simulationStateChanged(SimulationController controller) {
+    protected void simulationStateChanged(SimulationController controller) {
         if (controller.getState() == SimState.DISCONNECTED)
             showMessage("No simulation process.");
         else {
@@ -143,14 +143,14 @@ public class ModuleOutputView extends ViewWithMessagePart {
     }
 
     protected void editorActivated(IEditorPart editor) {
-	    if (editor != associatedSimulationEditor && editor instanceof SimulationEditor)
-	        associateWithEditor((SimulationEditor)editor);
-	}
+        if (editor != associatedSimulationEditor && editor instanceof SimulationEditor)
+            associateWithEditor((SimulationEditor)editor);
+    }
 
-	protected void editorClosed(IEditorPart editor) {
-	    if (editor == associatedSimulationEditor)
-	        disassociateFromEditor();
-	}
+    protected void editorClosed(IEditorPart editor) {
+        if (editor == associatedSimulationEditor)
+            disassociateFromEditor();
+    }
 
     protected void associateWithEditor(SimulationEditor editor) {
         associatedSimulationEditor = editor;
@@ -159,7 +159,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
         controller.addSimulationStateListener(simulationListener);
 
         associatedSimulationEditor.getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
-        
+
         if (controller.getState() == SimState.DISCONNECTED || !controller.hasRootObjects()) {
             showMessage("No simulation process.");
         }
@@ -183,25 +183,25 @@ public class ModuleOutputView extends ViewWithMessagePart {
     }
 
     protected SimulationEditor getActiveSimulationEditor() {
-	    IWorkbenchPartSite site = getSite();
-	    IWorkbenchPage page = site==null ? null : site.getWorkbenchWindow().getActivePage();
-	    if (page != null) {
-	        if (page.getActiveEditor() instanceof SimulationEditor)
-	            return (SimulationEditor)page.getActiveEditor();
-	        // no active simulation editor; just return the first one we find
-	        for (IEditorReference ref : page.getEditorReferences())
-	            if (ref.getEditor(false) instanceof SimulationEditor)
-	                return (SimulationEditor)ref.getEditor(false);
-	    }
-	    return null;
-	}
+        IWorkbenchPartSite site = getSite();
+        IWorkbenchPage page = site==null ? null : site.getWorkbenchWindow().getActivePage();
+        if (page != null) {
+            if (page.getActiveEditor() instanceof SimulationEditor)
+                return (SimulationEditor)page.getActiveEditor();
+            // no active simulation editor; just return the first one we find
+            for (IEditorReference ref : page.getEditorReferences())
+                if (ref.getEditor(false) instanceof SimulationEditor)
+                    return (SimulationEditor)ref.getEditor(false);
+        }
+        return null;
+    }
 
     /**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus() {
-		viewer.setFocus();
-	}
+     * Passing the focus request to the viewer's control.
+     */
+    public void setFocus() {
+        viewer.setFocus();
+    }
 
     @Override
     public void dispose() {

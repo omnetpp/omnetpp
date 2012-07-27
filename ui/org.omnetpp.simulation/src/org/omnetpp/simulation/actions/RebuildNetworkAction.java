@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
 
 /**
  * The Rebuild Network action.
- *  
+ *
  * @author Andras
  */
 public class RebuildNetworkAction extends AbstractSimulationAction {
@@ -30,7 +30,7 @@ public class RebuildNetworkAction extends AbstractSimulationAction {
                 MessageDialog.openInformation(getShell(), "Error", "No network has been set up yet.");
                 return;
             }
-            
+
             controller.rebuildNetwork();
         }
         catch (Exception e) {

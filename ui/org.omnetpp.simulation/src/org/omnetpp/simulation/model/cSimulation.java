@@ -7,25 +7,25 @@ import org.omnetpp.simulation.controller.SimulationController;
 
 /**
  * Represents objects derived from the cSimulation C++ class in the simulation.
- * 
+ *
  * @author Andras
  */
-//TODO finish 
+//TODO finish
 public class cSimulation extends cObject {
-	private cModule rootModule;
-	private HashMap<Integer, cModule> idToModuleMap = new HashMap<Integer, cModule>();
-	private HashMap<String, cModule> pathToModuleMap = new HashMap<String, cModule>(); //FIXME remove this
+    private cModule rootModule;
+    private HashMap<Integer, cModule> idToModuleMap = new HashMap<Integer, cModule>();
+    private HashMap<String, cModule> pathToModuleMap = new HashMap<String, cModule>(); //FIXME remove this
 
     public cSimulation(SimulationController controller, long id) {
         super(controller, id);
     }
-	
-//	// KLUDGE: TODO: remove this and create a generic, extensible root model
-//	private Object routingTable;
-//	public void setRoutingTable(Object routingTable) {
+
+//  // KLUDGE: TODO: remove this and create a generic, extensible root model
+//  private Object routingTable;
+//  public void setRoutingTable(Object routingTable) {
 //        this.routingTable = routingTable;
 //    }
-//	public Object getRoutingTable() {
+//  public Object getRoutingTable() {
 //        return routingTable;
 //    }
 //
@@ -42,35 +42,35 @@ public class cSimulation extends cObject {
         return idToModuleMap.size();
     }
 
-//	/* to be called after module creation */
-//	public void addModule(cModule module) {
-//		idToModuleMap.put(module.getId(), module);
-//		pathToModuleMap.put(module.getFullPath(), module);
-//	}
+//  /* to be called after module creation */
+//  public void addModule(cModule module) {
+//      idToModuleMap.put(module.getId(), module);
+//      pathToModuleMap.put(module.getFullPath(), module);
+//  }
 //
 //    public void removeModule(cModule module) {
 //        removeModule(module.getId());
 //    }
 //
-//	public void removeModule(int id) {
-//		cModule module = getModuleById(id);
-//		idToModuleMap.remove(id);
-//		pathToModuleMap.remove(module.getFullPath());
-//	}
+//  public void removeModule(int id) {
+//      cModule module = getModuleById(id);
+//      idToModuleMap.remove(id);
+//      pathToModuleMap.remove(module.getFullPath());
+//  }
 
-	public cModule getRootModule() {
-		return rootModule;
-	}
+    public cModule getRootModule() {
+        return rootModule;
+    }
 
-	public cModule getModuleById(int id) {
-		return idToModuleMap.get(id);
-	}
+    public cModule getModuleById(int id) {
+        return idToModuleMap.get(id);
+    }
 
-//	public cModule getModuleByPath(String fullPath) {
-//		return pathToModuleMap.get(fullPath);
-//	}
+//  public cModule getModuleByPath(String fullPath) {
+//      return pathToModuleMap.get(fullPath);
+//  }
 
-//	XXX what for?
+//  XXX what for?
 //    public Map<cModule, cModule> findShortestPaths(cModule sourceModule, cModule targetModule) {
 //        Set<cModule> unsettledModules = new HashSet<cModule>();
 //        Map<cModule, cModule> predecessorModules = new HashMap<cModule, cModule>();
@@ -107,12 +107,12 @@ public class cSimulation extends cObject {
 //        return getPath(findShortestPaths(sourceModule, targetModule), targetModule);
 //    }
 //
-//	
+//
 //    protected List<cModule> getNeighbors(cModule moduleModel) {
 //        ArrayList<cModule> neighbors = new ArrayList<cModule>();
 //        for (int i = 0; i < moduleModel.getNumGates(); i++) {
 //            cGate gateModel = moduleModel.getGate(i);
-////FIXME TODO            
+////FIXME TODO
 ////            ConnectionModel incomingConnectionModel = gateModel.getIncomingConnection();
 ////            if (incomingConnectionModel != null && !neighbors.contains(incomingConnectionModel.getSourceModule()))
 ////                neighbors.add(incomingConnectionModel.getSourceModule());
@@ -140,7 +140,7 @@ public class cSimulation extends cObject {
     protected void doFillFromJSON(Map jsonObject) {
         super.doFillFromJSON(jsonObject);
 //
-//TODO 
+//TODO
 //sample code:
 //        List jsonSubmodules = (List) jsonObject.get("submodules");
 //        submodules = new cModule[jsonSubmodules.size()];
