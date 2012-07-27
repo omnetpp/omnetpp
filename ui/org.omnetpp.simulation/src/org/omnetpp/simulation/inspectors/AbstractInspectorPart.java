@@ -3,6 +3,7 @@ package org.omnetpp.simulation.inspectors;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.CoordinateListener;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FigureListener;
@@ -37,7 +38,7 @@ import org.omnetpp.simulation.model.cObject;
 //TODO drag icon is rendered badly
 //TODO normal resize for SWT inspectors, module inspectors, etc
 //TODO floating controls misplaced if canvas is scrolled
-public abstract class AbstractInspectorPart implements IInspectorPart {
+public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptable {
     protected cObject object;
     protected IInspectorFigure figure;
     protected IInspectorContainer inspectorContainer;
@@ -60,6 +61,17 @@ public abstract class AbstractInspectorPart implements IInspectorPart {
         new InspectorMouseListener(this); //XXX revise this listener!
     }
 
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Object getAdapter(Class adapter) {
+        // being able to adapt to cObject helps working with the selection
+        if (adapter.isInstance(object))
+            return object;
+        if (adapter.isInstance(this))
+            return this;
+        return null;
+    }
+    
 //XXX this is the Figure-based implementation of floating controls. Drawback: it can never appear over SWT widgets like the object fields tree
 //    class FloatingControlsLocator implements Locator {
 //        public void relocate(IFigure target) {

@@ -30,9 +30,11 @@ public class Field implements IAdaptable {
     @Override
     @SuppressWarnings("rawtypes")
     public Object getAdapter(Class adapter) {
-        // let it adapt cObject (helps with working with the selection)
-        if (adapter.equals(cObject.class) && value instanceof cObject)
+        // being able to adapt to cObject helps working with the selection
+        if (adapter.isInstance(value))
             return value;
+        if (adapter.isInstance(this))
+            return this;
         return null;
     }
 

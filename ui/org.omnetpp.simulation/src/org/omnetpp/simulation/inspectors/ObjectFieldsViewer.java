@@ -66,10 +66,12 @@ public class ObjectFieldsViewer {
         @Override
         @SuppressWarnings("rawtypes")
         public Object getAdapter(Class adapter) {
-            // let it adapt cObject (helps with working with the selection)
+            // being able to adapt to cObject helps working with the selection
             Object value = field.values[index];
-            if (adapter.equals(cObject.class) && value instanceof cObject)
+            if (adapter.isInstance(value))
                 return value;
+            if (adapter.isInstance(this))
+                return this;
             return null;
         }
 
