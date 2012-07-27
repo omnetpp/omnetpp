@@ -1,6 +1,12 @@
 package org.omnetpp.simulation.model;
 
-public class Field {
+import org.eclipse.core.runtime.IAdaptable;
+
+/**
+ * 
+ * @author Andras
+ */
+public class Field implements IAdaptable {
     public cObject owner;
     public String name;
     public String type;
@@ -21,6 +27,15 @@ public class Field {
     public String valueSymbolicName;  //TODO
     public String[] valueSymbolicNames; //TODO
     
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Object getAdapter(Class adapter) {
+        // let it adapt cObject (helps with working with the selection)
+        if (adapter.equals(cObject.class) && value instanceof cObject)
+            return value;
+        return null;
+    }
+
     @Override
     public String toString() {
         return declaredOn + "::" + name;

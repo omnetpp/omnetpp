@@ -1,9 +1,11 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -22,7 +24,6 @@ import org.omnetpp.simulation.model.cPacket;
  * 
  * @author Andras
  */
-//TODO cObjects should be double-clickable
 //TODO icon buttons to switch mode, ordering, etc.
 //TODO resize by border
 //TODO drag by label
@@ -62,15 +63,24 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 	    label = new Label(frame, SWT.NONE);
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 	    
-        viewer = new ObjectFieldsViewer(frame, SWT.BORDER | SWT.V_SCROLL);
+        viewer = new ObjectFieldsViewer(frame, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         viewer.setMode(isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET : ObjectFieldsViewer.Mode.GROUPED);
         viewer.setInput(object);
 	 	
-	 	viewer.getTree().addSelectionListener(new SelectionAdapter() {
+	 	viewer.getTree().addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                inspectorContainer.select(object, true);
+                inspectorContainer.select(object, true);  //XXX ???
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // inspect the selected object(s)
+                ISelection selection = viewer.getTreeViewer().getSelection();
+                cObject[] objects = getContainer().getObjectsFromSelection(selection);
+                for (cObject object : objects)
+                    getContainer().inspect(object);
             }
         });
 	 	

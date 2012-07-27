@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -37,8 +38,10 @@ import org.omnetpp.simulation.model.cPacket;
  */
 //TODO implement ordering and filtering of fields
 //TODO Field, FieldArrayElement should be adaptable to cObject? that should make it easier to implement inspect-on-doubleclick
-//TODO implement CHILDREN view
 public class ObjectFieldsViewer {
+    private static final Image IMG_FIELD = SimulationPlugin.getCachedImage("icons/obj16/field.png");
+    private static final List<String> CPACKET_BASE_CLASSES = Arrays.asList(new String[]{ "cObject", "cNamedObject", "cOwnedObject", "cMessage", "cPacket" }); 
+
     public enum Mode { PACKET, CHILDREN, GROUPED, INHERITANCE, FLAT };
     public enum Ordering { NATURAL, ALPHABETICAL };
 
@@ -47,14 +50,11 @@ public class ObjectFieldsViewer {
     private Ordering ordering = Ordering.NATURAL;
     private boolean reverseOrder = false;
 
-    private static final Image IMG_FIELD = SimulationPlugin.getCachedImage("icons/obj16/field.png");
-
-    private static List<String> CPACKET_BASE_CLASSES = Arrays.asList(new String[]{ "cObject", "cNamedObject", "cOwnedObject", "cMessage", "cPacket" }); 
     
     /**
      * Represents an intermediate node in the tree
      */
-    protected static class FieldArrayElement {
+    protected static class FieldArrayElement implements IAdaptable {
         Field field;
         int index;
         
@@ -62,7 +62,17 @@ public class ObjectFieldsViewer {
             this.field = field; 
             this.index = index;
         }
-        
+
+        @Override
+        @SuppressWarnings("rawtypes")
+        public Object getAdapter(Class adapter) {
+            // let it adapt cObject (helps with working with the selection)
+            Object value = field.values[index];
+            if (adapter.equals(cObject.class) && value instanceof cObject)
+                return value;
+            return null;
+        }
+
         @Override
         public String toString() {
             return field.toString() + ":[" + index + "]";
@@ -85,6 +95,7 @@ public class ObjectFieldsViewer {
             FieldArrayElement other = (FieldArrayElement) obj;
             return (field == other.field || field.equals(other.field)) && index == other.index;
         }
+
     }
 
     /**

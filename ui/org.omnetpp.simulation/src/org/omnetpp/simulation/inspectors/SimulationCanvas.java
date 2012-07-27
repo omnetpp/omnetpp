@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.Figure;
@@ -223,6 +224,24 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         scrollSmoothTo(bounds.x, bounds.y);  // scrolls so that inspector is at the top of the screen (behavior could be improved)
     }
 
+    @Override
+    public cObject[] getObjectsFromSelection(ISelection selection) {
+        if (selection.isEmpty() || !(selection instanceof IStructuredSelection))
+            return new cObject[0];
+
+        List<cObject> result = new ArrayList<cObject>();
+        for (Object element : ((IStructuredSelection)selection).toList()) {
+            if (element instanceof cObject)
+                result.add((cObject)element);
+            else if (element instanceof IAdaptable) {
+                cObject object = (cObject) ((IAdaptable)element).getAdapter(cObject.class);
+                if (object != null)
+                    result.add(object);
+            }
+        }
+        return result.toArray(new cObject[0]);
+    }
+    
 	@SuppressWarnings({ "rawtypes", "unchecked" })
     public void select(cObject object, boolean removeOthers) {
 		if (removeOthers) {

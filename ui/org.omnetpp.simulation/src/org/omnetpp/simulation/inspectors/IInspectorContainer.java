@@ -5,6 +5,7 @@ import java.util.List;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.Layer;
+import org.eclipse.jface.viewers.ISelection;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -56,6 +57,13 @@ public interface IInspectorContainer {
      */
     Layer getControlsLayer();
 
+    /**
+     * Utility function: extracts cObjects from the selection and returns them.
+     * Tries both instanceOf and getAdapter(cObject.class) on elements of the
+     * selection.
+     */
+    cObject[] getObjectsFromSelection(ISelection selection);
+    
 	/**
 	 * Request selecting this object, and optionally deselecting all others.
 	 */
