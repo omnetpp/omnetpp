@@ -8,17 +8,6 @@ import org.eclipse.draw2d.IFigure;
  * @author Andras
  */
 public interface IInspectorFigure extends IFigure {
-
-    /**
-     * Returns the associated inspector part.
-     */
-    IInspectorPart getInspectorPart();
-
-    /**
-     * Sets the associated inspector part.
-     */
-    void setInspectorPart(IInspectorPart part);
-
     /**
      * If there's a move/resize handle at the given coordinates
      * (figure coordinates), return a binary OR of the appropriate

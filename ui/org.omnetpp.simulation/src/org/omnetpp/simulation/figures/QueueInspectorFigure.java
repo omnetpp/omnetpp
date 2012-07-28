@@ -12,7 +12,6 @@ import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.inspectors.IInspectorFigure;
-import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * Figure for QueueInspectorPart
@@ -21,15 +20,13 @@ import org.omnetpp.simulation.inspectors.IInspectorPart;
  */
 //FIXME messages are not clickable or hoverable
 public class QueueInspectorFigure extends Figure implements IInspectorFigure {
-    protected IInspectorPart inspectorPart;
-
     class QueueContentsLayout extends AbstractLayout {
         @Override
         protected Dimension calculatePreferredSize(IFigure container, int hint, int hint2) {
             return new Dimension(10,10);  // irrelevant
         }
 
-        //@Override
+        @Override
         @SuppressWarnings("unchecked")
         public void layout(IFigure container) {
             // compute the area where we'll put the message figures
@@ -64,22 +61,12 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
         setSelectionBorder(false);
     }
 
-    //@Override
-    public IInspectorPart getInspectorPart() {
-        return inspectorPart;
-    }
-
-    //@Override
-    public void setInspectorPart(IInspectorPart part) {
-        this.inspectorPart = part;
-    }
-
-    //@Override
+    @Override
     public int getDragOperation(int x, int y) {
         return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
 
-    //@Override
+    @Override
     public void setSelectionBorder(boolean isSelected) {
         //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
         setBorder(isSelected ? new LineBorder(5) : null); //XXX for now

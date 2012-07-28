@@ -29,19 +29,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
     // to visually mix Figures and SWT controls, because SWT controls are always on
     // top so "slicing" can occur if such inspector overlaps with another).
     public class ContainerFigure extends Layer implements IInspectorFigure {
-        protected IInspectorPart inspectorPart;
-
         public ContainerFigure() {
-        }
-
-        @Override
-        public IInspectorPart getInspectorPart() {
-            return inspectorPart;
-        }
-
-        @Override
-        public void setInspectorPart(IInspectorPart part) {
-            this.inspectorPart = part;
         }
 
         @Override
@@ -53,7 +41,6 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         public void setSelectionBorder(boolean isSelected) {
             // nothing (we do it in SWT)
         }
-
     }
 
     public AbstractSWTInspectorPart(IInspectorContainer parent, cObject object) {

@@ -9,12 +9,10 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.simulation.inspectors.IInspectorFigure;
-import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 //FIXME draw proper resize handles, and make the mouse listener recognize it
 public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigure {
     protected CompoundModuleFigure moduleFigure;
-    protected IInspectorPart inspectorPart;
 
     public CompoundModuleFigureEx() {
         moduleFigure = new CompoundModuleFigure();
@@ -33,15 +31,7 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
         });
     }
 
-    public IInspectorPart getInspectorPart() {
-        return inspectorPart;
-    }
-
-    public void setInspectorPart(IInspectorPart inspectorPart) {
-        this.inspectorPart = inspectorPart;
-    }
-
-    //@Override
+    @Override
     public int getDragOperation(int x, int y) {
         return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
@@ -76,12 +66,8 @@ public class CompoundModuleFigureEx extends ScrollPane implements IInspectorFigu
         return getContents().getSize();
     }
 
-    //@Override
+    @Override
     public void setSelectionBorder(boolean isSelected) {
         setBorder(isSelected ? new SelectionBorder() : null); //XXX for now
-    }
-
-    public boolean getSelectionBorderShown() {
-        return getBorder() != null; //XXX for now
     }
 }

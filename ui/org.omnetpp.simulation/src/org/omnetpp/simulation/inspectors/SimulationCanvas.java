@@ -84,12 +84,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         layeredPane.add(inspectorsLayer);
 
 
-        controlsLayer = new Layer(); //XXX {
-//            public void paint(org.eclipse.draw2d.Graphics graphics) {
-//                graphics.setAlpha(128);
-//                super.paint(graphics);
-//            }
-//        };
+        controlsLayer = new Layer();
         controlsLayer.setLayoutManager(new DelegatingLayout());
         layeredPane.add(controlsLayer);
 
@@ -103,7 +98,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             public void menuDetected(MenuDetectEvent e) {
                 contextMenuManager.removeAll();
                 Point p = toControl(e.x, e.y);
-                IInspectorPart inspectorPart = AbstractInspectorPart.findInspectorPartAt(SimulationCanvas.this, p.x, p.y);
+                IInspectorPart inspectorPart = findInspectorPartAt(p.x, p.y);
                 if (inspectorPart != null)
                     inspectorPart.populateContextMenu(contextMenuManager, p);
             }
@@ -112,6 +107,18 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         FigureUtils.addTooltipSupport(this, this.getContents());  //TODO make use of this!!!
    }
 
+    protected IInspectorPart findInspectorPartAt(int x, int y) {
+        IFigure target = getInspectorsLayer().findFigureAt(x, y);
+        while (target != null && !(target instanceof IInspectorFigure))
+            target = target.getParent();
+        if (target == null)
+            return null;
+        for (IInspectorPart inspector : getInspectors())
+            if (inspector.getFigure() == target)
+                return inspector;
+        return null;
+    }
+    
     @Override
     public FigureCanvas getControl() {
         return this;

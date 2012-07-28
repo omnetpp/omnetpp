@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.CoordinateListener;
-import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -49,7 +48,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         this.inspectorContainer = parent;
 
         figure = createFigure();
-        figure.setInspectorPart(this);
         addMoveResizeSupport();
         addFloatingControlsSupport();
     }
@@ -416,13 +414,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
 
     public boolean isDisposed() {
         return object == null;
-    }
-
-    public static IInspectorPart findInspectorPartAt(FigureCanvas canvas, int x, int y) {
-        IFigure target = canvas.getContents().findFigureAt(x, y);
-        while (target != null && !(target instanceof IInspectorFigure))
-            target = target.getParent();
-        return target==null ? null : ((IInspectorFigure)target).getInspectorPart();
     }
 
     @Override

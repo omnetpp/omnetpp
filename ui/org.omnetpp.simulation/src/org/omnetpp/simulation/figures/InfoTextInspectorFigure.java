@@ -8,14 +8,12 @@ import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.jface.resource.JFaceResources;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.inspectors.IInspectorFigure;
-import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * Experimental inspector figure, for InfoTextInspectorPart
  * @author Andras
  */
 public class InfoTextInspectorFigure extends RoundedRectangle implements IInspectorFigure {
-    protected IInspectorPart inspectorPart;
     protected Label nameLabel;
     protected Label infoStringLabel;
     protected Insets insets = new Insets(4, 8, 4, 8);
@@ -46,22 +44,12 @@ public class InfoTextInspectorFigure extends RoundedRectangle implements IInspec
         //XXX re-layout if size changed?
     }
 
-    //@Override
-    public IInspectorPart getInspectorPart() {
-        return inspectorPart;
-    }
-
-    //@Override
-    public void setInspectorPart(IInspectorPart part) {
-        this.inspectorPart = part;
-    }
-
-    //@Override
+    @Override
     public int getDragOperation(int x, int y) {
         return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
     }
 
-    //@Override
+    @Override
     public void setSelectionBorder(boolean isSelected) {
         //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
         setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
