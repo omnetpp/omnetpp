@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +71,13 @@ public class QueueInspectorPart extends AbstractInspectorPart {
             QueueInspectorFigure queueFigure = (QueueInspectorFigure)figure;
 
             // only rebuild everything if queue contents has changed
-            cObject[] childObjects = new cObject[0]; //FIXME queue.getChildObjects();
+            cObject[] childObjects = queue.getChildObjects();
+            try {
+                queue.getController().loadUnfilledObjects(childObjects);
+            }
+            catch (IOException e) {
+                e.printStackTrace();  //FIXME better error handling
+            }
             if (!Arrays.equals(childObjects, prevObjects)) {
                 // clear and re-add message figures
                 prevObjects = childObjects;
@@ -130,7 +137,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         System.out.println("clicked item: " + queueItemFigure);
         if (queueItemFigure != null) {
             cObject obj = figureToObjectMap.get(queueItemFigure);
-            //TODO Activator.openInspector2(obj, true);
+            getContainer().inspect(obj);
         }
     }
 

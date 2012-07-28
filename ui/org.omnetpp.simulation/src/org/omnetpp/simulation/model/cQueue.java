@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.model;
 
+import java.util.Map;
+
 import org.omnetpp.simulation.controller.SimulationController;
 
 public class cQueue extends cObject {
@@ -16,5 +18,11 @@ public class cQueue extends cObject {
 
     public int getCount() {
         return count;
+    }
+    
+    @Override
+    protected void doFillFromJSON(Map jsonObject) {
+        super.doFillFromJSON(jsonObject);
+        //TODO
     }
 }
