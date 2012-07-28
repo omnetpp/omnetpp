@@ -7,6 +7,7 @@ import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.RunMode;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Run action.
@@ -14,8 +15,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class RunAction extends AbstractSimulationAction {
-    public RunAction(SimulationController controller) {
-        super(controller, AS_CHECK_BOX);
+    public RunAction(SimulationEditor editor) {
+        super(editor, AS_CHECK_BOX);
         setText("Run");
         setToolTipText("Run");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_RUN));

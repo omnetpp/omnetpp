@@ -16,6 +16,8 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.inspectors.SimulationCanvas;
 
 /**
  * Base class to factor out common code in Action classes.
@@ -24,7 +26,7 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  */
 //TODO disable if simulationController is DETACHED
 public abstract class AbstractSimulationAction extends Action {
-    private SimulationController simulationController;
+    private SimulationEditor simulationEditor;
 
     private ISimulationStateListener listener = new ISimulationStateListener() {
         @Override
@@ -36,24 +38,28 @@ public abstract class AbstractSimulationAction extends Action {
     /**
      * Default constructor.
      */
-    public AbstractSimulationAction(SimulationController simulationController) {
-        this.simulationController = simulationController;
-        simulationController.addSimulationStateListener(listener);
+    public AbstractSimulationAction(SimulationEditor simulationEditor) {
+        this.simulationEditor = simulationEditor;
+        simulationEditor.getSimulationController().addSimulationStateListener(listener);
     }
 
     /**
      * Constructor to set style.
      */
-    public AbstractSimulationAction(SimulationController simulationController, int style) {
+    public AbstractSimulationAction(SimulationEditor simulationEditor, int style) {
         super("", style);
-        this.simulationController = simulationController;
-        simulationController.addSimulationStateListener(listener);
+        this.simulationEditor = simulationEditor;
+        simulationEditor.getSimulationController().addSimulationStateListener(listener);
     }
 
     public SimulationController getSimulationController() {
-        return simulationController;
+        return simulationEditor.getSimulationController();
     }
 
+    public SimulationCanvas getSimulationCanvas() {
+        return simulationEditor.getSimulationCanvas();
+    }
+    
     public abstract void updateState();
 
     /**

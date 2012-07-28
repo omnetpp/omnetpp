@@ -6,6 +6,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Rebuild Network action.
@@ -13,8 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class RebuildNetworkAction extends AbstractSimulationAction {
-    public RebuildNetworkAction(SimulationController controller) {
-        super(controller);
+    public RebuildNetworkAction(SimulationEditor editor) {
+        super(editor);
         setText("Rebuild Network");
         setToolTipText("Rebuild Network");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_RESTART));

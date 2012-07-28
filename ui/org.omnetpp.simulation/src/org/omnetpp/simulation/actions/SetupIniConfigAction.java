@@ -20,6 +20,8 @@ import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.ConfigDescription;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  * The Setup Inifile Config action.
@@ -32,8 +34,8 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
     private static Image IMAGE_CONFIG_REPEAT = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIG_REPEAT);
     private static Image IMAGE_RUN = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIGRUN);
 
-    public SetupIniConfigAction(SimulationController controller) {
-        super(controller);
+    public SetupIniConfigAction(SimulationEditor editor) {
+        super(editor);
         setText("Set Up...");
         setToolTipText("Set Up...");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_NEWRUN));
@@ -192,10 +194,13 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
             if (dialog.open() == ListDialog.OK) {
                 String configName = dialog.getConfigName();
                 int runNumber = dialog.getRunNumber();
+
                 //XXX check something was selected
                 //XXX next stuff should be using a progress monitor...
                 controller.newRun(configName, runNumber);
-                //XXX inspect system module...
+                
+                cObject network = controller.getRootObject(SimulationController.ROOTOBJ_SYSTEMMODULE);
+                getSimulationCanvas().inspect(network);
             }
         }
         catch (Exception e) {

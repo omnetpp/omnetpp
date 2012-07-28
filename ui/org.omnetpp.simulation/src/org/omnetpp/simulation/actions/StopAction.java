@@ -6,6 +6,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Stop action.
@@ -13,8 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class StopAction extends AbstractSimulationAction {
-    public StopAction(SimulationController controller) {
-        super(controller);
+    public StopAction(SimulationEditor editor) {
+        super(editor);
         setText("Stop");
         setToolTipText("Stop");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_STOP));

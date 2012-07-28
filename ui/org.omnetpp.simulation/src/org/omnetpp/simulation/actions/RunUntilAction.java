@@ -7,6 +7,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Run Until action.
@@ -14,8 +15,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class RunUntilAction extends AbstractSimulationAction {
-    public RunUntilAction(SimulationController controller) {
-        super(controller, AS_CHECK_BOX);
+    public RunUntilAction(SimulationEditor editor) {
+        super(editor, AS_CHECK_BOX);
         setText("Run Until...");
         setToolTipText("Run Until...");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_UNTIL));

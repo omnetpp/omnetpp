@@ -6,6 +6,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Setup Network action.
@@ -13,8 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class SetupNetworkAction extends AbstractSimulationAction {
-    public SetupNetworkAction(SimulationController controller) {
-        super(controller);
+    public SetupNetworkAction(SimulationEditor editor) {
+        super(editor);
         setText("Set Up Network...");
         setToolTipText("Set Up Network...");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_NEWNET));

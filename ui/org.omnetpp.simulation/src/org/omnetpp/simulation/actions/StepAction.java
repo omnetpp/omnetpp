@@ -7,6 +7,7 @@ import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.RunMode;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Step action.
@@ -14,8 +15,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class StepAction extends AbstractSimulationAction {
-    public StepAction(SimulationController controller) {
-        super(controller, AS_CHECK_BOX);
+    public StepAction(SimulationEditor editor) {
+        super(editor, AS_CHECK_BOX);
         setText("Step");
         setToolTipText("Step");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_STEP));

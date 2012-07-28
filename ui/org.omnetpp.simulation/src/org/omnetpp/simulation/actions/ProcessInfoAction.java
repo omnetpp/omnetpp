@@ -6,6 +6,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * Brings up a dialog with properties of the simulation process we are attached to.
@@ -13,8 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class ProcessInfoAction extends AbstractSimulationAction {
-    public ProcessInfoAction(SimulationController controller) {
-        super(controller);
+    public ProcessInfoAction(SimulationEditor editor) {
+        super(editor);
         setText("Process Info");
         setToolTipText("Process Info");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_PROCESSINFO));

@@ -6,6 +6,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Setup Inifile Config action.
@@ -13,8 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class RefreshAction extends AbstractSimulationAction {
-    public RefreshAction(SimulationController controller) {
-        super(controller);
+    public RefreshAction(SimulationEditor editor) {
+        super(editor);
         setText("Refresh");
         setToolTipText("Refresh");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_REFRESH));

@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The "Kill simulation on editor close" action.
@@ -12,8 +13,8 @@ import org.omnetpp.simulation.controller.SimulationController;
  * @author Andras
  */
 public class LinkWithSimulationAction extends AbstractSimulationAction {
-    public LinkWithSimulationAction(SimulationController controller) {
-        super(controller, AS_CHECK_BOX);
+    public LinkWithSimulationAction(SimulationEditor editor) {
+        super(editor, AS_CHECK_BOX);
         setText("Kill simulation on editor close");
         setToolTipText("Kill simulation on editor close");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_LINK));

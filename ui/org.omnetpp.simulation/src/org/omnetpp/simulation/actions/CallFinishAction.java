@@ -6,6 +6,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
  * The Call Finish action
@@ -13,8 +14,8 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  * @author Andras
  */
 public class CallFinishAction extends AbstractSimulationAction {
-    public CallFinishAction(SimulationController controller) {
-        super(controller);
+    public CallFinishAction(SimulationEditor editor) {
+        super(editor);
         setText("Finalize");
         setToolTipText("Invokes the finish() method on all components in the simulation");
         setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_FINISH));

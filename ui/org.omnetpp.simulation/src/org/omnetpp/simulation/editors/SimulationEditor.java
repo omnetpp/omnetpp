@@ -119,21 +119,21 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationToolbars.setLayout(new GridLayout(5, false));
 
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
-        new ActionContributionItem(new LinkWithSimulationAction(simulationController)).fill(toolbar1, -1);
-        new ActionContributionItem(new ProcessInfoAction(simulationController)).fill(toolbar1, -1);
-        new ActionContributionItem(new RefreshAction(simulationController)).fill(toolbar1, -1);
-        new ActionContributionItem(new SetupIniConfigAction(simulationController)).fill(toolbar1, -1);
-        new ActionContributionItem(new SetupNetworkAction(simulationController)).fill(toolbar1, -1);
-        new ActionContributionItem(new RebuildNetworkAction(simulationController)).fill(toolbar1, -1);
+        new ActionContributionItem(new LinkWithSimulationAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(new ProcessInfoAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(new RefreshAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(new SetupIniConfigAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(new SetupNetworkAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(new RebuildNetworkAction(this)).fill(toolbar1, -1);
         ToolBar toolbar2 = new ToolBar(simulationToolbars, SWT.NONE);
-        new ActionContributionItem(new StepAction(simulationController)).fill(toolbar2, -1);
-        new ActionContributionItem(new RunAction(simulationController)).fill(toolbar2, -1);
-        new ActionContributionItem(new FastRunAction(simulationController)).fill(toolbar2, -1);
-        new ActionContributionItem(new ExpressRunAction(simulationController)).fill(toolbar2, -1);
-        new ActionContributionItem(new RunUntilAction(simulationController)).fill(toolbar2, -1);
+        new ActionContributionItem(new StepAction(this)).fill(toolbar2, -1);
+        new ActionContributionItem(new RunAction(this)).fill(toolbar2, -1);
+        new ActionContributionItem(new FastRunAction(this)).fill(toolbar2, -1);
+        new ActionContributionItem(new ExpressRunAction(this)).fill(toolbar2, -1);
+        new ActionContributionItem(new RunUntilAction(this)).fill(toolbar2, -1);
         ToolBar toolbar3 = new ToolBar(simulationToolbars, SWT.NONE);
-        new ActionContributionItem(new StopAction(simulationController)).fill(toolbar3, -1);
-        new ActionContributionItem(new CallFinishAction(simulationController)).fill(toolbar3, -1);
+        new ActionContributionItem(new StopAction(this)).fill(toolbar3, -1);
+        new ActionContributionItem(new CallFinishAction(this)).fill(toolbar3, -1);
 
         statusLabel = new Label(simulationRibbon, SWT.BORDER);
         statusLabel.setText("n/a");
