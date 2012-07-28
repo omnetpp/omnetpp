@@ -8,14 +8,14 @@
 package org.omnetpp.simulation.editors;
 
 import org.eclipse.jface.action.IToolBarManager;
-import org.omnetpp.animation.eventlog.editors.EventLogAnimationContributor;
+import org.eclipse.ui.part.EditorActionBarContributor;
 
 /**
  * Contributes context menu and toolbar items to the platform.
  *
  * @author andras
  */
-public class SimulationContributor extends EventLogAnimationContributor {
+public class SimulationContributor extends EditorActionBarContributor /*XXX rather: EventLogAnimationContributor*/ {
     @Override
     public void contributeToToolBar(IToolBarManager toolBarManager) {
         // do not contribute to global toolbars

@@ -13,8 +13,6 @@ Require-Bundle: org.apache.commons.httpclient,
  org.eclipse.ui.editors,
  org.eclipse.draw2d,
  org.omnetpp.common,
- org.omnetpp.animation.core,
- org.omnetpp.animation.eventlog,
  org.omnetpp.figures,
  org.omnetpp.ned.model
 Bundle-ActivationPolicy: lazy

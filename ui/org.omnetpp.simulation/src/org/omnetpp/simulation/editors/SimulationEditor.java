@@ -17,14 +17,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
-import org.omnetpp.animation.widgets.AnimationLever;
-import org.omnetpp.animation.widgets.AnimationPositionControl;
-import org.omnetpp.animation.widgets.AnimationStatus;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
@@ -148,45 +144,45 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         l.heightHint = 20;
         futureEventsTimeline.setLayoutData(l);
 
-        // create animation ribbon
-        Composite animationRibbon = new Composite(tabFolder, SWT.NONE);
-        animationTab.setControl(animationRibbon);
-        animationRibbon.setLayout(removeSpacing(new GridLayout(1, false)));
-        animationRibbon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-        Composite animationToolbars = new Composite(animationRibbon, SWT.NONE);
-        animationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        animationToolbars.setLayout(new GridLayout(3, false));
-
-        SimulationContributor contributor = (SimulationContributor)getEditorSite().getActionBarContributor();
-        ToolBar animToolbar1 = new ToolBar(animationToolbars, SWT.NONE);
-        new ActionContributionItem(contributor.gotoBeginningAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.stepBackwardAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.playBackwardAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.playForwardAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.stopAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.stepForwardAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.gotoEndAction).fill(animToolbar1, -1);
-        contributor.separatorAction.fill(animToolbar1, -1);
-        contributor.separatorAction.fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.animationTimeModeAction).fill(animToolbar1, -1);
-        contributor.separatorAction.fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.refreshAction).fill(animToolbar1, -1);
-
-        contributor.separatorAction.fill(animToolbar1, -1);
-
-        new ActionContributionItem(contributor.decreasePlaybackSpeedAction).fill(animToolbar1, -1);
-        final AnimationLever animationLever = new AnimationLever(animToolbar1, SWT.NONE);
-        ToolItem ti = new ToolItem(animToolbar1, SWT.SEPARATOR, animToolbar1.getItemCount());
-        ti.setControl(animationLever.getLever());
-        ti.setWidth(animationLever.getLever().computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
-        new ActionContributionItem(contributor.increasePlaybackSpeedAction).fill(animToolbar1, -1);
-
-        AnimationStatus animationStatus = new AnimationStatus(animationToolbars, SWT.NONE);
-        animationStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-        AnimationPositionControl animationPositionControl = new AnimationPositionControl(animationRibbon, SWT.NONE);
-        animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+//        // create animation ribbon
+//        Composite animationRibbon = new Composite(tabFolder, SWT.NONE);
+//        animationTab.setControl(animationRibbon);
+//        animationRibbon.setLayout(removeSpacing(new GridLayout(1, false)));
+//        animationRibbon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+//
+//        Composite animationToolbars = new Composite(animationRibbon, SWT.NONE);
+//        animationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+//        animationToolbars.setLayout(new GridLayout(3, false));
+//
+//        SimulationContributor contributor = (SimulationContributor)getEditorSite().getActionBarContributor();
+//        ToolBar animToolbar1 = new ToolBar(animationToolbars, SWT.NONE);
+//        new ActionContributionItem(contributor.gotoBeginningAction).fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.stepBackwardAction).fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.playBackwardAction).fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.playForwardAction).fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.stopAction).fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.stepForwardAction).fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.gotoEndAction).fill(animToolbar1, -1);
+//        contributor.separatorAction.fill(animToolbar1, -1);
+//        contributor.separatorAction.fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.animationTimeModeAction).fill(animToolbar1, -1);
+//        contributor.separatorAction.fill(animToolbar1, -1);
+//        new ActionContributionItem(contributor.refreshAction).fill(animToolbar1, -1);
+//
+//        contributor.separatorAction.fill(animToolbar1, -1);
+//
+//        new ActionContributionItem(contributor.decreasePlaybackSpeedAction).fill(animToolbar1, -1);
+//        final AnimationLever animationLever = new AnimationLever(animToolbar1, SWT.NONE);
+//        ToolItem ti = new ToolItem(animToolbar1, SWT.SEPARATOR, animToolbar1.getItemCount());
+//        ti.setControl(animationLever.getLever());
+//        ti.setWidth(animationLever.getLever().computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+//        new ActionContributionItem(contributor.increasePlaybackSpeedAction).fill(animToolbar1, -1);
+//
+//        AnimationStatus animationStatus = new AnimationStatus(animationToolbars, SWT.NONE);
+//        animationStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+//
+//        AnimationPositionControl animationPositionControl = new AnimationPositionControl(animationRibbon, SWT.NONE);
+//        animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         // create simulation canvas (TODO: on the same tab as the controls!)
         simulationCanvas = new SimulationCanvas(parent, SWT.DOUBLE_BUFFERED | SWT.BORDER);
@@ -284,7 +280,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 //        });
 //
 //        getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
-//
+
         // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
             @Override
