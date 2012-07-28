@@ -2,6 +2,7 @@ package org.omnetpp.simulation.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -118,11 +119,13 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         simulationToolbars.setLayout(new GridLayout(5, false));
 
+        IAction setupIniConfigAction = null;  // we'll need it later
+        
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(new LinkWithSimulationAction(this)).fill(toolbar1, -1);
         new ActionContributionItem(new ProcessInfoAction(this)).fill(toolbar1, -1);
         new ActionContributionItem(new RefreshAction(this)).fill(toolbar1, -1);
-        new ActionContributionItem(new SetupIniConfigAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(setupIniConfigAction = new SetupIniConfigAction(this)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupNetworkAction(this)).fill(toolbar1, -1);
         new ActionContributionItem(new RebuildNetworkAction(this)).fill(toolbar1, -1);
         ToolBar toolbar2 = new ToolBar(simulationToolbars, SWT.NONE);
@@ -314,6 +317,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         });
 
         // obtain initial status query
+        final IAction finalSetupIniConfigAction = setupIniConfigAction;
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -321,10 +325,16 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                     // KLUDGE: TODO: this is necessary, because connection timeout does not work as expected (apache HttpClient ignores the provided value)
                     Thread.sleep(1000);
                     simulationController.refreshStatus();
-                } catch (Exception e) {
+                } 
+                catch (Exception e) {
                     MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());
                     SimulationPlugin.logError(e);
+                    return;
                 }
+                
+                // immediately offer setting up a network
+                if (simulationController.getState() == SimState.NONETWORK)
+                    finalSetupIniConfigAction.run();                   
             }
         });
 
