@@ -24,8 +24,8 @@ import org.omnetpp.simulation.model.cQueue;
  * @author Andras
  */
 //XXX add tooltip for message items
-//XXX add similar context menu as GraphicalModulePart has
-//XXX lots of stuff common with GraphicalModulePart -- factor them out?
+//XXX add similar context menu as GraphicalModuleInspectorPart has
+//XXX lots of stuff common with GraphicalModuleInspectorPart -- factor them out?
 public class QueueInspectorPart extends AbstractInspectorPart {
     private Map<cObject,IFigure> objectToFigureMap = new HashMap<cObject, IFigure>();
     private Map<IFigure,cObject> figureToObjectMap = new HashMap<IFigure, cObject>();
@@ -38,7 +38,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
             object.safeLoad(); //XXX why not in refresh()?
 
         // mouse handling
-        //XXX near copy-paste from GraphicalModulePart, factor out!
+        //XXX near copy-paste from GraphicalModuleInspectorPart, factor out!
         figure.addMouseListener(new MouseListener() {
             //@Override
             public void mouseDoubleClicked(MouseEvent me) {
@@ -117,7 +117,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         });
     }
 
-    //XXX near copy/paste from GraphicalModulePart - factor out
+    //XXX near copy/paste from GraphicalModuleInspectorPart - factor out
     @Override
     public void selectionChanged(IStructuredSelection selection) {
         super.selectionChanged(selection);
@@ -131,7 +131,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    //XXX near copy/paste from GraphicalModulePart - factor out
+    //XXX near copy/paste from GraphicalModuleInspectorPart - factor out
     protected void handleMouseDoubleClick(MouseEvent me) {
         IFigure queueItemFigure = findQueueItemFigureAt(me.x,me.y);
         System.out.println("clicked item: " + queueItemFigure);
@@ -141,7 +141,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    //XXX near copy/paste from GraphicalModulePart - factor out
+    //XXX near copy/paste from GraphicalModuleInspectorPart - factor out
     protected void handleMousePressed(MouseEvent me) {
         IFigure queueItemFigure = findQueueItemFigureAt(me.x,me.y);
         System.out.println("clicked item: " + queueItemFigure);

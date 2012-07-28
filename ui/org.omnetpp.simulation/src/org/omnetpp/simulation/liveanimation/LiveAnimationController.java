@@ -12,7 +12,7 @@ import org.omnetpp.simulation.controller.Anim;
 import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.LogBuffer;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.inspectors.GraphicalModulePart;
+import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
 import org.omnetpp.simulation.model.cGate;
@@ -69,9 +69,9 @@ public class LiveAnimationController {
                     System.out.println("sendHop: " + srcGate.getFullPath() + " --> " + destGate.getFullPath());
                     cModule containingModule = srcGate.getOwnerModule().getParentModule();
                     IInspectorPart inspector = simulationCanvas.findInspectorFor(containingModule);
-                    if (inspector instanceof GraphicalModulePart) {
+                    if (inspector instanceof GraphicalModuleInspectorPart) {
                         System.out.println("Animating on inspector " + inspector.getObject().getFullPath());
-                        GraphicalModulePart moduleInspector = (GraphicalModulePart)inspector;
+                        GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
                         ConnectionFigure connectionFigure = moduleInspector.getConnectionFigure(srcGate);
                         if (connectionFigure != null) {
                             Layer messageFigureParent = moduleInspector.getFigure().getInternalModuleFigure().getForegroundDecorationLayer();

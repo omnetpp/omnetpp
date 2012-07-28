@@ -215,7 +215,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         //TODO move inspector creation out of SimulationCanvas!!!
         IInspectorPart inspector = null;
         if (object instanceof cModule && !(object instanceof cSimpleModule))
-            inspector = new GraphicalModulePart(this, (cModule)object);
+            inspector = new GraphicalModuleInspectorPart(this, (cModule)object);
 //        else if (object instanceof cMessage)
 //            inspectorPart = new MessageInspectorPart(this, (cMessage)object);
         else if (object instanceof cQueue)
