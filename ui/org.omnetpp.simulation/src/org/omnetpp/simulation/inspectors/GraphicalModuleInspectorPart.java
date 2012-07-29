@@ -15,9 +15,12 @@ import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
@@ -28,6 +31,21 @@ import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.CompoundModuleFigureEx;
 import org.omnetpp.simulation.figures.SubmoduleFigureEx;
+import org.omnetpp.simulation.inspectors.actions.CloseAction;
+import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
+import org.omnetpp.simulation.inspectors.actions.InspectAsObject;
+import org.omnetpp.simulation.inspectors.actions.InspectNedTypeAction;
+import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
+import org.omnetpp.simulation.inspectors.actions.ModelInformationAction;
+import org.omnetpp.simulation.inspectors.actions.ReduceIconsAction;
+import org.omnetpp.simulation.inspectors.actions.RelayoutAction;
+import org.omnetpp.simulation.inspectors.actions.RunLocalAction;
+import org.omnetpp.simulation.inspectors.actions.RunLocalFastAction;
+import org.omnetpp.simulation.inspectors.actions.ShowArrowheadsAction;
+import org.omnetpp.simulation.inspectors.actions.ShowSubmoduleNamesAction;
+import org.omnetpp.simulation.inspectors.actions.StopAction;
+import org.omnetpp.simulation.inspectors.actions.ZoomInAction;
+import org.omnetpp.simulation.inspectors.actions.ZoomOutAction;
 import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cModule;
@@ -94,6 +112,28 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         refresh();
     }
 
+    /**
+     * Adjusts canvasScale.
+     */
+    public void zoomOut() {
+        float canvasScale = getCanvasScale();
+        canvasScale /= 1.5;
+        if (Math.abs(canvasScale-1.0) < 0.01)
+            canvasScale = 1.0f; // prevent accumulation of rounding errors
+        setCanvasScale(canvasScale);
+    }
+
+    /**
+     * Adjusts canvasScale.
+     */
+    public void zoomIn() {
+        float canvasScale = getCanvasScale();
+        canvasScale *= 1.5;
+        if (Math.abs(canvasScale-1.0) < 0.01)
+            canvasScale = 1.0f; // prevent accumulation of rounding errors
+        setCanvasScale(canvasScale);
+    }
+
     public int getImageSizePercentage() {
         return imageSizePercentage;
     }
@@ -104,7 +144,33 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         refresh();
     }
 
-    public boolean isShowNameLabels() {
+    /**
+     * Adjusts imageSizePercentage.
+     */
+    public void enlargeIcons() {
+        int imageSizePercentage = getImageSizePercentage();
+        if (imageSizePercentage < 500) {
+            imageSizePercentage *= 1.2;
+            if (Math.abs(imageSizePercentage-100) < 15)
+                imageSizePercentage = 100; // prevent accumulation of rounding errors
+            setImageSizePercentage(imageSizePercentage);
+        }
+    }
+
+    /**
+     * Adjusts imageSizePercentage.
+     */
+    public void reduceIcons() {
+        int imageSizePercentage = getImageSizePercentage();
+        if (imageSizePercentage > 10) {
+            imageSizePercentage /= 1.2;
+            if (Math.abs(imageSizePercentage-100) < 15)
+                imageSizePercentage = 100; // prevent accumulation of rounding errors
+            setImageSizePercentage(imageSizePercentage);
+        }
+    }
+    
+    public boolean getShowNameLabels() {
         return showNameLabels;
     }
 
@@ -113,7 +179,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         refresh();
     }
 
-    public boolean isShowArrowHeads() {
+    public boolean getShowArrowHeads() {
         return showArrowHeads;
     }
 
@@ -377,98 +443,19 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     }
 
     protected void populateBackgroundContextMenu(MenuManager contextMenuManager, Point p) {
-        //XXX factor out actions
-
-        contextMenuManager.add(new Action("Re-layout") {
-            @Override
-            public void run() {
-                CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-                CompoundModuleLayout layouter = moduleFigure.getSubmoduleLayouter();
-                layouter.requestFullLayout();
-                //layouter.setSeed(layouter.getSeed()+1);  -- not needed
-                moduleFigure.getSubmoduleLayer().revalidate();
-            }
-        });
-
+        contextMenuManager.add(my(new RelayoutAction()));
         contextMenuManager.add(new Separator());
-
-        contextMenuManager.add(new Action("Zoom in") {
-            @Override
-            public void run() {
-                canvasScale *= 1.5;
-                if (Math.abs(canvasScale-1.0) < 0.01)
-                    canvasScale = 1.0f; // prevent accumulation of rounding errors
-                refresh();
-            }
-        });
-        contextMenuManager.add(new Action("Zoom out") {
-            @Override
-            public void run() {
-                canvasScale /= 1.5;
-                if (Math.abs(canvasScale-1.0) < 0.01)
-                    canvasScale = 1.0f; // prevent accumulation of rounding errors
-                refresh();
-            }
-        });
-
-        contextMenuManager.add(new Action("Enlarge icons") {
-            @Override
-            public void run() {
-                if (imageSizePercentage < 500) {
-                    imageSizePercentage *= 1.2;
-                    if (Math.abs(imageSizePercentage-100) < 15)
-                        imageSizePercentage = 100; // prevent accumulation of rounding errors
-                    refresh();
-                }
-            }
-        });
-        contextMenuManager.add(new Action("Reduce icons") {
-            @Override
-            public void run() {
-                if (imageSizePercentage > 10) {
-                    imageSizePercentage /= 1.2;
-                    if (Math.abs(imageSizePercentage-100) < 15)
-                        imageSizePercentage = 100; // prevent accumulation of rounding errors
-                    refresh();
-                }
-            }
-        });
-
+        contextMenuManager.add(my(new ZoomInAction()));
+        contextMenuManager.add(my(new ZoomOutAction()));
+        contextMenuManager.add(my(new EnlargeIconsAction()));
+        contextMenuManager.add(my(new ReduceIconsAction()));
         contextMenuManager.add(new Separator());
-
-        contextMenuManager.add(new Action("Toggle name labels") {
-            @Override
-            public void run() {
-                showNameLabels = !showNameLabels;
-                refresh();
-            }
-        });
-
-        contextMenuManager.add(new Action("Toggle arrowheads") {
-            @Override
-            public void run() {
-                showArrowHeads = !showArrowHeads;
-                refresh();
-            }
-        });
-
+        contextMenuManager.add(my(new ShowSubmoduleNamesAction()));
+        contextMenuManager.add(my(new ShowArrowheadsAction()));
         contextMenuManager.add(new Separator());
-
-        contextMenuManager.add(new Action("Go to parent") {
-            @Override
-            public void run() {
-                //Close this inspector; open new inspector at these coordinates; also add to navigation history
-            }
-        });
-
+        contextMenuManager.add(my(new InspectParentAction()));
         contextMenuManager.add(new Separator());
-
-        contextMenuManager.add(new Action("Close") {
-            @Override
-            public void run() {
-                getContainer().close(GraphicalModuleInspectorPart.this);
-            }
-        });
+        contextMenuManager.add(my(new CloseAction()));
     }
 
     protected void populateSubmoduleContextMenu(MenuManager contextMenuManager, SubmoduleFigureEx submoduleFigure, Point p) {
@@ -498,5 +485,47 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             }
         });
     }
+    
+    @Override
+    protected void addIconsToFloatingToolbar(ToolBarManager manager) {
+        //XXX the following buttons are from Tkenv -- revise which ones we really need
+        manager.add(my(new InspectParentAction()));
+        manager.add(my(new InspectAsObject()));
+        manager.add(my(new InspectNedTypeAction()));
+        manager.add(my(new ModelInformationAction()));
+//        ToolItem search = addToolItem(toolbar, "Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)", SimulationUIConstants.IMG_TOOL_FINDOBJ);
+        manager.add(new Separator());
+        manager.add(my(new RunLocalAction()));
+        manager.add(my(new RunLocalFastAction()));
+        manager.add(my(new StopAction()));
+        manager.add(new Separator());
+//        ToolItem moduleOutput = addToolItem(toolbar, "See module output", SimulationUIConstants.IMG_TOOL_ASOUTPUT);
+        manager.add(my(new RelayoutAction()));
+        manager.add(new Separator());
+        manager.add(my(new ShowSubmoduleNamesAction()));
+        manager.add(my(new ShowArrowheadsAction()));
+        manager.add(my(new EnlargeIconsAction()));
+        manager.add(my(new ReduceIconsAction()));
+        manager.add(my(new ZoomInAction()));
+        manager.add(my(new ZoomOutAction()));
+        manager.update(false);
+    }
+
+    protected ToolItem addToolItem(ToolBar toolbar, String tooltip, String imagePath) {
+        ToolItem item = new ToolItem(toolbar, SWT.PUSH);
+        if (imagePath != null)
+            item.setImage(SimulationPlugin.getCachedImage(imagePath));
+        item.setToolTipText(tooltip);
+        return item;
+    }
+
+    public void relayoutSubmodules() {
+        CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
+        CompoundModuleLayout layouter = moduleFigure.getSubmoduleLayouter();
+        layouter.requestFullLayout();
+        //layouter.setSeed(layouter.getSeed()+1);  -- not needed
+        moduleFigure.getSubmoduleLayer().revalidate();
+    }
+
 
 }

@@ -8,6 +8,9 @@ import org.eclipse.draw2d.CoordinateListener;
 import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.ControlContribution;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -15,8 +18,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
 import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -25,10 +26,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.inspectors.actions.CloseAction;
+import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -253,6 +253,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     private int moveOffsetX, moveOffsetY;
     private static Cursor dragCursor = null;
 
+    protected IAction my(IInspectorAction action) {
+        action.setInspectorPart(this);
+        return action;
+    }
+    
     protected void openFloatingControls() {
         Assert.isTrue(floatingControls == null);
 
@@ -264,24 +269,29 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         Composite panel = new Composite(getContainer().getControl(), SWT.BORDER);
         panel.setLayout(new FillLayout());
 
-        ToolBar toolbar = new ToolBar(panel, SWT.HORIZONTAL);
-
         // add icons to the toolbar
-        addIconsToFloatingToolbar(toolbar);
+        ToolBar toolbar = new ToolBar(panel, SWT.HORIZONTAL);
+        ToolBarManager manager = new ToolBarManager(toolbar);
 
-        new ToolItem(toolbar, SWT.SEPARATOR);
+        addIconsToFloatingToolbar(manager);
+        
+        final Label[] dragHandleRef = new Label[1];
+        manager.add(new ControlContribution("") {
+            @Override
+            protected Control createControl(Composite parent) {
+                Label dragHandle = new Label(parent, SWT.NONE);
+                dragHandle.setImage(SimulationPlugin.getCachedImage("icons/etool16/draghandle.png"));
+                dragHandle.setToolTipText("Drag handle");
+                dragHandleRef[0] = dragHandle;
+                return dragHandle;
+            }
+        });
 
-        // plus the drag handle and the close button
-        final Label dragHandle = new Label(toolbar, SWT.NONE);
-        dragHandle.setAlignment(SWT.LEFT);
-        dragHandle.setImage(SimulationPlugin.getCachedImage("icons/etool16/draghandle.png"));
-        dragHandle.setToolTipText("Drag handle");
-        ToolItem dragHandleWrapperItem = new ToolItem(toolbar, SWT.SEPARATOR);
-        dragHandleWrapperItem.setControl(dragHandle);
-
-        ToolItem closeButton = new ToolItem(toolbar, SWT.PUSH);
-        closeButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
-        closeButton.setToolTipText("Close");
+        manager.add(my(new CloseAction()));
+        manager.update(true);
+        final Label dragHandle = dragHandleRef[0];
+        
+        panel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW));
 
         // set the size of the toolbar
         panel.layout();
@@ -309,14 +319,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
 
         // move it to the correct location
         relocateFloatingControls();
-
-        // add action to buttons
-        closeButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-                getContainer().close(AbstractInspectorPart.this);
-            }
-        });
 
         if (dragCursor == null)
             dragCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_HAND);
@@ -349,15 +351,8 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         });
     }
 
-    // expected to be redefined from subclasses
-    protected void addIconsToFloatingToolbar(ToolBar toolbar) {
-        ToolItem startButton = new ToolItem(toolbar, SWT.PUSH);
-        startButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_COPY));
-        startButton.setToolTipText("Whatever");
-
-        ToolItem stopButton = new ToolItem(toolbar, SWT.DROP_DOWN);
-        stopButton.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_PASTE));
-        stopButton.setToolTipText("Mode");
+    // expected to be overridden in subclasses
+    protected void addIconsToFloatingToolbar(ToolBarManager manager) {
     }
 
     protected void relocateFloatingControls() {
