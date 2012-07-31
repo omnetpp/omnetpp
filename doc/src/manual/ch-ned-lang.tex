@@ -1154,10 +1154,10 @@ expression:
 module Node {
     submodules:
         trafGen1 : TrafGen {
-            profile = xmldoc("all.xml", "profile[@id='gen1']");
+            profile = xmldoc("all.xml", "/root/profile[@id='gen1']");
         }
         trafGen2 : TrafGen {
-            profile = xmldoc("all.xml", "profile[@id='gen2']");
+            profile = xmldoc("all.xml", "/root/profile[@id='gen2']");
         }
 }
 \end{ned}
@@ -1169,7 +1169,7 @@ default value for \fkeyword{xml} parameters. An example:
 \begin{ned}
 simple TrafGen {
     parameters:
-        xml profile = xml("<profile/>"); // empty document as default
+        xml profile = xml("<root/>"); // empty document as default
         ...
 }
 \end{ned}
