@@ -175,8 +175,10 @@ public class ObjectFieldsViewer {
                     result[i] = new FieldArrayElement(field, i);
                 if (field.isCObject) {
                     for (Object value : field.values) {  //TODO replace loop with controller bulk load operation!!!
-                        ((cObject)value).safeLoad();
+                        if (value != null) {
+                            ((cObject)value).safeLoad();
                             ((cObject)value).safeLoadFields();
+                        }
                     }
                 }
                 return result;
