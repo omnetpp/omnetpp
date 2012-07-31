@@ -74,7 +74,7 @@ public class LiveAnimationController {
                         GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
                         ConnectionFigure connectionFigure = moduleInspector.getConnectionFigure(srcGate);
                         if (connectionFigure != null) {
-                            Layer messageFigureParent = moduleInspector.getFigure().getInternalModuleFigure().getForegroundDecorationLayer();
+                            Layer messageFigureParent = moduleInspector.getCompoundModuleFigure().getForegroundDecorationLayer();
                             animationPrimitives.add(new DummyMoveMessageAnimation(messageFigureParent, connectionFigure.getStart(), connectionFigure.getEnd()));
                         }
                     }

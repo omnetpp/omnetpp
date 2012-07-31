@@ -246,6 +246,16 @@ public class CompoundModuleFigure extends LayeredPane
         return box;
     }
 
+    @Override
+    public Dimension getMaximumSize() {
+        return super.getPreferredSize();
+    }
+
+    @Override
+    public void setMaximumSize(Dimension d) {
+        throw new RuntimeException("maximum size is automatic, it cannot be set");
+    }
+
     /**
      * Adjusts compound module background parameters
      */

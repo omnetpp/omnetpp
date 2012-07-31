@@ -9,9 +9,20 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.AbstractHintLayout;
 import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.Label;
+import org.eclipse.draw2d.LayoutListener;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
+import org.eclipse.draw2d.PositionConstants;
+import org.eclipse.draw2d.RoundedRectangle;
+import org.eclipse.draw2d.ScalableFigure;
+import org.eclipse.draw2d.ScalableLayeredPane;
+import org.eclipse.draw2d.ScrollPane;
+import org.eclipse.draw2d.StackLayout;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -21,7 +32,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
 import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
@@ -29,7 +42,7 @@ import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.figures.CompoundModuleFigureEx;
+import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.SubmoduleFigureEx;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
@@ -59,18 +72,28 @@ import org.omnetpp.simulation.model.cObject;
 public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected static final DisplayString EMPTY_DISPLAYSTRING = new DisplayString("");
 
+    private Label labelFigure;
+    private ScrollPane scrollPane; // child of the inspector figure
+    protected ScalableFigure scalableFigure; // child (content) of scrollPane 
+    protected CompoundModuleFigure compoundModuleFigure; // child of scalableFigure
+
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
-    protected float canvasScale = 1.0f;  //TODO properly do it
     protected int imageSizePercentage = 100; // controls submodule icons; 100 means 1:1
     protected boolean showNameLabels = true;
     protected boolean showArrowHeads = true;
+
 
     /**
      * Constructor.
      */
     public GraphicalModuleInspectorPart(IInspectorContainer parent, cModule module) {
         super(parent, module);
+        
+        if (!module.isFilledIn())
+            module.safeLoad();
+        if (!module.isFieldsFilledIn())
+            module.safeLoadFields();
 
         // mouse handling
         figure.addMouseListener(new MouseListener() {
@@ -89,49 +112,161 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 handleMouseReleased(me);
             }
         });
+        
+        figure.addLayoutListener(new LayoutListener.Stub() {
+            @Override
+            public void postLayout(IFigure container) {
+                // when zooming out, ensure inspector shrinks accordingly (size obeys maxSize)
+                boolean changed = false;
+                Rectangle bounds = container.getBounds().getCopy();
+                Dimension maxSize = container.getMaximumSize();
+                if (bounds.width > maxSize.width) { bounds.width = maxSize.width; changed = true; }
+                if (bounds.height > maxSize.height) { bounds.height = maxSize.height; changed = true; }
+                if (changed)
+                    container.getParent().setConstraint(container, bounds);
+            }
+        });
     }
 
+    private class InspectorFigure extends RoundedRectangle implements IInspectorFigure {
+        public InspectorFigure() {
+            setForegroundColor(ColorFactory.GREY70);
+        }
+        
+        @Override
+        public int getDragOperation(int x, int y) {
+            return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds()); //FIXME disable this!!! dragging should CROP! but it's not permitted to enlarge the inspector!!!!
+        }
+
+        @Override
+        public void setSelectionBorder(boolean isSelected) {
+            // TODO Auto-generated method stub
+        }
+
+        public Dimension getMaximumSize() {
+            return getPreferredSize();  // so that it cannot be enlarged more than the embedded CompoundModuleFigure permits
+        }
+    }
+    
+    // Note: this class looks actually quite reusable, for many inspectors
+    protected static class TitleAndContentLayout extends AbstractHintLayout {
+        private static final int MARGIN_HEIGHT = 5;
+        private static final int MARGIN_WIDTH = 5;
+        private static final int VERTICAL_SPACING = 5;
+        
+        @Override
+        public void layout(IFigure container) {
+            @SuppressWarnings("unchecked")
+            List<IFigure> children = container.getChildren();
+            Assert.isTrue(children.size()==2, "two children expected, a title bar and a content figure");
+            IFigure title = children.get(0);
+            IFigure content = children.get(1);
+            Rectangle containerBounds = container.getBounds();
+
+            title.setBounds(new Rectangle(MARGIN_WIDTH+containerBounds.x, MARGIN_HEIGHT+containerBounds.y, containerBounds.width - 2*MARGIN_WIDTH, title.getPreferredSize().height));
+            int contentTop = title.getBounds().bottom() + VERTICAL_SPACING;
+            Rectangle contentBounds = new Rectangle(MARGIN_WIDTH+containerBounds.x, contentTop, containerBounds.width - 2*MARGIN_WIDTH, containerBounds.bottom() - contentTop - MARGIN_HEIGHT);
+            Dimension contentMaximumSize = content.getMaximumSize();
+            if (contentBounds.width > contentMaximumSize.width)
+                contentBounds.width = contentMaximumSize.width;
+            if (contentBounds.height > contentMaximumSize.height)
+                contentBounds.height = contentMaximumSize.height;
+            content.setBounds(contentBounds);
+        }
+
+        @Override
+        protected Dimension calculatePreferredSize(IFigure container, int wHint, int hHint) {
+            @SuppressWarnings("unchecked")
+            List<IFigure> children = container.getChildren();
+            Dimension titleSize = children.get(0).getPreferredSize();
+            Dimension contentSize = children.get(1).getPreferredSize();
+            return new Dimension(2*MARGIN_WIDTH + contentSize.width, 2*MARGIN_HEIGHT + VERTICAL_SPACING + titleSize.height + contentSize.height); // note: we ignore title's width, as text in it tends to be too long 
+        }
+        
+        @Override
+        protected Dimension calculateMinimumSize(IFigure container, int wHint, int hHint) {
+            @SuppressWarnings("unchecked")
+            List<IFigure> children = container.getChildren();
+            Dimension titleSize = children.get(0).getMinimumSize();
+            Dimension contentSize = children.get(1).getMinimumSize();
+            return new Dimension(2*MARGIN_WIDTH + contentSize.width, 2*MARGIN_HEIGHT + VERTICAL_SPACING + titleSize.height + contentSize.height); // note: we ignore title's width, as text in it tends to be too long 
+        }
+    }
+    
     @Override
     protected IInspectorFigure createFigure() {
-        CompoundModuleFigureEx figure = new CompoundModuleFigureEx();
-        return figure;
+        InspectorFigure root = new InspectorFigure();
+        root.setLayoutManager(new TitleAndContentLayout()); // note: GridLayout has problems (it does not observe getMaximumSize() of children, and its getMinimumSize() returns getPreferredSize() i.e. it cannot be shrunk)
+        root.setMinimumSize(new Dimension(20, 20));
+
+        labelFigure = new Label("n/a");
+        labelFigure.setLabelAlignment(PositionConstants.LEFT);
+        labelFigure.setForegroundColor(ColorFactory.BLACK); // otherwise it would inherit border's color from parent
+        root.add(labelFigure);
+
+        scrollPane = new ScrollPane();
+        root.add(scrollPane);
+        
+        scalableFigure = new ScalableLayeredPane(); //XXX or something simpler
+        scrollPane.setContents(scalableFigure);
+        scrollPane.setMinimumSize(new Dimension(20,20));
+        scalableFigure.setLayoutManager(new StackLayout()); // for lack of a FillLayout class...
+
+        compoundModuleFigure = new CompoundModuleFigure();
+        scalableFigure.add(compoundModuleFigure);
+
+        // work around slightly odd default behavior of scrollPane (scrollbars don't appear immediately when you shrink the window)
+        scrollPane.addLayoutListener(new LayoutListener.Stub() {
+            public void postLayout(IFigure container) {
+                scrollPane.setHorizontalScrollBarVisibility(scrollPane.getSize().width >= scrollPane.getContents().getSize().width ? ScrollPane.NEVER : ScrollPane.ALWAYS);
+                scrollPane.setVerticalScrollBarVisibility(scrollPane.getSize().height >= scrollPane.getContents().getSize().height ? ScrollPane.NEVER : ScrollPane.ALWAYS);
+            }
+        });
+        
+        return root;
     }
 
+    public CompoundModuleFigure getCompoundModuleFigure() {
+        return compoundModuleFigure;
+    }
+    
     //@Override
     public boolean isMaximizable() {
         return false;
     }
 
-    public float getCanvasScale() {
-        return canvasScale;
+    public double getZoomLevel() {
+        return scalableFigure.getScale();
     }
 
-    public void setCanvasScale(float canvasScale) {
-        Assert.isTrue(canvasScale > 0);
-        this.canvasScale = canvasScale;
+    public void setZoomLevel(double zoom) {
+        Assert.isTrue(zoom > 0);
+
+        boolean haveScrollbar = scrollPane.getHorizontalScrollBar().isVisible() || scrollPane.getVerticalScrollBar().isVisible();
+
+        scalableFigure.setScale(zoom);
         refresh();
+        
+        if (!haveScrollbar) {
+            // grow inspector window so that scrollbars don't appear if they weren't present before setting the zoom
+            figure.getParent().setConstraint(figure, figure.getBounds().getCopy().setSize(figure.getPreferredSize()));
+        }
     }
 
-    /**
-     * Adjusts canvasScale.
-     */
     public void zoomOut() {
-        float canvasScale = getCanvasScale();
-        canvasScale /= 1.5;
-        if (Math.abs(canvasScale-1.0) < 0.01)
-            canvasScale = 1.0f; // prevent accumulation of rounding errors
-        setCanvasScale(canvasScale);
+        double zoom = getZoomLevel();
+        zoom /= 1.5;
+        if (Math.abs(zoom-1.0) < 0.01)
+            zoom = 1.0f; // prevent accumulation of rounding errors
+        setZoomLevel(zoom);
     }
 
-    /**
-     * Adjusts canvasScale.
-     */
     public void zoomIn() {
-        float canvasScale = getCanvasScale();
-        canvasScale *= 1.5;
-        if (Math.abs(canvasScale-1.0) < 0.01)
-            canvasScale = 1.0f; // prevent accumulation of rounding errors
-        setCanvasScale(canvasScale);
+        double zoom = getZoomLevel();
+        zoom *= 1.5;
+        if (Math.abs(zoom-1.0) < 0.01)
+            zoom = 1.0f; // prevent accumulation of rounding errors
+        setZoomLevel(zoom);
     }
 
     public int getImageSizePercentage() {
@@ -188,11 +323,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         refresh();
     }
 
-    @Override
-    public CompoundModuleFigureEx getFigure() {
-        return (CompoundModuleFigureEx) super.getFigure();
-    }
-
     public SubmoduleFigure getSubmoduleFigure(cModule submodule) {
         return submodules.get(submodule);
     }
@@ -201,11 +331,19 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         return connections.get(srcGate);
     }
 
+    public void relayout() {
+        CompoundModuleLayout layouter = (CompoundModuleLayout) compoundModuleFigure.getSubmoduleLayer().getLayoutManager();
+        layouter.requestFullLayout();
+        //layouter.setSeed(layouter.getSeed()+1);  -- not needed
+        compoundModuleFigure.getSubmoduleLayer().revalidate();
+    }
+
     @Override
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
             cModule module = (cModule) object;
+            //TODO load submodules, gates, channels etc in one call!
             if (module.isFilledIn())
                 module.safeLoad();
             try {
@@ -216,19 +354,21 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 SimulationPlugin.logError(e);
             }
 
-//            CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-//            moduleFigure.setDisplayString(getDisplayStringFrom(module)); //XXX needed? the same is in refreshVisuals()!!!
-
-
+            refreshLabel();
             refreshChildren();
             refreshConnections();
             refreshVisuals();
         }
     }
 
+    protected void refreshLabel() {
+        cModule module = (cModule) getObject();
+        String text = module.getFullPath();   //TODO add NED type name too!!! (not yet accessible in cModule)
+        labelFigure.setText(text);
+    }
+
     protected void refreshChildren() {
         //TODO only call this function if there were any moduleCreated/moduleDeleted notifications from the simkernel
-        CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         List<cModule> toBeRemoved = null;
         List<cModule> toBeAdded = null;
 
@@ -253,7 +393,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // do the removals and additions
         if (toBeRemoved != null) {
             for (cModule submodule : toBeRemoved) {
-                moduleFigure.getSubmoduleLayer().remove(submodules.get(submodule));
+                compoundModuleFigure.getSubmoduleLayer().remove(submodules.get(submodule));
                 submodules.remove(submodule);
             }
         }
@@ -263,15 +403,14 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 SubmoduleFigureEx submoduleFigure = new SubmoduleFigureEx();
                 submoduleFigure.setFont(getContainer().getControl().getFont()); // to speed up figure's getFont()
                 submoduleFigure.setPinVisible(false);
-                moduleFigure.getSubmoduleLayer().add(submoduleFigure);
-                submoduleFigure.setRangeFigureLayer(((CompoundModuleFigureEx)figure).getInternalModuleFigure().getBackgroundDecorationLayer());
+                compoundModuleFigure.getSubmoduleLayer().add(submoduleFigure);
+                submoduleFigure.setRangeFigureLayer(compoundModuleFigure.getBackgroundDecorationLayer());
                 submodules.put(submodule, submoduleFigure);
             }
         }
     }
 
     protected void refreshConnections() {
-        CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         ArrayList<cGate> toBeRemoved = null;
         ArrayList<cGate> toBeAdded = null;
 
@@ -314,7 +453,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // do the removals and additions
         if (toBeRemoved != null) {
             for (cGate gate : toBeRemoved) {
-                moduleFigure.getConnectionLayer().remove(connections.get(gate));
+                compoundModuleFigure.getConnectionLayer().remove(connections.get(gate));
                 connections.remove(gate);
             }
         }
@@ -324,25 +463,22 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 cGate targetGate = gate.getNextGate();
                 ConnectionFigure connectionFigure = new ConnectionFigure();
                 GateAnchor sourceAnchor = (gate.getOwnerModule().equals(parentModule) ?
-                        new CompoundModuleGateAnchor(moduleFigure.getInternalModuleFigure()) :
-                            new GateAnchor(submodules.get(gate.getOwnerModule())));
+                        new CompoundModuleGateAnchor(compoundModuleFigure) : new GateAnchor(submodules.get(gate.getOwnerModule())));
                 GateAnchor targetAnchor = (targetGate.getOwnerModule().equals(parentModule) ?
-                        new CompoundModuleGateAnchor(moduleFigure.getInternalModuleFigure()) :
-                            new GateAnchor(submodules.get(targetGate.getOwnerModule())));
+                        new CompoundModuleGateAnchor(compoundModuleFigure) : new GateAnchor(submodules.get(targetGate.getOwnerModule())));
                 connectionFigure.setSourceAnchor(sourceAnchor);
                 connectionFigure.setTargetAnchor(targetAnchor);
-                moduleFigure.getConnectionLayer().add(connectionFigure);
+                compoundModuleFigure.getConnectionLayer().add(connectionFigure);
                 connections.put(gate, connectionFigure);
             }
         }
     }
 
     protected void refreshVisuals() {
-        CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
         cModule parentModule = (cModule) object;
-        moduleFigure.setDisplayString(getDisplayStringFrom(parentModule));
+        compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule));
 
-        float scale = canvasScale * moduleFigure.getInternalModuleFigure().getScale(); //FIXME the compound module's scale should be set too
+        float scale = compoundModuleFigure.getScale();
 
         // refresh submodules
         for (cModule submodule : submodules.keySet()) {
@@ -517,14 +653,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             item.setImage(SimulationPlugin.getCachedImage(imagePath));
         item.setToolTipText(tooltip);
         return item;
-    }
-
-    public void relayoutSubmodules() {
-        CompoundModuleFigureEx moduleFigure = (CompoundModuleFigureEx)figure;
-        CompoundModuleLayout layouter = moduleFigure.getSubmoduleLayouter();
-        layouter.requestFullLayout();
-        //layouter.setSeed(layouter.getSeed()+1);  -- not needed
-        moduleFigure.getSubmoduleLayer().revalidate();
     }
 
 

@@ -13,6 +13,6 @@ public class RelayoutAction extends AbstractInspectorAction {
     @Override
     public void run() {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
-        inspector.relayoutSubmodules();
+        inspector.relayout();
     }
 }
