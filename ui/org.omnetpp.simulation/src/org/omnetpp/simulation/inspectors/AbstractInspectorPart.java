@@ -206,12 +206,14 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
                 // when user moves at least 10 pixels away from the inspector's bounding box,
                 // plus one second elapses without moving back within inspector bounds.
                 // We do the same, except ignore the 10 pixels distance.
-                if (floatingControls == null && figure.containsPoint(e.x, e.y)) {
+                org.eclipse.draw2d.geometry.Point mouse = getContainer().translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
+                
+                if (floatingControls == null && figure.containsPoint(mouse)) {
                     openFloatingControls();
                 }
                 if (floatingControls != null) {
                     //NOTE: ONCE THE MOUSE ENTERS FLOATINGCONTROLS, WE STOP RECEIVING NOTIFICATIONS SO CANNOT CANCEL THE TIMER!
-                    if (figure.containsPoint(e.x, e.y)) {
+                    if (figure.containsPoint(mouse)) {
                         if (isRemoveFloatingControlsTimerActive) {
                             Display.getCurrent().timerExec(-1, removeFloatingControlsTimer); // cancel timer
                             isRemoveFloatingControlsTimerActive = false;
@@ -362,11 +364,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
 
     protected Point computeFloatingControlsNaturalLocation() {
         IFigure reference = AbstractInspectorPart.this.figure;
-        Rectangle targetBounds = new Rectangle(reference.getBounds());
+        Rectangle targetBounds = reference.getBounds().getCopy();
         reference.translateToAbsolute(targetBounds);
         Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y);
         Point controlsSize = floatingControls.getSize();
-        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3);
+        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3); // canvas coordinates
     }
 
     /**

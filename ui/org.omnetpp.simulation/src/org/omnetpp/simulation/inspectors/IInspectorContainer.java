@@ -58,6 +58,13 @@ public interface IInspectorContainer {
     Layer getControlsLayer();
 
     /**
+     * TODO
+     */
+    org.eclipse.swt.graphics.Point translateAbsoluteFigureCoordinatesToCanvas(int x, int y);
+    
+    org.eclipse.draw2d.geometry.Point translateCanvasToAbsoluteFigureCoordinates(int x, int y);
+    
+    /**
      * Utility function: extracts cObjects from the selection and returns them.
      * Tries both instanceOf and getAdapter(cObject.class) on elements of the
      * selection.

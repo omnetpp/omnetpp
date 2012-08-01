@@ -69,6 +69,7 @@ import org.omnetpp.simulation.model.cObject;
  * @author Andras
  */
 //TODO ConnectionFigure must be fixed too!
+//TODO when zoom buttons are clicked, currently toolbar jumps away to follow the inspector!!! (it should stay where it was)
 public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected static final DisplayString EMPTY_DISPLAYSTRING = new DisplayString("");
 

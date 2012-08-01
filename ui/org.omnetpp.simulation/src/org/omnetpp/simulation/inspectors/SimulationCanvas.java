@@ -140,6 +140,20 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     @Override
+    public Point translateAbsoluteFigureCoordinatesToCanvas(int x, int y) {
+        int xoffset = getHorizontalBar().getSelection();
+        int yoffset = getVerticalBar().getSelection();
+        return new Point(x - xoffset, y - yoffset);
+    }
+
+    @Override
+    public org.eclipse.draw2d.geometry.Point translateCanvasToAbsoluteFigureCoordinates(int x, int y) {
+        int xoffset = getHorizontalBar().getSelection();
+        int yoffset = getVerticalBar().getSelection();
+        return new org.eclipse.draw2d.geometry.Point(x + xoffset, y + yoffset);
+    }
+
+    @Override
     public void dispose() {
         for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
             removeInspectorPart(inspectorPart);
