@@ -23,6 +23,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Image;
@@ -75,7 +76,13 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         //setBackground(new Color(null, 235, 235, 235));
 
-        Layer layeredPane = new Layer();
+        Layer layeredPane = new Layer() {
+            @Override
+            public void paint(Graphics graphics) {
+                graphics.setAntialias(SWT.ON);
+                super.paint(graphics);
+            }
+        };
         layeredPane.setLayoutManager(new StackLayout());
 
 
