@@ -6,16 +6,20 @@ import java.util.List;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.draw2d.CoordinateListener;
 import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -26,14 +30,25 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.MouseTrackListener;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.ToolBar;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cQueue;
@@ -172,6 +187,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         // register the inspector
         inspectors.add(inspectorPart);
+        addFloatingControlsSupport(inspectorPart);  //TODO also to its SWT parts!!!
         inspectorPart.refresh();
     }
 
@@ -339,6 +355,258 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
                 }
             });
         }
+    }
+
+    private IInspectorPart floatingControlsOwner = null;
+    private Control floatingControls = null;
+    private Point floatingControlsDisplacement;  // relative to its normal location (= right-aligned just above the inspector)
+    private boolean isRemoveFloatingControlsTimerActive = false;
+    
+    private Runnable removeFloatingControlsTimer = new Runnable() {
+        @Override
+        public void run() {
+            System.out.println("removeFloatingControlsTimer expired");
+            isRemoveFloatingControlsTimerActive = false;
+            if (floatingControls != null && !floatingControls.isDisposed() && !containsMouse(floatingControls))
+                closeFloatingControls();
+        }
+    };
+
+    protected static boolean containsMouse(Control control) {
+        Point mouse = Display.getCurrent().getCursorLocation();
+        return Display.getCurrent().map(control.getParent(), null, control.getBounds()).contains(mouse);
+    }
+    
+    protected void addFloatingControlsSupportTo(Control control, final IInspectorPart inspector) {
+        MouseTrackAdapter listener = new MouseTrackAdapter() { //TODO also: cancel 1s timer!
+            @Override
+            public void mouseEnter(MouseEvent e) {
+                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls == null) {
+                    openFloatingControls(inspector);
+                }
+                if (floatingControls != null) {
+                    if (isRemoveFloatingControlsTimerActive) {
+                        Display.getCurrent().timerExec(-1, removeFloatingControlsTimer); // cancel timer
+                        isRemoveFloatingControlsTimerActive = false;
+                    }
+                }
+            }
+        };
+
+        addMouseTrackListenerRec(control, listener);
+    }
+
+    protected static void addMouseTrackListenerRec(Control control, MouseTrackListener listener) {
+        control.addMouseTrackListener(listener);
+        if (control instanceof Composite)
+            for (Control child : ((Composite) control).getChildren())
+                addMouseTrackListenerRec(child, listener);
+    }
+
+    protected void addFloatingControlsSupport(final IInspectorPart inspector) {
+        final IInspectorFigure figure = inspector.getFigure();
+        
+        addMouseMoveListener(new MouseMoveListener() {
+            @Override
+            public void mouseMove(MouseEvent e) {
+                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                // Removing floating controls. Windows 7 does the following with its desktop gadgets:
+                // when user moves at least 10 pixels away from the inspector's bounding box,
+                // plus one second elapses without moving back within inspector bounds.
+                // We do the same, except ignore the 10 pixels distance.
+                org.eclipse.draw2d.geometry.Point mouse = translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
+                
+                if (floatingControls == null && figure.containsPoint(mouse) && (e.stateMask&SWT.BUTTON_MASK)==0) {
+                    //TODO if others have floating controls open, we should only open ours (and close others') with a delay -- otherwise it's a pain to work with overlapping inspectors!!!
+                    openFloatingControls(inspector);
+                }
+                if (floatingControls != null) {
+                    //NOTE: ONCE THE MOUSE ENTERS FLOATINGCONTROLS, WE STOP RECEIVING NOTIFICATIONS SO CANNOT CANCEL THE TIMER!
+                    if (figure.containsPoint(mouse)) {
+                        if (isRemoveFloatingControlsTimerActive) {
+                            Display.getCurrent().timerExec(-1, removeFloatingControlsTimer); // cancel timer
+                            isRemoveFloatingControlsTimerActive = false;
+                        }
+                    }
+                    else {
+                        if (!isRemoveFloatingControlsTimerActive) {
+                            Display.getCurrent().timerExec(1000, removeFloatingControlsTimer); // start timer
+                            isRemoveFloatingControlsTimerActive = true;
+                        }
+                    }
+                }
+            }
+        });
+
+        // need to adjust control's bounds when figure is moved or resized
+        figure.addFigureListener(new FigureListener() {
+            @Override
+            public void figureMoved(IFigure source) {
+                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls != null)
+                    relocateFloatingControls();
+            }
+        });
+
+        // also also when FigureCanvas is scrolled
+        getViewport().addCoordinateListener(new CoordinateListener() {
+            @Override
+            public void coordinateSystemChanged(IFigure source) {
+                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls != null)
+                    relocateFloatingControls();
+            }
+        });
+
+    }
+
+    private boolean dragInProgress = false;
+    private int moveOffsetX, moveOffsetY;
+    private static Cursor dragCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_HAND);
+
+    protected void openFloatingControls(IInspectorPart inspector) {
+        Assert.isTrue(floatingControls == null);
+
+        // close floating controls of all other inspectors
+        if (floatingControls != null)
+            closeFloatingControls();
+
+        Composite panel = new Composite(this, SWT.BORDER);
+        panel.setLayout(new FillLayout());
+
+        // add icons to the toolbar
+        ToolBar toolbar = new ToolBar(panel, SWT.HORIZONTAL);
+        ToolBarManager manager = new ToolBarManager(toolbar);
+
+        inspector.populateFloatingToolbar(manager);
+        
+        final Label[] dragHandleRef = new Label[1];
+        manager.add(new ControlContribution("") {
+            @Override
+            protected Control createControl(Composite parent) {
+                Label dragHandle = new Label(parent, SWT.NONE);
+                dragHandle.setImage(SimulationPlugin.getCachedImage("icons/etool16/draghandle.png")); //XXX factor out image
+                dragHandle.setToolTipText("Drag handle");
+                dragHandleRef[0] = dragHandle;
+                return dragHandle;
+            }
+        });
+
+        CloseAction closeAction = new CloseAction();
+        closeAction.setInspectorPart(inspector);
+        manager.add(closeAction);
+        manager.update(true);
+        final Label dragHandle = dragHandleRef[0];
+        
+        panel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW));
+
+        // set the size of the toolbar
+        panel.layout();
+        panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+
+        // raise to the top
+        panel.moveAbove(null);
+
+        // we may need to displace it by some vector compared to its normal location,
+        // to ensure it is fully visible (i.e. appears within canvas bounds)
+        Point naturalLoc = computeFloatingControlsNaturalLocation(inspector.getFigure(), panel);
+        Point adjustedLoc = new Point(naturalLoc.x, naturalLoc.y);
+        if (adjustedLoc.x + panel.getSize().x > getSize().x)
+            adjustedLoc.x = getSize().x - panel.getSize().x;
+        if (adjustedLoc.x < 0)
+            adjustedLoc.x = 0;
+        if (adjustedLoc.y + panel.getSize().y > getSize().y)
+            adjustedLoc.y = getSize().y - panel.getSize().y;
+        if (adjustedLoc.y < 0)
+            adjustedLoc.y = 0;
+        floatingControlsDisplacement = new Point(adjustedLoc.x - naturalLoc.x, adjustedLoc.y - naturalLoc.y);
+
+        // created!
+        floatingControls = panel;
+        floatingControlsOwner = inspector;
+        
+        // move it to the correct location
+        relocateFloatingControls();
+
+        // configure drag handle (allows inspector to be moved around with the mouse)
+        dragHandle.addMouseListener(new MouseAdapter() {
+            public void mouseDown(MouseEvent e) {
+                dragInProgress = true;
+                Point p = Display.getCurrent().getCursorLocation();
+                org.eclipse.draw2d.geometry.Point pp = translateCanvasToAbsoluteFigureCoordinates(p.x, p.y); // well, p is screen coord not canvas, but here it only affects moveOffset
+                Rectangle figureBounds = floatingControlsOwner.getFigure().getBounds();
+                moveOffsetX = figureBounds.x - pp.x;
+                moveOffsetY = figureBounds.y - pp.y;
+                dragHandle.setCursor(dragCursor);
+                floatingControlsOwner.raiseToTop();
+                
+                // By default draw2d updates canvas bounds continually while dragging, which
+                // results in a weird effect: when dragging up an inspector from near the bottom 
+                // of the canvas and the canvas shrinks as a result, the mouse overtakes the 
+                // drag handle and other interesting things happen. The workaround is to disable
+                // updating the canvas bounds while dragging; this can be achieved by setting
+                // preferredSize.
+                IFigure contents = getContents();
+                contents.setPreferredSize(contents.getPreferredSize());
+            }
+            public void mouseUp(MouseEvent e) {
+                dragInProgress = false;
+                dragHandle.setCursor(null);
+
+                // restore no preferredSize
+                IFigure contents = getContents();
+                contents.setPreferredSize(null);
+            }
+        });
+        dragHandle.addMouseMoveListener(new MouseMoveListener() {
+            public void mouseMove(MouseEvent e) {
+                if (dragInProgress && (e.stateMask&SWT.BUTTON_MASK) != SWT.BUTTON1)
+                    dragInProgress = false;
+                if (dragInProgress) {
+                    Point p = Display.getCurrent().getCursorLocation();
+                    org.eclipse.draw2d.geometry.Point pp = translateCanvasToAbsoluteFigureCoordinates(p.x, p.y); // well, p is screen coord not canvas, but here it only affects moveOffset  
+                    IInspectorFigure figure = floatingControlsOwner.getFigure();
+                    Rectangle r = figure.getBounds().getCopy();
+                    r.setLocation(pp.x + moveOffsetX, pp.y + moveOffsetY);
+                    
+                    // don't allow inspectors to stick out on the left or top, because it can be difficult or impossible to bring them back
+                    if (r.x < 0) r.x = 0;
+                    if (r.y < 0) r.y = 0;
+                    figure.getParent().setConstraint(figure, r);
+                }
+            }
+        });
+    }
+
+    protected void relocateFloatingControls() {
+        Point naturalLoc = computeFloatingControlsNaturalLocation(floatingControlsOwner.getFigure(), floatingControls);
+        floatingControls.setLocation(naturalLoc.x + floatingControlsDisplacement.x, naturalLoc.y + floatingControlsDisplacement.y);
+    }
+
+    protected Point computeFloatingControlsNaturalLocation(IInspectorFigure inspectorFigure, Control floatingControls) {
+        Rectangle targetBounds = inspectorFigure.getBounds().getCopy();
+        inspectorFigure.translateToAbsolute(targetBounds);
+        Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y);
+        Point controlsSize = floatingControls.getSize();
+        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3); // canvas coordinates
+    }
+
+    /**
+     * Returns null if not displayed.
+     */
+    public Control getFloatingControls() {
+        return floatingControls;
+    }
+
+    public IInspectorPart getFloatingControlsOwner() {
+        return floatingControlsOwner;
+    }
+    
+    public void closeFloatingControls() {
+        floatingControls.dispose();
+        floatingControls = null;
+        floatingControlsOwner = null;
     }
 
 }

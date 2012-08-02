@@ -9,13 +9,14 @@ import java.util.Map;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.figures.QueueInspectorFigure;
+import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cQueue;
 
@@ -109,14 +110,15 @@ public class QueueInspectorPart extends AbstractInspectorPart {
 
     //@Override
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
-        contextMenuManager.add(new Action("Close") {
-            @Override
-            public void run() {
-                getContainer().close(QueueInspectorPart.this);
-            }
-        });
+        contextMenuManager.add(my(new CloseAction()));
     }
 
+    @Override
+    public void populateFloatingToolbar(ToolBarManager manager) {
+        // TODO Auto-generated method stub
+    }
+
+    
     //XXX near copy/paste from GraphicalModuleInspectorPart - factor out
     @Override
     public void selectionChanged(IStructuredSelection selection) {
@@ -163,6 +165,5 @@ public class QueueInspectorPart extends AbstractInspectorPart {
 
     protected void handleMouseReleased(MouseEvent me) {
     }
-
 
 }

@@ -5,6 +5,7 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
 import org.omnetpp.simulation.model.cObject;
@@ -45,12 +46,12 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    //@Override
+    @Override
     public boolean isMaximizable() {
         return false;
     }
 
-    //@Override
+    @Override
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
         contextMenuManager.add(new Action("Close") {
             @Override
@@ -58,6 +59,11 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
                 getContainer().close(InfoTextInspectorPart.this);
             }
         });
+    }
+
+    @Override
+    public void populateFloatingToolbar(ToolBarManager manager) {
+        // TODO Auto-generated method stub
     }
 
     protected void handleMousePressed(MouseEvent me) {

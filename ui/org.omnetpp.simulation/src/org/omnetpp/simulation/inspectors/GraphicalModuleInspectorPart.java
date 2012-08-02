@@ -624,7 +624,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     }
     
     @Override
-    protected void addIconsToFloatingToolbar(ToolBarManager manager) {
+    public void populateFloatingToolbar(ToolBarManager manager) {
         //XXX the following buttons are from Tkenv -- revise which ones we really need
         manager.add(my(new InspectParentAction()));
         manager.add(my(new InspectAsObject()));

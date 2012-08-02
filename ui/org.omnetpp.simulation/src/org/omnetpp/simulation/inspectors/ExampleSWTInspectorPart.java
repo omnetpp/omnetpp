@@ -3,6 +3,7 @@ package org.omnetpp.simulation.inspectors;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -45,6 +46,10 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
     }
 
+    @Override
+    public void populateFloatingToolbar(ToolBarManager manager) {
+    }
+    
     @Override
     public void refresh() {
         super.refresh();
@@ -90,5 +95,6 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
         if (!object.isFieldsFilledIn())
             object.safeLoadFields();
     }
+
 
 }

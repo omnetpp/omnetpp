@@ -86,7 +86,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
             }
         });
 
-        addFloatingControlsSupportTo(control);
+//XXX        addFloatingControlsSupportTo(control);
 
         return figure;
     }
@@ -112,7 +112,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         super.raiseToTop();
 
         control.moveAbove(null);
-        getFloatingControls().moveAbove(control);
+//XXX        getFloatingControls().moveAbove(control);
     }
 
     @Override

@@ -1,9 +1,9 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.model.cObject;
 
 
@@ -42,18 +42,10 @@ public interface IInspectorPart {
      */
     void dispose();
 
+    /**
+     * TODO
+     */
     boolean isDisposed();
-
-    /**
-     * TODO
-     * Returns null if not open
-     */
-    Control getFloatingControls();
-
-    /**
-     * TODO
-     */
-    void closeFloatingControls();
 
     /**
      * Brings this inspector to the front of all inspectors in Z-order.
@@ -83,6 +75,14 @@ public interface IInspectorPart {
      */
     void selectionChanged(IStructuredSelection selection);
 
-    void populateContextMenu(MenuManager contextMenuManager, Point p);
+    /**
+     * TODO
+     */
+    void populateContextMenu(MenuManager manager, Point p);
+
+    /**
+     * TODO
+     */
+    void populateFloatingToolbar(ToolBarManager manager);
 
 }

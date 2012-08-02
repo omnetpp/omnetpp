@@ -125,7 +125,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     }
 
     @Override
-    protected void addIconsToFloatingToolbar(ToolBarManager manager) {
+    public void populateFloatingToolbar(ToolBarManager manager) {
         manager.add(packetModeTool = my(new SetModeAction(Mode.PACKET, "Packet mode", IMG_MODE_PACKET)));
         manager.add(childrenModeTool = my(new SetModeAction(Mode.CHILDREN, "Children mode", IMG_MODE_CHILDREN)));
         manager.add(groupedModeTool = my(new SetModeAction(Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED)));
