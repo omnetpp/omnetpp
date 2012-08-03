@@ -2,10 +2,10 @@ package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.CoordinateListener;
+import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
@@ -25,10 +25,11 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
     protected static Cursor arrowCursor;
     protected Control control;
 
-    // Note: this is a Layer because it needs to be transparent. (It is not a good idea
-    // to visually mix Figures and SWT controls, because SWT controls are always on
-    // top so "slicing" can occur if such inspector overlaps with another).
-    public class ContainerFigure extends Layer implements IInspectorFigure {
+    // Note: this is a transparent Figure. (It is not a good idea to visually mix Figures 
+    // and SWT controls, because SWT controls are always on top so "slicing" can occur 
+    // if such inspector overlaps with another). Note: this cannot be a layer because
+    // SimulationCanvas.findInspectorPartAt() wouldn't find it!
+    public class ContainerFigure extends Figure implements IInspectorFigure {
         public ContainerFigure() {
         }
 
@@ -86,8 +87,6 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
             }
         });
 
-//XXX        addFloatingControlsSupportTo(control);
-
         return figure;
     }
 
@@ -97,7 +96,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
      */
     abstract protected Control createControl(Composite parent);
 
-    public Control getControl() {
+    public Control getSWTControl() {
         return control;
     }
 
@@ -112,7 +111,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         super.raiseToTop();
 
         control.moveAbove(null);
-//XXX        getFloatingControls().moveAbove(control);
+//XXX        getFloatingToolbar().moveAbove(control);
     }
 
     @Override

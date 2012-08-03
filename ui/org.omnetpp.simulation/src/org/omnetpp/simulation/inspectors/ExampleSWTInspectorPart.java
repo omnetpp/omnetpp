@@ -54,7 +54,7 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
-            List listbox = (List)getControl();
+            List listbox = (List)getSWTControl();
             listbox.setItems(new String[0]);  // clear listbox
 
             listbox.add("\"" + object.getFullName() + "\" (" + object.getClassName() + ")");

@@ -4,6 +4,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.model.cObject;
 
 
@@ -84,5 +85,11 @@ public interface IInspectorPart {
      * TODO
      */
     void populateFloatingToolbar(ToolBarManager manager);
+
+    /**
+     * TODO
+     * null unless inspector is an SWT inspector
+     */
+    Control getSWTControl();
 
 }

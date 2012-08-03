@@ -14,7 +14,7 @@ public interface IInspectorFigure extends IFigure {
      * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise
      * return 0. For move operation it should set all four.
      */
-    int getDragOperation(int x, int y);
+    int getDragOperation(int x, int y);  //TODO into inspector; and add IFigure arg too; addMoveResizeSupportTo(IFigure); ResizeSupport.
 
     /**
      * Display/hide the selection border around the inspector

@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.model.cObject;
 
@@ -44,91 +45,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
             return this;
         return null;
     }
-    
-//XXX this is the Figure-based implementation of floating controls. Drawback: it can never appear over SWT widgets like the object fields tree
-//    class FloatingControlsLocator implements Locator {
-//        public void relocate(IFigure target) {
-//            // see RelativeLocator.relocate()
-//            IFigure reference = AbstractInspectorPart.this.figure;
-//            Rectangle targetBounds = new Rectangle(reference.getBounds());
-//            reference.translateToAbsolute(targetBounds);
-//            target.translateToRelative(targetBounds);
-//
-//            Dimension targetSize = target.getPreferredSize();
-//
-//            targetBounds.x += targetBounds.width - targetSize.width;
-//            targetBounds.y -= targetSize.height;
-//            targetBounds.setSize(targetSize);
-//            target.setBounds(targetBounds);
-//        }
-//    }
-//
-////    private long controlsDisplayedTime;
-//    protected void addFloatingControlsSupport() {
-//        //XXX experimental; TODO fade-in/fade-out effect! (layer to be turned into AlphaLayer)
-//        final IFigure floatingControls = createFloatingControls();
-//        figure.addMouseMotionListener(new MouseMotionListener.Stub() {
-//            @Override
-//            public void mouseHover(MouseEvent me) {
-//                getContainer().getControlsLayer().add(floatingControls);
-//                getContainer().getControlsLayer().getLayoutManager().setConstraint(floatingControls, new FloatingControlsLocator());
-////                controlsDisplayedTime = System.currentTimeMillis();
-//            }
-//
-//            @Override
-//            public void mouseMoved(MouseEvent me) {
-//                if (floatingControls.getParent() != null) {
-////                    long delay = System.currentTimeMillis() - controlsDisplayedTime;
-////                    if (delay >= 1000) // leave it displayed at least for a few seconds
-//                        getContainer().getControlsLayer().remove(floatingControls);
-//                }
-//            }
-//        });
-//
-//        // force the locator to be invoked whenever the inspector figure moves; without this, the floating
-//        // controls follow the inspector figure with a quite noticeable lag (apparently the layouter is only
-//        // invoked when the mouse rests)
-//        figure.addFigureListener(new FigureListener() {
-//            @Override
-//            public void figureMoved(IFigure source) {
-//                getContainer().getControlsLayer().invalidate();
-//            }
-//        });
-//    }
-//
-//    class ToolButton extends Button {
-//        public ToolButton(Image image) {
-//            super(image);
-//            setRolloverEnabled(true);
-//        }
-//    }
-//    class ToolbarSpace extends Figure {
-//        public ToolbarSpace() {
-//            setPreferredSize(8, 8);
-//        }
-//    }
-//
-//    protected IFigure createFloatingControls() {
-//        IFigure toolbar = new Figure();
-//        toolbar.setLayoutManager(new ToolbarLayout(true));
-//        toolbar.setBorder(new LineBorder(ColorFactory.GREY50, 1));
-//
-//        //XXX dummy buttons
-//        toolbar.add(new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_HOME_NAV)));
-//        toolbar.add(new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_SAVE_EDIT)));
-//        toolbar.add(new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_ETOOL_PRINT_EDIT)));
-//        toolbar.add(new ToolbarSpace());
-//        ToolButton closeButton = new ToolButton(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_DELETE));
-//        toolbar.add(closeButton);
-//
-//        closeButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent event) {
-//                getContainer().close(AbstractInspectorPart.this);
-//            }
-//        });
-//        return toolbar;
-//    }
 
     protected IAction my(IInspectorAction action) {
         action.setInspectorPart(this);
@@ -170,6 +86,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     @Override
     public IInspectorFigure getFigure() {
         return figure;
+    }
+
+    @Override
+    public Control getSWTControl() {
+        return null;
     }
 
     @Override

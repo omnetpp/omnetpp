@@ -55,20 +55,59 @@ import org.omnetpp.simulation.model.cSimpleModule;
  *
  * @author Andras
  */
-//XXX snap to grid for the move/resize?
 //FIXME how to evaluate "$PARNAME" references in display strings???
-//NOTE: see ModelCanvas in the old topic/guienv2 branch for scrollable version (using ScrolledComposite)
 public class SimulationCanvas extends FigureCanvas implements IInspectorContainer, ISelectionProvider {
     private final Image BACKGROUND_IMAGE = SimulationPlugin.getCachedImage("icons/misc/paper.png"); //XXX bg.png
 
+    // layers
     private Figure inspectorsLayer;
     private Layer controlsLayer;
 
+    // inspectors, selection handling
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
     protected ISimulationStateListener simulationListener;
     protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
     protected IStructuredSelection currentSelection = new StructuredSelection();
 
+    // floating toolbar
+    private IInspectorPart floatingToolbarOwner = null;
+    private Control floatingToolbar = null;
+    private Point floatingToolbarDisplacement;  // relative to its normal location (= right-aligned just above the inspector)
+    private boolean isFloatingToolbarStickyTimerActive = false;
+
+    private Runnable floatingToolbarStickyTimer = new Runnable() {
+        @Override
+        public void run() {
+            isFloatingToolbarStickyTimerActive = false;
+
+            // floating toolbar sticky period is over: let another inspector steal the toolbar, or just remove it
+            if (floatingToolbar != null && !floatingToolbar.isDisposed() && !containsMouse(floatingToolbar)) {
+                Point e = Display.getCurrent().map(null, SimulationCanvas.this, Display.getCurrent().getCursorLocation());
+                org.eclipse.draw2d.geometry.Point mouse = translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
+                IInspectorPart inspectorUnderMouse = findInspectorPartAt(mouse.x, mouse.y);
+
+                System.out.println("sticky timer expired, under mouse: " + inspectorUnderMouse);
+                if (inspectorUnderMouse == null) {
+                    closeFloatingToolbar();
+                }
+                else {
+                    closeFloatingToolbar();
+                    openFloatingToolbarFor(inspectorUnderMouse);
+                }
+            }
+        }
+    };
+
+    private FigureListener floatingToolbarRelocator = new FigureListener() {
+        @Override
+        public void figureMoved(IFigure source) {
+            relocateFloatingToolbar();
+        }
+    };
+
+    /**
+     * Inner class, used for the background with the paper pattern
+     */
     class ImagePatternFigure extends Figure {
         private Pattern pattern;
 
@@ -124,6 +163,46 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         });
 
         FigureUtils.addTooltipSupport(this, this.getContents());  //TODO make use of this!!!
+
+        // add floating toolbar support
+        addMouseMoveListener(new MouseMoveListener() {
+            @Override
+            public void mouseMove(MouseEvent e) {
+                org.eclipse.draw2d.geometry.Point mouse = translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
+
+                IInspectorPart inspectorUnderMouse = findInspectorPartAt(mouse.x, mouse.y);
+
+                // open floating toolbar when mouse moves over any inspector
+                if (floatingToolbar == null && inspectorUnderMouse != null && (e.stateMask&SWT.BUTTON_MASK)==0) {
+                    openFloatingToolbarFor(inspectorUnderMouse);
+                    return;
+                }
+
+                // floating toolbar is "sticky" for one second duration after you move the mouse out of its owner
+                // inspector. When this one second expires, we let another inspector steal the floating toolbar
+                // or just remove it. (This is similar to what e.g. Windows 7 with its desktop gadgets).
+                if (floatingToolbar != null) {
+                    if (inspectorUnderMouse != floatingToolbarOwner) {
+                        // mouse is "away from home" (over empty area or another inspector): start sticky timer
+                        startFloatingToolbarStickyTimerIfNotRunning();
+                    }
+                    else {
+                        // mouse is back home (over the same inspector that has the floating toolbar): cancel sticky timer
+                        cancelFloatingToolbarStickyTimer();
+                    }
+                }
+            }
+        });
+
+        // need to move floating toolbar when FigureCanvas is scrolled
+        getViewport().addCoordinateListener(new CoordinateListener() {
+            @Override
+            public void coordinateSystemChanged(IFigure source) {
+                if (floatingToolbar != null)
+                    relocateFloatingToolbar();
+            }
+        });
+
    }
 
     protected IInspectorPart findInspectorPartAt(int x, int y) {
@@ -137,7 +216,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
                 return inspector;
         return null;
     }
-    
+
     @Override
     public FigureCanvas getControl() {
         return this;
@@ -177,20 +256,78 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         addInspectorPart(inspectorPart, 0, lastY+5);
     }
 
-    public void addInspectorPart(IInspectorPart inspectorPart, final int x, final int y) {
-        final IFigure inspectorFigure = inspectorPart.getFigure();
+    public void addInspectorPart(final IInspectorPart inspector, int x, int y) {
+        final IFigure inspectorFigure = inspector.getFigure();
         getInspectorsLayer().add(inspectorFigure);
         getInspectorsLayer().setConstraint(inspectorFigure, new Rectangle(x, y, -1, -1));
 
+        // if inspector has SWT parts, add listeners to show floating toolbar when mouse is over them
+        Control control = inspector.getSWTControl();
+        if (control != null)
+            addFloatingToolbarSupportTo(control, inspector);
+
         // register the inspector
-        inspectors.add(inspectorPart);
-        addFloatingControlsSupport(inspectorPart);  //TODO also to its SWT parts!!!
-        inspectorPart.refresh();
+        inspectors.add(inspector);
+        inspector.refresh();
+    }
+
+    protected void addFloatingToolbarSupportTo(Control control, final IInspectorPart inspector) {
+        MouseTrackAdapter listener = new MouseTrackAdapter() {
+            @Override
+            public void mouseEnter(MouseEvent e) {
+                //XXX this is more or less a copypasta of the listener code in the ctor!
+                IInspectorPart inspectorUnderMouse = inspector; // for clarity
+
+                // open floating toolbar when mouse moves over any inspector
+                if (floatingToolbar == null && (e.stateMask&SWT.BUTTON_MASK)==0) {
+                    openFloatingToolbarFor(inspectorUnderMouse);
+                }
+
+                // floating toolbar is "sticky" for one second duration after you move the mouse out of its owner
+                // inspector. When this one second expires, we let another inspector steal the floating toolbar
+                // or just remove it. (This is similar to what e.g. Windows 7 with its desktop gadgets).
+                if (floatingToolbar != null) {
+                    if (inspectorUnderMouse != floatingToolbarOwner) {
+                        startFloatingToolbarStickyTimerIfNotRunning();
+                    }
+                    else {
+                        cancelFloatingToolbarStickyTimer();
+                    }
+                }
+                
+            }
+        };
+
+        addMouseTrackListenerRec(control, listener);
+    }
+
+    protected static void addMouseTrackListenerRec(Control control, MouseTrackListener listener) {
+        control.addMouseTrackListener(listener);
+        if (control instanceof Composite)
+            for (Control child : ((Composite) control).getChildren())
+                addMouseTrackListenerRec(child, listener);
+    }
+
+    protected void startFloatingToolbarStickyTimerIfNotRunning() {
+        if (!isFloatingToolbarStickyTimerActive) {
+            Display.getCurrent().timerExec(1000, floatingToolbarStickyTimer);
+            isFloatingToolbarStickyTimerActive = true;
+        }
+    }
+
+    protected void cancelFloatingToolbarStickyTimer() {
+        if (isFloatingToolbarStickyTimerActive) {
+            Display.getCurrent().timerExec(-1, floatingToolbarStickyTimer);
+            isFloatingToolbarStickyTimerActive = false;
+        }
     }
 
     public void removeInspectorPart(IInspectorPart inspectorPart) {
         System.out.println("removeInspectorPart: " + inspectorPart);
         Assert.isTrue(inspectors.contains(inspectorPart));
+
+        if (floatingToolbar != null && floatingToolbarOwner == inspectorPart)
+            closeFloatingToolbar();
         inspectors.remove(inspectorPart);
         inspectorPart.dispose();
     }
@@ -354,117 +491,8 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         }
     }
 
-    private IInspectorPart floatingControlsOwner = null;
-    private Control floatingControls = null;
-    private Point floatingControlsDisplacement;  // relative to its normal location (= right-aligned just above the inspector)
-    private boolean isRemoveFloatingControlsTimerActive = false;
-    
-    private Runnable removeFloatingControlsTimer = new Runnable() {
-        @Override
-        public void run() {
-            System.out.println("removeFloatingControlsTimer expired");
-            isRemoveFloatingControlsTimerActive = false;
-            if (floatingControls != null && !floatingControls.isDisposed() && !containsMouse(floatingControls))
-                closeFloatingControls();
-        }
-    };
-
-    protected static boolean containsMouse(Control control) {
-        Point mouse = Display.getCurrent().getCursorLocation();
-        return Display.getCurrent().map(control.getParent(), null, control.getBounds()).contains(mouse);
-    }
-    
-    protected void addFloatingControlsSupportTo(Control control, final IInspectorPart inspector) {
-        MouseTrackAdapter listener = new MouseTrackAdapter() { //TODO also: cancel 1s timer!
-            @Override
-            public void mouseEnter(MouseEvent e) {
-                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
-                if (floatingControls == null) {
-                    openFloatingControls(inspector);
-                }
-                if (floatingControls != null) {
-                    if (isRemoveFloatingControlsTimerActive) {
-                        Display.getCurrent().timerExec(-1, removeFloatingControlsTimer); // cancel timer
-                        isRemoveFloatingControlsTimerActive = false;
-                    }
-                }
-            }
-        };
-
-        addMouseTrackListenerRec(control, listener);
-    }
-
-    protected static void addMouseTrackListenerRec(Control control, MouseTrackListener listener) {
-        control.addMouseTrackListener(listener);
-        if (control instanceof Composite)
-            for (Control child : ((Composite) control).getChildren())
-                addMouseTrackListenerRec(child, listener);
-    }
-
-    protected void addFloatingControlsSupport(final IInspectorPart inspector) {
-        final IInspectorFigure figure = inspector.getFigure();
-        
-        addMouseMoveListener(new MouseMoveListener() {
-            @Override
-            public void mouseMove(MouseEvent e) {
-                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
-                
-                // Removing floating controls. Windows 7 does the following with its desktop gadgets:
-                // when user moves at least 10 pixels away from the inspector's bounding box,
-                // plus one second elapses without moving back within inspector bounds.
-                // We do the same, except ignore the 10 pixels distance.
-                org.eclipse.draw2d.geometry.Point mouse = translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
-                
-                if (floatingControls == null && figure.containsPoint(mouse) && (e.stateMask&SWT.BUTTON_MASK)==0) {
-                    //TODO if others have floating controls open, we should only open ours (and close others') with a delay -- otherwise it's a pain to work with overlapping inspectors!!!
-                    openFloatingControls(inspector);
-                }
-                if (floatingControls != null) {
-                    //NOTE: ONCE THE MOUSE ENTERS FLOATINGCONTROLS, WE STOP RECEIVING NOTIFICATIONS SO CANNOT CANCEL THE TIMER!
-                    if (figure.containsPoint(mouse)) {
-                        if (isRemoveFloatingControlsTimerActive) {
-                            Display.getCurrent().timerExec(-1, removeFloatingControlsTimer); // cancel timer
-                            isRemoveFloatingControlsTimerActive = false;
-                        }
-                    }
-                    else {
-                        if (!isRemoveFloatingControlsTimerActive) {
-                            Display.getCurrent().timerExec(1000, removeFloatingControlsTimer); // start timer
-                            isRemoveFloatingControlsTimerActive = true;
-                        }
-                    }
-                }
-            }
-        });
-
-        // need to adjust control's bounds when figure is moved or resized
-        figure.addFigureListener(new FigureListener() {
-            @Override
-            public void figureMoved(IFigure source) {
-                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
-                if (floatingControls != null)
-                    relocateFloatingControls();
-            }
-        });
-
-        // also also when FigureCanvas is scrolled
-        getViewport().addCoordinateListener(new CoordinateListener() {
-            @Override
-            public void coordinateSystemChanged(IFigure source) {
-                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
-                if (floatingControls != null)
-                    relocateFloatingControls();
-            }
-        });
-
-    }
-
-    protected void openFloatingControls(IInspectorPart inspector) {
-        Assert.isTrue(floatingControls == null);
-
-        // close floating controls of all other inspectors
-        if (floatingControls != null)
-            closeFloatingControls();
+    protected void openFloatingToolbarFor(IInspectorPart inspector) {
+        Assert.isTrue(floatingToolbar == null);
 
         Composite panel = new Composite(this, SWT.BORDER);
         panel.setLayout(new FillLayout());
@@ -474,14 +502,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         ToolBarManager manager = new ToolBarManager(toolbar);
 
         inspector.populateFloatingToolbar(manager);
-        
+
         manager.add(new DragHandle(inspector));
 
         CloseAction closeAction = new CloseAction();
         closeAction.setInspectorPart(inspector);
         manager.add(closeAction);
         manager.update(true);
-        
+
         panel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW));
 
         // set the size of the toolbar
@@ -493,54 +521,97 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         // we may need to displace it by some vector compared to its normal location,
         // to ensure it is fully visible (i.e. appears within canvas bounds)
-        Point naturalLoc = computeFloatingControlsNaturalLocation(inspector.getFigure(), panel);
+        Point naturalLoc = computeFloatingToolbarNaturalLocation(inspector.getFigure(), panel);
         Point adjustedLoc = new Point(naturalLoc.x, naturalLoc.y);
-        if (adjustedLoc.x + panel.getSize().x > getSize().x)
-            adjustedLoc.x = getSize().x - panel.getSize().x;
+        if (adjustedLoc.x + panel.getSize().x > getClientArea().width)
+            adjustedLoc.x = getClientArea().width - panel.getSize().x;
         if (adjustedLoc.x < 0)
             adjustedLoc.x = 0;
-        if (adjustedLoc.y + panel.getSize().y > getSize().y)
-            adjustedLoc.y = getSize().y - panel.getSize().y;
+        if (adjustedLoc.y + panel.getSize().y > getClientArea().height)
+            adjustedLoc.y = getClientArea().height - panel.getSize().y;
         if (adjustedLoc.y < 0)
             adjustedLoc.y = 0;
-        floatingControlsDisplacement = new Point(adjustedLoc.x - naturalLoc.x, adjustedLoc.y - naturalLoc.y);
+        floatingToolbarDisplacement = new Point(adjustedLoc.x - naturalLoc.x, adjustedLoc.y - naturalLoc.y);
 
         // created!
-        floatingControls = panel;
-        floatingControlsOwner = inspector;
-        
+        floatingToolbar = panel;
+        floatingToolbarOwner = inspector;
+
         // move it to the correct location
-        relocateFloatingControls();
+        relocateFloatingToolbar();
+
+        // when figure is moved/resized, make the toolbar follow it 
+        inspector.getFigure().addFigureListener(floatingToolbarRelocator);
+
+        // This listener solves the following problem: Zoom buttons on module inspectors' 
+        // floating toolbar could not be clicked repeatedly, because toolbar jumped away
+        // after the first click (due to the inspector being resized). Workaround is to
+        // decouple the toolbar from the inspector while the mouse is over the toolbar.
+        // Luckily, according to the listener the DragHandle is NOT part of the toolbar, 
+        // so dragging by the handle DOES move the toolbar too, as it should.
+        toolbar.addMouseTrackListener(new MouseTrackAdapter() {
+            @Override
+            public void mouseEnter(MouseEvent e) {
+                detachFloatingToolbarFromInspector();
+            }
+            @Override
+            public void mouseExit(MouseEvent e) {
+                reattachFloatingToolbarToInspector();
+            }
+        });
     }
 
-    protected void relocateFloatingControls() {
-        Point naturalLoc = computeFloatingControlsNaturalLocation(floatingControlsOwner.getFigure(), floatingControls);
-        floatingControls.setLocation(naturalLoc.x + floatingControlsDisplacement.x, naturalLoc.y + floatingControlsDisplacement.y);
+    protected void reattachFloatingToolbarToInspector() {
+        Assert.isTrue(floatingToolbar != null);
+        
+        // recompute displacement
+        Point naturalLoc = computeFloatingToolbarNaturalLocation(floatingToolbarOwner.getFigure(), floatingToolbar);
+        Point actualLoc = floatingToolbar.getLocation();
+        floatingToolbarDisplacement = new Point(actualLoc.x - naturalLoc.x, actualLoc.y - naturalLoc.y);
+        
+        floatingToolbarOwner.getFigure().addFigureListener(floatingToolbarRelocator);
     }
 
-    protected Point computeFloatingControlsNaturalLocation(IInspectorFigure inspectorFigure, Control floatingControls) {
-        Rectangle targetBounds = inspectorFigure.getBounds().getCopy();
-        inspectorFigure.translateToAbsolute(targetBounds);
-        Point targetTopRightCorner = new Point(targetBounds.right(), targetBounds.y);
-        Point controlsSize = floatingControls.getSize();
-        return new Point(targetTopRightCorner.x - controlsSize.x, targetTopRightCorner.y - controlsSize.y - 3); // canvas coordinates
+    protected void detachFloatingToolbarFromInspector() {
+        Assert.isTrue(floatingToolbar != null);
+        floatingToolbarOwner.getFigure().removeFigureListener(floatingToolbarRelocator);
+    }
+
+    protected void relocateFloatingToolbar() {
+        Point naturalLoc = computeFloatingToolbarNaturalLocation(floatingToolbarOwner.getFigure(), floatingToolbar);
+        floatingToolbar.setLocation(naturalLoc.x + floatingToolbarDisplacement.x, naturalLoc.y + floatingToolbarDisplacement.y);
+    }
+
+    protected Point computeFloatingToolbarNaturalLocation(IInspectorFigure inspectorFigure, Control floatingToolbar) {
+        Rectangle figureBounds = inspectorFigure.getBounds().getCopy();
+        inspectorFigure.translateToAbsolute(figureBounds);
+        Point toolbarSize = floatingToolbar.getSize();
+        return new Point(figureBounds.right() - toolbarSize.x, figureBounds.y - toolbarSize.y - 3);
+    }
+
+    protected static boolean containsMouse(Control control) {
+        Point mouse = Display.getCurrent().getCursorLocation();
+        return Display.getCurrent().map(control.getParent(), null, control.getBounds()).contains(mouse);
+    }
+
+    public void closeFloatingToolbar() {
+        if (floatingToolbar != null) {
+            floatingToolbar.dispose();
+            floatingToolbar = null;
+            floatingToolbarOwner.getFigure().removeFigureListener(floatingToolbarRelocator);
+            floatingToolbarOwner = null;
+        }
     }
 
     /**
      * Returns null if not displayed.
      */
-    public Control getFloatingControls() {
-        return floatingControls;
+    public Control getFloatingToolbar() {
+        return floatingToolbar;
     }
 
-    public IInspectorPart getFloatingControlsOwner() {
-        return floatingControlsOwner;
-    }
-    
-    public void closeFloatingControls() {
-        floatingControls.dispose();
-        floatingControls = null;
-        floatingControlsOwner = null;
+    public IInspectorPart getFloatingToolbarOwner() {
+        return floatingToolbarOwner;
     }
 
 }
