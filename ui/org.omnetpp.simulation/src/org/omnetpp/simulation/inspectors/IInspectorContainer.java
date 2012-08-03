@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -59,6 +61,27 @@ public interface IInspectorContainer {
 
     /**
      * TODO
+     * note: works in conjunction with IInspectorPart.getDragOperation()
+     */
+    void addMoveResizeSupport(IFigure figure);
+
+    /**
+     * TODO
+     */
+    void removeMoveResizeSupport(IFigure figure);
+    
+    /**
+     * TODO
+     */
+    void addMoveResizeSupport(Control control);
+
+    /**
+     * TODO
+     */
+    void removeMoveResizeSupport(Control control);
+
+    /**
+     * TODO
      */
     org.eclipse.swt.graphics.Point translateAbsoluteFigureCoordinatesToCanvas(int x, int y);
     
@@ -91,4 +114,5 @@ public interface IInspectorContainer {
      * Remove all objects from the selection.
      */
     void deselectAll();
+
 }

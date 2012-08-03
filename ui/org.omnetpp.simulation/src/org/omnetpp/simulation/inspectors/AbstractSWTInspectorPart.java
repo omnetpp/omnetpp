@@ -25,17 +25,12 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
     protected static Cursor arrowCursor;
     protected Control control;
 
-    // Note: this is a transparent Figure. (It is not a good idea to visually mix Figures 
-    // and SWT controls, because SWT controls are always on top so "slicing" can occur 
+    // Note: this is a transparent Figure. (It is not a good idea to visually mix Figures
+    // and SWT controls, because SWT controls are always on top so "slicing" can occur
     // if such inspector overlaps with another). Note: this cannot be a layer because
     // SimulationCanvas.findInspectorPartAt() wouldn't find it!
     public class ContainerFigure extends Figure implements IInspectorFigure {
         public ContainerFigure() {
-        }
-
-        @Override
-        public int getDragOperation(int x, int y) {
-            return 0;  // we do it on the SWT control
         }
 
         @Override
@@ -109,9 +104,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
     @Override
     public void raiseToTop() {
         super.raiseToTop();
-
         control.moveAbove(null);
-//XXX        getFloatingToolbar().moveAbove(control);
     }
 
     @Override
@@ -120,4 +113,5 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         control = null;
         super.dispose();
     }
+   
 }

@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.QueueInspectorFigure;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.model.cObject;
@@ -61,6 +62,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     @Override
     protected IInspectorFigure createFigure() {
         QueueInspectorFigure figure = new QueueInspectorFigure();
+        getContainer().addMoveResizeSupport(figure);
         return figure;
     }
 
@@ -165,5 +167,9 @@ public class QueueInspectorPart extends AbstractInspectorPart {
 
     protected void handleMouseReleased(MouseEvent me) {
     }
-
+    
+    @Override
+    public int getDragOperation(IFigure figure, int x, int y) {
+        return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, figure.getBounds());
+    }
 }

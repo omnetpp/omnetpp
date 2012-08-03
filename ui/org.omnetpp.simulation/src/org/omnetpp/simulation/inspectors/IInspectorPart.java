@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
+import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -54,10 +55,15 @@ public interface IInspectorPart {
     void raiseToTop();
 
     /**
-     * Returns the corresponding figure. Clients are responsible
-     * for inserting the figure into a draw2d canvas.
+     * Returns the inspector's root figure.
      */
     IInspectorFigure getFigure();
+
+    /**
+     * TODO
+     * null unless inspector is an SWT inspector
+     */
+    Control getSWTControl();
 
     /**
      * Returns whether this inspector can be maximized to fill the canvas.
@@ -87,9 +93,23 @@ public interface IInspectorPart {
     void populateFloatingToolbar(ToolBarManager manager);
 
     /**
-     * TODO
-     * null unless inspector is an SWT inspector
+     * If there's a move/resize handle in the given figure at the given
+     * coordinates (figure coordinates), return a binary OR of the appropriate
+     * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise return 0.
+     * For move operation it should set all four.
+     * 
+     * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
      */
-    Control getSWTControl();
+    int getDragOperation(IFigure figure, int x, int y);
+
+    /**
+     * For SWT-based inspectors. If there's a move/resize handle in the given control 
+     * at the given coordinates (control coordinates), return a binary OR of the appropriate
+     * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise return 0.
+     * For move operation it should set all four.
+     * 
+     * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
+     */
+    int getDragOperation(Control control, int x, int y);
 
 }

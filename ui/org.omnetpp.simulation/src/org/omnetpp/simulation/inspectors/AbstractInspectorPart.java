@@ -4,9 +4,13 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.draw2d.IFigure;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.model.cObject;
 
@@ -25,15 +29,9 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         this.inspectorContainer = parent;
 
         figure = createFigure();
-        addMoveResizeSupport();
     }
 
     protected abstract IInspectorFigure createFigure();
-
-    protected void addMoveResizeSupport() {
-        // add move/resize/selection support
-        new InspectorMouseListener(this); //XXX revise this listener!
-    }
 
     @Override
     @SuppressWarnings("rawtypes")
@@ -123,6 +121,19 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
             figure.setSelectionBorder(isSelected);
     }
 
+    @Override
+    public int getDragOperation(IFigure figure, int x, int y) {
+        // a more-or-less sensible default, to be refined in subclasses
+        return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, figure.getBounds());
+    }
+    
+    @Override
+    public int getDragOperation(Control control, int x, int y) {
+        // a more-or-less sensible default, to be refined in subclasses that are SWT inspectors
+        Point size = control.getSize();
+        return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
+    }
+    
     @Override
     public String toString() {
         if (object.isDisposed())

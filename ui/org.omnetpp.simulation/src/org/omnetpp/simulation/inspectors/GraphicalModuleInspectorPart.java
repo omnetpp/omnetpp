@@ -133,11 +133,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         public InspectorFigure() {
             setForegroundColor(ColorFactory.GREY70);
         }
-        
-        @Override
-        public int getDragOperation(int x, int y) {
-            return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds()); //FIXME disable this!!! dragging should CROP! but it's not permitted to enlarge the inspector!!!!
-        }
 
         @Override
         public void setSelectionBorder(boolean isSelected) {
@@ -224,9 +219,21 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             }
         });
         
+        getContainer().addMoveResizeSupport(root); // for resize
+        getContainer().addMoveResizeSupport(labelFigure);  // for drag
+
         return root;
     }
 
+    @Override
+    public int getDragOperation(IFigure figure, int x, int y) {
+        if (figure == this.figure)
+            return FigureUtils.getBorderResizeDragOperation(x, y, figure.getBounds());
+        if (figure == labelFigure)
+            return FigureUtils.getMoveOnlyDragOperation(x, y, figure.getBounds());
+        return 0;
+    }
+    
     public CompoundModuleFigure getCompoundModuleFigure() {
         return compoundModuleFigure;
     }

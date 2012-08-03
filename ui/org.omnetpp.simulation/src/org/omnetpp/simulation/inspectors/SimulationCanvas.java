@@ -69,6 +69,9 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
     protected IStructuredSelection currentSelection = new StructuredSelection();
 
+    // support for moving/resizing inspector by the border (or by arbitrary area of any child figure)
+    MoveResizeSupport moveResizeSupport = new MoveResizeSupport(this);
+    
     // floating toolbar
     private IInspectorPart floatingToolbarOwner = null;
     private Control floatingToolbar = null;
@@ -84,7 +87,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             if (floatingToolbar != null && !floatingToolbar.isDisposed() && !containsMouse(floatingToolbar)) {
                 Point e = Display.getCurrent().map(null, SimulationCanvas.this, Display.getCurrent().getCursorLocation());
                 org.eclipse.draw2d.geometry.Point mouse = translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
-                IInspectorPart inspectorUnderMouse = findInspectorPartAt(mouse.x, mouse.y);
+                IInspectorPart inspectorUnderMouse = findInspectorAt(mouse.x, mouse.y);
 
                 System.out.println("sticky timer expired, under mouse: " + inspectorUnderMouse);
                 if (inspectorUnderMouse == null) {
@@ -156,7 +159,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             public void menuDetected(MenuDetectEvent e) {
                 contextMenuManager.removeAll();
                 Point p = toControl(e.x, e.y);
-                IInspectorPart inspectorPart = findInspectorPartAt(p.x, p.y);
+                IInspectorPart inspectorPart = findInspectorAt(p.x, p.y);
                 if (inspectorPart != null)
                     inspectorPart.populateContextMenu(contextMenuManager, p);
             }
@@ -170,7 +173,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             public void mouseMove(MouseEvent e) {
                 org.eclipse.draw2d.geometry.Point mouse = translateCanvasToAbsoluteFigureCoordinates(e.x, e.y);
 
-                IInspectorPart inspectorUnderMouse = findInspectorPartAt(mouse.x, mouse.y);
+                IInspectorPart inspectorUnderMouse = findInspectorAt(mouse.x, mouse.y);
 
                 // open floating toolbar when mouse moves over any inspector
                 if (floatingToolbar == null && inspectorUnderMouse != null && (e.stateMask&SWT.BUTTON_MASK)==0) {
@@ -202,21 +205,52 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
                     relocateFloatingToolbar();
             }
         });
+    }
 
-   }
 
-    protected IInspectorPart findInspectorPartAt(int x, int y) {
-        IFigure target = getInspectorsLayer().findFigureAt(x, y);
-        while (target != null && !(target instanceof IInspectorFigure))
-            target = target.getParent();
-        if (target == null)
+    public void addMoveResizeSupport(IFigure figure) {
+        moveResizeSupport.adopt(figure);
+    }
+
+    public void removeMoveResizeSupport(IFigure figure) {
+        moveResizeSupport.forget(figure);
+    }
+
+    public void addMoveResizeSupport(Control control) {
+        moveResizeSupport.adopt(control);
+    }
+
+    public void removeMoveResizeSupport(Control control) {
+        moveResizeSupport.forget(control);
+    }
+
+    public IInspectorPart findInspectorAt(int x, int y) {
+        IFigure figure = getInspectorsLayer().findFigureAt(x, y);
+        return findInspectorFor(figure);
+    }
+
+    public IInspectorPart findInspectorFor(IFigure figure) {
+        // inspectors' root figure must be IInspectorFigure, and only that
+        while (figure != null && !(figure instanceof IInspectorFigure))
+            figure = figure.getParent();
+        if (figure == null)
             return null;
         for (IInspectorPart inspector : getInspectors())
-            if (inspector.getFigure() == target)
+            if (inspector.getFigure() == figure)
                 return inspector;
         return null;
     }
 
+    public IInspectorPart findInspectorFor(Control control) {
+        while (control != null && control != this) {
+            for (IInspectorPart inspector : getInspectors())
+                if (inspector.getSWTControl() == control)
+                    return inspector;
+            control = control.getParent();
+        }
+        return null;
+    }
+    
     @Override
     public FigureCanvas getControl() {
         return this;
@@ -613,5 +647,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     public IInspectorPart getFloatingToolbarOwner() {
         return floatingToolbarOwner;
     }
+
 
 }

@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
@@ -15,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
@@ -87,6 +89,9 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
         frame.layout();
 
+        getContainer().addMoveResizeSupport(frame);
+        getContainer().addMoveResizeSupport(label);
+        
         return frame;
     }
 
@@ -156,5 +161,15 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
             viewer.refresh();
         }
+    }
+    
+    @Override
+    public int getDragOperation(Control control, int x, int y) {
+        Point size = control.getSize();
+        if (control == getSWTControl())
+            return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
+        if (control == label)
+            return FigureUtils.getMoveOnlyDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
+        return 0;
     }
 }

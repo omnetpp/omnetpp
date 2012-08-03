@@ -45,11 +45,6 @@ public class InfoTextInspectorFigure extends RoundedRectangle implements IInspec
     }
 
     @Override
-    public int getDragOperation(int x, int y) {
-        return FigureUtils.getBorderMoveResizeDragOperation(x, y, getBounds());
-    }
-
-    @Override
     public void setSelectionBorder(boolean isSelected) {
         //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
         setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
