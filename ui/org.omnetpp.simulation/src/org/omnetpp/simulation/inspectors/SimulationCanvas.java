@@ -17,7 +17,6 @@ import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.util.SafeRunnable;
@@ -30,7 +29,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.MouseTrackAdapter;
@@ -43,7 +41,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
@@ -381,7 +378,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         MouseTrackAdapter listener = new MouseTrackAdapter() { //TODO also: cancel 1s timer!
             @Override
             public void mouseEnter(MouseEvent e) {
-                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 if (floatingControls == null) {
                     openFloatingControls(inspector);
                 }
@@ -410,7 +407,8 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         addMouseMoveListener(new MouseMoveListener() {
             @Override
             public void mouseMove(MouseEvent e) {
-                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                
                 // Removing floating controls. Windows 7 does the following with its desktop gadgets:
                 // when user moves at least 10 pixels away from the inspector's bounding box,
                 // plus one second elapses without moving back within inspector bounds.
@@ -443,7 +441,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         figure.addFigureListener(new FigureListener() {
             @Override
             public void figureMoved(IFigure source) {
-                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 if (floatingControls != null)
                     relocateFloatingControls();
             }
@@ -453,17 +451,13 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         getViewport().addCoordinateListener(new CoordinateListener() {
             @Override
             public void coordinateSystemChanged(IFigure source) {
-                if (floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
+                if (floatingControls != null && floatingControlsOwner.isDisposed()) return; //FIXME rather: remove listeners in dispose!!!!
                 if (floatingControls != null)
                     relocateFloatingControls();
             }
         });
 
     }
-
-    private boolean dragInProgress = false;
-    private int moveOffsetX, moveOffsetY;
-    private static Cursor dragCursor = new Cursor(Display.getCurrent(), SWT.CURSOR_HAND);
 
     protected void openFloatingControls(IInspectorPart inspector) {
         Assert.isTrue(floatingControls == null);
@@ -481,23 +475,12 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         inspector.populateFloatingToolbar(manager);
         
-        final Label[] dragHandleRef = new Label[1];
-        manager.add(new ControlContribution("") {
-            @Override
-            protected Control createControl(Composite parent) {
-                Label dragHandle = new Label(parent, SWT.NONE);
-                dragHandle.setImage(SimulationPlugin.getCachedImage("icons/etool16/draghandle.png")); //XXX factor out image
-                dragHandle.setToolTipText("Drag handle");
-                dragHandleRef[0] = dragHandle;
-                return dragHandle;
-            }
-        });
+        manager.add(new DragHandle(inspector));
 
         CloseAction closeAction = new CloseAction();
         closeAction.setInspectorPart(inspector);
         manager.add(closeAction);
         manager.update(true);
-        final Label dragHandle = dragHandleRef[0];
         
         panel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW));
 
@@ -528,55 +511,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         
         // move it to the correct location
         relocateFloatingControls();
-
-        // configure drag handle (allows inspector to be moved around with the mouse)
-        dragHandle.addMouseListener(new MouseAdapter() {
-            public void mouseDown(MouseEvent e) {
-                dragInProgress = true;
-                Point p = Display.getCurrent().getCursorLocation();
-                org.eclipse.draw2d.geometry.Point pp = translateCanvasToAbsoluteFigureCoordinates(p.x, p.y); // well, p is screen coord not canvas, but here it only affects moveOffset
-                Rectangle figureBounds = floatingControlsOwner.getFigure().getBounds();
-                moveOffsetX = figureBounds.x - pp.x;
-                moveOffsetY = figureBounds.y - pp.y;
-                dragHandle.setCursor(dragCursor);
-                floatingControlsOwner.raiseToTop();
-                
-                // By default draw2d updates canvas bounds continually while dragging, which
-                // results in a weird effect: when dragging up an inspector from near the bottom 
-                // of the canvas and the canvas shrinks as a result, the mouse overtakes the 
-                // drag handle and other interesting things happen. The workaround is to disable
-                // updating the canvas bounds while dragging; this can be achieved by setting
-                // preferredSize.
-                IFigure contents = getContents();
-                contents.setPreferredSize(contents.getPreferredSize());
-            }
-            public void mouseUp(MouseEvent e) {
-                dragInProgress = false;
-                dragHandle.setCursor(null);
-
-                // restore no preferredSize
-                IFigure contents = getContents();
-                contents.setPreferredSize(null);
-            }
-        });
-        dragHandle.addMouseMoveListener(new MouseMoveListener() {
-            public void mouseMove(MouseEvent e) {
-                if (dragInProgress && (e.stateMask&SWT.BUTTON_MASK) != SWT.BUTTON1)
-                    dragInProgress = false;
-                if (dragInProgress) {
-                    Point p = Display.getCurrent().getCursorLocation();
-                    org.eclipse.draw2d.geometry.Point pp = translateCanvasToAbsoluteFigureCoordinates(p.x, p.y); // well, p is screen coord not canvas, but here it only affects moveOffset  
-                    IInspectorFigure figure = floatingControlsOwner.getFigure();
-                    Rectangle r = figure.getBounds().getCopy();
-                    r.setLocation(pp.x + moveOffsetX, pp.y + moveOffsetY);
-                    
-                    // don't allow inspectors to stick out on the left or top, because it can be difficult or impossible to bring them back
-                    if (r.x < 0) r.x = 0;
-                    if (r.y < 0) r.y = 0;
-                    figure.getParent().setConstraint(figure, r);
-                }
-            }
-        });
     }
 
     protected void relocateFloatingControls() {

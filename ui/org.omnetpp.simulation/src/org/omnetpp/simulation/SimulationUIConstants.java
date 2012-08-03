@@ -17,6 +17,7 @@ public class SimulationUIConstants {
     public static final String IMG_TOOL_CONFIG = DIR + "config.png";
     public static final String IMG_TOOL_COPY = DIR + "copy.png";
     public static final String IMG_TOOL_CUT = DIR + "cut.png";
+    public static final String IMG_TOOL_DRAGHANDLE = DIR + "draghandle.png";
     public static final String IMG_TOOL_ENLARGEICONS = DIR + "enlargeicons.png";
     public static final String IMG_TOOL_REDUCEICONS = DIR + "reduceicons.png";
     public static final String IMG_TOOL_EXPRESS = DIR + "express.png";
