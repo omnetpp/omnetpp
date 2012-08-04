@@ -1,12 +1,14 @@
 package org.omnetpp.simulation.editors;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -18,9 +20,13 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.simulation.SimulationEditorInput;
-import org.omnetpp.common.ui.FigureCanvas;
 import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.common.util.BinarySearchUtils.BoundKind;
+import org.omnetpp.eventlog.engine.EventLog;
+import org.omnetpp.eventlog.engine.FileReader;
+import org.omnetpp.eventlog.engine.IEventLog;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
@@ -46,8 +52,8 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
     
     protected SimulationController simulationController;
 
-    protected ScrolledComposite sc;
-    protected FigureCanvas canvas;
+//    protected ScrolledComposite sc;
+    protected EventLogAnimationCanvas animationCanvas;
 
     private Label statusLabel;
 
@@ -59,7 +65,7 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         setSite(site);
         setInput(input);
         setPartName(input.getName());
-        
+
         SimulationEditorInput simInput = (SimulationEditorInput)input;
         simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
         simulationController.setSimulationCallback(this);
@@ -76,7 +82,7 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         Composite controlArea = new Composite(parent, SWT.BORDER);
         controlArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         controlArea.setLayout(new GridLayout(4, false));
-        
+
         ToolBar toolbar1 = new ToolBar(controlArea, SWT.NONE);
         new ActionContributionItem(new SetupIniConfigAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupNetworkAction(simulationController)).fill(toolbar1, -1);
@@ -94,28 +100,46 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         statusLabel = new Label(controlArea, SWT.NONE);
         statusLabel.setText("n/a");
         statusLabel.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false));
-        
-        sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
-        sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+
+//        sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+//        sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // create canvas
-        canvas = new FigureCanvas(sc, SWT.DOUBLE_BUFFERED);
-        sc.setContent(canvas);
-        canvas.setBackground(new Color(null, 235, 235, 235));
+        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
+//        sc.setContent(animationCanvas);
+        animationCanvas.setBackground(new Color(null, 235, 235, 235));
+        //animationCanvas.setBorder(new LineBorder(ColorFactory.RED));
+        animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        animationCanvas.setWorkbenchPart(this);
 
         // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
             @Override
-            public void simulationStateChanged(SimulationController controller) {
+            public void simulationStateChanged(final SimulationController controller) {
                 Display.getDefault().asyncExec(new Runnable() {
                     @Override
                     public void run() {
                         updateStatusDisplay();
+                        setEventlogFileName(controller.getEventlogFile());
+                        AnimationController animationController = animationCanvas.getAnimationController();
+                        if (animationController != null) {
+//                            long eventNumber = animationController.getCurrentEventNumber();
+                            AnimationPosition animationPosition = animationController.getCurrentAnimationPosition();
+                            animationController.clearInternalState();
+                            animationCanvas.getInput().synchronize(animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges());
+//                            animationController.gotoEndAnimationPosition();
+//                            System.out.println(animationController.getEndAnimationPosition());
+//                            animationController.gotoEventNumber(eventNumber);
+                            animationController.gotoAnimationPosition(animationPosition);
+                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getSimulationTime(), BoundKind.UPPER_BOUND);
+                            System.out.println("FROM: " + animationPosition + " STOP: " + stopAnimationPosition);
+                            animationController.startAnimation(true, stopAnimationPosition);
+                        }
                     }
                 });
             }
         });
-        
+
         // obtain initial status query
         Display.getDefault().asyncExec(new Runnable() {
             @Override
@@ -128,7 +152,26 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
                 }
             }
         });
-        
+
+    }
+
+    private void setEventlogFileName(String fileName) {
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(new Path(fileName));
+        if (file != null && file.isAccessible() && (animationCanvas.getInput() == null || !animationCanvas.getInput().getFile().equals(file))) {
+            IEventLog eventLog = new EventLog(new FileReader(file.getLocation().toOSString(), false));
+            EventLogInput eventLogInput = new EventLogInput(file, eventLog);
+            EventLogAnimationPrimitiveProvider animationPrimitiveProvider = new EventLogAnimationPrimitiveProvider(eventLogInput, new EventLogAnimationParameters());
+            AnimationController animationController = new AnimationController(new EventLogAnimationCoordinateSystem(eventLogInput ), animationPrimitiveProvider);
+
+            animationCanvas.setAnimationController(animationController);
+            animationCanvas.setInput(eventLogInput);
+            animationCanvas.setAnimationContributor(EventLogAnimationContributor.getDefault());
+            animationController.setAnimationCanvas(animationCanvas);
+            animationPrimitiveProvider.setAnimationController(animationController);
+
+            animationController.clearInternalState();
+            animationController.gotoInitialAnimationPosition();
+        }
     }
 
     @Override
@@ -144,7 +187,7 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
 
     @Override
     public void setFocus() {
-        canvas.setFocus();
+        animationCanvas.setFocus();
     }
 
     public SimulationController getSimulationController() {
@@ -157,11 +200,11 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         status += "   " + controller.getState().name();
 
         if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
-            status +=  
-            "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() + 
-            "   (" + controller.getNetworkName() + ")" + 
+            status +=
+            "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() +
+            "   (" + controller.getNetworkName() + ")" +
             "  -  Event #" + controller.getEventNumber() +
-            "   t=" + controller.getSimulationTime() + "s"; 
+            "   t=" + controller.getSimulationTime() + "s";
         statusLabel.setText(status);
     }
 
