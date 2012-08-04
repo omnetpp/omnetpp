@@ -26,17 +26,18 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.animation.controller.AnimationController;
-import org.omnetpp.animation.controller.AnimationPosition;
+import org.omnetpp.animation.controller.BlankAnimationCoordinateSystem;
+import org.omnetpp.animation.editors.AnimationContributorBase;
 import org.omnetpp.animation.eventlog.controller.EventLogAnimationCoordinateSystem;
-import org.omnetpp.animation.eventlog.editors.EventLogAnimationContributor;
 import org.omnetpp.animation.eventlog.providers.EventLogAnimationPrimitiveProvider;
 import org.omnetpp.animation.eventlog.widgets.EventLogAnimationCanvas;
 import org.omnetpp.animation.eventlog.widgets.EventLogAnimationParameters;
+import org.omnetpp.animation.providers.EmptyAnimationPrimitiveProvider;
+import org.omnetpp.animation.widgets.AnimationCanvas;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.SelectionProvider;
-import org.omnetpp.common.util.BinarySearchUtils.BoundKind;
 import org.omnetpp.eventlog.engine.EventLog;
 import org.omnetpp.eventlog.engine.FileReader;
 import org.omnetpp.eventlog.engine.IEventLog;
@@ -132,16 +133,21 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
                 
         tabFolder.setSelection(simulationTab);
         
-//        sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
-//        sc.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-
         // create canvas
         animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
-//        sc.setContent(animationCanvas);
         animationCanvas.setBackground(new Color(null, 235, 235, 235));
-        //animationCanvas.setBorder(new LineBorder(ColorFactory.RED));
         animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         animationCanvas.setWorkbenchPart(this);
+
+        AnimationController animationController = new AnimationController(new BlankAnimationCoordinateSystem(), new EmptyAnimationPrimitiveProvider());
+        animationCanvas.setAnimationController(animationController);
+        animationController.setAnimationCanvas(animationCanvas);
+
+        // animationCanvas.setInput(eventLogInput);
+
+        AnimationContributorBase contributor = (AnimationContributorBase) getEditorSite().getActionBarContributor();
+        animationCanvas.setAnimationContributor(contributor);
+
 
         // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
@@ -152,20 +158,21 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
                     public void run() {
                         updateStatusDisplay();
                         setEventlogFileName(controller.getEventlogFile());
-                        AnimationController animationController = animationCanvas.getAnimationController();
-                        if (animationController != null) {
+//                        AnimationController animationController = animationCanvas.getAnimationController();
+//                        if (animationController != null) {
 //                            long eventNumber = animationController.getCurrentEventNumber();
-                            AnimationPosition animationPosition = animationController.getCurrentAnimationPosition();
-                            animationController.clearInternalState();
-                            animationCanvas.getInput().synchronize(animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges());
+//                            AnimationPosition animationPosition = animationController.getCurrentAnimationPosition();
+//                            animationController.clearInternalState();
+//                            if (animationCanvas.getInput() != null)
+//                                animationCanvas.getInput().synchronize(animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges());
 //                            animationController.gotoEndAnimationPosition();
 //                            System.out.println(animationController.getEndAnimationPosition());
 //                            animationController.gotoEventNumber(eventNumber);
-                            animationController.gotoAnimationPosition(animationPosition);
-                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getSimulationTime(), BoundKind.UPPER_BOUND);
-                            System.out.println("FROM: " + animationPosition + " STOP: " + stopAnimationPosition);
-                            animationController.startAnimation(true, stopAnimationPosition);
-                        }
+//                            animationController.gotoAnimationPosition(animationPosition);
+//                            AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getSimulationTime(), BoundKind.UPPER_BOUND);
+//                            System.out.println("FROM: " + animationPosition + " STOP: " + stopAnimationPosition);
+//                            animationController.startAnimation(true, stopAnimationPosition);
+//                        }
                     }
                 });
             }
@@ -193,16 +200,16 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
             IEventLog eventLog = new EventLog(new FileReader(file.getLocation().toOSString(), false));
             EventLogInput eventLogInput = new EventLogInput(file, eventLog);
             EventLogAnimationPrimitiveProvider animationPrimitiveProvider = new EventLogAnimationPrimitiveProvider(eventLogInput, new EventLogAnimationParameters());
-            AnimationController animationController = new AnimationController(new EventLogAnimationCoordinateSystem(eventLogInput ), animationPrimitiveProvider);
 
-            animationCanvas.setAnimationController(animationController);
-            animationCanvas.setInput(eventLogInput);
-            animationCanvas.setAnimationContributor(EventLogAnimationContributor.getDefault());
-            animationController.setAnimationCanvas(animationCanvas);
-            animationPrimitiveProvider.setAnimationController(animationController);
+            AnimationController animationController = animationCanvas.getAnimationController();
+            
+            animationController.setProviders(new EventLogAnimationCoordinateSystem(eventLogInput), animationPrimitiveProvider);
+            animationPrimitiveProvider.setAnimationController(animationController); //TODO animationController.setProviders() should already do that
 
-            animationController.clearInternalState();
-            animationController.gotoInitialAnimationPosition();
+            animationCanvas.setInput(eventLogInput);  //TODO should not be necessary (canvas should not know about input)
+
+            //animationController.gotoInitialAnimationPosition();
+//            animationController.gotoAnimationPosition(new AnimationPosition(0L, BigDecimal.getZero(), 0.0, 0.0));
         }
     }
     
@@ -230,6 +237,10 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
 
     public SimulationController getSimulationController() {
         return simulationController;
+    }
+
+    public AnimationCanvas getAnimationCanvas() {
+        return animationCanvas;
     }
 
     protected void updateStatusDisplay() {
@@ -283,5 +294,6 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
     public boolean isSaveAsAllowed() {
         return false;
     }
+
 
 }

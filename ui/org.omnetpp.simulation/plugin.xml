@@ -5,11 +5,12 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            name="Simulation"
+            class="org.omnetpp.simulation.editors.SimulationEditor"
+            contributorClass="org.omnetpp.simulation.editors.SimulationContributor"
             extensions="sim"
             icon="icons/sample.gif"
-            class="org.omnetpp.simulation.editors.SimulationEditor"
-            id="org.omnetpp.simulation.editors.SimulationEditor">
+            id="org.omnetpp.simulation.editors.SimulationEditor"
+            name="Simulation">
       </editor>
    </extension>
 
