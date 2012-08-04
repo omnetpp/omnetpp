@@ -36,6 +36,8 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.animation.controller.AnimationPlaybackController;
+import org.omnetpp.animation.controller.AnimationStateAdapter;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
@@ -83,6 +85,7 @@ public class SimulationController {
 
     private ISimulationCallback simulationCallback;
     private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
+    private AnimationPlaybackController animationPlaybackController; //TODO get rid of this reference in this class if possible
 
     // simulation status (as returned by the GET "/sim/status" request)
     private String hostName;
@@ -170,6 +173,16 @@ public class SimulationController {
 
     public ISimulationCallback getSimulationCallback() {
         return simulationCallback;
+    }
+    
+    public void setAnimationPlaybackController(AnimationPlaybackController animationPlaybackController) {
+        this.animationPlaybackController = animationPlaybackController;
+        this.animationPlaybackController.getAnimationController().addAnimationListener(new AnimationStateAdapter() {
+            @Override
+            public void animationStopped() {
+                SimulationController.this.animationStopped();
+            }
+        });
     }
 
     public void addSimulationStateListener(ISimulationStateListener listener) {
@@ -347,6 +360,7 @@ public class SimulationController {
 
             doLoadObjects(cachedObjects.keySet());
 
+            System.out.println("refreshStatus notifyListeners() follows:");
             notifyListeners();
 
             // carry out action requested by the simulation
@@ -522,14 +536,35 @@ public class SimulationController {
     public void step() throws IOException {
         Assert.isTrue(state == SimState.READY);
         if (currentRunMode == RunMode.NOTRUNNING) {
+            animationPlaybackController.jumpToEnd();
+            
             currentRunMode = RunMode.STEP;
             notifyListeners(); // because currentRunMode has changed
             getPageContent(urlBase + "sim/step");
-            currentRunMode = RunMode.NOTRUNNING;
             refreshStatus();
+            
+            // animate it
+            animationPlaybackController.play();
+            // Note: currentRunMode = RunMode.NOTRUNNING will be done in animationStopped()!
         }
         else {
             stop(); // if already running, just stop it
+        }
+    }
+
+    protected void animationStopped() {
+        if (currentRunMode == RunMode.STEP) {
+            currentRunMode = RunMode.NOTRUNNING;
+            notifyListeners();
+        }
+        else if (currentRunMode == RunMode.NORMAL) {
+            try {
+                doRun();
+            }
+            catch (Exception e) {
+                MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", "An error occurred: " + e.getMessage());
+                SimulationPlugin.logError("Error running simulation", e);
+            }
         }
     }
 
@@ -553,6 +588,8 @@ public class SimulationController {
         runUntilSimTime = simTime;  //TODO if time/event already passed, don't do anything
         runUntilEventNumber = eventNumber;
 
+        animationPlaybackController.jumpToEnd();
+        
         if (currentRunMode == RunMode.NOTRUNNING) {
             Assert.isTrue(state == SimState.READY);
             stopRequested = false;
@@ -596,7 +633,16 @@ public class SimulationController {
             @Override
             public void run() {
                 try {
-                    doRun();
+                    if (currentRunMode == RunMode.FAST || currentRunMode == RunMode.EXPRESS) {
+                        animationPlaybackController.stop();  // in case it was running
+                        animationPlaybackController.jumpToEnd(); // show current state on animation canvas
+                        doRun();
+                    }
+                    else if (currentRunMode == RunMode.NORMAL) {
+                        // animate it
+                        animationPlaybackController.play();
+                        // Note: next doRun() will be called from animationStopped()!
+                    }
                 }
                 catch (IOException e) {
                     MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", "An error occurred: " + e.getMessage());
@@ -631,7 +677,7 @@ public class SimulationController {
 
         // parse
         Object jsonTree = new JSONReader().read(response);
-        System.out.println("  got: " + jsonTree.toString());
+//        System.out.println("  got: " + jsonTree.toString());
         return jsonTree;
     }
 

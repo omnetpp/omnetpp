@@ -24,13 +24,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.animation.controller.AnimationController;
+import org.omnetpp.animation.controller.AnimationPlaybackController;
 import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.controller.BlankAnimationCoordinateSystem;
+import org.omnetpp.animation.controller.IAnimationPlaybackStateListener;
 import org.omnetpp.animation.editors.IAnimationCanvasProvider;
 import org.omnetpp.animation.eventlog.controller.EventLogAnimationCoordinateSystem;
 import org.omnetpp.animation.eventlog.providers.EventLogAnimationPrimitiveProvider;
@@ -184,35 +187,25 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         new ActionContributionItem(contributor.stepForwardAction).fill(animToolbar1, -1);
         new ActionContributionItem(contributor.gotoEndAction).fill(animToolbar1, -1);
         contributor.separatorAction.fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.decreaseAnimationSpeedAction).fill(animToolbar1, -1);
-        new ActionContributionItem(contributor.increaseAnimationSpeedAction).fill(animToolbar1, -1);
         contributor.separatorAction.fill(animToolbar1, -1);
         new ActionContributionItem(contributor.animationTimeModeAction).fill(animToolbar1, -1);
         contributor.separatorAction.fill(animToolbar1, -1);
         new ActionContributionItem(contributor.refreshAction).fill(animToolbar1, -1);
 
-//        AnimationSpeedControl animationSpeedControl = new AnimationSpeedControl(animationToolbars, SWT.HORIZONTAL);
-//        GridData g = new GridData(SWT.FILL, SWT.FILL, false, false);
-//        g.heightHint = 20; g.widthHint = 300;
-//        animationSpeedControl.getScale().setLayoutData(g);
+        contributor.separatorAction.fill(animToolbar1, -1);
 
-//        new Lever(animationToolbars, SWT.NONE);
-
-        AnimationLever animationLever = new AnimationLever(animationToolbars, SWT.NONE);
-        animationLever.getLever().setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+        new ActionContributionItem(contributor.decreasePlaybackSpeedAction).fill(animToolbar1, -1);
+        final AnimationLever animationLever = new AnimationLever(animToolbar1, SWT.NONE);
+        ToolItem ti = new ToolItem(animToolbar1, SWT.SEPARATOR, animToolbar1.getItemCount());
+        ti.setControl(animationLever.getLever());
+        ti.setWidth(animationLever.getLever().computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+        new ActionContributionItem(contributor.increasePlaybackSpeedAction).fill(animToolbar1, -1);
 
         AnimationStatus animationStatus = new AnimationStatus(animationToolbars, SWT.NONE);
         animationStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         AnimationPositionControl animationPositionControl = new AnimationPositionControl(animationRibbon, SWT.NONE);
         animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-//        AnimationTimeline animationTimeline = new AnimationTimeline(animationRibbon, SWT.NONE);
-//        animationTimeline.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
-
-//        ToolBar animPosition = new ToolBar(animationRibbon, SWT.NONE);
-//        contributor.animationPositionContribution.fill(animPosition, animPosition.getItemCount());
-//        new ActionContributionItem(contributor.animationPositionModeAction).fill(animPosition, -1);
 
         // create canvas
         animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
@@ -271,48 +264,52 @@ public class SimulationEditor extends EditorPart implements IAnimationCanvasProv
         animationCanvas.setAnimationController(animationController);
         animationController.setAnimationCanvas(animationCanvas);
 
-//        animationSpeedControl.setAnimationController(animationController);
-        animationLever.setAnimationController(animationController);
+        final AnimationPlaybackController animationPlaybackController = new AnimationPlaybackController(animationController);
+        animationCanvas.setAnimationPlaybackController(animationPlaybackController);
+        simulationController.setAnimationPlaybackController(animationPlaybackController);
+
+        animationLever.setAnimationPlaybackController(animationPlaybackController);
         animationStatus.setAnimationController(animationController);
         animationPositionControl.setAnimationController(animationController);
 
         // animationCanvas.setInput(eventLogInput);
-
+        
         animationCanvas.setAnimationContributor(contributor);
 
+        animationPlaybackController.addPlaybackStateListener(new IAnimationPlaybackStateListener() {
+            @Override
+            public void playbackStateChanged(AnimationPlaybackController controller) {
+                animationLever.setSecondaryAnimationSpeed(animationPlaybackController.getPlaybackSpeed());
+            }
+        });
+        
         getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
 
         // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
             @Override
             public void simulationStateChanged(final SimulationController controller) {
-                Display.getDefault().asyncExec(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (controller.getEventlogFile() != null)
-                            setEventlogFileName(controller.getEventlogFile());
-                        if (animationCanvas.getInput() != null) {
-                            AnimationController animationController = animationCanvas.getAnimationController();
-                            int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
-                            AnimationPosition currentAnimationPosition = animationController.getCurrentAnimationPosition();
-                            // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
-                            if (currentAnimationPosition.getSimulationTime() != null)
-                                currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
-                            animationController.clearInternalState();
-                            animationCanvas.getInput().synchronize(fileChange);
-                            if (currentAnimationPosition.isCompletelySpecified()) {
-                                AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
-                                animationController.gotoAnimationPosition(currentAnimationPosition);
-                                animationController.startAnimation(true, stopAnimationPosition);
-                            }
-                            else {
-                                animationController.gotoInitialAnimationPosition();
-                                animationController.setLowerBoundAnimationPosition(animationController.getCurrentAnimationPosition());
-                            }
-                        }
-                        updateStatusDisplay();
+                if (controller.getEventlogFile() != null)
+                    setEventlogFileName(controller.getEventlogFile());
+                if (animationCanvas.getInput() != null) {
+                    AnimationController animationController = animationCanvas.getAnimationController();
+                    int fileChange = animationCanvas.getInput().getEventLog().getFileReader().checkFileForChanges();
+                    System.out.println("fileChange: " + fileChange);
+                    AnimationPosition currentAnimationPosition = animationController.getCurrentAnimationPosition();
+                    // NOTE: we need to copy the simulation time BigDecimal to avoid dangling pointers after synchronize
+                    if (currentAnimationPosition.getSimulationTime() != null)
+                        currentAnimationPosition.setSimulationTime(new BigDecimal(currentAnimationPosition.getSimulationTime()));
+                    animationController.clearInternalState();
+                    animationCanvas.getInput().synchronize(fileChange);
+                    if (currentAnimationPosition.isCompletelySpecified()) {
+                        AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
+                        animationController.gotoAnimationPosition(currentAnimationPosition);
+                        animationController.startAnimation(true, stopAnimationPosition);
                     }
-                });
+                    else
+                        animationController.gotoInitialAnimationPosition();
+                }
+                updateStatusDisplay();
             }
         });
 
