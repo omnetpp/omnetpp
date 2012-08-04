@@ -47,9 +47,7 @@ import org.omnetpp.simulation.SimulationPlugin;
  */
 // TODO errors in the simulation should be turned into SimulationException thrown from these methods?
 // TODO cmdenv: implement "runUntil" parameter "wallclocktimelimit", to be used with Express (or Fast too)
-// TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
 // TODO finish the "displayerror" and "askparameter" stuff
-// TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
 public class SimulationController {
     // root object IDs
     public static final String ROOTOBJ_SIMULATION = "simulation";
@@ -81,6 +79,7 @@ public class SimulationController {
 
     private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
     private IJobChangeListener jobChangeListener;
+    private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
 
     private ISimulationCallback simulationCallback;
     private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
@@ -92,8 +91,10 @@ public class SimulationController {
     private String configName;
     private int runNumber;
     private String networkName;
-    private long eventNumber;
-    private BigDecimal simulationTime;
+    private long eventNumber; // last event number
+    private BigDecimal simulationTime; // last simulation time
+    private long nextEventNumber;
+    private BigDecimal nextSimulationTime;
     private int nextEventModuleId;  //TODO display on UI
     private long nextEventMessageId; //TODO display on UI
     private String eventlogFile;
@@ -116,6 +117,7 @@ public class SimulationController {
     public SimulationController(String hostName, int portNumber, Job launcherJob) {
         this.urlBase = "http://" + hostName + ":" + portNumber + "/";
         this.launcherJob = launcherJob;
+        this.cancelJobOnDispose = launcherJob != null;
 
         // if simulation was launched via a local launcher job (see SimulationLauncherJob),
         // set up simulationProcessTerminated() to be called when the launcher job exits
@@ -140,8 +142,11 @@ public class SimulationController {
     }
 
     public void dispose() {
-        if (launcherJob != null)
+        if (launcherJob != null) {
             Job.getJobManager().removeJobChangeListener(jobChangeListener);
+            if (cancelJobOnDispose && launcherJob.getState() != Job.NONE)
+                launcherJob.cancel();
+        }
     }
 
     public boolean canCancelLaunch() {
@@ -246,10 +251,26 @@ public class SimulationController {
         return simulationTime;
     }
 
+    public long getNextEventNumber() {
+        return nextEventNumber;
+    }
+
+    public BigDecimal getNextSimulationTime() {
+        return nextSimulationTime;
+    }
+
     public String getEventlogFile() {
         return eventlogFile;
     }
 
+    public void setCancelJobOnDispose(boolean cancelJobOnDispose) {
+        this.cancelJobOnDispose = cancelJobOnDispose;
+    }
+    
+    public boolean getCancelJobOnDispose() {
+        return cancelJobOnDispose;
+    }
+    
     protected String encode(String s) {
         try {
             return URLEncoder.encode(s, "US-ASCII");
@@ -273,8 +294,10 @@ public class SimulationController {
             hostName = (String) responseMap.get("hostname");
             processId = ((Number) responseMap.get("processid")).longValue();
             state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
-            simulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("simtime"), "0"));
-            eventNumber = defaultLongIfNull((Number) responseMap.get("eventnumber"), 0);
+            eventNumber = defaultLongIfNull((Number) responseMap.get("eventNumber"), 0);
+            simulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("simTime"), "0"));
+            nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
+            nextSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimTime"), "0"));
             configName = (String) responseMap.get("config");
             runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
             networkName = (String) responseMap.get("network");

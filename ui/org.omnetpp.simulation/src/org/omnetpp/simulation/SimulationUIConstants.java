@@ -46,6 +46,7 @@ public class SimulationUIConstants {
     public static final String IMG_TOOL_STEP = IMG_ETOOL_DIR + "step.png";
     public static final String IMG_TOOL_STOP = IMG_ETOOL_DIR + "stop.png";
     public static final String IMG_TOOL_STOP_WIDE = IMG_ETOOL_DIR + "stop_wide.png";
+    public static final String IMG_TOOL_LINK = IMG_ETOOL_DIR + "link.png";
     public static final String IMG_TOOL_TREE = IMG_ETOOL_DIR + "tree.png";
     public static final String IMG_TOOL_UNDO = IMG_ETOOL_DIR + "undo.png";
     public static final String IMG_TOOL_UNTIL = IMG_ETOOL_DIR + "until.png";

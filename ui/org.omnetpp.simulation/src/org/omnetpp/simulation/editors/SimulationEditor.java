@@ -1,6 +1,7 @@
 package org.omnetpp.simulation.editors;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -30,19 +31,23 @@ import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.animation.controller.AnimationController;
 import org.omnetpp.animation.controller.AnimationPosition;
 import org.omnetpp.animation.controller.BlankAnimationCoordinateSystem;
-import org.omnetpp.animation.editors.AnimationContributorBase;
+import org.omnetpp.animation.editors.IAnimationCanvasProvider;
 import org.omnetpp.animation.eventlog.controller.EventLogAnimationCoordinateSystem;
 import org.omnetpp.animation.eventlog.providers.EventLogAnimationPrimitiveProvider;
 import org.omnetpp.animation.eventlog.widgets.EventLogAnimationCanvas;
 import org.omnetpp.animation.eventlog.widgets.EventLogAnimationParameters;
 import org.omnetpp.animation.providers.EmptyAnimationPrimitiveProvider;
 import org.omnetpp.animation.widgets.AnimationCanvas;
+import org.omnetpp.animation.widgets.AnimationLever;
+import org.omnetpp.animation.widgets.AnimationPositionControl;
+import org.omnetpp.animation.widgets.AnimationStatus;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.simulation.MessageModel;
 import org.omnetpp.common.simulation.ModuleModel;
 import org.omnetpp.common.simulation.SimulationEditorInput;
+import org.omnetpp.common.simulation.SimulationModel;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.util.BinarySearchUtils.BoundKind;
 import org.omnetpp.eventlog.engine.EventLog;
@@ -53,6 +58,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
 import org.omnetpp.simulation.actions.FastRunAction;
+import org.omnetpp.simulation.actions.LinkWithSimulationAction;
 import org.omnetpp.simulation.actions.RebuildNetworkAction;
 import org.omnetpp.simulation.actions.RunAction;
 import org.omnetpp.simulation.actions.RunUntilAction;
@@ -69,7 +75,14 @@ import org.omnetpp.simulation.controller.SimulationController.SimState;
  *
  * @author Andras
  */
-public class SimulationEditor extends EditorPart implements ISimulationCallback {
+//TODO better icons for animation controls
+//TODO when playing, the "Play" or "Play backward" icon should remain pushed!
+//TODO initial module creations should NOT be animated at all! (they are NOT part of initialize() but take place before that, as part of setupNetwork())
+//TODO StepForward: change to "StepForwardToNextEvent" from "NextAnimationChange"
+//TODO why animation toolbar cannot mirror the simulation toolbar, only with green buttons?
+//TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
+//TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
+public class SimulationEditor extends EditorPart implements IAnimationCanvasProvider, ISimulationCallback {
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
 
     protected SimulationController simulationController;
@@ -98,23 +111,34 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
     public void createPartControl(Composite parent) {
         parent.setLayout(removeSpacing(new GridLayout(1, true)));
 
-        // create toolbars
+        // create tabfolder for simulation and animation ribbons
         CTabFolder tabFolder = new CTabFolder(parent, SWT.HORIZONTAL);
         tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        // make tab colors nicer; see Scave's FormToolkit2.setColors() for the original 
+        Color blue = new Color(null, 183, 202, 232);
+        Color lighterBlue = new Color(null, 233, 239, 245);
+        tabFolder.setSelectionBackground(new Color[]{blue, lighterBlue}, new int[] {25}, true);
+        
+        // create tabs
         CTabItem simulationTab = new CTabItem(tabFolder, SWT.NONE);
         simulationTab.setText("Simulate");
         CTabItem animationTab = new CTabItem(tabFolder, SWT.NONE);
         animationTab.setText("Playback");
 
-        Composite simulationControls = new Composite(tabFolder, SWT.NONE);
-        simulationTab.setControl(simulationControls);
-        simulationControls.setLayout(removeSpacing(new GridLayout(1, false)));
+        tabFolder.setSelection(simulationTab);
 
-        Composite simulationToolbars = new Composite(simulationControls, SWT.NONE);
+        // create simulation ribbon
+        Composite simulationRibbon = new Composite(tabFolder, SWT.NONE);
+        simulationTab.setControl(simulationRibbon);
+        simulationRibbon.setLayout(removeSpacing(new GridLayout(1, false)));
+
+        Composite simulationToolbars = new Composite(simulationRibbon, SWT.NONE);
         simulationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        simulationToolbars.setLayout(new GridLayout(4, false));
+        simulationToolbars.setLayout(new GridLayout(5, false));
 
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
+        new ActionContributionItem(new LinkWithSimulationAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupIniConfigAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new SetupNetworkAction(simulationController)).fill(toolbar1, -1);
         new ActionContributionItem(new RebuildNetworkAction(simulationController)).fill(toolbar1, -1);
@@ -128,20 +152,115 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         new ActionContributionItem(new StopAction(simulationController)).fill(toolbar3, -1);
         new ActionContributionItem(new CallFinishAction(simulationController)).fill(toolbar3, -1);
 
-        statusLabel = new Label(simulationControls, SWT.BORDER);
+        statusLabel = new Label(simulationRibbon, SWT.BORDER);
         statusLabel.setText("n/a");
         statusLabel.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false));
 
-        Canvas futureEventsTimeline = new Canvas(simulationControls, SWT.BORDER);
+        Canvas futureEventsTimeline = new Canvas(simulationRibbon, SWT.BORDER);
         futureEventsTimeline.setBackground(ColorFactory.BEIGE);
         GridData l = new GridData(SWT.FILL, SWT.END, true, false);
         l.heightHint = 20;
         futureEventsTimeline.setLayoutData(l);
 
-        tabFolder.setSelection(simulationTab);
+        // create animation ribbon
+        Composite animationRibbon = new Composite(tabFolder, SWT.NONE);
+        animationTab.setControl(animationRibbon);
+        animationRibbon.setLayout(removeSpacing(new GridLayout(1, false)));
+        animationRibbon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        Composite animationToolbars = new Composite(animationRibbon, SWT.NONE);
+        animationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        animationToolbars.setLayout(new GridLayout(3, false));
+
+        SimulationContributor contributor = (SimulationContributor)getEditorSite().getActionBarContributor();
+        ToolBar animToolbar1 = new ToolBar(animationToolbars, SWT.NONE);
+        new ActionContributionItem(contributor.gotoBeginningAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.stepBackwardAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.playBackwardAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.playForwardAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.stopAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.stepForwardAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.gotoEndAction).fill(animToolbar1, -1);
+        contributor.separatorAction.fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.decreaseAnimationSpeedAction).fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.increaseAnimationSpeedAction).fill(animToolbar1, -1);
+        contributor.separatorAction.fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.animationTimeModeAction).fill(animToolbar1, -1);
+        contributor.separatorAction.fill(animToolbar1, -1);
+        new ActionContributionItem(contributor.refreshAction).fill(animToolbar1, -1);
+
+//        AnimationSpeedControl animationSpeedControl = new AnimationSpeedControl(animationToolbars, SWT.HORIZONTAL);
+//        GridData g = new GridData(SWT.FILL, SWT.FILL, false, false);
+//        g.heightHint = 20; g.widthHint = 300;
+//        animationSpeedControl.getScale().setLayoutData(g);
+
+//        new Lever(animationToolbars, SWT.NONE);
+
+        AnimationLever animationLever = new AnimationLever(animationToolbars, SWT.NONE);
+        animationLever.getLever().setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+
+        AnimationStatus animationStatus = new AnimationStatus(animationToolbars, SWT.NONE);
+        animationStatus.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+        AnimationPositionControl animationPositionControl = new AnimationPositionControl(animationRibbon, SWT.NONE);
+        animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+//        AnimationTimeline animationTimeline = new AnimationTimeline(animationRibbon, SWT.NONE);
+//        animationTimeline.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, false));
+
+//        ToolBar animPosition = new ToolBar(animationRibbon, SWT.NONE);
+//        contributor.animationPositionContribution.fill(animPosition, animPosition.getItemCount());
+//        new ActionContributionItem(contributor.animationPositionModeAction).fill(animPosition, -1);
 
         // create canvas
-        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED);
+        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
+            private Figure messageFigure;
+            private ArrayList<SubmoduleFigure> submoduleFigures = new ArrayList<SubmoduleFigure>();
+
+            @Override
+            public void animationPositionChanged(AnimationPosition animationPosition) {
+                super.animationPositionChanged(animationPosition);
+                if (animationController.isAtEndAnimationPosition()) {
+                    highlightNextEventModule((SimulationModel)animationController.getRootModel(), simulationController.getNextEventModuleId());
+                    highlightNextEventMessage();
+                }
+                else {
+                    // KLUDGE: this might accidentally remove a border not set here
+                    for (SubmoduleFigure submoduleFigure : submoduleFigures)
+                        submoduleFigure.setBorder(null);
+                    submoduleFigures.clear();
+                    if (messageFigure != null)
+                        messageFigure.setBorder(null);
+                }
+            }
+
+            private void highlightNextEventModule(SimulationModel simulation, int moduleId) {
+                ModuleModel module = simulation.getModuleById(moduleId);
+                highlightNextModule(simulation, module, false);
+            }
+
+            private void highlightNextModule(SimulationModel simulation, ModuleModel module, boolean isAncestor) {
+                SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationCanvas.getFigure(module, SubmoduleFigure.class);
+                if (submoduleFigure != null) {
+                    // KLUDGE: mark next module
+                    submoduleFigure.setBorder(new LineBorder(ColorFactory.RED, isAncestor ? 1 : 2));
+                    submoduleFigures.add(submoduleFigure);
+                }
+                ModuleModel parentModule = module.getParentModule();
+                if (parentModule != null)
+                    highlightNextModule(simulation, parentModule, true);
+            }
+
+            private void highlightNextEventMessage() {
+                MessageModel message = new MessageModel();
+                message.setId((int)simulationController.getNextEventMessageId());
+                messageFigure = (Figure)animationCanvas.getFigure(message, Figure.class);
+                if (messageFigure != null) {
+                    // KLUDGE: mark next message
+                    messageFigure.setBorder(new LineBorder(ColorFactory.RED));
+                }
+            }
+        };
         animationCanvas.setBackground(new Color(null, 235, 235, 235));
         animationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         animationCanvas.setWorkbenchPart(this);
@@ -150,11 +269,16 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
         animationCanvas.setAnimationController(animationController);
         animationController.setAnimationCanvas(animationCanvas);
 
+//        animationSpeedControl.setAnimationController(animationController);
+        animationLever.setAnimationController(animationController);
+        animationStatus.setAnimationController(animationController);
+        animationPositionControl.setAnimationController(animationController);
+
         // animationCanvas.setInput(eventLogInput);
 
-        AnimationContributorBase contributor = (AnimationContributorBase) getEditorSite().getActionBarContributor();
         animationCanvas.setAnimationContributor(contributor);
 
+        getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
 
         // update status display when something happens to the simulation
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
@@ -163,7 +287,6 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
                 Display.getDefault().asyncExec(new Runnable() {
                     @Override
                     public void run() {
-                        updateStatusDisplay();
                         if (controller.getEventlogFile() != null)
                             setEventlogFileName(controller.getEventlogFile());
                         if (animationCanvas.getInput() != null) {
@@ -176,27 +299,16 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
                             animationController.clearInternalState();
                             animationCanvas.getInput().synchronize(fileChange);
                             if (currentAnimationPosition.isCompletelySpecified()) {
-                                animationController.gotoAnimationPosition(currentAnimationPosition);
-                                AnimationPosition boundAnimationPosition = new AnimationPosition(controller.getEventNumber() - 1, controller.getSimulationTime(), Double.MAX_VALUE, Double.MAX_VALUE);
                                 AnimationPosition stopAnimationPosition = animationController.getAnimationCoordinateSystem().getAnimationPosition(controller.getEventNumber(), BoundKind.UPPER_BOUND);
-                                System.out.println("GOTO FROM: " + currentAnimationPosition + " BOUND: " + boundAnimationPosition + " STOP: " + stopAnimationPosition);
+                                animationController.gotoAnimationPosition(currentAnimationPosition);
                                 animationController.startAnimation(true, stopAnimationPosition);
                             }
                             else {
-                                System.out.println("GOTO INITIAL");
                                 animationController.gotoInitialAnimationPosition();
+                                animationController.setLowerBoundAnimationPosition(animationController.getCurrentAnimationPosition());
                             }
-                            // KLUDGE: mark next module
-                            SubmoduleFigure submoduleFigure = (SubmoduleFigure)animationCanvas.getFigure(new ModuleModel(null, controller.getNextEventModuleId()), SubmoduleFigure.class);
-                            if (submoduleFigure != null)
-                                submoduleFigure.setBorder(new LineBorder(ColorFactory.RED));
-                            // KLUDGE: mark next message
-                            MessageModel message = new MessageModel();
-                            message.setId((int)controller.getNextEventMessageId());
-                            Figure figure = (Figure)animationCanvas.getFigure(message, Figure.class);
-                            if (figure != null)
-                                figure.setBorder(new LineBorder(ColorFactory.RED));
                         }
+                        updateStatusDisplay();
                     }
                 });
             }
@@ -241,16 +353,12 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
 
     @Override
     public void dispose() {
-    	super.dispose();
-
-    	//TODO when platform is shutting down, just cancel the launcherJob without asking!
-    	if (simulationController.canCancelLaunch()) {
-    	    boolean ans = MessageDialog.openQuestion(getSite().getShell(), "Terminate?", "Do you want to terminate the simulation process?");
-    	    if (ans)
-    	        simulationController.cancelLaunch();
-    	}
+        super.dispose();
+        
+        simulationController.dispose();
+        simulationController = null;
     }
-
+    
     @Override
     public void setFocus() {
         animationCanvas.setFocus();
@@ -270,12 +378,17 @@ public class SimulationEditor extends EditorPart implements ISimulationCallback 
             String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
             status += "   " + controller.getState().name();
 
+            SimulationModel simulationModel = (SimulationModel)animationCanvas.getAnimationController().getRootModel();
+            ModuleModel module = simulationModel != null ? simulationModel.getModuleById(controller.getNextEventModuleId()) : null;
+
             if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
                 status +=
                 "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() +
                 "   (" + controller.getNetworkName() + ")" +
                 "  -  Event #" + controller.getEventNumber() +
-                "   t=" + controller.getSimulationTime() + "s";
+                "   t=" + controller.getSimulationTime() + "s" +
+                "   next=" + controller.getNextSimulationTime() + "s" +
+                " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getTypeName() + ")");
             statusLabel.setText(status);
         }
     }

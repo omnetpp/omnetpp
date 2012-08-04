@@ -7,32 +7,17 @@
 
 package org.omnetpp.simulation.editors;
 
-import org.eclipse.ui.IEditorPart;
-import org.omnetpp.animation.editors.AnimationContributorBase;
+import org.eclipse.jface.action.IToolBarManager;
+import org.omnetpp.animation.eventlog.editors.EventLogAnimationContributor;
 
 /**
  * Contributes context menu and toolbar items to the platform.
  *
  * @author andras
  */
-public class SimulationContributor extends AnimationContributorBase {
+public class SimulationContributor extends EventLogAnimationContributor {
     @Override
-    public void setActiveEditor(IEditorPart targetEditor) {
-        if (targetEditor instanceof SimulationEditor) {
-            if (animationCanvas != null) {
-                getPage().removePartListener(this);
-                animationCanvas.removeSelectionChangedListener(this);
-                animationCanvas.getAnimationController().removeAnimationListener(this);
-            }
-            animationCanvas = ((SimulationEditor)targetEditor).getAnimationCanvas();
-            getPage().addPartListener(this);
-            animationCanvas.addSelectionChangedListener(this);
-            animationCanvas.getAnimationController().addAnimationListener(this);
-            animationPositionContribution.configureSlider();
-            update();
-        }
-        else
-            super.setActiveEditor(targetEditor);
+    public void contributeToToolBar(IToolBarManager toolBarManager) {
+        // do not contribute to global toolbars
     }
-    
 }

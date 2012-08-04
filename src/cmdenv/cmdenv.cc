@@ -535,8 +535,11 @@ bool Cmdenv::handle(cHttpRequest *request)
             result["config"] = JsonBox::Value(cfg->getActiveConfigName());
             result["run"] = JsonBox::Value(cfg->getActiveRunNumber());
             result["network"] = JsonBox::Value(simulation.getNetworkType()->getName());
-            result["eventnumber"] = JsonBox::Value((int)simulation.getEventNumber()); //FIXME lossy conversion! int64 -> int
-            result["simtime"] = JsonBox::Value(SIMTIME_STR(simTime())); //FIXME goes through as string!
+            // TODO: eventnumber is immediately incremented after handling a message
+            result["eventNumber"] = JsonBox::Value((int)simulation.getEventNumber() - 1); //FIXME lossy conversion! int64 -> int
+            result["simTime"] = JsonBox::Value(SIMTIME_STR(simTime())); //FIXME goes through as string!
+            result["nextEventNumber"] = JsonBox::Value((int)simulation.getEventNumber()); //FIXME lossy conversion! int64 -> int
+            result["nextEventSimTime"] = JsonBox::Value(SIMTIME_STR(simulation.guessNextSimtime())); //FIXME goes through as string!
             if (simulation.guessNextModule())
                 result["nextEventModuleId"] = JsonBox::Value(simulation.guessNextModule()->getId());
             if (simulation.guessNextEvent())
