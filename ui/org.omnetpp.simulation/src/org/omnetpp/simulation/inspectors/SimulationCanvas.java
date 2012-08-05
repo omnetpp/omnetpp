@@ -334,6 +334,12 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     @Override
+    public void updateFloatingToolbarActions() {
+        if (floatingToolbarSupport != null)
+            floatingToolbarSupport.updateFloatingToolbarActions();
+    }
+    
+    @Override
     public cObject[] getObjectsFromSelection(ISelection selection) {
         if (selection.isEmpty() || !(selection instanceof IStructuredSelection))
             return new cObject[0];

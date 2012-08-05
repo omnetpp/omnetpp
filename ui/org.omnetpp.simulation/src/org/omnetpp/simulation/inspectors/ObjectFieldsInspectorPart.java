@@ -19,7 +19,6 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
-import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
 import org.omnetpp.simulation.inspectors.actions.SortAction;
@@ -41,14 +40,6 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private Composite frame;
     private Label label;
     private ObjectFieldsViewer viewer;
-
-    private IInspectorAction packetModeTool;  //TODO null these when floating toolbar disappears
-    private IInspectorAction childrenModeTool;
-    private IInspectorAction groupedModeTool;
-    private IInspectorAction inheritaceModeTool;
-    private IInspectorAction flatModeTool;
-    private IInspectorAction sortAction;
-
     
     public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
         super(parent, object);
@@ -107,7 +98,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
     public void setMode(Mode mode) {
         viewer.setMode(mode);
-        updateActions();
+        getContainer().updateFloatingToolbarActions();
     }
 
     public Ordering getOrdering() {
@@ -116,7 +107,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
     public void setOrdering(Ordering ordering) {
         viewer.setOrdering(ordering);
-        updateActions();
+        getContainer().updateFloatingToolbarActions();
     }
 
     @Override
@@ -127,24 +118,13 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     public void populateFloatingToolbar(ToolBarManager manager) {
         manager.add(my(new InspectParentAction()));
         manager.add(new Separator());
-        manager.add(sortAction = my(new SortAction()));
+        manager.add(my(new SortAction()));
         manager.add(new Separator());
-        manager.add(packetModeTool = my(new SetModeAction(Mode.PACKET, "Packet mode", IMG_MODE_PACKET)));
-        manager.add(childrenModeTool = my(new SetModeAction(Mode.CHILDREN, "Children mode", IMG_MODE_CHILDREN)));
-        manager.add(groupedModeTool = my(new SetModeAction(Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED)));
-        manager.add(inheritaceModeTool = my(new SetModeAction(Mode.INHERITANCE, "Inheritance mode", IMG_MODE_INHERITANCE)));
-        manager.add(flatModeTool = my(new SetModeAction(Mode.FLAT, "Flat mode", IMG_MODE_FLAT)));
-    }
-
-    public void updateActions() {
-        if (packetModeTool != null) {
-            sortAction.update();
-            packetModeTool.update();
-            childrenModeTool.update();
-            groupedModeTool.update();
-            inheritaceModeTool.update();
-            flatModeTool.update();
-        }
+        manager.add(my(new SetModeAction(Mode.PACKET, "Packet mode", IMG_MODE_PACKET)));
+        manager.add(my(new SetModeAction(Mode.CHILDREN, "Children mode", IMG_MODE_CHILDREN)));
+        manager.add(my(new SetModeAction(Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED)));
+        manager.add(my(new SetModeAction(Mode.INHERITANCE, "Inheritance mode", IMG_MODE_INHERITANCE)));
+        manager.add(my(new SetModeAction(Mode.FLAT, "Flat mode", IMG_MODE_FLAT)));
     }
 
     @Override

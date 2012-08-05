@@ -60,6 +60,31 @@ public interface IInspectorContainer {
     Layer getControlsLayer();
 
     /**
+     * TODO 
+     */
+    void openFloatingToolbarFor(IInspectorPart inspector);
+    
+    /**
+     * TODO 
+     */
+    void closeFloatingToolbar();
+
+    /**
+     * TODO 
+     */
+    Control getFloatingToolbar();
+
+    /**
+     * TODO 
+     */
+    IInspectorPart getFloatingToolbarOwner();
+
+    /**
+     * TODO 
+     */
+    void updateFloatingToolbarActions();
+
+    /**
      * TODO
      * note: works in conjunction with IInspectorPart.getDragOperation()
      */

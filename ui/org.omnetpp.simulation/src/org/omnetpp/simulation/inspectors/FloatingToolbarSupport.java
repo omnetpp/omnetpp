@@ -1,10 +1,16 @@
 package org.omnetpp.simulation.inspectors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.CoordinateListener;
 import org.eclipse.draw2d.FigureListener;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
@@ -19,6 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
+import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 
 /**
  *
@@ -31,6 +38,7 @@ public class FloatingToolbarSupport {
     private Control floatingToolbar = null;
     private Point floatingToolbarDisplacement;  // relative to its normal location (= right-aligned just above the inspector)
     private boolean isFloatingToolbarStickyTimerActive = false;
+    private List<IInspectorAction> toolbarActions = null;  // so inspectors can call updateActions()
 
     private Runnable floatingToolbarStickyTimer = new Runnable() {
         @Override
@@ -191,6 +199,16 @@ public class FloatingToolbarSupport {
 
         panel.setCursor(new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW));
 
+        // collect IInspectorActions into toolbarActions, for updateFloatingToolbarActions()
+        toolbarActions = new ArrayList<IInspectorAction>();
+        for (IContributionItem item : manager.getItems()) {
+            if (item instanceof ActionContributionItem) {
+                IAction action = ((ActionContributionItem)item).getAction();
+                if (action instanceof IInspectorAction)
+                    toolbarActions.add((IInspectorAction)action);
+            }
+        }
+
         // set the size of the toolbar
         panel.layout();
         panel.setSize(panel.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -247,9 +265,15 @@ public class FloatingToolbarSupport {
             floatingToolbar = null;
             floatingToolbarOwner.getFigure().removeFigureListener(floatingToolbarRelocator);
             floatingToolbarOwner = null;
+            toolbarActions = null;
         }
     }
 
+    public void updateFloatingToolbarActions() {
+        if (toolbarActions != null)
+            for (IInspectorAction action : toolbarActions)
+                action.update();
+    }
     protected void reattachFloatingToolbarToInspector() {
         Assert.isTrue(floatingToolbar != null);
         

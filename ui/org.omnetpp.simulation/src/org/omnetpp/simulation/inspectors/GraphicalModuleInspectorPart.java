@@ -44,7 +44,6 @@ import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.SubmoduleFigureEx;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
-import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.inspectors.actions.InspectAsObject;
 import org.omnetpp.simulation.inspectors.actions.InspectNedTypeAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
@@ -83,10 +82,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected boolean showNameLabels = true;
     protected boolean showArrowHeads = true;
 
-    private IInspectorAction enlargeIconsAction;
-    private IInspectorAction reduceIconsAction;
-    private IInspectorAction zoomInAction;
-    private IInspectorAction zoomOutAction;
 
     /**
      * Constructor.
@@ -263,7 +258,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             figure.getParent().setConstraint(figure, figure.getBounds().getCopy().setSize(figure.getPreferredSize()));
         }
         
-        updateActions();
+        getContainer().updateFloatingToolbarActions();
     }
 
     public void zoomOut() {
@@ -298,7 +293,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         Assert.isTrue(imageSizePercentage > 0);
         this.imageSizePercentage = imageSizePercentage;
         refresh();
-        updateActions();
+        getContainer().updateFloatingToolbarActions();
     }
 
     /**
@@ -670,20 +665,10 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         manager.add(new Separator());
         manager.add(my(new ShowSubmoduleNamesAction()));
         manager.add(my(new ShowArrowheadsAction()));
-        manager.add(enlargeIconsAction = my(new EnlargeIconsAction()));
-        manager.add(reduceIconsAction = my(new ReduceIconsAction()));
-        manager.add(zoomInAction = my(new ZoomInAction()));
-        manager.add(zoomOutAction = my(new ZoomOutAction()));
+        manager.add(my(new EnlargeIconsAction()));
+        manager.add(my(new ReduceIconsAction()));
+        manager.add(my(new ZoomInAction()));
+        manager.add(my(new ZoomOutAction()));
         manager.update(false);
     }
-
-    public void updateActions() {
-        if (enlargeIconsAction != null) {
-            enlargeIconsAction.update();
-            reduceIconsAction.update();
-            zoomInAction.update();
-            zoomOutAction.update();
-        }
-    }
-
 }
