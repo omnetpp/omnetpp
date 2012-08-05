@@ -299,7 +299,6 @@ public class ObjectFieldsViewer {
 
         // utility function for groupFieldsOf()
         private Field[] sortIfNeeded(List<Field> fields) {
-            System.out.println("ordering = " + ordering);
             if (ordering == Ordering.ALPHABETICAL)
                 Collections.sort(fields, new FieldNameComparator());
             return fields.toArray(new Field[]{});
