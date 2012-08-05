@@ -84,8 +84,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     public SimulationCanvas(Composite parent, int style) {
         super(parent, style);
 
-        //setBackground(new Color(null, 235, 235, 235));
-
         Layer layeredPane = new Layer() {
             @Override
             public void paint(Graphics graphics) {
@@ -94,7 +92,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             }
         };
         layeredPane.setLayoutManager(new StackLayout());
-
 
         inspectorsLayer = new ImagePatternFigure(BACKGROUND_IMAGE);
         inspectorsLayer.setLayoutManager(new XYLayout());
@@ -111,7 +108,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         final MenuManager contextMenuManager = new MenuManager("#popup");
         setMenu(contextMenuManager.createContextMenu(this));
         addMenuDetectListener(new MenuDetectListener() {
-            //@Override
+            @Override
             public void menuDetected(MenuDetectEvent e) {
                 contextMenuManager.removeAll();
                 Point p = toControl(e.x, e.y);
@@ -131,21 +128,31 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         floatingToolbarSupport = new FloatingToolbarSupport(this);
     }
 
+    @Override
+    public void dispose() {
+        for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
+            removeInspectorPart(inspectorPart);
+        super.dispose();
+    }
 
     public void addMoveResizeSupport(IFigure figure) {
-        moveResizeSupport.adopt(figure);
+        if (moveResizeSupport != null)
+            moveResizeSupport.adopt(figure);
     }
 
     public void removeMoveResizeSupport(IFigure figure) {
-        moveResizeSupport.forget(figure);
+        if (moveResizeSupport != null)
+            moveResizeSupport.forget(figure);
     }
 
     public void addMoveResizeSupport(Control control) {
-        moveResizeSupport.adopt(control);
+        if (moveResizeSupport != null)
+            moveResizeSupport.adopt(control);
     }
 
     public void removeMoveResizeSupport(Control control) {
-        moveResizeSupport.forget(control);
+        if (moveResizeSupport != null)
+            moveResizeSupport.forget(control);
     }
 
     public IInspectorPart findInspectorAt(int x, int y) {
@@ -200,13 +207,6 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         int xoffset = getHorizontalBar().getSelection();
         int yoffset = getVerticalBar().getSelection();
         return new org.eclipse.draw2d.geometry.Point(x + xoffset, y + yoffset);
-    }
-
-    @Override
-    public void dispose() {
-        for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
-            removeInspectorPart(inspectorPart);
-        super.dispose();
     }
 
     public void addInspectorPart(IInspectorPart inspectorPart) {
