@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <locale.h>
 #include "platmisc.h"
 #include "commonutil.h"
