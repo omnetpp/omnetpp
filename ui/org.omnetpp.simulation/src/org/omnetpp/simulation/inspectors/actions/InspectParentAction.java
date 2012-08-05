@@ -5,7 +5,11 @@ import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.inspectors.IInspectorContainer;
 import org.omnetpp.simulation.model.cObject;
 
-
+/**
+ * 
+ * @author Andras
+ */
+//TODO disable if there's no parent!
 public class InspectParentAction extends AbstractInspectorAction {
     public InspectParentAction() {
         super("Inspect parent", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_PARENT));
@@ -14,7 +18,9 @@ public class InspectParentAction extends AbstractInspectorAction {
     @Override
     public void run() {
         cObject parent = getInspectorPart().getObject().getOwner();
-        IInspectorContainer container = getInspectorPart().getContainer();
-        container.inspect(parent);
+        if (parent != null) {
+            IInspectorContainer container = getInspectorPart().getContainer();
+            container.inspect(parent);
+        }
     }
 }

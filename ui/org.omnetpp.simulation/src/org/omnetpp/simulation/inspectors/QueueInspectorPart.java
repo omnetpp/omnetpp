@@ -18,6 +18,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.QueueInspectorFigure;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
+import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cQueue;
 
@@ -105,21 +106,20 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     }
 
 
-    //@Override
+    @Override
     public boolean isMaximizable() {
         return false;
     }
 
-    //@Override
+    @Override
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
         contextMenuManager.add(my(new CloseAction()));
     }
 
     @Override
     public void populateFloatingToolbar(ToolBarManager manager) {
-        // TODO Auto-generated method stub
+        manager.add(my(new InspectParentAction()));
     }
-
     
     //XXX near copy/paste from GraphicalModuleInspectorPart - factor out
     @Override
