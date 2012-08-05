@@ -3,6 +3,7 @@ package org.omnetpp.simulation.inspectors;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
@@ -19,7 +20,9 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
+import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
+import org.omnetpp.simulation.inspectors.actions.SortAction;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
 
@@ -27,9 +30,6 @@ import org.omnetpp.simulation.model.cPacket;
  *
  * @author Andras
  */
-//TODO icon buttons to switch mode, ordering, etc.
-//TODO resize by border
-//TODO drag by label
 //TODO adaptive label: display the most useful info that fits in the available space
 public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private static final ImageDescriptor IMG_MODE_PACKET = SimulationPlugin.getImageDescriptor("icons/etool16/treemode_packet.png");
@@ -47,8 +47,9 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private IAction groupedModeTool;
     private IAction inheritaceModeTool;
     private IAction flatModeTool;
+    private IAction sortAction;
 
-
+    
     public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
         super(parent, object);
     }
@@ -117,20 +118,16 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         viewer.setOrdering(ordering);
     }
 
-    public boolean isReverseOrder() {
-        return viewer.isReverseOrder();
-    }
-
-    public void setReverseOrder(boolean reverseOrder) {
-        viewer.setReverseOrder(reverseOrder);
-    }
-
     @Override
     public void populateContextMenu(MenuManager contextMenuManager, Point p) {
     }
 
     @Override
     public void populateFloatingToolbar(ToolBarManager manager) {
+        manager.add(my(new InspectParentAction()));
+        manager.add(new Separator());
+        manager.add(sortAction = my(new SortAction()));
+        manager.add(new Separator());
         manager.add(packetModeTool = my(new SetModeAction(Mode.PACKET, "Packet mode", IMG_MODE_PACKET)));
         manager.add(childrenModeTool = my(new SetModeAction(Mode.CHILDREN, "Children mode", IMG_MODE_CHILDREN)));
         manager.add(groupedModeTool = my(new SetModeAction(Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED)));
@@ -147,6 +144,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
             groupedModeTool.setChecked(mode == Mode.GROUPED);
             inheritaceModeTool.setChecked(mode == Mode.INHERITANCE);
             flatModeTool.setChecked(mode == Mode.FLAT);
+            sortAction.setChecked(getOrdering() != Ordering.NATURAL);
         }
     }
 

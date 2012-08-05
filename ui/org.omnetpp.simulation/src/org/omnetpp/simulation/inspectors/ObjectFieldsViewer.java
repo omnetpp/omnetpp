@@ -3,6 +3,8 @@ package org.omnetpp.simulation.inspectors;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,10 +38,8 @@ import org.omnetpp.simulation.model.cPacket;
  *
  * @author Andras
  */
-//TODO implement ordering and filtering of fields
-//TODO Field, FieldArrayElement should be adaptable to cObject? that should make it easier to implement inspect-on-doubleclick
 public class ObjectFieldsViewer {
-    private static final Image IMG_FIELD = SimulationPlugin.getCachedImage("icons/obj16/field.png");
+    private static final Image IMG_FIELD = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_FIELD);
     private static final List<String> CPACKET_BASE_CLASSES = Arrays.asList(new String[]{ "cObject", "cNamedObject", "cOwnedObject", "cMessage", "cPacket" });
 
     public enum Mode { PACKET, CHILDREN, GROUPED, INHERITANCE, FLAT };
@@ -48,7 +48,6 @@ public class ObjectFieldsViewer {
     private TreeViewer treeViewer;
     private Mode mode = Mode.GROUPED;
     private Ordering ordering = Ordering.NATURAL;
-    private boolean reverseOrder = false;
 
 
     /**
@@ -122,7 +121,7 @@ public class ObjectFieldsViewer {
         @Override
         public int hashCode() {
             final int prime = 31;
-            int result = Arrays.hashCode(fields);
+            int result = 1; // note: leave out fields[] as in equals()
             result = prime * result + ((groupName == null) ? 0 : groupName.hashCode());
             result = prime * result + ((parent == null) ? 0 : parent.hashCode());
             return result;
@@ -136,6 +135,8 @@ public class ObjectFieldsViewer {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
+            // note: leave out fields[], otherwise turning sorting on/off closes the field group node
+            // in the tree! (TreeViewer uses equals() to identify tree nodes)
             FieldGroup other = (FieldGroup) obj;
             if (groupName == null && other.groupName != null)
                 return false;
@@ -145,13 +146,26 @@ public class ObjectFieldsViewer {
                 return false;
             else if (!parent.equals(other.parent))
                 return false;
-            if (!Arrays.equals(fields, other.fields))
-                return false;
             return true;
         }
     }
 
+    protected class FieldNameComparator implements Comparator<Field> {
+        @Override
+        public int compare(Field o1, Field o2) {
+            return o1.name.compareTo(o2.name);
+        }
+    }
+
+    protected class ObjectNameComparator implements Comparator<cObject> {
+        @Override
+        public int compare(cObject o1, cObject o2) {
+            return o1.getFullName().compareTo(o2.getFullName());
+        }
+    }
+
     protected class TreeContentProvider implements ITreeContentProvider {
+
         public Object[] getChildren(Object element) {
             // Note: cObject only occurs here as root, at other places it's
             // always a field value somewhere, and as such, is wrapped into
@@ -216,10 +230,12 @@ public class ObjectFieldsViewer {
                 catch (IOException e) {
                     e.printStackTrace();  //TODO how to handle exceptions properly...
                 }
+                if (ordering == Ordering.ALPHABETICAL)
+                    Arrays.sort(children = children.clone(), new ObjectNameComparator());
                 return children;
             }
             else if (mode == Mode.FLAT) {
-                return object.getFields();
+                return sortIfNeeded(Arrays.asList(object.getFields().clone()));
             }
             else if (mode == Mode.GROUPED) {
                 Field[] fields = object.getFields();
@@ -234,7 +250,7 @@ public class ObjectFieldsViewer {
                     result.addAll(groups.get(null));
                 for (String groupName : groups.keySet())
                     if (groupName != null)
-                        result.add(new FieldGroup(object, groupName, groups.get(groupName).toArray(new Field[]{})));
+                        result.add(new FieldGroup(object, groupName, sortIfNeeded(groups.get(groupName))));
                 return result.toArray();
             }
             else if (mode == Mode.INHERITANCE) {
@@ -251,7 +267,7 @@ public class ObjectFieldsViewer {
                     result.addAll(groups.get(""));
                 for (String groupName : groups.keySet())
                     if (!groupName.equals(""))
-                        result.add(new FieldGroup(object, groupName, groups.get(groupName).toArray(new Field[]{})));
+                        result.add(new FieldGroup(object, groupName, sortIfNeeded(groups.get(groupName))));
                 return result.toArray();
             }
             else if (mode == Mode.PACKET) {
@@ -269,8 +285,8 @@ public class ObjectFieldsViewer {
                         if (!CPACKET_BASE_CLASSES.contains(f.declaredOn))
                             fields.add(f);
 
-                     // and form a new field group from it
-                    result.add(new FieldGroup(object, pk.getClassName(), fields.toArray(new Field[]{})));
+                    // and form a new field group from it
+                    result.add(new FieldGroup(object, pk.getClassName(), sortIfNeeded(fields)));
 
                     // go down to the encapsulated packet
                     pk = ((cPacket)pk).getEncapsulatedPacket();  //TODO also follow segments[] and suchlike!!!
@@ -279,6 +295,14 @@ public class ObjectFieldsViewer {
                 return result.toArray();
             }
             return null;
+        }
+
+        // utility function for groupFieldsOf()
+        private Field[] sortIfNeeded(List<Field> fields) {
+            System.out.println("ordering = " + ordering);
+            if (ordering == Ordering.ALPHABETICAL)
+                Collections.sort(fields, new FieldNameComparator());
+            return fields.toArray(new Field[]{});
         }
 
         public Object[] getElements(Object inputElement) {
@@ -497,18 +521,7 @@ public class ObjectFieldsViewer {
         refresh();
     }
 
-    public boolean isReverseOrder() {
-        return reverseOrder;
-    }
-
-    public void setReverseOrder(boolean reverseOrder) {
-        this.reverseOrder = reverseOrder;
-        refresh();
-    }
-
     public void refresh() {
         treeViewer.refresh();
     }
-
-
 }

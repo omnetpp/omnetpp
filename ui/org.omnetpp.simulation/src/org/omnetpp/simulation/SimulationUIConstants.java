@@ -48,6 +48,7 @@ public class SimulationUIConstants {
     public static final String IMG_TOOL_REVERT = DIR + "revert.png";
     public static final String IMG_TOOL_RUN = DIR + "run.png";
     public static final String IMG_TOOL_SAVE = DIR + "save.png";
+    public static final String IMG_TOOL_SORT = DIR + "sort.png";
     public static final String IMG_TOOL_STEP = DIR + "step.png";
     public static final String IMG_TOOL_STOP = DIR + "stop.png";
     public static final String IMG_TOOL_STOP_WIDE = DIR + "stop_wide.png";
