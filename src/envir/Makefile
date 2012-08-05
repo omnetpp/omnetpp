@@ -41,9 +41,7 @@ OBJS= $O/appreg.o $O/args.o $O/startup.o $O/evmain.o $O/envirbase.o $O/fsutils.o
       $O/statisticparser.o $O/visitor.o
 
 #TODO make configurable; put into separate lib? (src/httpserver)
-OBJS += $O/httpserver.o $O/mongoosehttpserver.o $O/mongoose.o \
-        $O/jsonarray.o $O/jsonconvert.o $O/jsonescaper.o $O/jsonindentcanceller.o \
-        $O/jsonindenter.o $O/jsonobject.o $O/jsonsolidusescaper.o $O/jsonvalue.o
+OBJS += $O/httpserver.o $O/mongoosehttpserver.o $O/mongoose.o  $O/json.o
 
 #
 # Automatic rules
@@ -94,6 +92,9 @@ eventlogwriter.cc eventlogwriter.h : eventlogwriter.pl ../eventlog/eventlogentri
 	$(PERL) eventlogwriter.pl
 
 $O/envirbase.o: eventlogwriter.h
+
+$O/mongoose.o : mongoose.c mongoose.h
+	$(CXX) -c $(COPTS) -o $@ -DHAVE_STRTOUI64 mongoose.c
 
 # Build a static lib that contains the main() function used with executable or dynamically linked models
 $L/$(MAINLIBNAME)$(A_LIB_SUFFIX) : $O/main.o
@@ -304,7 +305,9 @@ $O/envirbase.o: envirbase.cc \
   ../../include/cresultrecorder.h \
   ../../include/cpar.h \
   ../../include/globals.h \
+  mongoosehttpserver.h \
   ../../include/cvisitor.h \
+  httpserver.h \
   ../../include/cnedmathfunction.h \
   ../../include/cobjectfactory.h \
   appreg.h \
@@ -320,6 +323,7 @@ $O/envirbase.o: envirbase.cc \
   ../../include/ccoroutine.h \
   ../../include/platdep/platdefs.h \
   ../../include/cnedvalue.h \
+  mongoose.h \
   envirdefs.h \
   ../../include/simtime.h \
   ../../include/cgate.h \
@@ -340,12 +344,12 @@ $O/envirbase.o: envirbase.cc \
   ../../include/cobject.h \
   ../../include/cnedfunction.h \
   ../../include/cstringpool.h \
-  ../../include/cdefaultlist.h \
   ../../include/cdensityestbase.h \
+  ../../include/cdefaultlist.h \
   cxmldoccache.h \
   objectprinter.h \
-  ../../include/cxmlelement.h \
   ../../include/cstddev.h \
+  ../../include/cxmlelement.h \
   ../../include/crng.h \
   ../common/ver.h \
   ../../include/simutil.h \
@@ -612,6 +616,24 @@ $O/fsutils.o: fsutils.cc \
   ../../include/cstringpool.h \
   fsutils.h \
   ../../include/simutil.h
+$O/httpserver.o: httpserver.cc \
+  ../../include/regmacros.h \
+  ../../include/cconfiguration.h \
+  ../../include/errmsg.h \
+  ../../include/envirext.h \
+  ../../include/cvisitor.h \
+  httpserver.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  envirdefs.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cobject.h \
+  ../../include/simutil.h
 $O/indexedfileoutvectormgr.o: indexedfileoutvectormgr.cc \
   ../../include/regmacros.h \
   envirbase.h \
@@ -712,6 +734,13 @@ $O/intervals.o: intervals.cc \
   objectprinter.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h
+$O/json.o: json.cc \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  envirdefs.h \
+  ../../include/simtime.h \
+  json.h \
+  ../../include/simkerneldefs.h
 $O/main.o: main.cc \
   envirdefs.h
 $O/matchablefield.o: matchablefield.cc \
@@ -753,6 +782,26 @@ $O/matchableobject.o: matchableobject.cc \
   ../../include/simkerneldefs.h \
   ../../include/cobject.h \
   ../../include/cstringpool.h \
+  ../../include/simutil.h
+$O/mongoosehttpserver.o: mongoosehttpserver.cc \
+  ../../include/regmacros.h \
+  ../../include/cconfiguration.h \
+  ../../include/errmsg.h \
+  ../../include/envirext.h \
+  mongoosehttpserver.h \
+  ../../include/cvisitor.h \
+  httpserver.h \
+  ../../include/platdep/platmisc.h \
+  ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/platdep/platdefs.h \
+  envirdefs.h \
+  mongoose.h \
+  ../../include/simtime.h \
+  ../../include/simtime_t.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/cobject.h \
   ../../include/simutil.h
 $O/objectprinter.o: objectprinter.cc \
   ../../include/regmacros.h \

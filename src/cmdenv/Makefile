@@ -81,52 +81,72 @@ $O/cmdenv.o: cmdenv.cc \
   ../../include/regmacros.h \
   ../envir/args.h \
   cmdenv.h \
-  ../../include/platdep/platdefs.h \
+  ../../include/ctimestampedvalue.h \
   ../envir/envirdefs.h \
   ../../include/cnamedobject.h \
   ../../include/cexpression.h \
-  ../envir/eventlogfilemgr.h \
   cmddefs.h \
-  ../../include/cgate.h \
-  ../../include/simtime.h \
+  ../../include/ccompoundmodule.h \
   ../envir/objectprinter.h \
-  ../../include/carray.h \
   ../envir/speedometer.h \
-  ../../include/simtime_t.h \
-  ../../include/cenvir.h \
-  ../../include/cmsgpar.h \
   ../../include/ccomponent.h \
-  ../../include/cconfigoption.h \
   ../../include/cproperties.h \
   ../../include/cregistrationlist.h \
+  ../../include/cenum.h \
+  ../../include/platdep/timeutil.h \
   ../../include/cconfiguration.h \
-  ../../include/opp_string.h \
-  ../envir/intervals.h \
-  ../../include/simkerneldefs.h \
-  ../../include/csimulation.h \
   ../../include/errmsg.h \
-  ../../include/cmessage.h \
   ../../include/cownedobject.h \
-  ../../include/cobject.h \
+  ../../include/cmessage.h \
   ../../include/onstartup.h \
   ../../include/cresultlistener.h \
+  ../envir/visitor.h \
   ../envir/envirbase.h \
-  ../../include/clistener.h \
   ../../include/envirext.h \
-  ../../include/cstringpool.h \
+  ../../include/clistener.h \
+  ../../include/cscheduler.h \
   ../../include/cpar.h \
+  ../../include/cresultrecorder.h \
   ../../include/globals.h \
   ../envir/appreg.h \
-  ../../include/cdefaultlist.h \
   ../../include/cvisitor.h \
   ../../include/cnedmathfunction.h \
   ../../include/csimplemodule.h \
   ../../include/cobjectfactory.h \
+  ../envir/json.h \
   ../../include/cmodule.h \
   ../../include/platdep/platmisc.h \
+  ../envir/matchableobject.h \
   ../../include/cexception.h \
+  ../../include/platdep/intxtypes.h \
+  ../../include/ccomponenttype.h \
+  ../../include/platdep/platdefs.h \
+  ../../include/cqueue.h \
+  ../../include/coutvector.h \
+  ../../include/cwatch.h \
+  ../envir/eventlogfilemgr.h \
+  ../../include/simtime.h \
+  ../../include/cgate.h \
+  ../../include/carray.h \
+  ../../include/cenvir.h \
+  ../../include/simtime_t.h \
+  ../../include/cmsgpar.h \
+  ../../include/cconfigoption.h \
+  ../../include/cclassdescriptor.h \
+  ../../include/cstatistic.h \
+  ../../include/cchannel.h \
+  ../envir/intervals.h \
+  ../../include/opp_string.h \
+  ../../include/simkerneldefs.h \
+  ../../include/csimulation.h \
+  ../../include/cdisplaystring.h \
+  ../../include/cobject.h \
+  ../../include/cstringpool.h \
+  ../../include/cresultfilter.h \
+  ../envir/httpserver.h \
+  ../../include/cdensityestbase.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cstddev.h \
   ../../include/cmessageheap.h \
   ../../include/simutil.h \
-  ../../include/cproperty.h \
-  ../../include/platdep/intxtypes.h \
-  ../../include/ccomponenttype.h
+  ../../include/cproperty.h
