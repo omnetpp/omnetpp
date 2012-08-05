@@ -62,6 +62,8 @@ public class MoveResizeSupport {
                 dragOperation = inspector.getDragOperation(figure, me.x, me.y);
                 me.consume(); // otherwise dragging too fast breaks the drag (!!??)
 
+                inspector.raiseToTop();
+
                 // By default draw2d updates canvas bounds continually while dragging, which
                 // results in a weird effect: when dragging up an inspector from near the bottom 
                 // of the canvas and the canvas shrinks as a result, the mouse overtakes the 
@@ -114,6 +116,8 @@ public class MoveResizeSupport {
                 dragStart = new Point(mouse.x, mouse.y);  // note: don't use (e.x,e.y) because they are control-relative and the control itself will move!
                 dragStartInspectorFigureBounds = inspector.getFigure().getBounds().getCopy();
                 dragOperation = inspector.getDragOperation(control, e.x, e.y);
+
+                inspector.raiseToTop();
 
                 // By default draw2d updates canvas bounds continually while dragging, which
                 // results in a weird effect: when dragging up an inspector from near the bottom 

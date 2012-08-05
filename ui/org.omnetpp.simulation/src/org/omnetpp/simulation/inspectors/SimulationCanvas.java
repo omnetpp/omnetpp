@@ -305,6 +305,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     public void reveal(IInspectorPart inspector) {
+        inspector.raiseToTop();
         Rectangle bounds = inspector.getFigure().getBounds();
         scrollSmoothTo(bounds.x, bounds.y);  // scrolls so that inspector is at the top of the screen (behavior could be improved)
     }
