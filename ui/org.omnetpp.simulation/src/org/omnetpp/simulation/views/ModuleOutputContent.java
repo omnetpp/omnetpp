@@ -3,10 +3,14 @@ package org.omnetpp.simulation.views;
 import java.util.Arrays;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.swt.graphics.Color;
-import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.LogBuffer;
-import org.omnetpp.simulation.controller.LogBuffer.EventEntry;
+import org.omnetpp.simulation.controller.LogBuffer.ILogBufferChangedListener;
 import org.omnetpp.simulation.widgets.ITextChangeListener;
 import org.omnetpp.simulation.widgets.ITextViewerContent;
 
@@ -15,157 +19,151 @@ import org.omnetpp.simulation.widgets.ITextViewerContent;
  * 
  * @author Andras
  */
-//TODO computation of line numbers and offsets could be incremental for efficiency
 //TODO getters could use a fixed point plus incremental computation, exploiting the fact that painting of the lines occurs top-down
 public class ModuleOutputContent implements ITextViewerContent {
     private LogBuffer logBuffer;
-    private String filterModuleFullPath;
+    private IEventEntryLinesProvider linesProvider; //TODO rename to IEventEntryLinesProvider
+    private String filterModuleFullPath;  //TODO move filter into some IEventEntryFilter class?
+    private ListenerList textChangeListeners = new ListenerList();
     
     // cached data
-    private int lineCount;
-    private int charCount;
-    private int entryStartLineNumbers[]; // indexed by the entry's index in logBuffer  
-    private int entryStartOffsets[];
+    private int lineCount = -1;
+    private int entryStartLineNumbers[] = null; // indexed by the entry's index in logBuffer  
 
-    public ModuleOutputContent(LogBuffer logBuffer) {
+    public ModuleOutputContent(LogBuffer logBuffer, IEventEntryLinesProvider labelProvider) {
         this.logBuffer = logBuffer;
-        refresh();
+        this.linesProvider = labelProvider;
+        
+        logBuffer.addChangeListener(new ILogBufferChangedListener() {
+            @Override
+            public void changed(LogBuffer logBuffer) {
+                invalidateIndex();
+                fireTextChangeNotification();
+            }
+        });
     }
     
     public void setFilterModuleFullPath(String filterModuleFullPath) {
         this.filterModuleFullPath = filterModuleFullPath;
-        refresh(); //XXX or at least invalidate
+        invalidateIndex();
+        fireTextChangeNotification();
+    }
+
+    public void invalidateIndex() {
+        lineCount = -1;
+        entryStartLineNumbers = null;
+    }
+
+    protected boolean isIndexValid() {
+        return entryStartLineNumbers != null;
     }
     
-    protected boolean filterMatches(LogBuffer.EventEntry entry) {
-        if (filterModuleFullPath != null)
-            return entry.moduleFullPath.startsWith(filterModuleFullPath);  //XXX properly: equals, or starts with path+"."
-        return true;
-    }
-    
-    //XXX to be called when logbuffer content or some filter condition changes
-    public void refresh() {
-        // recompute line numbers and offsets
-        int n = logBuffer.getNumEntries();
-        entryStartLineNumbers = new int[n];
-        entryStartOffsets = new int[n];
-        
-        int currentLineNumber = 0;
-        int currentOffset = 0;
-        for (int i = 0; i < n; i++) {
-            entryStartLineNumbers[i] = currentLineNumber;
-            entryStartOffsets[i] = currentOffset;
+    protected boolean filterMatches(EventEntry entry) {  //TODO into some IEventEntryFilter
+        if (filterModuleFullPath == null)
+        return true; // no filtering
 
-            EventEntry entry = logBuffer.getEventEntry(i);
-            currentLineNumber += getNumLines(entry);
-            currentOffset += getTextLength(entry);
-        }
-        
-        lineCount = currentLineNumber;
-        charCount = currentOffset;
-    }
-    
-    protected int getNumLines(LogBuffer.EventEntry entry) {
-        return 1 + entry.logItems.length;   // header plus lines
-    }
-    
-    protected int getTextLength(LogBuffer.EventEntry entry) {
-        // for offset computation
-        int result = getBannerLine(entry).length();
-        for (int i = 0; i < entry.logItems.length; i++)
-            result += entry.logItems[i].toString().length();
-        return result;
-    }
-
-    protected String getEntryLine(LogBuffer.EventEntry entry, int lineNumber) {
-        if (lineNumber == 0)
-            return getBannerLine(entry);
-        else 
-            return entry.logItems[lineNumber-1].toString();
-    }
-
-    protected Color getEntryLineColor(LogBuffer.EventEntry entry, int lineNumber) {
-        if (lineNumber == 0)
-            return ColorFactory.BLUE;
-        else if (entry.logItems[lineNumber-1] instanceof String)
-            return null;
-        else
-            return ColorFactory.GREY50;
-    }
-
-    protected int getEntryLineByOffset(LogBuffer.EventEntry entry, int offset) {
-        int currentOffset = 0;
-        int numEntryLines = getNumLines(entry);
-        for (int i = 0; i < numEntryLines; i++) {
-            int lineLength = getEntryLine(entry, i).length();
-            if (offset < currentOffset + lineLength)
-                return i;
-            currentOffset += lineLength;
-        }
-        throw new RuntimeException();
-    }
-
-    protected String getBannerLine(LogBuffer.EventEntry entry) {
-        if (entry.moduleId == 0)
-            return "Log lines:\n";
-        else
-            return "Event #" + entry.eventNumber + " t=" + entry.simulationTime.toString() + " at " + entry.moduleFullPath + " on " + entry.messageName + " (" + entry.messageClassName + ")\n";
+        String moduleFullPath = entry.moduleFullPath;
+        if (moduleFullPath == null)
+            return false;
+        if (moduleFullPath.startsWith(filterModuleFullPath))
+            if (moduleFullPath.equals(filterModuleFullPath) || moduleFullPath.startsWith(filterModuleFullPath + "."))
+                return true;
+        return false;
     }
 
     @Override
     public int getLineCount() {
+        if (!isIndexValid())
+            rebuildIndex();
         return lineCount;
     }
 
     @Override
-    public int getCharCount() {
-        return charCount;
-    }
+    public String getLineText(int lineIndex) {
+        Assert.isTrue(lineIndex >= 0 && lineIndex < lineCount);
+        if (lineIndex == lineCount-1)  // empty last line
+            return "";
 
-    @Override
-    public String getLine(int lineIndex) {
-        int entryIndex = Arrays.binarySearch(entryStartLineNumbers, lineIndex);
-        if (entryIndex < 0) entryIndex = -entryIndex-2;
-        return getEntryLine(logBuffer.getEventEntry(entryIndex),  lineIndex - entryStartLineNumbers[entryIndex]);
-    }
-
-    @Override
-    public int getLineAtOffset(int offset) {
-        int entryIndex = Arrays.binarySearch(entryStartOffsets, offset);
-        if (entryIndex < 0) entryIndex = -entryIndex-2;
-        return getEntryLineByOffset(logBuffer.getEventEntry(entryIndex),  offset - entryStartOffsets[entryIndex]);
-    }
-
-    @Override
-    public int getOffsetAtLine(int lineIndex) {
-        int entryIndex = Arrays.binarySearch(entryStartLineNumbers, lineIndex);
-        if (entryIndex < 0) entryIndex = -entryIndex-2;
-        EventEntry entry = logBuffer.getEventEntry(entryIndex);
-        int entryLineIndex = lineIndex - entryStartLineNumbers[entryIndex];
-        
-        int offset = 0;
-        Assert.isTrue(entryLineIndex < getNumLines(entry));
-        for (int i = 0; i < entryLineIndex; i++)
-            offset += getEntryLine(entry, i).length();
-        return offset;
+        int entryIndex = getIndexOfEntryAt(lineIndex);
+        EventEntry eventEntry = logBuffer.getEventEntry(entryIndex);
+        Assert.isTrue(filterMatches(eventEntry));
+        return linesProvider.getLineText(eventEntry,  lineIndex - entryStartLineNumbers[entryIndex]);
     }
 
     @Override
     public Color getLineColor(int lineIndex) {
-        int entryIndex = Arrays.binarySearch(entryStartLineNumbers, lineIndex);
-        if (entryIndex < 0) entryIndex = -entryIndex-2;
-        return getEntryLineColor(logBuffer.getEventEntry(entryIndex), lineIndex - entryStartLineNumbers[entryIndex]);
+        Assert.isTrue(lineIndex >= 0 && lineIndex < lineCount);
+        if (lineIndex == lineCount-1)  // empty last line
+            return null;
         
+        int entryIndex = getIndexOfEntryAt(lineIndex);
+        EventEntry eventEntry = logBuffer.getEventEntry(entryIndex);
+        Assert.isTrue(filterMatches(eventEntry));
+        return linesProvider.getLineColor(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
     }
 
+    protected int getIndexOfEntryAt(int lineIndex) {
+        if (!isIndexValid())
+            rebuildIndex();
+        int entryIndex = Arrays.binarySearch(entryStartLineNumbers, lineIndex);
+        if (entryIndex < 0) entryIndex = -entryIndex-2;
+        
+        // entryStartLineNumber[] contains one slot for ALL event entries, even those that 
+        // don't match the filter; so we have to find the LAST slot with the same line number,
+        // and that will be the matching entry
+        int baseLineNumber = entryStartLineNumbers[entryIndex];
+        while (entryIndex+1 < entryStartLineNumbers.length && entryStartLineNumbers[entryIndex+1] == baseLineNumber)
+            entryIndex++;
+        return entryIndex;
+    }
+
+    protected void rebuildIndex() {
+        //long startTime = System.currentTimeMillis();
+        
+        // recompute line numbers. note: entryStartLineNumber[] contains one slot 
+        // for ALL event entries, even those that don't match the filter!
+        int n = logBuffer.getNumEntries();
+        entryStartLineNumbers = new int[n];
+        
+        int currentLineNumber = 0;
+        for (int i = 0; i < n; i++) {
+            entryStartLineNumbers[i] = currentLineNumber;
+
+            EventEntry entry = logBuffer.getEventEntry(i);
+            if (filterMatches(entry))
+                currentLineNumber += linesProvider.getNumLines(entry);
+        }
+        
+        lineCount = currentLineNumber + 1;  // note: +1 is for empty last line (content cannot be zero lines!)
+
+        //System.out.println("rebuildIndex() for " + n + " log entries: " + (System.currentTimeMillis()-startTime) + "ms"); --> ~10..20ms for 1 million events
+    }
+    
     @Override
     public void addTextChangeListener(ITextChangeListener listener) {
-        //TODO
+        textChangeListeners.add(listener);
     }
 
     @Override
     public void removeTextChangeListener(ITextChangeListener listener) {
-        //TODO
+        textChangeListeners.remove(listener);
+    }
+
+    protected void fireTextChangeNotification() {
+        for (Object o: textChangeListeners.getListeners()) {
+            final ITextChangeListener listener = (ITextChangeListener) o;
+            SafeRunner.run(new ISafeRunnable() {
+                @Override
+                public void run() throws Exception {
+                    listener.textChanged(ModuleOutputContent.this);
+                }
+                
+                @Override
+                public void handleException(Throwable e) {
+                    SimulationPlugin.logError(e);
+                }
+            });
+        }
     }
 
 }

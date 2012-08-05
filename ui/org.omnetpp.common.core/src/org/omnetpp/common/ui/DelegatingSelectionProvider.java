@@ -44,7 +44,7 @@ public class DelegatingSelectionProvider implements ISelectionProvider {
 	
 	private void fireSelectionChanged(SelectionChangedEvent event) {
 		for (Object listener : listeners.getListeners())
-			((ISelectionChangedListener)listener).selectionChanged(event);
+			((ISelectionChangedListener)listener).selectionChanged(event); //TODO SafeRunner, etc
 	}
 
 	public void setSelection(ISelection selection) {

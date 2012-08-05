@@ -3,6 +3,7 @@ package org.omnetpp.simulation.views;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +22,7 @@ import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.widgets.TextViewer;
 import org.omnetpp.simulation.widgets.TextViewerContent;
 
@@ -28,6 +30,7 @@ import org.omnetpp.simulation.widgets.TextViewerContent;
  *
  * @author Andras
  */
+//TODO when view is closed, it should deregister its listener from LogBuffer!!! (see ModuleOutputContent's ctor)
 public class ModuleOutputView extends ViewWithMessagePart {
 	public static final String ID = "org.omnetpp.simulation.views.ModuleOutputView";
 
@@ -39,6 +42,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
     protected IPartListener partListener;
 
     protected ISimulationStateListener simulationListener;
+    protected ISelectionChangedListener selectionChangeListener;
 
 
 	/**
@@ -96,6 +100,20 @@ public class ModuleOutputView extends ViewWithMessagePart {
                 });
             }
         };
+
+        selectionChangeListener = new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent e) {
+                System.out.println("module output view: got selection change, new selection: " + e.getSelection());  //TODO
+                if (e.getSelection() instanceof IStructuredSelection) {
+                    IStructuredSelection sel = (IStructuredSelection) e.getSelection();
+                    if (sel.getFirstElement() instanceof cModule) { //FIXME not only the 1st elem, and use adaptable not instaceof
+                        cModule module = (cModule) sel.getFirstElement();
+                        ((ModuleOutputContent)viewer.getContent()).setFilterModuleFullPath(module.getFullPath()); //XXX
+                    }
+                }
+            }
+        };
         
         // associate ourselves with the current simulation editor
         Display.getCurrent().asyncExec(new Runnable() {
@@ -108,7 +126,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
                     showMessage("No associated simulation.");
             }
         });
-        
+
         return viewer;
 	}
 
@@ -118,8 +136,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
         else {
             hideMessage();
             if (!(viewer.getContent() instanceof ModuleOutputContent))
-                viewer.setContent(new ModuleOutputContent(controller.getLogBuffer()));
-            ((ModuleOutputContent)viewer.getContent()).refresh();  //TODO ModuleOutputContent itself should listen, and should notify the viewer about content changes!!!
+                viewer.setContent(new ModuleOutputContent(controller.getLogBuffer(), new EventEntryLinesProvider()));
             viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
         }
@@ -138,15 +155,17 @@ public class ModuleOutputView extends ViewWithMessagePart {
     protected void associateWithEditor(SimulationEditor editor) {
         associatedSimulationEditor = editor;
 
-        SimulationController controller = ((SimulationEditor)editor).getSimulationController();
+        SimulationController controller = associatedSimulationEditor.getSimulationController();
         controller.addSimulationStateListener(simulationListener);
 
+        associatedSimulationEditor.getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
+        
         if (controller.getState() == SimState.DISCONNECTED || !controller.hasRootObjects()) {
             showMessage("No simulation process.");
         }
         else {
             hideMessage();
-            ModuleOutputContent content = new ModuleOutputContent(controller.getLogBuffer());
+            ModuleOutputContent content = new ModuleOutputContent(controller.getLogBuffer(), new EventEntryLinesProvider());
             viewer.setContent(content);
             viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
@@ -155,6 +174,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
 
     protected void disassociateFromEditor() {
         associatedSimulationEditor.getSimulationController().removeSimulationStateListener(simulationListener);
+        associatedSimulationEditor.getSite().getSelectionProvider().removeSelectionChangedListener(selectionChangeListener);
         associatedSimulationEditor = null;
         viewer.setContent(BLANK_TEXT_CONTENT);
         viewer.refresh();

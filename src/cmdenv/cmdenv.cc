@@ -1734,9 +1734,13 @@ void Cmdenv::simulationEvent(cEvent *event)
             entry->put("@", jsonWrap("E"));
             entry->put("#", jsonWrap(simulation.getEventNumber()));
             entry->put("t", jsonWrap(simulation.getSimTime()));
-            entry->put("m", jsonWrap(simulation.getContextModule()->getId())); //XXX
-            entry->put("msgt", jsonWrap(msg->getClassName()));
-            entry->put("msgn", jsonWrap(msg->getName()));
+            cModule *mod = msg->getArrivalModule();
+            entry->put("moduleId", jsonWrap(mod->getId()));
+            entry->put("moduleFullPath", jsonWrap(mod->getFullPath()));
+            entry->put("moduleNedType", jsonWrap(mod->getNedTypeName()));
+            entry->put("messageId", jsonWrap(msg->getId()));
+            entry->put("messageName", jsonWrap((std::string)msg->getName()));
+            entry->put("messageClassName", jsonWrap(msg->getClassName()));
             jsonLog->push_back(entry);
         }
     }

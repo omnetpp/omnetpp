@@ -20,8 +20,8 @@ public class TextViewerContent implements ITextViewerContent {
 
     public TextViewerContent(String text) {
         this.lines = text.split("\n");  // XXX split() discards trailing blank lines
-        for (int i = 0; i < lines.length; i++)
-            lines[i] = lines[i] + "\n";
+        if (lines.length == 0) 
+            lines = new String[] { "" };
     }
     
     @Override
@@ -30,34 +30,8 @@ public class TextViewerContent implements ITextViewerContent {
     }
 
     @Override
-    public int getCharCount() {
-        int sum = 0;
-        for (String line : lines)
-            sum += line.length();
-        return sum;
-    }
-
-    @Override
-    public String getLine(int lineIndex) {
+    public String getLineText(int lineIndex) {
         return lines[lineIndex];
-    }
-
-    @Override
-    public int getLineAtOffset(int offset) {
-        for (int i = 0; i < lines.length; i++) {
-            offset -= lines[i].length();
-            if (offset < 0)
-                return i;
-        }
-        return lines.length;
-    }
-
-    @Override
-    public int getOffsetAtLine(int lineIndex) {
-        int offset = 0;
-        for (int i = 0; i < lineIndex; i++)
-            offset += lines[i].length();
-        return offset;
     }
 
     @Override

@@ -3,30 +3,27 @@ package org.omnetpp.simulation.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.omnetpp.common.engine.BigDecimal;
+import org.eclipse.core.runtime.ISafeRunnable;
+import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.SafeRunner;
+import org.omnetpp.simulation.SimulationPlugin;
+
 
 /**
  * TODO
  *
  * @author Andras
  */
+//TODO LogBuffer should notify ModuleOutputContent when it changes!
 //FIXME making it possible to change module name and parent after creation is a REALLY BAD IDEA -- makes our job much more difficult in the IDE!!!
 public class LogBuffer {
-    public static final Object[] EMPTY_ARRAY = new Object[0];
-    
-    public static class EventEntry {
-        public long eventNumber;
-        public BigDecimal simulationTime;
-        public int moduleId;  
-        public String moduleNedType;  // fully qualified NED type name
-        public String moduleFullPath; //XXX we assume that the module's fullPath doesn't change during its lifetime
-        public String messageClassName;
-        public String messageName;
-        public Object[] logItems = EMPTY_ARRAY; //TODO store method calls too which affect the context
+    private List<EventEntry> eventEntries = new ArrayList<EventEntry>();
+    private ListenerList changeListeners = new ListenerList();
+
+    public interface ILogBufferChangedListener {
+        void changed(LogBuffer logBuffer);
     }
     
-    private List<EventEntry> eventEntries = new ArrayList<EventEntry>();
-
     public LogBuffer() {
     }
     
@@ -45,4 +42,31 @@ public class LogBuffer {
     public EventEntry getLastEventEntry() {
         return eventEntries.isEmpty() ? null : eventEntries.get(eventEntries.size()-1);
     }
+    
+    // to be called manually after a batch of addEventEntry() calls
+    public void fireChangeNotification() {
+        for (Object o: changeListeners.getListeners()) {
+            final ILogBufferChangedListener listener = (ILogBufferChangedListener) o;
+            SafeRunner.run(new ISafeRunnable() {
+                @Override
+                public void run() throws Exception {
+                    listener.changed(LogBuffer.this);
+                }
+
+                @Override
+                public void handleException(Throwable e) {
+                    SimulationPlugin.logError(e);
+                }
+            });
+        }
+    }
+    
+    public void addChangeListener(ILogBufferChangedListener listener) {
+        changeListeners.add(listener);
+    }
+
+    public void removeChangeListener(ILogBufferChangedListener listener) {
+        changeListeners.remove(listener);
+    }
+
 }

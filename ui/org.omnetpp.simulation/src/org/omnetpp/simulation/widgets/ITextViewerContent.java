@@ -18,15 +18,11 @@ import org.eclipse.swt.graphics.Color;
  */
 public interface ITextViewerContent {
     /**
-     * Return the number of lines.  Should answer 1 when no text is specified.
-     * The TextViewer widget relies on this behavior for drawing the cursor.
+     * Return the number of lines. It should never return zero. It is recommended
+     * that this provided adds an empty line at the end of all content (so that
+     * the caret can be moved after the last line).
      */
     public int getLineCount();
-
-    /**
-     * Return the number of characters in the content.
-     */
-    public int getCharCount();
 
     /**
      * Return the line at the given line index without delimiters.
@@ -37,48 +33,7 @@ public interface ITextViewerContent {
      *  content.
      * @return the line text without delimiters
      */
-    public String getLine(int lineIndex);
-
-    /**
-     * Return the line index at the given character offset.
-     * <p>
-     *
-     * @param offset offset of the line to return. The first character of the 
-     *  document is at offset 0.  An offset of getLength() is valid and should 
-     *  answer the number of lines. 
-     * @return the line index. The first line is at index 0.  If the character 
-     *  at offset is a delimiter character, answer the line index of the line 
-     *  that is delimited. 
-     *  For example, if text = "\r\n\r\n", and delimiter = "\r\n", then:
-     * <ul>
-     * <li>getLineAtOffset(0) == 0
-     * <li>getLineAtOffset(1) == 0
-     * <li>getLineAtOffset(2) == 1
-     * <li>getLineAtOffset(3) == 1
-     * <li>getLineAtOffset(4) == 2
-     * </ul>
-     */
-    public int getLineAtOffset(int offset);
-
-    /**
-     * Return the character offset of the first character of the given line.
-     * <p>
-     * <b>NOTE:</b> When there is no text (i.e., no lines), getOffsetAtLine(0) 
-     * is a valid call that should return 0.
-     * </p>
-     *
-     * @param lineIndex index of the line. The first line is at index 0.
-     * @return offset offset of the first character of the line. The first 
-     *  character of the document is at offset 0.  The return value should 
-     *  include line delimiters.  
-     *  For example, if text = "\r\ntest\r\n" and delimiter = "\r\n", then:
-     * <ul>
-     * <li>getOffsetAtLine(0) == 0
-     * <li>getOffsetAtLine(1) == 2
-     * <li>getOffsetAtLine(2) == 8
-     * </ul>
-     */
-    public int getOffsetAtLine(int lineIndex);
+    public String getLineText(int lineIndex);
 
     /**
      * Return the color for the specified line.

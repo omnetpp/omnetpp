@@ -26,7 +26,7 @@ import org.omnetpp.animation.widgets.AnimationPositionControl;
 import org.omnetpp.animation.widgets.AnimationStatus;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.simulation.SimulationEditorInput;
-import org.omnetpp.common.ui.SelectionProvider;
+import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.actions.CallFinishAction;
 import org.omnetpp.simulation.actions.ExpressRunAction;
@@ -85,8 +85,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
         simulationController.setSimulationCallback(this);
 
-        site.setSelectionProvider(new SelectionProvider());
-    }
+        getSite().setSelectionProvider(new DelegatingSelectionProvider());  // must do it now, because 'editor opened' notification goes right after init() returns
+}
 
     @Override
     public void createPartControl(Composite parent) {
@@ -192,6 +192,9 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         // create animation controller for the simulation canvas
         LiveAnimationController liveAnimationController = new LiveAnimationController(simulationCanvas, simulationController);
         simulationController.setLiveAnimationController(liveAnimationController);
+
+        DelegatingSelectionProvider delegatingSelectionProvider = (DelegatingSelectionProvider) getSite().getSelectionProvider();
+        delegatingSelectionProvider.setSelectionProvider(simulationCanvas);  //TODO switch to "animationCanvas" when use flips to "Playback" tab
         
 //        // create animation canvas
 //        animationCanvas = new EventLogAnimationCanvas(parent, SWT.DOUBLE_BUFFERED) {
@@ -424,6 +427,4 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     public boolean isSaveAsAllowed() {
         return false;
     }
-
-
 }

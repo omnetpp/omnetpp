@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.controller.LogBuffer.EventEntry;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
@@ -379,11 +378,11 @@ public class SimulationController {
                     lastEventEntry = new EventEntry();
                     lastEventEntry.eventNumber = ((Number)logEntry.get("#")).longValue();
                     lastEventEntry.simulationTime = BigDecimal.parse((String)logEntry.get("t"));
-                    lastEventEntry.moduleId = ((Number)logEntry.get("m")).intValue();
-                    lastEventEntry.moduleFullPath = "TODO.foo.bar[12]"; //TODO look up in cSimulation 
-                    lastEventEntry.moduleNedType = "TODOModule"; //TODO look up in cSimulation
-                    lastEventEntry.messageName = (String)logEntry.get("msgn");
-                    lastEventEntry.messageClassName = (String)logEntry.get("msgt");
+                    lastEventEntry.moduleId = ((Number)logEntry.get("moduleId")).intValue();
+                    lastEventEntry.moduleFullPath = (String) logEntry.get("moduleFullPath"); 
+                    lastEventEntry.moduleNedType = (String) logEntry.get("moduleNedType");
+                    lastEventEntry.messageName = (String)logEntry.get("messageName");
+                    lastEventEntry.messageClassName = (String)logEntry.get("messageClassName");
                     logBuffer.addEventEntry(lastEventEntry);
                 }
                 else if (type.equals("L")) {
@@ -438,6 +437,8 @@ public class SimulationController {
                 logItems.clear();
             }
             
+            logBuffer.fireChangeNotification();  // tell everyone interested about the change
+            
             /*
              * Refresh cached objects. Strategy: Maintain a refreshSerial, and for
              * each object also maintain the refreshSerial when they were last
@@ -463,7 +464,7 @@ public class SimulationController {
                     filledObjects.add(obj);
             doLoadObjects(filledObjects);
 
-            System.out.println("refreshStatus notifyListeners() follows:");
+            //System.out.println("refreshStatus notifyListeners() follows:");
             notifyListeners();
 
             // carry out action requested by the simulation
@@ -803,13 +804,13 @@ public class SimulationController {
         String response = getPageContent(url);
         if (response == null)
             return new HttpException("Received empty document in response to GET " + url);
-        System.out.println("  - HTTP GET took " + (System.currentTimeMillis() - startTime) + "ms");
+        //System.out.println("  - HTTP GET took " + (System.currentTimeMillis() - startTime) + "ms");
 
         // parse
         startTime = System.currentTimeMillis();
         Object jsonTree = new JSONReader().read(response);
 //        System.out.println("  got: " + jsonTree.toString());
-        System.out.println("  - JSON parsing took " + (System.currentTimeMillis() - startTime) + "ms");
+        //System.out.println("  - JSON parsing took " + (System.currentTimeMillis() - startTime) + "ms");
         return jsonTree;
     }
 
