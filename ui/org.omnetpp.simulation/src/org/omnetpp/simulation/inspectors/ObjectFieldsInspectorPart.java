@@ -1,7 +1,6 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -20,6 +19,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
+import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
 import org.omnetpp.simulation.inspectors.actions.SortAction;
@@ -42,12 +42,12 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private Label label;
     private ObjectFieldsViewer viewer;
 
-    private IAction packetModeTool;  //TODO null these when floating toolbar disappears
-    private IAction childrenModeTool;
-    private IAction groupedModeTool;
-    private IAction inheritaceModeTool;
-    private IAction flatModeTool;
-    private IAction sortAction;
+    private IInspectorAction packetModeTool;  //TODO null these when floating toolbar disappears
+    private IInspectorAction childrenModeTool;
+    private IInspectorAction groupedModeTool;
+    private IInspectorAction inheritaceModeTool;
+    private IInspectorAction flatModeTool;
+    private IInspectorAction sortAction;
 
     
     public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
@@ -107,7 +107,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
     public void setMode(Mode mode) {
         viewer.setMode(mode);
-        updateModeSwitcherToolsState();
+        updateActions();
     }
 
     public Ordering getOrdering() {
@@ -116,6 +116,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
     public void setOrdering(Ordering ordering) {
         viewer.setOrdering(ordering);
+        updateActions();
     }
 
     @Override
@@ -133,18 +134,16 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         manager.add(groupedModeTool = my(new SetModeAction(Mode.GROUPED, "Grouped mode", IMG_MODE_GROUPED)));
         manager.add(inheritaceModeTool = my(new SetModeAction(Mode.INHERITANCE, "Inheritance mode", IMG_MODE_INHERITANCE)));
         manager.add(flatModeTool = my(new SetModeAction(Mode.FLAT, "Flat mode", IMG_MODE_FLAT)));
-        updateModeSwitcherToolsState();
     }
 
-    public void updateModeSwitcherToolsState() {
-        Mode mode = viewer.getMode();
+    public void updateActions() {
         if (packetModeTool != null) {
-            packetModeTool.setChecked(mode == Mode.PACKET);
-            childrenModeTool.setChecked(mode == Mode.CHILDREN);
-            groupedModeTool.setChecked(mode == Mode.GROUPED);
-            inheritaceModeTool.setChecked(mode == Mode.INHERITANCE);
-            flatModeTool.setChecked(mode == Mode.FLAT);
-            sortAction.setChecked(getOrdering() != Ordering.NATURAL);
+            sortAction.update();
+            packetModeTool.update();
+            childrenModeTool.update();
+            groupedModeTool.update();
+            inheritaceModeTool.update();
+            flatModeTool.update();
         }
     }
 

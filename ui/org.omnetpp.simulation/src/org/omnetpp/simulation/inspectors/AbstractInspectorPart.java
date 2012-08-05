@@ -6,7 +6,6 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
@@ -44,7 +43,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         return null;
     }
 
-    protected IAction my(IInspectorAction action) {
+    protected IInspectorAction my(IInspectorAction action) {
         action.setInspectorPart(this);
         return action;
     }

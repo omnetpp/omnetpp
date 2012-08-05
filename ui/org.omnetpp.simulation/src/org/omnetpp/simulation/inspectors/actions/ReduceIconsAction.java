@@ -15,4 +15,10 @@ public class ReduceIconsAction extends AbstractInspectorAction {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
         inspector.reduceIcons();
     }
+
+    @Override
+    public void update() {
+        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
+        setEnabled(inspector.canReduceIcons());
+    }
 }

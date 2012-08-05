@@ -30,8 +30,6 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
@@ -46,6 +44,7 @@ import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.SubmoduleFigureEx;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
+import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.inspectors.actions.InspectAsObject;
 import org.omnetpp.simulation.inspectors.actions.InspectNedTypeAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
@@ -68,13 +67,13 @@ import org.omnetpp.simulation.model.cObject;
  * An inspector that displays a compound module graphically.
  * @author Andras
  */
-//TODO ConnectionFigure must be fixed too!
-//TODO when zoom buttons are clicked, currently toolbar jumps away to follow the inspector!!! (it should stay where it was)
 public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected static final DisplayString EMPTY_DISPLAYSTRING = new DisplayString("");
+    protected static final int IMAGESIZEPERCENTAGE_MIN = 10;
+    protected static final int IMAGESIZEPERCENTAGE_MAX = 500;
 
-    private Label labelFigure;
-    private ScrollPane scrollPane; // child of the inspector figure
+    protected Label labelFigure;
+    protected ScrollPane scrollPane; // child of the inspector figure
     protected ScalableFigure scalableFigure; // child (content) of scrollPane 
     protected CompoundModuleFigure compoundModuleFigure; // child of scalableFigure
 
@@ -84,6 +83,10 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     protected boolean showNameLabels = true;
     protected boolean showArrowHeads = true;
 
+    private IInspectorAction enlargeIconsAction;
+    private IInspectorAction reduceIconsAction;
+    private IInspectorAction zoomInAction;
+    private IInspectorAction zoomOutAction;
 
     /**
      * Constructor.
@@ -259,6 +262,8 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             // grow inspector window so that scrollbars don't appear if they weren't present before setting the zoom
             figure.getParent().setConstraint(figure, figure.getBounds().getCopy().setSize(figure.getPreferredSize()));
         }
+        
+        updateActions();
     }
 
     public void zoomOut() {
@@ -277,6 +282,14 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         setZoomLevel(zoom);
     }
 
+    public boolean canZoomOut() {
+        return getZoomLevel() > 0.1; // a pretty arbitrary limit
+    }
+    
+    public boolean canZoomIn() {
+        return getZoomLevel() < 10; // a pretty arbitrary limit
+    }
+
     public int getImageSizePercentage() {
         return imageSizePercentage;
     }
@@ -285,6 +298,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         Assert.isTrue(imageSizePercentage > 0);
         this.imageSizePercentage = imageSizePercentage;
         refresh();
+        updateActions();
     }
 
     /**
@@ -292,7 +306,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
      */
     public void enlargeIcons() {
         int imageSizePercentage = getImageSizePercentage();
-        if (imageSizePercentage < 500) {
+        if (imageSizePercentage < IMAGESIZEPERCENTAGE_MAX) {
             imageSizePercentage *= 1.2;
             if (Math.abs(imageSizePercentage-100) < 15)
                 imageSizePercentage = 100; // prevent accumulation of rounding errors
@@ -305,12 +319,20 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
      */
     public void reduceIcons() {
         int imageSizePercentage = getImageSizePercentage();
-        if (imageSizePercentage > 10) {
+        if (imageSizePercentage > IMAGESIZEPERCENTAGE_MIN) {
             imageSizePercentage /= 1.2;
             if (Math.abs(imageSizePercentage-100) < 15)
                 imageSizePercentage = 100; // prevent accumulation of rounding errors
             setImageSizePercentage(imageSizePercentage);
         }
+    }
+
+    public boolean canReduceIcons() {
+        return getImageSizePercentage() > IMAGESIZEPERCENTAGE_MIN;
+    }
+
+    public boolean canEnlargeIcons() {
+        return getImageSizePercentage() < IMAGESIZEPERCENTAGE_MAX;
     }
     
     public boolean getShowNameLabels() {
@@ -648,20 +670,20 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         manager.add(new Separator());
         manager.add(my(new ShowSubmoduleNamesAction()));
         manager.add(my(new ShowArrowheadsAction()));
-        manager.add(my(new EnlargeIconsAction()));
-        manager.add(my(new ReduceIconsAction()));
-        manager.add(my(new ZoomInAction()));
-        manager.add(my(new ZoomOutAction()));
+        manager.add(enlargeIconsAction = my(new EnlargeIconsAction()));
+        manager.add(reduceIconsAction = my(new ReduceIconsAction()));
+        manager.add(zoomInAction = my(new ZoomInAction()));
+        manager.add(zoomOutAction = my(new ZoomOutAction()));
         manager.update(false);
     }
 
-    protected ToolItem addToolItem(ToolBar toolbar, String tooltip, String imagePath) {
-        ToolItem item = new ToolItem(toolbar, SWT.PUSH);
-        if (imagePath != null)
-            item.setImage(SimulationPlugin.getCachedImage(imagePath));
-        item.setToolTipText(tooltip);
-        return item;
+    public void updateActions() {
+        if (enlargeIconsAction != null) {
+            enlargeIconsAction.update();
+            reduceIconsAction.update();
+            zoomInAction.update();
+            zoomOutAction.update();
+        }
     }
-
 
 }

@@ -23,4 +23,10 @@ public class InspectParentAction extends AbstractInspectorAction {
             container.inspect(parent);
         }
     }
+    
+    @Override
+    public void update() {
+        cObject parent = getInspectorPart().getObject().getOwner();
+        setEnabled(parent != null);
+    }
 }

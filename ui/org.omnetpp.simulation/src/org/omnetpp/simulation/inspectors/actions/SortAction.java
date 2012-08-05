@@ -24,4 +24,10 @@ public class SortAction extends AbstractInspectorAction {
         ObjectFieldsInspectorPart inspector = (ObjectFieldsInspectorPart) getInspectorPart();
         inspector.setOrdering(isChecked() ? Ordering.ALPHABETICAL : Ordering.NATURAL);
     }
+    
+    @Override
+    public void update() {
+        ObjectFieldsInspectorPart inspector = (ObjectFieldsInspectorPart) getInspectorPart();
+        setChecked(inspector.getOrdering() == Ordering.ALPHABETICAL);
+    }
 }

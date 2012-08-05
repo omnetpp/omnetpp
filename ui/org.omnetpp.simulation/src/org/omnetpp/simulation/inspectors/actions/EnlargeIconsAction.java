@@ -15,4 +15,10 @@ public class EnlargeIconsAction extends AbstractInspectorAction {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
         inspector.enlargeIcons();
     }
+
+    @Override
+    public void update() {
+        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
+        setEnabled(inspector.canEnlargeIcons());
+    }
 }

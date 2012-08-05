@@ -31,10 +31,14 @@ public class AbstractInspectorAction extends Action implements IInspectorAction 
     @Override
     public void setInspectorPart(IInspectorPart inspector) {
         this.inspector = inspector;
+        update();
     }
     
-    protected IInspectorPart getInspectorPart() {
+    public IInspectorPart getInspectorPart() {
         Assert.isNotNull(inspector, "setInspectorPart() should have been called");
         return inspector;
+    }
+
+    public void update() {
     }
 }

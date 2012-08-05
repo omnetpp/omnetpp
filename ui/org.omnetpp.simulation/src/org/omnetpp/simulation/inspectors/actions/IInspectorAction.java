@@ -16,4 +16,8 @@ public interface IInspectorAction extends IAction {
      */
     void setInspectorPart(IInspectorPart inspector);
 
+    /**
+     * Refreshes the inspector's state
+     */
+    void update();
 }
