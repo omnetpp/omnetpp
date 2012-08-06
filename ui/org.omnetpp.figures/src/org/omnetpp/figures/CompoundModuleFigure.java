@@ -168,18 +168,19 @@ public class CompoundModuleFigure extends LayeredPane
         super();
 
         setLayoutManager(new StackLayout());
-        // add layer used to display message animation effects - not used in editor
-        addLayerAfter(messageLayer = new Layer(), null, null);
-        // connections inside a compound module
-        addLayerAfter(connectionLayer = new ConnectionLayer(), null, null);
+
+        // compound module background: images, colors, grid, etc.
+        add(backgroundLayer = new BackgroundLayer());
+        // submodule background decoration (range indicator etc), non-extensible
+        add(backDecorationLayer = new Layer());
+        // plain layer used to display submodules - size is automatically calculated from children sizes and positions
+        add(submoduleLayer = new SubmoduleLayer());
         // foregroundDecorationLayer (text messages, decorator icons etc)
-        addLayerAfter(frontDecorationLayer = new Layer(), null, null);
-        // plain layer used to display submodules - size is automatically calculated from child size and positions
-        addLayerAfter(submoduleLayer = new SubmoduleLayer(), null, null);
-        // submodule background decoration (range indicator etc). non extendable
-        addLayerAfter(backDecorationLayer = new Layer(), null, null);
-        // compound module background. images, colors, grid etc
-        addLayerAfter(backgroundLayer = new BackgroundLayer(), null, null);
+        add(frontDecorationLayer = new Layer());
+        // connections inside a compound module
+        add(connectionLayer = new ConnectionLayer());
+        // add layer for message animation effects - not used in the editor
+        add(messageLayer = new Layer());
 
         // add a compound module border
         setBorder(new CompoundModuleLineBorder());
