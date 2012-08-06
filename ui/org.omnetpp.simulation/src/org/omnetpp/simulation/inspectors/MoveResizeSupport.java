@@ -20,7 +20,8 @@ import org.eclipse.swt.widgets.Display;
  *
  * @author Andras
  */
-//TODO solve scrolling-while-move problem like in DragHandle: temporarily preferredSize of the canvas
+//TODO resize border is too thin at the right edge of SWT control (and the next few pixels actually move!)
+//TODO the foremost ("focused"?) inspector or inspectors should be visually distinguished (different border color?)
 public class MoveResizeSupport {
     private static final Cursor CURSOR_SIZEE = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEE); //TODO into some share resource file
     private static final Cursor CURSOR_SIZEW = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEW);

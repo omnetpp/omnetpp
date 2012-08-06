@@ -31,6 +31,7 @@ import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
  *
  * @author Andras
  */
+//FIXME SWT inspector cannot steal floating toolbar if it's over (and inside the bounds of) the toolbar's current owner (non-SWT inspector)
 public class FloatingToolbarSupport {
     private SimulationCanvas simulationCanvas;
     
