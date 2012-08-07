@@ -388,7 +388,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     protected void refreshLabel() {
         cModule module = (cModule) getObject();
-        String text = module.getFullPath();   //TODO add NED type name too!!! (not yet accessible in cModule)
+        String text = "(" + module.getShortTypeName() + ") " + module.getFullPath() + " [id=" + module.getId() + "]";
         labelFigure.setText(text);
     }
 

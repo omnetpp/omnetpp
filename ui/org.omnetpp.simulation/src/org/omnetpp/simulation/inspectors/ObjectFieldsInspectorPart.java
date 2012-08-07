@@ -139,7 +139,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         super.refresh();
 
         if (!isDisposed()) {
-            String text = "(" + object.getClassName() + ") " + object.getFullPath() + " - " + object.getInfo();
+            String text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
             label.setText(text);
             label.setToolTipText(text); // because label text is usually not fully visible
 

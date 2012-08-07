@@ -181,6 +181,10 @@ public class cObject {
         return className;
     }
 
+    public String getShortTypeName() {
+        return getClassName();  // and for modules and channels, it will return the NED type name without package
+    }
+    
     public String getIcon() {
         checkState();
         return icon;

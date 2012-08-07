@@ -3,6 +3,7 @@ package org.omnetpp.simulation.model;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.simulation.controller.SimulationController;
@@ -13,6 +14,7 @@ import org.omnetpp.simulation.controller.SimulationController;
  */
 public class cComponent extends cObject {
     private cComponentType componentType;
+    private String shortTypeName;
     private cModule parentModule;
     private cPar[] parameters;
     private IDisplayString displayString;
@@ -35,6 +37,16 @@ public class cComponent extends cObject {
         return componentType.getFullName();
     }
     
+    @Override
+    public String getShortTypeName() {
+        if (shortTypeName == null) {
+            // computed here and cached; discarded on every refresh
+            String nedTypeName = getNedTypeName();
+            shortTypeName = !nedTypeName.contains(".") ? nedTypeName : StringUtils.substringAfterLast(nedTypeName, ".");
+        }
+        return shortTypeName;
+    }
+    
     public cModule getParentModule() {
         checkState();
         return parentModule;
@@ -55,6 +67,7 @@ public class cComponent extends cObject {
         super.doFillFromJSON(jsonObject);
 
         componentType = (cComponentType) getController().getObjectByJSONRef((String) jsonObject.get("componentType"));
+        shortTypeName = null; // computed on demand
         parentModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("parentModule"));
         displayString = new DisplayString((String) jsonObject.get("displayString"));
 

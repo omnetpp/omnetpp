@@ -399,7 +399,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 "  -  Event #" + controller.getEventNumber() +
                 "   t=" + controller.getSimulationTime() + "s" +
                 "   next=" + controller.getNextSimulationTime() + "s" +
-                " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getNedTypeName() + ")");
+                " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getShortTypeName() + ")");
             statusLabel.setText(status);
         }
     }
