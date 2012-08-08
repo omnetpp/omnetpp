@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -533,20 +534,22 @@ public class SimulationController {
         doLoadObjects(objects, ContentToLoadEnum.FIELDS);
     }
 
+    public void loadObjects(cObject[] objects) throws IOException {
+        doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.OBJECT);
+    }
+
+    public void loadObjects(List<? extends cObject>objects) throws IOException {
+        doLoadObjects(objects, ContentToLoadEnum.OBJECT);
+    }
+
     //TODO we need a loadUnfilledObjectsAndTheirFields() too!!!  btw, why not 1 method and 2 flags: "unfilled objects only", "load fields too" ????
     public void loadUnfilledObjects(cObject[] objects) throws IOException {
-        // load objects that are not yet filled in
-        Set<cObject> missing = new HashSet<cObject>();
-        for (cObject obj : objects) {
-            if (!obj.isFilledIn())
-                missing.add(obj);
-        }
-        doLoadObjects(missing, ContentToLoadEnum.OBJECT);
+        loadUnfilledObjects(Arrays.asList(objects));
     }
 
     public void loadUnfilledObjects(Collection<? extends cObject> objects) throws IOException {
         // load objects that are not yet filled in
-        Set<cObject> missing = new HashSet<cObject>();
+        List<cObject> missing = new ArrayList<cObject>();
         for (cObject obj : objects) {
             if (!obj.isFilledIn())
                 missing.add(obj);

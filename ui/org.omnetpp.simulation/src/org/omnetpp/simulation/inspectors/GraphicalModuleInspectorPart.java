@@ -2,8 +2,6 @@ package org.omnetpp.simulation.inspectors;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +55,10 @@ import org.omnetpp.simulation.inspectors.actions.ShowSubmoduleNamesAction;
 import org.omnetpp.simulation.inspectors.actions.StopAction;
 import org.omnetpp.simulation.inspectors.actions.ZoomInAction;
 import org.omnetpp.simulation.inspectors.actions.ZoomOutAction;
+import org.omnetpp.simulation.model.cChannel;
 import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cModule;
-import org.omnetpp.simulation.model.cObject;
 
 /**
  * An inspector that displays a compound module graphically.
@@ -368,14 +366,33 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         super.refresh();
         if (!isDisposed()) {
             cModule module = (cModule) object;
-            //TODO load submodules, gates, channels etc in one call!
-            if (module.isFilledIn())
-                module.safeLoad();
             try {
-                Collection<? extends cObject> submodsList = Arrays.asList(module.getSubmodules());
-                module.getController().loadUnfilledObjects(submodsList);
+                // load submodules, gates, channels in as few calls as possible:
+                // module and submodules first
+                if (module.isFilledIn())
+                    module.safeLoad();
+                module.getController().loadUnfilledObjects(module.getSubmodules());
+
+                // all gates (needed for connections)
+                List<cGate> gateList = new ArrayList<cGate>();
+                for (cGate gate : module.getGates())
+                    if (!gate.isFilledIn())
+                        gateList.add(gate);
+                for (cModule submodule : module.getSubmodules())
+                    for (cGate gate : submodule.getGates())
+                        if (!gate.isFilledIn())
+                            gateList.add(gate);
+                module.getController().loadObjects(gateList); // pre-filtered to unfilled objects
+
+                // channel objects
+                List<cChannel> channelList = new ArrayList<cChannel>();
+                for (cGate gate : gateList)
+                    if (gate.getChannel() != null && !gate.getChannel().isFilledIn())
+                        channelList.add(gate.getChannel());
+                module.getController().loadObjects(channelList); // pre-filtered to unfilled objects
             }
-            catch (IOException e) {  //FIXME ez itt valahogy nem tul jo!
+            catch (IOException e) {
+                //TODO properly handle... (e.g. close inspector?)
                 SimulationPlugin.logError(e);
             }
 
@@ -507,6 +524,8 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
         // refresh submodules
         for (cModule submodule : submodules.keySet()) {
+            if (!submodule.isFilledIn())
+                submodule.safeLoad();
             SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
             submoduleFigure.setDisplayString(scale, getDisplayStringFrom(submodule));
             submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
@@ -517,6 +536,8 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // refresh connections
         //FIXME this is very slow!!!! even when there are no display strings at all. ConnectionFigure is not caching the displaystring?
         for (cGate gate : connections.keySet()) {
+            if (!gate.isFilledIn())
+                gate.safeLoad();
             ConnectionFigure connectionFigure = connections.get(gate);
             connectionFigure.setDisplayString(getDisplayStringFrom(gate.getChannel())); // note: gate.getDisplayString() would implicitly create a cIdealChannel!
             connectionFigure.setArrowHeadEnabled(showArrowHeads);

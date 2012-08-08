@@ -388,6 +388,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             status += "   " + controller.getState().name();
 
             cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+            if (!simulation.isFilledIn())
+                simulation.safeLoad();
             cModule module = simulation.getModuleById(controller.getNextEventModuleId());
             if (module != null && !module.isFilledIn())
                 module.safeLoad();
