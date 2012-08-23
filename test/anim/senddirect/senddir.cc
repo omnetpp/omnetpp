@@ -52,7 +52,7 @@ void Gen::sendTo(const char *modname, const char *gatename)
     cModule *target = simulation.getModuleByPath(modname);
     ev << "Sending " << msgname <<  " to " << modname << "." << gatename << endl;
     wait(0);
-    sendDirect(msg, 0, target->gate(gatename));
+    sendDirect(msg, target->gate(gatename));
     wait(1);
 }
 
