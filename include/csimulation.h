@@ -368,12 +368,14 @@ class SIM_API cSimulation : public cNamedObject, noncopyable
 
     /**
      * Returns the current simulation time. (It is also available via the
-     * global simTime() function.)
+     * global simTime() function.) Between events it returns the time of
+     * the last executed event.
      */
     simtime_t_cref getSimTime() const  {return sim_time;}
 
     /**
-     * Returns the sequence number of current event.
+     * Returns the sequence number of current event. Between events it returns
+     * the time of the next executed event.  FIXME this is inconsistent with getSimTime()!!!!! TODO also check what Tkenv and Cmdenv displays!!!!!
      */
     eventnumber_t getEventNumber() const  {return event_num;}
 
