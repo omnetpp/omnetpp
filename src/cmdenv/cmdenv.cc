@@ -539,16 +539,15 @@ bool Cmdenv::handle(cHttpRequest *request)
             result->put("config", jsonWrap(cfg->getActiveConfigName()));
             result->put("run", jsonWrap(cfg->getActiveRunNumber()));
             result->put("network", jsonWrap(simulation.getNetworkType()->getName()));
-            // TODO: eventnumber is immediately incremented after handling a message
-            result->put("eventNumber", jsonWrap(simulation.getEventNumber() - 1));
-            result->put("simTime", jsonWrap(simTime()));
+            result->put("lastEventNumber", jsonWrap(simulation.getEventNumber() - 1)); // FIXME: eventnumber is immediately incremented after handling a message -- fix this
+            result->put("lastEventSimtime", jsonWrap(simTime()));  //FIXME simTime() is also updated at the wrong place (in the scheduler, not it doOneEvent())
             result->put("nextEventNumber", jsonWrap(simulation.getEventNumber()));
-            result->put("nextEventSimTime", jsonWrap(simulation.guessNextSimtime()));
+            result->put("nextEventSimtimeGuess", jsonWrap(simulation.guessNextSimtime()));
             if (simulation.guessNextModule())
-                result["nextEventModuleId"] = jsonWrap(simulation.guessNextModule()->getId());
+                result->put("nextEventModuleIdGuess", jsonWrap(simulation.guessNextModule()->getId()));
             cEvent *guessNextEvent = simulation.guessNextEvent();
             if (guessNextEvent && guessNextEvent->isMessage())
-                result->put("nextEventMessageId", jsonWrap(static_cast<cMessage*>(guessNextEvent)->getId()));
+                result->put("nextEventMessageIdGuess", jsonWrap(static_cast<cMessage*>(guessNextEvent)->getId()));
         }
 
         if (collectJsonLog) {

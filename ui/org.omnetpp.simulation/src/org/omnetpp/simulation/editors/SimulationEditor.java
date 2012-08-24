@@ -22,6 +22,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.simulation.SimulationPlugin;
@@ -196,7 +197,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             @Override
             public void simulationStateChanged(SimulationController controller) {
                 simulationCanvas.refreshInspectors();
-                showNextEventMarker();
+                if (!controller.isBeforeAnimatingLastEvent())
+                    showNextEventMarker();
             }
         });
 
@@ -388,25 +390,28 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     protected void updateStatusDisplay() {
         if (!statusLabel.isDisposed()) {
+            //TODO this should not be a single label because text jumps due to the use of proportional font
             SimulationController controller = getSimulationController();
             String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
             status += "   " + controller.getState().name();
 
-            cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
-            if (!simulation.isFilledIn())
-                simulation.safeLoad();
-            cModule module = simulation.getModuleById(controller.getNextEventModuleId());
-            if (module != null && !module.isFilledIn())
-                module.safeLoad();
+            if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK) {
+                status += "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() + "   (" + controller.getNetworkName() + ")";
 
-            if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK)
-                status +=
-                "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() +
-                "   (" + controller.getNetworkName() + ")" +
-                "  -  Event #" + controller.getEventNumber() +
-                "   t=" + controller.getSimulationTime() + "s" +
-                "   next=" + controller.getNextSimulationTime() + "s" +
-                " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getShortTypeName() + ")");
+                cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+                if (!simulation.isFilledIn())
+                    simulation.safeLoad();
+
+                boolean displayLast = controller.isBeforeAnimatingLastEvent();
+                long eventNumber = displayLast ? controller.getLastEventNumber() : controller.getNextEventNumber();
+                BigDecimal simTime = displayLast ? controller.getLastEventSimulationTime() : controller.getNextEventSimulationTimeGuess();
+                cModule module = displayLast ? null /*TODO!!!!*/ : simulation.getModuleById(controller.getNextEventModuleIdGuess());
+                if (module != null && !module.isFilledIn())
+                    module.safeLoad();
+                String moduleText = module == null ? "n/a" : module.getFullPath() + " (" + module.getShortTypeName() + ")";
+                status += "  -  Event #" + eventNumber + "   t=" + simTime + "s" + " in " + moduleText;
+            }
+            
             statusLabel.setText(status);
         }
     }
@@ -419,7 +424,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
         // get next event's module ID
         SimulationController controller = getSimulationController();
-        int nextEventModuleId = controller.getNextEventModuleId();
+        int nextEventModuleId = controller.getNextEventModuleIdGuess();
         if (nextEventModuleId <= 1)
             return;
 

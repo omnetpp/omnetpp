@@ -105,19 +105,20 @@ public class SimulationController {
     private String configName;
     private int runNumber;
     private String networkName;
-    private long eventNumber; // last event number
-    private BigDecimal simulationTime; // last simulation time
+    private long lastEventNumber; // last event's event number
+    private BigDecimal lastEventSimulationTime; // last event's simulation time
     private long nextEventNumber;
-    private BigDecimal nextSimulationTime;
-    private int nextEventModuleId;  //TODO display on UI
-    private long nextEventMessageId; //TODO display on UI
+    private BigDecimal nextEventSimulationTimeGuess; // hw-in-the-loop may inject new event before first one in the FES!
+    private int nextEventModuleIdGuess;  //TODO display on UI
+    private long nextEventMessageIdGuess; //TODO display on UI
     private String eventlogFile;
 
     // run state
     private RunMode currentRunMode = RunMode.NOTRUNNING; // UI state (simulation might be in READY, since UI runs it in increments of n events)
     private BigDecimal runUntilSimTime = null;
     private long runUntilEventNumber = 0;
-    private boolean stopRequested;
+    private boolean stopRequested = false;
+    private boolean isBeforeAnimatingLastEvent = false;  //TODO status display to obey it!!!
 
     // object cache
     private long refreshSerial;
@@ -259,6 +260,10 @@ public class SimulationController {
         return currentRunMode;
     }
 
+    public boolean isBeforeAnimatingLastEvent() {
+        return isBeforeAnimatingLastEvent;
+    }
+    
     public boolean isRunUntilActive() {
         // whether a "Run Until" is active
         return currentRunMode != RunMode.NOTRUNNING && (runUntilSimTime != null || runUntilEventNumber != 0);
@@ -276,28 +281,28 @@ public class SimulationController {
         return networkName;
     }
 
-    public int getNextEventModuleId() {
-        return nextEventModuleId;
+    public long getLastEventNumber() {
+        return lastEventNumber;
     }
 
-    public long getNextEventMessageId() {
-        return nextEventMessageId;
-    }
-
-    public long getEventNumber() {
-        return eventNumber;
-    }
-
-    public BigDecimal getSimulationTime() {
-        return simulationTime;
+    public BigDecimal getLastEventSimulationTime() {
+        return lastEventSimulationTime;
     }
 
     public long getNextEventNumber() {
         return nextEventNumber;
     }
 
-    public BigDecimal getNextSimulationTime() {
-        return nextSimulationTime;
+    public BigDecimal getNextEventSimulationTimeGuess() {
+        return nextEventSimulationTimeGuess;
+    }
+
+    public int getNextEventModuleIdGuess() {
+        return nextEventModuleIdGuess;
+    }
+
+    public long getNextEventMessageIdGuess() {
+        return nextEventMessageIdGuess;
     }
 
     public String getEventlogFile() {
@@ -336,21 +341,21 @@ public class SimulationController {
 
             // refresh basic simulation state
             Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
-            //System.out.println(responseJSON.toString());
             Map responseMap = (Map) responseJSON;
             hostName = (String) responseMap.get("hostname");
             processId = ((Number) responseMap.get("processid")).longValue();
-            state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
-            eventNumber = defaultLongIfNull((Number) responseMap.get("eventNumber"), 0);
-            simulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("simTime"), "0"));
-            nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
-            nextSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimTime"), "0"));
             configName = (String) responseMap.get("config");
             runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
             networkName = (String) responseMap.get("network");
-            nextEventModuleId = defaultIntegerIfNull((Number) responseMap.get("nextEventModuleId"), 0);
-            nextEventMessageId = defaultLongIfNull((Number) responseMap.get("nextEventMessageId"), 0);
+            state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
             eventlogFile = (String) responseMap.get("eventlogfile");
+
+            lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);  //TODO rename JSON fields, also in cmdenv.cc!!!
+            lastEventSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("lastEventSimtime"), "0"));
+            nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
+            nextEventSimulationTimeGuess = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimtimeGuess"), "0"));
+            nextEventModuleIdGuess = defaultIntegerIfNull((Number) responseMap.get("nextEventModuleIdGuess"), 0);
+            nextEventMessageIdGuess = defaultLongIfNull((Number) responseMap.get("nextEventMessageIdGuess"), 0);
 
             // remember action requested by the simulation
             Map errorInfo = (Map) responseMap.get("errorInfo");
@@ -691,12 +696,13 @@ public class SimulationController {
             currentRunMode = RunMode.STEP;
             notifyListeners(); // because currentRunMode has changed
             getPageContent(urlBase + "sim/step");
+            isBeforeAnimatingLastEvent = true;
             refreshStatus();
 
             // animate it
 //            animationPlaybackController.play();
             liveAnimationController.startAnimatingLastEvent();
-            // Note: currentRunMode = RunMode.NOTRUNNING will be done in animationStopped()!
+            // Note: currentRunMode=RunMode.NOTRUNNING and isBeforeAnimatingLastEvent=false will be done in animationStopped()!
         }
         else {
             stop(); // if already running, just stop it
@@ -707,10 +713,13 @@ public class SimulationController {
     public void animationStopped() {
         if (currentRunMode == RunMode.STEP) {
             currentRunMode = RunMode.NOTRUNNING;
+            isBeforeAnimatingLastEvent = false;
             notifyListeners();
         }
         else if (currentRunMode == RunMode.NORMAL) {
             try {
+                isBeforeAnimatingLastEvent = false;
+                notifyListeners();
                 doRun();
             }
             catch (Exception e) {
@@ -773,12 +782,14 @@ public class SimulationController {
             default: Assert.isTrue(false);
         }
 
-        long untilEvent = runUntilEventNumber == 0 ? eventNumber+eventDelta : Math.min(runUntilEventNumber, eventNumber+eventDelta);
+        long untilEvent = runUntilEventNumber == 0 ? lastEventNumber+eventDelta : Math.min(runUntilEventNumber, lastEventNumber+eventDelta);
         String untilArgs = "&uevent=" + untilEvent;
         if (runUntilSimTime != null)
             untilArgs += "&utime=" + runUntilSimTime.toString();
 
         getPageContent(urlBase + "sim/run?mode=" + currentRunMode.name().toLowerCase() + untilArgs);
+        if (currentRunMode == RunMode.NORMAL)
+            isBeforeAnimatingLastEvent = true;
         refreshStatus(); // note: state will be READY here again
 
         Display.getCurrent().asyncExec(new Runnable() {

@@ -40,8 +40,8 @@ public class ProcessInfoAction extends AbstractSimulationAction {
                     "Run number", ""+controller.getRunNumber(),
                     "Network name", controller.getNetworkName(),
                     "Simulation state", controller.getState().name(),
-                    "Event number", ""+controller.getEventNumber(),
-                    "Simulation time", controller.getSimulationTime().toString(),
+                    "Last event's event number", ""+controller.getLastEventNumber(),
+                    "Last event's simulation time", controller.getLastEventSimulationTime().toString(),
             };
 
             // TODO this is a quick'n'ugly solution, we need a nicer looking dialog!
