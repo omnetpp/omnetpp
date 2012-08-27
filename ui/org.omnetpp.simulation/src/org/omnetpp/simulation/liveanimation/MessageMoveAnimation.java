@@ -49,7 +49,7 @@ public class MessageMoveAnimation extends AbstractAnimationPrimitive {
         if (figure.getParent() != layer)
             layer.add(figure);
 
-        figure.getParent().revalidate();
+//        figure.getParent().revalidate();
 
         if (!more)
             removeFigure();

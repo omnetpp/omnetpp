@@ -73,7 +73,15 @@ public class MessageFigure extends Figure {
     }
     
     public void setCenterLocation(Point centerLocation) {
+        if (getParent() != null)
+            erase();
+        
         this.centerLocation = centerLocation;
+
+        if (getParent() != null) {
+            fireFigureMoved();
+            repaint();
+        }
     }
 
     @Override

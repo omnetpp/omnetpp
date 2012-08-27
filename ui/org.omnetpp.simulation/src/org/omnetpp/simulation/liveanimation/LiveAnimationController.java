@@ -15,7 +15,7 @@ import org.omnetpp.simulation.controller.SimulationController;
  * @author Andras
  */
 public class LiveAnimationController {
-    private static final int TICK_MILLIS = 5;
+    private static final int TICK_MILLIS = 10;
 
     private SimulationController simulationController;
     private AnimationDirector animationDirector;
@@ -84,6 +84,7 @@ public class LiveAnimationController {
 
     protected boolean updateAnimationFor(double time) {
         //System.out.println("updateAnimationFor(t=" + time + ")");
+        numUpdates++;
         boolean needMoreTicks = false;
         for (IAnimationPrimitive primitive : animationPrimitives)
             if (primitive.updateFor(time))
