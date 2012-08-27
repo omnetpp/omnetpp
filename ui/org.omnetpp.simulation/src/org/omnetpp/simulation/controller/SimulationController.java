@@ -43,6 +43,7 @@ import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
+import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPar;
 
@@ -410,7 +411,6 @@ public class SimulationController {
                 }
                 else if (type.equals("SH")) {
                     Anim.MessageSendHopEntry item = new Anim.MessageSendHopEntry();
-                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
                     item.srcGate = (cGate) getObjectByJSONRef((String)logEntry.get("srcGate"));
                     item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
                     item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
@@ -418,7 +418,7 @@ public class SimulationController {
                 }
                 else if (type.equals("SD")) {
                     Anim.MessageSendDirectEntry item = new Anim.MessageSendDirectEntry();
-                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
+                    item.srcModule = (cModule) getObjectByJSONRef((String)logEntry.get("srcModule"));
                     item.destGate = (cGate) getObjectByJSONRef((String)logEntry.get("destGate"));
                     item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
                     item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
@@ -426,7 +426,6 @@ public class SimulationController {
                 }
                 else if (type.equals("ES")) {
                     Anim.EndSendEntry item = new Anim.EndSendEntry();
-                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
                     logItems.add(item);
                 }
                 else {

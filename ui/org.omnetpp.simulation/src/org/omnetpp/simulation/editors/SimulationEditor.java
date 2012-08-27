@@ -42,7 +42,10 @@ import org.omnetpp.simulation.controller.ISimulationCallback;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
+import org.omnetpp.simulation.liveanimation.AnimationDirector;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
@@ -116,7 +119,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationToolbars.setLayout(new GridLayout(5, false));
 
         IAction setupIniConfigAction = null;  // we'll need it later
-        
+
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(new LinkWithSimulationAction(this)).fill(toolbar1, -1);
         new ActionContributionItem(new ProcessInfoAction(this)).fill(toolbar1, -1);
@@ -193,11 +196,13 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             @Override
             public void simulationStateChanged(SimulationController controller) {
                 simulationCanvas.refreshInspectors();
+                showNextEventMarker();
             }
         });
 
         // create animation controller for the simulation canvas
-        LiveAnimationController liveAnimationController = new LiveAnimationController(simulationCanvas, simulationController);
+        AnimationDirector animationDirector = new AnimationDirector(simulationCanvas, simulationController);
+        LiveAnimationController liveAnimationController = new LiveAnimationController(simulationController, animationDirector);
         simulationController.setLiveAnimationController(liveAnimationController);
 
         DelegatingSelectionProvider delegatingSelectionProvider = (DelegatingSelectionProvider) getSite().getSelectionProvider();
@@ -321,16 +326,16 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                     // KLUDGE: TODO: this is necessary, because connection timeout does not work as expected (apache HttpClient ignores the provided value)
                     Thread.sleep(1000);
                     simulationController.refreshStatus();
-                } 
+                }
                 catch (Exception e) {
                     MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());
                     SimulationPlugin.logError(e);
                     return;
                 }
-                
+
                 // immediately offer setting up a network
                 if (simulationController.getState() == SimState.NONETWORK)
-                    finalSetupIniConfigAction.run();                   
+                    finalSetupIniConfigAction.run();
             }
         });
 
@@ -403,6 +408,43 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 "   next=" + controller.getNextSimulationTime() + "s" +
                 " in " + (module == null ? "unknown" : module.getFullPath() + " (" + module.getShortTypeName() + ")");
             statusLabel.setText(status);
+        }
+    }
+
+    protected void showNextEventMarker() {
+        // remove existing
+        for (IInspectorPart inspector : simulationCanvas.getInspectors())
+            if (inspector instanceof GraphicalModuleInspectorPart)
+                ((GraphicalModuleInspectorPart)inspector).removeNextEventMarker();
+
+        // get next event's module ID
+        SimulationController controller = getSimulationController();
+        int nextEventModuleId = controller.getNextEventModuleId();
+        if (nextEventModuleId <= 1)
+            return;
+
+        // add marker to it and all ancestors
+        cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+        if (!simulation.isFilledIn())
+            simulation.safeLoad();
+        cModule module = simulation.getModuleById(nextEventModuleId);
+        if (!module.isFilledIn())
+            module.safeLoad();
+
+        addNextEventMarkerTo(module, true);
+        while ((module = module.getParentModule()) != null) {
+            if (!module.isFilledIn())
+                module.safeLoad();
+            addNextEventMarkerTo(module, false);
+        }
+    }
+
+    protected void addNextEventMarkerTo(cModule module, boolean primary) {
+        if (module.getParentModule() != null) {
+            // find out if this module appears as a submodule in a graphical module inspector, and if so, highlight it
+            IInspectorPart inspector = simulationCanvas.findInspectorFor(module.getParentModule());
+            if (inspector instanceof GraphicalModuleInspectorPart)
+                ((GraphicalModuleInspectorPart)inspector).setNextEventMarker(module, primary);
         }
     }
 

@@ -3,6 +3,7 @@ package org.omnetpp.simulation.controller;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
+import org.omnetpp.simulation.model.cModule;
 
 public class Anim {  //TODO temp class; make inner classes toplevel
 
@@ -37,8 +38,7 @@ public class Anim {  //TODO temp class; make inner classes toplevel
     }
 
     public static class MessageSendDirectEntry extends Entry {
-        public cMessage msg; //XXX redundant
-        //TODO fromModule
+        public cModule srcModule;
         public cGate destGate;
         public BigDecimal propagationDelay;  // optional
         public BigDecimal transmissionDelay; // optional
@@ -50,7 +50,6 @@ public class Anim {  //TODO temp class; make inner classes toplevel
     }
 
     public static class MessageSendHopEntry extends Entry {
-        public cMessage msg; //XXX redundant
         public cGate srcGate;
         public BigDecimal propagationDelay;  // optional
         public BigDecimal transmissionDelay; // optional
@@ -62,8 +61,6 @@ public class Anim {  //TODO temp class; make inner classes toplevel
     }
 
     public static class EndSendEntry extends Entry {
-        public cMessage msg; //XXX redundant
-
         @Override
         public String toString() {
             return "endsend";

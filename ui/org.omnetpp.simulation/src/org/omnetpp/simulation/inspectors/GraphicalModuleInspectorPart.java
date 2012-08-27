@@ -39,6 +39,7 @@ import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.ned.model.DisplayString;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.FigureUtils;
+import org.omnetpp.simulation.figures.MessageFigure;
 import org.omnetpp.simulation.figures.SubmoduleFigureEx;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
@@ -58,6 +59,7 @@ import org.omnetpp.simulation.inspectors.actions.ZoomOutAction;
 import org.omnetpp.simulation.model.cChannel;
 import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
+import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
 
 /**
@@ -71,14 +73,17 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     protected Label labelFigure;
     protected ScrollPane scrollPane; // child of the inspector figure
-    protected ScalableFigure scalableFigure; // child (content) of scrollPane 
+    protected ScalableFigure scalableFigure; // child (content) of scrollPane
     protected CompoundModuleFigure compoundModuleFigure; // child of scalableFigure
 
     protected Map<cModule,SubmoduleFigureEx> submodules = new HashMap<cModule,SubmoduleFigureEx>();
     protected Map<cGate,ConnectionFigure> connections = new HashMap<cGate, ConnectionFigure>();
+    protected Map<cMessage,MessageFigure> messages = new HashMap<cMessage, MessageFigure>();  //XXX remove if not useful
     protected int imageSizePercentage = 100; // controls submodule icons; 100 means 1:1
     protected boolean showNameLabels = true;
     protected boolean showArrowHeads = true;
+
+    protected IFigure nextEventMarkerFigure;
 
 
     /**
@@ -86,7 +91,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
      */
     public GraphicalModuleInspectorPart(IInspectorContainer parent, cModule module) {
         super(parent, module);
-        
+
         if (!module.isFilledIn())
             module.safeLoad();
         if (!module.isFieldsFilledIn())
@@ -109,7 +114,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 handleMouseReleased(me);
             }
         });
-        
+
         figure.addLayoutListener(new LayoutListener.Stub() {
             @Override
             public void postLayout(IFigure container) {
@@ -139,13 +144,13 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             return getPreferredSize();  // so that it cannot be enlarged more than the embedded CompoundModuleFigure permits
         }
     }
-    
+
     // Note: this class looks actually quite reusable, for many inspectors
     protected static class TitleAndContentLayout extends AbstractHintLayout {
         private static final int MARGIN_HEIGHT = 5;
         private static final int MARGIN_WIDTH = 5;
         private static final int VERTICAL_SPACING = 5;
-        
+
         @Override
         public void layout(IFigure container) {
             @SuppressWarnings("unchecked")
@@ -172,19 +177,19 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             List<IFigure> children = container.getChildren();
             Dimension titleSize = children.get(0).getPreferredSize();
             Dimension contentSize = children.get(1).getPreferredSize();
-            return new Dimension(2*MARGIN_WIDTH + contentSize.width, 2*MARGIN_HEIGHT + VERTICAL_SPACING + titleSize.height + contentSize.height); // note: we ignore title's width, as text in it tends to be too long 
+            return new Dimension(2*MARGIN_WIDTH + contentSize.width, 2*MARGIN_HEIGHT + VERTICAL_SPACING + titleSize.height + contentSize.height); // note: we ignore title's width, as text in it tends to be too long
         }
-        
+
         @Override
         protected Dimension calculateMinimumSize(IFigure container, int wHint, int hHint) {
             @SuppressWarnings("unchecked")
             List<IFigure> children = container.getChildren();
             Dimension titleSize = children.get(0).getMinimumSize();
             Dimension contentSize = children.get(1).getMinimumSize();
-            return new Dimension(2*MARGIN_WIDTH + contentSize.width, 2*MARGIN_HEIGHT + VERTICAL_SPACING + titleSize.height + contentSize.height); // note: we ignore title's width, as text in it tends to be too long 
+            return new Dimension(2*MARGIN_WIDTH + contentSize.width, 2*MARGIN_HEIGHT + VERTICAL_SPACING + titleSize.height + contentSize.height); // note: we ignore title's width, as text in it tends to be too long
         }
     }
-    
+
     @Override
     protected IInspectorFigure createFigure() {
         InspectorFigure root = new InspectorFigure();
@@ -198,7 +203,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
         scrollPane = new ScrollPane();
         root.add(scrollPane);
-        
+
         scalableFigure = new ScalableLayeredPane(); //XXX or something simpler
         scrollPane.setContents(scalableFigure);
         scrollPane.setMinimumSize(new Dimension(20,20));
@@ -214,7 +219,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 scrollPane.setVerticalScrollBarVisibility(scrollPane.getSize().height >= scrollPane.getContents().getSize().height ? ScrollPane.NEVER : ScrollPane.ALWAYS);
             }
         });
-        
+
         getContainer().addMoveResizeSupport(root); // for resize
         getContainer().addMoveResizeSupport(labelFigure);  // for drag
 
@@ -229,11 +234,11 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             return FigureUtils.getMoveOnlyDragOperation(x, y, figure.getBounds());
         return 0;
     }
-    
+
     public CompoundModuleFigure getCompoundModuleFigure() {
         return compoundModuleFigure;
     }
-    
+
     //@Override
     public boolean isMaximizable() {
         return false;
@@ -250,12 +255,12 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
         scalableFigure.setScale(zoom);
         refresh();
-        
+
         if (!haveScrollbar) {
             // grow inspector window so that scrollbars don't appear if they weren't present before setting the zoom
             figure.getParent().setConstraint(figure, figure.getBounds().getCopy().setSize(figure.getPreferredSize()));
         }
-        
+
         getContainer().updateFloatingToolbarActions();
     }
 
@@ -278,7 +283,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     public boolean canZoomOut() {
         return getZoomLevel() > 0.1; // a pretty arbitrary limit
     }
-    
+
     public boolean canZoomIn() {
         return getZoomLevel() < 10; // a pretty arbitrary limit
     }
@@ -327,7 +332,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     public boolean canEnlargeIcons() {
         return getImageSizePercentage() < IMAGESIZEPERCENTAGE_MAX;
     }
-    
+
     public boolean getShowNameLabels() {
         return showNameLabels;
     }
@@ -352,6 +357,27 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     public ConnectionFigure getConnectionFigure(cGate srcGate) {
         return connections.get(srcGate);
+    }
+
+    public MessageFigure getMessageFigure(cMessage message) {
+        return messages.get(message);
+    }
+
+    public void addMessageFigure(cMessage message, MessageFigure messageFigure) {
+        getCompoundModuleFigure().getMessageLayer().add(messageFigure);
+        messages.put(message, messageFigure);
+    }
+
+    public void removeMessageFigure(cMessage message) {
+        MessageFigure messageFigure = messages.get(message);
+        getCompoundModuleFigure().getMessageLayer().remove(messageFigure);
+        messages.remove(message);
+    }
+
+    public void clearMessageFigures() {
+        for (MessageFigure f : messages.values())
+            f.getParent().remove(f);
+        messages.clear();
     }
 
     public void relayout() {
@@ -667,7 +693,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             }
         });
     }
-    
+
     @Override
     public void populateFloatingToolbar(ToolBarManager manager) {
         //XXX the following buttons are from Tkenv -- revise which ones we really need
@@ -692,4 +718,33 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         manager.add(my(new ZoomOutAction()));
         manager.update(false);
     }
+
+    public void setNextEventMarker(cModule submodule, boolean primary) {
+        if (nextEventMarkerFigure != null)
+            removeNextEventMarker();
+
+        RoundedRectangle roundedRectangle = new RoundedRectangle() {
+            public boolean containsPoint(int x, int y) { return false; }  // otherwise module icon under it becomes non-clickable
+        };
+        roundedRectangle.setCornerDimensions(new Dimension(16,16));
+        roundedRectangle.setAlpha(140);
+        roundedRectangle.setFill(false);
+        int borderWidth = primary ? 4 : 2;
+        roundedRectangle.setLineWidth(borderWidth);
+        roundedRectangle.setForegroundColor(ColorFactory.RED);
+
+        nextEventMarkerFigure = roundedRectangle;
+
+        getCompoundModuleFigure().getForegroundDecorationLayer().add(nextEventMarkerFigure);
+        SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
+        nextEventMarkerFigure.setBounds(submoduleFigure.getShapeBounds().getShrinked(-(borderWidth+2), -(borderWidth+2)));
+    }
+
+    public void removeNextEventMarker() {
+        if (nextEventMarkerFigure != null) {
+            nextEventMarkerFigure.getParent().remove(nextEventMarkerFigure);
+            nextEventMarkerFigure = null;
+        }
+    }
+
 }

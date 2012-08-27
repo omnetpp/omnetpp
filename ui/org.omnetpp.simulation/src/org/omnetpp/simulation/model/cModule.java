@@ -91,21 +91,22 @@ public class cModule extends cComponent {
 
     public cModule getCommonAncestorModule(cModule otherModule) {
         checkState();
-        if (isAncestorModuleOf(otherModule))
-            return this;
-        else if (otherModule.isAncestorModuleOf(this))
-            return otherModule;
-        else
-            return getCommonAncestorModule(otherModule.getParentModule());
+        for (cModule m = this; m != null; m = m.getParentModule()) {
+            if (!m.isFilledIn())
+                m.safeLoad();
+            if (m.isAncestorModuleOf(otherModule))
+                return m;
+        }
+        return null;
     }
 
-    public boolean isAncestorModuleOf(cModule otherModule) {
+    public boolean isAncestorModuleOf(cModule module) {
         checkState();
-        while (otherModule != null) {
-            if (otherModule.equals(this))
+        for (cModule m = module; m != null; m = m.getParentModule()) {
+            if (m == this)
                 return true;
-            else
-                otherModule = otherModule.getParentModule();
+            if (!m.isFilledIn())
+                m.safeLoad();
         }
         return false;
     }

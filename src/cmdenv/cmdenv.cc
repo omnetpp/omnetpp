@@ -1807,9 +1807,11 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
 
     if (collectJsonLog)
     {
+        cModule *srcModule = msg->getSenderModule();
+
         JsonObject *entry = new JsonObject();
-        entry->put("@", jsonWrap("SD"));
-        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("@", jsonWrap("SD"));  // note: msg is already in BeginSend
+        entry->put("srcModule", jsonWrap(getIdStringForObject(srcModule)));
         entry->put("destGate", jsonWrap(getIdStringForObject(toGate)));
         entry->put("propagationDelay", jsonWrap(propagationDelay));
         entry->put("transmissionDelay", jsonWrap(transmissionDelay));
@@ -1824,8 +1826,7 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
     if (collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
-        entry->put("@", jsonWrap("SH"));
-        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("@", jsonWrap("SH"));  // note: msg is already in BeginSend
         entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
         jsonLog->push_back(entry);
     }
@@ -1841,8 +1842,7 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
         // this JSON info (so there won't be enough info for animation), but we ignore
         // that rare case to keep the implementation simple
         JsonObject *entry = new JsonObject();
-        entry->put("@", jsonWrap("SH"));
-        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("@", jsonWrap("SH"));  // note: msg is already in BeginSend
         entry->put("srcGate", jsonWrap(getIdStringForObject(srcGate)));
         entry->put("propagationDelay", jsonWrap(propagationDelay));
         entry->put("transmissionDelay", jsonWrap(transmissionDelay));
@@ -1857,8 +1857,7 @@ void Cmdenv::endSend(cMessage *msg)
     if (collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
-        entry->put("@", jsonWrap("ES"));
-        entry->put("msg", jsonWrap(getIdStringForObject(msg)));
+        entry->put("@", jsonWrap("ES"));  // note: msg is already in BeginSend
         jsonLog->push_back(entry);
     }
 }

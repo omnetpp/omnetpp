@@ -4,32 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.draw2d.Layer;
 import org.eclipse.swt.widgets.Display;
-import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.controller.Anim;
 import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.LogBuffer;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
-import org.omnetpp.simulation.inspectors.IInspectorPart;
-import org.omnetpp.simulation.inspectors.SimulationCanvas;
-import org.omnetpp.simulation.model.cGate;
-import org.omnetpp.simulation.model.cModule;
 
 /**
  *
  * @author Andras
  */
 public class LiveAnimationController {
-    private static final int TICK_MILLIS = 20;
+    private static final int TICK_MILLIS = 5;
 
-    private SimulationCanvas simulationCanvas;
     private SimulationController simulationController;
+    private AnimationDirector animationDirector;
 
-    private List<AnimationPrimitive> animationPrimitives = new ArrayList<AnimationPrimitive>();
+    private List<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
 
+    private double animationSpeed = 1.0;
+    private long animationStartTimeMillis;
+    private long numUpdates; // since animationStartTimeMillis
+    
     private Runnable invokeTick = new Runnable() {
         @Override
         public void run() {
@@ -37,9 +33,9 @@ public class LiveAnimationController {
         }
     };
 
-    public LiveAnimationController(SimulationCanvas simulationCanvas, SimulationController simulationController) {
-        this.simulationCanvas = simulationCanvas;
+    public LiveAnimationController(SimulationController simulationController, AnimationDirector animationDirector) {
         this.simulationController = simulationController;
+        this.animationDirector = animationDirector;
     }
 
     public void startAnimatingLastEvent() {
@@ -47,51 +43,18 @@ public class LiveAnimationController {
         addAnimationsForLastEvent();
 
         // start animating
+        animationStartTimeMillis = System.currentTimeMillis();
+        numUpdates = 0;
         startTicking();
     }
 
     protected void addAnimationsForLastEvent() {
-        //animationPrimitives.add(new DummyAnimationPrimitive(50));  //TODO
-        //animationPrimitives.add(new DummyMoveMessageAnimation(simulationCanvas.getContents()));  //TODO
-
         LogBuffer logBuffer = simulationController.getLogBuffer();
         EventEntry event = logBuffer.getLastEventEntry();
         Assert.isNotNull(event);
 
-        for (Object o : event.logItems) {
-            if (o instanceof Anim.MessageSendHopEntry) {
-                Anim.MessageSendHopEntry e = (Anim.MessageSendHopEntry)o;
-                cGate srcGate = e.srcGate;
-                loadContextualObjects(srcGate);
-                cGate destGate = srcGate.getNextGate();
-                loadContextualObjects(destGate);
-                if (srcGate.getOwnerModule().getParentModule() == destGate.getOwnerModule().getParentModule()) { //TODO we only deal with this case for now
-                    System.out.println("sendHop: " + srcGate.getFullPath() + " --> " + destGate.getFullPath());
-                    cModule containingModule = srcGate.getOwnerModule().getParentModule();
-                    IInspectorPart inspector = simulationCanvas.findInspectorFor(containingModule);
-                    if (inspector instanceof GraphicalModuleInspectorPart) {
-                        System.out.println("Animating on inspector " + inspector.getObject().getFullPath());
-                        GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
-                        ConnectionFigure connectionFigure = moduleInspector.getConnectionFigure(srcGate);
-                        if (connectionFigure != null) {
-                            Layer messageFigureParent = moduleInspector.getCompoundModuleFigure().getForegroundDecorationLayer();
-                            animationPrimitives.add(new DummyMoveMessageAnimation(messageFigureParent, connectionFigure.getStart(), connectionFigure.getEnd()));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    protected void loadContextualObjects(cGate gate) {
-        if (!gate.isFilledIn())
-            gate.safeLoad();
-        cModule module = gate.getOwnerModule();
-        if (!module.isFilledIn())
-            module.safeLoad();
-        cModule parentModule = module.getParentModule();
-        if (!parentModule.isFilledIn())
-            parentModule.safeLoad();
+        animationPrimitives.addAll(animationDirector.getAnimationsForLastEvent(event));
+        
     }
 
     protected void startTicking() {
@@ -105,8 +68,9 @@ public class LiveAnimationController {
 
     protected void tick() {
         try {
-            // update stuff
-            boolean needMoreTicks = updateAnimations();
+            // update the animation
+            double time = (System.currentTimeMillis() - animationStartTimeMillis) / 1000.0 * animationSpeed;
+            boolean needMoreTicks = updateAnimationFor(time);
             if (needMoreTicks)
                 Display.getCurrent().timerExec(TICK_MILLIS, invokeTick);
             else
@@ -118,10 +82,11 @@ public class LiveAnimationController {
         }
     }
 
-    protected boolean updateAnimations() {
+    protected boolean updateAnimationFor(double time) {
+        //System.out.println("updateAnimationFor(t=" + time + ")");
         boolean needMoreTicks = false;
-        for (AnimationPrimitive ap : animationPrimitives)
-            if (ap.update())
+        for (IAnimationPrimitive primitive : animationPrimitives)
+            if (primitive.updateFor(time))
                 needMoreTicks = true;
         return needMoreTicks;
     }
@@ -133,6 +98,13 @@ public class LiveAnimationController {
         // notify controller
         if (simulationController != null)
             simulationController.animationStopped();
+        
+        // statistics
+        if (numUpdates > 5) {
+            long millis = System.currentTimeMillis() - animationStartTimeMillis;
+            long fps = numUpdates * 1000 / millis;
+            System.out.println("Animation: " + numUpdates + " updates in " + millis + "ms, " + fps + "fps");
+        }
     }
 }
 
