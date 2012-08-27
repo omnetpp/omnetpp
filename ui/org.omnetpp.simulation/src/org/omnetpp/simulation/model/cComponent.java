@@ -12,6 +12,7 @@ import org.omnetpp.simulation.controller.SimulationController;
  * @author Andras
  */
 public class cComponent extends cObject {
+    private cComponentType componentType;
     private cModule parentModule;
     private cPar[] parameters;
     private IDisplayString displayString;
@@ -20,6 +21,20 @@ public class cComponent extends cObject {
         super(controller, id);
     }
 
+    public cComponentType getComponentType() {
+        checkState();
+        return componentType;
+    }
+    
+    public String getNedTypeName() {
+        checkState();
+        if (componentType == null)
+            return null;
+        if (!componentType.isFilledIn())
+            componentType.safeLoad();
+        return componentType.getFullName();
+    }
+    
     public cModule getParentModule() {
         checkState();
         return parentModule;
@@ -39,6 +54,7 @@ public class cComponent extends cObject {
     protected void doFillFromJSON(Map jsonObject) {
         super.doFillFromJSON(jsonObject);
 
+        componentType = (cComponentType) getController().getObjectByJSONRef((String) jsonObject.get("componentType"));
         parentModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("parentModule"));
         displayString = new DisplayString((String) jsonObject.get("displayString"));
 

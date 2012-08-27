@@ -635,6 +635,7 @@ bool Cmdenv::handle(cHttpRequest *request)
              {
                  JsonObject *jfields = new JsonObject();
                  if (what=="" || what.find('i') != std::string::npos) {  // "info"
+                     // cObject
                      jfields->put("name", jsonWrap(obj->getName()));
                      jfields->put("fullName", jsonWrap(obj->getFullName()));
                      jfields->put("fullPath", jsonWrap(obj->getFullPath()));
@@ -651,7 +652,7 @@ bool Cmdenv::handle(cHttpRequest *request)
                          cComponent *component = (cComponent *)obj;
 
                          jfields->put("parentModule", jsonWrap(getIdStringForObject(component->getParentModule())));
-                         jfields->put("nedTypeName", jsonWrap(component->getNedTypeName()));
+                         jfields->put("componentType", jsonWrap(getIdStringForObject(component->getComponentType())));
                          jfields->put("displayString", jsonWrap(component->getDisplayString().str()));
 
                          JsonArray *jparameters = new JsonArray();
@@ -731,6 +732,19 @@ bool Cmdenv::handle(cHttpRequest *request)
                          jfields->put("encapsulationTreeId", jsonWrap(msg->getEncapsulationTreeId()));
                      }
 
+                     // cSimulation
+                     if (dynamic_cast<cSimulation *>(obj)) {
+                         cSimulation *sim = (cSimulation *)obj;
+                         jfields->put("systemModule", jsonWrap(getIdStringForObject(sim->getSystemModule())));
+                         jfields->put("scheduler", jsonWrap(getIdStringForObject(sim->getScheduler())));
+                         jfields->put("messageQueue", jsonWrap(getIdStringForObject(&sim->getMessageQueue())));
+                         JsonArray *jmodules = new JsonArray();
+                         for (int id = 0; id <= sim->getLastModuleId(); id++)
+                             jmodules->push_back(jsonWrap(getIdStringForObject(sim->getModule(id))));
+                         jfields->put("modules", jmodules);
+                     }
+
+                     // cComponentType: nothing worth serializing
                  }
                  if (what=="" || what.find('c') != std::string::npos) {  // "children"
                      cCollectChildrenVisitor visitor(obj);
@@ -879,6 +893,8 @@ const char *Cmdenv::getKnownBaseClass(cObject *object)
         return "cMessageHeap";
     else if (dynamic_cast<cWatchBase *>(object))
         return "cWatchBase";
+    else if (dynamic_cast<cComponentType*>(object))
+        return "cComponentType";
     else if (dynamic_cast<cRegistrationList*>(object))
         return "cRegistrationList";
 //    else if (dynamic_cast<cOwnedObject*>(object))   -- not interesting -- no new data members etc

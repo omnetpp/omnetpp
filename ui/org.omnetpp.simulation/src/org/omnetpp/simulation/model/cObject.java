@@ -236,10 +236,10 @@ public class cObject {
     @Override
     public String toString() {
         if (!isFilledIn)
-            return "[id=" + objectId + ",unfilled]";
+            return "[oid=" + objectId + ",unfilled]";
         else if (isDisposed)
-            return "[id=" + objectId + ",disposed]";
+            return "[oid=" + objectId + ",disposed]";
         else
-            return "(" + className + ") " + fullName + "[id=" + objectId + "]";
+            return "(" + className + ") " + fullPath + "[oid=" + objectId + "]";
     }
 }

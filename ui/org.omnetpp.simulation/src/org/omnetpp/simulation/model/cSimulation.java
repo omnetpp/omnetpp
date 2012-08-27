@@ -1,6 +1,6 @@
 package org.omnetpp.simulation.model;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.omnetpp.simulation.controller.SimulationController;
@@ -13,12 +13,54 @@ import org.omnetpp.simulation.controller.SimulationController;
 //TODO finish
 public class cSimulation extends cObject {
     private cModule rootModule;
-    private HashMap<Integer, cModule> idToModuleMap = new HashMap<Integer, cModule>();
-    private HashMap<String, cModule> pathToModuleMap = new HashMap<String, cModule>(); //FIXME remove this
+    private cModule[] modules;
+    private cObject scheduler;
+    private cMessageHeap messageQueue;
 
     public cSimulation(SimulationController controller, long id) {
         super(controller, id);
     }
+
+    public cObject getScheduler() {
+        checkState();
+        return scheduler;
+    }
+    
+    public cMessageHeap getMessageQueue() {
+        checkState();
+        return messageQueue;
+    }
+    
+    public cModule getRootModule() {
+        checkState();
+        return rootModule;
+    }
+
+    public cModule getModuleById(int id) {
+        checkState();
+        return modules[id];
+    }
+
+    public int getLastModuleId() {
+        checkState();
+        return modules.length - 1;
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    protected void doFillFromJSON(Map jsonObject) {
+        super.doFillFromJSON(jsonObject);
+        
+        scheduler = getController().getObjectByJSONRef((String) jsonObject.get("scheduler"));
+        messageQueue = (cMessageHeap) getController().getObjectByJSONRef((String) jsonObject.get("messageQueue"));
+        rootModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("systemModule"));
+        List jsonModules = (List) jsonObject.get("modules");
+        if (modules == null || modules.length != jsonModules.size())
+            modules = new cModule[jsonModules.size()];
+        for (int id = 0; id < modules.length; id++)
+            modules[id] = (cModule) getController().getObjectByJSONRef((String) jsonModules.get(id));
+    }
+
 
 //  // KLUDGE: TODO: remove this and create a generic, extensible root model
 //  private Object routingTable;
@@ -37,11 +79,11 @@ public class cSimulation extends cObject {
 //    public Object getInterfaceTable() {
 //        return interfaceTable;
 //    }
-
-    public int getModuleCount() {
-        return idToModuleMap.size();
-    }
-
+//
+//    public int getModuleCount() {
+//        return idToModuleMap.size();
+//    }
+//
 //  /* to be called after module creation */
 //  public void addModule(cModule module) {
 //      idToModuleMap.put(module.getId(), module);
@@ -57,19 +99,11 @@ public class cSimulation extends cObject {
 //      idToModuleMap.remove(id);
 //      pathToModuleMap.remove(module.getFullPath());
 //  }
-
-    public cModule getRootModule() {
-        return rootModule;
-    }
-
-    public cModule getModuleById(int id) {
-        return idToModuleMap.get(id);
-    }
-
+//
 //  public cModule getModuleByPath(String fullPath) {
 //      return pathToModuleMap.get(fullPath);
 //  }
-
+//
 //  XXX what for?
 //    public Map<cModule, cModule> findShortestPaths(cModule sourceModule, cModule targetModule) {
 //        Set<cModule> unsettledModules = new HashSet<cModule>();
@@ -133,20 +167,5 @@ public class cSimulation extends cObject {
 //        path.add(0, currentModule);
 //        return path;
 //    }
-
-
-    @Override
-    @SuppressWarnings("rawtypes")
-    protected void doFillFromJSON(Map jsonObject) {
-        super.doFillFromJSON(jsonObject);
-//
-//TODO
-//sample code:
-//        List jsonSubmodules = (List) jsonObject.get("submodules");
-//        submodules = new cModule[jsonSubmodules.size()];
-//        for (int i = 0; i < submodules.length; i++)
-//            submodules[i] = (cModule) getController().getObjectByJSONRef((String) jsonSubmodules.get(i));
-//
-    }
 
 }
