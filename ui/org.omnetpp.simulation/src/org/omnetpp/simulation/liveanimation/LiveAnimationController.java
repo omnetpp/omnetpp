@@ -14,6 +14,15 @@ import org.omnetpp.simulation.controller.SimulationController;
  *
  * @author Andras
  */
+//
+//XXX Notes for smooth animations:
+// Problem 1: System.currentTimeMillis() is inaccurate, granularity is ~10ms ==> use System.nanoTime() instead
+// Problem 2: if drawing is not synchronized to vertical retrace (vsync), animations will be choppy! No current easy solution.
+// Explanation of problem: http://www.java-gaming.org/topics/why-java-games-look-choppy-vertical-retrace/14696/view.html
+// Feature request for WaitForVerticalBlank(): http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6378181
+// More overview: http://today.java.net/pub/a/today/2006/02/23/smooth-moves-solutions.html#vertical-retrace
+// Native lib for WaitForVerticalBlank(): http://www.newdawnsoftware.com/resources/pxsync/
+//
 public class LiveAnimationController {
     private static final int TICK_MILLIS = 10;
 
@@ -23,7 +32,7 @@ public class LiveAnimationController {
     private List<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
 
     private double animationSpeed = 1.0;
-    private long animationStartTimeMillis;
+    private long animationStartTimeNanos;
     private long numUpdates; // since animationStartTimeMillis
     
     private Runnable invokeTick = new Runnable() {
@@ -43,7 +52,7 @@ public class LiveAnimationController {
         addAnimationsForLastEvent();
 
         // start animating
-        animationStartTimeMillis = System.currentTimeMillis();
+        animationStartTimeNanos = System.nanoTime();
         numUpdates = 0;
         startTicking();
     }
@@ -69,7 +78,7 @@ public class LiveAnimationController {
     protected void tick() {
         try {
             // update the animation
-            double time = (System.currentTimeMillis() - animationStartTimeMillis) / 1000.0 * animationSpeed;
+            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed;
             boolean needMoreTicks = updateAnimationFor(time);
             if (needMoreTicks)
                 Display.getCurrent().timerExec(TICK_MILLIS, invokeTick);
@@ -102,9 +111,9 @@ public class LiveAnimationController {
         
         // statistics
         if (numUpdates > 5) {
-            long millis = System.currentTimeMillis() - animationStartTimeMillis;
-            long fps = numUpdates * 1000 / millis;
-            System.out.println("Animation: " + numUpdates + " updates in " + millis + "ms, " + fps + "fps");
+            long nanos = System.nanoTime() - animationStartTimeNanos;
+            long fps = numUpdates * 1000000000 / nanos;
+            System.out.println("Animation: " + numUpdates + " updates in " + nanos + "ms, " + fps + "fps");
         }
     }
 }
