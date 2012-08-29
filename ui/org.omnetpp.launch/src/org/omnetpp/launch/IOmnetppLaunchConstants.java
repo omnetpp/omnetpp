@@ -135,4 +135,29 @@ public interface IOmnetppLaunchConstants {
      * The default value for the gdbinit file (containing pretty printers)
      */
     public static final String OPP_GDB_INIT_FILE = "${opp_root}/misc/gdb/gdbinit.py";
+
+    /**
+     * Value for OPP_USER_INTERFACE: IDE plus Cmdenv (add -u Cmdenv -w to the command-line args)
+     */
+    public static final String UI_IDE = "<IDE>";
+
+    /**
+     * Value for OPP_USER_INTERFACE: launch the simulation program without explicit -u option
+     */
+    public static final String UI_DEFAULTEXTERNAL = "<default-external>";
+
+    /**
+     * Value for OPP_USER_INTERFACE: launch the simulation program with -u Cmdenv
+     */
+    public static final String UI_CMDENV = "Cmdenv";
+
+    /**
+     * Value for OPP_USER_INTERFACE: launch the simulation program with -u Tkenv
+     */
+    public static final String UI_TKENV = "Tkenv";
+
+    /**
+     * If OPP_USER_INTERFACE is empty (missing, "", or all whitespace), use this value instead
+     */
+    public static final String UI_FALLBACKVALUE = UI_IDE;
 }

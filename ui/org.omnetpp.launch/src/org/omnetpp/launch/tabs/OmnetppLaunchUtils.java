@@ -294,9 +294,18 @@ public class OmnetppLaunchUtils {
         newCfg.setAttribute(IOmnetppLaunchConstants.ATTR_PROGRAM_NAME, exeName);
 
         String args = "";
-        String envirStr = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim();
-        if (StringUtils.isNotEmpty(envirStr))
-            args += " -u "+envirStr;
+
+        String envirStr = StringUtils.defaultIfEmpty(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
+        if (envirStr.equals(IOmnetppLaunchConstants.UI_IDE))
+            args += " -u Cmdenv -w";
+        else if (envirStr.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL))
+            /*nothing*/;
+        else if (envirStr.equals(IOmnetppLaunchConstants.UI_CMDENV))
+            args += " -u Cmdenv";
+        else if (envirStr.equals(IOmnetppLaunchConstants.UI_TKENV))
+            args += " -u Tkenv";
+        else
+            args += " -u " + envirStr;
 
         String configStr = config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim();
         if (StringUtils.isNotEmpty(configStr))

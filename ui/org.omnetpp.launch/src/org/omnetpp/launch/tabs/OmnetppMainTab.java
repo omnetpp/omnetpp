@@ -93,7 +93,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     protected Text fRunText;
     protected Text fNedPathText;
     protected Spinner fParallelismSpinner;
-    protected Button fDefaultEnvButton;
+    protected Button fDefaultExternalEnvButton;
+    protected Button fIDEEnvButton;
     protected Button fCmdenvButton;
     protected Button fTkenvButton;
     protected Button fOtherEnvButton;
@@ -182,11 +183,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
                 fParallelismSpinner.setSelection(config.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1));
 
             // update UI radio buttons
-            String uiArg = config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
-            fDefaultEnvButton.setSelection("".equals(uiArg));
-            fCmdenvButton.setSelection("Cmdenv".equals(uiArg));
-            fTkenvButton.setSelection("Tkenv".equals(uiArg));
-            boolean isOther = !fDefaultEnvButton.getSelection() && !fCmdenvButton.getSelection() && !fTkenvButton.getSelection();
+            String uiArg = StringUtils.defaultIfEmpty(config.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
+            fIDEEnvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_IDE));
+            fDefaultExternalEnvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL));
+            fCmdenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_CMDENV));
+            fTkenvButton.setSelection(uiArg.equals(IOmnetppLaunchConstants.UI_TKENV));
+            boolean isOther = !fIDEEnvButton.getSelection() && !fDefaultExternalEnvButton.getSelection() && !fCmdenvButton.getSelection() && !fTkenvButton.getSelection();
             fOtherEnvButton.setSelection(isOther);
             fOtherEnvText.setText(isOther ? uiArg.trim() : "");
 
@@ -232,13 +234,18 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         else
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, strippedRun);
 
-        if (fCmdenvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "Cmdenv");
+        if (fIDEEnvButton.getSelection())
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_IDE);
+        else if (fDefaultExternalEnvButton.getSelection())
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_DEFAULTEXTERNAL);
+        else if (fCmdenvButton.getSelection())
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_CMDENV);
         else if (fTkenvButton.getSelection())
-            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "Tkenv");
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, IOmnetppLaunchConstants.UI_TKENV);
         else if (fOtherEnvButton.getSelection())
             configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, fOtherEnvText.getText());
-        else configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
+        else
+            configuration.setAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "");
 
         // this MUST be filled only after the environment buttons are set otherwise
         // the UpdateDialogState method will set the value to 1 (the default if Tkenv is used)
@@ -564,7 +571,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             return false;
         }
         if (!fCmdenvButton.getSelection() && !fOtherEnvButton.getSelection() && isMultipleRuns) {
-            setErrorMessage("Multiple runs are only supported for the Command line environment");
+            setErrorMessage("Multiple runs are only supported with Cmdenv, the command-line interface");
             return false;
         }
 
@@ -876,21 +883,26 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     }
 
     protected void createUIRadioButtons(Composite parent, int colSpan) {
-        Composite comp = SWTFactory.createComposite(parent, 6, colSpan, GridData.FILL_HORIZONTAL);
+        Composite comp = SWTFactory.createComposite(parent, 8, colSpan, GridData.FILL_HORIZONTAL);
         ((GridLayout)comp.getLayout()).marginWidth = 0;
         ((GridLayout)comp.getLayout()).marginHeight = 0;
 
         SWTFactory.createLabel(comp, "User interface:", 1);
-
-        fDefaultEnvButton = createRadioButton(comp, "Default");
-        fDefaultEnvButton.setSelection(true);
-        fCmdenvButton = createRadioButton(comp, "Command line");
-        fTkenvButton = createRadioButton(comp, "Tcl/Tk");
+        fIDEEnvButton = createRadioButton(comp, "IDE");
+        SWTFactory.createLabel(comp, "  External: ", 1);
+        fDefaultExternalEnvButton = createRadioButton(comp, "Default");
+        fDefaultExternalEnvButton.setSelection(true);
+        fCmdenvButton = createRadioButton(comp, "Cmdenv");
+        fTkenvButton = createRadioButton(comp, "Tkenv");
         fOtherEnvButton = createRadioButton(comp, "Other:");
-
         fOtherEnvText = SWTFactory.createSingleText(comp, 1);
-        fOtherEnvText.setToolTipText("Specify the custom environment name");
         fOtherEnvText.addModifyListener(this);
+
+        fIDEEnvButton.setToolTipText("Launch a Cmdenv simulation and let the IDE connect to it");
+        fDefaultExternalEnvButton.setToolTipText("Launches the simulation without a -u option");
+        fCmdenvButton.setToolTipText("Launches the simulation with the -u Cmdenv option");
+        fTkenvButton.setToolTipText("Launches the simulation with the -u Tkenv option");
+        fOtherEnvButton.setToolTipText("Specify the custom environment name");
     }
 
     protected void createRecordEventlogRadioButtons(Composite parent, int colSpan) {

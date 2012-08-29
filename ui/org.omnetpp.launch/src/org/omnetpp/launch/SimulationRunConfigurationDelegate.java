@@ -51,9 +51,9 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
         ILaunchConfiguration configuration = launch.getLaunchConfiguration();
         final String name = configuration.getName();
 
-        if (monitor == null) {
+        if (monitor == null)
             monitor = new NullProgressMonitor();
-        }
+
         monitor.beginTask("Launching Simulation", 1);
 
         int runs[] = OmnetppLaunchUtils.parseRuns(configuration.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER, ""),
@@ -74,7 +74,8 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
             });
         }
 
-        boolean openSimulationEditor = runs.length == 1  /*TODO && requestedByUser */;
+        String envirStr = StringUtils.defaultIfEmpty(configuration.getAttribute(IOmnetppLaunchConstants.OPP_USER_INTERFACE, "").trim(), IOmnetppLaunchConstants.UI_FALLBACKVALUE);
+        boolean openSimulationEditor = envirStr.equals(IOmnetppLaunchConstants.UI_IDE);
         final int port = openSimulationEditor ? findFirstAvailableTcpPort(6000, 7000) : -1; //TODO let user specify a port manually, via the "-p" option
 
         int numProcesses = configuration.getAttribute(IOmnetppLaunchConstants.OPP_NUM_CONCURRENT_PROCESSES, 1);

@@ -33,7 +33,7 @@ public class SimulationDebugLaunchDelegate extends GdbLaunchDelegate {
 
         if (!Platform.getOS().equals(Platform.OS_MACOSX)) {  //OS X contains obsolete gdb without Python support
             ILaunchConfiguration newConfig = offerUpgradingLaunchConfig(config);
-            if (newConfig != null) 
+            if (newConfig != null)
                 OmnetppLaunchUtils.setConfigurationInLaunch(launch, newConfig);
         }
 
