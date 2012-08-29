@@ -897,7 +897,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         ((GridLayout)comp.getLayout()).marginWidth = 0;
         ((GridLayout)comp.getLayout()).marginHeight = 0;
 
-        SWTFactory.createLabel(comp, "Record Eventlog:", 1);
+        SWTFactory.createLabel(comp, "Record eventlog:", 1);
 
         fEventLogDefaultButton = createRadioButton(comp, "Default");
         fEventLogDefaultButton.setSelection(true);
@@ -911,7 +911,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         ((GridLayout)comp.getLayout()).marginWidth = 0;
         ((GridLayout)comp.getLayout()).marginHeight = 0;
 
-        SWTFactory.createLabel(comp, "Debug on error:", 1);
+        SWTFactory.createLabel(comp, "Debug on errors:", 1);
 
         fDbgOnErrDefaultButton = createRadioButton(comp, "Default");
         fDbgOnErrDefaultButton.setSelection(true);
