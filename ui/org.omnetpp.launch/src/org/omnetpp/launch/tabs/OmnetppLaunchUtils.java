@@ -103,6 +103,12 @@ public class OmnetppLaunchUtils {
 
         @Override
         public void keyValueLine(int lineNumber, int numLines, String rawLine, String key, String value, String comment) {
+            if (currentSection == null) {  // invalid syntax (file must begin with section header) but let's accept it anyway
+                currentSection = new Section();
+                currentSection.name = "General";
+                result.put(currentSection.name, currentSection);
+            }
+
             if ("extends".equals(key))
                 currentSection.extnds = value;
 
