@@ -22,6 +22,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
@@ -58,6 +59,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO finish horiz scrolling!
 //TODO implement selectionprovider stuff
 public class TextViewer extends Canvas implements ISelectionProvider {
+    private static final Cursor CURSOR_IBEAM = new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM); //TODO into some shared resource file
     protected ITextViewerContent content;
     protected ITextChangeListener textChangeListener;
     protected Font font;
@@ -110,6 +112,8 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         //setFont(JFaceResources.getDefaultFont());
         //setFont(new Font(getDisplay(), "Courier New", 8, SWT.NORMAL));
         setFont(new Font(getDisplay(), "Arial", 8, SWT.NORMAL));
+
+        setCursor(CURSOR_IBEAM);
 
         clipboard = new Clipboard(getDisplay());
 
@@ -218,6 +222,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         setKeyBinding(previousKey, ST.COLUMN_PREVIOUS);
 
         // Selection
+        setKeyBinding('A' | SWT.MOD1, ST.SELECT_ALL);
         setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);
         setKeyBinding(SWT.ARROW_DOWN | SWT.MOD2, ST.SELECT_LINE_DOWN);
         if (IS_CARBON) {
