@@ -32,6 +32,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
@@ -243,6 +244,15 @@ public class ObjectTreeView extends ViewWithMessagePart {
         });
 
         return viewer.getTree();
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Object getAdapter(Class adapter) {
+        // ensure this view has a custom page in Properties View; see PropertySheet documentation
+        if (adapter.equals(IPropertySheetPage.class))
+            return new SimulationObjectPropertySheetPage();
+        return super.getAdapter(adapter);
     }
 
     protected void simulationStateChanged(SimulationController controller) {

@@ -21,6 +21,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
@@ -51,6 +52,7 @@ import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cSimulation;
+import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
 
 /**
  *
@@ -376,6 +378,15 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationCanvas.setFocus();
     }
 
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Object getAdapter(Class adapter) {
+        // ensure this editor has a custom page in Properties View; see PropertySheet documentation
+        if (adapter.equals(IPropertySheetPage.class))
+            return new SimulationObjectPropertySheetPage();
+        return super.getAdapter(adapter);
+    }
+    
     public SimulationController getSimulationController() {
         return simulationController;
     }
