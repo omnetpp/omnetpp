@@ -238,7 +238,7 @@ void Cmdenv::askParameter(cPar *par, bool unassigned)
     }
 }
 
-void Cmdenv::run()
+void Cmdenv::doRun()
 {
     state = SIM_NONETWORK; //TODO into ctor
     command = CMD_NONE;

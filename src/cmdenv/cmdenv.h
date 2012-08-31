@@ -202,7 +202,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
 
    protected:
      virtual void displayException(std::exception& ex);
-     virtual void run();
+     virtual void doRun();
      virtual void printUISpecificHelp();
 
      virtual void readOptions();

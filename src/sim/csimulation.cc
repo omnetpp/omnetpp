@@ -451,6 +451,9 @@ void cSimulation::deleteNetwork()
     if (!systemmodp)
         return;  // network already deleted
 
+    if (cSimulation::getActiveSimulation() != this)
+        throw cRuntimeError("cSimulation: cannot invoke deleteNetwork() on an instance that is not the active one (see cSimulation::getActiveSimulation())"); // because cModule::deleteModule() would crash
+
     if (getContextModule()!=NULL)
         throw cRuntimeError("Attempt to delete network during simulation");
 

@@ -170,7 +170,7 @@ static void signalHandler(int signum)
    exit(2);
 }
 
-void Tkenv::run()
+void Tkenv::doRun()
 {
     //
     // SETUP

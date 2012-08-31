@@ -241,9 +241,10 @@ class ENVIR_API EnvirBase : public cRunnableEnvir
   protected:
     // functions added locally
     virtual bool simulationRequired();
-    virtual bool setup();  // true==OK
-    virtual void run() = 0;
-    virtual void shutdown();
+    virtual bool setup();  // does not throw; returns true if OK to go on
+    virtual void run();  // does not throw; delegates to doRun()
+    virtual void shutdown(); // does not throw
+    virtual void doRun() = 0;
 
     virtual void setupNetwork(cModuleType *network);
     virtual void startRun();

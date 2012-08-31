@@ -251,7 +251,7 @@ int EnvirBase::run(int argc, char *argv[], cConfiguration *configobject)
     if (simulationRequired())
     {
         if (setup())
-            run();
+            run();   // must not throw, because we want shutdown() always to be called
         shutdown();
     }
     return exitcode;
@@ -825,6 +825,17 @@ int EnvirBase::getParsimNumPartitions() const
 #endif
 }
 
+void EnvirBase::run()
+{
+    try
+    {
+        doRun();
+    }
+    catch (std::exception& e)
+    {
+        displayException(e);
+    }
+}
 
 void EnvirBase::shutdown()
 {
