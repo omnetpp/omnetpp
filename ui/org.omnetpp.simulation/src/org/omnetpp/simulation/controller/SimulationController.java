@@ -790,7 +790,10 @@ public class SimulationController {
         getPageContent(urlBase + "sim/run?mode=" + currentRunMode.name().toLowerCase() + untilArgs);
         if (currentRunMode == RunMode.NORMAL)
             isBeforeAnimatingLastEvent = true;
+
         refreshStatus(); // note: state will be READY here again
+        if (state != SimState.READY)
+            return;
 
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
