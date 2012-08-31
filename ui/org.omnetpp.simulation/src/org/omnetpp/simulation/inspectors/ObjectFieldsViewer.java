@@ -351,7 +351,10 @@ public class ObjectFieldsViewer {
             if (element instanceof cObject) {
                 cObject object = (cObject) element;
                 result.append(object.getFullName());
-                result.append("(" + object.getClassName() + ")", greyStyle);
+                result.append(" (" + object.getClassName() + ")", greyStyle);
+                String infoTxt = object.getInfo();
+                if (!infoTxt.equals(""))
+                    result.append("  " + infoTxt, brownStyle);
                 return result;
             }
             else if (element instanceof Field || element instanceof FieldArrayElement) {
