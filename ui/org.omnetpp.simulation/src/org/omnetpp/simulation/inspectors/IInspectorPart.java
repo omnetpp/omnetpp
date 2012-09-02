@@ -71,14 +71,10 @@ public interface IInspectorPart {
     boolean isMaximizable();
 
     /**
-     * Returns true if this inspector is selected.
-     */
-    boolean isSelected();
-
-    /**
-     * Called when the canvas selection changes. The inspector part should
-     * look at the objects in the selection, and highlight the relevant ones
-     * (the ones it displays) on the canvas
+     * Called by the inspector container (which manages the selection) when the
+     * selection changes. The inspector part should look at the objects in the
+     * selection, and highlight the relevant ones (the ones it displays) on the
+     * canvas.
      */
     void selectionChanged(IStructuredSelection selection);
 

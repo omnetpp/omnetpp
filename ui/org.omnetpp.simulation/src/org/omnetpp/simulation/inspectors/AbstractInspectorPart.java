@@ -9,6 +9,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.model.cObject;
@@ -91,11 +92,6 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     }
 
     @Override
-    public boolean isSelected() {  //XXX needed? canvas holds the selection anyway, this only allows inconsistency!!!
-        return isSelected;
-    }
-
-    @Override
     public void refresh() {
         Assert.isTrue(figure.getParent()!=null && inspectorContainer!=null, "inspector not yet installed");
         Assert.isTrue(object != null, "inspector already disposed");
@@ -115,9 +111,14 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     @Override
     public void selectionChanged(IStructuredSelection selection) {
         boolean oldSelectedState = isSelected;
-        isSelected = selection.toList().contains(object); //XXX or the inspectorPart???
+        isSelected = selection.toList().contains(this);
         if (oldSelectedState != isSelected)
-            figure.setSelectionBorder(isSelected);
+            setSelectionMark(isSelected);
+    }
+
+    protected void setSelectionMark(boolean isSelected) {
+        // override in subclasses to provide a visually more attractive implementation
+        figure.setBackgroundColor(isSelected ? ColorFactory.GREY50 : null);
     }
 
     @Override
@@ -125,7 +126,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         // a more-or-less sensible default, to be refined in subclasses
         return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, figure.getBounds());
     }
-    
+
     @Override
     public int getDragOperation(Control control, int x, int y) {
         // a more-or-less sensible default, to be refined in subclasses that are SWT inspectors
@@ -140,4 +141,5 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         else
             return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
     }
+
 }

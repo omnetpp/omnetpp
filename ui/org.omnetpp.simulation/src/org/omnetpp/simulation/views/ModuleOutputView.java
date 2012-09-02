@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.views;
 
+import java.util.List;
+
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -22,6 +24,7 @@ import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.inspectors.SelectionUtils;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.widgets.TextViewer;
 import org.omnetpp.simulation.widgets.TextViewerContent;
@@ -102,14 +105,16 @@ public class ModuleOutputView extends ViewWithMessagePart {
 
         selectionChangeListener = new ISelectionChangedListener() {
             @Override
+            @SuppressWarnings("unchecked")
             public void selectionChanged(SelectionChangedEvent e) {
                 System.out.println("module output view: got selection change, new selection: " + e.getSelection());  //TODO
                 if (e.getSelection() instanceof IStructuredSelection) {
-                    IStructuredSelection sel = (IStructuredSelection) e.getSelection();
-                    if (sel.getFirstElement() instanceof cModule) { //FIXME not only the 1st elem, and use adaptable not instaceof
-                        cModule module = (cModule) sel.getFirstElement();
-                        ((ModuleOutputContent)viewer.getContent()).setFilterModuleFullPath(module.getFullPath()); //XXX
-                    }
+                    List<cModule> selectedModules = SelectionUtils.getObjects(e.getSelection(), cModule.class);
+                    String[] modulePaths = new String[selectedModules.size()];
+                    for (int i = 0; i < modulePaths.length; i++)
+                        modulePaths[i] = selectedModules.get(i).getFullPath();
+                    ModuleOutputContent moduleOutputContent = (ModuleOutputContent)viewer.getContent();
+                    moduleOutputContent.setFilter(new ModulePathsEventEntryFilter(modulePaths));
                 }
             }
         };

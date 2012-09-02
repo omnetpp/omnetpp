@@ -121,17 +121,17 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         manager.add(my(new InspectParentAction()));
     }
     
-    //XXX near copy/paste from GraphicalModuleInspectorPart - factor out
     @Override
+    @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
         super.selectionChanged(selection);
 
         // update selection border around submodules
-        List list = selection.toList();
+        List<cObject> selectedLocalObjects = SelectionUtils.getObjects(selection, this, cObject.class);
         for (cObject obj : objectToFigureMap.keySet()) {
             IFigure itemFigure = objectToFigureMap.get(obj);
-            //FIXME TODO itemFigure.setSelectionBorderShown(list.contains(obj));
-            itemFigure.setForegroundColor(list.contains(obj) ? ColorFactory.BLACK : ColorFactory.RED);
+            if (itemFigure != null)
+                itemFigure.setForegroundColor(selectedLocalObjects.contains(obj) ? ColorFactory.BLACK : ColorFactory.RED);
         }
     }
 
@@ -150,17 +150,17 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         IFigure queueItemFigure = findQueueItemFigureAt(me.x,me.y);
         System.out.println("clicked item: " + queueItemFigure);
         if (queueItemFigure == null) {
-            if ((me.getState()& SWT.CONTROL) != 0)
+            if ((me.getState()&SWT.CONTROL) != 0)
                 inspectorContainer.toggleSelection(getObject());
             else
                 inspectorContainer.select(getObject(), true);
         }
         else {
             cObject obj = figureToObjectMap.get(queueItemFigure);
-            if ((me.getState()& SWT.CONTROL) != 0)
-                inspectorContainer.toggleSelection(obj);
+            if ((me.getState()&SWT.CONTROL) != 0)
+                inspectorContainer.toggleSelection(new SelectionItem(this, obj));
             else
-                inspectorContainer.select(obj, true);
+                inspectorContainer.select(new SelectionItem(this, obj), true);
         }
         //note: no me.consume()! it would kill the move/resize listener
     }

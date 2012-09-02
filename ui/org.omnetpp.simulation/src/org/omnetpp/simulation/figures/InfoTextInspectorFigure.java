@@ -29,8 +29,6 @@ public class InfoTextInspectorFigure extends RoundedRectangle implements IInspec
         infoStringLabel = new Label();
         infoStringLabel.setFont(JFaceResources.getBannerFont()); //XXX
         add(infoStringLabel);
-
-        setSelectionBorder(false);
     }
 
     @Override
@@ -43,11 +41,4 @@ public class InfoTextInspectorFigure extends RoundedRectangle implements IInspec
         infoStringLabel.setText(info);
         //XXX re-layout if size changed?
     }
-
-    @Override
-    public void setSelectionBorder(boolean isSelected) {
-        //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
-        setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
-    }
-
 }

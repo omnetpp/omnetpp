@@ -1,10 +1,12 @@
 package org.omnetpp.simulation.inspectors;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.draw2d.DelegatingLayout;
 import org.eclipse.draw2d.Figure;
@@ -19,7 +21,6 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.SafeRunnable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -45,7 +46,7 @@ import org.omnetpp.simulation.model.cSimpleModule;
  * @author Andras
  */
 //FIXME how to evaluate "$PARNAME" references in display strings???
-public class SimulationCanvas extends FigureCanvas implements IInspectorContainer, ISelectionProvider {
+public class SimulationCanvas extends FigureCanvas implements IInspectorContainer {
     private final Image BACKGROUND_IMAGE = SimulationPlugin.getCachedImage("icons/misc/paper.png"); //XXX bg.png
 
     // layers
@@ -338,27 +339,9 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         if (floatingToolbarSupport != null)
             floatingToolbarSupport.updateFloatingToolbarActions();
     }
-    
-    @Override
-    public cObject[] getObjectsFromSelection(ISelection selection) {
-        if (selection.isEmpty() || !(selection instanceof IStructuredSelection))
-            return new cObject[0];
-
-        List<cObject> result = new ArrayList<cObject>();
-        for (Object element : ((IStructuredSelection)selection).toList()) {
-            if (element instanceof cObject)
-                result.add((cObject)element);
-            else if (element instanceof IAdaptable) {
-                cObject object = (cObject) ((IAdaptable)element).getAdapter(cObject.class);
-                if (object != null)
-                    result.add(object);
-            }
-        }
-        return result.toArray(new cObject[0]);
-    }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void select(cObject object, boolean removeOthers) {
+    public void select(Object object, boolean removeOthers) {
         if (removeOthers) {
             setSelection(new StructuredSelection(object));
         }
@@ -372,7 +355,19 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         }
     }
 
-    public void toggleSelection(cObject object) {
+    @SuppressWarnings("rawtypes")
+    public void select(Object[] objects, boolean removeOthers) {
+        if (removeOthers) {
+            setSelection(new StructuredSelection(objects));
+        }
+        else {
+            IStructuredSelection selection = getSelection();
+            Collection list = CollectionUtils.union(selection.toList(), Arrays.asList(objects));
+            setSelection(new StructuredSelection(list.toArray()));
+        }
+   }
+
+    public void toggleSelection(Object object) {
         if (getSelection().toList().contains(object))
             deselect(object);
         else
@@ -380,7 +375,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void deselect(cObject object) {
+    public void deselect(Object object) {
         if (getSelection().toList().contains(object)) {
             List list = new ArrayList(getSelection().toList());
             list.remove(object);
@@ -400,6 +395,13 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         if (!selection.equals(currentSelection)) {
             Assert.isTrue(selection instanceof StructuredSelection);
             this.currentSelection = (StructuredSelection)selection;
+            System.out.println("Selection changed to: " + currentSelection.toList());
+
+            //XXX debug: assert on its contents
+            for (Object o : currentSelection.toList())
+                if (!(o instanceof IInspectorPart) && !(o instanceof SelectionItem))
+                    System.out.println("**** SimulationCanvas: UNEXPECTED OBJECT IN SELECTION!!! SHOULD BE AN INSPECTOR OR AN ITEM WITHIN AN INSPECTOR ****");
+
             fireSelectionChange();
         }
     }

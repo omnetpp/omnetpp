@@ -11,6 +11,7 @@ import org.eclipse.draw2d.AbstractHintLayout;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Label;
 import org.eclipse.draw2d.LayoutListener;
+import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.PositionConstants;
@@ -85,7 +86,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     protected IFigure nextEventMarkerFigure;
 
-
     /**
      * Constructor.
      */
@@ -98,7 +98,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             module.safeLoadFields();
 
         // mouse handling
-        figure.addMouseListener(new MouseListener() {
+        compoundModuleFigure.addMouseListener(new MouseListener() {
             //@Override
             public void mouseDoubleClicked(MouseEvent me) {
                 handleMouseDoubleClick(me);
@@ -133,11 +133,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     private class InspectorFigure extends RoundedRectangle implements IInspectorFigure {
         public InspectorFigure() {
             setForegroundColor(ColorFactory.GREY70);
-        }
-
-        @Override
-        public void setSelectionBorder(boolean isSelected) {
-            // TODO Auto-generated method stub
         }
 
         public Dimension getMaximumSize() {
@@ -603,17 +598,17 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
         System.out.println("clicked submodule: " + submoduleFigure);
         if (submoduleFigure == null) {
-            if ((me.getState() & SWT.CONTROL) != 0)
-                inspectorContainer.toggleSelection(getObject());
+            if ((me.getState()&SWT.CONTROL) != 0)
+                inspectorContainer.toggleSelection(this);
             else
-                inspectorContainer.select(getObject(), true);
+                inspectorContainer.select(this, true);
         }
         else {
             cModule submodule = findSubmoduleFor(submoduleFigure);
-            if ((me.getState()& SWT.CONTROL) != 0)
-                inspectorContainer.toggleSelection(submodule);
+            if ((me.getState()&SWT.CONTROL) != 0)
+                inspectorContainer.toggleSelection(new SelectionItem(this, submodule));
             else
-                inspectorContainer.select(submodule, true);
+                inspectorContainer.select(new SelectionItem(this, submodule), true);
         }
         //note: no me.consume()! it would kill the move/resize listener
     }
@@ -628,16 +623,16 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         return (SubmoduleFigureEx)target;
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
+    @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
         super.selectionChanged(selection);
 
         // update selection border around submodules
-        List list = selection.toList();
+        List<cModule> selectedLocalObjects = SelectionUtils.getObjects(selection, this, cModule.class);
         for (cModule submodule : submodules.keySet()) {
             SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
-            submoduleFigure.setSelectionBorderShown(list.contains(submodule));
+            submoduleFigure.setBorder(selectedLocalObjects.contains(submodule) ? new LineBorder(3) : null);
         }
     }
 

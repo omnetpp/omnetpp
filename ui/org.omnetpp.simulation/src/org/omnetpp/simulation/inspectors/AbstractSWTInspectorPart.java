@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -31,11 +32,6 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
     // SimulationCanvas.findInspectorPartAt() wouldn't find it!
     public class ContainerFigure extends Figure implements IInspectorFigure {
         public ContainerFigure() {
-        }
-
-        @Override
-        public void setSelectionBorder(boolean isSelected) {
-            // nothing (we do it in SWT)
         }
     }
 
@@ -105,6 +101,11 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
     public void raiseToTop() {
         super.raiseToTop();
         control.moveAbove(null);
+    }
+    
+    @Override
+    protected void setSelectionMark(boolean isSelected) {
+        control.setBackground(isSelected ? ColorFactory.GREY50 : null);
     }
 
     @Override

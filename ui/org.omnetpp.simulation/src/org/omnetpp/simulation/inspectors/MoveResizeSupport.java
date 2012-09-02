@@ -20,8 +20,6 @@ import org.eclipse.swt.widgets.Display;
  *
  * @author Andras
  */
-//TODO resize border is too thin at the right edge of SWT control (and the next few pixels actually move!)
-//TODO the foremost ("focused"?) inspector or inspectors should be visually distinguished (different border color?)
 public class MoveResizeSupport {
     private static final Cursor CURSOR_SIZEE = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEE); //TODO into some share resource file
     private static final Cursor CURSOR_SIZEW = new Cursor(Display.getDefault(), SWT.CURSOR_SIZEW);
@@ -62,6 +60,11 @@ public class MoveResizeSupport {
                 dragStartInspectorFigureBounds = inspector.getFigure().getBounds().getCopy();
                 dragOperation = inspector.getDragOperation(figure, me.x, me.y);
                 me.consume(); // otherwise dragging too fast breaks the drag (!!??)
+
+                if ((me.getState()&SWT.CONTROL) != 0)
+                    simulationCanvas.toggleSelection(inspector);
+                else
+                    simulationCanvas.select(inspector, true);
 
                 inspector.raiseToTop();
 
@@ -117,6 +120,11 @@ public class MoveResizeSupport {
                 dragStart = new Point(mouse.x, mouse.y);  // note: don't use (e.x,e.y) because they are control-relative and the control itself will move!
                 dragStartInspectorFigureBounds = inspector.getFigure().getBounds().getCopy();
                 dragOperation = inspector.getDragOperation(control, e.x, e.y);
+
+                if ((e.stateMask&SWT.CONTROL) != 0)
+                    simulationCanvas.toggleSelection(inspector);
+                else
+                    simulationCanvas.select(inspector, true);
 
                 inspector.raiseToTop();
 

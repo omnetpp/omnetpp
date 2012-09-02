@@ -6,7 +6,7 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
-import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.model.cObject;
 
@@ -21,7 +21,7 @@ import org.omnetpp.simulation.model.cObject;
  *
  * @author Andras
  */
-public interface IInspectorContainer {
+public interface IInspectorContainer extends ISelectionProvider {
     /**
      * TEMPORARY: open an inspector for this object
      * todo what kind, etc
@@ -109,31 +109,29 @@ public interface IInspectorContainer {
      * TODO
      */
     org.eclipse.swt.graphics.Point translateAbsoluteFigureCoordinatesToCanvas(int x, int y);
-    
+
     org.eclipse.draw2d.geometry.Point translateCanvasToAbsoluteFigureCoordinates(int x, int y);
-    
-    /**
-     * Utility function: extracts cObjects from the selection and returns them.
-     * Tries both instanceOf and getAdapter(cObject.class) on elements of the
-     * selection.
-     */
-    cObject[] getObjectsFromSelection(ISelection selection);
 
     /**
      * Request selecting this object, and optionally deselecting all others.
      */
-    void select(cObject object, boolean deselectOthers);
+    void select(Object object, boolean deselectOthers);
+
+    /**
+     * Request selecting the given objects, and optionally deselecting all others.
+     */
+    void select(Object[] objects, boolean deselectOthers);
 
     /**
      * Select this object if it was not selected, and vica versa. Selection
      * state of other objects remain unchanged.
      */
-    void toggleSelection(cObject object);
+    void toggleSelection(Object object);
 
     /**
      * Remove this object from the selection
      */
-    void deselect(cObject object);
+    void deselect(Object object);
 
     /**
      * Remove all objects from the selection.

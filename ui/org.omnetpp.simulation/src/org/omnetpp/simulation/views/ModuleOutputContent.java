@@ -2,6 +2,7 @@ package org.omnetpp.simulation.views;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.ListenerList;
@@ -22,8 +23,8 @@ import org.omnetpp.simulation.widgets.ITextViewerContent;
 //TODO getters could use a fixed point plus incremental computation, exploiting the fact that painting of the lines occurs top-down
 public class ModuleOutputContent implements ITextViewerContent {
     private LogBuffer logBuffer;
-    private IEventEntryLinesProvider linesProvider; //TODO rename to IEventEntryLinesProvider
-    private String filterModuleFullPath;  //TODO move filter into some IEventEntryFilter class?
+    private IEventEntryFilter filter;
+    private IEventEntryLinesProvider linesProvider;
     private ListenerList textChangeListeners = new ListenerList();
 
     // cached data
@@ -43,10 +44,16 @@ public class ModuleOutputContent implements ITextViewerContent {
         });
     }
 
-    public void setFilterModuleFullPath(String filterModuleFullPath) {
-        this.filterModuleFullPath = filterModuleFullPath;
-        invalidateIndex();
-        fireTextChangeNotification();
+    public void setFilter(IEventEntryFilter filter) {
+        if (!ObjectUtils.equals(this.filter, filter)) {
+            this.filter = filter;
+            invalidateIndex();
+            fireTextChangeNotification();
+        }
+    }
+
+    public IEventEntryFilter getFilter() {
+        return filter;
     }
 
     public void invalidateIndex() {
@@ -56,19 +63,6 @@ public class ModuleOutputContent implements ITextViewerContent {
 
     protected boolean isIndexValid() {
         return entryStartLineNumbers != null;
-    }
-
-    protected boolean filterMatches(EventEntry entry) {  //TODO into some IEventEntryFilter
-        if (filterModuleFullPath == null)
-        return true; // no filtering
-
-        String moduleFullPath = entry.moduleFullPath;
-        if (moduleFullPath == null)
-            return false;
-        if (moduleFullPath.startsWith(filterModuleFullPath))
-            if (moduleFullPath.equals(filterModuleFullPath) || moduleFullPath.startsWith(filterModuleFullPath + "."))
-                return true;
-        return false;
     }
 
     @Override
@@ -86,7 +80,7 @@ public class ModuleOutputContent implements ITextViewerContent {
 
         int entryIndex = getIndexOfEntryAt(lineIndex);
         EventEntry eventEntry = logBuffer.getEventEntry(entryIndex);
-        Assert.isTrue(filterMatches(eventEntry));
+        Assert.isTrue(filter==null || filter.matches(eventEntry));
         return linesProvider.getLineText(eventEntry,  lineIndex - entryStartLineNumbers[entryIndex]);
     }
 
@@ -98,7 +92,7 @@ public class ModuleOutputContent implements ITextViewerContent {
 
         int entryIndex = getIndexOfEntryAt(lineIndex);
         EventEntry eventEntry = logBuffer.getEventEntry(entryIndex);
-        Assert.isTrue(filterMatches(eventEntry));
+        Assert.isTrue(filter==null || filter.matches(eventEntry));
         return linesProvider.getLineColor(eventEntry, lineIndex - entryStartLineNumbers[entryIndex]);
     }
 
@@ -130,7 +124,7 @@ public class ModuleOutputContent implements ITextViewerContent {
             entryStartLineNumbers[i] = currentLineNumber;
 
             EventEntry entry = logBuffer.getEventEntry(i);
-            if (filterMatches(entry))
+            if (filter==null || filter.matches(entry))
                 currentLineNumber += linesProvider.getNumLines(entry);
         }
 

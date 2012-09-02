@@ -3,14 +3,9 @@ package org.omnetpp.simulation.inspectors;
 import org.eclipse.draw2d.IFigure;
 
 /**
- * Graphical representation of inspectors.
+ * Marker interface for the toplevel figure of an inspector.
  *
  * @author Andras
  */
 public interface IInspectorFigure extends IFigure {
-    /**
-     * Display/hide the selection border around the inspector
-     */
-    void setSelectionBorder(boolean isSelected);
-
 }

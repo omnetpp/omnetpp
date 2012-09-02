@@ -1,14 +1,19 @@
 package org.omnetpp.simulation.inspectors;
 
+import java.util.List;
+
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -16,6 +21,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
@@ -70,19 +76,26 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         viewer.setMode(initialMode);
         viewer.setInput(object);
 
-        viewer.getTree().addSelectionListener(new SelectionListener() {
+        viewer.getTree().addSelectionListener(new SelectionAdapter() {
             @Override
-            public void widgetSelected(SelectionEvent e) {
-                inspectorContainer.select(object, true);  //XXX ???
-            }
-
-            @Override
+            @SuppressWarnings("unchecked")
             public void widgetDefaultSelected(SelectionEvent e) {
                 // inspect the selected object(s)
                 ISelection selection = viewer.getTreeViewer().getSelection();
-                cObject[] objects = getContainer().getObjectsFromSelection(selection);
+                List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
                 for (cObject object : objects)
                     getContainer().inspect(object);
+            }
+        });
+
+        viewer.getTreeViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent e) {
+                // wrap to SelectionItems and export to the inspector canvas
+                Object[] array = ((IStructuredSelection)e.getSelection()).toArray();
+                for (int i = 0; i < array.length; i++)
+                    array[i] = new SelectionItem(ObjectFieldsInspectorPart.this, array[i]);
+                getContainer().select(array, true);
             }
         });
 
@@ -90,7 +103,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
         getContainer().addMoveResizeSupport(frame);
         getContainer().addMoveResizeSupport(label);
-        
+
         return frame;
     }
 
@@ -155,5 +168,10 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         if (control == label)
             return FigureUtils.getMoveOnlyDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
         return 0;
+    }
+
+    protected void setSelectionMark(boolean isSelected) {
+        super.setSelectionMark(isSelected);
+        label.setBackground(isSelected ? ColorFactory.GREY50 : null);
     }
 }

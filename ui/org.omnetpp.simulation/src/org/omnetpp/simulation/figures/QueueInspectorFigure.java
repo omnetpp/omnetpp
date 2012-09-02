@@ -6,7 +6,6 @@ import org.eclipse.draw2d.AbstractLayout;
 import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -57,14 +56,6 @@ public class QueueInspectorFigure extends Figure implements IInspectorFigure {
         setLayoutManager(new QueueContentsLayout());
         setPreferredSize(200,50);
         setMinimumSize(new Dimension(32,16));
-
-        setSelectionBorder(false);
-    }
-
-    @Override
-    public void setSelectionBorder(boolean isSelected) {
-        //setBorder(isSelected ? new SelectionBorder() : null); //XXX SelectionBorder crashes the VM !! ????
-        setBorder(isSelected ? new LineBorder(5) : null); //XXX for now
     }
 
     public IFigure createQueueItemFigure() {
