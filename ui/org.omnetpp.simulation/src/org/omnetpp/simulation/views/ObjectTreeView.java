@@ -51,8 +51,7 @@ import org.omnetpp.simulation.model.cObject;
 //FIXME display message if no active simulation
 //FIXME better loading of objects!! (from bg, etc)
 public class ObjectTreeView extends ViewWithMessagePart {
-    public static final String ID = "org.omnetpp.simulation.views.ObjectTreeView";
-
+    // note: view ID is defined in IConstants.java
     protected TreeViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 

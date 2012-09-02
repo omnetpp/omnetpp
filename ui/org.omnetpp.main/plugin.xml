@@ -83,7 +83,7 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.omnetpp.ide.PerspectiveFactory"
+            class="org.omnetpp.ide.OmnetppPerspectiveFactory"
             icon="icons/logo16.png"
             id="org.omnetpp.main.OmnetppPerspective"
             name="Simulation"/>

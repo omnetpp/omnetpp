@@ -19,10 +19,17 @@ public interface IConstants extends ICoreConstants {
     // fonts (use with JFaceResources.getFont(symbolicName); see JFaceResources for others)
     public static final String SMALL_FONT = "org.omnetpp.common.smallFont";
 
+    // perspectives
+    public static final String OMNETPP_PERSPECTIVE_ID = "org.omnetpp.main.OmnetppPerspective";
+    public static final String SIMULATE_PERSPECTIVE_ID = "org.omnetpp.simulation.SimulationPerspective";
+
     // nature, builders
     public static final String OMNETPP_NATURE_ID = "org.omnetpp.main.omnetppnature";
     public static final String VECTORFILEINDEXER_BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";
     public static final String MAKEFILEBUILDER_BUILDER_ID = "org.omnetpp.cdt.MakefileBuilder";
+
+    // editors
+    public static final String SIMULATION_EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";
 
     // views
     public static final String NEW_VERSION_VIEW_ID = "org.omnetpp.main.NewVersionView";
@@ -34,6 +41,10 @@ public interface IConstants extends ICoreConstants {
     public static final String ANIMATION_VIEW_ID = "org.omnetpp.animation.editors.AnimationView";
     public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";
     public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
+    public static final String SIMULATIONOBJECTTREE_VIEW_ID = "org.omnetpp.simulation.views.ObjectTreeView";
+    public static final String MODULEOUTPUT_VIEW_ID = "org.omnetpp.simulation.views.ModuleOutputView";
+
+    public static final String ID_CONSOLE_VIEW = "org.eclipse.ui.console.ConsoleView"; //from IConsoleConstants
 
     // wizards
     public static final String NEW_NEDFILE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewNedFile";

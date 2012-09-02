@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
-
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.omnetpp.simulation.SimulationPerspectiveFactory"
+            icon="icons/misc/perspective.png"
+            id="org.omnetpp.simulation.SimulationPerspective"
+            name="Simulate"/>
+   </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor

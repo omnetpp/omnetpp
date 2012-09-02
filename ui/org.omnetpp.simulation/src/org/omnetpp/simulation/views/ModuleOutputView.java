@@ -32,8 +32,7 @@ import org.omnetpp.simulation.widgets.TextViewerContent;
  */
 //TODO when view is closed, it should deregister its listener from LogBuffer!!! (see ModuleOutputContent's ctor)
 public class ModuleOutputView extends ViewWithMessagePart {
-    public static final String ID = "org.omnetpp.simulation.views.ModuleOutputView";
-
+    // note: view ID is defined in IConstants.java
     protected TextViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
     protected TextViewerContent BLANK_TEXT_CONTENT = new TextViewerContent("<blank text content>\n"); //XXX

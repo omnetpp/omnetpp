@@ -22,7 +22,7 @@ import org.omnetpp.common.IConstants;
  *
  * @author Andras
  */
-public class PerspectiveFactory implements IPerspectiveFactory {
+public class OmnetppPerspectiveFactory implements IPerspectiveFactory {
 
     public void createInitialLayout(IPageLayout layout) {
         // Note: starting point of this code was JDT's "Java" perspective,

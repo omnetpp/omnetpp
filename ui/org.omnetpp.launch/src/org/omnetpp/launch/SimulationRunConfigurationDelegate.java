@@ -23,13 +23,16 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.util.StringUtils;
@@ -97,16 +100,24 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
                 public void run() {
                     IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
                     IWorkbenchPage workbenchPage = workbenchWindow.getActivePage();
-                    IEditorInput input = new SimulationEditorInput(name, "localhost", port, launcherjob);
-                    String SIMULATION_EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";
                     try {
-                        IDE.openEditor(workbenchPage, input, SIMULATION_EDITOR_ID);
+                        // offer switching to "Simulation" perspective
+                        IPerspectiveDescriptor desc = workbenchWindow.getWorkbench().getPerspectiveRegistry().findPerspectiveWithId(IConstants.SIMULATE_PERSPECTIVE_ID);
+                        if (desc == null)
+                            LaunchPlugin.logError("Perspective " + IConstants.SIMULATE_PERSPECTIVE_ID + "not found", new RuntimeException());
+                        if (desc != null && !workbenchPage.getPerspective().equals(desc)) {
+                            if (MessageDialog.openConfirm(workbenchWindow.getShell(), "Switch Perspective", "Switch to the 'Simulate' perspective?"))
+                                workbenchPage.setPerspective(desc);
+                        }
+
+                        // open the editor
+                        IEditorInput input = new SimulationEditorInput(name, "localhost", port, launcherjob);
+                        IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {
                         ErrorDialog.openError(workbenchWindow.getShell(), "Error", "Could not open animation window for the running simulation.", e.getStatus());
                         LaunchPlugin.logError(e);
                     }
-                    //TODO offer switching to "Simulation" perspective!
                 }
             });
         }
