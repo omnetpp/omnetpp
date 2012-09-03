@@ -21,13 +21,13 @@ public class cObject {
     private long objectId;
     private boolean isFilledIn = false;
     private boolean isFieldsFilledIn = false;
-    private boolean isDisposed = false;
+    private boolean isDisposed = false; //TODO deleted (~C++)
 
     private String className;
     private String name;
     private String fullName;
     private String fullPath;
-    private String icon;
+    private String icon;   //TODO could come from the class descriptor
     private String info;
     private cObject owner;
     private cObject[] childObjects;

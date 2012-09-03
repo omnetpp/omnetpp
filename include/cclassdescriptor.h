@@ -157,7 +157,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Must be redefined in subclasses to return the number of fields
      * in the client object.
      */
-    virtual int getFieldCount(void *object) const = 0;
+    virtual int getFieldCount(void *object) const = 0; //TODO remove 'object' ptr from this and similar methods; TODO declare that descriptors are constant during runtime
 
     /**
      * Must be redefined in subclasses to return the name of a field

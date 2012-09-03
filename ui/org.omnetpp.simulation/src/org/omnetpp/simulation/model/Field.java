@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IAdaptable;
  *
  * @author Andras
  */
+//TODO: strip metadata into a cClassDescriptor class
 public class Field implements IAdaptable {
     public cObject owner;
     public String name;
