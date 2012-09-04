@@ -1727,17 +1727,21 @@ sub generateDescriptorClass
 {
     print CC "class $msgdescclass : public cClassDescriptor\n";
     print CC "{\n";
+    print CC "  private:\n";
+    print CC "    mutable const char **propertynames;\n";
     print CC "  public:\n";
     print CC "    $msgdescclass();\n";
     print CC "    virtual ~$msgdescclass();\n";
     print CC "\n";
     print CC "    virtual bool doesSupport(cObject *obj) const;\n";
+    print CC "    virtual const char **getPropertyNames() const;\n";
     print CC "    virtual const char *getProperty(const char *propertyname) const;\n";
     print CC "    virtual int getFieldCount() const;\n";
     print CC "    virtual const char *getFieldName(int field) const;\n";
     print CC "    virtual int findField(const char *fieldName) const;\n";
     print CC "    virtual unsigned int getFieldTypeFlags(int field) const;\n";
     print CC "    virtual const char *getFieldTypeString(int field) const;\n";
+    print CC "    virtual const char **getFieldPropertyNames(int field) const;\n";
     print CC "    virtual const char *getFieldProperty(int field, const char *propertyname) const;\n";
     print CC "\n";
     print CC "    virtual int getFieldArraySize(void *object, int field) const;\n";
@@ -1756,11 +1760,13 @@ sub generateDescriptorClass
     my $qualifiedrealmsgclass = prefixWithNamespace($namespacename, $realmsgclass);
     print CC "$msgdescclass\:\:$msgdescclass() : cClassDescriptor(\"$qualifiedrealmsgclass\", \"$msgbaseclass\")\n";
     print CC "{\n";
+    print CC "    propertynames = NULL;\n";
     print CC "}\n";
     print CC "\n";
 
     print CC "$msgdescclass\:\:~$msgdescclass()\n";
     print CC "{\n";
+    print CC "    delete[] propertynames;\n";
     print CC "}\n";
     print CC "\n";
 
@@ -1771,10 +1777,27 @@ sub generateDescriptorClass
     print CC "}\n";
     print CC "\n";
 
+    # getPropertyNames()
+    print CC "const char **$msgdescclass\:\:getPropertyNames() const\n";
+    print CC "{\n";
+    print CC "    if (!propertynames) {\n";
+    print CC "        static const char *names[] = { ";
+    for my $key (keys %props) {
+        print CC "\"$key\", ";
+    }
+    print CC " NULL };\n";
+    print CC "        cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "        const char **basenames = basedesc ? basedesc->getPropertyNames() : NULL;\n";
+    print CC "        propertynames = mergeLists(basenames, names);\n";
+    print CC "    }\n";
+    print CC "    return propertynames;\n";
+    print CC "}\n";
+    print CC "\n";
+
     # getProperty()
     print CC "const char *$msgdescclass\:\:getProperty(const char *propertyname) const\n";
     print CC "{\n";
-    for $key (keys %props) {
+    for my $key (keys %props) {
         $prop = quote($props{$key});
         print CC "    if (!strcmp(propertyname,\"$key\")) return \"$prop\";\n";
     }
@@ -1885,6 +1908,36 @@ sub generateDescriptorClass
         print CC "    };\n";
         print CC "    return (field>=0 && field<$fieldcount) ? fieldTypeStrings[field] : NULL;\n";
     }
+    print CC "}\n";
+    print CC "\n";
+
+    # getFieldPropertyNames()
+    print CC "const char **$msgdescclass\:\:getFieldPropertyNames(int field) const\n";
+    print CC "{\n";
+    print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
+    print CC "    if (basedesc) {\n";
+    print CC "        if (field < basedesc->getFieldCount())\n";
+    print CC "            return basedesc->getFieldPropertyNames(field);\n";
+    print CC "        field -= basedesc->getFieldCount();\n";
+    print CC "    }\n";
+    print CC "    switch (field) {\n";
+    for (my $i=0; $i<$fieldcount; $i++)
+    {
+        my $fieldname = $fieldlist[$i];
+        my $ref = $fprops{$fieldname};
+        if (keys(%$ref) != ()) {
+            print CC "        case $i: {\n";
+            print CC "            static const char *names[] = { ";
+            for my $key (keys %$ref) {
+                print CC "\"$key\", ";
+            }
+            print CC " NULL };\n";
+            print CC "            return names;\n";
+            print CC "        }\n";
+        }
+    }
+    print CC "        default: return NULL;\n";
+    print CC "    }\n";
     print CC "}\n";
     print CC "\n";
 

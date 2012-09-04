@@ -86,6 +86,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     static std::string oppstring2string(const std::string& s)  {return s;}
     static void string2oppstring(const char *s, opp_string& str) {str = s?s:"";}
     static void string2oppstring(const char *s, std::string& str) {str = s?s:"";}
+    static const char **mergeLists(const char **list1, const char **list2);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -146,12 +147,19 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     int getInheritanceChainLength() const;
 
     /**
+     * Returns a NULL-terminated string array with the names of properties on this
+     * class. The list includes the properties of the ancestor classes as well.
+     */
+    virtual const char **getPropertyNames() const = 0;
+
+    /**
      * Returns the value of the given property of the descriptor as a single string.
      * Returns NULL if there is no such property. For structured property values
      * (with multiple keys and/or list(s) inside), the value is returned as a
-     * single unparsed string.
+     * single unparsed string. If a property appears in a base class and its
+     * subclass too, the subclass's property will be returned.
      */
-    virtual const char *getProperty(const char *propertyname) const = 0;  //TODO: split to getNumProperties(), getPropertyName(i), getProperty(i); or: add getPropertyNames() that would return a string array (const char **)
+    virtual const char *getProperty(const char *propertyname) const = 0;
 
     /**
      * Returns the number of fields in the described class.
@@ -201,12 +209,18 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     virtual const char *getFieldTypeString(int field) const = 0;
 
     /**
+     * Returns a NULL-terminated string array with the names of the given
+     * field's properties.
+     */
+    virtual const char **getFieldPropertyNames(int field) const = 0;
+
+    /**
      * Returns the value of the given property of the given field in the
      * described class as a single string. Returns NULL if there is no such
      * property. For structured property values (with multiple keys and/or
      * list(s) inside), the value is returned as a single unparsed string.
      */
-    virtual const char *getFieldProperty(int field, const char *propertyname) const = 0; //TODO: split to getNumFieldProperties(), getFieldPropertyName(i), getFieldProperty(i); or: add getFieldPropertyNames() that would return a string array (const char **)
+    virtual const char *getFieldProperty(int field, const char *propertyname) const = 0;
 
     /**
      * Returns the array size of a field in the given object. If the field is

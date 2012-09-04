@@ -35,11 +35,13 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     cStdVectorWatcherDescriptor(const char *vecTypeName, const char *elemTypeName);
     virtual ~cStdVectorWatcherDescriptor();
 
+    virtual const char **getPropertyNames() const;
     virtual const char *getProperty(const char *propertyname) const;
     virtual int getFieldCount() const;
     virtual const char *getFieldName(int field) const;
     virtual unsigned int getFieldTypeFlags(int field) const;
     virtual const char *getFieldTypeString(int field) const;
+    virtual const char **getFieldPropertyNames(int field) const;
     virtual const char *getFieldProperty(int field, const char *propertyname) const;
     virtual int getFieldArraySize(void *object, int field) const;
 
@@ -59,6 +61,12 @@ cClassDescriptor(vecType, NULL)
 
 cStdVectorWatcherDescriptor::~cStdVectorWatcherDescriptor()
 {
+}
+
+const char **cStdVectorWatcherDescriptor::getPropertyNames() const
+{
+    static const char **names = { NULL };
+    return names;
 }
 
 const char *cStdVectorWatcherDescriptor::getProperty(const char *propertyname) const
@@ -84,6 +92,12 @@ const char *cStdVectorWatcherDescriptor::getFieldName(int field) const
 const char *cStdVectorWatcherDescriptor::getFieldTypeString(int field) const
 {
     return elementTypeName.c_str();
+}
+
+const char **cStdVectorWatcherDescriptor::getFieldPropertyNames(int field) const
+{
+    static const char **names = { NULL };
+    return names;
 }
 
 const char *cStdVectorWatcherDescriptor::getFieldProperty(int field, const char *propertyname) const

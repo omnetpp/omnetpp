@@ -137,6 +137,41 @@ long cClassDescriptor::string2enum(const char *s, const char *enumname)
     return enump->lookup(s,0);
 }
 
+// helper for the next one
+static bool listContains(const char **list, const char *s)
+{
+    for (const char **p = list; *p; p++)
+        if (!strcmp(*p, s))
+            return true;
+    return false;
+}
+
+const char **cClassDescriptor::mergeLists(const char **list1, const char **list2)
+{
+    // args may be NULL
+    const char *emptylist[] = { NULL };
+    if (!list1) list1 = emptylist;
+    if (!list2) list2 = emptylist;
+
+    // count all elements
+    int n = 0;
+    for (const char **p = list1; *p; p++, n++);
+    for (const char **p = list2; *p; p++, n++);
+
+    // preallocate the result array
+    const char **result = new const char *[n+1];
+
+    // copy items
+    const char **dest = result;
+    for (const char **p = list1; *p; p++)
+        *dest++ = *p;
+    for (const char **p = list2; *p; p++)
+        if (!listContains(list1, *p))
+            *dest++ = *p;
+    *dest = NULL;
+    return result;
+}
+
 
 //-----------------------------------------------------------
 
