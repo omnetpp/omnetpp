@@ -54,7 +54,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
         FD_ISPOINTER = 0x04,  ///< field is pointer or pointer array: T *a; T *a[]; T *a[10];
         FD_ISCOBJECT = 0x08,  ///< if ISCOMPOUND: basic type (T) subclasses from cObject
         FD_ISCOWNEDOBJECT = 0x10, ///< if ISCOMPOUND: basic type (T) subclasses from cOwnedObject
-        FD_ISEDITABLE = 0x20, ///< whether field supports setFieldAsString()
+        FD_ISEDITABLE = 0x20, ///< whether field supports setFieldValueAsString()
         FD_NONE = 0x0
     };
 
@@ -218,19 +218,14 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * Returns the value of the given field in the given object as a string.
      * For compound fields, the message compiler generates code which calls operator<<.
      */
-    virtual std::string getFieldAsString(void *object, int field, int i) const = 0;  //TODO getFieldValueAsString()
-
-    /**
-     * DEPRECATED: Use the getFieldAsString(void*, int, int) instead.
-     */
-    _OPPDEPRECATED virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;  //TODO remove
+    virtual std::string getFieldValueAsString(void *object, int field, int i) const = 0;
 
     /**
      * Sets the value of a field in the given object by parsing the given value string.
-     * Returns true if successful, and false if an error occurred or the
-     * field does not support setting.
+     * Returns true if successful, and false if an error occurred or the field
+     * does not support setting.
      */
-    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const = 0;  //TODO setFieldValueAsString()
+    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const = 0;
 
     /**
      * Returns the declared type name of a compound field in the described class.
@@ -242,7 +237,7 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     /**
      * Returns the pointer to the value of a compound field in the given object.
      */
-    virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;  //TODO getFieldStructValuePointer()
+    virtual void *getFieldStructValuePointer(void *object, int field, int i) const = 0;
     //@}
 };
 

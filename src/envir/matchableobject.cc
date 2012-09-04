@@ -103,7 +103,7 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     if (!found)
         return NULL;
 
-    tmp = desc->getFieldAsString(obj, fieldId, index);
+    tmp = desc->getFieldValueAsString(obj, fieldId, index);
     return tmp.c_str();
 }
 

@@ -794,12 +794,12 @@ bool Cmdenv::handle(cHttpRequest *request)
                              if (desc->getFieldStructName(fld))
                                  jdetailField->put("structName", jsonWrap(desc->getFieldStructName(fld)));
                              //TODO send symbolic names if @enum() exists!!!
-                             //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
+                             //TODO virtual void *getFieldStructValuePointer(void *object, int field, int i) const = 0;
                              if (!desc->getFieldIsArray(fld)) {
                                  if (!desc->getFieldIsCompound(fld))
-                                     jdetailField->put("value", jsonWrap(desc->getFieldAsString(obj, fld, 0)));
+                                     jdetailField->put("value", jsonWrap(desc->getFieldValueAsString(obj, fld, 0)));
                                  else {
-                                     void *ptr = desc->getFieldStructPointer(obj, fld, 0);
+                                     void *ptr = desc->getFieldStructValuePointer(obj, fld, 0);
                                      if (desc->getFieldIsCObject(fld)) {
                                          cObject *o = (cObject *)ptr;
                                          jdetailField->put("value", jsonWrap(getIdStringForObject(o)));
@@ -813,9 +813,9 @@ bool Cmdenv::handle(cHttpRequest *request)
                                  JsonArray *jValues = new JsonArray();
                                  for (int i = 0; i < n; i++) {
                                      if (!desc->getFieldIsCompound(fld))
-                                         jValues->push_back(jsonWrap(desc->getFieldAsString(obj, fld, i)));
+                                         jValues->push_back(jsonWrap(desc->getFieldValueAsString(obj, fld, i)));
                                      else {
-                                         void *ptr = desc->getFieldStructPointer(obj, fld, i);
+                                         void *ptr = desc->getFieldStructValuePointer(obj, fld, i);
                                          if (desc->getFieldIsCObject(fld)) {
                                              cObject *o = (cObject *)ptr;
                                              jValues->push_back(jsonWrap(getIdStringForObject(o)));

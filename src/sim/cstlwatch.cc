@@ -40,11 +40,11 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     virtual const char *getFieldProperty(int field, const char *propertyname) const;
     virtual int getFieldArraySize(void *object, int field) const;
 
-    virtual std::string getFieldAsString(void *object, int field, int i) const;
-    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+    virtual std::string getFieldValueAsString(void *object, int field, int i) const;
+    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const;
 
     virtual const char *getFieldStructName(int field) const;
-    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+    virtual void *getFieldStructValuePointer(void *object, int field, int i) const;
 };
 
 Register_ClassDescriptor(cStdVectorWatcherDescriptor);
@@ -110,7 +110,7 @@ int cStdVectorWatcherDescriptor::getFieldArraySize(void *object, int field) cons
     }
 }
 
-std::string cStdVectorWatcherDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string cStdVectorWatcherDescriptor::getFieldValueAsString(void *object, int field, int i) const
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
     switch (field) {
@@ -119,7 +119,7 @@ std::string cStdVectorWatcherDescriptor::getFieldAsString(void *object, int fiel
     }
 }
 
-bool cStdVectorWatcherDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool cStdVectorWatcherDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
 {
     return false; // not supported
 }
@@ -129,7 +129,7 @@ const char *cStdVectorWatcherDescriptor::getFieldStructName(int field) const
     return NULL;
 }
 
-void *cStdVectorWatcherDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *cStdVectorWatcherDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
 {
     return NULL;
 }

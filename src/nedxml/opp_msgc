@@ -1741,11 +1741,11 @@ sub generateDescriptorClass
     print CC "    virtual const char *getFieldProperty(int field, const char *propertyname) const;\n";
     print CC "\n";
     print CC "    virtual int getFieldArraySize(void *object, int field) const;\n";
-    print CC "    virtual std::string getFieldAsString(void *object, int field, int i) const;\n";
-    print CC "    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;\n";
+    print CC "    virtual std::string getFieldValueAsString(void *object, int field, int i) const;\n";
+    print CC "    virtual bool setFieldValueAsString(void *object, int field, int i, const char *value) const;\n";
     print CC "\n";
     print CC "    virtual const char *getFieldStructName(int field) const;\n";
-    print CC "    virtual void *getFieldStructPointer(void *object, int field, int i) const;\n";
+    print CC "    virtual void *getFieldStructValuePointer(void *object, int field, int i) const;\n";
     print CC "};\n\n";
 
     # register class
@@ -1943,13 +1943,13 @@ sub generateDescriptorClass
     print CC "}\n";
     print CC "\n";
 
-    # getFieldAsString()
-    print CC "std::string $msgdescclass\:\:getFieldAsString(void *object, int field, int i) const\n";
+    # getFieldValueAsString()
+    print CC "std::string $msgdescclass\:\:getFieldValueAsString(void *object, int field, int i) const\n";
     print CC "{\n";
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount())\n";
-    print CC "            return basedesc->getFieldAsString(object,field,i);\n";
+    print CC "            return basedesc->getFieldValueAsString(object,field,i);\n";
     print CC "        field -= basedesc->getFieldCount();\n";
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
@@ -1998,13 +1998,13 @@ sub generateDescriptorClass
     print CC "}\n";
     print CC "\n";
 
-    # setFieldAsString()
-    print CC "bool $msgdescclass\:\:setFieldAsString(void *object, int field, int i, const char *value) const\n";
+    # setFieldValueAsString()
+    print CC "bool $msgdescclass\:\:setFieldValueAsString(void *object, int field, int i, const char *value) const\n";
     print CC "{\n";
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount())\n";
-    print CC "            return basedesc->setFieldAsString(object,field,i,value);\n";
+    print CC "            return basedesc->setFieldValueAsString(object,field,i,value);\n";
     print CC "        field -= basedesc->getFieldCount();\n";
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
@@ -2066,13 +2066,13 @@ sub generateDescriptorClass
     print CC "}\n";
     print CC "\n";
 
-    # getFieldStructPointer()
-    print CC "void *$msgdescclass\:\:getFieldStructPointer(void *object, int field, int i) const\n";
+    # getFieldStructValuePointer()
+    print CC "void *$msgdescclass\:\:getFieldStructValuePointer(void *object, int field, int i) const\n";
     print CC "{\n";
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount())\n";
-    print CC "            return basedesc->getFieldStructPointer(object,field, i);\n";
+    print CC "            return basedesc->getFieldStructValuePointer(object,field, i);\n";
     print CC "        field -= basedesc->getFieldCount();\n";
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
