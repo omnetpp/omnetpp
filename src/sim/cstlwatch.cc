@@ -33,17 +33,17 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     virtual ~cStdVectorWatcherDescriptor();
 
     virtual const char *getProperty(const char *propertyname) const;
-    virtual int getFieldCount(void *object) const;
-    virtual const char *getFieldName(void *object, int field) const;
-    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
-    virtual const char *getFieldTypeString(void *object, int field) const;
-    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getFieldCount() const;
+    virtual const char *getFieldName(int field) const;
+    virtual unsigned int getFieldTypeFlags(int field) const;
+    virtual const char *getFieldTypeString(int field) const;
+    virtual const char *getFieldProperty(int field, const char *propertyname) const;
     virtual int getFieldArraySize(void *object, int field) const;
 
     virtual std::string getFieldAsString(void *object, int field, int i) const;
     virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
 
-    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual const char *getFieldStructName(int field) const;
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
@@ -63,12 +63,12 @@ const char *cStdVectorWatcherDescriptor::getProperty(const char *propertyname) c
     return NULL;
 }
 
-int cStdVectorWatcherDescriptor::getFieldCount(void *) const
+int cStdVectorWatcherDescriptor::getFieldCount() const
 {
     return 1;
 }
 
-unsigned int cStdVectorWatcherDescriptor::getFieldTypeFlags(void *, int field) const
+unsigned int cStdVectorWatcherDescriptor::getFieldTypeFlags(int field) const
 {
     switch (field) {
         case 0: return FD_ISARRAY; // as far as we're concerned. We don't know about FD_ISCOMPOUND, FD_ISPOINTER, FD_ISCOBJECT / FD_ISCOWNEDOBJECT
@@ -76,25 +76,27 @@ unsigned int cStdVectorWatcherDescriptor::getFieldTypeFlags(void *, int field) c
     }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldName(void *object, int field) const
+const char *cStdVectorWatcherDescriptor::getFieldName(int field) const
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
-    switch (field) {
-        case 0: return pp->getName();
-        default: return NULL;
-    }
+    return "fieldname"; //FIXME az alabbi kikommentezett kodot kellene atirni!  maga a descriptor kell tartalmazza a field nevet es tipust!!!
+//    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
+//    switch (field) {
+//        case 0: return pp->getName();
+//        default: return NULL;
+//    }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldTypeString(void *object, int field) const
+const char *cStdVectorWatcherDescriptor::getFieldTypeString(int field) const
 {
-    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
-    switch (field) {
-        case 0: return pp->getElemTypeName();
-        default: return NULL;
-    }
+    return "elementtype";
+//    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
+//    switch (field) {
+//        case 0: return pp->getElemTypeName();
+//        default: return NULL;
+//    }
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *cStdVectorWatcherDescriptor::getFieldProperty(int field, const char *propertyname) const
 {
     return NULL;
 }
@@ -122,7 +124,7 @@ bool cStdVectorWatcherDescriptor::setFieldAsString(void *object, int field, int 
     return false; // not supported
 }
 
-const char *cStdVectorWatcherDescriptor::getFieldStructName(void *object, int field) const
+const char *cStdVectorWatcherDescriptor::getFieldStructName(int field) const
 {
     return NULL;
 }

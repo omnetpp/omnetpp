@@ -33,7 +33,7 @@ USING_NAMESPACE
 #define MAXIMUM_OBJECT_PRINTER_LEVEL 20
 
 static ObjectPrinterRecursionControl defaultRecurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
-    const char *fieldName = descriptor->getFieldName(object, fieldIndex);
+    const char *fieldName = descriptor->getFieldName(fieldIndex);
     return strcmp(fieldName, "owner") ? RECURSE : SKIP;
 }
 
@@ -140,13 +140,13 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
     }
     else {
         parents[level] = object;
-        for (int fieldIndex = 0; fieldIndex < descriptor->getFieldCount(object); fieldIndex++) {
-            bool isArray = descriptor->getFieldIsArray(object, fieldIndex);
-            bool isPointer = descriptor->getFieldIsPointer(object, fieldIndex);
-            bool isCompound = descriptor->getFieldIsCompound(object, fieldIndex);
-            bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
-            const char *fieldType = descriptor->getFieldTypeString(object, fieldIndex);
-            const char *fieldName = descriptor->getFieldName(object, fieldIndex);
+        for (int fieldIndex = 0; fieldIndex < descriptor->getFieldCount(); fieldIndex++) {
+            bool isArray = descriptor->getFieldIsArray(fieldIndex);
+            bool isPointer = descriptor->getFieldIsPointer(fieldIndex);
+            bool isCompound = descriptor->getFieldIsCompound(fieldIndex);
+            bool isCObject = descriptor->getFieldIsCObject(fieldIndex);
+            const char *fieldType = descriptor->getFieldTypeString(fieldIndex);
+            const char *fieldName = descriptor->getFieldName(fieldIndex);
 
             int size = isArray ? descriptor->getFieldArraySize(object, fieldIndex) : 1;
             for (int elementIndex = 0; elementIndex < size; elementIndex++) {
@@ -172,7 +172,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                 if (isCompound) {
                     if (fieldValue) {
                         cClassDescriptor *fieldDescriptor = isCObject ? cClassDescriptor::getDescriptorFor((cObject *)fieldValue) :
-                                                                        cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(object, fieldIndex));
+                                                                        cClassDescriptor::getDescriptorFor(descriptor->getFieldStructName(fieldIndex));
 
                         if (isCObject && result == FULL_NAME)
                             ostream << ((cObject *)fieldValue)->getFullName() << "\n";
@@ -182,7 +182,7 @@ void ObjectPrinter::printObjectToStream(std::ostream& ostream, void *object, cCl
                             if (isCObject)
                                 ostream << "class " << ((cObject *)fieldValue)->getClassName() << " ";
                             else
-                                ostream << "struct " << descriptor->getFieldStructName(object, fieldIndex) << " ";
+                                ostream << "struct " << descriptor->getFieldStructName(fieldIndex) << " ";
 
                             ostream << "{\n";
                             printObjectToStream(ostream, fieldValue, fieldDescriptor, parents, level + 1);

@@ -42,7 +42,7 @@ class ENVIR_API MatchableObjectAdapter : public MatchExpression::Matchable
     mutable std::string tmp;
   protected:
     static void splitIndex(char *indexedName, int& index);
-    static bool findDescriptorField(cClassDescriptor *desc, cObject *obj, const char *attribute, int& fieldId, int& index);
+    static bool findDescriptorField(cClassDescriptor *desc, const char *attribute, int& fieldId, int& index);
   public:
     MatchableObjectAdapter(DefaultAttribute attr=FULLPATH, cObject *obj=NULL);
     void setObject(cObject *obj);

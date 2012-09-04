@@ -61,7 +61,7 @@ void MatchableObjectAdapter::splitIndex(char *indexedName, int& index)
     }
 }
 
-bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject *obj, const char *attribute, int& fieldId, int& index)
+bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, const char *attribute, int& fieldId, int& index)
 {
     // attribute may be in the form "fieldName[index]"; split the two
     char *fieldNameBuf = new char[strlen(attribute)+1];
@@ -69,7 +69,7 @@ bool MatchableObjectAdapter::findDescriptorField(cClassDescriptor *desc, cObject
     splitIndex(fieldNameBuf, index);
 
     // find field by name
-    fieldId = desc->findField(obj, fieldNameBuf);
+    fieldId = desc->findField(fieldNameBuf);
     delete [] fieldNameBuf;
     return fieldId != -1;
 }
@@ -92,14 +92,14 @@ const char *MatchableObjectAdapter::getAsString(const char *attribute) const
     int currentFieldId = id
     while ((token = tokenizer.nextToken())!=NULL)
     {
-        bool found = findDescriptorField(d, o, token, fid, index);
+        bool found = findDescriptorField(d, token, fid, index);
         if (!found) return NULL;
     }
 */
 
     int fieldId;
     int index;
-    bool found = findDescriptorField(desc, obj, attribute, fieldId, index);
+    bool found = findDescriptorField(desc, attribute, fieldId, index);
     if (!found)
         return NULL;
 

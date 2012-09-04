@@ -66,7 +66,7 @@ static bool compareMessageEventNumbers(cMessage *message1, cMessage *message2)
 }
 
 static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cClassDescriptor *descriptor, int fieldIndex, void *fieldValue, void **parents, int level) {
-    const char* propertyValue = descriptor->getFieldProperty(object, fieldIndex, "eventlog");
+    const char* propertyValue = descriptor->getFieldProperty(fieldIndex, "eventlog");
 
     if (propertyValue) {
         if (!strcmp(propertyValue, "skip"))
@@ -77,7 +77,7 @@ static ObjectPrinterRecursionControl recurseIntoMessageFields(void *object, cCla
             return FULL_PATH;
     }
 
-    bool isCObject = descriptor->getFieldIsCObject(object, fieldIndex);
+    bool isCObject = descriptor->getFieldIsCObject(fieldIndex);
     if (!isCObject)
         return RECURSE;
     else {

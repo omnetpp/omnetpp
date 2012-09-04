@@ -2326,7 +2326,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=4) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       char buf[20];
-      sprintf(buf, "%d", sd->getFieldCount(object));
+      sprintf(buf, "%d", sd->getFieldCount());
       Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
    }
@@ -2336,7 +2336,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsArray(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsArray(fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -2345,7 +2345,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCompound(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCompound(fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -2354,7 +2354,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsPointer(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsPointer(fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -2363,7 +2363,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCObject(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCObject(fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -2372,7 +2372,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCOwnedObject(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsCOwnedObject(fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -2381,7 +2381,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsEditable(object, fld) ? "1" : "0"), TCL_STATIC);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldIsEditable(fld) ? "1" : "0"), TCL_STATIC);
       return TCL_OK;
    }
 
@@ -2390,7 +2390,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldName(object, fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -2399,7 +2399,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(object, fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldTypeString(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -2447,7 +2447,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
       int fld = atoi(argv[4]);
       const char *propertyname = argv[5];
 
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldProperty(object, fld, propertyname)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldProperty(fld, propertyname)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -2456,7 +2456,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(object, fld)), TCL_VOLATILE);
+      Tcl_SetResult(interp, TCLCONST(sd->getFieldStructName(fld)), TCL_VOLATILE);
       return TCL_OK;
    }
 
@@ -2465,7 +2465,7 @@ int classDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    {
       if (argc!=5) {Tcl_SetResult(interp, TCLCONST("wrong argcount"), TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[4]);
-      const char *fieldStructName = sd->getFieldStructName(object, fld);
+      const char *fieldStructName = sd->getFieldStructName(fld);
       Tcl_SetResult(interp, ptrToStr(cClassDescriptor::getDescriptorFor(fieldStructName)), TCL_VOLATILE);
       return TCL_OK;
    }

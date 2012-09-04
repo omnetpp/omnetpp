@@ -191,11 +191,11 @@ int cClassDescriptor::getInheritanceChainLength() const
     return inheritancechainlength;
 }
 
-const char *cClassDescriptor::getFieldDeclaredOn(void *object, int field) const
+const char *cClassDescriptor::getFieldDeclaredOn(int field) const
 {
     cClassDescriptor *base = getBaseClassDescriptor();
-    if (base && field < base->getFieldCount(object))
-        return base->getFieldDeclaredOn(object, field);
+    if (base && field < base->getFieldCount())
+        return base->getFieldDeclaredOn(field);
     return getName();
 }
 
@@ -240,11 +240,11 @@ bool cClassDescriptor::getFieldAsString(void *object, int field, int i, char *bu
     return true;
 }
 
-int cClassDescriptor::findField(void *object, const char *fieldName) const
+int cClassDescriptor::findField(const char *fieldName) const
 {
-    int n = getFieldCount(object);
+    int n = getFieldCount();
     for (int i=0; i<n; i++)
-        if (strcmp(fieldName, getFieldName(object, i))==0)
+        if (strcmp(fieldName, getFieldName(i))==0)
             return i;
     return -1;
 }

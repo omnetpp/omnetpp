@@ -107,14 +107,14 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /**
      * Returns the descriptor object for the given class. The returned
-     * descriptor object is a singleton, and must not be deleted.
+     * descriptor object must not be deleted.
      */
     static cClassDescriptor *getDescriptorFor(const char *classname);
 
     /**
      * Returns the descriptor object for the given object. This can return
      * descriptor for a base class, if there is no exact match.
-     * The returned descriptor object is a singleton, and must not be deleted.
+     * The returned descriptor object must not be deleted.
      */
     static cClassDescriptor *getDescriptorFor(cObject *object);
     //@}
@@ -140,8 +140,8 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
     bool extendsCObject() const;
 
     /**
-     * Returns the number of base classes up to the root -- as far as
-     * it is reflected in the descriptors.
+     * Returns the number of base classes up to the root, as reflected in the
+     * descriptors (see getBaseClassDescriptor()).
      */
     int getInheritanceChainLength() const;
 
@@ -151,104 +151,98 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      * (with multiple keys and/or list(s) inside), the value is returned as a
      * single unparsed string.
      */
-    virtual const char *getProperty(const char *propertyname) const = 0;
+    virtual const char *getProperty(const char *propertyname) const = 0;  //TODO: split to getNumProperties(), getPropertyName(i), getProperty(i); or: add getPropertyNames() that would return a string array (const char **)
 
     /**
-     * Must be redefined in subclasses to return the number of fields
-     * in the client object.
+     * Returns the number of fields in the described class.
      */
-    virtual int getFieldCount(void *object) const = 0; //TODO remove 'object' ptr from this and similar methods; TODO declare that descriptors are constant during runtime
+    virtual int getFieldCount() const = 0;
 
     /**
-     * Must be redefined in subclasses to return the name of a field
-     * in the client object.
+     * Returns the name of a field in the described class.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
      */
-    virtual const char *getFieldName(void *object, int field) const = 0;
+    virtual const char *getFieldName(int field) const = 0;
 
     /**
      * Returns the index of the field with the given name, or -1 if not found.
      * cClassDescriptor provides an default implementation, but it is
      * recommended to replace it in subclasses with a more efficient version.
      */
-    virtual int findField(void *object, const char *fieldName) const;
+    virtual int findField(const char *fieldName) const;
 
     /**
-     * Must be redefined in subclasses to return the type flags of a field
-     * in the client object. Flags is a binary OR of the following:
-     * FD_ISARRAY, FD_ISCOMPOUND, FD_ISPOINTER, FD_ISCOWNEDOBJECT, FD_ISCOBJECT.
+     * Returns the type flags of a field in the described class. Flags is a
+     * binary OR of the following: FD_ISARRAY, FD_ISCOMPOUND, FD_ISPOINTER,
+     * FD_ISCOWNEDOBJECT, FD_ISCOBJECT.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
      */
-    virtual unsigned int getFieldTypeFlags(void *object, int field) const = 0;
+    virtual unsigned int getFieldTypeFlags(int field) const = 0;
 
     /** @name Utility functions based on getFieldTypeFlags() */
     //@{
-    bool getFieldIsArray(void *object, int field) const {return getFieldTypeFlags(object, field) & FD_ISARRAY;}
-    bool getFieldIsCompound(void *object, int field) const {return getFieldTypeFlags(object, field) & FD_ISCOMPOUND;}
-    bool getFieldIsPointer(void *object, int field) const {return getFieldTypeFlags(object, field) & FD_ISPOINTER;}
-    bool getFieldIsCObject(void *object, int field) const {return getFieldTypeFlags(object, field) & (FD_ISCOBJECT|FD_ISCOWNEDOBJECT);}
-    bool getFieldIsCOwnedObject(void *object, int field) const {return getFieldTypeFlags(object, field) & FD_ISCOWNEDOBJECT;}
-    bool getFieldIsEditable(void *object, int field) const {return getFieldTypeFlags(object, field) & FD_ISEDITABLE;}
+    bool getFieldIsArray(int field) const {return getFieldTypeFlags(field) & FD_ISARRAY;}
+    bool getFieldIsCompound(int field) const {return getFieldTypeFlags(field) & FD_ISCOMPOUND;}
+    bool getFieldIsPointer(int field) const {return getFieldTypeFlags(field) & FD_ISPOINTER;}
+    bool getFieldIsCObject(int field) const {return getFieldTypeFlags(field) & (FD_ISCOBJECT|FD_ISCOWNEDOBJECT);}
+    bool getFieldIsCOwnedObject(int field) const {return getFieldTypeFlags(field) & FD_ISCOWNEDOBJECT;}
+    bool getFieldIsEditable(int field) const {return getFieldTypeFlags(field) & FD_ISEDITABLE;}
     //@}
 
     /**
      * Returns the name of the class on which the given field was declared.
      */
-    virtual const char *getFieldDeclaredOn(void *object, int field) const;
+    virtual const char *getFieldDeclaredOn(int field) const;
 
     /**
-     * Must be redefined in subclasses to return the type of a field
-     * in the client object as a string.
+     * Returns the declared type of a field in the described class as a string.
      * The argument must be in the 0..getFieldCount()-1 range, inclusive.
      */
-    virtual const char *getFieldTypeString(void *object, int field) const = 0;
+    virtual const char *getFieldTypeString(int field) const = 0;
 
     /**
-     * Returns the value of the given property of the field as a single string.
-     * Returns NULL if there is no such property. For structured property values
-     * (with multiple keys and/or list(s) inside), the value is returned as a
-     * single unparsed string.
+     * Returns the value of the given property of the given field in the
+     * described class as a single string. Returns NULL if there is no such
+     * property. For structured property values (with multiple keys and/or
+     * list(s) inside), the value is returned as a single unparsed string.
      */
-    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const = 0;
+    virtual const char *getFieldProperty(int field, const char *propertyname) const = 0; //TODO: split to getNumFieldProperties(), getFieldPropertyName(i), getFieldProperty(i); or: add getFieldPropertyNames() that would return a string array (const char **)
 
     /**
-     * Must be redefined in subclasses to return the array size of a field
-     * in the client object. If the field is not an array, it should return 0.
+     * Returns the array size of a field in the given object. If the field is
+     * not an array, it returns 0.
      */
     virtual int getFieldArraySize(void *object, int field) const = 0;
 
     /**
-     * Must be redefined in subclasses to return the value of the given field
-     * in the client object as a string. For compound fields, the message
-     * compiler generates code which calls operator<<.
+     * Returns the value of the given field in the given object as a string.
+     * For compound fields, the message compiler generates code which calls operator<<.
      */
-    virtual std::string getFieldAsString(void *object, int field, int i) const = 0;
+    virtual std::string getFieldAsString(void *object, int field, int i) const = 0;  //TODO getFieldValueAsString()
 
     /**
      * DEPRECATED: Use the getFieldAsString(void*, int, int) instead.
      */
-    _OPPDEPRECATED virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;
+    _OPPDEPRECATED virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;  //TODO remove
 
     /**
-     * Must be redefined in subclasses to set the value of a field
-     * in the client object from the given value string.
+     * Sets the value of a field in the given object by parsing the given value string.
      * Returns true if successful, and false if an error occurred or the
      * field does not support setting.
      */
-    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const = 0;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const = 0;  //TODO setFieldValueAsString()
 
     /**
-     * Must be redefined in subclasses to return the type name of a compound field
-     * in the client object. If it is a pointer, the "*" is removed. The return value
-     * may be used then as classname to create a descriptor object for this compound field.
+     * Returns the declared type name of a compound field in the described class.
+     * The field is a pointer, the "*" is removed. The return value may be used
+     * as class name to obtain a class descriptor for this compound field.
      */
-    virtual const char *getFieldStructName(void *object, int field) const = 0;
+    virtual const char *getFieldStructName(int field) const = 0;
 
     /**
-     * Must be redefined in subclasses to return the pointer of a compound field
-     * in the client object.
+     * Returns the pointer to the value of a compound field in the given object.
      */
-    virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;  //TODO getFieldStructValuePointer()
     //@}
 };
 

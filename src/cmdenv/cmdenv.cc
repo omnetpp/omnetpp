@@ -760,47 +760,47 @@ bool Cmdenv::handle(cHttpRequest *request)
                      {
                          JsonArray *jdetailFields = new JsonArray();
                          //TODO serialize baseclass, properties, etc too
-                         for (int fld = 0; fld < desc->getFieldCount(obj); fld++)
+                         for (int fld = 0; fld < desc->getFieldCount(); fld++)
                          {
                              JsonObject *jdetailField = new JsonObject();
-                             jdetailField->put("name", jsonWrap(desc->getFieldName(obj, fld)));
-                             jdetailField->put("type", jsonWrap(desc->getFieldTypeString(obj, fld)));
-                             jdetailField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(obj, fld)));
-                             const char *property = desc->getFieldProperty(obj, fld, "group");
+                             jdetailField->put("name", jsonWrap(desc->getFieldName(fld)));
+                             jdetailField->put("type", jsonWrap(desc->getFieldTypeString(fld)));
+                             jdetailField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(fld)));
+                             const char *property = desc->getFieldProperty(fld, "group");
                              if (property)
                                  jdetailField->put("@group", jsonWrap(property));
-                             property = desc->getFieldProperty(obj, fld, "label");
+                             property = desc->getFieldProperty(fld, "label");
                              if (property)
                                  jdetailField->put("@label", jsonWrap(property));
-                             property = desc->getFieldProperty(obj, fld, "hint");
+                             property = desc->getFieldProperty(fld, "hint");
                              if (property)
                                  jdetailField->put("@hint", jsonWrap(property));
-                             property = desc->getFieldProperty(obj, fld, "enum");
+                             property = desc->getFieldProperty(fld, "enum");
                              if (property)
                                  jdetailField->put("@enum", jsonWrap(property));
                              //TODO: merge this into a single "flags" field!
-                             if (desc->getFieldIsArray(obj, fld))
+                             if (desc->getFieldIsArray(fld))
                                  jdetailField->put("isArray", jsonWrap(true));
-                             if (desc->getFieldIsCompound(obj, fld))
+                             if (desc->getFieldIsCompound(fld))
                                  jdetailField->put("isCompound", jsonWrap(true));
-                             if (desc->getFieldIsPointer(obj, fld))
+                             if (desc->getFieldIsPointer(fld))
                                  jdetailField->put("isPointer", jsonWrap(true));
-                             if (desc->getFieldIsCObject(obj, fld))
+                             if (desc->getFieldIsCObject(fld))
                                  jdetailField->put("isCObject", jsonWrap(true));
-                             if (desc->getFieldIsCOwnedObject(obj, fld))
+                             if (desc->getFieldIsCOwnedObject(fld))
                                  jdetailField->put("isCOwnedObject", jsonWrap(true));
-                             if (desc->getFieldIsEditable(obj, fld))
+                             if (desc->getFieldIsEditable(fld))
                                  jdetailField->put("isEditable", jsonWrap(true));
-                             if (desc->getFieldStructName(obj, fld))
-                                 jdetailField->put("structName", jsonWrap(desc->getFieldStructName(obj, fld)));
+                             if (desc->getFieldStructName(fld))
+                                 jdetailField->put("structName", jsonWrap(desc->getFieldStructName(fld)));
                              //TODO send symbolic names if @enum() exists!!!
                              //TODO virtual void *getFieldStructPointer(void *object, int field, int i) const = 0;
-                             if (!desc->getFieldIsArray(obj, fld)) {
-                                 if (!desc->getFieldIsCompound(obj, fld))
+                             if (!desc->getFieldIsArray(fld)) {
+                                 if (!desc->getFieldIsCompound(fld))
                                      jdetailField->put("value", jsonWrap(desc->getFieldAsString(obj, fld, 0)));
                                  else {
                                      void *ptr = desc->getFieldStructPointer(obj, fld, 0);
-                                     if (desc->getFieldIsCObject(obj, fld)) {
+                                     if (desc->getFieldIsCObject(fld)) {
                                          cObject *o = (cObject *)ptr;
                                          jdetailField->put("value", jsonWrap(getIdStringForObject(o)));
                                      }
@@ -812,11 +812,11 @@ bool Cmdenv::handle(cHttpRequest *request)
                                  int n = desc->getFieldArraySize(obj, fld);
                                  JsonArray *jValues = new JsonArray();
                                  for (int i = 0; i < n; i++) {
-                                     if (!desc->getFieldIsCompound(obj, fld))
+                                     if (!desc->getFieldIsCompound(fld))
                                          jValues->push_back(jsonWrap(desc->getFieldAsString(obj, fld, i)));
                                      else {
                                          void *ptr = desc->getFieldStructPointer(obj, fld, i);
-                                         if (desc->getFieldIsCObject(obj, fld)) {
+                                         if (desc->getFieldIsCObject(fld)) {
                                              cObject *o = (cObject *)ptr;
                                              jValues->push_back(jsonWrap(getIdStringForObject(o)));
                                          }
