@@ -28,8 +28,11 @@ USING_NAMESPACE
 //
 class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyable
 {
+  private:
+    std::string vectorTypeName;  // type name of the inspected type, e.g. "std::vector<foo::Bar>"
+    std::string elementTypeName; // type name of vector elements, e.g. "foo::Bar"
   public:
-    cStdVectorWatcherDescriptor();
+    cStdVectorWatcherDescriptor(const char *vecTypeName, const char *elemTypeName);
     virtual ~cStdVectorWatcherDescriptor();
 
     virtual const char *getProperty(const char *propertyname) const;
@@ -47,11 +50,11 @@ class SIM_API cStdVectorWatcherDescriptor : public cClassDescriptor //noncopyabl
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(cStdVectorWatcherDescriptor);
-
-cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor() :
-cClassDescriptor("cStdVectorWatcher", "cStdVectorWatcherBase")
+cStdVectorWatcherDescriptor::cStdVectorWatcherDescriptor(const char *vecType, const char *elemType) :
+cClassDescriptor(vecType, NULL)
 {
+    vectorTypeName = vecType;
+    elementTypeName = elemType;
 }
 
 cStdVectorWatcherDescriptor::~cStdVectorWatcherDescriptor()
@@ -70,30 +73,17 @@ int cStdVectorWatcherDescriptor::getFieldCount() const
 
 unsigned int cStdVectorWatcherDescriptor::getFieldTypeFlags(int field) const
 {
-    switch (field) {
-        case 0: return FD_ISARRAY; // as far as we're concerned. We don't know about FD_ISCOMPOUND, FD_ISPOINTER, FD_ISCOBJECT / FD_ISCOWNEDOBJECT
-        default: return FD_NONE;
-    }
+    return FD_ISARRAY; //TODO we could return FD_ISCOMPOUND, FD_ISPOINTER, FD_ISCOBJECT / FD_ISCOWNEDOBJECT, with a little help from cStdVectorWatcherBase, and then elements would become inspectable (currently they displayed as just strings)
 }
 
 const char *cStdVectorWatcherDescriptor::getFieldName(int field) const
 {
-    return "fieldname"; //FIXME az alabbi kikommentezett kodot kellene atirni!  maga a descriptor kell tartalmazza a field nevet es tipust!!!
-//    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
-//    switch (field) {
-//        case 0: return pp->getName();
-//        default: return NULL;
-//    }
+    return "elements";
 }
 
 const char *cStdVectorWatcherDescriptor::getFieldTypeString(int field) const
 {
-    return "elementtype";
-//    cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
-//    switch (field) {
-//        case 0: return pp->getElemTypeName();
-//        default: return NULL;
-//    }
+    return elementTypeName.c_str();
 }
 
 const char *cStdVectorWatcherDescriptor::getFieldProperty(int field, const char *propertyname) const
@@ -104,19 +94,13 @@ const char *cStdVectorWatcherDescriptor::getFieldProperty(int field, const char 
 int cStdVectorWatcherDescriptor::getFieldArraySize(void *object, int field) const
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
-    switch (field) {
-        case 0: return pp->size();
-        default: return 0;
-    }
+    return pp->size();
 }
 
 std::string cStdVectorWatcherDescriptor::getFieldValueAsString(void *object, int field, int i) const
 {
     cStdVectorWatcherBase *pp = (cStdVectorWatcherBase *)object;
-    switch (field) {
-        case 0: return pp->at(i);
-        default: return "";
-    }
+    return pp->at(i);
 }
 
 bool cStdVectorWatcherDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
@@ -126,12 +110,12 @@ bool cStdVectorWatcherDescriptor::setFieldValueAsString(void *object, int field,
 
 const char *cStdVectorWatcherDescriptor::getFieldStructName(int field) const
 {
-    return NULL;
+    return NULL;  //TODO we could return elementTypeName (if it is a compound type; if it's a pointer, the '*' should be removed)
 }
 
 void *cStdVectorWatcherDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
 {
-    return NULL;
+    return NULL;  //TODO we could return a pointer to the given array element (if element is a compound type)
 }
 
 
@@ -159,6 +143,15 @@ std::string cStdVectorWatcherBase::detailedInfo() const
 
 cClassDescriptor *cStdVectorWatcherBase::getDescriptor()
 {
-    return cClassDescriptor::getDescriptorFor("cStdVectorWatcher");
+    if (!desc) {
+        // try to find existing descriptor for this particular type (e.g. "std::vector<double>");
+        // if there isn't, create and register a new one
+        desc = (cClassDescriptor *) classDescriptors.getInstance()->lookup(getClassName());
+        if (!desc) {
+            desc = new cStdVectorWatcherDescriptor(getClassName(), getElemTypeName());
+            classDescriptors.getInstance()->add(desc);
+        }
+    }
+    return desc;
 }
 

@@ -38,8 +38,10 @@ NAMESPACE_BEGIN
 //
 class SIM_API cStdVectorWatcherBase : public cWatchBase
 {
+  private:
+    cClassDescriptor *desc;
   public:
-    cStdVectorWatcherBase(const char *name) : cWatchBase(name) {}
+    cStdVectorWatcherBase(const char *name) : cWatchBase(name) {desc = NULL;}
 
     virtual std::string info() const;
     virtual std::string detailedInfo() const;
@@ -60,7 +62,7 @@ class cStdVectorWatcher : public cStdVectorWatcherBase
 {
   protected:
     std::vector<T>& v;
-    std::string classname;
+    std::string classname; //XXX maybe do not cache?
   public:
     cStdVectorWatcher(const char *name, std::vector<T>& var) : cStdVectorWatcherBase(name), v(var) {
         classname = std::string("std::vector<")+opp_typename(typeid(T))+">";
@@ -258,7 +260,7 @@ class cStdMapWatcher : public cStdVectorWatcherBase
         classname = std::string("std::map<")+opp_typename(typeid(KeyT))+","+opp_typename(typeid(ValueT))+">";
     }
     const char *getClassName() const {return classname.c_str();}
-    virtual const char *getElemTypeName() const {return "struct pair<*,*>";}
+    virtual const char *getElemTypeName() const {return "pair<,>";}
     virtual int size() const {return m.size();}
     virtual std::string at(int i) const {
         // std::map doesn't support random access iterator and iteration is slow,
