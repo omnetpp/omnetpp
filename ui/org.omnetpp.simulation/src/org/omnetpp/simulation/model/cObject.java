@@ -24,8 +24,6 @@ public class cObject {
     private boolean isFieldsFilledIn = false;
     private boolean isDisposed = false;
 
-    public long lastAccessSerial; // SimulationController's refreshSerial when this object was last accessed; XXX obsolete, should be removed!
-
     private String className;
     private String name;
     private String fullName;
@@ -190,7 +188,7 @@ public class cObject {
     public String getShortTypeName() {
         return getClassName();  // and for modules and channels, it will return the NED type name without package
     }
-    
+
     public String getIcon() {
         checkState();
         return icon;

@@ -2,6 +2,7 @@ package org.omnetpp.simulation.controller;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.SocketException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -108,8 +109,7 @@ public class Simulation {
     // object cache
     private long refreshSerial;
     private Map<String, cObject> rootObjects = new HashMap<String, cObject>(); // keys: "simulation", "network", etc.
-    private Map<Long, cObject> cachedObjects = new HashMap<Long, cObject>();
-    private static final long MAX_AGE = 1; // unaccessed objects are removed from the cached after this many refresh cycles
+    private Map<Long, WeakReference<cObject>> cachedObjects = new HashMap<Long, WeakReference<cObject>>();
 
     // module logs
     private LogBuffer logBuffer = new LogBuffer();
@@ -387,25 +387,26 @@ public class Simulation {
              */
             refreshSerial++;
 
-            //XXX this 'garbage removal' stuff is simply WRONG now -- objects can still remain in memory via references from other objects
+            // purge garbage collected objects from cache
             List<Long> garbage = new ArrayList<Long>();
-            for (Long id : cachedObjects.keySet()) {
-                if (cachedObjects.get(id).lastAccessSerial - refreshSerial > MAX_AGE)
+            for (Long id : cachedObjects.keySet())
+                if (cachedObjects.get(id).get() == null)
                     garbage.add(id);
-            }
             cachedObjects.keySet().removeAll(garbage);
 
-            //TODO add the objects referenced by the new logBuffer entries too
+            // refresh contents of already-filled objects
             List<cObject> filledObjects = new ArrayList<cObject>();
-            for (cObject obj : cachedObjects.values()) {
-                if (obj.isFilledIn() && !(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
+            for (WeakReference<cObject> ref : cachedObjects.values()) {
+                cObject obj = ref.get();
+                if (obj != null && obj.isFilledIn() && !(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
                     filledObjects.add(obj);
             }
             doLoadObjects(filledObjects, ContentToLoadEnum.OBJECT);
 
             // refresh the detail fields of loaded objects too (where filled in)
             List<cObject> objectsWithFieldsLoaded = new ArrayList<cObject>();
-            for (cObject obj : cachedObjects.values()) {
+            for (WeakReference<cObject> ref : cachedObjects.values()) {
+                cObject obj = ref.get();
                 if (obj.isFieldsFilledIn())
                     objectsWithFieldsLoaded.add(obj);
             }
@@ -525,14 +526,15 @@ public class Simulation {
         if (colonPos == -1)
             throw new RuntimeException("argument should be in the form \"<id>:<classname>\": " + idAndType);
         long id = Long.valueOf(idAndType.substring(0, colonPos));
-        cObject obj = cachedObjects.get(id);
+        WeakReference<cObject> ref = cachedObjects.get(id);
+        cObject obj = ref == null ? null : ref.get();
         if (obj != null) {
             return obj;
         }
         else {
             String className = idAndType.substring(colonPos+1);
             obj = createBlankObject(id, className);
-            cachedObjects.put(id, obj);
+            cachedObjects.put(id, new WeakReference<cObject>(obj));
             return obj;
         }
     }
