@@ -5,18 +5,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.Assert;
 import org.omnetpp.simulation.controller.Simulation;
 
-//TODO implement garbage collection of loaded objects!!! use WeakRef in the object cache
-//TODO implement frozen objects!!!! freeze(), isFrozen();  references inside frozen objects: freeze them too, even if they are unfilled?
 
 /**
  * Represents a cObject in the simulation.
  * @author Andras
  */
-//TODO ha a getterek beallitananak egy "accessed" flaget, ezt fel lehetne hasznalni arra, hogy az erdektelen objektumokat unloadoljuk a controllerben refreshStatus()-kor!!!
-//TODO illetve ha az unload() kinullazza a benne levo referenciakat (es az object cache is weakref-eket tart), akkor a nem hivatkozott objektumok tudnak garbage collectalodni is!!!
+//TODO implement frozen objects!!!! freeze(), isFrozen();  references inside frozen objects: freeze them too, even if they are unfilled?
 //TODO StringPool the strings, esp. Field members!
+//TODO field metadata could be stored separately, in a cClassDescriptor
 public class cObject {
     private Simulation simulation;
     private long objectId;
@@ -33,7 +32,8 @@ public class cObject {
     private cObject owner;
     private cObject[] childObjects;
 
-    private Field[] fields;  //XXX temporary
+    private Field[] fields;
+    private long lastAccessEventNumber;
 
     public cObject(Simulation simulation, long id) {
         this.simulation = simulation;
@@ -54,6 +54,10 @@ public class cObject {
 
     public boolean isDisposed() {
         return isDisposed;
+    }
+
+    public long getLastAccessEventNumber() {
+        return lastAccessEventNumber;
     }
 
     // technically public, but should only be called from the Simulation class!
@@ -83,6 +87,20 @@ public class cObject {
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
         simulation.loadObject(this);
+    }
+
+    public void unload() {
+        System.out.println("@@@ unloading: " + toString());
+        Assert.isTrue(isFilledIn && !isDisposed);
+        isFilledIn = false;
+        isFieldsFilledIn = false;
+        clearReferences(); // clear references to other objects, to allow them to be garbage collected
+    }
+
+    protected void clearReferences() {
+        owner = null;
+        childObjects = null;
+        fields = null;
     }
 
     //TODO why not introduce a loadIfNeeded() method, to spare the "if"'s???
@@ -116,7 +134,6 @@ public class cObject {
         }
     }
 
-    //FIXME revise; todo into
     @SuppressWarnings("rawtypes")
     public void fillFieldsFromJSON(Map jsonObject) {
         List<Field> fields = new ArrayList<Field>();
@@ -156,12 +173,10 @@ public class cObject {
         isFieldsFilledIn = true;
     }
 
-    //FIXME revise, rename, move,...
     public boolean isFieldsFilledIn() {
         return isFieldsFilledIn;
     }
 
-    //FIXME revise
     public Field[] getFields() {
         checkState();
         if (!isFieldsFilledIn)
@@ -171,6 +186,7 @@ public class cObject {
 
     public void markAsDisposed() {
         isDisposed = true;
+        clearReferences(); // allow other objects to be garbage collected
     }
 
     protected void checkState() {
@@ -178,6 +194,7 @@ public class cObject {
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is not yet filled in");
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
+        lastAccessEventNumber = simulation.getLastEventNumber();
     }
 
     public String getClassName() {

@@ -61,6 +61,13 @@ public class cSimulation extends cObject {
             modules[id] = (cModule) getSimulation().getObjectByJSONRef((String) jsonModules.get(id));
     }
 
+    protected void clearReferences() {
+        super.clearReferences();
+        rootModule = null;
+        modules = null;
+        scheduler = null;
+        messageQueue = null;
+    }
 
 //  // KLUDGE: TODO: remove this and create a generic, extensible root model
 //  private Object routingTable;

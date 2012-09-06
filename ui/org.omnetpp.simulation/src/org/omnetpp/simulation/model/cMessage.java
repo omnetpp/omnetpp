@@ -99,4 +99,10 @@ public class cMessage extends cObject {
         arrivalTime = BigDecimal.parse((String) jsonObject.get("arrivalTime"));
     }
 
+    protected void clearReferences() {
+        super.clearReferences();
+        senderModule = arrivalModule = null;
+        senderGate = arrivalGate = null;
+    }
+
 }

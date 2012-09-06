@@ -65,4 +65,9 @@ public class cPacket extends cMessage {
         encapsulationId = ((Number)jsonObject.get("encapsulationId")).longValue();
         encapsulationTreeId = ((Number)jsonObject.get("encapsulationTreeId")).longValue();
     }
+
+    protected void clearReferences() {
+        super.clearReferences();
+        encapsulatedPacket = null;
+    }
 }

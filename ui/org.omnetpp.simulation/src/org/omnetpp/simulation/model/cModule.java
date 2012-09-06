@@ -131,4 +131,10 @@ public class cModule extends cComponent {
             submodules[i] = (cModule) getSimulation().getObjectByJSONRef((String) jsonSubmodules.get(i));
 
     }
+
+    protected void clearReferences() {
+        super.clearReferences();
+        gates = null;
+        submodules = null;
+    }
 }

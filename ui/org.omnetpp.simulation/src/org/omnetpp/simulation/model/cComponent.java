@@ -77,4 +77,12 @@ public class cComponent extends cObject {
         for (int i = 0; i < parameters.length; i++)
             parameters[i] = (cPar) getSimulation().getObjectByJSONRef((String) jsonParameters.get(i));
     }
+
+    protected void clearReferences() {
+        super.clearReferences();
+        componentType = null;
+        parentModule = null;
+        parameters = null;
+    }
+
 }

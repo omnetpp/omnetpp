@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.jobs.IJobChangeEvent;
 import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.model.cComponent;
@@ -48,8 +49,10 @@ import org.omnetpp.simulation.model.cPar;
  */
 // TODO errors in the simulation should be turned into SimulationException thrown from these methods?
 // TODO cmdenv: implement "runUntil" parameter "wallclocktimelimit", to be used with Express (or Fast too)
-// TODO finish the "displayerror" and "askparameter" stuff
 public class Simulation {
+    static boolean debugHttp = true;
+    static boolean debugCache = true;
+
     // root object IDs
     public static final String ROOTOBJ_SIMULATION = "simulation";
     public static final String ROOTOBJ_FES = "fes";
@@ -107,7 +110,6 @@ public class Simulation {
     private String eventlogFile;
 
     // object cache
-    private long refreshSerial;
     private Map<String, cObject> rootObjects = new HashMap<String, cObject>(); // keys: "simulation", "network", etc.
     private Map<Long, WeakReference<cObject>> cachedObjects = new HashMap<Long, WeakReference<cObject>>();
 
@@ -376,42 +378,49 @@ public class Simulation {
 
             logBuffer.fireChangeNotification();  // tell everyone interested about the change
 
-            /*
-             * Refresh cached objects. Strategy: Maintain a refreshSerial, and for
-             * each object also maintain the refreshSerial when they were last
-             * accessed. In each refresh() cycle, reload the cached objects that
-             * have been accessed recently (say, sometime during the last 3 refresh
-             * cycles); evoke the others from the cache as they are unlikely to be
-             * accessed in the immediate future. When non-cached objects are
-             * requested, load+cache them immediately.
-             */
-            refreshSerial++;
-
-            // purge garbage collected objects from cache
+            //
+            // Maintain object cache:
+            // - purge objects from cache that are unreferenced in Java, or have been deleted from C++;
+            //   also unload (~clear) objects that have not been accessed lately, to reduce HTTP load 
+            //   and allow other objects they reference to be garbage collected
+            // - refresh contents of already-filled objects
+            // - refresh the detail fields of loaded objects too (where filled in)
+            //
             List<Long> garbage = new ArrayList<Long>();
-            for (Long id : cachedObjects.keySet())
-                if (cachedObjects.get(id).get() == null)
+            List<cObject> objectsToReload = new ArrayList<cObject>();
+            List<cObject> objectsToReloadFields = new ArrayList<cObject>();
+            int numFilled = 0, numUnloads = 0; 
+            for (Long id : cachedObjects.keySet()) {
+                cObject obj = cachedObjects.get(id).get();
+                if (obj == null) {
                     garbage.add(id);
+                }
+                else {
+                    Assert.isTrue(!obj.isDisposed(), "deleted objects should not be in the cache");
+                    if (obj.isFilledIn()) {
+                        numFilled++;
+                        if (obj.getLastAccessEventNumber() < lastEventNumber-1) { //FIXME -1 is not good if simulation advanced >1 events since last refresh!
+                            obj.unload();
+                            numUnloads++;
+                        }
+                        else if (!(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
+                            objectsToReload.add(obj);
+                    }
+
+                    if (obj.isFieldsFilledIn()) {
+                        objectsToReloadFields.add(obj);
+                    }
+                }
+            }
             cachedObjects.keySet().removeAll(garbage);
+            doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT);
+            doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS);
 
-            // refresh contents of already-filled objects
-            List<cObject> filledObjects = new ArrayList<cObject>();
-            for (WeakReference<cObject> ref : cachedObjects.values()) {
-                cObject obj = ref.get();
-                if (obj != null && obj.isFilledIn() && !(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
-                    filledObjects.add(obj);
-            }
-            doLoadObjects(filledObjects, ContentToLoadEnum.OBJECT);
+            if (debugCache) 
+                Debug.println("Object cache after refresh: size " + cachedObjects.size() + " (" + (numFilled-numUnloads) + " filled); " +
+                        "refresh purged " + garbage.size() + ", unloaded " + numUnloads + ", reloaded " + objectsToReload.size() + ", fields-reloaded " + objectsToReloadFields.size());
 
-            // refresh the detail fields of loaded objects too (where filled in)
-            List<cObject> objectsWithFieldsLoaded = new ArrayList<cObject>();
-            for (WeakReference<cObject> ref : cachedObjects.values()) {
-                cObject obj = ref.get();
-                if (obj.isFieldsFilledIn())
-                    objectsWithFieldsLoaded.add(obj);
-            }
-            doLoadObjects(objectsWithFieldsLoaded, ContentToLoadEnum.FIELDS);
-
+            // allow the UI to be updated before we ask parameters or pop up and error dialog
             simulationCallback.statusRefreshed();
 
             // carry out action requested by the simulation
@@ -441,7 +450,7 @@ public class Simulation {
                 again = true;
             }
         } while (again);
-        System.out.println("\n*** Simulation.refreshStatus(): " + (System.currentTimeMillis() - startTime) + "ms\n");
+        if (debugHttp) Debug.println("Simulation.refreshStatus(): " + (System.currentTimeMillis() - startTime) + "ms\n");
     }
 
     public boolean hasRootObjects() {
@@ -624,18 +633,18 @@ public class Simulation {
         String response = getPageContent(url);
         if (response == null)
             return new HttpException("Received empty document in response to GET " + url);
-        //System.out.println("  - HTTP GET took " + (System.currentTimeMillis() - startTime) + "ms");
+        //if (debug) Debug.println("  - HTTP GET took " + (System.currentTimeMillis() - startTime) + "ms");
 
         // parse
         //startTime = System.currentTimeMillis();
         Object jsonTree = new JSONReader().read(response);
-        //System.out.println("  got: " + jsonTree.toString());
-        //System.out.println("  - JSON parsing took " + (System.currentTimeMillis() - startTime) + "ms");
+        //if (debug) Debug.println("  got: " + jsonTree.toString());
+        //if (debug) Debug.println("  - JSON parsing took " + (System.currentTimeMillis() - startTime) + "ms");
         return jsonTree;
     }
 
     protected String getPageContent(String url) throws IOException {
-        System.out.println("GET " + url);
+        if (debugHttp) Debug.println("GET " + url);
         if (url.length() > MONGOOSE_MAX_REQUEST_URI_SIZE)
             throw new RuntimeException("Request URL length " + url.length() + "exceeds Mongoose limit " + MONGOOSE_MAX_REQUEST_URI_SIZE);
 
@@ -672,7 +681,7 @@ public class Simulation {
                 throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
             String responseBody = method.getResponseBodyAsString();
             if (responseBody.length() > 1024)
-                System.out.println("  response: ~" + ((responseBody.length()+511)/1024) + "KiB");
+                if (debugHttp) Debug.println("  response: ~" + ((responseBody.length()+511)/1024) + "KiB");
             return responseBody;
         }
         catch (SocketException e) {
