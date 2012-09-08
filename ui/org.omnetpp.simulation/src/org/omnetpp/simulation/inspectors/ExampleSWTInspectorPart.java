@@ -75,13 +75,13 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
         listbox.add(object.getClassName() + " - 11.22.33.44 -> 99.88.77.66");
 
         for (Field field : object.getFields()) {
-            if (!ArrayUtils.contains(builtinClasses, field.declaredOn)) {
+            if (!ArrayUtils.contains(builtinClasses, field.getDeclaredOn())) {
 //                String txt = "   " + field.declaredOn + "::" + field.name + " = ";
-                String txt = "   " + field.name + " = ";
-                if (field.values == null)
-                    txt += field.value;  // prints "null" if value==null
+                String txt = "   " + field.getName() + " = ";
+                if (field.getValues() == null)
+                    txt += field.getValue();  // prints "null" if value==null
                 else
-                    txt += "[ " + StringUtils.join(field.values, ", ") + " ]";
+                    txt += "[ " + StringUtils.join(field.getValues(), ", ") + " ]";
 //                txt += " (" + field.type + ")";
 
                 listbox.add(txt);

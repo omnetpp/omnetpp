@@ -73,7 +73,7 @@ public class ObjectFieldsViewer {
         @SuppressWarnings("rawtypes")
         public Object getAdapter(Class adapter) {
             // being able to adapt to cObject helps working with the selection
-            Object value = field.values[index];
+            Object value = field.getValues()[index];
             if (adapter.isInstance(value))
                 return value;
             if (adapter.isInstance(this))
@@ -160,7 +160,7 @@ public class ObjectFieldsViewer {
     protected class FieldNameComparator implements Comparator<Field> {
         @Override
         public int compare(Field o1, Field o2) {
-            return o1.name.compareTo(o2.name);
+            return o1.getName().compareTo(o2.getName());
         }
     }
 
@@ -190,14 +190,14 @@ public class ObjectFieldsViewer {
                 // resolve field group to the fields it contains
                 return ((FieldGroup) element).fields;
             }
-            else if (element instanceof Field && ((Field)element).isArray) {
+            else if (element instanceof Field && ((Field)element).isArray()) {
                 // resolve array field to individual array elements
                 Field field = (Field)element;
-                FieldArrayElement[] result = new FieldArrayElement[field.values.length];
+                FieldArrayElement[] result = new FieldArrayElement[field.getValues().length];
                 for (int i = 0; i < result.length; i++)
                     result[i] = new FieldArrayElement(field, i);
-                if (field.isCObject) {
-                    for (Object value : field.values) {  //TODO replace loop with controller bulk load operation!!!
+                if (field.isCObject()) {
+                    for (Object value : field.getValues()) {  //TODO replace loop with controller bulk load operation!!!
                         if (value != null) {
                             ((cObject)value).safeLoad();
                             ((cObject)value).safeLoadFields();
@@ -210,7 +210,7 @@ public class ObjectFieldsViewer {
                 // resolve children of a field value
                 boolean isArrayElement = element instanceof FieldArrayElement;
                 Field field = !isArrayElement ? (Field)element : ((FieldArrayElement)element).field;
-                Object value = !isArrayElement ? field.value : field.values[((FieldArrayElement)element).index];
+                Object value = !isArrayElement ? field.getValue() : field.getValues()[((FieldArrayElement)element).index];
 
                 if (value instanceof cObject) {
                     // treat like cObject: resolve object to its fields
@@ -242,15 +242,15 @@ public class ObjectFieldsViewer {
                 return children;
             }
             else if (mode == Mode.FLAT) {
-                return sortIfNeeded(Arrays.asList(object.getFields().clone()));
+                return sortIfNeeded(Arrays.asList(object.getFields().clone())); // clone needed because sort() is destructive
             }
             else if (mode == Mode.GROUPED) {
                 Field[] fields = object.getFields();
                 Map<String,List<Field>> groups = new LinkedHashMap<String, List<Field>>();
                 for (Field f : fields) {
-                    if (!groups.containsKey(f.groupProperty))
-                        groups.put(f.groupProperty, new ArrayList<Field>());
-                    groups.get(f.groupProperty).add(f);
+                    if (!groups.containsKey(f.getGroupProperty()))
+                        groups.put(f.getGroupProperty(), new ArrayList<Field>());
+                    groups.get(f.getGroupProperty()).add(f);
                 }
                 List<Object> result = new ArrayList<Object>(groups.size());
                 if (groups.containsKey(null))
@@ -265,9 +265,9 @@ public class ObjectFieldsViewer {
                 Field[] fields = object.getFields();
                 Map<String,List<Field>> groups = new LinkedHashMap<String, List<Field>>();
                 for (Field f : fields) {
-                    if (!groups.containsKey(f.declaredOn))
-                        groups.put(f.declaredOn, new ArrayList<Field>());
-                    groups.get(f.declaredOn).add(f);
+                    if (!groups.containsKey(f.getDeclaredOn()))
+                        groups.put(f.getDeclaredOn(), new ArrayList<Field>());
+                    groups.get(f.getDeclaredOn()).add(f);
                 }
                 List<Object> result = new ArrayList<Object>(groups.size());
                 if (groups.containsKey(""))
@@ -289,7 +289,7 @@ public class ObjectFieldsViewer {
                     // add its non-builtin fields
                     List<Field> fields = new ArrayList<Field>();
                     for (Field f : pk.getFields())
-                        if (!CPACKET_BASE_CLASSES.contains(f.declaredOn))
+                        if (!CPACKET_BASE_CLASSES.contains(f.getDeclaredOn()))
                             fields.add(f);
 
                     // and form a new field group from it
@@ -317,7 +317,7 @@ public class ObjectFieldsViewer {
 
         public Object getParent(Object element) {
             if (element instanceof Field)
-                return ((Field) element).owner;
+                return ((Field) element).getOwner();
             else if (element instanceof FieldArrayElement)
                 return ((FieldArrayElement) element).field;
             else if (element instanceof FieldGroup)
@@ -367,15 +367,15 @@ public class ObjectFieldsViewer {
             else if (element instanceof Field || element instanceof FieldArrayElement) {
                 boolean isArrayElement = element instanceof FieldArrayElement;
                 Field field = !isArrayElement ? (Field)element : ((FieldArrayElement)element).field;
-                Object value = !isArrayElement ? field.value : field.values[((FieldArrayElement)element).index];
+                Object value = !isArrayElement ? field.getValue() : field.getValues()[((FieldArrayElement)element).index];
 
                 // the @label property can be used to override the field name
-                String name = field.labelProperty!=null ? field.labelProperty : field.name;
+                String name = field.getLabelProperty()!=null ? field.getLabelProperty() : field.getName();
 
                 // if it's an unexpanded array, return "name[size]" immediately
-                if (field.isArray && !isArrayElement) {
-                    result.append(name + "[" + field.values.length + "]");
-                    result.append(" (" + field.type + ")", greyStyle);
+                if (field.isArray() && !isArrayElement) {
+                    result.append(name + "[" + field.getValues().length + "]");
+                    result.append(" (" + field.getType() + ")", greyStyle);
                     return result;
                 }
 
@@ -385,11 +385,11 @@ public class ObjectFieldsViewer {
 
                 // we'll want to print the field type, except for expanded array elements
                 // (no need to repeat it, as it's printed in the "name[size]" node already)
-                String typeNameText = isArrayElement ? "" : " (" + field.type + ")";
+                String typeNameText = isArrayElement ? "" : " (" + field.getType() + ")";
 
-                if (field.isCompound) {
+                if (field.isCompound()) {
                     // if it's an object, try to say something about it...
-                    if (field.isCObject) {
+                    if (field.isCObject()) {
                         result.append(name + " = ");
                         if (value == null)
                             result.append("NULL", blueStyle);
@@ -421,11 +421,11 @@ public class ObjectFieldsViewer {
                 }
                 else {
                     // plain field, return "name = value" text
-                    if (field.enumProperty != null) {
-                        typeNameText += " - enum " + field.enumProperty;
-                        value = field.valueSymbolicName + " (" + value.toString() + ")";
+                    if (field.getEnumProperty() != null) {
+                        typeNameText += " - enum " + field.getEnumProperty();
+                        value = field.getValueSymbolicName() + " (" + value.toString() + ")";
                     }
-                    if (field.type.equals("string"))
+                    if (field.getType().equals("string"))
                         value = "\"" + value.toString() + "\"";
 
                     result.append(name);
@@ -453,10 +453,10 @@ public class ObjectFieldsViewer {
 
             Object value = element;
             if (element instanceof Field)
-                value = ((Field) element).value;
+                value = ((Field) element).getValue();
             if (element instanceof FieldArrayElement) {
                 FieldArrayElement fieldArrayElement = (FieldArrayElement)element;
-                value = fieldArrayElement.field.values[fieldArrayElement.index];
+                value = fieldArrayElement.field.getValues()[fieldArrayElement.index];
             }
             if (value instanceof cObject) {
                 cObject object = (cObject)value;

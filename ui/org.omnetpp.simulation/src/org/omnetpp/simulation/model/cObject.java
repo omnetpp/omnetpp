@@ -1,7 +1,6 @@
 package org.omnetpp.simulation.model;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +13,6 @@ import org.omnetpp.simulation.controller.Simulation;
  * @author Andras
  */
 //TODO implement frozen objects!!!! freeze(), isFrozen();  references inside frozen objects: freeze them too, even if they are unfilled?
-//TODO StringPool the strings, esp. Field members!
-//TODO field metadata could be stored separately, in a cClassDescriptor
 public class cObject {
     private Simulation simulation;
     private long objectId;
@@ -23,13 +20,14 @@ public class cObject {
     private boolean isFieldsFilledIn = false;
     private boolean isDisposed = false; //TODO deleted (~C++)
 
+    private cClassDescriptor descriptor;
     private String className;
     private String name;
     private String fullName;
     private String fullPath;
-    private String icon;   //TODO could come from the class descriptor
     private String info;
     private cObject owner;
+    private String icon; // the @icon property - cached here for efficiency
     private cObject[] childObjects;
 
     private Field[] fields;
@@ -73,9 +71,10 @@ public class cObject {
         name = (String) jsonObject.get("name");
         fullName = (String) jsonObject.get("fullName");
         fullPath = (String) jsonObject.get("fullPath");
-        icon = (String) jsonObject.get("icon");
         info = (String) jsonObject.get("info");
         owner = simulation.getObjectByJSONRef((String) jsonObject.get("owner"));
+        icon = (String) jsonObject.get("icon");
+        descriptor = (cClassDescriptor) simulation.getObjectByJSONRef((String) jsonObject.get("descriptor"));
 
         List jsonChildren = (List) jsonObject.get("children");
         childObjects = new cObject[jsonChildren.size()];
@@ -119,6 +118,8 @@ public class cObject {
     public void loadFields() throws IOException {
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
+        if (!descriptor.isFilledIn())
+            simulation.loadObject(descriptor); // for convenience -- will be needed for accessing the fields anyway
         simulation.loadObjectFields(this);
     }
 
@@ -136,40 +137,39 @@ public class cObject {
 
     @SuppressWarnings("rawtypes")
     public void fillFieldsFromJSON(Map jsonObject) {
-        List<Field> fields = new ArrayList<Field>();
-        for (Object o: (List)jsonObject.get("fields")) {
-            Map jfield = (Map)o;
-            Field f = new Field();
-            f.owner = this;
-            f.name = (String) jfield.get("name");
-            f.type = (String) jfield.get("type");
-            f.declaredOn = (String) jfield.get("declaredOn");
-            f.groupProperty = (String) jfield.get("@group"); // null for ungrouped
-            f.labelProperty = (String) jfield.get("@label");
-            f.hintProperty = (String) jfield.get("@hint");
-            f.enumProperty = (String) jfield.get("@enum");
-            f.isArray = Boolean.TRUE.equals((Boolean)jfield.get("isArray"));
-            f.isCompound = Boolean.TRUE.equals((Boolean)jfield.get("isCompound"));
-            f.isPointer = Boolean.TRUE.equals((Boolean)jfield.get("isPointer"));
-            f.isCObject = Boolean.TRUE.equals((Boolean)jfield.get("isCObject"));
-            f.isCOwnedObject = Boolean.TRUE.equals((Boolean)jfield.get("isCOwnedObject"));
-            f.isEditable = Boolean.TRUE.equals((Boolean)jfield.get("isEditable"));
-            f.structName = (String) jfield.get("declaredOn");
-            f.value = f.isArray ? null : jfield.get("value");
-            f.values = f.isArray ? ((List) jfield.get("value")).toArray() : null;
+        // IMPORTANT: we MUST NOT access cClassDescriptor here, because it might not be loaded at this point! 
+        // We must be able to load fields without cClassDescriptor present, and have it loaded only later. 
 
-            if (f.isCObject) {
-                // values are object references; resolve them
-                if (!f.isArray)
-                    f.value = simulation.getObjectByJSONRef((String)f.value);
-                else
-                    for (int i = 0; i < f.values.length; i++)
-                        f.values[i] = simulation.getObjectByJSONRef((String)f.values[i]);
+        List jsonFields = (List) jsonObject.get("fields");
+        int numFields = jsonFields.size();
+        boolean haveDesc = isFilledIn() && getDescriptor().isFilledIn();
+        if (haveDesc)
+            Assert.isTrue(numFields == getDescriptor().getFieldDescriptors().length);  // basic sanity check
+        fields = new Field[numFields];
+
+        for (int fieldId = 0; fieldId < numFields; fieldId++) {
+            Map jsonField = (Map) jsonFields.get(fieldId);
+            if (haveDesc)
+                Assert.isTrue(getDescriptor().getFieldDescriptor(fieldId).getName().equals(jsonField.get("name")));  // basic sanity check
+            boolean isObjRef = Boolean.TRUE.equals((Boolean)jsonField.get("isObjRef"));
+            Field field;
+            if (jsonField.containsKey("value")) {
+                Object value = jsonField.get("value");
+                if (isObjRef)
+                    value = simulation.getObjectByJSONRef((String)value);
+                field = new Field(this, fieldId, value);
+            } 
+            else {
+                Object[] values = ((List)jsonField.get("values")).toArray();
+                if (isObjRef)
+                    for (int i = 0; i < values.length; i++)
+                        values[i] = simulation.getObjectByJSONRef((String)values[i]);
+                field = new Field(this, fieldId, values);
             }
-
-            fields.add(f);
+            fields[fieldId] = field;
         }
-        this.fields = fields.toArray(new Field[]{});
+
+        // success
         isFieldsFilledIn = true;
     }
 
@@ -181,6 +181,8 @@ public class cObject {
         checkState();
         if (!isFieldsFilledIn)
             throw new InvalidSimulationObjectException("fields of object " + getObjectId() + "-" + getClass().getSimpleName() + " not yet filled in");
+        if (!descriptor.isFilledIn())
+            throw new RuntimeException("must load the class descriptor (cClassDescriptor) of the object to access its fields");
         return fields;
     }
 
@@ -208,7 +210,7 @@ public class cObject {
 
     public String getIcon() {
         checkState();
-        return icon;
+        return icon; // in theory the same as getDescriptor().getProperty("icon"), but we access it frequently, and even before class descriptor is loaded
     }
 
     public String getName() {
@@ -234,6 +236,11 @@ public class cObject {
     public cObject getOwner() {
         checkState();
         return owner;
+    }
+
+    public cClassDescriptor getDescriptor() {
+        checkState();
+        return descriptor;
     }
 
     public cObject[] getChildObjects() {
