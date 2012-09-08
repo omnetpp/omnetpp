@@ -2,13 +2,13 @@ package org.omnetpp.simulation.model;
 
 import java.util.Map;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cChannel extends cComponent {
     private boolean isTransmissionChannel;
 
-    public cChannel(SimulationController controller, long id) {
-        super(controller, id);
+    public cChannel(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public boolean isTransmissionChannel() {

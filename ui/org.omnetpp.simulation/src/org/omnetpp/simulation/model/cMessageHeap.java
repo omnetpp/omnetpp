@@ -1,11 +1,11 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cMessageHeap extends cObject {
     //TODO
 
-    public cMessageHeap(SimulationController controller, long id) {
-        super(controller, id);
+    public cMessageHeap(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

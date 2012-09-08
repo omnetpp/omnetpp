@@ -40,10 +40,11 @@ import org.omnetpp.simulation.actions.SetupIniConfigAction;
 import org.omnetpp.simulation.actions.SetupNetworkAction;
 import org.omnetpp.simulation.actions.StepAction;
 import org.omnetpp.simulation.actions.StopAction;
-import org.omnetpp.simulation.controller.ISimulationCallback;
+import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.Simulation;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
@@ -65,7 +66,7 @@ import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
 //TODO why animation toolbar cannot mirror the simulation toolbar, only with green buttons?
 //TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
 //TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
-public class SimulationEditor extends EditorPart implements /*TODO IAnimationCanvasProvider,*/ ISimulationCallback {
+public class SimulationEditor extends EditorPart implements /*TODO IAnimationCanvasProvider,*/ ISimulationUICallback {
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
 
     protected SimulationController simulationController;
@@ -85,8 +86,9 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         setPartName(input.getName());
 
         SimulationEditorInput simInput = (SimulationEditorInput)input;
-        simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
-        simulationController.setSimulationCallback(this);
+        Simulation simulation = new Simulation(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
+        simulationController = new SimulationController(simulation);
+        simulationController.getSimulation().setSimulationUICallback(this);
 
         getSite().setSelectionProvider(new DelegatingSelectionProvider());  // must do it now, because 'editor opened' notification goes right after init() returns
 }
@@ -199,13 +201,13 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             @Override
             public void simulationStateChanged(SimulationController controller) {
                 simulationCanvas.refreshInspectors();
-                if (!controller.isBeforeAnimatingLastEvent())
+                if (controller.isLastEventAnimationDone())
                     showNextEventMarker();
             }
         });
 
         // create animation controller for the simulation canvas
-        AnimationDirector animationDirector = new AnimationDirector(simulationCanvas, simulationController);
+        AnimationDirector animationDirector = new AnimationDirector(simulationCanvas, simulationController.getSimulation());
         LiveAnimationController liveAnimationController = new LiveAnimationController(simulationController, animationDirector);
         simulationController.setLiveAnimationController(liveAnimationController);
 
@@ -329,7 +331,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 try {
                     // KLUDGE: TODO: this is necessary, because connection timeout does not work as expected (apache HttpClient ignores the provided value)
                     Thread.sleep(1000);
-                    simulationController.refreshStatus();
+                    simulationController.getSimulation().refreshStatus();
                 }
                 catch (Exception e) {
                     MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());
@@ -338,7 +340,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 }
 
                 // immediately offer setting up a network
-                if (simulationController.getState() == SimState.NONETWORK)
+                if (simulationController.getUIState() == SimState.NONETWORK)
                     finalSetupIniConfigAction.run();
             }
         });
@@ -403,26 +405,26 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         if (!statusLabel.isDisposed()) {
             //TODO this should not be a single label because text jumps due to the use of proportional font
             SimulationController controller = getSimulationController();
-            String status = "   pid=" + controller.getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
-            status += "   " + controller.getState().name();
+            String status = "   pid=" + controller.getSimulation().getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
+            status += "   " + controller.getUIState().name();
 
-            if (controller.getState() != SimState.DISCONNECTED && controller.getState() != SimState.NONETWORK) {
-                status += "  -  " + controller.getConfigName() + " #" + controller.getRunNumber() + "   (" + controller.getNetworkName() + ")";
+            if (controller.getUIState() != SimState.DISCONNECTED && controller.getUIState() != SimState.NONETWORK) {
+                Simulation simulation = controller.getSimulation();
+                status += "  -  " + simulation.getConfigName() + " #" + simulation.getRunNumber() + "   (" + simulation.getNetworkName() + ")";
 
-                cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
-                if (!simulation.isFilledIn())
-                    simulation.safeLoad();
+                cSimulation csimulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
+                if (!csimulation.isFilledIn())
+                    csimulation.safeLoad();
 
-                boolean displayLast = controller.isBeforeAnimatingLastEvent();
-                long eventNumber = displayLast ? controller.getLastEventNumber() : controller.getNextEventNumber();
-                BigDecimal simTime = displayLast ? controller.getLastEventSimulationTime() : controller.getNextEventSimulationTimeGuess();
-                cModule module = displayLast ? null /*TODO!!!!*/ : simulation.getModuleById(controller.getNextEventModuleIdGuess());
+                long eventNumber = controller.getEventNumber();
+                BigDecimal simTime = controller.getSimulationTime();
+                cModule module = csimulation.getModuleById(controller.getEventModuleId());
                 if (module != null && !module.isFilledIn())
                     module.safeLoad();
                 String moduleText = module == null ? "n/a" : module.getFullPath() + " (" + module.getShortTypeName() + ")";
                 status += "  -  Event #" + eventNumber + "   t=" + simTime + "s" + " in " + moduleText;
             }
-            
+
             statusLabel.setText(status);
         }
     }
@@ -435,12 +437,12 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
         // get next event's module ID
         SimulationController controller = getSimulationController();
-        int nextEventModuleId = controller.getNextEventModuleIdGuess();
+        int nextEventModuleId = controller.getEventModuleId();
         if (nextEventModuleId <= 1)
             return;
 
         // add marker to it and all ancestors
-        cSimulation simulation = (cSimulation) controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+        cSimulation simulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
         if (!simulation.isFilledIn())
             simulation.safeLoad();
         cModule module = simulation.getModuleById(nextEventModuleId);

@@ -1,12 +1,12 @@
 package org.omnetpp.simulation.inspectors;
 
 import org.eclipse.draw2d.IFigure;
-import org.eclipse.draw2d.InputEvent;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
@@ -71,7 +71,7 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
 
     protected void handleMousePressed(MouseEvent me) {
         System.out.println("TextInspectorPart: mouse pressed");
-        if ((me.getState()& InputEvent.CONTROL) != 0)
+        if ((me.getState()& SWT.CONTROL) != 0)
             inspectorContainer.toggleSelection(getObject());
         else
             inspectorContainer.select(getObject(), true);

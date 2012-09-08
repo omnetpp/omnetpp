@@ -3,7 +3,7 @@ package org.omnetpp.simulation.model;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * TODO
@@ -16,8 +16,8 @@ public class cModule extends cComponent {
     private cGate[] gates;
     private cModule[] submodules;
 
-    public cModule(SimulationController controller, long id) {
-        super(controller, id);
+    public cModule(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public int getId() {
@@ -123,12 +123,12 @@ public class cModule extends cComponent {
         List jsonGates = (List) jsonObject.get("gates");
         gates = new cGate[jsonGates.size()];
         for (int i = 0; i < gates.length; i++)
-            gates[i] = (cGate) getController().getObjectByJSONRef((String) jsonGates.get(i));
+            gates[i] = (cGate) getSimulation().getObjectByJSONRef((String) jsonGates.get(i));
 
         List jsonSubmodules = (List) jsonObject.get("submodules");
         submodules = new cModule[jsonSubmodules.size()];
         for (int i = 0; i < submodules.length; i++)
-            submodules[i] = (cModule) getController().getObjectByJSONRef((String) jsonSubmodules.get(i));
+            submodules[i] = (cModule) getSimulation().getObjectByJSONRef((String) jsonSubmodules.get(i));
 
     }
 }

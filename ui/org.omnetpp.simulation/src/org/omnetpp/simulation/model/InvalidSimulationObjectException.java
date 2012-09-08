@@ -6,6 +6,7 @@ package org.omnetpp.simulation.model;
  * @author Andras
  */
 public class InvalidSimulationObjectException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
 
     public InvalidSimulationObjectException() {
     }

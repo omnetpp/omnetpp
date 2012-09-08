@@ -1,10 +1,10 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cCompoundModule extends cModule {
 
-    public cCompoundModule(SimulationController controller, long id) {
-        super(controller, id);
+    public cCompoundModule(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

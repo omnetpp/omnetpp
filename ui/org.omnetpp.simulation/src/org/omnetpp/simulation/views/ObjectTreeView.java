@@ -40,8 +40,9 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.Simulation;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 
@@ -69,7 +70,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
                     object.safeLoad(); //FIXME return if failed!
                 cObject[] childObjects = object.getChildObjects();
                 try {
-                    object.getController().loadUnfilledObjects(Arrays.asList(childObjects)); //FIXME return if failed??
+                    object.getSimulation().loadUnfilledObjects(Arrays.asList(childObjects)); //FIXME return if failed??
                 }
                 catch (IOException e) {
                     SimulationPlugin.logError("Could not retrieve objects from simulation process", e);
@@ -256,13 +257,13 @@ public class ObjectTreeView extends ViewWithMessagePart {
     }
 
     protected void simulationStateChanged(SimulationController controller) {
-        if (controller.getState() == SimState.DISCONNECTED)
+        if (controller.getUIState() == SimState.DISCONNECTED)
             showMessage("No simulation process.");
         else {
             hideMessage();
 
-            if (controller.hasRootObjects()) {
-                cObject input = controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+            if (controller.getSimulation().hasRootObjects()) {
+                cObject input = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
                 if (!input.equals(viewer.getInput()))
                     viewer.setInput(input);
             }
@@ -287,12 +288,12 @@ public class ObjectTreeView extends ViewWithMessagePart {
         SimulationController controller = ((SimulationEditor)editor).getSimulationController();
         controller.addSimulationStateListener(simulationListener);
 
-        if (controller.getState() == SimState.DISCONNECTED || !controller.hasRootObjects()) {
+        if (controller.getUIState() == SimState.DISCONNECTED || !controller.getSimulation().hasRootObjects()) {
             showMessage("No simulation process.");
         }
         else {
             hideMessage();
-            cObject input = controller.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+            cObject input = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
             viewer.setInput(input);
             viewer.refresh();
         }

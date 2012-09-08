@@ -77,7 +77,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
             // only rebuild everything if queue contents has changed
             cObject[] childObjects = queue.getChildObjects();
             try {
-                queue.getController().loadUnfilledObjects(childObjects);
+                queue.getSimulation().loadUnfilledObjects(childObjects);
             }
             catch (IOException e) {
                 e.printStackTrace();  //FIXME better error handling

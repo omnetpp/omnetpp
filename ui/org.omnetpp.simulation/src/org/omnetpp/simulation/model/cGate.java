@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cGate extends cObject {
     public enum Type {INPUT, OUTPUT, INOUT};
@@ -18,8 +18,8 @@ public class cGate extends cObject {
     private cGate nextGate;
     private cChannel channel;
 
-    public cGate(SimulationController controller, long id) {
-        super(controller, id);
+    public cGate(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public int getId() {
@@ -73,6 +73,7 @@ public class cGate extends cObject {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected void doFillFromJSON(Map jsonObject) {
         super.doFillFromJSON(jsonObject);
 
@@ -81,10 +82,10 @@ public class cGate extends cObject {
         vectorSize = ((Number)jsonObject.get("vectorSize")).intValue();
         type = Type.valueOf(((String)jsonObject.get("type")).toUpperCase());
 
-        ownerModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("ownerModule"));
+        ownerModule = (cModule) getSimulation().getObjectByJSONRef((String) jsonObject.get("ownerModule"));
         displayString = new DisplayString((String) jsonObject.get("displayString"));
-        previousGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("previousGate"));
-        nextGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("nextGate"));
-        channel = (cChannel) getController().getObjectByJSONRef((String) jsonObject.get("channel"));
+        previousGate = (cGate) getSimulation().getObjectByJSONRef((String) jsonObject.get("previousGate"));
+        nextGate = (cGate) getSimulation().getObjectByJSONRef((String) jsonObject.get("nextGate"));
+        channel = (cChannel) getSimulation().getObjectByJSONRef((String) jsonObject.get("channel"));
     }
 }

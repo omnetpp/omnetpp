@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Text;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.controller.SimulationController.RunMode;
+import org.omnetpp.simulation.controller.Simulation.RunMode;
 
 
 /**

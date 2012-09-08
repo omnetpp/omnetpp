@@ -4,7 +4,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
@@ -24,11 +24,10 @@ public class LinkWithSimulationAction extends AbstractSimulationAction {
     @Override
     public void run() {
         try {
-            SimulationController controller = getSimulationController();
-            if (!haveSimulation(controller))
+            if (!haveSimulationProcess())
                 return;
 
-            controller.setCancelJobOnDispose(isChecked());
+            getSimulationController().getSimulation().setCancelJobOnDispose(isChecked());
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
@@ -41,7 +40,8 @@ public class LinkWithSimulationAction extends AbstractSimulationAction {
 
     @Override
     public void updateState() {
-        setEnabled(getSimulationController().canCancelLaunch());
-        setChecked(getSimulationController().getCancelJobOnDispose());
+        Simulation simulation = getSimulationController().getSimulation();
+        setEnabled(simulation.canCancelLaunch());
+        setChecked(simulation.getCancelJobOnDispose());
     }
 }

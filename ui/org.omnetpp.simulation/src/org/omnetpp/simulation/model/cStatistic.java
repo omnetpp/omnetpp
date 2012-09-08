@@ -1,6 +1,6 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * Represents objects derived from the cStatistic C++ class in the simulation.
@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController;
  */
 //TODO finish
 public class cStatistic extends cObject {
-    public cStatistic(SimulationController controller, long id) {
-        super(controller, id);
+    public cStatistic(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

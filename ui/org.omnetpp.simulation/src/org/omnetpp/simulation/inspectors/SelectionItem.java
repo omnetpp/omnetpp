@@ -27,6 +27,7 @@ public class SelectionItem implements IAdaptable {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     public Object getAdapter(Class adapter) {
         if (adapter.isInstance(object))
             return object;

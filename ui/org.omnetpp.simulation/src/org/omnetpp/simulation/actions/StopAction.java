@@ -4,8 +4,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
@@ -25,7 +25,7 @@ public class StopAction extends AbstractSimulationAction {
     public void run() {
         try {
             SimulationController controller = getSimulationController();
-            if (!haveSimulation(controller))
+            if (!haveSimulationProcess())
                 return;
 
             controller.stop();
@@ -38,6 +38,6 @@ public class StopAction extends AbstractSimulationAction {
 
     @Override
     public void updateState() {
-        setEnabled(getSimulationController().getState() == SimState.RUNNING);
+        setEnabled(getSimulationController().getUIState() == SimState.RUNNING);
     }
 }

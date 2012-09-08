@@ -21,8 +21,8 @@ import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.inspectors.SelectionUtils;
 import org.omnetpp.simulation.model.cModule;
@@ -135,12 +135,12 @@ public class ModuleOutputView extends ViewWithMessagePart {
     }
 
     protected void simulationStateChanged(SimulationController controller) {
-        if (controller.getState() == SimState.DISCONNECTED)
+        if (controller.getUIState() == SimState.DISCONNECTED)
             showMessage("No simulation process.");
         else {
             hideMessage();
             if (!(viewer.getContent() instanceof ModuleOutputContent))
-                viewer.setContent(new ModuleOutputContent(controller.getLogBuffer(), new EventEntryLinesProvider()));
+                viewer.setContent(new ModuleOutputContent(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider()));
             viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
         }
@@ -164,12 +164,12 @@ public class ModuleOutputView extends ViewWithMessagePart {
 
         associatedSimulationEditor.getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
 
-        if (controller.getState() == SimState.DISCONNECTED || !controller.hasRootObjects()) {
+        if (controller.getUIState() == SimState.DISCONNECTED) {
             showMessage("No simulation process.");
         }
         else {
             hideMessage();
-            ModuleOutputContent content = new ModuleOutputContent(controller.getLogBuffer(), new EventEntryLinesProvider());
+            ModuleOutputContent content = new ModuleOutputContent(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider());
             viewer.setContent(content);
             viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();

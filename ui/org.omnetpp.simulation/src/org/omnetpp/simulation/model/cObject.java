@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
+
+//TODO implement garbage collection of loaded objects!!! use WeakRef in the object cache
+//TODO implement frozen objects!!!! freeze(), isFrozen();  references inside frozen objects: freeze them too, even if they are unfilled?
 
 /**
  * Represents a cObject in the simulation.
@@ -15,7 +18,7 @@ import org.omnetpp.simulation.controller.SimulationController;
 //TODO illetve ha az unload() kinullazza a benne levo referenciakat (es az object cache is weakref-eket tart), akkor a nem hivatkozott objektumok tudnak garbage collectalodni is!!!
 //TODO StringPool the strings, esp. Field members!
 public class cObject {
-    private SimulationController controller;
+    private Simulation simulation;
     private long objectId;
     private boolean isFilledIn = false;
     private boolean isFieldsFilledIn = false;
@@ -34,13 +37,13 @@ public class cObject {
 
     private Field[] fields;  //XXX temporary
 
-    public cObject(SimulationController controller, long id) {
-        this.controller = controller;
+    public cObject(Simulation simulation, long id) {
+        this.simulation = simulation;
         this.objectId = id;
     }
 
-    public SimulationController getController() {
-        return controller;
+    public Simulation getSimulation() {
+        return simulation;
     }
 
     public long getObjectId() {
@@ -55,12 +58,14 @@ public class cObject {
         return isDisposed;
     }
 
-    // for SimulationController's use only!
+    // technically public, but should only be called from the Simulation class!
+    @SuppressWarnings("rawtypes")
     public void fillFromJSON(Map jsonObject) {
         doFillFromJSON(jsonObject);
         isFilledIn = true;
     }
 
+    @SuppressWarnings("rawtypes")
     protected void doFillFromJSON(Map jsonObject) {
         className = (String) jsonObject.get("className");
         name = (String) jsonObject.get("name");
@@ -68,18 +73,18 @@ public class cObject {
         fullPath = (String) jsonObject.get("fullPath");
         icon = (String) jsonObject.get("icon");
         info = (String) jsonObject.get("info");
-        owner = controller.getObjectByJSONRef((String) jsonObject.get("owner"));
+        owner = simulation.getObjectByJSONRef((String) jsonObject.get("owner"));
 
         List jsonChildren = (List) jsonObject.get("children");
         childObjects = new cObject[jsonChildren.size()];
         for (int i = 0; i < childObjects.length; i++)
-            childObjects[i] = controller.getObjectByJSONRef((String) jsonChildren.get(i));
+            childObjects[i] = simulation.getObjectByJSONRef((String) jsonChildren.get(i));
     }
 
     public void load() throws IOException {
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
-        controller.loadObject(this);
+        simulation.loadObject(this);
     }
 
     //TODO why not introduce a loadIfNeeded() method, to spare the "if"'s???
@@ -98,7 +103,7 @@ public class cObject {
     public void loadFields() throws IOException {
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
-        controller.loadObjectFields(this);
+        simulation.loadObjectFields(this);
     }
 
     //TODO should load base AND fields together! (unless base is already loaded)
@@ -114,6 +119,7 @@ public class cObject {
     }
 
     //FIXME revise; todo into
+    @SuppressWarnings("rawtypes")
     public void fillFieldsFromJSON(Map jsonObject) {
         List<Field> fields = new ArrayList<Field>();
         for (Object o: (List)jsonObject.get("fields")) {
@@ -140,10 +146,10 @@ public class cObject {
             if (f.isCObject) {
                 // values are object references; resolve them
                 if (!f.isArray)
-                    f.value = controller.getObjectByJSONRef((String)f.value);
+                    f.value = simulation.getObjectByJSONRef((String)f.value);
                 else
                     for (int i = 0; i < f.values.length; i++)
-                        f.values[i] = controller.getObjectByJSONRef((String)f.values[i]);
+                        f.values[i] = simulation.getObjectByJSONRef((String)f.values[i]);
             }
 
             fields.add(f);
@@ -222,7 +228,7 @@ public class cObject {
 
     @Override
     public int hashCode() {
-        return (int) (objectId ^ (objectId >>> 32)) + 31*controller.hashCode();
+        return (int) (objectId ^ (objectId >>> 32)) + 31*simulation.hashCode();
     }
 
     @Override
@@ -232,7 +238,7 @@ public class cObject {
         if (obj == null || getClass() != obj.getClass())
             return false;
         cObject other = (cObject) obj;
-        return controller == other.controller && objectId == other.objectId;
+        return simulation == other.simulation && objectId == other.objectId;
     }
 
     @Override

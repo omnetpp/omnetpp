@@ -3,11 +3,9 @@ package org.omnetpp.simulation.liveanimation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.EventEntry;
-import org.omnetpp.simulation.controller.LogBuffer;
 import org.omnetpp.simulation.controller.SimulationController;
 
 /**
@@ -47,9 +45,9 @@ public class LiveAnimationController {
         this.animationDirector = animationDirector;
     }
 
-    public void startAnimatingLastEvent() {
+    public void startAnimatingLastEvent(EventEntry event) {
         // add animations for last event
-        addAnimationsForLastEvent();
+        addAnimationsForLastEvent(event);
 
         // start animating
         animationStartTimeNanos = System.nanoTime();
@@ -57,13 +55,8 @@ public class LiveAnimationController {
         startTicking();
     }
 
-    protected void addAnimationsForLastEvent() {
-        LogBuffer logBuffer = simulationController.getLogBuffer();
-        EventEntry event = logBuffer.getLastEventEntry();
-        Assert.isNotNull(event);
-
+    protected void addAnimationsForLastEvent(EventEntry event) {
         animationPrimitives.addAll(animationDirector.getAnimationsForLastEvent(event));
-        
     }
 
     protected void startTicking() {
@@ -102,19 +95,19 @@ public class LiveAnimationController {
     }
 
     protected void animationFinished() {
-        // purge obsolete animation primitives
-        animationPrimitives.clear(); //XXX for now...
-
-        // notify controller
-        if (simulationController != null)
-            simulationController.animationStopped();
-        
         // statistics
         if (numUpdates > 5) {
             long nanos = System.nanoTime() - animationStartTimeNanos;
             long fps = numUpdates * 1000000000 / nanos;
             System.out.println("Animation: " + numUpdates + " updates in " + nanos + "ms, " + fps + "fps");
         }
+
+        // purge obsolete animation primitives
+        animationPrimitives.clear(); //XXX for now...
+
+        // notify controller
+        if (simulationController != null)
+            simulationController.animationStopped();
     }
 }
 

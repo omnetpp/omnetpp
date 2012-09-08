@@ -232,7 +232,7 @@ public class ObjectFieldsViewer {
             if (mode == Mode.CHILDREN) {
                 cObject[] children = object.getChildObjects();
                 try {
-                    object.getController().loadUnfilledObjects(children);
+                    object.getSimulation().loadUnfilledObjects(children);
                 }
                 catch (IOException e) {
                     e.printStackTrace();  //TODO how to handle exceptions properly...

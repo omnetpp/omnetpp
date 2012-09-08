@@ -3,7 +3,7 @@ package org.omnetpp.simulation.model;
 import java.util.Map;
 
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cMessage extends cObject {
     private short kind;
@@ -20,8 +20,8 @@ public class cMessage extends cObject {
     private BigDecimal sendingTime;
     private BigDecimal arrivalTime;
 
-    public cMessage(SimulationController controller, long id) {
-        super(controller, id);
+    public cMessage(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public short getKind() {
@@ -90,10 +90,10 @@ public class cMessage extends cObject {
         id = ((Number)jsonObject.get("id")).longValue();
         treeId = ((Number)jsonObject.get("treeId")).longValue();
 
-        senderModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("senderModule"));
-        senderGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("senderGate"));
-        arrivalModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("arrivalModule"));
-        arrivalGate = (cGate) getController().getObjectByJSONRef((String) jsonObject.get("arrivalGate"));
+        senderModule = (cModule) getSimulation().getObjectByJSONRef((String) jsonObject.get("senderModule"));
+        senderGate = (cGate) getSimulation().getObjectByJSONRef((String) jsonObject.get("senderGate"));
+        arrivalModule = (cModule) getSimulation().getObjectByJSONRef((String) jsonObject.get("arrivalModule"));
+        arrivalGate = (cGate) getSimulation().getObjectByJSONRef((String) jsonObject.get("arrivalGate"));
 
         sendingTime = BigDecimal.parse((String) jsonObject.get("sendingTime"));
         arrivalTime = BigDecimal.parse((String) jsonObject.get("arrivalTime"));

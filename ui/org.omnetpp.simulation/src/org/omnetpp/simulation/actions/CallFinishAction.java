@@ -4,8 +4,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
@@ -31,13 +31,13 @@ public class CallFinishAction extends AbstractSimulationAction {
                 return;
             if (!controller.isNetworkPresent())
                 return;
-            if (controller.getState() == SimState.FINISHCALLED) {
+            if (controller.getUIState() == SimState.FINISHCALLED) {
                 MessageDialog.openInformation(getShell(), "Finish Called", "finish() has been invoked already.");
                 return;
             }
 
             // let the user confirm the action, especially if we are in the ERROR state
-            if (controller.getState() == SimState.ERROR) {
+            if (controller.getUIState() == SimState.ERROR) {
                 if (!MessageDialog.openQuestion(getShell(), "Warning", "Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?"))
                     return;
             }
@@ -58,7 +58,7 @@ public class CallFinishAction extends AbstractSimulationAction {
 
     @Override
     public void updateState() {
-        SimState state = getSimulationController().getState();
+        SimState state = getSimulationController().getUIState();
         setEnabled(state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR); // we also allow it in ERROR case, see SimulationController method
     }
 }

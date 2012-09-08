@@ -390,9 +390,9 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             try {
                 // load submodules, gates, channels in as few calls as possible:
                 // module and submodules first
-                if (module.isFilledIn())
+                if (!module.isFilledIn())
                     module.safeLoad();
-                module.getController().loadUnfilledObjects(module.getSubmodules());
+                module.getSimulation().loadUnfilledObjects(module.getSubmodules());
 
                 // all gates (needed for connections)
                 List<cGate> gateList = new ArrayList<cGate>();
@@ -403,14 +403,14 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                     for (cGate gate : submodule.getGates())
                         if (!gate.isFilledIn())
                             gateList.add(gate);
-                module.getController().loadObjects(gateList); // pre-filtered to unfilled objects
+                module.getSimulation().loadObjects(gateList); // pre-filtered to unfilled objects
 
                 // channel objects
                 List<cChannel> channelList = new ArrayList<cChannel>();
                 for (cGate gate : gateList)
                     if (gate.getChannel() != null && !gate.getChannel().isFilledIn())
                         channelList.add(gate.getChannel());
-                module.getController().loadObjects(channelList); // pre-filtered to unfilled objects
+                module.getSimulation().loadObjects(channelList); // pre-filtered to unfilled objects
             }
             catch (IOException e) {
                 //TODO properly handle... (e.g. close inspector?)
@@ -496,7 +496,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             if (module==parentModule)
                 atParent = true;
             try {
-                module.getController().loadUnfilledObjects(module.getGates());
+                module.getSimulation().loadUnfilledObjects(module.getGates());
             }
             catch (IOException e) {
                 // TODO Auto-generated catch block

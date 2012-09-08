@@ -1,9 +1,9 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cDensityEstBase extends cStatistic {
-    public cDensityEstBase(SimulationController controller, long id) {
-        super(controller, id);
+    public cDensityEstBase(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

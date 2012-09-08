@@ -1,6 +1,6 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * Represents objects derived from the cSimpleModule C++ class in the simulation.
@@ -10,7 +10,7 @@ import org.omnetpp.simulation.controller.SimulationController;
 //TODO finish
 public class cSimpleModule extends cModule {
 
-    public cSimpleModule(SimulationController controller, long id) {
-        super(controller, id);
+    public cSimpleModule(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

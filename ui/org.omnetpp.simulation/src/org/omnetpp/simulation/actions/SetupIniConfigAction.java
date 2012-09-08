@@ -18,8 +18,9 @@ import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.ConfigDescription;
+import org.omnetpp.simulation.controller.Simulation;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 
@@ -197,9 +198,9 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
 
                 //XXX check something was selected
                 //XXX next stuff should be using a progress monitor...
-                controller.newRun(configName, runNumber);
-                
-                cObject network = controller.getRootObject(SimulationController.ROOTOBJ_SYSTEMMODULE);
+                controller.setupRun(configName, runNumber);
+
+                cObject network = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SYSTEMMODULE);
                 getSimulationCanvas().inspect(network);
             }
         }
@@ -211,7 +212,7 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
 
     @Override
     public void updateState() {
-        SimState state = getSimulationController().getState();
+        SimState state = getSimulationController().getUIState();
         setEnabled(state != SimState.DISCONNECTED && state != SimState.RUNNING);
     }
 }

@@ -3,7 +3,7 @@ package org.omnetpp.simulation.model;
 import java.util.List;
 import java.util.Map;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * Represents objects derived from the cSimulation C++ class in the simulation.
@@ -17,8 +17,8 @@ public class cSimulation extends cObject {
     private cObject scheduler;
     private cMessageHeap messageQueue;
 
-    public cSimulation(SimulationController controller, long id) {
-        super(controller, id);
+    public cSimulation(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public cObject getScheduler() {
@@ -51,14 +51,14 @@ public class cSimulation extends cObject {
     protected void doFillFromJSON(Map jsonObject) {
         super.doFillFromJSON(jsonObject);
         
-        scheduler = getController().getObjectByJSONRef((String) jsonObject.get("scheduler"));
-        messageQueue = (cMessageHeap) getController().getObjectByJSONRef((String) jsonObject.get("messageQueue"));
-        rootModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("systemModule"));
+        scheduler = getSimulation().getObjectByJSONRef((String) jsonObject.get("scheduler"));
+        messageQueue = (cMessageHeap) getSimulation().getObjectByJSONRef((String) jsonObject.get("messageQueue"));
+        rootModule = (cModule) getSimulation().getObjectByJSONRef((String) jsonObject.get("systemModule"));
         List jsonModules = (List) jsonObject.get("modules");
         if (modules == null || modules.length != jsonModules.size())
             modules = new cModule[jsonModules.size()];
         for (int id = 0; id < modules.length; id++)
-            modules[id] = (cModule) getController().getObjectByJSONRef((String) jsonModules.get(id));
+            modules[id] = (cModule) getSimulation().getObjectByJSONRef((String) jsonModules.get(id));
     }
 
 

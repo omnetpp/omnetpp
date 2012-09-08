@@ -5,8 +5,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
@@ -26,7 +26,7 @@ public class RunUntilAction extends AbstractSimulationAction {
     public void run() {
         try {
             SimulationController controller = getSimulationController();
-            if (!ensureNetworkReady(controller))
+            if (!ensureNetworkReady())
                 return;
 
             RunUntilDialog dialog = new RunUntilDialog(getShell());
@@ -45,7 +45,7 @@ public class RunUntilAction extends AbstractSimulationAction {
 
     @Override
     public void updateState() {
-        SimState state = getSimulationController().getState();
+        SimState state = getSimulationController().getUIState();
         setEnabled(state == SimState.READY || state == SimState.RUNNING);
 
         setChecked(getSimulationController().isRunUntilActive());

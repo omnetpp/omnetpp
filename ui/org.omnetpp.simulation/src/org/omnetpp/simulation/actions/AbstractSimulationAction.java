@@ -14,8 +14,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
 
@@ -65,8 +65,8 @@ public abstract class AbstractSimulationAction extends Action {
     /**
      * Utility function.
      */
-    protected boolean haveSimulation(SimulationController controller) {
-        if (controller.getState() == SimState.DISCONNECTED) {
+    protected boolean haveSimulationProcess() {
+        if (getSimulationController().getSimulation().getState() == SimState.DISCONNECTED) {
             MessageDialog.openConfirm(getShell(), "Error", "No simulation process.");
             return false;
         }
@@ -76,9 +76,10 @@ public abstract class AbstractSimulationAction extends Action {
     /**
      * Utility function. Returns true on success, false on failure.
      */
-    protected boolean ensureNetworkReady(SimulationController controller) {
-        if (!haveSimulation(controller))
+    protected boolean ensureNetworkReady() {
+        if (!haveSimulationProcess())
             return false;
+        SimulationController controller = getSimulationController();
         if (!controller.isNetworkPresent())
             return false;
         if (controller.isSimulationOK())
@@ -99,9 +100,9 @@ public abstract class AbstractSimulationAction extends Action {
      * Utility function. Returns true on success, false on failure.
      */
     protected boolean ensureNotRunning(SimulationController controller) {
-        if (!haveSimulation(controller))
+        if (!haveSimulationProcess())
             return false;
-        if (controller.getState() == SimState.RUNNING) {
+        if (controller.getUIState() == SimState.RUNNING) {
             MessageDialog.openInformation(getShell(), "Simulation Running", "Sorry, you cannot do this while the simulation is running.");
             return false;
         }

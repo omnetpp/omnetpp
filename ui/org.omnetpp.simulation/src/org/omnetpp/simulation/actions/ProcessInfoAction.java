@@ -4,8 +4,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
-import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.controller.SimulationController.SimState;
+import org.omnetpp.simulation.controller.Simulation;
+import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
@@ -24,24 +24,24 @@ public class ProcessInfoAction extends AbstractSimulationAction {
     @Override
     public void run() {
         try {
-            SimulationController controller = getSimulationController();
+            Simulation simulation = getSimulationController().getSimulation();
 
-            if (!haveSimulation(controller))
+            if (!haveSimulationProcess())
                 return;
 
             String[] items = new String[] {
-                    "Host", controller.getHostName(),
-                    "Port", ""+controller.getPortNumber(),
-                    "URL", controller.getUrlBase(),
+                    "Host", simulation.getHostName(),
+                    "Port", ""+simulation.getPortNumber(),
+                    "URL", simulation.getUrlBase(),
                     "Command line", "<TODO>",  //TODO
-                    "Process Id", ""+controller.getProcessId(),
+                    "Process Id", ""+simulation.getProcessId(),
                     "", "",
-                    "Configuration name", controller.getConfigName(),
-                    "Run number", ""+controller.getRunNumber(),
-                    "Network name", controller.getNetworkName(),
-                    "Simulation state", controller.getState().name(),
-                    "Last event's event number", ""+controller.getLastEventNumber(),
-                    "Last event's simulation time", controller.getLastEventSimulationTime().toString(),
+                    "Configuration name", simulation.getConfigName(),
+                    "Run number", ""+simulation.getRunNumber(),
+                    "Network name", simulation.getNetworkName(),
+                    "Simulation state", simulation.getState().name(),
+                    "Last event's event number", ""+simulation.getLastEventNumber(),
+                    "Last event's simulation time", simulation.getLastEventSimulationTime().toString(),
             };
 
             // TODO this is a quick'n'ugly solution, we need a nicer looking dialog!
@@ -58,7 +58,7 @@ public class ProcessInfoAction extends AbstractSimulationAction {
 
     @Override
     public void updateState() {
-        SimState state = getSimulationController().getState();
+        SimState state = getSimulationController().getUIState();
         setEnabled(state != SimState.DISCONNECTED);
     }
 }

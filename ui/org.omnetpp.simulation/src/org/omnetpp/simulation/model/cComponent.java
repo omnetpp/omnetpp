@@ -6,7 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * TODO
@@ -19,8 +19,8 @@ public class cComponent extends cObject {
     private cPar[] parameters;
     private IDisplayString displayString;
 
-    public cComponent(SimulationController controller, long id) {
-        super(controller, id);
+    public cComponent(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public cComponentType getComponentType() {
@@ -63,17 +63,18 @@ public class cComponent extends cObject {
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected void doFillFromJSON(Map jsonObject) {
         super.doFillFromJSON(jsonObject);
 
-        componentType = (cComponentType) getController().getObjectByJSONRef((String) jsonObject.get("componentType"));
+        componentType = (cComponentType) getSimulation().getObjectByJSONRef((String) jsonObject.get("componentType"));
         shortTypeName = null; // computed on demand
-        parentModule = (cModule) getController().getObjectByJSONRef((String) jsonObject.get("parentModule"));
+        parentModule = (cModule) getSimulation().getObjectByJSONRef((String) jsonObject.get("parentModule"));
         displayString = new DisplayString((String) jsonObject.get("displayString"));
 
         List jsonParameters = (List) jsonObject.get("parameters");
         parameters = new cPar[jsonParameters.size()];
         for (int i = 0; i < parameters.length; i++)
-            parameters[i] = (cPar) getController().getObjectByJSONRef((String) jsonParameters.get(i));
+            parameters[i] = (cPar) getSimulation().getObjectByJSONRef((String) jsonParameters.get(i));
     }
 }

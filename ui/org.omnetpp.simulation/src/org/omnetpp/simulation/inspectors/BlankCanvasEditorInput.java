@@ -41,7 +41,7 @@ public class BlankCanvasEditorInput implements IEditorInput {
     }
 
     //@Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes" })
     public Object getAdapter(Class adapter) {
         return null;
     }

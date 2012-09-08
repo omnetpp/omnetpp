@@ -1,6 +1,6 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * Represents contents of cRegistrationList C++ objects.
@@ -11,7 +11,7 @@ import org.omnetpp.simulation.controller.SimulationController;
 public class cRegistrationList extends cObject {
     //TODO
 
-    public cRegistrationList(SimulationController controller, long id) {
-        super(controller, id);
+    public cRegistrationList(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

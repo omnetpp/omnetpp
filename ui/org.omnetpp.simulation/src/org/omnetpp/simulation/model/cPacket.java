@@ -3,7 +3,7 @@ package org.omnetpp.simulation.model;
 import java.util.Map;
 
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cPacket extends cMessage {
     private long bitLength;
@@ -14,8 +14,8 @@ public class cPacket extends cMessage {
     private long encapsulationId;
     private long encapsulationTreeId;
 
-    public cPacket(SimulationController controller, long id) {
-        super(controller, id);
+    public cPacket(Simulation simulation, long id) {
+        super(simulation, id);
     }
 
     public boolean hasBitError() {
@@ -61,7 +61,7 @@ public class cPacket extends cMessage {
         bitError = (Boolean) jsonObject.get("bitError");
         duration = BigDecimal.parse((String) jsonObject.get("duration"));
         isReceptionStart = (Boolean) jsonObject.get("isReceptionStart");
-        encapsulatedPacket = (cPacket) getController().getObjectByJSONRef((String) jsonObject.get("encapsulatedPacket"));
+        encapsulatedPacket = (cPacket) getSimulation().getObjectByJSONRef((String) jsonObject.get("encapsulatedPacket"));
         encapsulationId = ((Number)jsonObject.get("encapsulationId")).longValue();
         encapsulationTreeId = ((Number)jsonObject.get("encapsulationTreeId")).longValue();
     }

@@ -15,7 +15,7 @@ import org.omnetpp.simulation.controller.Anim.EndSendEntry;
 import org.omnetpp.simulation.controller.Anim.MessageSendDirectEntry;
 import org.omnetpp.simulation.controller.Anim.MessageSendHopEntry;
 import org.omnetpp.simulation.controller.EventEntry;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
@@ -33,7 +33,7 @@ import org.omnetpp.simulation.model.cSimulation;
  */
 public class AnimationDirector {
     private SimulationCanvas simulationCanvas;
-    private SimulationController simulationController;
+    private Simulation simulation;
 
     private class AnimStep { 
         cModule src, dest; 
@@ -48,14 +48,14 @@ public class AnimationDirector {
         double time = 0;  // current animation time
         cMessage messageBeingSent = null;  // set by BeginSend, cleared by EndSend
         Stack<List<MethodCallAnimation>> methodCallStack = new Stack<List<MethodCallAnimation>>(); // active method calls (every call may consist of several arrows)
-        cSimulation simulation = (cSimulation) simulationController.getRootObject(SimulationController.ROOTOBJ_SIMULATION);
+        cSimulation csimulation = (cSimulation) simulation.getRootObject(Simulation.ROOTOBJ_SIMULATION);
     };
 
-    public AnimationDirector(SimulationCanvas simulationCanvas, SimulationController simulationController) {
+    public AnimationDirector(SimulationCanvas simulationCanvas, Simulation simulation) {
         this.simulationCanvas = simulationCanvas;
-        this.simulationController = simulationController;
+        this.simulation= simulation;
     }
-    
+
     public List<IAnimationPrimitive> getAnimationsForLastEvent(EventEntry event) {
         Assert.isNotNull(event);
 
@@ -82,9 +82,9 @@ public class AnimationDirector {
         }
         Assert.isTrue(state.messageBeingSent == null, "missing EndSend");
         Assert.isTrue(state.methodCallStack.isEmpty(), "unterminated ComponentMethodBegin");
-        
+
         // Act Two: animate simulation time duration up to the next event: move messages that are underway, etc.
-        state.simulation.getMessageQueue();
+        state.csimulation.getMessageQueue();
         return animationPrimitives;
     }
 
@@ -158,8 +158,8 @@ public class AnimationDirector {
     }
 
     protected void doMethodBeginEntry(ComponentMethodBeginEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
-        cModule srcModule = state.simulation.getModuleById(e.srcModuleId);
-        cModule destModule = state.simulation.getModuleById(e.destModuleId);
+        cModule srcModule = state.csimulation.getModuleById(e.srcModuleId);
+        cModule destModule = state.csimulation.getModuleById(e.destModuleId);
 
         // src and/or dest module may have been deleted later during the same event; if so, skip the animation
         if (srcModule != null && destModule != null) {  
@@ -213,6 +213,8 @@ public class AnimationDirector {
 
     protected List<AnimStep> findSendDirectPath(cModule srcModule, cModule destModule) {
         List<AnimStep> path = new ArrayList<AnimStep>();
+        if (!destModule.isFilledIn())
+            destModule.safeLoad();
         if (destModule.isAncestorModuleOf(srcModule)) {
             for (cModule m = srcModule; m != destModule; m = m.getParentModule())
                 path.add(new AnimStep(m, null));

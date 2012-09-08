@@ -1,9 +1,9 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cPar extends cObject {
-    public cPar(SimulationController controller, long id) {
-        super(controller, id);
+    public cPar(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }

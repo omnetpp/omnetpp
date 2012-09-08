@@ -1,9 +1,9 @@
 package org.omnetpp.simulation.model;
 
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.Simulation;
 
 public class cArray extends cObject {
-    public cArray(SimulationController controller, long id) {
-        super(controller, id);
+    public cArray(Simulation simulation, long id) {
+        super(simulation, id);
     }
 }
