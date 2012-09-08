@@ -253,6 +253,29 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
      */
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const = 0;
     //@}
+
+    /** @name Functions for backwards compatibility (OMNeT++ 4.2 and earlier). */
+    //@{
+    _OPPDEPRECATED int getFieldCount(void *UNUSED) const  {return getFieldCount();}
+    _OPPDEPRECATED const char *getFieldName(void *UNUSED, int field) const  {return getFieldName(field);}
+    _OPPDEPRECATED int findField(void *UNUSED, const char *fieldName) const {return findField(fieldName);}
+    _OPPDEPRECATED unsigned int getFieldTypeFlags(void *UNUSED, int field) const  {return getFieldTypeFlags(field);}
+    _OPPDEPRECATED bool getFieldIsArray(void *UNUSED, int field) const  {return getFieldIsArray(field);}
+    _OPPDEPRECATED bool getFieldIsCompound(void *UNUSED, int field) const  {return getFieldIsCompound(field);}
+    _OPPDEPRECATED bool getFieldIsPointer(void *UNUSED, int field) const  {return getFieldIsPointer(field);}
+    _OPPDEPRECATED bool getFieldIsCObject(void *UNUSED, int field) const  {return getFieldIsCObject(field);}
+    _OPPDEPRECATED bool getFieldIsCOwnedObject(void *UNUSED, int field) const  {return getFieldIsCOwnedObject(field);}
+    _OPPDEPRECATED bool getFieldIsEditable(void *UNUSED, int field) const  {return getFieldIsEditable(field);}
+    _OPPDEPRECATED const char *getFieldDeclaredOn(void *UNUSED, int field) const  {return getFieldDeclaredOn(field);}
+    _OPPDEPRECATED const char *getFieldTypeString(void *UNUSED, int field) const  {return getFieldTypeString(field);}
+    _OPPDEPRECATED const char *getFieldProperty(void *UNUSED, int field, const char *propertyname) const  {return getFieldProperty(field, propertyname);}
+    _OPPDEPRECATED int getArraySize(void *object, int field) const  {return getFieldArraySize(object, field);}
+    _OPPDEPRECATED std::string getFieldAsString(void *object, int field, int i) const  {return getFieldValueAsString(object, field, i);}
+    _OPPDEPRECATED bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;
+    _OPPDEPRECATED bool setFieldAsString(void *object, int field, int i, const char *value) const  {return setFieldValueAsString(object, field, i, value);}
+    _OPPDEPRECATED const char *getFieldStructName(void *UNUSED, int field) const  {return getFieldStructName(field);}
+    _OPPDEPRECATED void *getFieldStructPointer(void *object, int field, int i) const  {return getFieldStructValuePointer(object, field, i);}
+    //@}
 };
 
 // TODO remove this compatibili1y hack after OMNeT++ 4.3
