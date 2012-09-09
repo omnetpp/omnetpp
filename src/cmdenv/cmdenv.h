@@ -232,6 +232,9 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      long getIdForObject(cObject *obj);
      std::string getIdStringForObject(cObject *obj);
 
+     JsonObject *serializeObject(cObject *obj, JsonObject *jObject);
+     JsonObject *serializeObjectChildren(cObject *obj, JsonObject *jObject);
+     JsonObject *serializeObjectFields(cObject *obj, JsonObject *jObject);
      const char *getKnownBaseClass(cObject *object);
 
      // new functions:

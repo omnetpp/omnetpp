@@ -624,6 +624,9 @@ bool Cmdenv::handle(cHttpRequest *request)
 
         std::string ids = commandArgs["ids"];
         std::string what = commandArgs["what"];
+        bool wantInfo = (what=="" || what.find('i') != std::string::npos);
+        bool wantChildren = (what=="" || what.find('c') != std::string::npos);
+        bool wantDetails = (what=="" || what.find('d') != std::string::npos);
         JsonObject2 *result = new JsonObject2();
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())
@@ -633,225 +636,12 @@ bool Cmdenv::handle(cHttpRequest *request)
              if (obj)
              {
                  JsonObject *jObject = new JsonObject();
-                 if (what=="" || what.find('i') != std::string::npos) {  // "info"
-                     // cObject
-                     jObject->put("name", jsonWrap(obj->getName()));
-                     jObject->put("fullName", jsonWrap(obj->getFullName()));
-                     jObject->put("fullPath", jsonWrap(obj->getFullPath()));
-                     jObject->put("className", jsonWrap(obj->getClassName()));
-                     jObject->put("knownBaseClass", jsonWrap(getKnownBaseClass(obj)));
-                     jObject->put("info", jsonWrap(obj->info()));
-                     jObject->put("owner", jsonWrap(getIdStringForObject(obj->getOwner())));
-                     jObject->put("descriptor", jsonWrap(getIdStringForObject(obj->getDescriptor())));
-                     cClassDescriptor *desc = obj->getDescriptor();
-                     const char *icon = desc ? desc->getProperty("icon") : NULL;
-                     jObject->put("icon", jsonWrap(icon ? icon : ""));
-
-                     // cComponent
-                     if (dynamic_cast<cComponent *>(obj)) {
-                         cComponent *component = (cComponent *)obj;
-
-                         jObject->put("parentModule", jsonWrap(getIdStringForObject(component->getParentModule())));
-                         jObject->put("componentType", jsonWrap(getIdStringForObject(component->getComponentType())));
-                         jObject->put("displayString", jsonWrap(component->getDisplayString().str()));
-
-                         JsonArray *jparameters = new JsonArray();
-                         for (int i = 0; i < component->getNumParams(); i++) {
-                             cPar *par = &component->par(i);
-                             jparameters->push_back(jsonWrap(getIdStringForObject(par)));
-                         }
-                         jObject->put("parameters", jparameters);
-                     }
-
-                     // cModule
-                     if (dynamic_cast<cModule *>(obj)) {
-                         cModule *mod = (cModule *)obj;
-                         jObject->put("moduleId", jsonWrap(mod->getId()));
-                         jObject->put("index", jsonWrap(mod->getIndex()));
-                         jObject->put("vectorSize", jsonWrap(mod->isVector() ? mod->getVectorSize() : -1));
-
-                         JsonArray *jgates = new JsonArray();
-                         for (cModule::GateIterator i(mod); !i.end(); i++) {
-                             cGate *gate = i();
-                             jgates->push_back(jsonWrap(getIdStringForObject(gate)));
-                         }
-                         jObject->put("gates", jgates);
-
-                         JsonArray *jsubmodules = new JsonArray();
-                         for (cModule::SubmoduleIterator i(mod); !i.end(); i++) {
-                             cModule *submod = i();
-                             jsubmodules->push_back(jsonWrap(getIdStringForObject(submod)));
-                         }
-                         jObject->put("submodules", jsubmodules);
-                     }
-
-                     // cGate
-                     if (dynamic_cast<cGate *>(obj)) {
-                         cGate *gate = (cGate *)obj;
-                         jObject->put("type", jsonWrap(cGate::getTypeName(gate->getType())));
-                         jObject->put("gateId", jsonWrap(gate->getId()));
-                         jObject->put("index", jsonWrap(gate->getIndex()));
-                         jObject->put("vectorSize", jsonWrap(gate->isVector() ? gate->getVectorSize() : -1));
-                         jObject->put("ownerModule", jsonWrap(getIdStringForObject(gate->getOwnerModule())));
-                         jObject->put("nextGate", jsonWrap(getIdStringForObject(gate->getNextGate())));
-                         jObject->put("previousGate", jsonWrap(getIdStringForObject(gate->getPreviousGate())));
-                         jObject->put("channel", jsonWrap(getIdStringForObject(gate->getChannel())));
-                     }
-
-                     // cChannel
-                     if (dynamic_cast<cChannel *>(obj)) {
-                         cChannel *channel = (cChannel *)obj;
-                         jObject->put("isTransmissionChannel", jsonWrap(channel->isTransmissionChannel()));
-                         jObject->put("sourceGate", jsonWrap(getIdStringForObject(channel->getSourceGate())));
-                     }
-
-                     // cMessage
-                     if (dynamic_cast<cMessage *>(obj)) {
-                         cMessage *msg = (cMessage *)obj;
-                         jObject->put("kind", jsonWrap(msg->getKind()));
-                         jObject->put("priority", jsonWrap(msg->getSchedulingPriority()));
-                         jObject->put("id", jsonWrap(msg->getId()));
-                         jObject->put("treeId", jsonWrap(msg->getTreeId()));
-                         jObject->put("senderModule", jsonWrap(getIdStringForObject(msg->getSenderModule())));
-                         jObject->put("senderGate", jsonWrap(getIdStringForObject(msg->getSenderGate())));
-                         jObject->put("arrivalModule", jsonWrap(getIdStringForObject(msg->getArrivalModule())));
-                         jObject->put("arrivalGate", jsonWrap(getIdStringForObject(msg->getArrivalGate())));
-                         jObject->put("sendingTime", jsonWrap(msg->getSendingTime()));
-                         jObject->put("arrivalTime", jsonWrap(msg->getArrivalTime()));
-                     }
-
-                     // cPacket
-                     if (dynamic_cast<cPacket *>(obj)) {
-                         cPacket *msg = (cPacket *)obj;
-                         jObject->put("bitLength", jsonWrap(msg->getBitLength()));
-                         jObject->put("bitError", jsonWrap(msg->hasBitError()));
-                         jObject->put("duration", jsonWrap(msg->getDuration()));
-                         jObject->put("isReceptionStart", jsonWrap(msg->isReceptionStart()));
-                         jObject->put("encapsulatedPacket", jsonWrap(getIdStringForObject(msg->getEncapsulatedPacket())));
-                         jObject->put("encapsulationId", jsonWrap(msg->getEncapsulationId()));
-                         jObject->put("encapsulationTreeId", jsonWrap(msg->getEncapsulationTreeId()));
-                     }
-
-                     // cSimulation
-                     if (dynamic_cast<cSimulation *>(obj)) {
-                         cSimulation *sim = (cSimulation *)obj;
-                         jObject->put("systemModule", jsonWrap(getIdStringForObject(sim->getSystemModule())));
-                         jObject->put("scheduler", jsonWrap(getIdStringForObject(sim->getScheduler())));
-                         jObject->put("messageQueue", jsonWrap(getIdStringForObject(&sim->getMessageQueue())));
-                         JsonArray *jmodules = new JsonArray();
-                         for (int id = 0; id <= sim->getLastModuleId(); id++)
-                             jmodules->push_back(jsonWrap(getIdStringForObject(sim->getModule(id))));
-                         jObject->put("modules", jmodules);
-                     }
-
-                     // cComponentType: nothing worth serializing
-
-                     // cClassDescriptor
-                     if (dynamic_cast<cClassDescriptor*>(obj)) {
-                         cClassDescriptor *desc = (cClassDescriptor *)obj;
-                         jObject->put("baseClassDescriptor", jsonWrap(getIdStringForObject(desc->getBaseClassDescriptor())));
-                         jObject->put("extendsCObject", jsonWrap(desc->extendsCObject()));
-                         JsonObject *jProperties = new JsonObject();
-                         const char **propertyNames = desc->getPropertyNames();
-                         for (const char **pp = propertyNames; *pp; pp++) {
-                             const char *name = *pp;
-                             const char *value = desc->getProperty(name);
-                             jProperties->put(name, jsonWrap(value));
-                         }
-                         jObject->put("properties", jProperties);
-                         JsonArray *jFields = new JsonArray();
-                         for (int fieldId = 0; fieldId < desc->getFieldCount(); fieldId++)
-                         {
-                             JsonObject *jField = new JsonObject();
-                             jField->put("name", jsonWrap(desc->getFieldName(fieldId)));
-                             jField->put("type", jsonWrap(desc->getFieldTypeString(fieldId)));
-                             jField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(fieldId)));
-                             JsonObject *jFieldProperties = new JsonObject();
-                             const char **propertyNames = desc->getFieldPropertyNames(fieldId);
-                             for (const char **pp = propertyNames; *pp; pp++) {
-                                 const char *name = *pp;
-                                 const char *value = desc->getFieldProperty(fieldId, name);
-                                 jFieldProperties->put(name, jsonWrap(value));
-                             }
-                             jField->put("properties", jFieldProperties);
-                             //TODO: merge this into a single "flags" field!
-                             if (desc->getFieldIsArray(fieldId))
-                                 jField->put("isArray", jsonWrap(true));
-                             if (desc->getFieldIsCompound(fieldId))
-                                 jField->put("isCompound", jsonWrap(true));
-                             if (desc->getFieldIsPointer(fieldId))
-                                 jField->put("isPointer", jsonWrap(true));
-                             if (desc->getFieldIsCObject(fieldId))
-                                 jField->put("isCObject", jsonWrap(true));
-                             if (desc->getFieldIsCOwnedObject(fieldId))
-                                 jField->put("isCOwnedObject", jsonWrap(true));
-                             if (desc->getFieldIsEditable(fieldId))
-                                 jField->put("isEditable", jsonWrap(true));
-                             if (desc->getFieldStructName(fieldId))
-                                 jField->put("structName", jsonWrap(desc->getFieldStructName(fieldId)));
-                             jFields->push_back(jField);
-                         }
-                         jObject->put("fields", jFields);
-                     }
-                 }
-                 if (what=="" || what.find('c') != std::string::npos) {  // "children"
-                     cCollectChildrenVisitor visitor(obj);
-                     visitor.process(obj);
-
-                     JsonArray *jchildren = new JsonArray();
-                     for (int i = 0; i < visitor.getArraySize(); i++)
-                         jchildren->push_back(jsonWrap(getIdStringForObject(visitor.getArray()[i])));
-                     jObject->put("children", jchildren);
-                 }
-                 if (what=="" || what.find('d') != std::string::npos) {  // "details"
-                     cClassDescriptor *desc = obj->getDescriptor();
-                     if (desc)
-                     {
-                         JsonArray *jFields = new JsonArray();
-                         for (int fieldId = 0; fieldId < desc->getFieldCount(); fieldId++)
-                         {
-                             JsonObject *jField = new JsonObject();
-                             jField->put("name", jsonWrap(desc->getFieldName(fieldId))); // strictly speaking this is redundant (index already identifies the field) but provides more safety and readability
-                             if (desc->getFieldIsCObject(fieldId))
-                                 jField->put("isObjRef", jsonWrap(true));  // value(s) are object references (produced with getIdStringForObject())
-                             if (!desc->getFieldIsArray(fieldId)) {
-                                 if (!desc->getFieldIsCompound(fieldId))
-                                     jField->put("value", jsonWrap(desc->getFieldValueAsString(obj, fieldId, 0)));
-                                 else {
-                                     void *ptr = desc->getFieldStructValuePointer(obj, fieldId, 0);
-                                     if (desc->getFieldIsCObject(fieldId)) {
-                                         cObject *o = (cObject *)ptr;
-                                         jField->put("value", jsonWrap(getIdStringForObject(o)));
-                                     }
-                                     else {
-                                         jField->put("value", jsonWrap("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
-                                     }
-                                 }
-                             } else {
-                                 int n = desc->getFieldArraySize(obj, fieldId);
-                                 JsonArray *jValues = new JsonArray();
-                                 for (int i = 0; i < n; i++) {
-                                     if (!desc->getFieldIsCompound(fieldId))
-                                         jValues->push_back(jsonWrap(desc->getFieldValueAsString(obj, fieldId, i)));
-                                     else {
-                                         void *ptr = desc->getFieldStructValuePointer(obj, fieldId, i);
-                                         if (desc->getFieldIsCObject(fieldId)) {
-                                             cObject *o = (cObject *)ptr;
-                                             jValues->push_back(jsonWrap(getIdStringForObject(o)));
-                                         }
-                                         else {
-                                             jValues->push_back(jsonWrap("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
-                                         }
-                                     }
-                                 }
-                                 jField->put("values", jValues);
-                             }
-                             jFields->push_back(jField);
-                         }
-                         jObject->put("fields", jFields);
-                     }
-
-                 }
+                 if (wantInfo)
+                     serializeObject(obj, jObject);
+                 if (wantChildren)
+                     serializeObjectChildren(obj, jObject);
+                 if (wantDetails)
+                     serializeObjectFields(obj, jObject);
                  result->put(objectId, jObject);
              }
         }
@@ -875,6 +665,245 @@ bool Cmdenv::handle(cHttpRequest *request)
     }
 
     return true; // handled
+}
+
+JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
+{
+    if (!jObject)
+        jObject = new JsonObject();
+
+    // cObject
+    jObject->put("name", jsonWrap(obj->getName()));
+    jObject->put("fullName", jsonWrap(obj->getFullName()));
+    jObject->put("fullPath", jsonWrap(obj->getFullPath()));
+    jObject->put("className", jsonWrap(obj->getClassName()));
+    jObject->put("knownBaseClass", jsonWrap(getKnownBaseClass(obj)));
+    jObject->put("info", jsonWrap(obj->info()));
+    jObject->put("owner", jsonWrap(getIdStringForObject(obj->getOwner())));
+    jObject->put("descriptor", jsonWrap(getIdStringForObject(obj->getDescriptor())));
+    cClassDescriptor *desc = obj->getDescriptor();
+    const char *icon = desc ? desc->getProperty("icon") : NULL;
+    jObject->put("icon", jsonWrap(icon ? icon : ""));
+
+    // cComponent
+    if (dynamic_cast<cComponent *>(obj)) {
+        cComponent *component = (cComponent *)obj;
+
+        jObject->put("parentModule", jsonWrap(getIdStringForObject(component->getParentModule())));
+        jObject->put("componentType", jsonWrap(getIdStringForObject(component->getComponentType())));
+        jObject->put("displayString", jsonWrap(component->getDisplayString().str()));
+
+        JsonArray *jparameters = new JsonArray();
+        for (int i = 0; i < component->getNumParams(); i++) {
+            cPar *par = &component->par(i);
+            jparameters->push_back(jsonWrap(getIdStringForObject(par)));
+        }
+        jObject->put("parameters", jparameters);
+    }
+
+    // cModule
+    if (dynamic_cast<cModule *>(obj)) {
+        cModule *mod = (cModule *)obj;
+        jObject->put("moduleId", jsonWrap(mod->getId()));
+        jObject->put("index", jsonWrap(mod->getIndex()));
+        jObject->put("vectorSize", jsonWrap(mod->isVector() ? mod->getVectorSize() : -1));
+
+        JsonArray *jgates = new JsonArray();
+        for (cModule::GateIterator i(mod); !i.end(); i++) {
+            cGate *gate = i();
+            jgates->push_back(jsonWrap(getIdStringForObject(gate)));
+        }
+        jObject->put("gates", jgates);
+
+        JsonArray *jsubmodules = new JsonArray();
+        for (cModule::SubmoduleIterator i(mod); !i.end(); i++) {
+            cModule *submod = i();
+            jsubmodules->push_back(jsonWrap(getIdStringForObject(submod)));
+        }
+        jObject->put("submodules", jsubmodules);
+    }
+
+    // cGate
+    if (dynamic_cast<cGate *>(obj)) {
+        cGate *gate = (cGate *)obj;
+        jObject->put("type", jsonWrap(cGate::getTypeName(gate->getType())));
+        jObject->put("gateId", jsonWrap(gate->getId()));
+        jObject->put("index", jsonWrap(gate->getIndex()));
+        jObject->put("vectorSize", jsonWrap(gate->isVector() ? gate->getVectorSize() : -1));
+        jObject->put("ownerModule", jsonWrap(getIdStringForObject(gate->getOwnerModule())));
+        jObject->put("nextGate", jsonWrap(getIdStringForObject(gate->getNextGate())));
+        jObject->put("previousGate", jsonWrap(getIdStringForObject(gate->getPreviousGate())));
+        jObject->put("channel", jsonWrap(getIdStringForObject(gate->getChannel())));
+    }
+
+    // cChannel
+    if (dynamic_cast<cChannel *>(obj)) {
+        cChannel *channel = (cChannel *)obj;
+        jObject->put("isTransmissionChannel", jsonWrap(channel->isTransmissionChannel()));
+        jObject->put("sourceGate", jsonWrap(getIdStringForObject(channel->getSourceGate())));
+    }
+
+    // cMessage
+    if (dynamic_cast<cMessage *>(obj)) {
+        cMessage *msg = (cMessage *)obj;
+        jObject->put("kind", jsonWrap(msg->getKind()));
+        jObject->put("priority", jsonWrap(msg->getSchedulingPriority()));
+        jObject->put("id", jsonWrap(msg->getId()));
+        jObject->put("treeId", jsonWrap(msg->getTreeId()));
+        jObject->put("senderModule", jsonWrap(getIdStringForObject(msg->getSenderModule())));
+        jObject->put("senderGate", jsonWrap(getIdStringForObject(msg->getSenderGate())));
+        jObject->put("arrivalModule", jsonWrap(getIdStringForObject(msg->getArrivalModule())));
+        jObject->put("arrivalGate", jsonWrap(getIdStringForObject(msg->getArrivalGate())));
+        jObject->put("sendingTime", jsonWrap(msg->getSendingTime()));
+        jObject->put("arrivalTime", jsonWrap(msg->getArrivalTime()));
+    }
+
+    // cPacket
+    if (dynamic_cast<cPacket *>(obj)) {
+        cPacket *msg = (cPacket *)obj;
+        jObject->put("bitLength", jsonWrap(msg->getBitLength()));
+        jObject->put("bitError", jsonWrap(msg->hasBitError()));
+        jObject->put("duration", jsonWrap(msg->getDuration()));
+        jObject->put("isReceptionStart", jsonWrap(msg->isReceptionStart()));
+        jObject->put("encapsulatedPacket", jsonWrap(getIdStringForObject(msg->getEncapsulatedPacket())));
+        jObject->put("encapsulationId", jsonWrap(msg->getEncapsulationId()));
+        jObject->put("encapsulationTreeId", jsonWrap(msg->getEncapsulationTreeId()));
+    }
+
+    // cSimulation
+    if (dynamic_cast<cSimulation *>(obj)) {
+        cSimulation *sim = (cSimulation *)obj;
+        jObject->put("systemModule", jsonWrap(getIdStringForObject(sim->getSystemModule())));
+        jObject->put("scheduler", jsonWrap(getIdStringForObject(sim->getScheduler())));
+        jObject->put("messageQueue", jsonWrap(getIdStringForObject(&sim->getMessageQueue())));
+        JsonArray *jmodules = new JsonArray();
+        for (int id = 0; id <= sim->getLastModuleId(); id++)
+            jmodules->push_back(jsonWrap(getIdStringForObject(sim->getModule(id))));
+        jObject->put("modules", jmodules);
+    }
+
+    // cComponentType: nothing worth serializing
+
+    // cClassDescriptor
+    if (dynamic_cast<cClassDescriptor*>(obj)) {
+        cClassDescriptor *desc = (cClassDescriptor *)obj;
+        jObject->put("baseClassDescriptor", jsonWrap(getIdStringForObject(desc->getBaseClassDescriptor())));
+        jObject->put("extendsCObject", jsonWrap(desc->extendsCObject()));
+        JsonObject *jProperties = new JsonObject();
+        const char **propertyNames = desc->getPropertyNames();
+        for (const char **pp = propertyNames; *pp; pp++) {
+            const char *name = *pp;
+            const char *value = desc->getProperty(name);
+            jProperties->put(name, jsonWrap(value));
+        }
+        jObject->put("properties", jProperties);
+        JsonArray *jFields = new JsonArray();
+        for (int fieldId = 0; fieldId < desc->getFieldCount(); fieldId++)
+        {
+            JsonObject *jField = new JsonObject();
+            jField->put("name", jsonWrap(desc->getFieldName(fieldId)));
+            jField->put("type", jsonWrap(desc->getFieldTypeString(fieldId)));
+            jField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(fieldId)));
+            JsonObject *jFieldProperties = new JsonObject();
+            const char **propertyNames = desc->getFieldPropertyNames(fieldId);
+            for (const char **pp = propertyNames; *pp; pp++) {
+                const char *name = *pp;
+                const char *value = desc->getFieldProperty(fieldId, name);
+                jFieldProperties->put(name, jsonWrap(value));
+            }
+            jField->put("properties", jFieldProperties);
+            //TODO: merge this into a single "flags" field!
+            if (desc->getFieldIsArray(fieldId))
+                jField->put("isArray", jsonWrap(true));
+            if (desc->getFieldIsCompound(fieldId))
+                jField->put("isCompound", jsonWrap(true));
+            if (desc->getFieldIsPointer(fieldId))
+                jField->put("isPointer", jsonWrap(true));
+            if (desc->getFieldIsCObject(fieldId))
+                jField->put("isCObject", jsonWrap(true));
+            if (desc->getFieldIsCOwnedObject(fieldId))
+                jField->put("isCOwnedObject", jsonWrap(true));
+            if (desc->getFieldIsEditable(fieldId))
+                jField->put("isEditable", jsonWrap(true));
+            if (desc->getFieldStructName(fieldId))
+                jField->put("structName", jsonWrap(desc->getFieldStructName(fieldId)));
+            jFields->push_back(jField);
+        }
+        jObject->put("fields", jFields);
+    }
+    return jObject;
+}
+
+JsonObject *Cmdenv::serializeObjectChildren(cObject *obj, JsonObject *jObject)
+{
+    if (!jObject)
+        jObject = new JsonObject();
+
+    cCollectChildrenVisitor visitor(obj);
+    visitor.process(obj);
+
+    JsonArray *jchildren = new JsonArray();
+    for (int i = 0; i < visitor.getArraySize(); i++)
+        jchildren->push_back(jsonWrap(getIdStringForObject(visitor.getArray()[i])));
+    jObject->put("children", jchildren);
+    return jObject;
+}
+
+JsonObject *Cmdenv::serializeObjectFields(cObject *obj, JsonObject *jObject)
+{
+    if (!jObject)
+        jObject = new JsonObject();
+
+    cClassDescriptor *desc = obj->getDescriptor();
+    if (!desc)
+        return jObject;
+
+    JsonArray *jFields = new JsonArray();
+    for (int fieldId = 0; fieldId < desc->getFieldCount(); fieldId++)
+    {
+        // Note: we only need to serialize the field's value (or values if it's an array)
+        // because all other info about fields (type, declaring class, properties, etc)
+        // is available via the class descriptor, cClassDescriptor.
+        JsonObject *jField = new JsonObject();
+        jField->put("name", jsonWrap(desc->getFieldName(fieldId))); // strictly speaking this is redundant (index already identifies the field) but provides more safety and readability
+        if (desc->getFieldIsCObject(fieldId))
+            jField->put("isObjRef", jsonWrap(true));  // value(s) are object references (produced with getIdStringForObject())
+        if (!desc->getFieldIsArray(fieldId)) {
+            if (!desc->getFieldIsCompound(fieldId))
+                jField->put("value", jsonWrap(desc->getFieldValueAsString(obj, fieldId, 0)));
+            else {
+                void *ptr = desc->getFieldStructValuePointer(obj, fieldId, 0);
+                if (desc->getFieldIsCObject(fieldId)) {
+                    cObject *o = (cObject *)ptr;
+                    jField->put("value", jsonWrap(getIdStringForObject(o)));
+                }
+                else {
+                    jField->put("value", jsonWrap("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
+                }
+            }
+        } else {
+            int n = desc->getFieldArraySize(obj, fieldId);
+            JsonArray *jValues = new JsonArray();
+            for (int i = 0; i < n; i++) {
+                if (!desc->getFieldIsCompound(fieldId))
+                    jValues->push_back(jsonWrap(desc->getFieldValueAsString(obj, fieldId, i)));
+                else {
+                    void *ptr = desc->getFieldStructValuePointer(obj, fieldId, i);
+                    if (desc->getFieldIsCObject(fieldId)) {
+                        cObject *o = (cObject *)ptr;
+                        jValues->push_back(jsonWrap(getIdStringForObject(o)));
+                    }
+                    else {
+                        jValues->push_back(jsonWrap("...some struct...")); //XXX look up using getFieldStructName() -- recursive!
+                    }
+                }
+            }
+            jField->put("values", jValues);
+        }
+        jFields->push_back(jField);
+    }
+    jObject->put("fields", jFields);
+    return jObject;
 }
 
 const char *Cmdenv::getKnownBaseClass(cObject *object)
