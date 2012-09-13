@@ -550,6 +550,21 @@ bool Cmdenv::handle(cHttpRequest *request)
                 result->put("nextEventMessageIdGuess", jsonWrap(static_cast<cMessage*>(guessNextEvent)->getId()));
         }
 
+        JsonObject *jRootObjects = new JsonObject();
+        jRootObjects->put("simulation", jsonWrap(getIdStringForObject(&simulation)));
+        jRootObjects->put("fes", jsonWrap(getIdStringForObject(&simulation.msgQueue)));
+        jRootObjects->put("systemModule", jsonWrap(getIdStringForObject(simulation.getSystemModule())));
+        jRootObjects->put("defaultList", jsonWrap(getIdStringForObject(&defaultList)));
+        jRootObjects->put("componentTypes", jsonWrap(getIdStringForObject(componentTypes.getInstance())));
+        jRootObjects->put("nedFunctions", jsonWrap(getIdStringForObject(nedFunctions.getInstance())));
+        jRootObjects->put("classes", jsonWrap(getIdStringForObject(classes.getInstance())));
+        jRootObjects->put("enums", jsonWrap(getIdStringForObject(enums.getInstance())));
+        jRootObjects->put("classDescriptors", jsonWrap(getIdStringForObject(classDescriptors.getInstance())));
+        jRootObjects->put("configOptions", jsonWrap(getIdStringForObject(configOptions.getInstance())));
+        jRootObjects->put("resultFilters", jsonWrap(getIdStringForObject(resultFilters.getInstance())));
+        jRootObjects->put("resultRecorders", jsonWrap(getIdStringForObject(resultRecorders.getInstance())));
+        result->put("rootObjects", jRootObjects);
+
         if (collectJsonLog) {
             result->put("log", jsonLog);
             jsonLog = new JsonArray();  // previous one is now owned by result
@@ -587,29 +602,6 @@ bool Cmdenv::handle(cHttpRequest *request)
             jconfig->put("extends", jbaseConfigs);
             result->push_back(jconfig);
         }
-
-        std::stringstream ss;
-        result->printOn(ss);
-        delete result;
-        request->print(ss.str().c_str());
-    }
-    else if (strcmp(uri, "/sim/getRootObjectIds") == 0) {
-        request->print(OK_STATUS);
-        request->print("\n");
-
-        JsonObject *result = new JsonObject();
-        result->put("simulation", jsonWrap(getIdStringForObject(&simulation)));
-        result->put("fes", jsonWrap(getIdStringForObject(&simulation.msgQueue)));
-        result->put("systemModule", jsonWrap(getIdStringForObject(simulation.getSystemModule())));
-        result->put("defaultList", jsonWrap(getIdStringForObject(&defaultList)));
-        result->put("componentTypes", jsonWrap(getIdStringForObject(componentTypes.getInstance())));
-        result->put("nedFunctions", jsonWrap(getIdStringForObject(nedFunctions.getInstance())));
-        result->put("classes", jsonWrap(getIdStringForObject(classes.getInstance())));
-        result->put("enums", jsonWrap(getIdStringForObject(enums.getInstance())));
-        result->put("classDescriptors", jsonWrap(getIdStringForObject(classDescriptors.getInstance())));
-        result->put("configOptions", jsonWrap(getIdStringForObject(configOptions.getInstance())));
-        result->put("resultFilters", jsonWrap(getIdStringForObject(resultFilters.getInstance())));
-        result->put("resultRecorders", jsonWrap(getIdStringForObject(resultRecorders.getInstance())));
 
         std::stringstream ss;
         result->printOn(ss);

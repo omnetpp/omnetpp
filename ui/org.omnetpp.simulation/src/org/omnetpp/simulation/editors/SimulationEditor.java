@@ -88,7 +88,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         SimulationEditorInput simInput = (SimulationEditorInput)input;
         Simulation simulation = new Simulation(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
         simulationController = new SimulationController(simulation);
-        simulationController.getSimulation().setSimulationUICallback(this);
+        simulationController.setSimulationUICallback(this);
 
         getSite().setSelectionProvider(new DelegatingSelectionProvider());  // must do it now, because 'editor opened' notification goes right after init() returns
 }
@@ -331,7 +331,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 try {
                     // KLUDGE: TODO: this is necessary, because connection timeout does not work as expected (apache HttpClient ignores the provided value)
                     Thread.sleep(1000);
-                    simulationController.getSimulation().refreshStatus();
+                    simulationController.refreshStatus();
                 }
                 catch (Exception e) {
                     MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());

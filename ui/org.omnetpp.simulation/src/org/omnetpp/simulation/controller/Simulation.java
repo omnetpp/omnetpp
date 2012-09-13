@@ -79,6 +79,32 @@ public class Simulation {
         NOTRUNNING, STEP, NORMAL, FAST, EXPRESS
     }
 
+    /**
+     * TODO
+     */
+    class StatusResponse {
+    }
+
+    /**
+     * TODO
+     */
+    class AskParameter extends StatusResponse {
+        String paramName;
+        String ownerFullPath;
+        String paramType;
+        String prompt;
+        String defaultValue;
+        String unit;
+        String[] choices;
+    }
+
+    /**
+     * TODO
+     */
+    class ErrorInfo extends StatusResponse {
+        String message;
+    }
+
     private static final int MONGOOSE_MAX_REQUEST_URI_SIZE = 256*1024-1000; // see MAX_REQUEST_SIZE in mongoose.h
 
     private enum ContentToLoadEnum { OBJECT, FIELDS };
@@ -89,7 +115,6 @@ public class Simulation {
     private IJobChangeListener jobChangeListener;
     private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
 
-    private ISimulationUICallback simulationUICallback;
     private ISimulationCallback simulationCallback;
 
     // simulation status (as returned by the GET "/sim/status" request)
@@ -166,14 +191,6 @@ public class Simulation {
     public void cancelLaunch() {
         if (launcherJob != null)
             launcherJob.cancel();
-    }
-
-    public void setSimulationUICallback(ISimulationUICallback simulationUICallback) {
-        this.simulationUICallback = simulationUICallback;
-    }
-
-    public ISimulationUICallback getSimulationUICallback() {
-        return simulationUICallback;
     }
 
     public void setSimulationCallback(ISimulationCallback simulationCallback) {
@@ -263,194 +280,183 @@ public class Simulation {
     }
 
     @SuppressWarnings("rawtypes")
-    public void refreshStatus() throws IOException {
-        Assert.isTrue(simulationUICallback != null && simulationCallback != null); // callbacks must be set
-        long startTime = System.currentTimeMillis();
-        boolean again;
-        do {
+    public StatusResponse refreshStatus() throws IOException {
+        Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
 
-            //TODO merge "status" and "getRootObjectIds" into one! also "getObjectInfo" and "getObjectChildren"
+        // store basic simulation state
+        Map responseMap = (Map) responseJSON;
+        hostName = (String) responseMap.get("hostname");
+        processId = ((Number) responseMap.get("processid")).longValue();
+        configName = (String) responseMap.get("config");
+        runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
+        networkName = (String) responseMap.get("network");
+        state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
+        eventlogFile = (String) responseMap.get("eventlogfile");
 
-            // refresh basic simulation state
-            Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
-            Map responseMap = (Map) responseJSON;
-            hostName = (String) responseMap.get("hostname");
-            processId = ((Number) responseMap.get("processid")).longValue();
-            configName = (String) responseMap.get("config");
-            runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
-            networkName = (String) responseMap.get("network");
-            state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
-            eventlogFile = (String) responseMap.get("eventlogfile");
+        lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);  //TODO rename JSON fields, also in cmdenv.cc!!!
+        lastEventSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("lastEventSimtime"), "0"));
+        nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
+        nextEventSimulationTimeGuess = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimtimeGuess"), "0"));
+        nextEventModuleIdGuess = defaultIntegerIfNull((Number) responseMap.get("nextEventModuleIdGuess"), 0);
+        nextEventMessageIdGuess = defaultLongIfNull((Number) responseMap.get("nextEventMessageIdGuess"), 0);
 
-            lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);  //TODO rename JSON fields, also in cmdenv.cc!!!
-            lastEventSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("lastEventSimtime"), "0"));
-            nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
-            nextEventSimulationTimeGuess = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimtimeGuess"), "0"));
-            nextEventModuleIdGuess = defaultIntegerIfNull((Number) responseMap.get("nextEventModuleIdGuess"), 0);
-            nextEventMessageIdGuess = defaultLongIfNull((Number) responseMap.get("nextEventMessageIdGuess"), 0);
+        // refresh root object IDs
+        Map jsonRootObjects = (Map) responseMap.get("rootObjects");
+        for (Object key : jsonRootObjects.keySet())
+            rootObjects.put((String) key, getObjectByJSONRef((String) jsonRootObjects.get(key)));
 
-            // remember action requested by the simulation
-            Map errorInfo = (Map) responseMap.get("errorInfo");
-            Map askParameter = (Map) responseMap.get("askParameter");
+        // parse action requested by the simulation
+        StatusResponse request = null;
+        if (responseMap.containsKey("askParameter")) {
+            Map jsonData = (Map) responseMap.get("askParameter");
+            AskParameter info = new AskParameter();
+            info.paramName = (String) jsonData.get("paramName");
+            info.ownerFullPath = (String) jsonData.get("ownerFullPath");
+            info.paramType = (String) jsonData.get("paramType");
+            info.prompt = (String) jsonData.get("prompt");
+            info.defaultValue = (String) jsonData.get("defaultValue");
+            info.unit = (String) jsonData.get("unit");
+            info.choices = null; //TODO
+            request = info;
+        }
+        else if (responseMap.containsKey("errorInfo")) {
+            Map jsonData = (Map) responseMap.get("errorInfo");
+            ErrorInfo info = new ErrorInfo();
+            info.message = (String) jsonData.get("message");
+            request = info;
+        }
 
-            // refresh root object IDs
-            Object json = getPageContentAsJSON(urlBase + "/sim/getRootObjectIds");
-            for (Object key : ((Map) json).keySet()) {
-                String rootRef = (String) ((Map) json).get(key);
-                cObject rootObj = getObjectByJSONRef(rootRef);
-                rootObjects.put((String) key, rootObj);
+        // load the log
+        List logEntries = (List) responseMap.get("log");
+        EventEntry lastEventEntry = null;
+        List<Object> logItems = new ArrayList<Object>();
+        for (Object e : logEntries) {
+            Map logEntry = (Map)e;
+            String type = (String)logEntry.get("@");
+            if (type.equals("E")) {
+                if (!logItems.isEmpty()) {
+                    if (lastEventEntry == null)
+                        logBuffer.addEventEntry(lastEventEntry = new EventEntry());
+                    lastEventEntry.logItems = logItems.toArray(new Object[]{});
+                    logItems.clear();
+                }
+
+                lastEventEntry = new EventEntry();
+                lastEventEntry.eventNumber = ((Number)logEntry.get("#")).longValue();
+                lastEventEntry.simulationTime = BigDecimal.parse((String)logEntry.get("t"));
+                lastEventEntry.moduleId = ((Number)logEntry.get("moduleId")).intValue();
+                lastEventEntry.moduleFullPath = (String) logEntry.get("moduleFullPath");
+                lastEventEntry.moduleNedType = (String) logEntry.get("moduleNedType");
+                lastEventEntry.messageName = (String)logEntry.get("messageName");
+                lastEventEntry.messageClassName = (String)logEntry.get("messageClassName");
+                logBuffer.addEventEntry(lastEventEntry);
             }
+            else if (type.equals("L")) {
+                String line = (String)logEntry.get("txt");
+                logItems.add(line);
+            }
+            else if (type.equals("MB")) {
+                Anim.ComponentMethodBeginEntry item = new Anim.ComponentMethodBeginEntry();
+                item.srcModuleId = ((Number)logEntry.get("sm")).intValue();
+                item.destModuleId = ((Number)logEntry.get("tm")).intValue();
+                item.txt = (String) (String)logEntry.get("m");
+                logItems.add(item);
+            }
+            else if (type.equals("ME")) {
+                Anim.ComponentMethodEndEntry item = new Anim.ComponentMethodEndEntry();
+                logItems.add(item);
+            }
+            else if (type.equals("BS")) {  //TODO no need for the simulation to send these entries (BS..ES) in Fast mode! (and of course not in Express mode)
+                Anim.BeginSendEntry item = new Anim.BeginSendEntry();
+                item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
+                logItems.add(item);
+            }
+            else if (type.equals("SH")) {
+                Anim.MessageSendHopEntry item = new Anim.MessageSendHopEntry();
+                item.srcGate = (cGate) getObjectByJSONRef((String)logEntry.get("srcGate"));
+                item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
+                item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
+                logItems.add(item);
+            }
+            else if (type.equals("SD")) {
+                Anim.MessageSendDirectEntry item = new Anim.MessageSendDirectEntry();
+                item.srcModule = (cModule) getObjectByJSONRef((String)logEntry.get("srcModule"));
+                item.destGate = (cGate) getObjectByJSONRef((String)logEntry.get("destGate"));
+                item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
+                item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
+                logItems.add(item);
+            }
+            else if (type.equals("ES")) {
+                Anim.EndSendEntry item = new Anim.EndSendEntry();
+                logItems.add(item);
+            }
+            else {
+                throw new RuntimeException("type: '" + type + "'");
+            }
+        }
+        if (!logItems.isEmpty()) {
+            if (lastEventEntry == null)
+                logBuffer.addEventEntry(lastEventEntry = new EventEntry());
+            lastEventEntry.logItems = logItems.toArray(new Object[]{});
+            logItems.clear();
+        }
 
-            // load the log
-            List logEntries = (List) responseMap.get("log");
-            EventEntry lastEventEntry = null;
-            List<Object> logItems = new ArrayList<Object>();
-            for (Object e : logEntries) {
-                Map logEntry = (Map)e;
-                String type = (String)logEntry.get("@");
-                if (type.equals("E")) {
-                    if (!logItems.isEmpty()) {
-                        if (lastEventEntry == null)
-                            logBuffer.addEventEntry(lastEventEntry = new EventEntry());
-                        lastEventEntry.logItems = logItems.toArray(new Object[]{});
-                        logItems.clear();
+        // if we added something to the log, tell everyone interested about it
+        if (lastEventEntry != null)
+            logBuffer.fireChangeNotification();  
+
+        return request;
+    }
+
+    public void refreshObjectCache() throws IOException {
+        //
+        // Maintain object cache:
+        // - purge objects from cache that are unreferenced in Java, or have been deleted from C++;
+        //   also unload (~clear) objects that have not been accessed lately, to reduce HTTP load 
+        //   and allow other objects they reference to be garbage collected
+        // - refresh contents of already-filled objects
+        // - refresh the detail fields of loaded objects too (where filled in)
+        //
+        List<Long> garbage = new ArrayList<Long>();
+        List<cObject> objectsToReload = new ArrayList<cObject>();
+        List<cObject> objectsToReloadFields = new ArrayList<cObject>();
+        int numFilled = 0, numUnloads = 0; 
+        for (Long id : cachedObjects.keySet()) {
+            cObject obj = cachedObjects.get(id).get();
+            if (obj == null) {
+                garbage.add(id);
+            }
+            else {
+                Assert.isTrue(!obj.isDisposed(), "deleted objects should not be in the cache");
+                if (obj.isFilledIn()) {
+                    numFilled++;
+                    if (obj.getLastAccessEventNumber() < lastEventNumber-1) { //FIXME -1 is not good if simulation advanced >1 events since last refresh!
+                        obj.unload();
+                        numUnloads++;
                     }
+                    else if (!(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
+                        objectsToReload.add(obj);
+                }
 
-                    lastEventEntry = new EventEntry();
-                    lastEventEntry.eventNumber = ((Number)logEntry.get("#")).longValue();
-                    lastEventEntry.simulationTime = BigDecimal.parse((String)logEntry.get("t"));
-                    lastEventEntry.moduleId = ((Number)logEntry.get("moduleId")).intValue();
-                    lastEventEntry.moduleFullPath = (String) logEntry.get("moduleFullPath");
-                    lastEventEntry.moduleNedType = (String) logEntry.get("moduleNedType");
-                    lastEventEntry.messageName = (String)logEntry.get("messageName");
-                    lastEventEntry.messageClassName = (String)logEntry.get("messageClassName");
-                    logBuffer.addEventEntry(lastEventEntry);
-                }
-                else if (type.equals("L")) {
-                    String line = (String)logEntry.get("txt");
-                    logItems.add(line);
-                }
-                else if (type.equals("MB")) {
-                    Anim.ComponentMethodBeginEntry item = new Anim.ComponentMethodBeginEntry();
-                    item.srcModuleId = ((Number)logEntry.get("sm")).intValue();
-                    item.destModuleId = ((Number)logEntry.get("tm")).intValue();
-                    item.txt = (String) (String)logEntry.get("m");
-                    logItems.add(item);
-                }
-                else if (type.equals("ME")) {
-                    Anim.ComponentMethodEndEntry item = new Anim.ComponentMethodEndEntry();
-                    logItems.add(item);
-                }
-                else if (type.equals("BS")) {  //TODO no need for the simulation to send these entries (BS..ES) in Fast mode! (and of course not in Express mode)
-                    Anim.BeginSendEntry item = new Anim.BeginSendEntry();
-                    item.msg = (cMessage) getObjectByJSONRef((String)logEntry.get("msg"));
-                    logItems.add(item);
-                }
-                else if (type.equals("SH")) {
-                    Anim.MessageSendHopEntry item = new Anim.MessageSendHopEntry();
-                    item.srcGate = (cGate) getObjectByJSONRef((String)logEntry.get("srcGate"));
-                    item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
-                    item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
-                    logItems.add(item);
-                }
-                else if (type.equals("SD")) {
-                    Anim.MessageSendDirectEntry item = new Anim.MessageSendDirectEntry();
-                    item.srcModule = (cModule) getObjectByJSONRef((String)logEntry.get("srcModule"));
-                    item.destGate = (cGate) getObjectByJSONRef((String)logEntry.get("destGate"));
-                    item.propagationDelay = defaultBigDecimalIfNull((String)logEntry.get("propagationDelay"), null);
-                    item.transmissionDelay = defaultBigDecimalIfNull((String)logEntry.get("transmissionDelay"), null);
-                    logItems.add(item);
-                }
-                else if (type.equals("ES")) {
-                    Anim.EndSendEntry item = new Anim.EndSendEntry();
-                    logItems.add(item);
-                }
-                else {
-                    throw new RuntimeException("type: '" + type + "'");
+                if (obj.isFieldsFilledIn()) {
+                    objectsToReloadFields.add(obj);
                 }
             }
-            if (!logItems.isEmpty()) {
-                if (lastEventEntry == null)
-                    logBuffer.addEventEntry(lastEventEntry = new EventEntry());
-                lastEventEntry.logItems = logItems.toArray(new Object[]{});
-                logItems.clear();
-            }
+        }
+        cachedObjects.keySet().removeAll(garbage);
+        doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT);
+        doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS);
 
-            logBuffer.fireChangeNotification();  // tell everyone interested about the change
+        if (debugCache) 
+            Debug.println("Object cache after refresh: size " + cachedObjects.size() + " (" + (numFilled-numUnloads) + " filled); " +
+                    "refresh purged " + garbage.size() + ", unloaded " + numUnloads + ", reloaded " + objectsToReload.size() + ", fields-reloaded " + objectsToReloadFields.size());
+    }
 
-            //
-            // Maintain object cache:
-            // - purge objects from cache that are unreferenced in Java, or have been deleted from C++;
-            //   also unload (~clear) objects that have not been accessed lately, to reduce HTTP load 
-            //   and allow other objects they reference to be garbage collected
-            // - refresh contents of already-filled objects
-            // - refresh the detail fields of loaded objects too (where filled in)
-            //
-            List<Long> garbage = new ArrayList<Long>();
-            List<cObject> objectsToReload = new ArrayList<cObject>();
-            List<cObject> objectsToReloadFields = new ArrayList<cObject>();
-            int numFilled = 0, numUnloads = 0; 
-            for (Long id : cachedObjects.keySet()) {
-                cObject obj = cachedObjects.get(id).get();
-                if (obj == null) {
-                    garbage.add(id);
-                }
-                else {
-                    Assert.isTrue(!obj.isDisposed(), "deleted objects should not be in the cache");
-                    if (obj.isFilledIn()) {
-                        numFilled++;
-                        if (obj.getLastAccessEventNumber() < lastEventNumber-1) { //FIXME -1 is not good if simulation advanced >1 events since last refresh!
-                            obj.unload();
-                            numUnloads++;
-                        }
-                        else if (!(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
-                            objectsToReload.add(obj);
-                    }
-
-                    if (obj.isFieldsFilledIn()) {
-                        objectsToReloadFields.add(obj);
-                    }
-                }
-            }
-            cachedObjects.keySet().removeAll(garbage);
-            doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT);
-            doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS);
-
-            if (debugCache) 
-                Debug.println("Object cache after refresh: size " + cachedObjects.size() + " (" + (numFilled-numUnloads) + " filled); " +
-                        "refresh purged " + garbage.size() + ", unloaded " + numUnloads + ", reloaded " + objectsToReload.size() + ", fields-reloaded " + objectsToReloadFields.size());
-
-            // allow the UI to be updated before we ask parameters or pop up and error dialog
-            simulationCallback.statusRefreshed();
-
-            // carry out action requested by the simulation
-            again = false;
-            if (askParameter != null) {
-                String paramName = (String) askParameter.get("paramName");
-                String ownerFullPath = (String) askParameter.get("ownerFullPath");
-                String paramType = (String) askParameter.get("paramType");
-                String prompt = (String) askParameter.get("prompt");
-                String defaultValue = (String) askParameter.get("defaultValue");
-                String unit = (String) askParameter.get("unit");
-                String[] choices = null; //TODO
-
-                // parameter value prompt
-                String value = simulationUICallback.askParameter(paramName, ownerFullPath, paramType, prompt, defaultValue, unit, choices);
-                getPageContent(urlBase + "sim/askParameterResp?v=" + urlEncode(value)); //TODO how to post "cancel"?
-
-                // we need to refresh again
-                again = true;
-            }
-            if (errorInfo != null) {
-                // display error message
-                String message = (String) errorInfo.get("message");
-                simulationUICallback.displayError(message);
-
-                // we need to refresh again
-                again = true;
-            }
-        } while (again);
-        if (debugHttp) Debug.println("Simulation.refreshStatus(): " + (System.currentTimeMillis() - startTime) + "ms\n");
+    /**
+     * To be called after a refreshStatus() returns with an AskParameter object.
+     */
+    public void sendParameterValue(String value) throws IOException {
+        getPageContent(urlBase + "sim/askParameterResp?v=" + urlEncode(value)); //TODO how to post "cancel"?
     }
 
     public boolean hasRootObjects() {

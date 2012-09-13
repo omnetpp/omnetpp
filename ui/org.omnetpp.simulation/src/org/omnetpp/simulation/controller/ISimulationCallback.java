@@ -10,11 +10,6 @@ import java.net.SocketException;
  */
 public interface ISimulationCallback {
     /**
-     * Called when the simulation status has been refreshed
-     */
-    void statusRefreshed();
-
-    /**
      * Called when the socket cannot connect to the simulation, which we interpret
      * as a fatal condition. Timeout (which is likely a transient error) does NOT trigger
      * this callback; see subclasses of SocketException what does.

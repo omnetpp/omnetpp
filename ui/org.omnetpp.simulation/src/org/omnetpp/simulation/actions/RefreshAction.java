@@ -25,7 +25,7 @@ public class RefreshAction extends AbstractSimulationAction {
     public void run() {
         try {
             SimulationController controller = getSimulationController();
-            controller.getSimulation().refreshStatus();
+            controller.refreshStatus();
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error: " + e.toString());

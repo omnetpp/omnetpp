@@ -10,11 +10,15 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.Simulation.AskParameter;
+import org.omnetpp.simulation.controller.Simulation.ErrorInfo;
 import org.omnetpp.simulation.controller.Simulation.RunMode;
 import org.omnetpp.simulation.controller.Simulation.SimState;
+import org.omnetpp.simulation.controller.Simulation.StatusResponse;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 
 /**
@@ -23,8 +27,6 @@ import org.omnetpp.simulation.liveanimation.LiveAnimationController;
  * @author Andras
  */
 //TODO introduce BUSY state in Cmdenv? it would be active during setting up a network and calling finish
-//TODO Stop gomb resetelje a running state-et!!! (cancel animation, etc!!!)
-//TODO ha animacio kozben vagyunk, Step/Run/Stop etc allitsa le az animaciot!!!
 public class SimulationController implements ISimulationCallback {
     private Simulation simulation;
     private LiveAnimationController liveAnimationController;  //TODO should probably be done via listeners, and not by storing LiveAnimationController reference here!
@@ -35,7 +37,10 @@ public class SimulationController implements ISimulationCallback {
     private BigDecimal runUntilSimTime;
     private long runUntilEventNumber;
     private boolean stopRequested;
+
+    private ISimulationUICallback simulationUICallback;
     private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
+
 
     public SimulationController(Simulation simulation) {
         this.simulation = simulation;
@@ -109,6 +114,14 @@ public class SimulationController implements ISimulationCallback {
 
     public LiveAnimationController getLiveAnimationController() {
         return liveAnimationController;
+    }
+
+    public void setSimulationUICallback(ISimulationUICallback simulationUICallback) {
+        this.simulationUICallback = simulationUICallback;
+    }
+
+    public ISimulationUICallback getSimulationUICallback() {
+        return simulationUICallback;
     }
 
     public void addSimulationStateListener(ISimulationStateListener listener) {
@@ -281,7 +294,7 @@ public class SimulationController implements ISimulationCallback {
         //TODO or, at least bring up a cancellable progress dialog after a few seconds
 
         for (int retries = 0; true; retries++) {
-            simulation.refreshStatus();  // note: this will trigger at least one but potentially several statusRefreshed() callbacks
+            refreshStatus();  // note: this will trigger at least one but potentially several statusRefreshed() callbacks
             SimState state = simulation.getState();
             if (state == expectedState || state == SimState.TERMINATED || state == SimState.ERROR || state == SimState.DISCONNECTED)
                 return;
@@ -290,9 +303,37 @@ public class SimulationController implements ISimulationCallback {
         }
     }
 
-    @Override
-    public void statusRefreshed() {
-        notifyListeners();
+    public void refreshStatus() throws IOException {
+        Assert.isTrue(simulationUICallback != null); // callbacks must be set
+        long startTime = System.currentTimeMillis();
+        boolean again;
+        do {
+            //TODO implement PAUSE/RESUME commands in Cmdenv!! this method calls getObjectINfo even while
+            // simulation is running!!!! or while network is being set up! this could be solved with PAUSE/RESUME
+
+            StatusResponse request = simulation.refreshStatus();
+            simulation.refreshObjectCache(); //XXX not good! not atomic with previous one, so doing this during simulation will bring interesting results
+
+            // allow the UI to be updated before we ask parameters or pop up and error dialog
+            notifyListeners();
+
+            // carry out action requested by the simulation
+            again = false;
+            if (request instanceof AskParameter) {
+                // parameter value prompt
+                AskParameter info = (AskParameter)request;
+                String value = simulationUICallback.askParameter(info.paramName, info.ownerFullPath, info.paramType, info.prompt, info.defaultValue, info.unit, info.choices);
+                simulation.sendParameterValue(value);
+                again = true;
+            }
+            if (request instanceof ErrorInfo) {
+                // display error message
+                ErrorInfo info = (ErrorInfo)request;
+                simulationUICallback.displayError(info.message);
+                again = true;
+            }
+        } while (again);
+        Debug.println("Simulation.refreshStatus(): " + (System.currentTimeMillis() - startTime) + "ms\n");
     }
 
     @Override
