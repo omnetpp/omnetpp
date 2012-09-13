@@ -32,7 +32,7 @@ public class LiveAnimationController {
     private double animationSpeed = 1.0;
     private long animationStartTimeNanos;
     private long numUpdates; // since animationStartTimeMillis
-    
+
     private Runnable invokeTick = new Runnable() {
         @Override
         public void run() {
@@ -64,6 +64,7 @@ public class LiveAnimationController {
     }
 
     public void cancelAnimation() {
+        //TODO if (animationRunning)
         Display.getCurrent().timerExec(-1, invokeTick);
         animationFinished();
     }

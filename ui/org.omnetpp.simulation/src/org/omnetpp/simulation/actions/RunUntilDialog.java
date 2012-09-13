@@ -121,7 +121,7 @@ public class RunUntilDialog extends TrayDialog {
 
         //TODO error handling!!!
         String simtimeString = simtimeText.getText();
-        simtime = StringUtils.isBlank(simtimeString) ? BigDecimal.getZero() : BigDecimal.parse(simtimeString);
+        simtime = StringUtils.isBlank(simtimeString) ? null : BigDecimal.parse(simtimeString);
         String eventNumberString = eventNumberText.getText();
         eventNumber = StringUtils.isBlank(eventNumberString) ? 0 : Long.valueOf(eventNumberString);
         super.okPressed();

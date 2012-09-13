@@ -190,7 +190,7 @@ public class SimulationController implements ISimulationCallback {
     }
 
     public void runUntil(RunMode mode, BigDecimal simTime, long eventNumber) throws IOException {
-        runUntilSimTime = simTime;  //TODO if time/event already passed, don't do anything
+        runUntilSimTime = simTime;
         runUntilEventNumber = eventNumber;
 
 //        animationPlaybackController.jumpToEnd();
@@ -209,15 +209,23 @@ public class SimulationController implements ISimulationCallback {
     }
 
     protected void doRun() throws IOException {
-        if (stopRequested) {
-            stopRequested = false;
+        // should we run at all?
+        boolean run = true;
+        if (simulation.getState() != SimState.READY && simulation.getState() != SimState.RUNNING)
+            run = false;
+        else if (stopRequested)
+            run = false;
+        if (runUntilEventNumber > 0 && simulation.getNextEventNumber() >= runUntilEventNumber)
+            run = false;
+        if (runUntilSimTime != null && simulation.getNextEventSimulationTimeGuess().greaterOrEqual(runUntilSimTime))
+            run = false;
+        if (!run) {
             currentRunMode = RunMode.NOTRUNNING;
             notifyListeners(); // because currentRunMode has changed
             return;
         }
 
-        //TODO exit if "until" limit has been reached
-
+        // determine how much we'll run in this chunk
         long eventDelta = -1;
         switch (currentRunMode) {
             case NORMAL: eventDelta = 1; break;
@@ -227,42 +235,49 @@ public class SimulationController implements ISimulationCallback {
         }
 
         long untilEvent = runUntilEventNumber == 0 ? simulation.getLastEventNumber()+eventDelta : Math.min(runUntilEventNumber, simulation.getLastEventNumber()+eventDelta);
+
+        // tell process to run...
         simulation.sendRunUntilCommand(currentRunMode, runUntilSimTime, untilEvent);
         if (currentRunMode == RunMode.NORMAL)
             lastEventAnimationDone = false;
 
-        refreshUntil(SimState.READY);
+        // ...and wait for it to complete
+        refreshUntil(SimState.READY);  //XXX note: error dialog will *precede* animation of last event -- weird!
 
-        if (simulation.getState() != SimState.READY)
-            return;
-
-        Display.getCurrent().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (currentRunMode == RunMode.FAST || currentRunMode == RunMode.EXPRESS) {
-//                        animationPlaybackController.stop();  // in case it was running
-//                        animationPlaybackController.jumpToEnd(); // show current state on animation canvas
+        // animate, or asyncExec next run chunk 
+        if (currentRunMode == RunMode.NORMAL) {
+            // animate it
+            //animationPlaybackController.play();
+            EventEntry lastEvent = getSimulation().getLogBuffer().getLastEventEntry();
+            liveAnimationController.startAnimatingLastEvent(lastEvent);
+            // Note: next doRun() will be called from animationStopped()!
+        }
+        else if (simulation.getState() == SimState.READY) {
+            Display.getCurrent().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // animationPlaybackController.stop();  // in case it was running
+                        // animationPlaybackController.jumpToEnd(); // show current state on animation canvas
                         doRun();
                     }
-                    else if (currentRunMode == RunMode.NORMAL) {
-                        // animate it
-//                        animationPlaybackController.play();
-                        EventEntry lastEvent = getSimulation().getLogBuffer().getLastEventEntry();
-                        liveAnimationController.startAnimatingLastEvent(lastEvent);
-                        // Note: next doRun() will be called from animationStopped()!
+                    catch (IOException e) {
+                        MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", "An error occurred: " + e.getMessage());
+                        SimulationPlugin.logError("Error running simulation", e);
                     }
                 }
-                catch (IOException e) {
-                    MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", "An error occurred: " + e.getMessage());
-                    SimulationPlugin.logError("Error running simulation", e);
-                }
-            }
-        });
+            });
+        }
     }
 
     public void stop() throws IOException {
+        // make sure doRun()'s asyncExec() code won't do anything (unfortunately Display does not offer a ways to cancel asyncExec code)
         stopRequested = true;
+
+        // cancel animation (TODO if running!)
+        liveAnimationController.cancelAnimation();
+
+        // stop the underlying simulation
         if (simulation.getState() == SimState.RUNNING) {
             try {
                 simulation.sendStopCommand();
@@ -270,6 +285,14 @@ public class SimulationController implements ISimulationCallback {
                 refreshUntil(SimState.READY);
             }
         }
+
+        // update the UI
+        currentRunMode = RunMode.NOTRUNNING;
+        lastEventAnimationDone = true;
+        runUntilSimTime = null;
+        runUntilEventNumber = 0;
+
+        notifyListeners(); // because currentRunMode has changed
     }
 
     public void callFinish() throws IOException {
@@ -354,16 +377,15 @@ public class SimulationController implements ISimulationCallback {
 
     // XXX called from outside
     public void animationStopped() {
+        lastEventAnimationDone = true;
         if (currentRunMode == RunMode.STEP) {
             currentRunMode = RunMode.NOTRUNNING;
-            lastEventAnimationDone = true;
             notifyListeners();
         }
         else if (currentRunMode == RunMode.NORMAL) {
             try {
-                lastEventAnimationDone = true;
                 notifyListeners();
-                doRun();
+                doRun();  //FIXME not if stopRequested???
             }
             catch (Exception e) {
                 MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", "An error occurred: " + e.getMessage());
