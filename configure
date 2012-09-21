@@ -5156,7 +5156,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS=$TK_CFLAGS86
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk86 -ltcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5192,7 +5192,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS=$TK_CFLAGS86
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.6 -ltcl8.6" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5228,7 +5228,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS=$TK_CFLAGS86
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk86 -lcygtcl86" TK_CFLAGS="$opp_x11inc $TK_CFLAGS86"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5265,7 +5265,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS=$TK_CFLAGS85
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk85 -ltcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5301,7 +5301,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS=$TK_CFLAGS85
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.5 -ltcl8.5" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5337,7 +5337,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS=$TK_CFLAGS85
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk85 -lcygtcl85" TK_CFLAGS="$opp_x11inc $TK_CFLAGS85"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5374,7 +5374,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk84 -ltcl84" TK_CFLAGS=$TK_CFLAGS84
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk84 -ltcl84" TK_CFLAGS="$opp_x11inc $TK_CFLAGS84"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5410,7 +5410,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4" TK_CFLAGS=$TK_CFLAGS84
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4" TK_CFLAGS="$opp_x11inc $TK_CFLAGS84"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5446,7 +5446,7 @@ Tk_MainLoop();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS=$TK_CFLAGS84
+$as_echo "yes" >&6; }; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84" TK_CFLAGS="$opp_x11inc $TK_CFLAGS84"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }; tcltk_ok=no;
@@ -5464,7 +5464,7 @@ rm -f core conftest.err conftest.$ac_objext \
         # try to give a hint in the error message about the problem
         if test "$no_x" = "yes"; then
             if test "$cygwin" = yes; then
-                as_fn_error $? "Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from www.omnetpp.org." "$LINENO" 5
+                as_fn_error $? "Cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages." "$LINENO" 5
             else
                 as_fn_error $? "Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!" "$LINENO" 5
             fi
