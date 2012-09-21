@@ -759,4 +759,89 @@ public class StringUtils extends org.apache.commons.lang.StringUtils {
 		result.add(string.substring(lastEnd));
 		return result;
 	}
+
+    /**
+     * Return the substring of {@code str} starting at the given position,
+     * either to the end of the string or maximum {@code len} characters.
+     * @throws IllegalArgumentException if {@code startIndex} is negative or out-of-bounds
+     * @throws IllegalArgumentException if {@code len} is negative
+     */
+    public static String substring(String str, int startIndex, int len) {
+        int strLen = str.length();
+        if (startIndex < 0 || startIndex > strLen)
+            throw new IllegalArgumentException("substring(): index out of bounds");
+        if (len < 0)
+            throw new IllegalArgumentException("substring(): length is negative");
+        return str.substring(startIndex, Math.min(startIndex + len, strLen));
+    }
+
+    /**
+     * Returns the last {@code len} character of {@code str},
+     * or the full {@code str} if it is shorter than {@code len} characters.
+     * @throws IllegalArgumentException if {@code len} is negative
+     */
+    public static String tail(String str, int len) {
+        int strLen = str.length();
+        if (len < 0)
+            throw new IllegalArgumentException("tail(): length is negative");
+        return len >= strLen ? str : str.substring(strLen - len);
+    }
+
+    /**
+     * Interprets {@code str} as a space-separated list, and returns the item at the given index.
+     * @throws IllegalArgumentException if {@code index} is negative or out-of-bounds
+     */
+    public static String choose(int index, String str) {
+        if (index < 0)
+            throw new IllegalArgumentException("choose(): negative index");
+        StringTokenizer tokenizer = new StringTokenizer(str);
+        for (int i=0; i<index && tokenizer.hasMoreTokens(); i++)
+            tokenizer.nextToken();
+        if (!tokenizer.hasMoreTokens())
+            throw new IllegalArgumentException("choose(): index out of bounds: " + index);
+        return tokenizer.nextToken();
+    }
+
+    /**
+     * Replaces all occurrences of {@code substr} in {@code str} with the string {@code repl}.
+     * Search begins from position {@code startIndex} in {@code str}.
+     * @throws IllegalArgumentException if {@code startIndex} is negative or out-of-bounds
+     */
+    public static String replace(String str, String substr, String repl, int startIndex) {
+        if (startIndex < 0)
+            throw new IllegalArgumentException("replace(): start index is negative");
+        if (startIndex > str.length())
+            throw new IllegalArgumentException("replace(): start index out of bounds");
+
+        int substrLen = substr.length();
+        int replLen = repl.length();
+        int index = startIndex;
+        StringBuilder sb = new StringBuilder(str);
+        while ((index = sb.indexOf(substr, index)) != -1) {
+            sb.replace(index, index+substrLen, repl);
+            index += replLen - substrLen + 1;
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Replaces the first occurrence of {@code substr} in {@code str} with the string {@code repl}.
+     * Search begins from position {@code startIndex} in {@code str}.
+     * @throws IllegalArgumentException if {@code startIndex} is negative or out-of-bounds
+     */
+    public static String replaceFirst(String str, String substr, String repl, int startIndex) {
+        if (startIndex < 0)
+            throw new IllegalArgumentException("replace(): start index is negative");
+        if (startIndex > str.length())
+            throw new IllegalArgumentException("replace(): start index out of bounds");
+
+        int index = str.indexOf(substr, startIndex);
+        if (index != -1) {
+            StringBuilder sb = new StringBuilder(str);
+            sb.replace(index, index+substr.length(), repl);
+            return sb.toString();
+        }
+        else
+            return str;
+    }
 }
