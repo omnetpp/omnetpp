@@ -361,10 +361,10 @@ FIXFLEX=$(PERL:/=\) -i.bak -pe "s/^.include .unistd.h.*//g"
 #   /opt:noref: keep functions and/or data that is never referenced (DOES NOT WORK!)
 #       see http://forums.microsoft.com/MSDN/ShowPost.aspx?PostID=144087&SiteID=1&mode=1
 #
-CFLAGS_DEBUG=/nologo $(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /w14996 /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB /D_DISABLE_DEPRECATE_STATIC_CPPLIB
+CFLAGS_DEBUG=/nologo $(MOPTION)d /EHsc /GR /FD /Zm250 /Od /RTCs /Zi /w14996 /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_DEBUG=/nologo /subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/nologo $(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /w14996 /D_CRT_SECURE_NO_DEPRECATE /D_STATIC_CPPLIB /D_DISABLE_DEPRECATE_STATIC_CPPLIB
+CFLAGS_RELEASE=/nologo $(MOPTION) /EHsc /GR /FD /Zm250 /O2 /DNDEBUG /w14996 /D_CRT_SECURE_NO_DEPRECATE
 LDFLAGS_RELEASE=/nologo /subsystem:console /opt:noref
 
 !if "$(LIB_SUFFIX)"==".dll"
@@ -421,6 +421,8 @@ CLVER_PROG=perl $(OMNETPP_SRC_DIR)/utils/opp_msvcver.pl $(CXX)
 
 !if "$(TOOLCHAIN_NAME)"!=""
 # respect user's setting
+!elseif [$(CLVER_PROG)] == 17
+TOOLCHAIN_NAME = vc110
 !elseif [$(CLVER_PROG)] == 16
 TOOLCHAIN_NAME = vc100
 !elseif [$(CLVER_PROG)] == 15
@@ -430,7 +432,7 @@ TOOLCHAIN_NAME = vc80
 !elseif [$(CLVER_PROG)] == -1
 !error Visual C++ compiler $(CXX) not found (not in the PATH?)
 !else
-!error Unsupported Visual C++ compiler version (8.x, 9.x and 10.x supported)
+!error Unsupported Visual C++ compiler version (8.x, 9.x, 10.x and 11.x supported)
 !endif
 
 #
