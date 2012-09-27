@@ -18,8 +18,8 @@
 
 #include <limits.h>   // __WORDSIZE
 
-// All systems except Visual C++ are expected to have <stdint.h>
-#if defined SWIG || defined _MSC_VER
+// All systems except Visual C++ (9.0 and earlier) are expected to have <stdint.h>
+#if defined SWIG || (defined _MSC_VER && (_MSC_VER < 1600))
 #define HAVE_STDINT_H 0
 #else
 #define HAVE_STDINT_H 1
