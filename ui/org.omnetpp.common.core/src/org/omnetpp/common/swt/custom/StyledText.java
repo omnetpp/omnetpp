@@ -5354,12 +5354,16 @@ int getCaretLine() {
 	return content.getLineAtOffset(caretOffset);
 }
 int getWrapWidth (int lineIndex) {
-    return lineIndex % 2 == 0 ? 100 : 10000;
-//	if (wordWrap && !isSingleLine()) {
-//		int width = clientAreaWidth - leftMargin - rightMargin;
-//		return width > 0 ? width : 1;
-//	}
-//	return -1;
+    if (wordWrap && !isSingleLine()) {
+        int wrapIndent = getLineWrapIndent(lineIndex);
+        if (wrapIndent < 0)
+            return Integer.MAX_VALUE;
+        else {
+            int width = clientAreaWidth - leftMargin - rightMargin;
+            return width > 0 ? width : 1;
+        }
+    }
+    return -1;
 }
 int getWordNext (int offset, int movement) {
 	return getWordNext(offset, movement, false);
