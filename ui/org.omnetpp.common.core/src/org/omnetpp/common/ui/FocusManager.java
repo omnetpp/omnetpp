@@ -11,7 +11,7 @@ import org.omnetpp.common.Debug;
 
 /**
  * Keeps track of the last focused control inside a Composite (or among an arbitrary
- * set of controls), so that the old focus can be restored if this Composite loses
+ * set of controls), so that the old focus can be restored when this Composite loses
  * and then re-gains focus. 
  * 
  * The default behavior of Composite's setFocus() is to give the focus to the first 
@@ -123,7 +123,7 @@ public class FocusManager {
     
     /**
      * Note: this is usually not the currently focused widget but the one focused
-     * before that, as value gets updated when the currently focused widget *loses* focus.
+     * before that, as value is updated when the currently focused widget *loses* focus.
      */
     public Control getLastFocusControl() {
         return lastFocusControl;

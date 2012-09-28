@@ -209,7 +209,7 @@ public class HoverSupport {
 
     // KLUDGE: this class is completely superfluous and should be deleted if the already existing eclipse code becomes reusable... :(
     private static class LocalInformationControlReplacer extends InformationControlReplacer {
-        // KLUDGE: the contents of thie inner class is copied over from StickyHoverManager
+        // KLUDGE: the contents of this inner class is copied over from StickyHoverManager
         // so much for code reuse... :(
         class Closer implements IInformationControlCloser, ControlListener, MouseListener, KeyListener, FocusListener, Listener {
             //TODO: Catch 'Esc' key in fInformationControlToClose: Don't dispose, just hideInformationControl().
