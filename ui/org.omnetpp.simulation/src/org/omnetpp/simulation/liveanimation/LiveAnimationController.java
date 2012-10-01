@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.EventEntry;
-import org.omnetpp.simulation.controller.SimulationController;
 
 /**
  *
@@ -24,12 +23,17 @@ import org.omnetpp.simulation.controller.SimulationController;
 public class LiveAnimationController {
     private static final int TICK_MILLIS = 10;
 
-    private SimulationController simulationController;
     private AnimationDirector animationDirector;
 
     private List<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
 
+    // configuration
     private double animationSpeed = 1.0;
+
+    // state 
+    private Runnable todoWhenDone;
+    private boolean isAnimating = false;
+    private boolean isStopping = false; // needed if we call Display.readAndDispatch() from cancelAnimation()
     private long animationStartTimeNanos;
     private long numUpdates; // since animationStartTimeMillis
 
@@ -40,16 +44,26 @@ public class LiveAnimationController {
         }
     };
 
-    public LiveAnimationController(SimulationController simulationController, AnimationDirector animationDirector) {
-        this.simulationController = simulationController;
+    public LiveAnimationController(AnimationDirector animationDirector) {
         this.animationDirector = animationDirector;
     }
 
-    public void startAnimatingLastEvent(EventEntry event) {
+    public boolean isAnimating() {
+        return isAnimating;
+    }
+
+    public boolean isStopping() {
+        return isStopping;
+    }
+
+    public void startAnimatingLastEvent(EventEntry event, Runnable todoWhenDone) {
         // add animations for last event
         addAnimationsForLastEvent(event);
 
         // start animating
+        this.todoWhenDone = todoWhenDone;
+        isAnimating = true;
+        isStopping = false;
         animationStartTimeNanos = System.nanoTime();
         numUpdates = 0;
         startTicking();
@@ -64,8 +78,34 @@ public class LiveAnimationController {
     }
 
     public void cancelAnimation() {
-        //TODO if (animationRunning)
+        if (!isAnimating)
+            throw new IllegalStateException("animation not running");
+
+        if (isStopping) 
+            return;
+        isStopping = true;
+
+        // cancel next tick
         Display.getCurrent().timerExec(-1, invokeTick);
+
+        // quickly run through the animation till the end (needed so that animation primitives
+        // can remove the figures they added, e.g. message discs)
+        try {
+            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed;
+            while (true) {
+                boolean needMoreTicks = updateAnimationFor(time);
+                if (!needMoreTicks)
+                    break;
+                time += TICK_MILLIS/1000.0;
+
+                //Display.getCurrent().update(); // would we exactly what we need, but doesn't appear to work on Windows 7
+                Display.getCurrent().readAndDispatch(); //FIXME works but a little dangerous (user might invoke actions, even close the editor etc!)
+            }
+        }
+        catch (Exception e) {
+            SimulationPlugin.logError("Error during animation", e);
+        }
+
         animationFinished();
     }
 
@@ -103,12 +143,16 @@ public class LiveAnimationController {
             System.out.println("Animation: " + numUpdates + " updates in " + nanos + "ms, " + fps + "fps");
         }
 
+        // update state
+        isAnimating = false;
+        isStopping = false;
+
         // purge obsolete animation primitives
-        animationPrimitives.clear(); //XXX for now...
+        animationPrimitives.clear();
 
         // notify controller
-        if (simulationController != null)
-            simulationController.animationStopped();
+        if (todoWhenDone != null)
+            todoWhenDone.run();
     }
 }
 

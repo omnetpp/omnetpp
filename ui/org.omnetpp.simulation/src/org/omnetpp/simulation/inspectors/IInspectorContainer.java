@@ -8,6 +8,7 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -22,6 +23,12 @@ import org.omnetpp.simulation.model.cObject;
  * @author Andras
  */
 public interface IInspectorContainer extends ISelectionProvider {
+    /**
+     * Returns the SimulationEditor that contains this inspector container, or
+     * null if this editor is not contained in a SimulationEditor.
+     */
+    SimulationEditor getEditor();
+
     /**
      * TEMPORARY: open an inspector for this object
      * todo what kind, etc

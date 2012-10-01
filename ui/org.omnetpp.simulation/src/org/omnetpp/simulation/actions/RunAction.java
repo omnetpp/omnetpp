@@ -29,7 +29,10 @@ public class RunAction extends AbstractSimulationAction {
             if (!ensureNetworkReady())
                 return;
 
-            controller.run();
+            if (!controller.isRunning())
+                controller.run(RunMode.NORMAL);
+            else
+                controller.switchToRunMode(RunMode.NORMAL);
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());

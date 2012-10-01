@@ -31,7 +31,7 @@ public class RunUntilAction extends AbstractSimulationAction {
 
             RunUntilDialog dialog = new RunUntilDialog(getShell());
             if (dialog.open() == Dialog.OK) {
-                controller.runUntil(dialog.getRunMode(), dialog.getSimTime(), dialog.getEventNumber());
+                controller.runUntil(dialog.getRunMode(), dialog.getSimTime(), dialog.getEventNumber(), dialog.getModule(), dialog.getMessage());
             }
         }
         catch (Exception e) {

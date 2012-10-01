@@ -13,18 +13,25 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation.RunMode;
+import org.omnetpp.simulation.model.cMessage;
+import org.omnetpp.simulation.model.cModule;
 
 
 /**
@@ -36,14 +43,21 @@ public class RunUntilDialog extends TrayDialog {
     private String title;
 
     // widgets
-    private Combo modeCombo;
     private Text simtimeText;
     private Text eventNumberText;
+    private Text moduleText;
+    //TODO: private Text messageText;
+    private Button normalRunButton;
+    private Button fastRunButton;
+    private Button expressRunButton;
+    private Widget lastFocus;
 
     // the result
     private RunMode mode;
     private BigDecimal simtime;
     private long eventNumber;
+    private cModule module;
+    private cMessage message;
 
     /**
      * Creates the dialog.
@@ -71,30 +85,69 @@ public class RunUntilDialog extends TrayDialog {
 
         Composite composite = new Composite(dialogArea, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        composite.setLayout(new GridLayout(2,false));
+        composite.setLayout(new GridLayout(1,false));
 
-        createLabel(composite, "Enter simulation time or event number to run until.\n\n", 2);
+        Group limitsGroup = new Group(composite, SWT.NONE);
+        limitsGroup.setText("Run the simulation until:");
+        limitsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        limitsGroup.setLayout(new GridLayout(2, false));
 
-        createLabel(composite, "Simulation time (s):", 1);
-        simtimeText = new Text(composite, SWT.BORDER);
+        createLabel(limitsGroup, "Simulation time (s):", 1);
+        simtimeText = new Text(limitsGroup, SWT.BORDER);
         simtimeText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        createLabel(composite, "Event number:", 1);
-        eventNumberText = new Text(composite, SWT.BORDER);
+        createLabel(limitsGroup, "Event number:", 1);
+        eventNumberText = new Text(limitsGroup, SWT.BORDER);
         eventNumberText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        createLabel(composite, "Run mode:", 1);
-        modeCombo = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
-        modeCombo.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        modeCombo.add(StringUtils.capitalize(RunMode.NORMAL.name().toLowerCase()));
-        modeCombo.add(StringUtils.capitalize(RunMode.FAST.name().toLowerCase()));
-        modeCombo.add(StringUtils.capitalize(RunMode.EXPRESS.name().toLowerCase()));
-        modeCombo.select(1);
+        createLabel(limitsGroup, "Module path or Id:", 1);
+        moduleText = new Text(limitsGroup, SWT.BORDER);
+        moduleText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        simtimeText.setFocus();
+//TODO:
+//        createLabel(limitsGroup, "Message:", 1);
+//        messageText = new Text(limitsGroup, SWT.BORDER);
+//        messageText.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-        //TODO set up validation!
-        //TODO restore last values from preference store
+        Group modeGroup = new Group(composite, SWT.NONE);
+        modeGroup.setText("Run mode:");
+        modeGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        modeGroup.setLayout(new GridLayout(1, false));
+        normalRunButton = new Button(modeGroup, SWT.RADIO);
+        normalRunButton.setText("Normal");
+        fastRunButton = new Button(modeGroup, SWT.RADIO);
+        fastRunButton.setText("Fast");
+        expressRunButton = new Button(modeGroup, SWT.RADIO);
+        expressRunButton.setText("Express");
+
+        // track focus so we can save/restore it (in okPressed() it's too late)
+        FocusListener focusListener = new FocusAdapter() { 
+            public void focusGained(FocusEvent e) { lastFocus = e.widget; } 
+        };
+        simtimeText.addFocusListener(focusListener);
+        eventNumberText.addFocusListener(focusListener);
+        moduleText.addFocusListener(focusListener);
+
+        // restore last dialog content
+        IDialogSettings settings = getDialogBoundsSettings();
+        simtimeText.setText(StringUtils.defaultString(settings.get("simtime")));
+        eventNumberText.setText(StringUtils.defaultString(settings.get("eventNumber")));
+        moduleText.setText(StringUtils.defaultString(settings.get("module")));
+        simtimeText.selectAll();
+        eventNumberText.selectAll();
+        moduleText.selectAll();
+        RunMode runMode = RunMode.valueOf(StringUtils.defaultIfEmpty(settings.get("runMode"), "NORMAL"));
+        if (runMode == RunMode.NORMAL)
+            normalRunButton.setSelection(true);
+        else if (runMode == RunMode.FAST)
+            fastRunButton.setSelection(true);
+        else if (runMode == RunMode.EXPRESS)
+            expressRunButton.setSelection(true);
+        simtimeText.setFocus();  // default
+        String focus = StringUtils.defaultString(settings.get("focus"));
+        if (focus.equals("simtime")) simtimeText.setFocus();
+        if (focus.equals("eventNumber")) eventNumberText.setFocus();
+        if (focus.equals("module")) moduleText.setFocus();
 
         Dialog.applyDialogFont(composite);
 
@@ -115,15 +168,39 @@ public class RunUntilDialog extends TrayDialog {
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     }
 
+    public RunMode readRunMode() {
+        if (normalRunButton.getSelection())
+            return RunMode.NORMAL;
+        else if (fastRunButton.getSelection())
+            return RunMode.FAST;
+        else if (expressRunButton.getSelection())
+            return RunMode.EXPRESS;
+        else 
+            return RunMode.NONE;
+    }
+
     protected void okPressed() {
-        // save dialog state into variables, so that client can retrieve them after the dialog was disposed
-        mode = RunMode.valueOf(modeCombo.getText().toUpperCase());
+        // save dialog settings
+        IDialogSettings settings = getDialogBoundsSettings();
+        settings.put("simtime", simtimeText.getText());
+        settings.put("eventNumber", eventNumberText.getText());
+        settings.put("module", moduleText.getText());
+        settings.put("runMode", readRunMode().toString());
+        String focus = lastFocus == simtimeText ? "simtime" :
+                       lastFocus == eventNumberText ? "eventNumber" :
+                       lastFocus == moduleText ? "module" : "";
+        settings.put("focus", focus);
+
+        // store dialog state in variables, so client can retrieve them after the dialog was disposed
+        mode = readRunMode();
 
         //TODO error handling!!!
         String simtimeString = simtimeText.getText();
         simtime = StringUtils.isBlank(simtimeString) ? null : BigDecimal.parse(simtimeString);
         String eventNumberString = eventNumberText.getText();
         eventNumber = StringUtils.isBlank(eventNumberString) ? 0 : Long.valueOf(eventNumberString);
+        //TODO module = StringUtils.isBlank(eventNumberString) ? 0 : Long.valueOf(eventNumberString);
+        //TODO message
         super.okPressed();
     }
 
@@ -137,5 +214,13 @@ public class RunUntilDialog extends TrayDialog {
 
     public long getEventNumber() {
         return eventNumber;
+    }
+
+    public cModule getModule() {
+        return module;
+    }
+
+    public cMessage getMessage() {
+        return message;
     }
 }

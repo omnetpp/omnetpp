@@ -366,7 +366,7 @@ class SIM_API cHttpRequestHandler
      * FIXME if it can handle the request, do it and return true;
      * otherwise return false.
      */
-    virtual bool handle(cHttpRequest *request) = 0;
+    virtual bool handleHttpRequest(cHttpRequest *request) = 0;
 };
 
 NAMESPACE_END

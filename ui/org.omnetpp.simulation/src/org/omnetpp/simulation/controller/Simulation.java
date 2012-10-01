@@ -72,12 +72,19 @@ public class Simulation {
      */
     public enum SimState {
         DISCONNECTED, // no simulation process, e.g. it has terminated
-        NONETWORK, READY, RUNNING, TERMINATED, ERROR, FINISHCALLED  // as defined in cmdenv.h
+        NONETWORK, READY, RUNNING, TERMINATED /*TODO COMPLETED -- ez egyebkent nincs sose!!*/, ERROR, FINISHCALLED  // as defined in cmdenv.h
+        //TODO consider: BUSY (or ==INPROGRESS) and CANCELLED (useful if setupNetwork() and callFinish() can be cancelled) 
     };
 
     public enum RunMode {
-        NOTRUNNING, STEP, NORMAL, FAST, EXPRESS
+        NONE, STEP, NORMAL, FAST, EXPRESS
     }
+
+    public enum StoppingReason {
+        NONE, UNTILSIMTIME, UNTILEVENT, UNTILMODULE, UNTILMESSAGE, 
+        REALTIMECHUNK, STOPCOMMAND, TERMINATION;
+        static boolean isUntil(StoppingReason r) {return r==UNTILSIMTIME || r==UNTILEVENT || r==UNTILMODULE || r==UNTILMESSAGE;}
+    };
 
     /**
      * TODO
@@ -85,10 +92,24 @@ public class Simulation {
     class StatusResponse {
     }
 
-    /**
-     * TODO
-     */
-    class AskParameter extends StatusResponse {
+    // INP_GETS
+    class GetsRequest extends StatusResponse {
+        String prompt;
+        String defaultValue;
+    }
+
+    // INP_ASKYESNO
+    class AskYesNoRequest extends StatusResponse {
+        String message;
+    }
+
+    // INP_MSGDIALOG
+    class MsgDialogRequest extends StatusResponse {
+        String message;
+    }
+
+    // INP_ASKPARAMETER
+    class AskParameterRequest extends StatusResponse {
         String paramName;
         String ownerFullPath;
         String paramType;
@@ -98,12 +119,9 @@ public class Simulation {
         String[] choices;
     }
 
-    /**
-     * TODO
-     */
-    class ErrorInfo extends StatusResponse {
-        String message;
-    }
+//    class ErrorInfo extends StatusResponse {
+//        String message;
+//    }
 
     private static final int MONGOOSE_MAX_REQUEST_URI_SIZE = 256*1024-1000; // see MAX_REQUEST_SIZE in mongoose.h
 
@@ -121,7 +139,10 @@ public class Simulation {
     private String hostName;
     private int portNumber;
     private long processId;
+    private String[] argv;
+    private String workingDir;
     private SimState state = SimState.NONETWORK;
+    private StoppingReason stoppingReason = StoppingReason.NONE;
     private String configName;
     private int runNumber;
     private String networkName;
@@ -223,8 +244,29 @@ public class Simulation {
         return processId;
     }
 
+    /**
+     * Command line of the simulation process we are talking to.
+     */
+    public String[] getArgv() {
+        return argv;
+    }
+
+    /**
+     * Working directory of the simulation process we are talking to.
+     */
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
     public SimState getState() {
         return state;
+    }
+
+    /**
+     * Why the last Run command stopped.
+     */
+    public StoppingReason getStoppingReason() {
+        return stoppingReason;
     }
 
     public String getConfigName() {
@@ -279,7 +321,7 @@ public class Simulation {
         return logBuffer;
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public StatusResponse refreshStatus() throws IOException {
         Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
 
@@ -287,10 +329,13 @@ public class Simulation {
         Map responseMap = (Map) responseJSON;
         hostName = (String) responseMap.get("hostname");
         processId = ((Number) responseMap.get("processid")).longValue();
+        argv = (String[]) ((List)responseMap.get("argv")).toArray(new String[]{});
+        workingDir = (String) responseMap.get("wd");
         configName = (String) responseMap.get("config");
         runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
         networkName = (String) responseMap.get("network");
         state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
+        stoppingReason = StoppingReason.valueOf(StringUtils.defaultString((String) responseMap.get("stoppingReason"), "none").toUpperCase());
         eventlogFile = (String) responseMap.get("eventlogfile");
 
         lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);  //TODO rename JSON fields, also in cmdenv.cc!!!
@@ -307,27 +352,47 @@ public class Simulation {
 
         // parse action requested by the simulation
         StatusResponse request = null;
-        if (responseMap.containsKey("askParameter")) {
-            Map jsonData = (Map) responseMap.get("askParameter");
-            AskParameter info = new AskParameter();
-            info.paramName = (String) jsonData.get("paramName");
-            info.ownerFullPath = (String) jsonData.get("ownerFullPath");
-            info.paramType = (String) jsonData.get("paramType");
-            info.prompt = (String) jsonData.get("prompt");
-            info.defaultValue = (String) jsonData.get("defaultValue");
-            info.unit = (String) jsonData.get("unit");
-            info.choices = null; //TODO
-            request = info;
-        }
-        else if (responseMap.containsKey("errorInfo")) {
-            Map jsonData = (Map) responseMap.get("errorInfo");
-            ErrorInfo info = new ErrorInfo();
-            info.message = (String) jsonData.get("message");
-            request = info;
+        if (responseMap.containsKey("userInput")) {
+            Map jsonData = (Map) responseMap.get("userInput");
+            String type = (String) jsonData.get("type");
+            if (StringUtils.isBlank(type)) {
+                throw new RuntimeException("missing userInput type");
+            }
+            else if (type.equals("askParameter")) {
+                AskParameterRequest r = new AskParameterRequest();
+                r.paramName = (String) jsonData.get("paramName");
+                r.ownerFullPath = (String) jsonData.get("ownerFullPath");
+                r.paramType = (String) jsonData.get("paramType");
+                r.prompt = (String) jsonData.get("prompt");
+                r.defaultValue = (String) jsonData.get("defaultValue");
+                r.unit = (String) jsonData.get("unit");
+                r.choices = null; //TODO
+                request = r;
+            }
+            else if (type.equals("gets")) {
+                GetsRequest r = new GetsRequest();
+                r.prompt = (String) jsonData.get("prompt");
+                r.defaultValue = (String) jsonData.get("defaultValue");
+                request = r;
+            }
+            else if (type.equals("askYesNo")) {
+                AskYesNoRequest r = new AskYesNoRequest();
+                r.message = (String) jsonData.get("message");
+                request = r;
+            }
+            else if (type.equals("msgDialog")) {
+                MsgDialogRequest r = new MsgDialogRequest();
+                r.message = (String) jsonData.get("message");
+                request = r;
+            }
+            else {
+                throw new RuntimeException("unrecognized userInput type: " + type);
+            }
         }
 
         // load the log
         List logEntries = (List) responseMap.get("log");
+        if (logEntries == null) logEntries = new ArrayList(0);
         EventEntry lastEventEntry = null;
         List<Object> logItems = new ArrayList<Object>();
         for (Object e : logEntries) {
@@ -453,10 +518,15 @@ public class Simulation {
     }
 
     /**
-     * To be called after a refreshStatus() returns with an AskParameter object.
+     * Send reply to a user interaction request.
      */
-    public void sendParameterValue(String value) throws IOException {
-        getPageContent(urlBase + "sim/askParameterResp?v=" + urlEncode(value)); //TODO how to post "cancel"?
+    public void sendReply(String value) throws IOException {
+        String params = (value == null) ? "" : "?value=" + urlEncode(value);
+        getPageContent(urlBase + "sim/reply" + params);
+    }
+
+    public void sendCancelReply() throws IOException {
+        getPageContent(urlBase + "sim/reply");
     }
 
     public boolean hasRootObjects() {
@@ -602,16 +672,22 @@ public class Simulation {
         getPageContent(urlBase + "sim/step");
     }
 
-    public void sendRunCommand(RunMode mode) throws IOException {
-        sendRunUntilCommand(mode, null, 0);
+    public void sendRunCommand(RunMode mode, long realtimeMillis) throws IOException {
+        sendRunUntilCommand(mode, realtimeMillis, null, 0, null, null);
     }
 
-    public void sendRunUntilCommand(RunMode mode, BigDecimal untilSimTime, long untilEventNumber) throws IOException {
+    public void sendRunUntilCommand(RunMode mode, long realtimeMillis, BigDecimal untilSimTime, long untilEventNumber, cModule untilModule, cMessage untilMessage) throws IOException {
         String untilArgs = "";
+        if (realtimeMillis > 0)
+            untilArgs += "&rtlimit=" + realtimeMillis;
         if (untilEventNumber > 0)
             untilArgs += "&uevent=" + untilEventNumber;
         if (untilSimTime != null)
             untilArgs += "&utime=" + untilSimTime.toString();
+        if (untilModule != null)
+            untilArgs += "&umod=" + untilModule.getObjectId();
+        if (untilMessage != null)
+            untilArgs += "&umsg=" + untilMessage.getObjectId();
         getPageContent(urlBase + "sim/run?mode=" + mode.name().toLowerCase() + untilArgs);
     }
 

@@ -193,7 +193,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 //        animationPositionControl.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
         // create simulation canvas (TODO: on the same tab as the controls!)
-        simulationCanvas = new SimulationCanvas(parent, SWT.DOUBLE_BUFFERED | SWT.BORDER);
+        simulationCanvas = new SimulationCanvas(parent, SWT.DOUBLE_BUFFERED | SWT.BORDER, this);
         simulationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // update inspectors when something happens in the simulation
@@ -208,7 +208,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
         // create animation controller for the simulation canvas
         AnimationDirector animationDirector = new AnimationDirector(simulationCanvas, simulationController.getSimulation());
-        LiveAnimationController liveAnimationController = new LiveAnimationController(simulationController, animationDirector);
+        LiveAnimationController liveAnimationController = new LiveAnimationController(animationDirector);
         simulationController.setLiveAnimationController(liveAnimationController);
 
         DelegatingSelectionProvider delegatingSelectionProvider = (DelegatingSelectionProvider) getSite().getSelectionProvider();
@@ -470,6 +470,11 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationCanvas.inspect(object);  //FIXME probably inspector creation should be brought out of SimulationCanvas!!!
     }
 
+//    @Override
+//    public void displayError(String errorMessage) {
+//        MessageDialog.openError(getSite().getShell(), "Error", errorMessage);
+//    }
+
     @Override
     public String askParameter(String paramName, String ownerFullPath, String paramType, String prompt, String defaultValue, String unit, String[] choices) {
         String dialogMessage = "Enter parameter " + paramName + "." + ownerFullPath; //TODO refine (use prompt, paramType, etc)
@@ -480,8 +485,22 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     }
 
     @Override
-    public void displayError(String errorMessage) {
-        MessageDialog.openError(getSite().getShell(), "Error", errorMessage);
+    public String gets(String prompt, String defaultValue) {
+        InputDialog dialog = new InputDialog(getSite().getShell(), "Simulation", prompt, defaultValue, null);
+        if (dialog.open() != Dialog.OK)
+            return null;
+        else 
+            return dialog.getValue();
+    }
+
+    @Override
+    public boolean askYesNo(String message) {
+        return MessageDialog.openQuestion(getSite().getShell(), "Simulation", message);
+    }
+
+    @Override
+    public void messageDialog(String message) {
+        MessageDialog.openError(getSite().getShell(), "Simulation", message);
     }
 
     @Override
@@ -503,4 +522,5 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     public boolean isSaveAsAllowed() {
         return false;
     }
+
 }

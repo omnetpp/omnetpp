@@ -29,7 +29,10 @@ public class FastRunAction extends AbstractSimulationAction {
             if (!ensureNetworkReady())
                 return;
 
-            controller.fastRun();
+            if (!controller.isRunning())
+                controller.run(RunMode.FAST);
+            else
+                controller.switchToRunMode(RunMode.FAST);
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());

@@ -29,7 +29,10 @@ public class ExpressRunAction extends AbstractSimulationAction {
             if (!ensureNetworkReady())
                 return;
 
-            controller.expressRun();
+            if (!controller.isRunning())
+                controller.run(RunMode.EXPRESS);
+            else
+                controller.switchToRunMode(RunMode.EXPRESS);
         }
         catch (Exception e) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());

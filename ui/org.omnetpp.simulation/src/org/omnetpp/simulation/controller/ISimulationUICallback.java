@@ -8,15 +8,20 @@ package org.omnetpp.simulation.controller;
  * @author Andras
  */
 public interface ISimulationUICallback {
-    /**
-     * Display an error message that occurred in the simulation
-     */
-    //TODO split args? (module,simtime,eventnum,message, etc; see members of cException and subclasses)
-    void displayError(String errorMessage);
+//    /**
+//     * Display an error message that occurred in the simulation
+//     */
+//    //TODO split args? (module,simtime,eventnum,message, etc; see members of cException and subclasses)
+//    void displayError(String errorMessage);
 
     /**
-     * Prompt the user for a parameter value. Should return null if user
-     * cancelled the operation.
+     * Prompt the user for a parameter value. Should return null if user cancelled the operation.
      */
     String askParameter(String paramName, String ownerFullPath, String paramType, String prompt, String defaultValue, String unit, String choices[]);
+
+    String gets(String prompt, String defaultValue);
+
+    boolean askYesNo(String message);
+
+    void messageDialog(String message);
 }

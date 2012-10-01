@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cQueue;
@@ -48,6 +49,9 @@ import org.omnetpp.simulation.model.cSimpleModule;
 //FIXME how to evaluate "$PARNAME" references in display strings???
 public class SimulationCanvas extends FigureCanvas implements IInspectorContainer {
     private final Image BACKGROUND_IMAGE = SimulationPlugin.getCachedImage("icons/misc/paper.png"); //XXX bg.png
+
+    // the simulation editor that contains this simulation canvas
+    private SimulationEditor simulationEditor;
 
     // layers
     private Figure inspectorsLayer;
@@ -82,8 +86,10 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         }
     }
 
-    public SimulationCanvas(Composite parent, int style) {
+    public SimulationCanvas(Composite parent, int style, SimulationEditor simulationEditor) {
         super(parent, style);
+
+        this.simulationEditor = simulationEditor;
 
         Layer layeredPane = new Layer() {
             @Override
@@ -121,12 +127,17 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         // add advanced tooltip support for inspectors -- TODO make use of this!!!
         FigureUtils.addTooltipSupport(this, this.getContents());  
-        
+
         // add move/resize support inspectors
         moveResizeSupport = new MoveResizeSupport(this);
 
         // add support for a floating toolbar for inspectors
         floatingToolbarSupport = new FloatingToolbarSupport(this);
+    }
+
+    @Override
+    public SimulationEditor getEditor() {
+        return simulationEditor;
     }
 
     @Override

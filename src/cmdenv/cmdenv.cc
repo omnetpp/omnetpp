@@ -134,6 +134,44 @@ static cEnum runModeEnum("RunMode",
         "express", Cmdenv::RUNMODE_EXPRESS,
         NULL);
 
+static cEnum stoppingReasonEnum("StoppingReason",
+        "none", Cmdenv::STOP_NONE,
+        "untilsimtime", Cmdenv::STOP_UNTILSIMTIME,
+        "untilevent", Cmdenv::STOP_UNTILEVENT,
+        "untilmodule", Cmdenv::STOP_UNTILMODULE,
+        "untilmessage", Cmdenv::STOP_UNTILMESSAGE,
+        "realtimechunk", Cmdenv::STOP_REALTIMECHUNK,
+        "stopcommand", Cmdenv::STOP_STOPCOMMAND,
+        "termination", Cmdenv::STOP_TERMINATION,
+        NULL);
+
+static cEnum commandEnum("Command",
+        "none", Cmdenv::CMD_NONE,
+        "setupNetwork", Cmdenv::CMD_SETUPNETWORK,
+        "setupRun", Cmdenv::CMD_SETUPRUN,
+        "rebuild", Cmdenv::CMD_REBUILD,
+        "step", Cmdenv::CMD_STEP,
+        "run", Cmdenv::CMD_RUN,
+        "stop", Cmdenv::CMD_STOP,
+        "finish", Cmdenv::CMD_FINISH,
+        "quit", Cmdenv::CMD_QUIT,
+        NULL);
+
+static cEnum userInputState("UserInputState",
+        "none", Cmdenv::INPSTATE_NONE,
+        "initiated", Cmdenv::INPSTATE_INITIATED,
+        "waitingForReply", Cmdenv::INPSTATE_WAITINGFORREPLY,
+        "replyArrived", Cmdenv::INPSTATE_REPLYARRIVED,
+        NULL);
+
+static cEnum userInputType("UserInputType",
+        "none", Cmdenv::INP_NONE,
+        "error", Cmdenv::INP_ERROR,
+        "askParameter", Cmdenv::INP_ASKPARAMETER,
+        "gets", Cmdenv::INP_GETS,
+        "askYesNo", Cmdenv::INP_ASKYESNO,
+        "msgDialog", Cmdenv::INP_MSGDIALOG,
+    NULL);
 
 Cmdenv::Cmdenv()
 {
@@ -146,20 +184,26 @@ Cmdenv::Cmdenv()
     fout = stdout;
 
     // init config variables that are used even before readOptions()
+    opt_httpcontrolled = false;
     opt_autoflush = true;
 
-    opt_updatefreq_fast = 500;
-    opt_updatefreq_express = 1000;
+    opt_updatefreq_fast = 500; // ms
+    opt_updatefreq_express = 1000; // ms
+
+    state = SIM_NONETWORK;
+    command = CMD_NONE;
+    stoppingReason = STOP_NONE;
 
     isConfigRun = false; //TODO check all other new vars too
 
-    lastId = 0;
+    lastObjectId = 0;
 
-    errorInfo.isValid = false;
-    askParamInfo.isValid = false;
-
-    collectJsonLog = true; //FIXME
+    collectJsonLog = true;
     jsonLog = new JsonArray();
+
+    userInput.state = INPSTATE_NONE;
+    userInput.type = INP_NONE;
+
 }
 
 Cmdenv::~Cmdenv()
@@ -208,46 +252,14 @@ void Cmdenv::readPerRunOptions()
     opt_perfdisplay = cfg->getAsBool(CFGID_PERFORMANCE_DISPLAY);
 }
 
-void Cmdenv::askParameter(cPar *par, bool unassigned)
-{
-    bool success = false;
-    while (!success)
-    {
-        cProperties *props = par->getProperties();
-        cProperty *prop = props->get("prompt");
-        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
-        std::string reply;
-
-        // ask the user. note: gets() will signal "cancel" by throwing an exception
-        if (!prompt.empty())
-            reply = this->gets(prompt.c_str(), par->str().c_str());
-        else
-            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
-            // against this string for detecting user input
-            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"' ("+(unassigned?"unassigned":"ask")+"):").c_str(), par->str().c_str());
-
-        try
-        {
-            par->parse(reply.c_str());
-            success = true;
-        }
-        catch (std::exception& e)
-        {
-            ev.printfmsg("%s -- please try again.", e.what());
-        }
-    }
-}
-
 void Cmdenv::doRun()
 {
-    state = SIM_NONETWORK; //TODO into ctor
-    command = CMD_NONE;
-
     httpServer->addHttpRequestHandler(this); //FIXME should go into setup()?
 
     if (args->optionGiven('w'))
     {
         // interactive mode: wait for commands
+        opt_httpcontrolled = true;
         processHttpRequests(true);
     }
     else
@@ -257,15 +269,15 @@ void Cmdenv::doRun()
         // (NOTE: inifile settings *already* got read at this point! as EnvirBase::setup()
         // invokes readOptions()).
 
-        const char *configname = args->optionValue('c');
-        if (configname)
-            opt_configname = configname;
+        const char *configName = args->optionValue('c');
+        if (configName)
+            opt_configname = configName;
         if (opt_configname.empty())
             opt_configname = "General";
 
-        const char *runstoexec = args->optionValue('r');
-        if (runstoexec)
-            opt_runstoexec = runstoexec;
+        const char *runsToExec = args->optionValue('r');
+        if (runsToExec)
+            opt_runstoexec = runsToExec;
 
         // if the list of runs is not given explicitly, must execute all runs
         if (opt_runstoexec.empty())
@@ -295,15 +307,15 @@ void Cmdenv::doRun()
 
         for (; runiterator()!=-1; runiterator++)
         {
-            int runnumber = runiterator();
+            int runNumber = runiterator();
             bool networkSetupDone = false;
-            bool startrun_done = false;
+            bool startrunDone = false;
             try
             {
-                ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runnumber);
+                ::fprintf(fout, "\nPreparing for running configuration %s, run #%d...\n", opt_configname.c_str(), runNumber);
                 ::fflush(fout);
 
-                cfg->activateConfig(opt_configname.c_str(), runnumber);
+                cfg->activateConfig(opt_configname.c_str(), runNumber);
 
                 const char *itervars = cfg->getVariable(CFGVAR_ITERATIONVARS2);
                 if (itervars && strlen(itervars)>0)
@@ -331,7 +343,7 @@ void Cmdenv::doRun()
 
                 disable_tracing = opt_expressmode;
                 startRun();
-                startrun_done = true;
+                startrunDone = true;
 
                 // run the simulation
                 ::fprintf(fout, "\nRunning simulation...\n");
@@ -343,7 +355,7 @@ void Cmdenv::doRun()
                 simulate();
                 disable_tracing = false;
 
-                ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runnumber);
+                ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", runNumber);
                 ::fflush(fout);
                 simulation.callFinish();
                 flushLastLine();
@@ -362,7 +374,7 @@ void Cmdenv::doRun()
             }
 
             // call endRun()
-            if (startrun_done)
+            if (startrunDone)
             {
                 try
                 {
@@ -404,7 +416,6 @@ void Cmdenv::doRun()
 
 void Cmdenv::processHttpRequests(bool blocking)
 {
-    //FIXME observe "blocking" flag!
     //FIXME handle exceptions! (store them, and return them when status is requested)
     for (;;)
     {
@@ -416,58 +427,39 @@ void Cmdenv::processHttpRequests(bool blocking)
 
         int currentCommand = command;
         command = CMD_NONE;
-
-        ::printf("[cmdenv] command=%d\n", currentCommand);
-        if (currentCommand == CMD_QUIT) {
-            return; //XXX set some "should_exit" flag like Tkenv?
-        }
-        else if (currentCommand == CMD_SETUPNETWORK) {
-            const char *networkName = commandArgs["network"].c_str();
-            newNetwork(networkName);
-        }
-        else if (currentCommand == CMD_SETUPRUN) {
-            const char *configName = commandArgs["config"].c_str();
-            int runNumber = atoi(commandArgs["run"].c_str());
-            newRun(configName, runNumber);
-        }
-        else if (currentCommand == CMD_REBUILD) {
-            rebuildSim();
-        }
-        else if (currentCommand == CMD_STEP) {
-            doOneStep();
-        }
-        else if (currentCommand == CMD_RUN) {
-            //TODO exception handling!
-            RunMode mode = (RunMode)runModeEnum.lookup(commandArgs["mode"].c_str(), RUNMODE_NONE);
-            simtime_t untilTime = commandArgs["utime"]=="" ? 0 : STR_SIMTIME(commandArgs["utime"].c_str());
-            eventnumber_t untilEventnum = commandArgs["uevent"]=="" ? 0 : opp_atol(commandArgs["uevent"].c_str());
-            long realTimeMillis = commandArgs["rtlimit"]=="" ? 0 : opp_atof(commandArgs["rtlimit"].c_str());
-            cMessage *untilMsg = commandArgs["umsg"]=="" ? NULL : check_and_cast<cMessage*>(getObjectById(opp_atol(commandArgs["umsg"].c_str())));
-            cModule *untilModule = commandArgs["umod"]=="" ? NULL : check_and_cast<cModule*>(getObjectById(opp_atol(commandArgs["umod"].c_str())));
-            runSimulation(mode, untilTime, untilEventnum, realTimeMillis, untilMsg, untilModule);
-        }
-        else if (currentCommand == CMD_STOP) {
-            setStopSimulationFlag();
-        }
-        else if (currentCommand == CMD_FINISH) {
-            finishSimulation();
-        }
-        else {
-            ASSERT(false);
-        }
+        processCommand(currentCommand);
     }
 }
 
-bool Cmdenv::handle(cHttpRequest *request)
+bool Cmdenv::handleHttpRequest(cHttpRequest *request)
 {
-    //TODO: rewrite HttpServer so it directly uses mongoose's url-based callback registration...
-    if (strcmp(request->getRequestMethod(), "GET") != 0 || strncmp(request->getUri(), "/sim", 4) !=0)
-        return false;
+    ASSERT2(command == CMD_NONE, "previous command not marked as done yet");
 
-    //TODO: parse request args into std::map, etc
+    //TODO: rewrite HttpServer so it directly uses mongoose's url-based callback registration...
+    const char *method = request->getRequestMethod();
     const char *uri = request->getUri();
     const char *query = request->getQueryString();
-    ASSERT2(command == CMD_NONE, "previous command not marked as done yet");
+    debug(!query ? "[http] %s %s\n" : "[http] %s %s?%s\n", method, uri, query);
+
+    const char *OK_STATUS = "HTTP/1.0 200 OK\n";
+    const char *ERROR_STATUS = "HTTP/1.0 409 Conflict\n\nRequest not allowed in this state\n";
+
+    // check method and base URL
+    if (strcmp(method, "GET") != 0 || strncmp(uri, "/sim", 4) !=0) {
+        debug("[http] wrong method or uri\n");
+        return false;
+    }
+
+    // if user input is in progress, we only allow requests that post the reply or are side effect free
+    if (userInput.state != INPSTATE_NONE) {
+        if (strcmp(uri, "/sim/reply") != 0 && strcmp(uri, "/sim/status") != 0 && strcmp(uri, "/sim/getObjectInfo") != 0) {
+            debug("[http] request %s not allowed in userInput.state=%s\n", uri, userInputState.getStringFor(userInput.state));
+            request->print(ERROR_STATUS);
+            return true;
+        }
+    }
+
+    clock_t startTime = clock();
 
     // parse query string into commandArgs[]
     commandArgs.clear();
@@ -481,8 +473,6 @@ bool Cmdenv::handle(cHttpRequest *request)
         else
             commandArgs[std::string(token, eqPtr-token)] = opp_urldecode(eqPtr + 1);
     }
-
-    const char *OK_STATUS = "HTTP/1.0 200 OK\n";
 
     if (strcmp(uri, "/sim/setupNetwork") == 0) {
         //TODO check state!
@@ -524,6 +514,18 @@ bool Cmdenv::handle(cHttpRequest *request)
         command = CMD_QUIT;
         request->print(OK_STATUS);
     }
+    else if (strcmp(uri, "/sim/reply") == 0) {
+        if (userInput.state != INPSTATE_WAITINGFORREPLY) {
+            request->print(ERROR_STATUS);
+        }
+        else {
+            bool hasValue = commandArgs.find("value") != commandArgs.end();
+            userInput.reply = hasValue ? commandArgs["value"] : "";
+            userInput.cancel = !hasValue;
+            userInput.state = INPSTATE_REPLYARRIVED;
+            request->print(OK_STATUS);
+        }
+    }
     else if (strcmp(uri, "/sim/status") == 0) {
         request->print(OK_STATUS);
         request->print("\n");
@@ -531,6 +533,12 @@ bool Cmdenv::handle(cHttpRequest *request)
         JsonObject *result = new JsonObject();
         result->put("hostname", jsonWrap(opp_gethostname()));
         result->put("processid", jsonWrap(getpid()));
+        JsonArray *jArgv = new JsonArray();
+        for (int i = 0; i < args->getArgCount(); i++)
+            jArgv->push_back(jsonWrap(args->getArgVector()[i]));
+        result->put("argv", jArgv);
+        char wdbuf[1024] = "n/a";
+        result->put("wd", jsonWrap(getcwd(wdbuf,sizeof(wdbuf))));
         result->put("state", jsonWrap(stateEnum.getStringFor(state)));
         result->put("eventlogfile", jsonWrap(toAbsolutePath(eventlogmgr->getFileName())));
         if (state != SIM_NONETWORK) {
@@ -548,6 +556,7 @@ bool Cmdenv::handle(cHttpRequest *request)
             cEvent *guessNextEvent = simulation.guessNextEvent();
             if (guessNextEvent && guessNextEvent->isMessage())
                 result->put("nextEventMessageIdGuess", jsonWrap(static_cast<cMessage*>(guessNextEvent)->getId()));
+            result->put("stoppingReason", jsonWrap(stoppingReasonEnum.getStringFor(stoppingReason)));
         }
 
         JsonObject *jRootObjects = new JsonObject();
@@ -570,11 +579,12 @@ bool Cmdenv::handle(cHttpRequest *request)
             jsonLog = new JsonArray();  // previous one is now owned by result
         }
 
-        if (errorInfo.isValid) {
-            JsonObject *info = new JsonObject();
-            info->put("message", jsonWrap(errorInfo.message));
-            result->put("errorInfo", info);
-            errorInfo.isValid = false;
+        if (userInput.state == INPSTATE_INITIATED) {
+            ASSERT(userInput.request != NULL);
+            userInput.request->put("type", jsonWrap(userInputType.getStringFor(userInput.type)));
+            result->put("userInput", userInput.request);
+            userInput.request = NULL;
+            userInput.state = INPSTATE_WAITINGFORREPLY;
         }
 
         std::stringstream ss;
@@ -639,7 +649,7 @@ bool Cmdenv::handle(cHttpRequest *request)
         }
 
         double consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
-        ::printf("[http] json tree assembly took %lgs\n", consumedCPU);
+        debug("[http] json tree assembly took %lgs\n", consumedCPU);
 
         startTime = clock();
 
@@ -648,15 +658,62 @@ bool Cmdenv::handle(cHttpRequest *request)
         delete result;
 
         consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
-        ::printf("[http] json tree serialization took %lgs\n", consumedCPU);
+        debug("[http] json tree serialization took %lgs\n", consumedCPU);
 
         request->print(ss.str().c_str());
     }
     else {
-        return false;
+        debug("[http] unrecognized request\n");
+        return false; // not handled
     }
 
+    double consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
+    debug("[http] done, processing took %lgs\n", consumedCPU);
+
     return true; // handled
+}
+
+void Cmdenv::processCommand(int command)
+{
+    debug("[cmdenv] processing \"%s\" command\n", commandEnum.getStringFor(command));
+    if (command == CMD_SETUPNETWORK) {
+        const char *networkName = commandArgs["network"].c_str();
+        newNetwork(networkName);
+    }
+    else if (command == CMD_SETUPRUN) {
+        const char *configName = commandArgs["config"].c_str();
+        int runNumber = atoi(commandArgs["run"].c_str());
+        newRun(configName, runNumber);
+    }
+    else if (command == CMD_REBUILD) {
+        rebuildSim();
+    }
+    else if (command == CMD_STEP) {
+        doOneStep();
+    }
+    else if (command == CMD_RUN) {
+        //TODO exception handling!
+        RunMode mode = (RunMode)runModeEnum.lookup(commandArgs["mode"].c_str(), RUNMODE_NONE);
+        long realTimeMillis = commandArgs["rtlimit"]=="" ? 0 : opp_atof(commandArgs["rtlimit"].c_str());
+        simtime_t untilSimTime = commandArgs["utime"]=="" ? 0 : STR_SIMTIME(commandArgs["utime"].c_str());
+        eventnumber_t untilEventNumber = commandArgs["uevent"]=="" ? 0 : opp_atol(commandArgs["uevent"].c_str());
+        cMessage *untilMessage = commandArgs["umsg"]=="" ? NULL : check_and_cast<cMessage*>(getObjectById(opp_atol(commandArgs["umsg"].c_str())));
+        cModule *untilModule = commandArgs["umod"]=="" ? NULL : check_and_cast<cModule*>(getObjectById(opp_atol(commandArgs["umod"].c_str())));
+        runSimulation(mode, realTimeMillis, untilSimTime, untilEventNumber, untilMessage, untilModule);
+    }
+    else if (command == CMD_STOP) {
+        setStopSimulationFlag();
+    }
+    else if (command == CMD_FINISH) {
+        finishSimulation();
+    }
+    else if (command == CMD_QUIT) {
+        //TODO kezelni! set some "should_exit" flag like Tkenv?
+    }
+    else {
+        ASSERT(false);
+    }
+    debug("[cmdenv] command \"%s\" done\n", commandEnum.getStringFor(command));
 }
 
 JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
@@ -683,7 +740,7 @@ JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
 
         jObject->put("parentModule", jsonWrap(getIdStringForObject(component->getParentModule())));
         jObject->put("componentType", jsonWrap(getIdStringForObject(component->getComponentType())));
-        jObject->put("displayString", jsonWrap(component->getDisplayString().str()));
+        jObject->put("displayString", jsonWrap(component->parametersFinalized() ? component->getDisplayString().str() : ""));
 
         JsonArray *jparameters = new JsonArray();
         for (int i = 0; i < component->getNumParams(); i++) {
@@ -938,12 +995,8 @@ const char *Cmdenv::getKnownBaseClass(cObject *object)
         return "cRegistrationList";
     else if (dynamic_cast<cClassDescriptor*>(object))
         return "cClassDescriptor";
-//    else if (dynamic_cast<cOwnedObject*>(object))   -- not interesting -- no new data members etc
-//        return "cOwnedObject";
-//    else if (dynamic_cast<cNamedObject*>(object))
-//        return "cNamedObject";
     else
-        return "cObject";
+        return "cObject"; // note: cOwnedObject and cNamedObject are not interesting
 }
 
 void Cmdenv::newNetwork(const char *networkname)
@@ -1037,6 +1090,8 @@ void Cmdenv::doOneStep()
     runUntil.msg = NULL; // deactivate corresponding checks in eventCancelled()/objectDeleted()
 
     state = SIM_RUNNING;
+    stoppingReason = STOP_NONE;
+
     startClock();
     notifyListeners(LF_ON_SIMULATION_RESUME);
     try
@@ -1090,19 +1145,29 @@ void Cmdenv::doOneStep()
  * UI update idejere megallitjuk (eleve until darabkakkal kell futtatni!)
  * until-t mindegyik tamogatja (simtime, eventnumber, msg, module, PLUS: elapsed!!! [i.e. run for 2s])
  */
-void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t until_eventnum, long realtimemillis, cMessage *until_msg, cModule *until_module)
+void Cmdenv::runSimulation(RunMode mode, long realTimeMillis, simtime_t untilSimTime, eventnumber_t untilEventNumber, cMessage *untilMessage, cModule *untilModule)
 {
     ASSERT(state==SIM_READY);
 
     runMode = mode;
-    runUntil.simTime = until_time;
-    runUntil.eventNumber = until_eventnum;
-    runUntil.msg = until_msg;
-    runUntil.module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runUntil.simTime = untilSimTime;
+    runUntil.eventNumber = untilEventNumber;
+    runUntil.msg = untilMessage;
+    runUntil.module = untilModule;  // Note: this is NOT supported with RUNMODE_EXPRESS
+    runUntil.hasRealTimeLimit = (realTimeMillis != 0);
+    if (runUntil.hasRealTimeLimit) {
+        struct timeval t;
+        gettimeofday(&t, NULL);
+        runUntil.realTime = timeval_add(t, realTimeMillis * 0.001);
+    }
 
     stopSimulationFlag = false;
 
     state = SIM_RUNNING;
+    stoppingReason = STOP_NONE;
+
+    //TODO: uzemmod valtogatast kiszedni belole!!!! nem kell!!!
+
     startClock();
     notifyListeners(LF_ON_SIMULATION_RESUME);
     try
@@ -1122,6 +1187,7 @@ void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unt
     catch (cTerminationException& e)
     {
         state = SIM_TERMINATED;
+        stoppingReason = STOP_TERMINATION;
         stoppedWithTerminationException(e);
         notifyListeners(LF_ON_SIMULATION_SUCCESS);
         displayException(e);
@@ -1129,6 +1195,7 @@ void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unt
     catch (std::exception& e)
     {
         state = SIM_ERROR;
+        stoppingReason = STOP_TERMINATION;
         stoppedWithException(e);
         notifyListeners(LF_ON_SIMULATION_ERROR);
         displayException(e);
@@ -1150,26 +1217,6 @@ void Cmdenv::runSimulation(RunMode mode, simtime_t until_time, eventnumber_t unt
         //
         finishSimulation();
     }
-}
-
-void Cmdenv::setSimulationRunMode(RunMode mode)
-{
-    // This function (and the next one too) is called while runSimulation() is
-    // underway, from Tcl code that gets a chance to run via the
-    // Tcl_Eval(interp, "update") commands
-    runMode = mode;
-}
-
-void Cmdenv::setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg)
-{
-    runUntil.simTime = until_time;
-    runUntil.eventNumber = until_eventnum;
-    runUntil.msg = until_msg;
-}
-
-void Cmdenv::setSimulationRunUntilModule(cModule *until_module)
-{
-    runUntil.module = until_module;
 }
 
 // note: also updates "since" (sets it to the current time) if answer is "true"
@@ -1211,32 +1258,38 @@ bool Cmdenv::doRunSimulation()
     Speedometer speedometer;
     speedometer.start(simulation.getSimTime());
     disable_tracing = false;
-    bool firstevent = true;
+    bool isFirstEvent = true;
 
-    struct timeval last_update;
-    gettimeofday(&last_update, NULL);
+    struct timeval lastUpdateTime;
+    gettimeofday(&lastUpdateTime, NULL);
 
-    while(1)
+    while (true)
     {
         if (runMode == RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
 
         cEvent *event = simulation.takeNextEvent();
-        if (!event) break; // scheduler interrupted (parsim)
+        if (!event)
+            break; // scheduler interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (runUntil.msg && simulation.msgQueue.peekFirst()==runUntil.msg) break;
+        if (runUntil.msg && simulation.msgQueue.peekFirst() == runUntil.msg) {
+            stoppingReason = STOP_UNTILMESSAGE;
+            break;
+        }
 
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
         cModule *mod = event->isMessage() ? static_cast<cMessage*>(event)->getArrivalModule() : NULL;
         bool untilmodule_reached = runUntil.module && moduleContains(runUntil.module,mod);
-        if (untilmodule_reached && !firstevent)
+        if (untilmodule_reached && !isFirstEvent) {
+            stoppingReason = STOP_UNTILMODULE;
             break;
-        firstevent = false;
+        }
+        isFirstEvent = false;
 
-        bool frequent_updates = (runMode==RUNMODE_NORMAL);
+        bool frequentUpdates = (runMode==RUNMODE_NORMAL);
 
         speedometer.addEvent(simulation.getSimTime());
 
@@ -1254,23 +1307,43 @@ bool Cmdenv::doRunSimulation()
         flushLastLine();
 
         // display update
-        if (frequent_updates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, last_update)))
+        if (frequentUpdates || ((simulation.getEventNumber()&0x0f)==0 && elapsed(opt_updatefreq_fast, lastUpdateTime)))
         {
-            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
-            {
+            if (runUntil.hasRealTimeLimit) {
+                struct timeval t;
+                gettimeofday(&t, NULL);
+                if (timeval_greater(t, runUntil.realTime)) {
+                    stoppingReason = STOP_REALTIMECHUNK;
+                    break;
+                }
+            }
+
+            if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS) {
                 speedometer.beginNewInterval();
 //                updatePerformanceDisplay(speedometer);
             }
 //            Tcl_Eval(interp, "update");
             processHttpRequests(false);
-            resetElapsedTime(last_update); // exclude UI update time [bug #52]
+            resetElapsedTime(lastUpdateTime); // exclude UI update time [bug #52]
         }
 
         // exit conditions
-        if (untilmodule_reached) break;
-        if (stopSimulationFlag) break;
-        if (runUntil.simTime>0 && simulation.guessNextSimtime()>=runUntil.simTime) break;
-        if (runUntil.eventNumber>0 && simulation.getEventNumber()>=runUntil.eventNumber) break;
+        if (untilmodule_reached) {
+            stoppingReason = STOP_UNTILMODULE;
+            break;
+        }
+        if (stopSimulationFlag) {
+            stoppingReason = STOP_STOPCOMMAND;
+            break;
+        }
+        if (runUntil.simTime > 0 && simulation.guessNextSimtime() >= runUntil.simTime) {
+            stoppingReason = STOP_UNTILSIMTIME;
+            break;
+        }
+        if (runUntil.eventNumber > 0 && simulation.getEventNumber() >= runUntil.eventNumber) {
+            stoppingReason = STOP_UNTILEVENT;
+            break;
+        }
 
         checkTimeLimits();
     }
@@ -1293,6 +1366,9 @@ bool Cmdenv::doRunSimulationExpress()
     // update, just to get the above notice displayed
 //    Tcl_Eval(interp, "update");
 
+    if (runUntil.module)
+        throw cRuntimeError("Express mode does not support run-until-module");
+
     // OK, let's begin
     Speedometer speedometer;
     speedometer.start(simulation.getSimTime());
@@ -1301,13 +1377,16 @@ bool Cmdenv::doRunSimulationExpress()
     struct timeval lastUpdateTime;
     gettimeofday(&lastUpdateTime, NULL);
 
-    do
+    while (true)
     {
         cEvent *event = simulation.takeNextEvent();
         if (!event) break; // scheduler interrupted (parsim)
 
         // "run until message": stop if desired event was reached
-        if (runUntil.msg && simulation.msgQueue.peekFirst()==runUntil.msg) break;
+        if (runUntil.msg && simulation.msgQueue.peekFirst() == runUntil.msg) {
+            stoppingReason = STOP_UNTILMESSAGE;
+            break;
+        }
 
         speedometer.addEvent(simulation.getSimTime());
 
@@ -1315,6 +1394,15 @@ bool Cmdenv::doRunSimulationExpress()
 
         if ((simulation.getEventNumber()&0xff)==0 && elapsed(opt_updatefreq_express, lastUpdateTime))
         {
+            if (runUntil.hasRealTimeLimit) {
+                struct timeval t;
+                gettimeofday(&t, NULL);
+                if (timeval_greater(t, runUntil.realTime)) {
+                    stoppingReason = STOP_REALTIMECHUNK;
+                    break;
+                }
+            }
+
             if (speedometer.getMillisSinceIntervalStart() > SPEEDOMETER_UPDATEMILLISECS)
             {
                 speedometer.beginNewInterval();
@@ -1326,12 +1414,23 @@ bool Cmdenv::doRunSimulationExpress()
             if (runMode != RUNMODE_EXPRESS)
                 return true;  // should continue, but in a different mode
         }
+
+        // exit conditions
+        if (stopSimulationFlag) {
+            stoppingReason = STOP_STOPCOMMAND;
+            break;
+        }
+        if (runUntil.simTime > 0 && simulation.guessNextSimtime() >= runUntil.simTime) {
+            stoppingReason = STOP_UNTILSIMTIME;
+            break;
+        }
+        if (runUntil.eventNumber > 0 && simulation.getEventNumber() >= runUntil.eventNumber) {
+            stoppingReason = STOP_UNTILEVENT;
+            break;
+        }
+
         checkTimeLimits();
     }
-    while( !stopSimulationFlag &&
-           (runUntil.simTime<=0 || simulation.guessNextSimtime() < runUntil.simTime) &&
-           (runUntil.eventNumber<=0 || simulation.getEventNumber() < runUntil.eventNumber)
-         );
     return false;
 }
 
@@ -1394,8 +1493,8 @@ long Cmdenv::getIdForObject(cObject *obj)
     std::map<cObject*,long>::iterator it = objectToIdMap.find(obj);
     if (it == objectToIdMap.end())
     {
-        int id = ++lastId;
-        ::printf("%ld --> (%s)%s\n", id, obj->getClassName(), obj->getFullPath().c_str());
+        int id = ++lastObjectId;
+        debug("[objcache] assigning id: %d --> (%s)%s\n", id, obj->getClassName(), obj->getFullPath().c_str());
         objectToIdMap[obj] = id;
         idToObjectMap[id] = obj;
         return id;
@@ -1639,13 +1738,7 @@ const char *Cmdenv::progressPercentage()
 
 void Cmdenv::displayException(std::exception& ex)
 {
-    EnvirBase::displayException(ex);
-
-    //TODO display the exception in the UI
-    errorInfo.message = ex.what();
-    errorInfo.isValid = true;
-    while (errorInfo.isValid)
-        processHttpRequests(true);  // status() will reset isValid
+    EnvirBase::displayException(ex); // will end up in putsmsg()
 }
 
 void Cmdenv::componentInitBegin(cComponent *component, int stage)
@@ -1675,10 +1768,47 @@ void Cmdenv::deinstallSignalHandler()
 
 //-----------------------------------------------------
 
+void Cmdenv::askParameter(cPar *par, bool unassigned)
+{
+    bool success = false;
+    while (!success)
+    {
+        cProperties *props = par->getProperties();
+        cProperty *prop = props->get("prompt");
+        std::string prompt = prop ? prop->getValue(cProperty::DEFAULTKEY) : "";
+        std::string reply;
+
+        // ask the user. note: gets() will signal "cancel" by throwing an exception
+        if (!prompt.empty())
+            reply = this->gets(prompt.c_str(), par->str().c_str());
+        else
+            // DO NOT change the "Enter parameter" string. The IDE launcher plugin matches
+            // against this string for detecting user input
+            reply = this->gets((std::string("Enter parameter `")+par->getFullPath()+"' ("+(unassigned?"unassigned":"ask")+"):").c_str(), par->str().c_str());
+
+        try
+        {
+            par->parse(reply.c_str());
+            success = true;
+        }
+        catch (std::exception& e)
+        {
+            ev.printfmsg("%s -- please try again.", e.what());
+        }
+    }
+}
+
 void Cmdenv::putsmsg(const char *s)
 {
     ::fprintf(fout, "\n<!> %s\n\n", s);
     ::fflush(fout);
+
+    if (opt_httpcontrolled)
+    {
+        JsonObject *details = new JsonObject();
+        details->put("message", jsonWrap(s));
+        getUserInput(INP_MSGDIALOG, details);
+    }
 }
 
 void Cmdenv::sputn(const char *s, int n)
@@ -1714,16 +1844,25 @@ cEnvir& Cmdenv::flush()
 std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 {
     if (!opt_interactive)
-    {
         throw cRuntimeError("The simulation wanted to ask a question, set cmdenv-interactive=true to allow it: \"%s\"", prompt);
+
+    ::fprintf(fout, "%s", prompt);
+    if (!opp_isempty(defaultReply))
+        ::fprintf(fout, "(default: %s) ", defaultReply);
+    ::fflush(fout);
+
+    if (opt_httpcontrolled)
+    {
+        JsonObject *details = new JsonObject();
+        details->put("prompt", jsonWrap(prompt));
+        details->put("default", jsonWrap(defaultReply));
+        std::string reply = getUserInput(INP_GETS, details);
+        ::fprintf(fout, "%s\n", reply.c_str());
+        ::fflush(fout);
+        return reply;
     }
     else
     {
-        ::fprintf(fout, "%s", prompt);
-        if (!opp_isempty(defaultReply))
-            ::fprintf(fout, "(default: %s) ", defaultReply);
-        ::fflush(fout);
-
         ::fgets(buffer, 512, stdin);
         buffer[strlen(buffer)-1] = '\0'; // chop LF
 
@@ -1737,18 +1876,29 @@ std::string Cmdenv::gets(const char *prompt, const char *defaultReply)
 bool Cmdenv::askyesno(const char *question)
 {
     if (!opt_interactive)
-    {
         throw cRuntimeError("Simulation needs user input in non-interactive mode (prompt text: \"%s (y/n)\")", question);
+
+    if (opt_httpcontrolled)
+    {
+        ::fprintf(fout, "%s (y/n) ", question);
+        ::fflush(fout);
+        JsonObject *details = new JsonObject();
+        details->put("message", jsonWrap(question));
+        std::string reply = getUserInput(INP_ASKYESNO, details);
+        ::fprintf(fout, "%s\n", reply.c_str());
+        ::fflush(fout);
+        return reply == "y";
     }
     else
     {
-        // should also return -1 (==CANCEL)
         for(;;)
         {
             ::fprintf(fout, "%s (y/n) ", question);
             ::fflush(fout);
             ::fgets(buffer, 512, stdin);
             buffer[strlen(buffer)-1] = '\0'; // chop LF
+            if (buffer[0]=='\x1b') // ESC?
+               throw cRuntimeError(eCANCEL);
             if (opp_toupper(buffer[0])=='Y' && !buffer[1])
                 return true;
             else if (opp_toupper(buffer[0])=='N' && !buffer[1])
@@ -1757,6 +1907,42 @@ bool Cmdenv::askyesno(const char *question)
                 putsmsg("Please type 'y' or 'n'!\n");
         }
     }
+}
+
+std::string Cmdenv::getUserInput(UserInputType type, JsonObject *details)
+{
+    debug("[cmdenv] entering getUserInput(type='%s')\n", userInputType.getStringFor(type));
+    ASSERT(userInput.state == INPSTATE_NONE);
+    userInput.type = type;
+    userInput.request = details;
+    userInput.state = INPSTATE_INITIATED;
+
+    // wait until HTTP communication takes place
+    while (userInput.state != INPSTATE_REPLYARRIVED)
+        httpServer->handleOneRequest(true);
+    ASSERT(command == CMD_NONE); // commands not allowed while user input is in progress
+
+    // done
+    userInput.state = INPSTATE_NONE;
+    if (userInput.cancel)
+        throw cRuntimeError(eCANCEL);
+    debug("[cmdenv] leaving getUserInput(), reply=\"%s\"\n", userInput.reply.c_str());
+    return userInput.reply;
+}
+
+void Cmdenv::debug(const char *fmt,...)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    time_t t = (time_t) tv.tv_sec;
+    struct tm tm = *localtime(&t);
+
+    ::printf("[%02d:%02d:%02d.%03d event #%"LL"d %s] ", tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000), simulation.getEventNumber(), stateEnum.getStringFor(state));
+    va_list va;
+    va_start(va, fmt);
+    ::vprintf(fmt, va);
+    va_end(va);
+    ::fflush(stdout); // needed for sensible output in the IDE console
 }
 
 bool Cmdenv::idle()
@@ -1823,7 +2009,7 @@ void Cmdenv::beginSend(cMessage *msg)
 {
     EnvirBase::beginSend(msg);
 
-    if (collectJsonLog)
+    if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("BS"));
@@ -1846,7 +2032,7 @@ void Cmdenv::messageSendDirect(cMessage *msg, cGate *toGate, simtime_t propagati
 {
     EnvirBase::messageSendDirect(msg, toGate, propagationDelay, transmissionDelay);
 
-    if (collectJsonLog)
+    if (!disable_tracing && collectJsonLog)
     {
         cModule *srcModule = msg->getSenderModule();
 
@@ -1864,7 +2050,7 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate)
 {
     EnvirBase::messageSendHop(msg, srcGate);
 
-    if (collectJsonLog)
+    if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("SH"));  // note: msg is already in BeginSend
@@ -1877,7 +2063,7 @@ void Cmdenv::messageSendHop(cMessage *msg, cGate *srcGate, simtime_t propagation
 {
     EnvirBase::messageSendHop(msg, srcGate, propagationDelay, transmissionDelay);
 
-    if (collectJsonLog) //TODO we won't animate in fast mode, so BS/SH/ES entries won't be needed then!
+    if (!disable_tracing && collectJsonLog) //TODO we won't animate in fast mode, so BS/SH/ES entries won't be needed then!
     {
         // Note: the link or even the gate may be deleted by the time the client receives
         // this JSON info (so there won't be enough info for animation), but we ignore
@@ -1895,7 +2081,7 @@ void Cmdenv::endSend(cMessage *msg)
 {
     EnvirBase::endSend(msg);
 
-    if (collectJsonLog)
+    if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("ES"));  // note: msg is already in BeginSend
@@ -1922,7 +2108,7 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
 {
     EnvirBase::componentMethodBegin(from, to, methodFmt, va, silent);
 
-    if (collectJsonLog)
+    if (!disable_tracing && collectJsonLog)
     {
         const char *methodText = "";  // for the Enter_Method_Silent case
         if (methodFmt) {
@@ -1944,7 +2130,7 @@ void Cmdenv::componentMethodEnd()
 {
     EnvirBase::componentMethodEnd();
 
-    if (collectJsonLog)
+    if (!disable_tracing && collectJsonLog)
     {
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("ME"));

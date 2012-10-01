@@ -85,16 +85,12 @@ int cMongooseHttpServer::findHttpRequestHandler(cHttpRequestHandler *p)
 
 void cMongooseHttpServer::uri_callback(struct mg_connection *conn, const struct mg_request_info *info, void *user_data)
 {
-    clock_t startTime = clock();
-
     cMongooseHttpRequest req(conn, info);
     cMongooseHttpServer *self = (cMongooseHttpServer *)user_data;
 
-    ::printf("[http] %s %s?%s\n", req.getRequestMethod(), req.getUri(), req.getQueryString());
-
     bool handled = false;
     for (int i=0; i<(int)self->handlers.size(); i++)
-        if (handled = self->handlers[i]->handle(&req))
+        if ((handled = self->handlers[i]->handleHttpRequest(&req)))
             break;
 
     if (!handled)
@@ -109,10 +105,6 @@ void cMongooseHttpServer::uri_callback(struct mg_connection *conn, const struct 
             "\r\n"
             "%s", strlen(body), body);
     }
-
-    double consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
-    ::printf("[http] processing took %lgs\n", consumedCPU);
-    fflush(stdout); // needed for sensible output in the IDE console
 }
 
 //----
@@ -125,7 +117,10 @@ cMongooseHttpRequest::cMongooseHttpRequest(struct mg_connection *conn, const str
 
 int cMongooseHttpRequest::print(const char *s)
 {
-    return mg_write(conn, s, strlen(s));
+    int len = strlen(s);
+    if (len >= 16384)
+        ::printf("[http] large response: writing %dK into it\n", len/1024);
+    return mg_write(conn, s, len);
 }
 
 int cMongooseHttpRequest::printf(const char *fmt, ...)
@@ -137,6 +132,8 @@ int cMongooseHttpRequest::printf(const char *fmt, ...)
     int len = mg_vsnprintf(conn, buf, sizeof(buf), fmt, ap);
     va_end(ap);
 
+    if (len >= 16384)
+        ::printf("[http] large response: writing %dK into it\n", len/1024);
     return mg_write(conn, buf, len);
 }
 

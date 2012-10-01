@@ -115,7 +115,8 @@ public class ProcessInfoAction extends AbstractSimulationAction {
                     "Host:", simulation.getHostName(),
                     "Port:", ""+simulation.getPortNumber(),
                     "URL:", simulation.getUrlBase(),
-                    "Command line:", "<TODO>",  //TODO
+                    "Command line:", StringUtils.join(simulation.getArgv(), " "),
+                    "Working directory:", simulation.getWorkingDir(),
                     "Process Id:", ""+simulation.getProcessId(),
                     "Simulation State:", null,
                     "Configuration name:", StringUtils.defaultString(simulation.getConfigName(), "n/a"),

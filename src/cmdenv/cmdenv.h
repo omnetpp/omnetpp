@@ -59,6 +59,17 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
            RUNMODE_EXPRESS
        };
 
+       enum StoppingReason {
+           STOP_NONE,
+           STOP_UNTILSIMTIME,
+           STOP_UNTILEVENT,
+           STOP_UNTILMODULE,
+           STOP_UNTILMESSAGE,
+           STOP_REALTIMECHUNK,
+           STOP_STOPCOMMAND,
+           STOP_TERMINATION
+       };
+
        enum Command {
            CMD_NONE = 0,
            CMD_SETUPNETWORK,
@@ -71,6 +82,22 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
            CMD_QUIT
        };
 
+       enum UserInputState {
+           INPSTATE_NONE,
+           INPSTATE_INITIATED,
+           INPSTATE_WAITINGFORREPLY,
+           INPSTATE_REPLYARRIVED
+       };
+
+       enum UserInputType {
+           INP_NONE,
+           INP_ERROR, //XXX currently unused (goes via INP_MSGDIALOG)
+           INP_ASKPARAMETER, //XXX currently unused (goes via INP_GETS)
+           INP_GETS,
+           INP_ASKYESNO,
+           INP_MSGDIALOG
+       };
+
     protected:
      // new simulation options:
      opp_string opt_configname;
@@ -78,6 +105,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      size_t opt_extrastack;
      opp_string opt_outputfile;
 
+     bool opt_httpcontrolled;  // when true, user input is expected via HTTP
      bool opt_expressmode;
      bool opt_interactive;
      bool opt_autoflush; // all modes
@@ -98,6 +126,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      StringMap commandArgs;       // command args
 
      RunMode runMode;             // the current mode the simulation is executing under
+     StoppingReason stoppingReason; // why the last Run command finished
      bool isConfigRun;            // true after newRun(), and false after newConfig()
 
      bool collectJsonLog;
@@ -107,7 +136,9 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
          simtime_t simTime;       // time limit in current "Run Until" execution, or zero
          eventnumber_t eventNumber;// event number in current "Run Until" execution, or zero
          cMessage *msg;           // stop before this event; also when this message gets canceled
-         cModule *module;         // stop before and after events in this module; FIXME currently ignored with EXPRESS mode
+         cModule *module;         // stop before and after events in this module; not supported in EXPRESS mode
+         bool hasRealTimeLimit;   // whether realTime (next field) is valid
+         struct timeval realTime; // stop when system clock reaches this time
      } runUntil;
 
      bool stopSimulationFlag;     // indicates that the simulation should be stopped (STOP button pressed in the UI)
@@ -116,38 +147,15 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      // object<->id mapping (we don't want to return pointer values to our HTTP client)
      std::map<cObject*,long> objectToIdMap;
      std::map<long,cObject*> idToObjectMap;
-     long lastId;
+     long lastObjectId;
 
-     // error data to be displayed on remote UI
      struct {
-         bool isValid;
-         std::string message; //TODO all other details: module, etc.
-     } errorInfo;
-
-     // question to be displayed on the remote UI
-     struct {
-         bool isValid;
-         std::string prompt; //TODO all other details
+         UserInputState state;
+         UserInputType type;
+         JsonObject *request;
          std::string reply;
-     } askParamInfo;  //TODO maybe just: getsInfo?  what about askYesNo?
-
-     // error data to be displayed on remote UI
-     struct {
-         bool isValid;
-         std::string message; //TODO dialog type: error/warning/info
-     } printfmsgInfo;
-
-     struct {
-         bool isValid;
-         std::string message;
-         std::string reply;
-     } getsInfo;
-
-     struct {
-         bool isValid;
-         std::string message;
-         bool reply;
-     } askyesnoInfo;
+         bool cancel;
+     } userInput;
 
      // set to true on SIGINT/SIGTERM signals
      static bool sigintReceived;
@@ -199,6 +207,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual std::string gets(const char *prompt, const char *defaultReply);
      virtual bool idle();
      virtual unsigned getExtraStackForEnvir() const;
+     virtual void debug(const char *fmt,...);
 
    protected:
      virtual void displayException(std::exception& ex);
@@ -210,20 +219,19 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void askParameter(cPar *par, bool unassigned);
 
      virtual void processHttpRequests(bool blocking);
-     virtual bool handle(cHttpRequest *request); // called back from processHttpRequests()
+     virtual bool handleHttpRequest(cHttpRequest *request); // called back from processHttpRequests()
+     virtual void processCommand(int command);
+     virtual std::string getUserInput(UserInputType type, JsonObject *details);
 
      // from Tkenv:
      virtual void newNetwork(const char *networkname);
      virtual void newRun(const char *configname, int runnumber);
      virtual void rebuildSim();
      virtual void doOneStep();
-     virtual void runSimulation(RunMode mode, simtime_t until_time=0, eventnumber_t until_eventnum=0, long realtimemillis=0, cMessage *until_msg=NULL, cModule *until_module=NULL);
-     virtual void setSimulationRunMode(RunMode runmode);
+     virtual void runSimulation(RunMode mode, long realTimeMillis=0, simtime_t untilSimTime=0, eventnumber_t untilEventNumber=0, cMessage *untilMessage=NULL, cModule *untilModule=NULL);
      virtual int getSimulationRunMode() const {return runMode;}
      virtual void setStopSimulationFlag() {stopSimulationFlag = true;}
      virtual bool getStopSimulationFlag() {return stopSimulationFlag;}
-     virtual void setSimulationRunUntil(simtime_t until_time, eventnumber_t until_eventnum, cMessage *until_msg);
-     virtual void setSimulationRunUntilModule(cModule *until_module);
      virtual bool doRunSimulation();
      virtual bool doRunSimulationExpress();
      virtual void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
