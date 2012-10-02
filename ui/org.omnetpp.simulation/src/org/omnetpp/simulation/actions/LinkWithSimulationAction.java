@@ -1,28 +1,25 @@
 package org.omnetpp.simulation.actions;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.Simulation;
-import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
  * The "Kill simulation on editor close" action.
  *
  * @author Andras
  */
-public class LinkWithSimulationAction extends AbstractSimulationAction {
-    public LinkWithSimulationAction(SimulationEditor editor) {
-        super(editor, AS_CHECK_BOX);
-        setText("Kill simulation on editor close");
-        setToolTipText("Kill simulation on editor close");
-        setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_LINK));
-        setChecked(true);  // the best guess until the first updateState() comes
+public class LinkWithSimulationAction extends AbstractSimulationActionDelegate {
+    @Override
+    protected void registerInContributor(IAction thisAction) {
+        SimulationEditorContributor.linkWithSimulationAction = thisAction;
     }
 
     @Override
-    public void run() {
+    public void run(IAction action) {
         try {
             if (!haveSimulationProcess())
                 return;

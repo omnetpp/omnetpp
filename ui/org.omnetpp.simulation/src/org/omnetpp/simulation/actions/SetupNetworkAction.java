@@ -1,28 +1,26 @@
 package org.omnetpp.simulation.actions;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
  * The Setup Network action.
  *
  * @author Andras
  */
-public class SetupNetworkAction extends AbstractSimulationAction {
-    public SetupNetworkAction(SimulationEditor editor) {
-        super(editor);
-        setText("Set Up Network...");
-        setToolTipText("Set Up Network...");
-        setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_NEWNET));
+public class SetupNetworkAction extends AbstractSimulationActionDelegate {
+    @Override
+    protected void registerInContributor(IAction thisAction) {
+        SimulationEditorContributor.setupNetworkAction = thisAction;
     }
 
     @Override
-    public void run() {
+    public void run(IAction action) {
         try {
             SimulationController controller = getSimulationController();
             if (!ensureNotRunning(controller))

@@ -1,6 +1,7 @@
 package org.omnetpp.simulation.actions;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -17,17 +18,16 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
-import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
  * Brings up a dialog with properties of the simulation process we are attached to.
  *
  * @author Andras
  */
-public class ProcessInfoAction extends AbstractSimulationAction {
+public class ProcessInfoAction extends AbstractSimulationActionDelegate {
 
     public class InfoDialog extends TitleAreaDialog {
         private String shellTitle;
@@ -95,15 +95,13 @@ public class ProcessInfoAction extends AbstractSimulationAction {
         }
     }
 
-    public ProcessInfoAction(SimulationEditor editor) {
-        super(editor);
-        setText("Process Info");
-        setToolTipText("Process Info");
-        setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_PROCESSINFO));
+    @Override
+    protected void registerInContributor(IAction thisAction) {
+        SimulationEditorContributor.processInfoAction = thisAction;
     }
 
     @Override
-    public void run() {
+    public void run(IAction action) {
         try {
             Simulation simulation = getSimulationController().getSimulation();
 

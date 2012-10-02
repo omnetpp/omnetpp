@@ -1,28 +1,26 @@
 package org.omnetpp.simulation.actions;
 
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
  * The Setup Inifile Config action.
  *
  * @author Andras
  */
-public class RefreshAction extends AbstractSimulationAction {
-    public RefreshAction(SimulationEditor editor) {
-        super(editor);
-        setText("Refresh");
-        setToolTipText("Refresh");
-        setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_REFRESH));
+public class RefreshAction extends AbstractSimulationActionDelegate {
+    @Override
+    protected void registerInContributor(IAction thisAction) {
+        SimulationEditorContributor.refreshAction = thisAction;
     }
 
     @Override
-    public void run() {
+    public void run(IAction action) {
         try {
             SimulationController controller = getSimulationController();
             controller.refreshStatus();

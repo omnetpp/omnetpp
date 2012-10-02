@@ -7,10 +7,13 @@
 
 package org.omnetpp.simulation.actions;
 
-import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
@@ -25,7 +28,8 @@ import org.omnetpp.simulation.inspectors.SimulationCanvas;
  * @author andras
  */
 //TODO disable if simulationController is DETACHED
-public abstract class AbstractSimulationAction extends Action {
+public abstract class AbstractSimulationActionDelegate implements IEditorActionDelegate {
+    private IAction thisAction;
     private SimulationEditor simulationEditor;
 
     private ISimulationStateListener listener = new ISimulationStateListener() {
@@ -38,18 +42,7 @@ public abstract class AbstractSimulationAction extends Action {
     /**
      * Default constructor.
      */
-    public AbstractSimulationAction(SimulationEditor simulationEditor) {
-        this.simulationEditor = simulationEditor;
-        simulationEditor.getSimulationController().addSimulationStateListener(listener);
-    }
-
-    /**
-     * Constructor to set style.
-     */
-    public AbstractSimulationAction(SimulationEditor simulationEditor, int style) {
-        super("", style);
-        this.simulationEditor = simulationEditor;
-        simulationEditor.getSimulationController().addSimulationStateListener(listener);
+    public AbstractSimulationActionDelegate() {
     }
 
     public SimulationController getSimulationController() {
@@ -59,8 +52,44 @@ public abstract class AbstractSimulationAction extends Action {
     public SimulationCanvas getSimulationCanvas() {
         return simulationEditor.getSimulationCanvas();
     }
-    
+
+    @Override
+    public void setActiveEditor(IAction action, IEditorPart targetEditor) {
+        if (thisAction == null) {
+            thisAction = action;
+            registerInContributor(action);
+        }
+
+        if (simulationEditor != null)
+            simulationEditor.getSimulationController().removeSimulationStateListener(listener);
+        simulationEditor = (SimulationEditor) targetEditor;
+        if (simulationEditor != null)
+            simulationEditor.getSimulationController().addSimulationStateListener(listener);
+    }
+
+    protected abstract void registerInContributor(IAction action);
+
+    @Override
+    public void selectionChanged(IAction action, ISelection selection) {
+    }
+
     public abstract void updateState();
+
+    protected void setEnabled(boolean b) {
+        thisAction.setEnabled(b);
+    }
+
+    protected void setChecked(boolean b) {
+        thisAction.setChecked(b);
+    }
+
+    protected boolean isEnabled() {
+        return thisAction.isEnabled();
+    }
+
+    protected boolean isChecked() {
+        return thisAction.isChecked();
+    }
 
     /**
      * Utility function.

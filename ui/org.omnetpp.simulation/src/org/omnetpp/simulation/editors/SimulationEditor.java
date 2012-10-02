@@ -2,7 +2,6 @@ package org.omnetpp.simulation.editors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,6 +19,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.color.ColorFactory;
@@ -27,21 +27,8 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.actions.CallFinishAction;
-import org.omnetpp.simulation.actions.ExpressRunAction;
-import org.omnetpp.simulation.actions.FastRunAction;
-import org.omnetpp.simulation.actions.LinkWithSimulationAction;
-import org.omnetpp.simulation.actions.ProcessInfoAction;
-import org.omnetpp.simulation.actions.RebuildNetworkAction;
-import org.omnetpp.simulation.actions.RefreshAction;
-import org.omnetpp.simulation.actions.RunAction;
-import org.omnetpp.simulation.actions.RunUntilAction;
-import org.omnetpp.simulation.actions.SetupIniConfigAction;
-import org.omnetpp.simulation.actions.SetupNetworkAction;
-import org.omnetpp.simulation.actions.StepAction;
-import org.omnetpp.simulation.actions.StopAction;
-import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
@@ -67,6 +54,7 @@ import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
 //TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
 //TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
 public class SimulationEditor extends EditorPart implements /*TODO IAnimationCanvasProvider,*/ ISimulationUICallback {
+    public static final String CONTEXT_SIMULATION = "org.omnetpp.context.simulation";
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
 
     protected SimulationController simulationController;
@@ -84,6 +72,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         setSite(site);
         setInput(input);
         setPartName(input.getName());
+
+        ((IContextService)getSite().getService(IContextService.class)).activateContext(CONTEXT_SIMULATION);
 
         SimulationEditorInput simInput = (SimulationEditorInput)input;
         Simulation simulation = new Simulation(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
@@ -123,24 +113,22 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         simulationToolbars.setLayout(new GridLayout(5, false));
 
-        IAction setupIniConfigAction = null;  // we'll need it later
-
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
-        new ActionContributionItem(new LinkWithSimulationAction(this)).fill(toolbar1, -1);
-        new ActionContributionItem(new ProcessInfoAction(this)).fill(toolbar1, -1);
-        new ActionContributionItem(new RefreshAction(this)).fill(toolbar1, -1);
-        new ActionContributionItem(setupIniConfigAction = new SetupIniConfigAction(this)).fill(toolbar1, -1);
-        new ActionContributionItem(new SetupNetworkAction(this)).fill(toolbar1, -1);
-        new ActionContributionItem(new RebuildNetworkAction(this)).fill(toolbar1, -1);
+        new ActionContributionItem(SimulationEditorContributor.linkWithSimulationAction).fill(toolbar1, -1);
+        new ActionContributionItem(SimulationEditorContributor.processInfoAction).fill(toolbar1, -1);
+        new ActionContributionItem(SimulationEditorContributor.refreshAction).fill(toolbar1, -1);
+        new ActionContributionItem(SimulationEditorContributor.setupIniConfigAction).fill(toolbar1, -1);
+        new ActionContributionItem(SimulationEditorContributor.setupNetworkAction).fill(toolbar1, -1);
+        new ActionContributionItem(SimulationEditorContributor.rebuildNetworkAction).fill(toolbar1, -1);
         ToolBar toolbar2 = new ToolBar(simulationToolbars, SWT.NONE);
-        new ActionContributionItem(new StepAction(this)).fill(toolbar2, -1);
-        new ActionContributionItem(new RunAction(this)).fill(toolbar2, -1);
-        new ActionContributionItem(new FastRunAction(this)).fill(toolbar2, -1);
-        new ActionContributionItem(new ExpressRunAction(this)).fill(toolbar2, -1);
-        new ActionContributionItem(new RunUntilAction(this)).fill(toolbar2, -1);
+        new ActionContributionItem(SimulationEditorContributor.stepAction).fill(toolbar2, -1);
+        new ActionContributionItem(SimulationEditorContributor.runAction).fill(toolbar2, -1);
+        new ActionContributionItem(SimulationEditorContributor.fastRunAction).fill(toolbar2, -1);
+        new ActionContributionItem(SimulationEditorContributor.expressRunAction).fill(toolbar2, -1);
+        new ActionContributionItem(SimulationEditorContributor.runUntilAction).fill(toolbar2, -1);
         ToolBar toolbar3 = new ToolBar(simulationToolbars, SWT.NONE);
-        new ActionContributionItem(new StopAction(this)).fill(toolbar3, -1);
-        new ActionContributionItem(new CallFinishAction(this)).fill(toolbar3, -1);
+        new ActionContributionItem(SimulationEditorContributor.stopAction).fill(toolbar3, -1);
+        new ActionContributionItem(SimulationEditorContributor.callFinishAction).fill(toolbar3, -1);
 
         statusLabel = new Label(simulationRibbon, SWT.BORDER);
         statusLabel.setText("n/a");
@@ -324,7 +312,6 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         });
 
         // obtain initial status query
-        final IAction finalSetupIniConfigAction = setupIniConfigAction;
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -341,7 +328,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
                 // immediately offer setting up a network
                 if (simulationController.getUIState() == SimState.NONETWORK)
-                    finalSetupIniConfigAction.run();
+                    SimulationEditorContributor.setupIniConfigAction.run();
             }
         });
 

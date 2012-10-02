@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -21,7 +22,7 @@ import org.omnetpp.simulation.controller.ConfigDescription;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
-import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.editors.SimulationEditorContributor;
 import org.omnetpp.simulation.model.cObject;
 
 /**
@@ -29,18 +30,11 @@ import org.omnetpp.simulation.model.cObject;
  *
  * @author Andras
  */
-public class SetupIniConfigAction extends AbstractSimulationAction {
+public class SetupIniConfigAction extends AbstractSimulationActionDelegate {
     private static Image IMAGE_CONFIG_EMPTY = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIG_EMPTY);
     private static Image IMAGE_CONFIG_SINGLE = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIG_SINGLE);
     private static Image IMAGE_CONFIG_REPEAT = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIG_REPEAT);
     private static Image IMAGE_RUN = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_CONFIGRUN);
-
-    public SetupIniConfigAction(SimulationEditor editor) {
-        super(editor);
-        setText("Set Up...");
-        setToolTipText("Set Up...");
-        setImageDescriptor(SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_NEWRUN));
-    }
 
     /**
      * Dialog for selecting a config name and a run number.
@@ -183,7 +177,12 @@ public class SetupIniConfigAction extends AbstractSimulationAction {
     }
 
     @Override
-    public void run() {
+    protected void registerInContributor(IAction thisAction) {
+        SimulationEditorContributor.setupIniConfigAction = thisAction;
+    }
+
+    @Override
+    public void run(IAction action) {
         try {
             SimulationController controller = getSimulationController();
             if (!ensureNotRunning(controller))
