@@ -104,7 +104,7 @@
       <context
             description="OMNeT++ Sequence Chart"
             id="org.omnetpp.context.SequenceChart"
-            name="SequenceChartContext"
+            name="Viewing a Sequence Chart"
             parentId="org.eclipse.ui.contexts.window">
       </context>
    </extension>
