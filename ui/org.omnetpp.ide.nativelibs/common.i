@@ -126,17 +126,6 @@ SWIG_JAVABODY_METHODS(public, public, ILock)
 
 %include "rwlock.h"
 
-// copied over from Expression.h, make sure that this is in sync with that!
-struct Value
-{
-    enum {UNDEF=0, BOOL='B', DBL='D', STR='S'} type;
-    bool bl;
-    double dbl;
-    const char *dblunit; // stringpooled, may be NULL
-    std::string s;
-};
-
-
 class SimpleResolver;
 
 %extend Expression {
@@ -174,11 +163,8 @@ class SimpleResolver : public Expression::Resolver {
 %}
 
 %ignore MathFunction;
+%ignore Expression::evaluate;  // swig does not support nested classes (Expression::Value)
 %include "expression.h"
-
-%{
-typedef Expression::Value Value;
-%}
 
 /* -------------------- stringtokenizer2.h -------------------------- */
 %define CHECK_STRINGTOKENIZER_EXCEPTION(METHOD)

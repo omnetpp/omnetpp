@@ -3,8 +3,6 @@ package org.omnetpp.common.eventlog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.engine.Expression;
-import org.omnetpp.common.engine.UnitConversion;
-import org.omnetpp.common.engine.Value;
 import org.omnetpp.common.ui.InputDialog;
 import org.omnetpp.eventlog.engine.IEventLog;
 
@@ -35,23 +33,23 @@ public class GotoSimulationTimeDialog extends InputDialog {
         return getSimulationTime(baseSimulationTime, getValue());
     }
 
-    public static BigDecimal getSimulationTime(BigDecimal baseSimulationTime, String originalValue) {
-        boolean relative;
-        String parsedValue;
+    public static BigDecimal getSimulationTime(BigDecimal baseSimulationTime, String expr) {
+        boolean relative = false;
+
         // check sign
-        if (originalValue.startsWith("+") || originalValue.startsWith("-")) {
+        if (expr.startsWith("+")) {
             relative = true;
-            parsedValue = "0s" + originalValue;
+            expr = expr.substring(1);
+        } 
+        else if (expr.startsWith("-")) {
+            relative = true;
         }
-        else {
-            relative = false;
-            parsedValue = originalValue;
-        }
+        
         // parse
         Expression expression = new Expression();
-        expression.parse(parsedValue);
-        Value value = expression.evaluate();
-        BigDecimal simulationTime = new BigDecimal(value.getDblunit() == null ? value.getDbl() : UnitConversion.convertUnit(value.getDbl(), value.getDblunit(), "s"));
+        expression.parse(expr);
+        double result = expr.matches(".*[a-zA-Z].*") ? expression.doubleValue("s") : expression.doubleValue();  
+        BigDecimal simulationTime = new BigDecimal(result);
         // relative vs. absolute
         if (relative)
             return baseSimulationTime.add(simulationTime);
