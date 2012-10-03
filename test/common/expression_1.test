@@ -41,44 +41,79 @@ Expression::Functor *Resolver::resolveFunction(const char *funcname, int argcoun
         throw opp_runtime_error("Unrecognized function: %s()", funcname);
 }
 
-static void eval(const char *txt, char type)
+static void eval(const char *txt)
 {
     try {
         ev << txt << " -> ";
         Expression expr;
         Resolver resolver;
         expr.parse(txt, &resolver);
-        switch (type) {
-          case 'B': ev << (expr.boolValue()?"true":"false"); break;
-          case 'D': ev << expr.doubleValue(); break;
-          case 'S': ev << expr.stringValue(); break;
-        }
-        ev << "\n";
+        //ev << expr.str() << " --> ";  // echo parsed form
+        ev << expr.evaluate().str() << "\n";
     }
     catch (std::exception& e) {
-        ev << "exception\n";  // e.what() << "\n";
+        ev << "exception: " << e.what() << "\n";
     }
 }
 
-static void evalAsBool(const char *txt)   {eval(txt, 'B');}
-static void evalAsDouble(const char *txt) {eval(txt, 'D');}
-static void evalAsString(const char *txt) {eval(txt, 'S');}
-
 %activity:
-evalAsDouble("3+2");
-evalAsDouble("3+2*5");
-evalAsDouble("(3+2)*5");
-evalAsDouble("a1");
-evalAsDouble("a2");
-evalAsDouble("a3");
-evalAsDouble("a1+a2+a3");
-evalAsDouble("fabs(-3.14)");
-evalAsDouble("pow(2,8)");
+// precedence
+eval("3+2");
+eval("3+2*5");
+eval("(3+2)*5");
 
-evalAsBool("true");
-evalAsBool("false");
-evalAsBool("1 < 3");
-evalAsString("1 < 3 ? \"lt\" : \"gt\"");
+// variables, functions
+eval("a1");
+eval("a2");
+eval("a3");
+eval("a1+a2+a3");
+eval("fabs(-3.14)");
+eval("pow(2,8)");
+
+// boolean
+eval("true");
+eval("false");
+eval("false || true");
+eval("false || false");
+eval("false && true");
+eval("true && true");
+eval("1 < 3");
+eval("1 < 3 ? \"lt\" : \"gt\"");
+
+// string
+eval("\"foo\"");
+eval("\"foo\" + \"bar\"");
+
+// quantities: OK
+eval("2m");
+eval("-2m");
+eval("1q+2q");
+eval("1s+2ms");
+eval("-1s+2ms");
+eval("1q-2q");
+eval("1s-2ms");
+eval("-1s-2ms");
+eval("3*5s");
+eval("-3*5s");
+eval("5s*3");
+eval("-5s*3");
+eval("1s/2");
+eval("1s/2s");
+eval("1s/2ms");
+
+// quantities: errors
+eval("1+2m");
+eval("1m+2");
+eval("1m+2s");
+eval("1-2m");
+eval("1m-2");
+eval("1m-2s");
+eval("1s*2s");
+eval("1s/2m");
+eval("1s^2");
+eval("1s^2s");
+eval("1^2s");
+
 //TODO many more tests needed, for all operators, precedence rules, etc
 
 ev << ".\n";
@@ -97,7 +132,39 @@ fabs(-3.14) -> 3.14
 pow(2,8) -> 256
 true -> true
 false -> false
+false || true -> true
+false || false -> false
+false && true -> false
+true && true -> true
 1 < 3 -> true
-1 < 3 ? "lt" : "gt" -> lt
+1 < 3 ? "lt" : "gt" -> "lt"
+"foo" -> "foo"
+"foo" + "bar" -> "foobar"
+2m -> 2m
+-2m -> -2m
+1q+2q -> 3q
+1s+2ms -> 1.002s
+-1s+2ms -> -0.998s
+1q-2q -> -1q
+1s-2ms -> 0.998s
+-1s-2ms -> -1.002s
+3*5s -> 15s
+-3*5s -> -15s
+5s*3 -> 15s
+-5s*3 -> -15s
+1s/2 -> 0.5s
+1s/2s -> 0.5
+1s/2ms -> 500
+1+2m -> exception: Cannot convert unit 'm' (meter) to none
+1m+2 -> exception: Cannot convert unit none to 'm' (meter)
+1m+2s -> exception: Cannot convert unit 's' (second) to 'm' (meter)
+1-2m -> exception: Cannot convert unit 'm' (meter) to none
+1m-2 -> exception: Cannot convert unit none to 'm' (meter)
+1m-2s -> exception: Cannot convert unit 's' (second) to 'm' (meter)
+1s*2s -> exception: Multiplying two quantities with units is not supported
+1s/2m -> exception: Cannot convert unit 'm' (meter) to 's' (second)
+1s^2 -> exception: Error in expression: `^': argument(s) must be dimensionless
+1s^2s -> exception: Error in expression: `^': argument(s) must be dimensionless
+1^2s -> exception: Error in expression: `^': argument(s) must be dimensionless
 .
 

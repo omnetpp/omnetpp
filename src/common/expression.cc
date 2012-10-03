@@ -197,19 +197,19 @@ Expression::Value Expression::evaluate() const
                      case NEG:
                          if (stk[tos].type!=Value::DBL)
                              throw opp_runtime_error(eEBADARGS,"-");
-                         stk[tos] = -stk[tos].dbl;
+                         stk[tos].dbl = -stk[tos].dbl;
                          break;
                      case NOT:
                          if (stk[tos].type!=Value::BOOL)
                              throw opp_runtime_error(eEBADARGS,"!");
-                         stk[tos] = !stk[tos].bl;
+                         stk[tos].bl = !stk[tos].bl;
                          break;
                      case BIN_NOT:
                          if (stk[tos].type!=Value::DBL)
                              throw opp_runtime_error(eEBADARGS,"~");
                          if (!opp_isempty(stk[tos].dblunit))
                              throw opp_runtime_error(eDIMLESS,"~");
-                         stk[tos] = (double)~ulong(stk[tos].dbl);
+                         stk[tos].dbl = ~ulong(stk[tos].dbl);
                          break;
                      default: Assert(false);
                  }
