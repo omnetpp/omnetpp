@@ -76,7 +76,12 @@ public class ScaveEditorMemento implements IMemento
 		return memento.getChild(type);
 	}
 
-	public IMemento[] getChildren(String type) {
+    public IMemento[] getChildren() {
+        // XXX this should delegate to memento.getChildren() on eclipse 4.2
+        throw new UnsupportedOperationException("getChildren() is not supported in ScaveEditorMemento");
+    }
+
+    public IMemento[] getChildren(String type) {
 		return memento.getChildren(type);
 	}
 
@@ -210,5 +215,6 @@ public class ScaveEditorMemento implements IMemento
 	public String getType() {
 		return "ScaveEditorMemento";
 	}
+
 
 }
