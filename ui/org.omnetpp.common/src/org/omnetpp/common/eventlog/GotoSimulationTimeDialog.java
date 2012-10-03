@@ -14,15 +14,16 @@ public class GotoSimulationTimeDialog extends InputDialog {
             public String isValid(String newText) {
                 try {
                     BigDecimal simulationTime = getSimulationTime(baseSimulationTime, newText);
+                    BigDecimal endTime = eventLog.getLastEvent().getSimulationTime();
                     if (simulationTime.less(BigDecimal.getZero()))
-                        return "The resulting simulation time is negative: " + simulationTime;
-                    else if (simulationTime.greater(eventLog.getLastEvent().getSimulationTime()))
-                        return "The resulting simulation time is beyond the end: " + simulationTime;
+                        return "Result ("+ simulationTime + "s) is negative";
+                    else if (simulationTime.greater(endTime))
+                        return "Result ("+ simulationTime + "s) is beyond the end (" + endTime +"s)";
                     else
                         return null;
                 }
-                catch (Exception x) {
-                    return "Expression does not evaluate to a simulation time";
+                catch (Exception e) {
+                    return "Error in expression";
                 }
             }
         });
