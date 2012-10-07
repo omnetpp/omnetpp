@@ -13,7 +13,7 @@ import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.LogBuffer;
 import org.omnetpp.simulation.controller.LogBuffer.ILogBufferChangedListener;
 import org.omnetpp.simulation.widgets.ITextChangeListener;
-import org.omnetpp.simulation.widgets.ITextViewerContent;
+import org.omnetpp.simulation.widgets.ITextViewerContentProvider;
 
 /**
  * TODO
@@ -21,7 +21,7 @@ import org.omnetpp.simulation.widgets.ITextViewerContent;
  * @author Andras
  */
 //TODO getters could use a fixed point plus incremental computation, exploiting the fact that painting of the lines occurs top-down
-public class ModuleOutputContent implements ITextViewerContent {
+public class ModuleOutputContentProvider implements ITextViewerContentProvider {
     private LogBuffer logBuffer;
     private IEventEntryFilter filter;
     private IEventEntryLinesProvider linesProvider;
@@ -31,7 +31,7 @@ public class ModuleOutputContent implements ITextViewerContent {
     private int lineCount = -1;
     private int entryStartLineNumbers[] = null; // indexed by the entry's index in logBuffer
 
-    public ModuleOutputContent(LogBuffer logBuffer, IEventEntryLinesProvider labelProvider) {
+    public ModuleOutputContentProvider(LogBuffer logBuffer, IEventEntryLinesProvider labelProvider) {
         this.logBuffer = logBuffer;
         this.linesProvider = labelProvider;
 
@@ -149,7 +149,7 @@ public class ModuleOutputContent implements ITextViewerContent {
             SafeRunner.run(new ISafeRunnable() {
                 @Override
                 public void run() throws Exception {
-                    listener.textChanged(ModuleOutputContent.this);
+                    listener.textChanged(ModuleOutputContentProvider.this);
                 }
 
                 @Override

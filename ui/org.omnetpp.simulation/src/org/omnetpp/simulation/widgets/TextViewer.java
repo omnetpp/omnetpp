@@ -60,7 +60,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 //TODO implement selectionprovider stuff
 public class TextViewer extends Canvas implements ISelectionProvider {
     private static final Cursor CURSOR_IBEAM = new Cursor(Display.getDefault(), SWT.CURSOR_IBEAM); //TODO into some shared resource file
-    protected ITextViewerContent content;
+    protected ITextViewerContentProvider content;
     protected ITextChangeListener textChangeListener;
     protected Font font;
     protected Color backgroundColor;
@@ -119,7 +119,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
 
         textChangeListener = new ITextChangeListener() {
             //@Override
-            public void textChanged(ITextViewerContent textViewer) {
+            public void textChanged(ITextViewerContentProvider textViewer) {
                 contentChanged();
             }
         };
@@ -788,7 +788,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         redraw();
     }
 
-    public void setContent(ITextViewerContent content) {
+    public void setContent(ITextViewerContentProvider content) {
         if (this.content != null)
             this.content.removeTextChangeListener(textChangeListener);
         this.content = content;
@@ -798,7 +798,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         contentChanged();
     }
 
-    public ITextViewerContent getContent() {
+    public ITextViewerContentProvider getContent() {
         return content;
     }
 

@@ -15,10 +15,10 @@ import org.eclipse.swt.graphics.Color;
  *
  * @author Andras
  */
-public class TextViewerContent implements ITextViewerContent {
+public class StringTextViewerContentProvider implements ITextViewerContentProvider {
     private String[] lines;  // text, split to lines
 
-    public TextViewerContent(String text) {
+    public StringTextViewerContentProvider(String text) {
         this.lines = text.split("\n");  // XXX split() discards trailing blank lines
         if (lines.length == 0)
             lines = new String[] { "" };

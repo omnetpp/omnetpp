@@ -16,7 +16,7 @@ import org.eclipse.swt.graphics.Color;
  *
  * @author Andras
  */
-public interface ITextViewerContent {
+public interface ITextViewerContentProvider {
     /**
      * Return the number of lines. It should never return zero. It is recommended
      * that this provided adds an empty line at the end of all content (so that

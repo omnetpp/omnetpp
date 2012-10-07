@@ -27,7 +27,7 @@ import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.inspectors.SelectionUtils;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.widgets.TextViewer;
-import org.omnetpp.simulation.widgets.TextViewerContent;
+import org.omnetpp.simulation.widgets.StringTextViewerContentProvider;
 
 /**
  *
@@ -38,7 +38,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
     // note: view ID is defined in IConstants.java
     protected TextViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-    protected TextViewerContent BLANK_TEXT_CONTENT = new TextViewerContent("<blank text content>\n"); //XXX
+    protected StringTextViewerContentProvider BLANK_TEXT_CONTENT = new StringTextViewerContentProvider("<blank text content>\n"); //XXX
 
     protected SimulationEditor associatedSimulationEditor;
     protected IPartListener partListener;
@@ -113,8 +113,8 @@ public class ModuleOutputView extends ViewWithMessagePart {
                     String[] modulePaths = new String[selectedModules.size()];
                     for (int i = 0; i < modulePaths.length; i++)
                         modulePaths[i] = selectedModules.get(i).getFullPath();
-                    ModuleOutputContent moduleOutputContent = (ModuleOutputContent)viewer.getContent();
-                    moduleOutputContent.setFilter(new ModulePathsEventEntryFilter(modulePaths));
+                    ModuleOutputContentProvider moduleOutputContentProvider = (ModuleOutputContentProvider)viewer.getContent();
+                    moduleOutputContentProvider.setFilter(new ModulePathsEventEntryFilter(modulePaths));
                 }
             }
         };
@@ -139,8 +139,8 @@ public class ModuleOutputView extends ViewWithMessagePart {
             showMessage("No simulation process.");
         else {
             hideMessage();
-            if (!(viewer.getContent() instanceof ModuleOutputContent))
-                viewer.setContent(new ModuleOutputContent(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider()));
+            if (!(viewer.getContent() instanceof ModuleOutputContentProvider))
+                viewer.setContent(new ModuleOutputContentProvider(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider()));
             viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
         }
@@ -169,7 +169,7 @@ public class ModuleOutputView extends ViewWithMessagePart {
         }
         else {
             hideMessage();
-            ModuleOutputContent content = new ModuleOutputContent(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider());
+            ModuleOutputContentProvider content = new ModuleOutputContentProvider(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider());
             viewer.setContent(content);
             viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
             viewer.refresh();
