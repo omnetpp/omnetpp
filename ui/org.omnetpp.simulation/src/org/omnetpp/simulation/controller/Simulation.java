@@ -388,6 +388,7 @@ public class Simulation {
             else {
                 throw new RuntimeException("unrecognized userInput type: " + type);
             }
+            if (debugHttp) Debug.println("  got request for user interaction: " + request.getClass().getSimpleName());
         }
 
         // load the log
