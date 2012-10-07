@@ -3,6 +3,7 @@ package org.omnetpp.simulation.liveanimation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.EventEntry;
@@ -48,6 +49,15 @@ public class LiveAnimationController {
         this.animationDirector = animationDirector;
     }
 
+    public double getAnimationSpeed() {
+        return animationSpeed;
+    }
+
+    public void setAnimationSpeed(double animationSpeed) {
+        Assert.isTrue(animationSpeed > 0);
+        this.animationSpeed = animationSpeed;
+    }
+
     public boolean isAnimating() {
         return isAnimating;
     }
@@ -91,7 +101,7 @@ public class LiveAnimationController {
         // quickly run through the animation till the end (needed so that animation primitives
         // can remove the figures they added, e.g. message discs)
         try {
-            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed;
+            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed;  //XXX speed minek ide?
             while (true) {
                 boolean needMoreTicks = updateAnimationFor(time);
                 if (!needMoreTicks)
@@ -112,7 +122,7 @@ public class LiveAnimationController {
     protected void tick() {
         try {
             // update the animation
-            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed;
+            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed; //XXX use +=! ha speed valtozik, akkor se csokkenhessen!
             boolean needMoreTicks = updateAnimationFor(time);
             if (needMoreTicks)
                 Display.getCurrent().timerExec(TICK_MILLIS, invokeTick);

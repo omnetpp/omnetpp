@@ -37,6 +37,7 @@ import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.SimulationCanvas;
 import org.omnetpp.simulation.liveanimation.AnimationDirector;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
+import org.omnetpp.simulation.liveanimation.SpeedControl;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cSimulation;
@@ -129,6 +130,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         ToolBar toolbar3 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(SimulationEditorContributor.stopAction).fill(toolbar3, -1);
         new ActionContributionItem(SimulationEditorContributor.callFinishAction).fill(toolbar3, -1);
+        SpeedControl speedControl = new SpeedControl("");
+        speedControl.fill(toolbar3, toolbar3.getItemCount());
 
         statusLabel = new Label(simulationRibbon, SWT.BORDER);
         statusLabel.setText("n/a");
@@ -198,6 +201,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         AnimationDirector animationDirector = new AnimationDirector(simulationCanvas, simulationController.getSimulation());
         LiveAnimationController liveAnimationController = new LiveAnimationController(animationDirector);
         simulationController.setLiveAnimationController(liveAnimationController);
+        speedControl.setController(liveAnimationController);
 
         DelegatingSelectionProvider delegatingSelectionProvider = (DelegatingSelectionProvider) getSite().getSelectionProvider();
         delegatingSelectionProvider.setSelectionProvider(simulationCanvas);  //TODO switch to "animationCanvas" when use flips to "Playback" tab
