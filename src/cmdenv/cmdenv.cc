@@ -831,6 +831,16 @@ JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
         jObject->put("modules", jmodules);
     }
 
+    // cMessageHeap
+    if (dynamic_cast<cMessageHeap *>(obj)) {
+        cMessageHeap *fes = (cMessageHeap *)obj;
+        fes->sort(); // extremely handy for the UI
+        JsonArray *msgs = new JsonArray();
+        for (int i = 0; i < fes->length(); i++)
+            msgs->push_back(jsonWrap(getIdStringForObject(fes->peek(i))));
+        jObject->put("messages", msgs);
+    }
+
     // cComponentType: nothing worth serializing
 
     // cClassDescriptor
