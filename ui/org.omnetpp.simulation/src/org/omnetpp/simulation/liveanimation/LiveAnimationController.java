@@ -35,8 +35,10 @@ public class LiveAnimationController {
     private Runnable todoWhenDone;
     private boolean isAnimating = false;
     private boolean isStopping = false; // needed if we call Display.readAndDispatch() from cancelAnimation()
+    private double animationTime;
     private long animationStartTimeNanos;
-    private long numUpdates; // since animationStartTimeMillis
+    private long lastTickTimeNanos;
+    private long numUpdates; // since animationStartTimeNanos
 
     private Runnable invokeTick = new Runnable() {
         @Override
@@ -84,6 +86,8 @@ public class LiveAnimationController {
     }
 
     protected void startTicking() {
+        animationTime = 0;
+        lastTickTimeNanos = System.nanoTime();
         tick(); // further ticks are scheduled from tick() itself
     }
 
@@ -101,12 +105,11 @@ public class LiveAnimationController {
         // quickly run through the animation till the end (needed so that animation primitives
         // can remove the figures they added, e.g. message discs)
         try {
-            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed;  //XXX speed minek ide?
             while (true) {
-                boolean needMoreTicks = updateAnimationFor(time);
+                boolean needMoreTicks = updateAnimationFor(animationTime);
                 if (!needMoreTicks)
                     break;
-                time += TICK_MILLIS/1000.0;
+                animationTime += TICK_MILLIS/1000.0;
 
                 //Display.getCurrent().update(); // would we exactly what we need, but doesn't appear to work on Windows 7
                 Display.getCurrent().readAndDispatch(); //FIXME works but a little dangerous (user might invoke actions, even close the editor etc!)
@@ -122,8 +125,10 @@ public class LiveAnimationController {
     protected void tick() {
         try {
             // update the animation
-            double time = (System.nanoTime() - animationStartTimeNanos) / 1000000000.0 * animationSpeed; //XXX use +=! ha speed valtozik, akkor se csokkenhessen!
-            boolean needMoreTicks = updateAnimationFor(time);
+            long currentTimeNanos = System.nanoTime();
+            animationTime += (currentTimeNanos - lastTickTimeNanos) / 1000000000.0 * animationSpeed;
+            lastTickTimeNanos = currentTimeNanos;
+            boolean needMoreTicks = updateAnimationFor(animationTime);
             if (needMoreTicks)
                 Display.getCurrent().timerExec(TICK_MILLIS, invokeTick);
             else
