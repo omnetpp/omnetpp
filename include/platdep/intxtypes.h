@@ -163,6 +163,7 @@
 #   define INT64_PRINTF_FORMAT   "I64"
 #elif __WORDSIZE == 64 && !defined(__APPLE__)
 #   define INT64_PRINTF_FORMAT   "l"
+#   define INT64_IS_SAME_AS_LONG
 #else
 #   define INT64_PRINTF_FORMAT   "ll"
 #endif

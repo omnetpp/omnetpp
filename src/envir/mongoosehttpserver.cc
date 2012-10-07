@@ -119,7 +119,7 @@ int cMongooseHttpRequest::print(const char *s)
 {
     int len = strlen(s);
     if (len >= 16384)
-        ::printf("[http] large response: writing %dK into it\n", len/1024);
+        ::printf("[http] producing large response: writing %dKt\n", len/1024);
     return mg_write(conn, s, len);
 }
 

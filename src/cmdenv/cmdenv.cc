@@ -840,10 +840,12 @@ JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
         jObject->put("extendsCObject", jsonWrap(desc->extendsCObject()));
         JsonObject *jProperties = new JsonObject();
         const char **propertyNames = desc->getPropertyNames();
-        for (const char **pp = propertyNames; *pp; pp++) {
-            const char *name = *pp;
-            const char *value = desc->getProperty(name);
-            jProperties->put(name, jsonWrap(value));
+        if (propertyNames) {
+            for (const char **pp = propertyNames; *pp; pp++) {
+                const char *name = *pp;
+                const char *value = desc->getProperty(name);
+                jProperties->put(name, jsonWrap(value));
+            }
         }
         jObject->put("properties", jProperties);
         JsonArray *jFields = new JsonArray();
@@ -855,10 +857,12 @@ JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
             jField->put("declaredOn", jsonWrap(desc->getFieldDeclaredOn(fieldId)));
             JsonObject *jFieldProperties = new JsonObject();
             const char **propertyNames = desc->getFieldPropertyNames(fieldId);
-            for (const char **pp = propertyNames; *pp; pp++) {
-                const char *name = *pp;
-                const char *value = desc->getFieldProperty(fieldId, name);
-                jFieldProperties->put(name, jsonWrap(value));
+            if (propertyNames) {
+                for (const char **pp = propertyNames; *pp; pp++) {
+                    const char *name = *pp;
+                    const char *value = desc->getFieldProperty(fieldId, name);
+                    jFieldProperties->put(name, jsonWrap(value));
+                }
             }
             jField->put("properties", jFieldProperties);
             //TODO: merge this into a single "flags" field!

@@ -25,6 +25,7 @@
 #include "envirdefs.h"
 #include "stringutil.h"
 #include "simtime.h"
+#include "intxtypes.h"
 
 
 class ENVIR_API JsonNode
@@ -142,7 +143,9 @@ class ENVIR_API JsonObject2 : public JsonNode, public std::vector<std::pair<std:
 inline JsonNode *jsonWrap(bool b) { return new JsonBool(b); }
 inline JsonNode *jsonWrap(int i) { return new JsonLong(i); }
 inline JsonNode *jsonWrap(long l) { return new JsonLong(l); }
+#ifndef INT64_IS_SAME_AS_LONG
 inline JsonNode *jsonWrap(int64_t l) { return new JsonInt64(l); }
+#endif
 inline JsonNode *jsonWrap(double d) { return new JsonDouble(d); }
 inline JsonNode *jsonWrap(SimTime t) { return new JsonSimTime(t); }
 inline JsonNode *jsonWrap(const char *s) { return new JsonConstantString(s); }
