@@ -16,6 +16,9 @@ public interface IConstants extends ICoreConstants {
     // whether this version is a COMMERCIAL build or not
     public static final boolean IS_COMMERCIAL = true;
 
+    // fonts (use with JFaceResources.getFont(symbolicName); see JFaceResources for others)
+    public static final String SMALL_FONT = "org.omnetpp.common.smallFont";
+
     // nature, builders
     public static final String OMNETPP_NATURE_ID = "org.omnetpp.main.omnetppnature";
     public static final String VECTORFILEINDEXER_BUILDER_ID = "org.omnetpp.scave.builder.vectorfileindexer";

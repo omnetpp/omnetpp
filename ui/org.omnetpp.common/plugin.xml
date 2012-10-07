@@ -88,4 +88,18 @@
             referenceClass="org.omnetpp.common.CommonPlugin">
       </plugin>
    </extension>
+   <extension
+         point="org.eclipse.ui.themes">
+      <fontDefinition
+            categoryId="org.eclipse.ui.workbenchMisc"
+            id="org.omnetpp.common.smallFont"
+            isEditable="true"
+            label="Small font"
+            value="Arial-regular-7">
+         <fontValue
+               value="Segoe UI-regular-7"
+               ws="win32">
+         </fontValue>
+      </fontDefinition>
+   </extension>
 </plugin>
