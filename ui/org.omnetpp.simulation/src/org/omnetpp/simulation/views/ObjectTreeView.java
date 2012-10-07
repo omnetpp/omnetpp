@@ -62,7 +62,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
     private ISimulationStateListener simulationListener;
 
-    class ViewContentProvider implements ITreeContentProvider {
+    public static class ViewContentProvider implements ITreeContentProvider {
         public Object[] getChildren(Object element) {
             if (element instanceof cObject) {
                 cObject object = (cObject)element;
@@ -114,7 +114,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
         }
     }
 
-    class ViewLabelProvider implements IStyledLabelProvider {
+    public static class ViewLabelProvider implements IStyledLabelProvider {
         private class ColorStyler extends Styler {
             Color color;
             public ColorStyler(Color color) { this.color = color; }

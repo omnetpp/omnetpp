@@ -1,18 +1,27 @@
 package org.omnetpp.simulation.editors;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
@@ -22,11 +31,14 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
+import org.omnetpp.common.ui.ArrayTreeContentProvider;
+import org.omnetpp.common.ui.CheckedTreeSelectionDialog2;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
+import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.ISimulationUICallback;
@@ -37,10 +49,15 @@ import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.liveanimation.AnimationDirector;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
+import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cSimulation;
+import org.omnetpp.simulation.ui.ModulePathsMessageFilter;
 import org.omnetpp.simulation.ui.SpeedControl;
+import org.omnetpp.simulation.ui.TimelineContentProvider;
+import org.omnetpp.simulation.ui.TimelineControl;
+import org.omnetpp.simulation.views.ObjectTreeView;
 import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
 
 /**
@@ -64,6 +81,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     protected SimulationCanvas simulationCanvas;
 
     private Label statusLabel;
+    private TimelineControl timeline;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -137,11 +155,70 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         statusLabel.setText("n/a");
         statusLabel.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false));
 
-        Canvas futureEventsTimeline = new Canvas(simulationRibbon, SWT.BORDER);
-        futureEventsTimeline.setBackground(ColorFactory.BEIGE);
+        // create and configure timeline
+        timeline = new TimelineControl(simulationRibbon, SWT.BORDER);
         GridData l = new GridData(SWT.FILL, SWT.END, true, false);
-        l.heightHint = 20;
-        futureEventsTimeline.setLayoutData(l);
+        timeline.setLayoutData(l);
+        TimelineContentProvider timelineProvider = new TimelineContentProvider(simulationController.getSimulation());
+        timeline.setContentProvider(timelineProvider);
+        timeline.setLabelProvider(timelineProvider);
+
+        //XXX temporary code: display the names of hovered messages
+        new HoverSupport().adapt(timeline, new IHTMLHoverProvider() {
+            @Override
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                Object[] messages = timeline.getMessagesForX(x, 2);
+                if (messages.length == 0)
+                    return null;
+                String html = "<ul>\n";
+                for (Object o : messages) {
+                    cMessage msg = (cMessage)o;
+                    html += "<li>(" + msg.getClassName() + ")&nbsp;<b>" + msg.getName() + "</b> -- "+ msg.getInfo() + "<br>\n";
+                }
+                html += "</ul>";
+                return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(html));
+            }
+        });
+
+        // double-clicking opens messages
+        timeline.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) { }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                Object[] messages = timeline.getSelection();
+                if (messages.length == 1)
+                    simulationCanvas.inspect((cObject)messages[0]);
+                else if (messages.length > 1) {
+                    // offer a checkbox list dialog
+                    messages = chooseObjectsToInspect(messages);
+                    if (messages != null)
+                        for (Object msg : messages)
+                            simulationCanvas.inspect((cObject)msg);
+                }
+            }
+        });
+
+        // timeline follows selection
+        ISelectionChangedListener selectionChangeListener = new ISelectionChangedListener() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public void selectionChanged(SelectionChangedEvent e) {
+                System.out.println("timeline: got selection change, new selection: " + e.getSelection());  //TODO
+                if (e.getSelection() instanceof IStructuredSelection) {
+                    List<cModule> selectedModules = SelectionUtils.getObjects(e.getSelection(), cModule.class);
+                    TimelineContentProvider provider = (TimelineContentProvider) timeline.getContentProvider();
+                    if (selectedModules.isEmpty())
+                        provider.setFilter(null); // no filtering
+                    else
+                        provider.setFilter(new ModulePathsMessageFilter(selectedModules.toArray(new cModule[]{})));
+                    timeline.redraw();
+                }
+            }
+        };
+        getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
+
 
 //        // create animation ribbon
 //        Composite animationRibbon = new Composite(tabFolder, SWT.NONE);
@@ -192,6 +269,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             @Override
             public void simulationStateChanged(SimulationController controller) {
                 simulationCanvas.refreshInspectors();
+                timeline.redraw();
                 if (controller.isLastEventAnimationDone())
                     showNextEventMarker();
             }
@@ -455,6 +533,23 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             if (inspector instanceof GraphicalModuleInspectorPart)
                 ((GraphicalModuleInspectorPart)inspector).setNextEventMarker(module, primary);
         }
+    }
+
+    protected Object[] chooseObjectsToInspect(Object[] elements) {
+        CheckedTreeSelectionDialog2 dialog = new CheckedTreeSelectionDialog2(
+                Display.getCurrent().getActiveShell(),
+                new DecoratingStyledCellLabelProvider(new ObjectTreeView.ViewLabelProvider(), null, null), //TODO make that inner class top-level...
+                new ArrayTreeContentProvider());
+        dialog.setTitle("Inspect Objects");
+        dialog.setMessage("Choose objects to be inspected:");
+        dialog.setHelpAvailable(false);
+        dialog.setInput(elements);
+        dialog.setStatusLineAboveButtons(false);
+        dialog.setInitialSelections(elements);
+
+        if (dialog.open() == Window.OK)
+            return dialog.getResult();
+        return null;
     }
 
     public void openInspector(cObject object) {
