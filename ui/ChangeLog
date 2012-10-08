@@ -8,7 +8,7 @@
 
 2011-05-27 Rudolf Hornig
 
-   * Before running the simulations, the IDE will show the command line in
+   * Before running a simulation, the IDE will show the command line in
      the console view to help you execute the same simulation from the
      command line.
 
@@ -24,11 +24,11 @@
 
 2011-05-03 Andras Varga
 
-   * Fixes #289: Problem with syntax higlight of xml tags in NED comments
+   * Fixes #289: Problem with syntax highlight of xml tags in NED comments
 
 2011-04-30 Andras Varga
 
-   * Added "Export BuildTeater makefile" to the project properties dialog to halp testing projects
+   * Added "Export BuildTester makefile" to the project properties dialog to halp testing projects
      that define several "Project Features" (i.e. INET-Framework)
 
 2011-04-21 Andras Varga
@@ -43,7 +43,7 @@
 
 2011-04-14 Andras Varga
 
-   * Makefile Wizard Tamplate fixes
+   * Makefile Wizard Template fixes
    * Added support for the new xml() NED function
 
 2011-04-08 Andras Varga
@@ -112,12 +112,12 @@
 2011-02-03 Levente Meszaros
 
    * Added Technology Preview version of the network animator. It works only on .elog files smaller than
-     10Mb. You can open it by right clicking on an .elog file and selection "Open width...".
+     10Mb. You can open it by right clicking on an .elog file and selection "Open with...".
      This implementation is NOT optimized for larger files.
 
 2011-02-01 Rudolf Hornig
 
-   * NED Files are refreshed now before opening. No more file is out of sync messages if the opened
+   * NED Files are refreshed now before opening. No more "file is out of sync" message if the opened
      ned file was modified outside of the IDE.
 
 2011-02-01 Andras Varga
@@ -152,12 +152,12 @@
 2011-01-21 Rudolf Hornig
 
    * Go to C++ definiton (CTRL-TAB) now correctly finds the appropriate C++ class even if the
-     NED type is extending and other type or it is using the @class property. (bug #238)
+     NED type is extending another type or it is using the @class property. (bug #238)
 
 2011-01-20 Rudolf Hornig
 
    * In graphical editor the previous action used with double click (go to type or supertype)
-     has ben moved to the F3 key. It is also available from the conetxt menu.
+     has ben moved to the F3 key. It is also available from the context menu.
 
 2011-01-20 Andras Varga
 
