@@ -156,6 +156,20 @@
   </xsl:attribute>
 </xsl:attribute-set>
 
+<!--  The properties of level-4 section titles. -->
+<xsl:attribute-set name="section.title.level4.properties">
+  <xsl:attribute name="font-size">
+      <xsl:value-of select="$body.font.master"></xsl:value-of><xsl:text>pt</xsl:text>
+  </xsl:attribute>
+</xsl:attribute-set>
+
+<!--  The properties of level-4 section titles. -->
+<xsl:attribute-set name="section.title.level5.properties">
+  <xsl:attribute name="font-size">
+      <xsl:value-of select="$body.font.master"></xsl:value-of><xsl:text>pt</xsl:text>
+  </xsl:attribute>
+</xsl:attribute-set>
+
 <!--  Turn on section numbers -->
 <xsl:param name="chapter.autolabel" select="1"/>
 <xsl:param name="section.label.includes.component.label" select="1"/>

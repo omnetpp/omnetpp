@@ -38,8 +38,8 @@
       file in the ``Project Explorer View'' to open the ``New Analysis File'' dialog. The folder and file name
       is prefilled according to the location and name of the result file. Press ``Finish'' to create a new analysis
       file containing the vector and scalar files whose names correspond to the result file. If
-      the name of the result file contains a numeric suffix (e.g. aloha-10.vec), then all files with the same
-      prefix will be added to the analysis file (i.e. aloha-*.vec and aloha-*.sca).</para>
+      the name of the result file contains a numeric suffix (e.g. [[aloha-10.vec]]), then all files with the same
+      prefix will be added to the analysis file (i.e. [[aloha-*.vec]] and [[aloha-*.sca]]).</para>
     <tip>
       <para> If the analysis file already exists, double-clicking on the result file will open it.</para>
     </tip>
@@ -81,9 +81,9 @@
         </para>
         <para>
           The underlying assumption is that users will organize their simulation-based research into various
-          <emphasis>experiments</emphasis>
+          ``experiments''
           . An experiment will consist of several
-          <emphasis>measurements</emphasis>,
+          ``measurements'',
           which are typically (but not necessarily) simulations done with the same model but with different
           parameter settings (i.e. the user will explore the parameter space with several simulation runs).
           To gain statistical confidence in the results, each measurement may be repeated
@@ -166,25 +166,12 @@
                   <entry>the run identifier</entry>
                 </row>
                 <row>
-                  <entry>
-                    attr:
-                    <emphasis>name</emphasis>
-                  </entry>
-                  <entry>
-                    the value of the run attribute named
-                    <emphasis>name</emphasis>
-                    , e.g. attr:experiment
-                  </entry>
+                  <entry>attr: ``name''</entry>
+                  <entry>the value of the run attribute named ``name'', e.g. attr:experiment</entry>
                 </row>
                 <row>
-                  <entry>
-                    param:
-                    <emphasis>name</emphasis>
-                  </entry>
-                  <entry>
-                    the value of the module parameter named
-                    <emphasis>name</emphasis>
-                  </entry>
+                  <entry>param: ``name''</entry>
+                  <entry>the value of the module parameter named ``name''</entry>
                 </row>
               </tbody>
             </tgroup>
@@ -240,10 +227,7 @@
         <tip>
           <para>
             Content Assist is available in the text fields where you can enter a filter expression. Press
-            <keycombo>
-              <keycap>Ctrl</keycap>
-              <keycap>Space</keycap>
-            </keycombo>
+            <keycombo><keycap>Ctrl</keycap><keycap>Space</keycap></keycombo>
             to get a list of appropriate suggestions related to the expression at the cursor position.
           </para>
         </tip>
@@ -255,9 +239,7 @@
             <literallayout><userinput>"queuing time"</userinput></literallayout>
           </para>
           <para>
-            filters for result items named
-            <emphasis>queuing time</emphasis>
-            .
+            filters for result items named ``queuing time''.
           </para>
         </informalexample>
         <informalexample>
@@ -266,13 +248,7 @@
 <userinput>                     name("transmission time"))</userinput></literallayout>
           </para>
           <para>
-            results in the
-            <emphasis>queuing times</emphasis>
-            and
-            <emphasis>transmission times</emphasis>
-            that are written by modules named
-            <emphasis>sink</emphasis>
-            .
+            results in the ``queuing times'' and ``transmission times'' that are written by modules named ``sink''.
           </para>
         </informalexample>
       </sect3>
@@ -284,8 +260,8 @@
         <para> The third page displays the datasets and charts created during the analysis. Datasets describe
           a set of input data, the processing applied to them and the charts. The dataset is displayed as a
           tree of processing steps and charts. There are nodes for adding and discarding data, applying
-          processing to vectors, selecting the operands of the operations and content of charts, and for
-          creating charts.</para>
+          processing to vectors and scalars, selecting the operands of the operations and content of charts,
+          and for creating charts.</para>
         <picture file="pictures/ANF-DatasetsPage.png">Defining datasets to be analyzed</picture>
         <tip>
           <para> You can browse the dataset's content in the ``Dataset View''. Open the view by selecting
@@ -305,15 +281,11 @@
             to edit the tree on this page. Double-clicking a chart node will display the chart.</para>
         </tip>
         <para>
-          Computations can be applied to the data by adding Apply/Compute nodes to the dataset. The data items
-          to which the computation should be applied can be selected by adding Select/Deselect children to the
-          processing node. By default, the computation is applied to each data item. The difference between Apply
-          and Compute is that Apply will remove its input from the dataset, while Compute keeps the original
-          data, too.
-          <xref linkend="processing-operations" />
-          contains the list of available operations.
+          Computations can be applied to the data by adding Apply to Vectors/Compute Vectors/Compute Scalars
+          nodes to the dataset. The input of the computations can be selected by adding Select/Deselect children to the
+          processing node. By default, the computation input is the whole content of the dataset at the processing node.
+          Details of the computations are described in the next sections.
         </para>
-        <xi:include href="processing-operations.xml#xpointer(//table[@id='processing-operations'])" />
         <para> Processing steps within a Group node only affect the group. This way, you can
           create branches in the dataset. To group a range of sibling nodes, select them and choose ``Group''
           from the context menu. To remove the grouping, select the Group node and choose ``Ungroup''.</para>
@@ -327,6 +299,425 @@
           section for details.
         </para>
       </sect3>
+      <sect3>
+        <title>Computing Vectors</title>
+        <para>
+          Both Compute Vectors and Apply to Vectors nodes compute new vectors from other vectors.
+          The difference between them is that Apply to Vectors will remove
+          its input from the dataset, while Compute keeps the original data, too.
+        </para>
+        <para>
+          <xref linkend="processing-operations" /> contains the list of available operations on vectors.
+          <xi:include href="processing-operations.xml#xpointer(//table[@id='processing-operations'])" />
+        </para>
+      </sect3>
+      <sect3>
+        <title>Computing Scalars</title>
+
+        <para>The Compute Scalars dataset node adds new scalars to the dataset whose values are computed
+        from other statistics in the dataset. The input of the computation can be restricted by adding
+        Select/Deselect nodes under it.</para>
+
+        <picture file="pictures/ANF-EditComputeScalars.png" width="80%">Edit 'Compute Scalars' dialog</picture>
+
+        <para>In the ``Properties'' dialog of the Compute Scalars node, you can set the name and module of the generated
+        scalars, and the expression that computes their values. You can also can enter a grouping expression,
+        and set flags to average the values across replications.
+        Content Assist (<keycap>Ctrl+SPACE</keycap>) is available for the ``Value'' field, it can
+        propose statistic and function names.</para>
+
+        <para>The content of the dialog is validated after each keystroke, and errors are displayed as small
+        icons next to the edit field. Hovering over the error icon shows the error message. However, not all errors
+        can be detected statically, in the dialog. If an error occurs while performing the computation, then an error
+        marker is added to the analysis file and to the corresponding dataset node in the Analysis editor.
+        You can view the error in the ``Problems View'', and double-clicking the problem item navigates back to the
+        ``Compute Scalars'' node.</para>
+
+        <para>When a ``Compute Scalars'' node in the dataset is evaluated,
+        computations will use the fields rougly in the order they appear in the dialog.
+        First, grouping takes place (by simulation run, and then by the optional grouping expression);
+        then values are computed; then values are stored by the given name and module; and finally,
+        averaging across simulation runs takes place.</para>
+
+        <para>Explanation the dialog fields:</para>
+
+        <formalpara><title>Value.</title>
+        This is an arithmetic expression for the value of the generated scalar(s). You can use
+        the values of existing scalars, various properties of existing vectors and histograms
+        (mean, min, max, etc), normal and aggregate functions (mean, min, max, etc),
+        and the usual set of operators.</formalpara>
+
+        <para>To refer to the value of a scalar, simply use the scalar name (e.g. [[pkLoss]]),
+        or enclose it with apostrophes if the name of the scalar contains special characters
+        (e.g. [['rcvdPk:count']].) If there are several scalars with that name in the
+        input dataset, usually recorded by different modules or in different runs, then the computation
+        will be performed on each. The scalar name cannot contain wildcards or dollar variables (see later.)</para>
+
+        <para>When necessary, you can qualify the scalar name with a module name pattern that will be
+        matched against the full paths of modules. The same pattern syntax is used as in ini files and
+        in other parts of the Analysis Tool (Quick reminder: use [[*]] and [[**]] for wildcards, [[{5..10}]]
+        for numeric range, [[[5..10]]] for module index range). If multiple scalars match
+        the qualified name, the expression will be computed for each. If there are several such patterns
+        in the expression, then the computation will be performed on their Cartesian product.</para>
+
+        <para>If the expression mentions several unqualified scalars (i.e. without module pattern),
+        they are expected to come from the same module. For example, if your expression is [[foo+bar]]
+        but the [[foo]] and [[bar]] scalars have been recorded by different modules, the result will be empty.</para>
+
+        <para>The iteration can be restricted by binding some part of the module name to variables,
+        and use those variables in other patterns. The [[${x=&lt;pattern&gt;}]] syntax in a module
+        name pattern binds the part of the module name matched to ``pattern'' to a variable named [[x]].
+        These variables can be referred as [[${x}]] in other patterns. The [[${...}]] syntax also allows
+        you to embed expressions (e.g. [[${x+1}]]) into the pattern.</para>
+
+        <para>To make use of vectors and histograms in the computation, you can use the [[count()]],
+        [[mean()]], [[min()]], [[max()]], [[stddev()]] and [[variance()]] functions to access their properties
+        (e.g. [[count(**.mac.pkDrop)]] or [[max('end-to-end delay')]]).</para>
+
+        <para>The following functions can be applied to scalars or to an expression that yields a scalar value:
+        [[count()]], [[mean()]], [[min()]], [[max()]], [[stddev()]], [[variance()]].
+        These aggregate functions produce one value for a group of scalars instead of one for each scalar.
+        By default, each scalar belongs to the same group, but it is possible to group them by module name (see Grouping).
+        Aggregate functions cannot cross simulation run boundaries, e.g they cannot be used to compute average over
+        all replications of the same configuration; use the ``Average replications'' checkbox for that.</para>
+
+        <formalpara><title>Grouping.</title>
+        Scalars can be grouped by module or value before the value computation, and you can enter a grouping
+        expression here. Grouping is the most useful when you want to use aggregate functions 
+        ([[count()]], [[mean()]], etc.) in the value expression.</formalpara>
+
+        <para>The grouping expression is evaluated for each statistic in the input dataset, and the resulting value
+        denotes the statistic's group. For example, if the expression produces 0 for some statistics
+        and 1 for others, there will be two groups. Aggregate functions ([[count()]], [[mean()]], etc.)
+        are performed on each group independently.</para>
+
+        <para>In the grouping expression, you can refer to the name, module and values of the statistic
+        ([[module]], [[name]] and [[value]]; the latter is only meaningful on scalars, and produces ``NaN''
+        for histograms and vectors), and to attributes of the simulation run ([[run]], [[configname]],
+        [[runnumber]], [[experiment]], [[measurement]], [[replication]], iteration variables of the ini file, etc.)
+        However, note that run attributes are not as useful as they would appear, because grouping
+        only takes place within simulation runs, you cannot join data from several simulation runs
+        into one group this way.</para>
+
+        <para>Often you want derive the group identifier from some part of the module name.
+        A useful tool for that is the pattern matching operator ([[=~]]) combined with conditionals ([[? :]]).
+        The expression [[&lt;str&gt; =~ &lt;pat&gt;]] matches the string [[str]] with the pattern [[pat]].
+        If there is no match, the value of the expression is [[false]], otherwise the input string [[str]]
+        (which counts as true). The useful bit is that you can bind parts of the matching string to variables
+        with the [[${x=&lt;pattern&gt;}]] syntax in the pattern (see above), and you can use those variables
+        later in the grouping expression, and also in the ``Value'', ``Name'' and ``Module'' fields.</para>
+
+        <formalpara><title>Name.</title>
+        This is the name for the generated scalars. You can enter a literal string here.
+        You can also use dollar variables bound in the ``Value'' and ``Grouping'' fields (e.g. [[${x}]]),
+        and their expressions (e.g. [[${x+y+1}]]).</formalpara>
+
+        <formalpara><title>Module.</title>
+        This is the place where you can enter the module name for the newly computed scalars.
+        If the value expression contains unqualified scalars (those without module name patterns)
+        that are not subject to aggregate functions, and you agree to place
+        the new scalars into the same modules as theirs, then this field can be left empty.
+        Otherwise, enter the module name. You can use dollar variables bound in the ``Value'' and
+        ``Grouping'' fields (e.g. [[${x}]]), and their expressions (e.g. [[${x+y+1}]]).
+        Note that the module name does not need to be an existing module name; you can "make up"
+        new modules by entering arbitrary names here.</formalpara>
+
+        <formalpara><title>Average replications checkbox.</title>
+        Check to compute only the avarage value across repetitions.</formalpara>
+
+        <para>The computation is performed in each run independently by default. If some run is a replication of the same
+        measurement with different seeds, you may want to average the results. If the ``Average replications'' checkbox is
+        selected, then only one scalar is added to the dataset for each measurement.</para>
+
+        <para>A new run generated for the scalar which represents the set of replications which it is computed from.
+        The attributes of this run are those that have the same value in all replications.</para>
+
+        <formalpara><title>Other checkboxes.</title>
+        In addition to mean, you can also add other statistical properties of the computed scalar to the dataset
+        by selecting the corresponding checkboxes in the dialog. The names of these new scalars
+        will be formed by adding the [[:stddev]], [[:confint]], [[:min]], or [[:max]] suffix
+        to the base name of the scalar.</formalpara>
+
+        <note>A more formal description of the ``Compute Scalars'' feature's operation, together with the
+        list of available functions and other details, can be found in the
+        Appendix (see <xref linkend="computed-scalar-spec"/>).</note>
+
+        <formalpara><title>Examples.</title>
+        Let us illustrate the usage of the computations with some examples.</formalpara>
+
+        <orderedlist>
+
+          <listitem><para>Assume that you have several source modules in the network that generate CBR traffic,
+          parameterized with packet length (in bytes) and send interval (seconds). Both parameters
+          are saved as scalars by each module ([[pkLen]], [[sendInterval]]), but you want to use the bit rate
+          for further computations or charts. Adding a ``Compute Scalar'' node with the following content
+          will create an additional [[bitrate]] scalar for each source module:</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[pkLen*8/sendInterval]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[bitrate]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>Assume that several sink modules record [[rcvdByteCount]] scalars, and the simulation
+          duration is saved globally as the [[duration]] scalar of the toplevel module. We are interested
+          in the throughput at each sink module. In the value expression we can refer to the [[duration]] scalar
+          by its qualified name, i.e. prefix it with the full name of its module. [[rcvdByteCount]] can be
+          left unqualified, and then the ``Module'' field doesn't need to be filled out because it will
+          be inferred from the [[rcvdByteCount]] statistic.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[8*rcvdByteCount / Network.duration]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[throughput]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>If you are interested in the total number of bytes received in the network,
+          you can use the [[sum()]] function. In this example we store the result as a new scalar
+          of the toplevel module, [[Network]].</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[sum(rcvdByteCount)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[totalRcvdBytes]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Network]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>If several modules record scalars named [[rcvdByteCount]] but you are only
+          interested in the ones recorded from network hosts, you can qualify the scalar name with
+          a pattern:</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[sum(**.host*.**.rcvdByteCount)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[totalHostRcvdBytes]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Network]]</para></listitem>
+          </itemizedlist></para>
+
+          <note>An alternative solution would be to restrict the input of the Compute Scalars node
+          by adding a Select child under it.</note>
+
+          </listitem>
+
+          <listitem><para>If several modules record vectors named [[end-to-end delay]] and you are
+          interested in the average of the peak end-to-end delays experienced by each module,
+          you can use the [[max()]] function on the vectors to get the peak, then [[mean()]]
+          to obtain their averages. Note that the vector name needs to be quoted with apostrophes
+          because it contains spaces.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[mean(max('end-to-end delay'))]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[avgPeakDelay]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Network]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>Let's assume there are 3 clients ([[cli0, cli1, cli2]]) and 3 servers ([[srv0, srv1, srv2]])
+          in the network, and each client sends datagrams to the corresponding server. The packet loss
+          per client-server pair can be computed from the number of sent and received packets.
+          We use the [[i]] variable to match the corresponding clients and servers.
+          (Without the [[i]] variable, i.e. by writing just [[Net.cli*.pkSent - Net.srv*.pkRcvd]],
+          the result would be Cartesian product.)</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[Net.cli${i={0..2}}.pkSent - Net.srv${i}.pkRcvd]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[pkLoss]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Net.srv${i}]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>A similar example is when you want to compute the total number of transport
+          packets (the sum of the TCP and UDP packet counts) for each host. Since the input scalars
+          are recorded by different modules, we need the [[host]] variable to match TCP and UDP modules
+          under the same host.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[${host=**}.udp.pkCount + ${host}.tcp.pkCount]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[transportPkCount]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[${host}]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>This example is a slight modification of the previous example. Assume that the TCP
+          module writes an output vector (named [[pkSent]]) containing the length of each packet sent,
+          and the UDP module writes a histogram of the sent packet lengths. As in the previous example,
+          we want to compute the number of sent packets for each host; we use [[count()]] to
+          extract the number of values from histograms and output vectors.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[count(${host=**}.udp.pkSent) + count(${host}.tcp.pkSent)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[pkCount]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[${host}]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>Now we are computing the average number of data packets sent by the hosts. We will use
+          the [[mean()]] function in the ``Value'' expression: [[mean(${host=**}.udp.pkCount + ${host}.tcp.pkCount)]].
+          The [[mean]] function computes one value from a set of values. Because this value can not be associated
+          with one host, the [[host]] variable will be undefined outside the [[mean()]] function call. Therefore
+          you can not enter [[${host}]] into the ``Module'', but an appropriate module name should be choosen.
+          Important: the [[mean()]] function cannot be used to compute the average of values that come from different
+          runs, as the ``Value'' expression is always evaluated with input statistics that come from the
+          same run; you have to use the ``Average replications''  checkbox for that instead.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[mean(${host=**}.udp.pkCount + ${host}.tcp.pkCount))]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[avgPkCount]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Network]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>Again, we are interested in the average number of sent packets, but we want
+          to compute the average for each subnet. In SQL you would use the GROUP BY clause to generate that report,
+          here you can use the ``Grouping'' expression. Let us assume that the subnets are at the second level
+          of the module hierarhcy, so they can be identified by the second component of the full names of modules.
+          Giving [[(module =~ *.${subnet=*}.**) ? subnet : "n/a"]] as the ``Grouping'' expression, the group identifier
+          will be the subnet of the modules (and [[n/a]] for the network). Now the same ``Value'' expression as
+          in the previous example computes the average for each subnet. The [[group]] variable now contains the
+          name of the subnet, so you can use the [[${group}]] expression as the ``Module''.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[mean(${host=**}.udp.pkCount + ${host}.tcp.pkCount))]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>: [[(module =~ *.${subnet=*}.**) ? subnet : "n/a"]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[avgPkCount]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[${group}]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>It is also possible to group the scalars by their values.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[count(responseTime)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>: [[value > 1.0 ? "Large" : "Normal"]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[num${group}ResponseTimes]]</para></listitem>
+          <listitem><para>``or:'' [[${"num" ++ group ++ "ResponseTimes"}]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Network]]</para></listitem>
+          </itemizedlist></para>
+
+          <note>Note the use of [[++]] for string concatenation in the name expression. The normal [[+]] operator
+          does numeric addition, and it would attempt to convert both operands to a numbers beforehand.</note>
+
+          </listitem>
+
+
+          <listitem><para>Assume that you run the simulation with the same parameter settings, but different seeds,
+          i.e. you have runs that are replications of the same measurement. Then computations are repeated for each
+          run, therefore they produce values for each replications. If you are not interested in the individual
+          results in the replications, you can generate only their average by turning on the ``Average replications''
+          checkbox. The average will be saved with the name entered into the ``Name'' field. The minimum/maximum
+          value, the standard deviation of the distribution, and the confidence interval of the mean can also
+          be generated. Their name will contain a [[:min]], [[:max]], [[:stddev]], [[:confint]] suffix.</para></listitem>
+
+
+          <listitem><para>To add a constant value as a scalar, enter the value into ``Value'' field,
+          its name into the ``Name'', and the module name into the ``Module'' field. Note that you can
+          use any name for the target module, not just names of existing modules. As a result of the computation,
+          one scalar will be added in every run that is present in the input dataset.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[299792458]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[speedOfLight]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Network.channelControl]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>If you want to add the constant for each module in your dataset, then enter [[module]] into
+          the ``Grouping'' field, and [[${group}]] into the ``Module'' field. In this case
+          the statistics of the input dataset are grouped not only by their run, but by their module name too.
+          The expression entered into the ``Grouping'' field is a predefined variable, that refers
+          to the module name of the statistic which the group identifier is generated for. We refer to the
+          value of the group identifier (i.e. the module name) in the ``Module'' field.
+          </para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[3.1415927]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>: [[module]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[pi]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[${group}]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>Sometimes multiple steps are needed to compute what you need. Assume you have
+          a network where various modules record ping round-trip delays (RTT), and you want to count the modules
+          with large RTT values (where the average RTT is more than twice the global average in the network).
+          The following examples achieves that. Step 1 and 2 could be merged, but we left them separate 
+          for better readability.</para>
+
+          <para>Step 1:</para>
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[mean('rtt:vector')]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[average]]</para></listitem>
+          </itemizedlist></para>
+
+          <para>Step 2:</para>
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[average / mean(**.average)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[relativeAverage]]</para></listitem>
+          </itemizedlist></para>
+
+          <para>Step 3:</para>
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[count(relativeAverage)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>: [[value > 2.0  ? "Above" : "Normal"]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[num${group}]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Net]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>In this example, we have 100 routers ([[Net.rte[0]..Net.rte[99] ]]) that
+          all record the number of dropped packets ([[drops]] scalar), and we want to know how many routers
+          dropped 0..99 packets, 100..199 packets, 200..299 packets, and so on. For this we group the scalars
+          by their values, and count the scalars in each group.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[count(drops)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>: [[floor(value / 100)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[values in the ${group}00- group]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Net]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>Assume we have the same 100 routers with drop count scalars as in the previous example.
+          We want to group the routers in batches of 10 by index, and compute the average drop count in each batch.</para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[mean(drops)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>: [[(module=~ *.rte[${index=*}]) ? floor(index/10) : "n/a"]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[avgDropsInGroup${group}]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Net]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+          <listitem><para>This is a variation of the previous example: if the batches are not of equal size, we can 
+          use the [[locate(x,a1,a2,a3,...an)]] function to group them. [[locate()]] returns the index of the first element
+          of ``a1..an'' that is less or equal than ``x'' (or 0 if ``x &lt; a1''). </para>
+
+          <para><itemizedlist spacing="compact" mark="none">
+          <listitem><para><emphasis role="bold">Value</emphasis>: [[mean(drops)]]</para></listitem>
+          <listitem><para><emphasis role="bold">Grouping</emphasis>:</para></listitem> <!-- line too long, adding a "manual line break" -->
+          <listitem><para>  [[(module=~ *.rte[${index=*}]) ? locate(index,5,15,35,85) : "n/a"]]</para></listitem>
+          <listitem><para><emphasis role="bold">Name</emphasis>: [[avgDropsInGroup${group}]]</para></listitem>
+          <listitem><para><emphasis role="bold">Module</emphasis>: [[Net]]</para></listitem>
+          </itemizedlist></para>
+
+          </listitem>
+
+        </orderedlist>
+      </sect3>
+
       <sect3>
         <title>Export</title>
         <para> You can export the content of the dataset into text files. Three formats are supported: comma
@@ -628,7 +1019,7 @@
         <para> By default, each data point that comes from the same y scalar belongs to the same line. This is
           not always what you want because these values may have been generated in runs having different
           parameter settings; therefore, they are not homogenous. You can specify scalars to determine the "iso" lines of
-          the scatter chart. Only those points that have the same values of these "iso" attributes are connected 
+          the scatter chart. Only those points that have the same values of these "iso" attributes are connected
           by lines.</para>
         <picture file="pictures/ANF-ScatterOptions.png">A scatter chart</picture>
         <tip>

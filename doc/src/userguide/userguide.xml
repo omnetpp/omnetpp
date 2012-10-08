@@ -13,4 +13,5 @@
 <xi:include href="result-analysis.xml" />
 <xi:include href="neddoc.xml" />
 <xi:include href="ide-extensions.xml" />
+<xi:include href="computed-scalar-spec.xml" />
 </book>
