@@ -1739,7 +1739,7 @@ sub generateDescriptorClass
     print CC "    virtual unsigned int getFieldTypeFlags(void *object, int field) const;\n";
     print CC "    virtual const char *getFieldTypeString(void *object, int field) const;\n";
     print CC "    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;\n";
-    print CC "    virtual int getFieldArraySize(void *object, int field) const;\n";
+    print CC "    virtual int getArraySize(void *object, int field) const;\n";
     print CC "\n";
     print CC "    virtual std::string getFieldAsString(void *object, int field, int i) const;\n";
     print CC "    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;\n";
@@ -1916,13 +1916,13 @@ sub generateDescriptorClass
     print CC "}\n";
     print CC "\n";
 
-    # getFieldArraySize()
-    print CC "int $msgdescclass\:\:getFieldArraySize(void *object, int field) const\n";
+    # getArraySize()
+    print CC "int $msgdescclass\:\:getArraySize(void *object, int field) const\n";
     print CC "{\n";
     print CC "    cClassDescriptor *basedesc = getBaseClassDescriptor();\n";
     print CC "    if (basedesc) {\n";
     print CC "        if (field < basedesc->getFieldCount(object))\n";
-    print CC "            return basedesc->getFieldArraySize(object, field);\n";
+    print CC "            return basedesc->getArraySize(object, field);\n";
     print CC "        field -= basedesc->getFieldCount(object);\n";
     print CC "    }\n";
     print CC "    $msgclass *pp = ($msgclass *)object; (void)pp;\n";
