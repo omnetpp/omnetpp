@@ -49,7 +49,7 @@ import org.omnetpp.simulation.figures.SubmoduleFigureEx;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
 import org.omnetpp.simulation.inspectors.actions.InspectAsObject;
-import org.omnetpp.simulation.inspectors.actions.InspectNedTypeAction;
+import org.omnetpp.simulation.inspectors.actions.InspectComponentTypeAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.ModelInformationAction;
 import org.omnetpp.simulation.inspectors.actions.ReduceIconsAction;
@@ -698,7 +698,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         //XXX the following buttons are from Tkenv -- revise which ones we really need
         manager.add(my(new InspectParentAction()));
         manager.add(my(new InspectAsObject()));
-        manager.add(my(new InspectNedTypeAction()));
+        manager.add(my(new InspectComponentTypeAction()));
         manager.add(my(new ModelInformationAction()));
 //        ToolItem search = addToolItem(toolbar, "Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)", SimulationUIConstants.IMG_TOOL_FINDOBJ);
         manager.add(new Separator());
