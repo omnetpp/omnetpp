@@ -28,8 +28,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.model.ConfigOption;
@@ -56,9 +56,9 @@ public abstract class FieldEditor extends Composite {
 	protected FormPage formPage; // to access hoverSupport, and to be able to call setEditorSelection()
 	protected Map<String,Object> hints;  // various options for the field editor; may be null; see HINT_xxx constants
 
-	protected IHoverTextProvider hoverTextProvider = new IHoverTextProvider() {
-		public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-			return getTooltipText();
+	protected IHTMLHoverProvider hoverTextProvider = new IHTMLHoverProvider() {
+		public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+			return new HTMLHoverInfo(getTooltipText());
 		}
 	};
 

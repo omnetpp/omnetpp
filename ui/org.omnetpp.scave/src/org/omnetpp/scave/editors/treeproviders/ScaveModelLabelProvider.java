@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.scave.Markers;
 import org.omnetpp.scave.model.Add;
 import org.omnetpp.scave.model.Analysis;
@@ -214,14 +213,12 @@ public class ScaveModelLabelProvider extends LabelProvider implements IColorProv
 		return element.toString(); // fallback
 	}
 
-	public String getTooltipText(Object element, SizeConstraint outPreferredSize) {
+	public String getTooltipText(Object element) {
         if (element instanceof DatasetItem) {
             DatasetItem datasetItem = (DatasetItem)element;
             IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
-            if (file != null && hasError(file, datasetItem)) {
-                outPreferredSize.preferredWidth = 200;
+            if (file != null && hasError(file, datasetItem))
                 return "Errors, see Problems View";
-            }
         }
         return null;
 	}

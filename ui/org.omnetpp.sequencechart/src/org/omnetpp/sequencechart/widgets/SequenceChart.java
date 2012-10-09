@@ -76,9 +76,9 @@ import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
@@ -327,10 +327,11 @@ public class SequenceChart
     private void setupHoverSupport() {
         hoverSupport = new HoverSupport();
     	hoverSupport.setHoverSizeConstaints(700, 200);
-    	hoverSupport.adapt(this, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+    	hoverSupport.adapt(this, new IHTMLHoverProvider() {
+			@Override
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
 			    if (!internalErrorHappenedDuringPaint)
-			        return HoverSupport.addHTMLStyleSheet(getTooltipText(x, y, outSizeConstraint));
+			        return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getTooltipText(x, y)));
 			    else
 			        return null;
 			}
@@ -4089,7 +4090,7 @@ public class SequenceChart
 	 * Calls collectStuffUnderMouse(), and assembles a possibly multi-line
 	 * tooltip text from it. Returns null if there's no text to display.
 	 */
-	private String getTooltipText(int x, int y, SizeConstraint outSizeConstraint) {
+	private String getTooltipText(int x, int y) {
 		ArrayList<IEvent> events = new ArrayList<IEvent>();
 		ArrayList<IMessageDependency> messageDependencies = new ArrayList<IMessageDependency>();
         ArrayList<ModuleMethodBeginEntry> moduleMethodCalls = new ArrayList<ModuleMethodBeginEntry>();
@@ -4103,7 +4104,7 @@ public class SequenceChart
 				if (res.length() != 0)
 					res += "<br/>";
 
-				res += getEventText(event, true, outSizeConstraint);
+				res += getEventText(event, true);
 
 				if (events.size() == 1) {
 					IEvent selectionEvent = getSelectionEvent();
@@ -4136,7 +4137,7 @@ public class SequenceChart
 				if (res.length() != 0)
 					res += "<br/>";
 
-				res += getMessageDependencyText(messageDependency, true, outSizeConstraint);
+				res += getMessageDependencyText(messageDependency, true);
 			}
 
 			return res;
@@ -4149,7 +4150,7 @@ public class SequenceChart
                 if (res.length() != 0)
                     res += "<br/>";
 
-                res += getModuleMethodCallText(moduleMethodCall, true, outSizeConstraint);
+                res += getModuleMethodCallText(moduleMethodCall, true);
             }
 
             return res;
@@ -4200,7 +4201,7 @@ public class SequenceChart
 	/**
 	 * Returns a descriptive message for the IMessageDependency to be presented to the user.
 	 */
-	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted, SizeConstraint outSizeConstraint) {
+	public String getMessageDependencyText(IMessageDependency messageDependency, boolean formatted) {
 		if (sequenceChartFacade.IMessageDependency_isFilteredMessageDependency(messageDependency.getCPtr())) {
 			FilteredMessageDependency filteredMessageDependency = (FilteredMessageDependency)messageDependency;
 			MessageEntry beginMessageEntry = filteredMessageDependency.getBeginMessageDependency().getMessageEntry();
@@ -4237,12 +4238,12 @@ public class SequenceChart
                     if (!sameMessage)
                         result += "<br/>First: ";
 
-                    result += getMessageDetailText(beginMessageEntry, outSizeConstraint);
+                    result += getMessageDetailText(beginMessageEntry);
                 }
 
                 if (!sameMessage && endMessageEntry.getDetail() != null) {
                     result += "<br/>Last: ";
-                    result += getMessageDetailText(endMessageEntry, outSizeConstraint);
+                    result += getMessageDetailText(endMessageEntry);
                 }
             }
 
@@ -4258,19 +4259,17 @@ public class SequenceChart
 		    result += getMessageIdText(beginSendEntry, formatted);
 
 		    if (formatted && beginSendEntry.getDetail() != null)
-		        result += getMessageDetailText(beginSendEntry, outSizeConstraint);
+		        result += getMessageDetailText(beginSendEntry);
 
 			return result;
 		}
 	}
 
-    private String getMessageDetailText(MessageEntry messageEntry, SizeConstraint outSizeConstraint) {
+    private String getMessageDetailText(MessageEntry messageEntry) {
         String detail = messageEntry.getDetail();
     	int longestLineLength = 0;
     	for (String line : detail.split("\n"))
     		longestLineLength = Math.max(longestLineLength, line.length());
-    	// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
-    	outSizeConstraint.minimumWidth = longestLineLength * 8;
     	return "<br/><pre>" + StringUtils.quoteForHtml(detail) + "</pre>";
     }
 
@@ -4284,7 +4283,7 @@ public class SequenceChart
         return "(" + messageEntry.getMessageClassName() + ") " + boldStart + messageEntry.getMessageName() + boldEnd;
     }
 
-    private String getModuleMethodCallText(ModuleMethodBeginEntry moduleMethodCall, boolean formatted, SizeConstraint outSizeConstraint) {
+    private String getModuleMethodCallText(ModuleMethodBeginEntry moduleMethodCall, boolean formatted) {
         String itallicStart = formatted ? "<i>" : "";
         String itallicEnd = formatted ? "</i>" : "";
         ModuleCreatedEntry fromModuleCreatedEntry = eventLog.getModuleCreatedEntry(moduleMethodCall.getFromModuleId());
@@ -4323,7 +4322,7 @@ public class SequenceChart
 	/**
 	 * Returns a descriptive message for the IEvent to be presented to the user.
 	 */
-	public String getEventText(IEvent event, boolean formatted, SizeConstraint outSizeConstraint) {
+	public String getEventText(IEvent event, boolean formatted) {
 		String boldStart = formatted ? "<b>" : "";
 		String boldEnd = formatted ? "</b>" : "";
 

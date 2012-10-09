@@ -22,8 +22,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Item;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.inifile.editor.IGotoInifile;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -100,11 +101,11 @@ public class InifileContentOutlinePage extends ContentOutlinePage implements IIn
 		getTreeViewer().setInput(inifileDocument);
 
  		// add tooltip support
- 		new HoverSupport().adapt(getTreeViewer().getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+ 		new HoverSupport().adapt(getTreeViewer().getTree(), new IHTMLHoverProvider() {
+			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
 				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
 				String section = (String) (item==null ? null : item.getData());
-				return section==null ? null : InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true);
+				return section==null ? null : new HTMLHoverInfo(InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true));
 			}
  		});
 

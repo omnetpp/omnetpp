@@ -37,7 +37,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IDataset;
@@ -232,9 +231,9 @@ public class HistogramChartCanvas extends ChartCanvas {
 	}
 
 	@Override
-	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
+	String getHoverHtmlText(int x, int y) {
 		if (plot.getArea().contains(x, y))
-			return plot.getTooltipText(x, y, outSizeConstraint);
+			return plot.getTooltipText(x, y);
 		else
 			return null;
 	}

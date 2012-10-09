@@ -71,10 +71,10 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.FilteredCheckboxTree;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.ui.ProblemsMessageDialog;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
 import org.omnetpp.ned.core.NedResourcesPlugin;
@@ -164,8 +164,8 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
 
-        // the "Paths and Symbols" CDT page tends to display out-of-date info at the first 
-        // invocation; the following, seemingly no-op code apparently cures that... 
+        // the "Paths and Symbols" CDT page tends to display out-of-date info at the first
+        // invocation; the following, seemingly no-op code apparently cures that...
         if (CDTPropertyManager.getProjectDescription(getProject()) != null)
             for (ICConfigurationDescription cfgDes : CDTPropertyManager.getProjectDescription(getProject()).getConfigurations())
                 ManagedBuildManager.getConfigurationForDescription(cfgDes);  // the magic!
@@ -225,14 +225,14 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             }
         });
 
-        new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
-                outPreferredSize.preferredWidth = 350;
+        new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
+            @Override
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof ProjectFeature) {
                     String result = getHtmlFeatureInfo((ProjectFeature)element);
-                    return HoverSupport.addHTMLStyleSheet(result);
+                    return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(result));
                 }
                 return null;
             }

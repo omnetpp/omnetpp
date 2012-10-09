@@ -35,9 +35,9 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
@@ -163,9 +163,10 @@ class CrossHair {
 		});
 		HoverSupport hoverSupport = new HoverSupport();
 		hoverSupport.setHoverSizeConstaints(500, 400);
-		hoverSupport.adapt(chart, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-				return getHoverText(x, y, outSizeConstraint, finalChart.getOptimizedCoordinateMapper());
+		hoverSupport.adapt(chart, new IHTMLHoverProvider() {
+			@Override
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+				return new HTMLHoverInfo(getHoverText(x, y, finalChart.getOptimizedCoordinateMapper()));
 			}
 		});
 	}
@@ -234,12 +235,13 @@ class CrossHair {
 		}
 	}
 
-	private String getHoverText(int x, int y, SizeConstraint preferredSize, ICoordsMapping coordsMapping) {
+	private String getHoverText(int x, int y, ICoordsMapping coordsMapping) {
 		ArrayList<DataPoint> dataPoints = new ArrayList<DataPoint>();
 		int totalFound = dataPointsNear(x, y, HALO, dataPoints, MAXCOUNT, coordsMapping);
 		if (!dataPoints.isEmpty()) {
 			Collections.sort(dataPoints, new Comparator<DataPoint> () {
-				public int compare(DataPoint dp1, DataPoint dp2) {
+				@Override
+                public int compare(DataPoint dp1, DataPoint dp2) {
 					String key1 = chart.getDataset().getSeriesKey(dp1.series);
 					String key2 = chart.getDataset().getSeriesKey(dp2.series);
 					return StringUtils.dictionaryCompare(key1, key2);
@@ -280,8 +282,8 @@ class CrossHair {
 			textLayout.setText(plainText.toString());
 			textLayout.setWidth(320); // comes from HoverSupport
 			org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
-			preferredSize.preferredWidth = 20 + bounds.width;
-			preferredSize.preferredHeight = 25 + bounds.height + (lineNo > 1 ? (lineNo - 1) * 6 : 0);
+//			preferredSize.preferredWidth = 20 + bounds.width;
+//			preferredSize.preferredHeight = 25 + bounds.height + (lineNo > 1 ? (lineNo - 1) * 6 : 0);
 
 //			Point preferredSize2 = computePreferedSize(htmlText.toString(), 320);
 //			preferredSize.preferredWidth =  preferredSize2.x; //20 + maxTextLength * 7;

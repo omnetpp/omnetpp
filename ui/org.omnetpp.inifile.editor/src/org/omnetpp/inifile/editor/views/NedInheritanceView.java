@@ -36,19 +36,19 @@ import org.eclipse.ui.IEditorPart;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileAnalyzer;
 import org.omnetpp.ned.core.NedResourcesPlugin;
 import org.omnetpp.ned.model.INedElement;
-import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
-import org.omnetpp.ned.model.interfaces.INedTypeInfo;
-import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.INedTypeElement;
+import org.omnetpp.ned.model.interfaces.INedTypeInfo;
 import org.omnetpp.ned.model.interfaces.INedTypeLookupContext;
+import org.omnetpp.ned.model.interfaces.INedTypeResolver;
+import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ExtendsElement;
 import org.omnetpp.ned.model.pojo.InterfaceNameElement;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
@@ -114,8 +114,8 @@ public class NedInheritanceView extends AbstractModuleView {
  		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
 
  		// add tooltip support to the tree
- 		new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outPreferredSize) {
+ 		new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
+			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();
 				if (element instanceof GenericTreeNode)

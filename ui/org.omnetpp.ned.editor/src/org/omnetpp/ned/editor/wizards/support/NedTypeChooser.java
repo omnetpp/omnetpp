@@ -11,7 +11,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.CreationContext;
 import org.omnetpp.common.wizard.IWidgetAdapterExt;
@@ -127,7 +126,7 @@ public class NedTypeChooser extends AbstractChooser implements IWidgetAdapterExt
     }
 
     @Override
-    protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
+    protected String getHoverText(int x, int y) {
         if (StringUtils.isEmpty(getText()))
             return null;
         INedTypeInfo nedType = lookupNedType();

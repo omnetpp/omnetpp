@@ -13,7 +13,6 @@ import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -77,7 +76,7 @@ public class FileChooser extends AbstractChooser {
     }
 
     @Override
-    protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
+    protected String getHoverText(int x, int y) {
         if (StringUtils.isEmpty(getText()))
             return null;
         String contents = getFilePreviewContents();

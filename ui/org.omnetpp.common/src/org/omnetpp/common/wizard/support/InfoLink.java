@@ -7,8 +7,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.IWidgetAdapter;
@@ -34,26 +35,24 @@ public class InfoLink extends Composite implements IWidgetAdapter {
         link = new Link(this, SWT.NONE);
 
         hoverSupport = new HoverSupport();
-        hoverSupport.adapt(link, new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-                return getHoverText(x, y, outSizeConstraint);
+        hoverSupport.adapt(link, new IHTMLHoverProvider() {
+            @Override
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                return new HTMLHoverInfo(getHoverText(x, y), sizeConstraint);
             }
         });
 
         link.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 hoverSupport.makeHoverSticky(link);
             }
         });
     }
 
-    protected String getHoverText(int x, int y, SizeConstraint outSizeConstraint) {
+    protected String getHoverText(int x, int y) {
         if (StringUtils.isEmpty(hoverText))
             return null;
-        outSizeConstraint.minimumWidth = sizeConstraint.minimumWidth;
-        outSizeConstraint.minimumHeight = sizeConstraint.minimumHeight;
-        outSizeConstraint.preferredWidth = sizeConstraint.preferredWidth;
-        outSizeConstraint.preferredHeight = sizeConstraint.preferredHeight;
         return HoverSupport.addHTMLStyleSheet(hoverText);
     }
 
@@ -64,7 +63,7 @@ public class InfoLink extends Composite implements IWidgetAdapter {
     public void setText(String text) {
         link.setText(text);
     }
-    
+
     public String getText() {
         return link.getText();
     }
@@ -72,7 +71,7 @@ public class InfoLink extends Composite implements IWidgetAdapter {
     public void setHoverText(String hoverText) {
         this.hoverText = hoverText;
     }
-    
+
     public String getHoverText() {
         return hoverText;
     }

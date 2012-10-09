@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.scave.charting.dataset.IAveragedScalarDataset;
@@ -380,7 +379,7 @@ public class ScalarChart extends ChartCanvas {
 	}
 
 	@Override
-	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
+	String getHoverHtmlText(int x, int y) {
 		int rowColumn = plot.findRowColumn(fromCanvasX(x), fromCanvasY(y));
 		if (rowColumn != -1) {
 			int numColumns = dataset.getColumnCount();
@@ -407,8 +406,8 @@ public class ScalarChart extends ChartCanvas {
 			textLayout.setText(line1 + "\n" + line2);
 			textLayout.setWidth(320);
 			org.eclipse.swt.graphics.Rectangle bounds= textLayout.getBounds();
-			outSizeConstraint.preferredWidth = 20 + bounds.width;
-			outSizeConstraint.preferredHeight = 20 + bounds.height;
+//			outSizeConstraint.preferredWidth = 20 + bounds.width;
+//			outSizeConstraint.preferredHeight = 20 + bounds.height;
 
 //			outSizeConstraint.preferredWidth = 20 + maxLength * 7;
 //			outSizeConstraint.preferredHeight = 25 + 2 * 12;

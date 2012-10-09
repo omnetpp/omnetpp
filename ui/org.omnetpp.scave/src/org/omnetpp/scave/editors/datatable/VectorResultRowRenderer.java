@@ -16,7 +16,6 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
 import org.omnetpp.scave.engine.EnumType;
 import org.omnetpp.scave.engine.OutputVectorEntry;
@@ -85,7 +84,7 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
 		}
 	}
 
-	public String getTooltipText(OutputVectorEntry element, SizeConstraint outSizeConstraint) {
+	public String getTooltipText(OutputVectorEntry element) {
 		return null;
 	}
 }

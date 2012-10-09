@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 
 /**
  * This class serves debugging purposes.
@@ -42,7 +41,7 @@ public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtu
 		return fontHeight + 2;
 	}
 
-	public String getTooltipText(Long element, SizeConstraint outSizeConstraint) {
+	public String getTooltipText(Long element) {
 		return null;
 	}
 }

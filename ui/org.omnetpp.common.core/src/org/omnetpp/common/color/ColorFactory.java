@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.RGB;
  * A factory that creates and manages colors using symbolic names or
  * #RRGGBB or @HHSSBB format, and performs other color-related utility
  * functions
- * 
+ *
  * @author rhornig; andras (cleanup)
  */
 public class ColorFactory {
@@ -621,14 +621,14 @@ public class ColorFactory {
 
     /**
      * Returns the color name, or #RRGGBB if no constant was found for the color.
-     * 
+     *
      * @param value RGB object to be converted (cannot be null)
      * @return String representation of the color
      */
     public static String asString(RGB value) {
         // check for color constants first
         String colorName = rgbToStringMap.get(value);
-        if (colorName != null) 
+        if (colorName != null)
             return colorName;
 
         // if no constant was found, create a hex description
@@ -636,10 +636,10 @@ public class ColorFactory {
     }
 
     /**
-     * Parses a string into an RGB object. The format can be "#RRGGBB", "@HHSSII", 
+     * Parses a string into an RGB object. The format can be "#RRGGBB", "@HHSSII",
      * or and English color name like "red" or "green". Returns null if the color
      * is not recognized.
-     * 
+     *
      * @param value String to be parsed
      * @return RGB or <code>null</code> on parse error
      */
@@ -677,29 +677,37 @@ public class ColorFactory {
     }
 
     /**
+     * Converts an AWT color to an SWT color
+     */
+    public static Color asColor(java.awt.Color color)
+    {
+        return color == null ? null : new Color(null, color.getRed(), color.getGreen(), color.getBlue());
+    }
+
+    /**
      * Returns a color from a color factory. Color names are those understood by asRGB():
-     * "#RRGGBB", "@HHSSII", or and English color name like "red" or "green". Returns null 
+     * "#RRGGBB", "@HHSSII", or and English color name like "red" or "green". Returns null
      * if the color is not recognized.
      */
     public static Color asColor(String value) {
-        if (value == null) 
+        if (value == null)
             return null;
 
         // look up in the registry
         Color result = stringToRgbMap.get(value.toLowerCase());
-        if (result != null) 
+        if (result != null)
             return result;
 
         // otherwise create an RGB representation from the string
         RGB rgb = asRGB(value);
-        if (rgb == null) 
+        if (rgb == null)
             return null;
-        
+
         return new Color(null, rgb); // this might be a problem if we are running on a 256-color display
     }
 
     /**
-     * Returns a color from a color factory, or defaultColor if value is an invalid or 
+     * Returns a color from a color factory, or defaultColor if value is an invalid or
      * nonexistent color.
      */
     public static Color asColor(String value, Color defaultColor) {

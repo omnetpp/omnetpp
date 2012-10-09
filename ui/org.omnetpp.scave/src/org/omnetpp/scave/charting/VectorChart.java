@@ -54,7 +54,6 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -619,7 +618,7 @@ public class VectorChart extends ChartCanvas {
 	}
 
 	@Override
-	String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint) {
+	String getHoverHtmlText(int x, int y) {
 		return null;
 	}
 

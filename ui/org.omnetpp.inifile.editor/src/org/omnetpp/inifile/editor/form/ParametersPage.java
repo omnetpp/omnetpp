@@ -51,8 +51,8 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
@@ -346,17 +346,17 @@ public class ParametersPage extends FormPage {
 		});
 
 		// add tooltip support
-		addTooltipSupport(treeViewer.getTree(), new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+		addTooltipSupport(treeViewer.getTree(), new IHTMLHoverProvider() {
+			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
 				Item item = treeViewer.getTree().getItem(new Point(x,y));
 				Object element = item==null ? null : item.getData();
 				element = element!=null ? ((GenericTreeNode)element).getPayload() : null;
 				if (element instanceof SectionKey) {
 					SectionKey entry = (SectionKey) element;
-					return InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer());
+					return new HTMLHoverInfo(InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer()));
 				}
 				else if (element!=null) {
-					return InifileHoverUtils.getSectionHoverText(element.toString(), getInifileDocument(), getInifileAnalyzer(), false);
+					return new HTMLHoverInfo(InifileHoverUtils.getSectionHoverText(element.toString(), getInifileDocument(), getInifileAnalyzer(), false));
 				}
 				return null;
 			}

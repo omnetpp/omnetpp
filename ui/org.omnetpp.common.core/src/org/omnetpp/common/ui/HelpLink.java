@@ -1,8 +1,12 @@
+/*--------------------------------------------------------------*
+  Copyright (C) 2006-2008 OpenSim Ltd.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  'License' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 package org.omnetpp.common.ui;
 
-import org.eclipse.jface.internal.text.html.BrowserInformationControl;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -17,14 +21,14 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * A Link control (similar to HTML links in appearance) that displays 
+ * A Link control (similar to HTML links in appearance) that displays
  * a focused persistent information control when the link is clicked.
  * The information control is closed it loses focus or the user hits Esc.
  *
  * Do not use it in dialogs or other composites that also have HoverSupport
  * installed. This control does not tell HoverSupport to refrain from
  * showing information controls while this HelpLink has its own open.
- * 
+ *
  * @author AnRdras
  */
 @SuppressWarnings("restriction")
@@ -36,6 +40,7 @@ public class HelpLink {
     public HelpLink(Composite parent, int style) {
         link = new Link(parent, style);
         link.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
                 openInformationControl();
             }
@@ -73,14 +78,7 @@ public class HelpLink {
     public void openInformationControl() {
         final IInformationControl c = createInformationControl(Display.getCurrent().getActiveShell());
         c.setSizeConstraints(600, 400);
-        String hoverText = getHoverText();
-        if (c instanceof DefaultInformationControl) {
-            hoverText = hoverText.replaceAll("<p>", "<br><br>");
-            hoverText = hoverText.replaceAll("</p>", "");
-            hoverText = hoverText.replaceAll("<h[0-9]>", "<br><br><b>");
-            hoverText = hoverText.replaceAll("</h[0-9]>", "</b>");
-        }
-        c.setInformation(HoverSupport.addHTMLStyleSheet(hoverText));
+        c.setInformation(HoverSupport.addHTMLStyleSheet(getHoverText()));
         Point size = hoverSize;
         if (size == null) {
             size = c.computeSizeHint(); //new Point(600, 400);
@@ -97,6 +95,7 @@ public class HelpLink {
         c.setVisible(true);
         c.setFocus();
         c.addFocusListener(new FocusAdapter() {
+            @Override
             public void focusLost(FocusEvent e) {
                 c.dispose();
             }
@@ -104,10 +103,7 @@ public class HelpLink {
     }
 
     protected IInformationControl createInformationControl(Shell shell) {
-        if (BrowserInformationControl.isAvailable(shell))
-            return new BrowserInformationControl(shell, JFaceResources.DIALOG_FONT, true); // apparently doesn't really matter which font we give it here...
-        else
-            return new DefaultInformationControl(shell, false);
+        return new StyledTextInformationControl(shell, true);
     }
 
     protected Point adjustLocation(Point loc, Point size) {

@@ -291,7 +291,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				// events submenu
 				for (final IEvent event : events) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event, false, null));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getEventText(event, false));
 					menuManager.add(subMenuManager);
 
                     subMenuManager.add(createFilterEventCausesConsequencesAction(event));
@@ -304,7 +304,7 @@ public class SequenceChartContributor extends EditorActionBarContributor impleme
 
 				// messages submenu
 				for (final IMessageDependency msg : msgs) {
-					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false, null));
+					IMenuManager subMenuManager = new MenuManager(sequenceChart.getMessageDependencyText(msg, false));
 					menuManager.add(subMenuManager);
 
 					subMenuManager.add(createFilterMessageAction(msg.getMessageEntry()));

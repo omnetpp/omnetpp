@@ -62,7 +62,7 @@ public class SymbolImageFactory {
 		}
 	}
 
-	private static Image createSymbolImage(IChartSymbol symbol, Color color, boolean drawLine) {
+	public static Image createSymbolImage(IChartSymbol symbol, Color color, boolean drawLine) {
 		int size = symbol != null ? symbol.getSizeHint() : 0;
 		Image image = null;
 		GC gc = null;

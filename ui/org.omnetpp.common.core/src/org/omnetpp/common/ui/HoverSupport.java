@@ -11,10 +11,8 @@ import java.util.HashMap;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.internal.text.InformationControlReplacer;
-import org.eclipse.jface.internal.text.html.BrowserInformationControl;
 import org.eclipse.jface.text.AbstractHoverInformationControlManager;
 import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
-import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension3;
@@ -40,7 +38,12 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.ReflectionUtils;
 
-
+/**
+ * This class provides mouse hover support for controls.
+ * The default information control supports a subset of HTML 3.2.
+ *
+ * @author levy
+ */
 @SuppressWarnings("restriction")
 public class HoverSupport {
     private static final String AFFORDANCE = "Press 'F2' for focus";
@@ -48,28 +51,28 @@ public class HoverSupport {
     private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
         "/* Font definitions*/\n" +
-        "html   { font-family: 'Tahoma',sans-serif; font-size: 8pt; font-style: normal; font-weight: normal; }\n" +
-        "body, h1, h2, h3, h4, h5, h6, p, table, td, caption, th, ul, ol, dl, li, dd, dt { font-size:1em; }\n" +
+        "body, h1, h2, h3, h4, h5, h6, p, table, td, caption, th, ul, ol, dl, li, dd, dt { font-family: SansSerif; font-size:1em; }\n" +
         "pre    { font-family: monospace; }\n" +
         "/* Margins */\n" +
-        "body   { overflow: auto; margin-top: 0px; margin-bottom: 0.5em; margin-left: 0.3em; margin-right: 0px; }\n" +
-        "h1     { margin-top: 0.3em; margin-bottom: 0.04em; }\n" +
-        "h2     { margin-top: 2em; margin-bottom: 0.25em; }\n" +
-        "h3     { margin-top: 1.7em; margin-bottom: 0.25em; }\n" +
-        "h4     { margin-top: 2em; margin-bottom: 0.3em; }\n" +
-        "h5     { margin-top: 0px; margin-bottom: 0px; }\n" +
-        "p      { margin-top: 1em; margin-bottom: 1em; }\n" +
-        "pre    { margin-left: 0.6em; margin-top: 0.3em }\n" +
-        "ul     { margin-top: 0px; margin-bottom: 1em; }\n" +
-        "li     { margin-top: 0px; margin-bottom: 0px; }\n" +
-        "li p   { margin-top: 0px; margin-bottom: 0px; }\n" +
-        "ol     { margin-top: 0px; margin-bottom: 1em; }\n" +
-        "dl     { margin-top: 0px; margin-bottom: 1em; }\n" +
-        "dt     { margin-top: 0px; margin-bottom: 0px; font-weight: bold; }\n" +
-        "dd     { margin-top: 0px; margin-bottom: 0px; }\n" +
+        "body   { overflow: auto; margin-top: 0px; margin-bottom: 5pt; margin-left: 3pt; margin-right: 0px; }\n" +
+        "h1     { margin-top: 3pt; margin-bottom: 5pt; }\n" +
+        "h2     { margin-top: 20pt; margin-bottom: 2.5pt; }\n" +
+        "h3     { margin-top: 20pt; margin-bottom: 2.5pt; }\n" +
+        "h4     { margin-top: 20pt; margin-bottom: 2.5pt; }\n" +
+        "h5     { margin-top: 0pt; margin-bottom: 0pt; }\n" +
+        "p      { margin-top: 10pt; margin-bottom: 10pt; }\n" +
+        "pre    { margin-left: 6pt; margin-top: 3pt; }\n" +
+        "ul     { margin-top: 0pt; margin-bottom: 10pt; }\n" +
+        "li     { margin-top: 0pt; margin-bottom: 0pt; }\n" +
+        "li p   { margin-top: 0pt; margin-bottom: 0pt; }\n" +
+        "ol     { margin-top: 0pt; margin-bottom: 10pt; }\n" +
+        "dl     { margin-top: 0pt; margin-bottom: 10pt; }\n" +
+        "dt     { margin-top: 0pt; margin-bottom: 0pt; font-weight: bold; }\n" +
+        "dd     { margin-top: 0pt; margin-bottom: 0pt; }\n" +
         "/* Styles and colors */\n" +
         "a:link    { color: #0000FF; }\n" +
         "a:hover   { color: #000080; }\n" +
+        "body      { color: #000000; background-color: #ffffe1 };\n" +
         "a:visited { text-decoration: underline; }\n" +
         "h4        { font-style: italic; }\n" +
         "strong    { font-weight: bold; }\n" +
@@ -77,7 +80,7 @@ public class HoverSupport {
         "var       { font-style: italic; }\n" +
         "th        { font-weight: bold; }\n" +
         "</style></head>\n" +
-        "<body text=\"#000000\" bgcolor=\"#ffffe1\">\n";
+        "<body>\n";
     private static final String HTML_EPILOG =
         "</body></html>\n";
 
@@ -91,6 +94,7 @@ public class HoverSupport {
          * we can catch keyboard events wherever the focus is.
          */
         protected Listener eventFilter = new Listener() {
+            @Override
             public void handleEvent(Event e) {
                 if (e.type == SWT.KeyDown && e.keyCode == SWT.F2 && !getInternalAccessor().isReplaceInProgress()) {
                     getInternalAccessor().replaceInformationControl(true);
@@ -108,18 +112,19 @@ public class HoverSupport {
             Point location = getHoverEventLocation();
             IInformationControl informationControl = getInformationControl();
             Point mouseLocation = Display.getDefault().getCursorLocation();
-            SizeConstraint preferredSize = new SizeConstraint();
-            String hoverText = hoverTextProviders.get(getSubjectControl()).getHoverTextFor(getSubjectControl(), location.x, location.y, preferredSize);
+            HTMLHoverInfo hover = hoverTextProviders.get(getSubjectControl()).getHTMLHoverFor(getSubjectControl(), location.x, location.y);
             org.eclipse.swt.graphics.Rectangle subjectArea = new org.eclipse.swt.graphics.Rectangle(location.x, location.y, 1, 1);
-            setInformation(hoverText, subjectArea);
-            if (hoverText != null) {
-                informationControl.setSizeConstraints(hoverSizeConstraints.x, hoverSizeConstraints.y);
-                setInformation(hoverText, subjectArea);
-                Point size = informationControl.computeSizeHint(); //issue: BrowserInformationControl is always at least 80 pixels high -- this is hardcoded :(
-                size.x = calculateSize(hoverSizeConstraints.x, size.x, preferredSize.minimumWidth, preferredSize.preferredWidth);
-                size.y = calculateSize(hoverSizeConstraints.y, size.y, preferredSize.minimumHeight, preferredSize.preferredHeight);
-                informationControl.setSize(size.x, size.y);
+            // TODO: apply size constraints of hover
+            if (hover != null && hover.getContent() != null) {
+                setInformation(hover, subjectArea);
+                Point size = informationControl.computeSizeHint();
                 informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
+            }
+            else {
+                // NOTE: we must set something, otherwise the manager thinks
+                // that the computation is still going on and ignores subsequent
+                // hover events
+                setInformation("", subjectArea);
             }
         }
 
@@ -181,29 +186,23 @@ public class HoverSupport {
         }
     }
 
-    private static class BrowserInformationControlCreator extends AbstractReusableInformationControlCreator {
+    private static class StyledTextInformationControlCreator extends AbstractReusableInformationControlCreator {
         @Override
         public IInformationControl doCreateInformationControl(Shell shell) {
-            if (BrowserInformationControl.isAvailable(shell))
-                return new BrowserInformationControl(shell, null, AFFORDANCE) {
-                    @Override
-                    public IInformationControlCreator getInformationPresenterControlCreator() {
-                        return HoverSupport.getInformationPresenterControlCreator();
-                    }
+            return new StyledTextInformationControl(shell, AFFORDANCE) {
+                @Override
+                public IInformationControlCreator getInformationPresenterControlCreator() {
+                    return HoverSupport.getInformationPresenterControlCreator();
+                }
             };
-            else
-                return new DefaultInformationControl(shell, false);
         }
     }
 
 
-    private static class StickyBrowserInformationControlCreator extends AbstractReusableInformationControlCreator {
+    private static class StickyStyledTextInformationControlCreator extends AbstractReusableInformationControlCreator {
         @Override
         public IInformationControl doCreateInformationControl(Shell shell) {
-            if (BrowserInformationControl.isAvailable(shell))
-                return new BrowserInformationControl(shell, null, true);
-            else
-                return new DefaultInformationControl(shell, true);
+            return new StyledTextInformationControl(shell, true);
         }
     }
 
@@ -228,6 +227,7 @@ public class HoverSupport {
             /*
              * @see IInformationControlCloser#setSubjectControl(Control)
              */
+            @Override
             public void setSubjectControl(Control control) {
                 fSubjectControl= control;
             }
@@ -235,6 +235,7 @@ public class HoverSupport {
             /*
              * @see IInformationControlCloser#setInformationControl(IInformationControl)
              */
+            @Override
             public void setInformationControl(IInformationControl control) {
                 // NOTE: we use getCurrentInformationControl2() from the outer class
             }
@@ -242,6 +243,7 @@ public class HoverSupport {
             /*
              * @see IInformationControlCloser#start(Rectangle)
              */
+            @Override
             public void start(org.eclipse.swt.graphics.Rectangle informationArea) {
 
                 if (fIsActive)
@@ -270,6 +272,7 @@ public class HoverSupport {
             /*
              * @see IInformationControlCloser#stop()
              */
+            @Override
             public void stop() {
 
                 if (!fIsActive)
@@ -296,25 +299,36 @@ public class HoverSupport {
                 fDisplay= null;
             }
 
+            @Override
             public void controlResized(ControlEvent e) { hideInformationControl(); }
+            @Override
             public void controlMoved(ControlEvent e) { hideInformationControl(); }
+            @Override
             public void mouseDown(MouseEvent e) { hideInformationControl(); }
+            @Override
             public void mouseUp(MouseEvent e) { }
+            @Override
             public void mouseDoubleClick(MouseEvent e) { hideInformationControl(); }
+            @Override
             public void keyPressed(KeyEvent e) { hideInformationControl(); }
+            @Override
             public void keyReleased(KeyEvent e) { }
+            @Override
             public void focusGained(FocusEvent e) { }
 
+            @Override
             public void focusLost(FocusEvent e) {
                 Display d= fSubjectControl.getDisplay();
                 d.asyncExec(new Runnable() {
                     // Without the asyncExec, mouse clicks to the workbench window are swallowed.
+                    @Override
                     public void run() {
                         hideInformationControl();
                     }
                 });
             }
 
+            @Override
             public void handleEvent(Event event) {
                 if (event.type == SWT.MouseMove) {
                     if (!(event.widget instanceof Control) || event.widget.isDisposed())
@@ -356,7 +370,7 @@ public class HoverSupport {
         }
     }
 
-    private HashMap<Control,IHoverTextProvider> hoverTextProviders = new HashMap<Control, IHoverTextProvider>();
+    private HashMap<Control,IHTMLHoverProvider> hoverTextProviders = new HashMap<Control, IHTMLHoverProvider>();
 
     private HashMap<Control, LocalHoverInformationControlManager> hoverInformationControlManagers = new HashMap<Control, LocalHoverInformationControlManager>();
 
@@ -379,11 +393,12 @@ public class HoverSupport {
     /**
      * Adds hover support for the given control.
      */
-    public void adapt(final Control control, IHoverTextProvider hoverTextProvider) {
+    public void adapt(final Control control, IHTMLHoverProvider hoverTextProvider) {
         Assert.isTrue(hoverTextProvider != null);
         Assert.isTrue(!hoverTextProviders.containsKey(control), "control already registered");
         hoverTextProviders.put(control, hoverTextProvider);
         control.addDisposeListener(new DisposeListener() {
+            @Override
             public void widgetDisposed(DisposeEvent e) {
                 forget(control);
             }
@@ -422,14 +437,14 @@ public class HoverSupport {
      * Utility method for ITextHoverExtension.
      */
     public static IInformationControlCreator getHoverControlCreator() {
-        return new BrowserInformationControlCreator();
+        return new StyledTextInformationControlCreator();
     }
 
     /**
      * Utility method for IInformationProviderExtension2.
      */
     public static IInformationControlCreator getInformationPresenterControlCreator() {
-        return new StickyBrowserInformationControlCreator();
+        return new StickyStyledTextInformationControlCreator();
     }
 
     /**

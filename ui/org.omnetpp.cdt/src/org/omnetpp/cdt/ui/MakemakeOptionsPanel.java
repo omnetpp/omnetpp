@@ -58,9 +58,9 @@ import org.omnetpp.cdt.build.MakemakeOptions;
 import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.cdt.build.MetaMakemake;
 import org.omnetpp.common.IConstants;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -286,9 +286,9 @@ public class MakemakeOptionsPanel extends Composite {
 
         Dialog.applyDialogFont(composite);
 
-        hoverSupport.adapt(dllHelpLink, new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
-                return HoverSupport.addHTMLStyleSheet(getHelpTextForBuildingDLLs());
+        hoverSupport.adapt(dllHelpLink, new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getHelpTextForBuildingDLLs()));
             }
         });
         dllHelpLink.addSelectionListener(new SelectionAdapter() {

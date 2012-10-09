@@ -51,9 +51,9 @@ import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.osgi.framework.Bundle;
 
 /**
@@ -159,15 +159,15 @@ public class TemplateSelectionPage extends WizardPage {
         });
 
         // show the descriptions in a tooltip
-        new HoverSupport().adapt(treeViewer.getTree(), new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+        new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 element = (element instanceof GenericTreeNode) ? ((GenericTreeNode)element).getPayload() : null;
                 if (element instanceof IContentTemplate) {
                     String description = getTemplateHoverText((IContentTemplate)element);
                     if (description != null)
-                        return HoverSupport.addHTMLStyleSheet(description);
+                        return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(description));
                 }
                 return null;
             }

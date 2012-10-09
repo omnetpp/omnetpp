@@ -464,7 +464,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 		}
 	}
 
-	public String getTooltipText(EventLogEntryReference eventLogEntryReference, SizeConstraint outSizeConstraint) {
+	@Override
+    public String getTooltipText(EventLogEntryReference eventLogEntryReference) {
 		EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
 
 		if (eventLogEntry instanceof BeginSendEntry) {
@@ -475,8 +476,6 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 				int longestLineLength = 0;
 				for (String line : detail.split("\n"))
 					longestLineLength = Math.max(longestLineLength, line.length());
-				// TODO: correct solution would be to get pre font width (monospace, 8) and consider margins too
-				outSizeConstraint.minimumWidth = longestLineLength * 8;
 				return "<pre>" + detail + "</pre>";
 			}
 		}

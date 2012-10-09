@@ -50,9 +50,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 
 /**
  * The virtual table is a virtually infinite table.
@@ -191,14 +191,14 @@ public class VirtualTable<T>
 
     	hoverSupport = new HoverSupport();
     	hoverSupport.setHoverSizeConstaints(700, 200);
-    	hoverSupport.adapt(canvas, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+    	hoverSupport.adapt(canvas, new IHTMLHoverProvider() {
+			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
 				T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
 
 				if (element == null)
 					return null;
 				else
-					return HoverSupport.addHTMLStyleSheet(getRowRenderer().getTooltipText(element, outSizeConstraint));
+					return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getRowRenderer().getTooltipText(element)));
 			}
     	});
 

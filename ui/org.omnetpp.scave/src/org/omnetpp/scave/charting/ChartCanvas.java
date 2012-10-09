@@ -56,7 +56,6 @@ import org.omnetpp.common.canvas.RectangularArea;
 import org.omnetpp.common.canvas.ZoomableCachingCanvas;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -157,7 +156,7 @@ public abstract class ChartCanvas extends ZoomableCachingCanvas implements IChar
 
 	abstract void doSetDataset(IDataset dataset);
 
-	abstract String getHoverHtmlText(int x, int y, SizeConstraint outSizeConstraint);
+	abstract String getHoverHtmlText(int x, int y);
 
 	protected void layoutChart() {
 		// prevent nasty infinite layout recursions

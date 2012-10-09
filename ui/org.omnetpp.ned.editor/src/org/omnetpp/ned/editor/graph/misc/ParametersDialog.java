@@ -66,9 +66,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.PStringVector;
 import org.omnetpp.common.engine.UnitConversion;
 import org.omnetpp.common.properties.EnumCellEditor;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.CollectionUtils;
@@ -671,8 +671,8 @@ public class ParametersDialog extends TitleAreaDialog {
         addEditButtons(group);
 
         hoverSupport = new HoverSupport();
-        hoverSupport.adapt(listViewer.getTable(), new IHoverTextProvider() {
-            public String getHoverTextFor(Control control, int x, int y, SizeConstraint outSizeConstraint) {
+        hoverSupport.adapt(listViewer.getTable(), new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
                 Table table = (Table)control;
                 TableItem tableItem = table.getItem(new Point(x, y));
 
@@ -689,7 +689,7 @@ public class ParametersDialog extends TitleAreaDialog {
                     if (paramLine.isOriginallyLocalDeclaration() || paramLine.isCurrentlyOverridden())
                         appendParamText(result, paramLine.currentParamLocal);
 
-                    return HoverSupport.addHTMLStyleSheet(StringUtils.removeEnd(result.toString(), "<br/><br/>"));
+                    return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(StringUtils.removeEnd(result.toString(), "<br/><br/>")));
                 }
             }
 

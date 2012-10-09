@@ -8,7 +8,9 @@
 package org.omnetpp.scave.charting;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.eclipse.draw2d.Graphics;
@@ -21,9 +23,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.image.ImageFactory;
+import org.omnetpp.common.ui.HTMLHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHoverTextProvider;
-import org.omnetpp.common.ui.SizeConstraint;
+import org.omnetpp.common.ui.IHTMLHoverProvider;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
@@ -38,12 +40,12 @@ class LegendTooltip implements ILegend
 	{
 		Color color;
 		String label;
-		String imageFile;
+		Image image;
 
 		public Item(Color color, String label, IChartSymbol symbol, boolean drawLine) {
 			this.color = color;
 			this.label = label;
-			this.imageFile = SymbolImageFactory.getImageFile(color, symbol, drawLine);
+			this.image = SymbolImageFactory.createSymbolImage(symbol, color, drawLine);
 		}
 	}
 
@@ -55,9 +57,10 @@ class LegendTooltip implements ILegend
 
 		final HoverSupport hoverSupport = new HoverSupport();
 		hoverSupport.setHoverSizeConstaints(320,400);
-		hoverSupport.adapt(button, new IHoverTextProvider() {
-			public String getHoverTextFor(Control control, int x, int y, SizeConstraint preferredSize) {
-				return getTooltipText(x, y, preferredSize);
+		hoverSupport.adapt(button, new IHTMLHoverProvider() {
+			@Override
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+				return getTooltip(x, y);
 			}
 		});
 
@@ -94,29 +97,25 @@ class LegendTooltip implements ILegend
 		// button is drawn as a child of the canvas
 	}
 
-	public String getTooltipText(int x, int y, SizeConstraint preferredSize) {
-		if (items.size() > 0) {
-			StringBuffer sb = new StringBuffer();
-			int height = 20;
-			sb.append("<b>Legend:</b>"); height += 17;
-			sb.append("<table style='margin-left: 1em'>");
-			for (Item item : items) {
-				sb.append("<tr>");
-				if (item.imageFile != null)
-					sb.append("<td style='vertical-align: middle'>").
-						append("<img src='file://").append(item.imageFile).append("'></td>"); // Note: URLEncoded filename does not work in IE
-				sb.append("<td style='vertical-align: middle; color: ").append(htmlColor(item.color)).append("'>").
-					append(htmlText(item.label)).append("</td>");
-				sb.append("</tr>");
-				height += 17;
-			}
-			sb.append("</table>");
-			preferredSize.preferredHeight = Math.max(height, 80);
-			return HoverSupport.addHTMLStyleSheet(sb.toString());
-		}
-		else
-			return null;
-	}
+    public HTMLHoverInfo getTooltip(int x, int y) {
+        if (items.size() > 0) {
+            Map<String, Image> imageMap = new HashMap<String, Image>();
+            StringBuffer sb = new StringBuffer();
+            sb.append("<b>Legend:</b>");
+            for (int i = 0; i < items.size(); i++) {
+                Item item = items.get(i);
+                sb.append("<div style='vertical-align: middle; color: ").append(htmlColor(item.color)).append("'>");
+                if (item.image != null) {
+                    imageMap.put(String.valueOf(i), item.image);
+                    sb.append("<img style='vertical-align: middle' src='" + i + "'/>&nbsp;");
+                }
+                sb.append(htmlText(item.label)).append("</div>");
+            }
+            return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(sb.toString()), imageMap, null);
+        }
+        else
+            return null;
+    }
 
 	public String htmlColor(Color color) {
 		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());

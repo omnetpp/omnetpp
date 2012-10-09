@@ -8,7 +8,6 @@
 package org.omnetpp.common.virtualtable;
 
 import org.eclipse.swt.graphics.GC;
-import org.omnetpp.common.ui.SizeConstraint;
 
 /**
  * Virtual table cells are rendered by using this interface.
@@ -33,7 +32,6 @@ public interface IVirtualTableRowRenderer<T> {
 
 	/**
 	 * A tooltip text for the given element or null.
-	 * @param outSizeConstraint TODO
 	 */
-	public String getTooltipText(T element, SizeConstraint outSizeConstraint);
+	public String getTooltipText(T element);
 }
