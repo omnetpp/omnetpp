@@ -52,6 +52,14 @@ CFLAGS=$(CFLAGS_RELEASE)
 D=
 endif
 
+ifeq ($(BUILDING_UILIBS),yes)
+SHARED_LIBS=no
+OUTPUT_PREFIX=ui-
+else
+SHARED_LIBS=yes
+OUTPUT_PREFIX=
+endif
+
 PERL = @PERL@
 YACC = @YACC@
 LEX = @LEX@
