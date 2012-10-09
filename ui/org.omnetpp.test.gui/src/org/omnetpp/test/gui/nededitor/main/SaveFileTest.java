@@ -18,32 +18,32 @@ import org.omnetpp.test.gui.access.NedEditorAccess;
 import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 public class SaveFileTest
-	extends NedFileTestCase
+    extends NedFileTestCase
 {
     final String CONTENT = "simple Test {}";
 
     public void testSaveFile() throws Throwable {
-	    createEmptyFile();
+        createEmptyFile();
         openFileFromProjectExplorerView();
         typeIntoTextualNedEditor(CONTENT);
-		NedEditorAccess nedEditor = findNedEditor();
-		nedEditor.ensureActiveTextEditor();
-		nedEditor.saveWithHotKey();
-		nedEditor.closeWithHotKey();
-		WorkspaceUtils.assertFileExistsWithContent(filePath, CONTENT);
-	}
-
-	public void testSaveFileAs() throws Throwable  {
-		createFileWithContent(CONTENT);
-		openFileFromProjectExplorerView();
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		workbenchWindow.chooseFromMainMenu("File|Save As.*");
-		ShellAccess shell = WorkbenchWindowAccess.findShellWithTitle(".*Save As.*");
-		String newFileName = "testRenamed.ned";
-		shell.findTextAfterLabel("File name:").typeIn(newFileName);
-		shell.pressKey(SWT.CR);
-		setFileName(newFileName);
+        NedEditorAccess nedEditor = findNedEditor();
+        nedEditor.ensureActiveTextEditor();
+        nedEditor.saveWithHotKey();
+        nedEditor.closeWithHotKey();
         WorkspaceUtils.assertFileExistsWithContent(filePath, CONTENT);
-		assertBothEditorsAreAccessible();
-	}
+    }
+
+    public void testSaveFileAs() throws Throwable  {
+        createFileWithContent(CONTENT);
+        openFileFromProjectExplorerView();
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        workbenchWindow.chooseFromMainMenu("File|Save As.*");
+        ShellAccess shell = WorkbenchWindowAccess.findShellWithTitle(".*Save As.*");
+        String newFileName = "testRenamed.ned";
+        shell.findTextAfterLabel("File name:").typeIn(newFileName);
+        shell.pressKey(SWT.CR);
+        setFileName(newFileName);
+        WorkspaceUtils.assertFileExistsWithContent(filePath, CONTENT);
+        assertBothEditorsAreAccessible();
+    }
 }

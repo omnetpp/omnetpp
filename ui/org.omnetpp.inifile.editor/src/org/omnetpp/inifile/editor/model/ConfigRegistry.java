@@ -618,7 +618,7 @@ public class ConfigRegistry {
     public static final ConfigOption CFGID_WITH_AKAROA = addPerObjectOption(
         "with-akaroa", KIND_VECTOR, CFG_BOOL, "false",
         "Whether the output vector should be under Akaroa control.");
-    
+
     public static final String CFGVAR_RUNID = addConfigVariable("runid", "A reasonably globally unique identifier for the run, produced by concatenating the configuration name, run number, date/time, etc.");
     public static final String CFGVAR_INIFILE = addConfigVariable("inifile", "Name of the (primary) inifile");
     public static final String CFGVAR_CONFIGNAME = addConfigVariable("configname", "Name of the active configuration");

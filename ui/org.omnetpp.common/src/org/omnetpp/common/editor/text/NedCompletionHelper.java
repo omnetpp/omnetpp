@@ -208,106 +208,106 @@ public final class NedCompletionHelper {
     //  public final static String[] proposedMsgKeywords = { "abstract", "ancestor", "channel", "class", "connections", "const", "cplusplus", "datarate", "delay", "display", "do", "endchannel", "endfor", "endmodule", "endnetwork", "endsimple", "enum", "error", "extends", "fields", "for", "gates", "gatesizes", "if", "import", "in:", "index", "like", "message", "module", "network", "nocheck", "noncobject", "on", "out:", "parameters", "properties", "ref", "simple", "sizeof", "struct", "submodules", "to" };
 
     public final static Template[] proposedNedOperatorsTempl = new Template[] {
-    	makeShortTemplate("const(${x})", "operator"),
-    	makeShortTemplate("default(${x})", "operator"),
-    	makeShortTemplate("sizeof(${gateOrSubmod})", "operator"),
+        makeShortTemplate("const(${x})", "operator"),
+        makeShortTemplate("default(${x})", "operator"),
+        makeShortTemplate("sizeof(${gateOrSubmod})", "operator"),
     };
 
     public final static Template[] proposedNedFunctionsTempl = new Template[] {
         // math
-    	makeShortTemplate("acos(${x})", "function"),
-    	makeShortTemplate("asin(${x})", "function"),
-    	makeShortTemplate("atan(${x})", "function"),
-    	makeShortTemplate("atan2(${x},${y})", "function"),
-    	makeShortTemplate("sin(${x})", "function"),
-    	makeShortTemplate("cos(${x})", "function"),
-    	makeShortTemplate("tan(${x})", "function"),
-    	makeShortTemplate("ceil(${x})", "function"),
-    	makeShortTemplate("floor(${x})", "function"),
-    	makeShortTemplate("max(${a},${b})", "function"),
-    	makeShortTemplate("min(${a},${b})", "function"),
-    	makeShortTemplate("exp(${x})", "function"),
-    	makeShortTemplate("pow(${x},${y})", "function"),
-    	makeShortTemplate("sqrt(${x})", "function"),
-    	makeShortTemplate("fabs(${x})", "function"),
-    	makeShortTemplate("fmod(${x},${y})", "function"),
-    	makeShortTemplate("hypot(${x},${y})", "function"),
-    	makeShortTemplate("log(${x})", "function"),
-    	makeShortTemplate("log10(${x})", "function"),
+        makeShortTemplate("acos(${x})", "function"),
+        makeShortTemplate("asin(${x})", "function"),
+        makeShortTemplate("atan(${x})", "function"),
+        makeShortTemplate("atan2(${x},${y})", "function"),
+        makeShortTemplate("sin(${x})", "function"),
+        makeShortTemplate("cos(${x})", "function"),
+        makeShortTemplate("tan(${x})", "function"),
+        makeShortTemplate("ceil(${x})", "function"),
+        makeShortTemplate("floor(${x})", "function"),
+        makeShortTemplate("max(${a},${b})", "function"),
+        makeShortTemplate("min(${a},${b})", "function"),
+        makeShortTemplate("exp(${x})", "function"),
+        makeShortTemplate("pow(${x},${y})", "function"),
+        makeShortTemplate("sqrt(${x})", "function"),
+        makeShortTemplate("fabs(${x})", "function"),
+        makeShortTemplate("fmod(${x},${y})", "function"),
+        makeShortTemplate("hypot(${x},${y})", "function"),
+        makeShortTemplate("log(${x})", "function"),
+        makeShortTemplate("log10(${x})", "function"),
 
-    	// unit
-    	makeShortTemplate("dropUnit(${quantity})", "function"),
-    	makeShortTemplate("replaceUnit(${quantity}, ${string})", "function"),
-    	makeShortTemplate("convertUnit(${quantity}, ${string})", "function"),
-    	makeShortTemplate("unitOf(${quantity})", "function"),
+        // unit
+        makeShortTemplate("dropUnit(${quantity})", "function"),
+        makeShortTemplate("replaceUnit(${quantity}, ${string})", "function"),
+        makeShortTemplate("convertUnit(${quantity}, ${string})", "function"),
+        makeShortTemplate("unitOf(${quantity})", "function"),
 
-    	// string
-    	makeShortTemplate("length(${string})", "function"),
-    	makeShortTemplate("contains(${string}, ${string})", "function"),
-    	makeShortTemplate("substring(${string}, ${int})", "function"),
-    	makeShortTemplate("substring(${string}, ${int}, ${int})", "function"),
-    	makeShortTemplate("substringBefore(${string}, ${string})", "function"),
-    	makeShortTemplate("substringAfter(${string}, ${string})", "function"),
-    	makeShortTemplate("substringBeforeLast(${string}, ${string})", "function"),
-    	makeShortTemplate("substringAfterLast(${string}, ${string})", "function"),
-    	makeShortTemplate("startsWith(${string}, ${string})", "function"),
-    	makeShortTemplate("endsWith(${string}, ${string})", "function"),
-    	makeShortTemplate("tail(${string}, ${int})", "function"),
-    	makeShortTemplate("replace(${string}, ${string}, ${string})", "function"),
-    	makeShortTemplate("replace(${string}, ${string}, ${string}, ${int})", "function"),
-    	makeShortTemplate("replaceFirst(${string}, ${string}, ${string})", "function"),
-    	makeShortTemplate("replaceFirst(${string}, ${string}, ${string}, ${int})", "function"),
-    	makeShortTemplate("trim(${string})", "function"),
-    	makeShortTemplate("indexOf(${string})", "function"),
-    	makeShortTemplate("choose(${int}, ${string})", "function"),
-    	makeShortTemplate("toUpper(${string})", "function"),
-    	makeShortTemplate("toLower(${string})", "function"),
+        // string
+        makeShortTemplate("length(${string})", "function"),
+        makeShortTemplate("contains(${string}, ${string})", "function"),
+        makeShortTemplate("substring(${string}, ${int})", "function"),
+        makeShortTemplate("substring(${string}, ${int}, ${int})", "function"),
+        makeShortTemplate("substringBefore(${string}, ${string})", "function"),
+        makeShortTemplate("substringAfter(${string}, ${string})", "function"),
+        makeShortTemplate("substringBeforeLast(${string}, ${string})", "function"),
+        makeShortTemplate("substringAfterLast(${string}, ${string})", "function"),
+        makeShortTemplate("startsWith(${string}, ${string})", "function"),
+        makeShortTemplate("endsWith(${string}, ${string})", "function"),
+        makeShortTemplate("tail(${string}, ${int})", "function"),
+        makeShortTemplate("replace(${string}, ${string}, ${string})", "function"),
+        makeShortTemplate("replace(${string}, ${string}, ${string}, ${int})", "function"),
+        makeShortTemplate("replaceFirst(${string}, ${string}, ${string})", "function"),
+        makeShortTemplate("replaceFirst(${string}, ${string}, ${string}, ${int})", "function"),
+        makeShortTemplate("trim(${string})", "function"),
+        makeShortTemplate("indexOf(${string})", "function"),
+        makeShortTemplate("choose(${int}, ${string})", "function"),
+        makeShortTemplate("toUpper(${string})", "function"),
+        makeShortTemplate("toLower(${string})", "function"),
 
-    	// conversion
-    	makeShortTemplate("int(${x})", "function"),
-    	makeShortTemplate("double(${x})", "function"),
-    	makeShortTemplate("string(${x})", "function"),
+        // conversion
+        makeShortTemplate("int(${x})", "function"),
+        makeShortTemplate("double(${x})", "function"),
+        makeShortTemplate("string(${x})", "function"),
 
-    	// reflection
-    	makeShortTemplate("fullPath()", "function"),
-    	makeShortTemplate("fullName()", "function"),
-    	makeShortTemplate("parentIndex()", "function"),
-    	makeShortTemplate("ancestorIndex(${int})", "function"),
+        // reflection
+        makeShortTemplate("fullPath()", "function"),
+        makeShortTemplate("fullName()", "function"),
+        makeShortTemplate("parentIndex()", "function"),
+        makeShortTemplate("ancestorIndex(${int})", "function"),
 
-    	// xml
-    	makeShortTemplate("xml(${string}, ${opt_xpath})", "function"),
+        // xml
+        makeShortTemplate("xml(${string}, ${opt_xpath})", "function"),
         makeShortTemplate("xmldoc(${filename}, ${opt_xpath})", "function"),
 
         // misc
-    	makeShortTemplate("simTime()", "function"),
+        makeShortTemplate("simTime()", "function"),
     };
 
     public final static Template[] proposedNedContinuousDistributionsTempl = new Template[] {
-    	makeShortTemplate("beta(${alpha1}, ${alpha2})", "continuous distribution"),
-    	makeShortTemplate("cauchy(${a}, ${b})", "continuous distribution"),
-    	makeShortTemplate("chi_square(${k})", "continuous distribution"),
-    	makeShortTemplate("erlang_k(${k}, ${mean})", "continuous distribution"),
-    	makeShortTemplate("exponential(${mean})", "continuous distribution"),
-    	makeShortTemplate("gamma_d(${alpha}, ${beta})", "continuous distribution"),
-    	makeShortTemplate("lognormal(${m}, ${w})", "continuous distribution"),
-    	makeShortTemplate("normal(${mean}, ${stddev})", "continuous distribution"),
-    	makeShortTemplate("pareto_shifted(${a}, ${b}, ${c})", "continuous distribution"),
-    	makeShortTemplate("student_t(${i})", "continuous distribution"),
-    	makeShortTemplate("triang(${a}, ${b}, ${c})", "continuous distribution"),
-    	makeShortTemplate("truncnormal(${mean}, ${stddev})", "continuous distribution"),
-    	makeShortTemplate("uniform(${a}, ${b})", "continuous distribution"),
-    	makeShortTemplate("weibull(${a}, ${b})", "continuous distribution"),
+        makeShortTemplate("beta(${alpha1}, ${alpha2})", "continuous distribution"),
+        makeShortTemplate("cauchy(${a}, ${b})", "continuous distribution"),
+        makeShortTemplate("chi_square(${k})", "continuous distribution"),
+        makeShortTemplate("erlang_k(${k}, ${mean})", "continuous distribution"),
+        makeShortTemplate("exponential(${mean})", "continuous distribution"),
+        makeShortTemplate("gamma_d(${alpha}, ${beta})", "continuous distribution"),
+        makeShortTemplate("lognormal(${m}, ${w})", "continuous distribution"),
+        makeShortTemplate("normal(${mean}, ${stddev})", "continuous distribution"),
+        makeShortTemplate("pareto_shifted(${a}, ${b}, ${c})", "continuous distribution"),
+        makeShortTemplate("student_t(${i})", "continuous distribution"),
+        makeShortTemplate("triang(${a}, ${b}, ${c})", "continuous distribution"),
+        makeShortTemplate("truncnormal(${mean}, ${stddev})", "continuous distribution"),
+        makeShortTemplate("uniform(${a}, ${b})", "continuous distribution"),
+        makeShortTemplate("weibull(${a}, ${b})", "continuous distribution"),
     };
 
     public final static Template[] proposedNedContinuousDistributionsTemplExt = addRngNumArgument(proposedNedContinuousDistributionsTempl);
 
     public final static Template[] proposedNedDiscreteDistributionsTempl = new Template[] {
-    	makeShortTemplate("bernoulli(${p})", "discrete distribution"),
-    	makeShortTemplate("binomial(${n}, ${p})", "discrete distribution"),
-    	makeShortTemplate("geometric(${p})", "discrete distribution"),
-    	makeShortTemplate("intuniform(${a}, ${b})", "discrete distribution"),
-    	makeShortTemplate("negbinomial(${n}, ${p})", "discrete distribution"),
-    	makeShortTemplate("poisson(${lambda})", "discrete distribution"),
+        makeShortTemplate("bernoulli(${p})", "discrete distribution"),
+        makeShortTemplate("binomial(${n}, ${p})", "discrete distribution"),
+        makeShortTemplate("geometric(${p})", "discrete distribution"),
+        makeShortTemplate("intuniform(${a}, ${b})", "discrete distribution"),
+        makeShortTemplate("negbinomial(${n}, ${p})", "discrete distribution"),
+        makeShortTemplate("poisson(${lambda})", "discrete distribution"),
     };
 
     public final static Template[] proposedNedDiscreteDistributionsTemplExt = addRngNumArgument(proposedNedDiscreteDistributionsTempl);
@@ -315,70 +315,70 @@ public final class NedCompletionHelper {
     public final static Template[] proposedNedGlobalTempl = new Template[] {
         makeTemplate("simple1", "create simple module",
                 "//\n// TODO documentation\n//\n"+
-        		"simple ${SomeModule}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"    gates:\n"+
-        		"}"),
+                "simple ${SomeModule}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "    gates:\n"+
+                "}"),
         makeTemplate("simple2", "specialize simple module",
-        		"//\n// TODO documentation\n//\n"+
-        		"simple ${SomeModule} extends ${AnotherModule}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "simple ${SomeModule} extends ${AnotherModule}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "}"),
         makeTemplate("simple3", "simple module that complies to an interface",
-        		"//\n// TODO documentation\n//\n"+
-        		"simple ${SomeModule} like ${SomeInterface}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"    gates:\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "simple ${SomeModule} like ${SomeInterface}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "    gates:\n"+
+                "}"),
         makeTemplate("module1", "create compound module",
-        		"//\n// TODO documentation\n//\n"+
-        		"module ${SomeModule}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"    gates:\n"+
-        		"    submodules:\n"+
-        		"    connections:\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "module ${SomeModule}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "    gates:\n"+
+                "    submodules:\n"+
+                "    connections:\n"+
+                "}"),
         makeTemplate("module2", "specialize compound module",
-        		"//\n// TODO documentation\n//\n"+
-        		"module ${SomeModule} extends ${AnotherModule}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "module ${SomeModule} extends ${AnotherModule}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "}"),
         makeTemplate("module3", "create compound module that complies to an interface",
-        		"//\n// TODO documentation\n//\n"+
-        		"module ${SomeModule} like ${SomeInterface}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"    gates:\n"+
-        		"    submodules:\n"+
-        		"    connections:\n"+
-        		"}"),
-		makeTemplate("moduleinterface", "create module interface",
-				"//\n// TODO documentation\n//\n"+
-				"moduleinterface ${SomeInterface}\n{\n"+
-				"    parameters:${cursor}\n"+
-				"    gates:\n"+
-				"}"),
+                "//\n// TODO documentation\n//\n"+
+                "module ${SomeModule} like ${SomeInterface}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "    gates:\n"+
+                "    submodules:\n"+
+                "    connections:\n"+
+                "}"),
+        makeTemplate("moduleinterface", "create module interface",
+                "//\n// TODO documentation\n//\n"+
+                "moduleinterface ${SomeInterface}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "    gates:\n"+
+                "}"),
         makeTemplate("network1", "create network",
-        		"//\n// TODO documentation\n//\n"+
-        		"network ${SomeNetwork}\n{\n"+
-        		"    parameters:${cursor}\n"+
-        		"    submodules:\n"+
-        		"    connections:\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "network ${SomeNetwork}\n{\n"+
+                "    parameters:${cursor}\n"+
+                "    submodules:\n"+
+                "    connections:\n"+
+                "}"),
         makeTemplate("channel1", "create channel",
-        		"//\n// TODO documentation\n//\n"+
-        		"channel ${SomeChannel}\n{\n"+
-        		"    ${cursor}\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "channel ${SomeChannel}\n{\n"+
+                "    ${cursor}\n"+
+                "}"),
         makeTemplate("channel2", "channel with underlying C++ class", //XXX revise name
-        		"//\n// TODO documentation\n//\n"+
-        		"channel ${SomeChannel}\n{\n"+
-        		"    @class(${classname});${cursor}\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "channel ${SomeChannel}\n{\n"+
+                "    @class(${classname});${cursor}\n"+
+                "}"),
         makeTemplate("channelinterface", "create channel interface",
-        		"//\n// TODO documentation\n//\n"+
-        		"channelinterface ${SomeChannelInterface}\n{\n"+
-        		"    ${cursor}\n"+
-        		"}"),
+                "//\n// TODO documentation\n//\n"+
+                "channelinterface ${SomeChannelInterface}\n{\n"+
+                "    ${cursor}\n"+
+                "}"),
         // special compound modules with submodule topologies
         makeTemplate("moduletree", "module with binary tree topology",
                 "//\n// Binary tree node\n//\n"+
@@ -472,39 +472,39 @@ public final class NedCompletionHelper {
 
     public final static Template[] proposedNedSubmoduleTempl = new Template[] {
         makeTemplate("submodule1", "submodule",
-        		"${someSubmodule} : ${SomeModule};"),
+                "${someSubmodule} : ${SomeModule};"),
         makeTemplate("submodule2", "submodule vector",
-		        "${someSubmodule}[${size}] : ${SomeModule};"),
-		makeTemplate("submodule3", "submodule with variable type",
-		        "${someSubmodule} : <${stringParameter}> like ${SomeInterface};"),
+                "${someSubmodule}[${size}] : ${SomeModule};"),
+        makeTemplate("submodule3", "submodule with variable type",
+                "${someSubmodule} : <${stringParameter}> like ${SomeInterface};"),
         makeTemplate("submodule4", "submodule with parameter settings",
-        		"${someSubmodule} : ${SomeModule} {\n"+
-        		"    ${cursor}\n"+
-        		"}"),
+                "${someSubmodule} : ${SomeModule} {\n"+
+                "    ${cursor}\n"+
+                "}"),
         makeTemplate("submodule5", "submodule with gate size settings",
-        		"${someSubmodule} : ${SomeModule} {\n"+
-        		"    gates:${cursor}\n"+
-        		"}"),
+                "${someSubmodule} : ${SomeModule} {\n"+
+                "    gates:${cursor}\n"+
+                "}"),
     };
 
     public final static Template[] proposedNedConnectionTempl = new Template[] {
         makeTemplate("connection1", "two one-way connections",
-        		"${mod1}.${outgate1} --> ${mod2}.${ingate2};\n"+
-        		"${mod1}.${ingate1} <-- ${mod2}.${outgate2};"),
+                "${mod1}.${outgate1} --> ${mod2}.${ingate2};\n"+
+                "${mod1}.${ingate1} <-- ${mod2}.${outgate2};"),
         makeTemplate("connection2", "a single two-way connection (inout gates)",
-				"${mod1}.${inoutgate1} <--> ${mod2}.${inoutgate2};"),
+                "${mod1}.${inoutgate1} <--> ${mod2}.${inoutgate2};"),
         makeTemplate("connection3", "connecting an inout gate with an input and an output",
-        		"${mod1}.${outgate} --> ${mod2}.${inoutgate}$$i;\n"+
-        		"${mod1}.${ingate} <-- ${mod2}.${inoutgate}$$o;"),
+                "${mod1}.${outgate} --> ${mod2}.${inoutgate}$$i;\n"+
+                "${mod1}.${ingate} <-- ${mod2}.${inoutgate}$$o;"),
         makeTemplate("connection4", "connections to parent (2x one-way)",
-        		"${mod}.${outgate} --> ${parentout};\n"+
-        		"${mod}.${ingate} <-- ${parentin};"),
+                "${mod}.${outgate} --> ${parentout};\n"+
+                "${mod}.${ingate} <-- ${parentin};"),
         makeTemplate("connection5", "connection with predefined channel",
-        		"${mod1}.${inout1} <--> ${SomeChannel} <--> ${mod2}.${inout2};"),
+                "${mod1}.${inout1} <--> ${SomeChannel} <--> ${mod2}.${inout2};"),
         makeTemplate("connection6", "connection with channel parameters",
-        		"${mod1}.${inout1} <--> {delay=${delay}; datarate=${txrate}; error=${ber};} <--> ${mod2}.${inout2};"),
+                "${mod1}.${inout1} <--> {delay=${delay}; datarate=${txrate}; error=${ber};} <--> ${mod2}.${inout2};"),
         makeTemplate("connection7", "connection with predefined channel parameterized",
-        		"${mod1}.${inout1} <--> ${SomeChannel} {${customParam}=${value};} <--> ${mod2}.${inout2};"),
+                "${mod1}.${inout1} <--> ${SomeChannel} {${customParam}=${value};} <--> ${mod2}.${inout2};"),
         //XXX with [], with ++, with "where", connection templates...
 
         // templates based on for loops
@@ -548,17 +548,17 @@ public final class NedCompletionHelper {
     }
 
     private static Template[] addRngNumArgument(Template[] templates) {
-    	Template[] result = new Template[templates.length];
-    	for (int i=0; i<templates.length; i++) {
-    		String pattern = templates[i].getPattern();
-    		Assert.isTrue(pattern.endsWith(")"));
-    		pattern = pattern.substring(0, pattern.length()-1) + ", ${rngNum})";
-   			result[i] = makeShortTemplate(pattern, templates[i].getDescription());
-    	}
-		return result;
-	}
+        Template[] result = new Template[templates.length];
+        for (int i=0; i<templates.length; i++) {
+            String pattern = templates[i].getPattern();
+            Assert.isTrue(pattern.endsWith(")"));
+            pattern = pattern.substring(0, pattern.length()-1) + ", ${rngNum})";
+            result[i] = makeShortTemplate(pattern, templates[i].getDescription());
+        }
+        return result;
+    }
 
-	/**
+    /**
      * Utility function for creating a multi-line template
      */
     public static Template makeTemplate(String name, String description, String pattern) {

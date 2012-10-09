@@ -39,7 +39,7 @@ public class ToolBarAccess
     public ToolItemAccess findToolItemWithTooltip(final String text) {
         return new ToolItemAccess((ToolItem)findObject(getControl().getItems(), new IPredicate() {
             public boolean matches(Object object) {
-            	String tooltipText = ((ToolItem)object).getToolTipText();
+                String tooltipText = ((ToolItem)object).getToolTipText();
                 return tooltipText != null && tooltipText.matches(text);
             }
         }));

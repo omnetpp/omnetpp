@@ -51,13 +51,13 @@ import org.omnetpp.eventlog.engine.SimulationBeginEntry;
 public abstract class EventLogEditor extends EditorPart implements IEventLogProvider, INavigationLocationProvider, IFollowSelectionSupport {
     protected boolean followSelection;
 
-	protected Runnable locationTimer;
+    protected Runnable locationTimer;
 
-	protected EventLogInput eventLogInput;
+    protected EventLogInput eventLogInput;
 
-	protected INavigationLocation lastLocation;
+    protected INavigationLocation lastLocation;
 
-	protected PropertySheetPage propertySheetPage;
+    protected PropertySheetPage propertySheetPage;
 
     public boolean getFollowSelection() {
         return followSelection;
@@ -67,25 +67,25 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
         this.followSelection = followSelection;
     }
 
-	public IEventLog getEventLog() {
-		return eventLogInput.getEventLog();
-	}
+    public IEventLog getEventLog() {
+        return eventLogInput.getEventLog();
+    }
 
-	public EventLogFacade getSequenceChartFacade() {
-		return eventLogInput.getSequenceChartFacade();
-	}
+    public EventLogFacade getSequenceChartFacade() {
+        return eventLogInput.getSequenceChartFacade();
+    }
 
-	public IFile getFile() {
-		return eventLogInput.getFile();
-	}
+    public IFile getFile() {
+        return eventLogInput.getFile();
+    }
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		locationTimer = new Runnable() {
-			public void run() {
-			    try {
-    		        Assert.isTrue(Display.getCurrent() != null);
-    				markLocation();
+    @Override
+    public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+        locationTimer = new Runnable() {
+            public void run() {
+                try {
+                    Assert.isTrue(Display.getCurrent() != null);
+                    markLocation();
                 }
                 catch (RuntimeException x) {
                     if (eventLogInput.isFileChangedException(x))
@@ -93,34 +93,34 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
                     else
                         throw x;
                 }
-			}
-		};
+            }
+        };
 
-		setSite(site);
-		setInput(input);
-		setPartName(input.getName());
+        setSite(site);
+        setInput(input);
+        setPartName(input.getName());
 
-		IFile file = null;
-		String logFileName;
-		if (input instanceof IFileEditorInput) {
-			IFileEditorInput fileInput = (IFileEditorInput)input;
-			file = fileInput.getFile();
-			logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
-		}
-		else if (input instanceof IPathEditorInput) {
-			IPathEditorInput pathFileInput = (IPathEditorInput)input;
-			logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
-		}
-		else
+        IFile file = null;
+        String logFileName;
+        if (input instanceof IFileEditorInput) {
+            IFileEditorInput fileInput = (IFileEditorInput)input;
+            file = fileInput.getFile();
+            logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
+        }
+        else if (input instanceof IPathEditorInput) {
+            IPathEditorInput pathFileInput = (IPathEditorInput)input;
+            logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
+        }
+        else
             throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + input.getName(),
                 "Please make sure the project is open before trying to open a file in it.");
 
-		IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
-		eventLogInput = new EventLogInput(file, eventLog);
-	}
+        IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
+        eventLogInput = new EventLogInput(file, eventLog);
+    }
 
     @Override
-	public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
+    public Object getAdapter(@SuppressWarnings("rawtypes") Class key) {
         if (key.equals(IPropertySheetPage.class)) {
             if (propertySheetPage == null) {
                 propertySheetPage = new PropertySheetPage();
@@ -165,7 +165,7 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
     }
 
     @Override
-	public String getTitleToolTip() {
+    public String getTitleToolTip() {
         IEventLog eventLog = eventLogInput.getEventLog();
 
         if (eventLog == null)
@@ -180,63 +180,63 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
         }
     }
 
-	@Override
-	public void dispose() {
-		super.dispose();
+    @Override
+    public void dispose() {
+        super.dispose();
 
-		if (eventLogInput != null)
-		    eventLogInput.dispose();
-	}
+        if (eventLogInput != null)
+            eventLogInput.dispose();
+    }
 
-	protected void addLocationProviderPaintListener(Control control) {
-		control.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-			    try {
-    				if (eventLogInput != null && canCreateNavigationLocation()) {
-    					INavigationLocation currentLocation = createNavigationLocation();
+    protected void addLocationProviderPaintListener(Control control) {
+        control.addPaintListener(new PaintListener() {
+            public void paintControl(PaintEvent e) {
+                try {
+                    if (eventLogInput != null && canCreateNavigationLocation()) {
+                        INavigationLocation currentLocation = createNavigationLocation();
 
-    					if (currentLocation != null && !currentLocation.equals(lastLocation)) {
-    						lastLocation = currentLocation;
-    						Display.getDefault().timerExec(3000, locationTimer);
-    					}
-    				}
-			    }
+                        if (currentLocation != null && !currentLocation.equals(lastLocation)) {
+                            lastLocation = currentLocation;
+                            Display.getDefault().timerExec(3000, locationTimer);
+                        }
+                    }
+                }
                 catch (RuntimeException x) {
                     if (eventLogInput.isFileChangedException(x))
                         eventLogInput.synchronize(x);
                     else
                         throw x;
                 }
-			}
-		});
-	}
+            }
+        });
+    }
 
-	protected boolean canCreateNavigationLocation() {
-		return !eventLogInput.getEventLog().isEmpty();
-	}
+    protected boolean canCreateNavigationLocation() {
+        return !eventLogInput.getEventLog().isEmpty();
+    }
 
-	public void markLocation() {
+    public void markLocation() {
         Assert.isTrue(Display.getCurrent() != null);
-		getSite().getPage().getNavigationHistory().markLocation(this);
-	}
+        getSite().getPage().getNavigationHistory().markLocation(this);
+    }
 
-	@Override
-	public void doSave(IProgressMonitor monitor) {
-		// void
-	}
+    @Override
+    public void doSave(IProgressMonitor monitor) {
+        // void
+    }
 
-	@Override
-	public void doSaveAs() {
-		// void
-	}
+    @Override
+    public void doSaveAs() {
+        // void
+    }
 
-	@Override
-	public boolean isDirty() {
-		return false;
-	}
+    @Override
+    public boolean isDirty() {
+        return false;
+    }
 
-	@Override
-	public boolean isSaveAsAllowed() {
-		return false;
-	}
+    @Override
+    public boolean isSaveAsAllowed() {
+        return false;
+    }
 }

@@ -16,18 +16,18 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class TabItemAccess extends WidgetAccess
 {
-	public TabItemAccess(TabItem cTabItem) {
-		super(cTabItem);
-	}
+    public TabItemAccess(TabItem cTabItem) {
+        super(cTabItem);
+    }
 
     @Override
-	public TabItem getWidget() {
-		return (TabItem)widget;
-	}
+    public TabItem getWidget() {
+        return (TabItem)widget;
+    }
 
     @UIStep
     public TabFolderAccess getTabFolder() {
-    	return (TabFolderAccess)createAccess(getWidget().getParent());
+        return (TabFolderAccess)createAccess(getWidget().getParent());
     }
 
     @UIStep
@@ -56,13 +56,13 @@ public class TabItemAccess extends WidgetAccess
         return -1;
     }
 
-//	@Override
-//	protected Menu getContextMenu() {
-//		return null;
-//	}
+//  @Override
+//  protected Menu getContextMenu() {
+//      return null;
+//  }
 
-//	@Override
-//	protected Point getAbsolutePointToClick() {
-//		return getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
-//	}
+//  @Override
+//  protected Point getAbsolutePointToClick() {
+//      return getWidget().getParent().toDisplay(getCenter(getWidget().getBounds()));
+//  }
 }

@@ -39,7 +39,7 @@ public class SimpleModulePropertySource extends MergedPropertySource {
             super(model);
             this.model = model;
             supportedProperties.addAll( EnumSet.range(DisplayString.Prop.SHAPE_WIDTH,
-            										  DisplayString.Prop.IMAGE_SIZE));
+                                                      DisplayString.Prop.IMAGE_SIZE));
         }
 
     }

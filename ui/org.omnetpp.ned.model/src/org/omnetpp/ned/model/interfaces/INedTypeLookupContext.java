@@ -17,10 +17,10 @@ import org.omnetpp.ned.model.INedElement;
  * @author andras
  */
 public interface INedTypeLookupContext extends INedElement, IHasResolver {
-	/**
-	 * Returns an empty string or a string ending in a dot. For a NED file
-	 * this string contains the package name, and for a container type
-	 * (compound module) it contains the fully qualified name of the module.
-	 */
-	public String getQNameAsPrefix();
+    /**
+     * Returns an empty string or a string ending in a dot. For a NED file
+     * this string contains the package name, and for a container type
+     * (compound module) it contains the fully qualified name of the module.
+     */
+    public String getQNameAsPrefix();
 }

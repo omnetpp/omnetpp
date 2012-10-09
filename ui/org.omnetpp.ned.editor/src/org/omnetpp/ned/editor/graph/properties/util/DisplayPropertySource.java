@@ -45,7 +45,7 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
     public static IPropertyDescriptor getPropertyDescriptor(DisplayString.Prop prop) {
         PropertyDescriptor pdesc;
         if (prop.getEnumSpec() != null)
-        	pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getName(), prop.getEnumSpec());
+            pdesc = new EnumComboboxPropertyDescriptor(prop, prop.getName(), prop.getEnumSpec());
         else if (prop.getType() == DisplayString.PropType.STRING)
             pdesc = new TextPropertyDescriptor(prop, prop.getName());
         else if (prop.getType() == DisplayString.PropType.UNIT)
@@ -105,31 +105,31 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
     // property request for property sheet
     @Override
     public Object getPropertyValue(Object propObj) {
-    	if (!(propObj instanceof DisplayString.Prop))
-    		return null;
+        if (!(propObj instanceof DisplayString.Prop))
+            return null;
 
         // check if we requested the "single line" DISPLAY property
         if (propObj == DisplayString.Prop.DISPLAY)
-        	return getEditableValue();
+            return getEditableValue();
 
         DisplayString.Prop prop = (DisplayString.Prop)propObj;
-        
+
         // otherwise look for a single tag/attribute
         String value = getDisplayString().getAsStringLocal(prop);
-        
+
         // if the property does not exists yet, return default empty value
         return value == null ? "" : value;
     }
 
     @Override
     public void setPropertyValue(Object propObj, Object value) {
-    	if (!(propObj instanceof DisplayString.Prop))
-    		return;
+        if (!(propObj instanceof DisplayString.Prop))
+            return;
 
         // check if we requested the "single line" DISPLAY property
         if (propObj == DisplayString.Prop.DISPLAY) {
             getDisplayString().set((String)value);
-        	return;
+            return;
         }
 
         // otherwise set a single attribute
@@ -144,13 +144,13 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
 
     @Override
     public void resetPropertyValue(Object prop) {
-    	if (!(prop instanceof DisplayString.Prop))
-    		return;
+        if (!(prop instanceof DisplayString.Prop))
+            return;
 
         // check if we requested the "single line" DISPLAY property, reset the whole display string
         if (prop == DisplayString.Prop.DISPLAY) {
             getDisplayString().set(null);
-        	return;
+            return;
         }
 
         // set only a single attribute
@@ -159,8 +159,8 @@ abstract public class DisplayPropertySource extends NedBasePropertySource {
 
     @Override
     public boolean isPropertySet(Object prop) {
-    	if (!(prop instanceof DisplayString.Prop))
-    		return false;
+        if (!(prop instanceof DisplayString.Prop))
+            return false;
 
         // check if we requested the "single line" DISPLAY property
         if (prop == DisplayString.Prop.DISPLAY)

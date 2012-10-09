@@ -11,13 +11,13 @@ import org.omnetpp.inifile.editor.text.actions.InifileTextEditorAction;
 
 /**
  * Action to enable/disable the long running part of ini file analysis.
- * 
+ *
  * @author tomi
  */
 public class ToggleAnalysisAction extends ResourceAction implements IPropertyChangeListener {
 
     public final static String ID = "ToggleAnalysis";
-    
+
     InifileAnalyzer analyzer;
 
     public ToggleAnalysisAction() {
@@ -26,7 +26,7 @@ public class ToggleAnalysisAction extends ResourceAction implements IPropertyCha
         setActionDefinitionId(InifileTextEditorAction.ACTION_DEFINITION_PREFIX+ID);
         setTargetEditor(null);
     }
-    
+
     @Override
     public void run() {
         if (analyzer != null) {
@@ -38,13 +38,13 @@ public class ToggleAnalysisAction extends ResourceAction implements IPropertyCha
                 analyzer.startAnalysisIfChanged();
         }
     }
-    
+
     public void setTargetEditor(InifileEditor editor) {
         if (analyzer != null)
             analyzer.removePropertyChangeListener(this);
-        
+
         analyzer = editor != null ? editor.getEditorData().getInifileAnalyzer() : null;
-        
+
         if (analyzer != null) {
             setChecked(analyzer.isParamResolutionEnabled());
             setEnabled(true);

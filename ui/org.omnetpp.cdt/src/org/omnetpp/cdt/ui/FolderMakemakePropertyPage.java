@@ -89,7 +89,7 @@ public class FolderMakemakePropertyPage extends PropertyPage {
                 updatePageState();
             }
         });
-        
+
         loadBuildSpecFile();
 
         IContainer folder = getFolder();

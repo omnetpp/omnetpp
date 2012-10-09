@@ -44,104 +44,104 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class DatasetImpl extends EObjectImpl implements Dataset {
-	/**
+    /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected static final String NAME_EDEFAULT = "";
+    protected static final String NAME_EDEFAULT = "";
 
-	/**
+    /**
      * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected String name = NAME_EDEFAULT;
+    protected String name = NAME_EDEFAULT;
 
-	/**
+    /**
      * The cached value of the '{@link #getItems() <em>Items</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getItems()
      * @generated
      * @ordered
      */
-	protected EList<DatasetItem> items;
+    protected EList<DatasetItem> items;
 
-	/**
+    /**
      * The cached value of the '{@link #getBasedOn() <em>Based On</em>}' reference.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getBasedOn()
      * @generated
      * @ordered
      */
-	protected Dataset basedOn;
+    protected Dataset basedOn;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected DatasetImpl() {
+    protected DatasetImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.DATASET;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setName(String newName) {
+    public void setName(String newName) {
         String oldName = name;
         name = newName;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.DATASET__NAME, oldName, name));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<DatasetItem> getItems() {
+    public EList<DatasetItem> getItems() {
         if (items == null) {
             items = new EObjectContainmentEList<DatasetItem>(DatasetItem.class, this, ScaveModelPackage.DATASET__ITEMS);
         }
         return items;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Dataset getBasedOn() {
+    public Dataset getBasedOn() {
         if (basedOn != null && basedOn.eIsProxy()) {
             InternalEObject oldBasedOn = (InternalEObject)basedOn;
             basedOn = (Dataset)eResolveProxy(oldBasedOn);
@@ -153,34 +153,34 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
         return basedOn;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Dataset basicGetBasedOn() {
+    public Dataset basicGetBasedOn() {
         return basedOn;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setBasedOn(Dataset newBasedOn) {
+    public void setBasedOn(Dataset newBasedOn) {
         Dataset oldBasedOn = basedOn;
         basedOn = newBasedOn;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.DATASET__BASED_ON, oldBasedOn, basedOn));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.DATASET__ITEMS:
                 return ((InternalEList<?>)getItems()).basicRemove(otherEnd, msgs);
@@ -188,13 +188,13 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.DATASET__NAME:
                 return getName();
@@ -207,14 +207,14 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.DATASET__NAME:
                 setName((String)newValue);
@@ -230,13 +230,13 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.DATASET__NAME:
                 setName(NAME_EDEFAULT);
@@ -251,13 +251,13 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.DATASET__NAME:
                 return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
@@ -269,13 +269,13 @@ public class DatasetImpl extends EObjectImpl implements Dataset {
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

@@ -15,48 +15,48 @@ import org.omnetpp.scave.model2.DatasetManager;
 
 public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDataset {
 
-	private XYArray[] vectors;  // each array contains X,Y values
-	private String[] keys;
+    private XYArray[] vectors;  // each array contains X,Y values
+    private String[] keys;
 
-	public VectorScatterPlotDataset(IDList vectors, XYArray[] vectorsData, ResultFileManager manager) {
-		this.vectors = vectorsData;
-		this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
-	}
+    public VectorScatterPlotDataset(IDList vectors, XYArray[] vectorsData, ResultFileManager manager) {
+        this.vectors = vectorsData;
+        this.keys = DatasetManager.getResultItemNames(vectors, null /*nameFormat*/, manager); // XXX nameFormat
+    }
 
-	public String getTitle(String format) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getTitle(String format) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public int getSeriesCount() {
-		return keys.length;
-	}
+    public int getSeriesCount() {
+        return keys.length;
+    }
 
-	public String getSeriesKey(int series) {
-		return keys[series];
-	}
-	
+    public String getSeriesKey(int series) {
+        return keys[series];
+    }
+
     public String getSeriesTitle(int series, String format) {
         return getSeriesKey(series); // TODO
     }
 
-	public int getItemCount(int series) {
-		return vectors[series].length();
-	}
+    public int getItemCount(int series) {
+        return vectors[series].length();
+    }
 
-	public double getX(int series, int item) {
-		return vectors[series].getX(item);
-	}
+    public double getX(int series, int item) {
+        return vectors[series].getX(item);
+    }
 
-	public BigDecimal getPreciseX(int series, int item) {
-		return new BigDecimal(getX(series, item));
-	}
+    public BigDecimal getPreciseX(int series, int item) {
+        return new BigDecimal(getX(series, item));
+    }
 
-	public double getY(int series, int item) {
-		return vectors[series].getY(item);
-	}
+    public double getY(int series, int item) {
+        return vectors[series].getY(item);
+    }
 
-	public BigDecimal getPreciseY(int series, int item) {
-		return new BigDecimal(getY(series, item));
-	}
+    public BigDecimal getPreciseY(int series, int item) {
+        return new BigDecimal(getY(series, item));
+    }
 }

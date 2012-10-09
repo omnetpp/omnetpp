@@ -33,69 +33,69 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
  */
 class LegendTooltip implements ILegend
 {
-	Button button;
-	List<Item> items = new ArrayList<Item>();
+    Button button;
+    List<Item> items = new ArrayList<Item>();
 
-	static class Item
-	{
-		Color color;
-		String label;
-		Image image;
+    static class Item
+    {
+        Color color;
+        String label;
+        Image image;
 
-		public Item(Color color, String label, IChartSymbol symbol, boolean drawLine) {
-			this.color = color;
-			this.label = label;
-			this.image = SymbolImageFactory.createSymbolImage(symbol, color, drawLine);
-		}
-	}
+        public Item(Color color, String label, IChartSymbol symbol, boolean drawLine) {
+            this.color = color;
+            this.label = label;
+            this.image = SymbolImageFactory.createSymbolImage(symbol, color, drawLine);
+        }
+    }
 
-	public LegendTooltip(ChartCanvas parent) {
-		button = new Button(parent, SWT.FLAT | SWT.CENTER | SWT.NO_FOCUS);
-		Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
-		button.setImage(icon);
-		button.setSize(button.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+    public LegendTooltip(ChartCanvas parent) {
+        button = new Button(parent, SWT.FLAT | SWT.CENTER | SWT.NO_FOCUS);
+        Image icon = ImageFactory.getImage(ImageFactory.TOOLBAR_IMAGE_LEGEND);
+        button.setImage(icon);
+        button.setSize(button.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 
-		final HoverSupport hoverSupport = new HoverSupport();
-		hoverSupport.setHoverSizeConstaints(320,400);
-		hoverSupport.adapt(button, new IHTMLHoverProvider() {
-			@Override
+        final HoverSupport hoverSupport = new HoverSupport();
+        hoverSupport.setHoverSizeConstaints(320,400);
+        hoverSupport.adapt(button, new IHTMLHoverProvider() {
+            @Override
             public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-				return getTooltip(x, y);
-			}
-		});
+                return getTooltip(x, y);
+            }
+        });
 
-		button.addSelectionListener(new SelectionAdapter() {
-			@Override
+        button.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
-			    hoverSupport.makeHoverSticky(button);
-			}
-		});
-	}
+                hoverSupport.makeHoverSticky(button);
+            }
+        });
+    }
 
     public boolean isVisible() {
         return button.isVisible();
     }
 
-	public void setVisible(boolean visible) {
-	    button.setVisible(visible);
+    public void setVisible(boolean visible) {
+        button.setVisible(visible);
     }
 
-	public void clearItems() {
-		items.clear();
-	}
+    public void clearItems() {
+        items.clear();
+    }
 
-	public void addItem(Color color, String label, IChartSymbol symbol, boolean drawLine) {
-		items.add(new Item(color, label, symbol, drawLine));
-	}
+    public void addItem(Color color, String label, IChartSymbol symbol, boolean drawLine) {
+        items.add(new Item(color, label, symbol, drawLine));
+    }
 
-	public Rectangle layout(Graphics graphics, Rectangle rect) {
-		button.setLocation(rect.getRight().x - button.getSize().x - 2, rect.y + 2);
-		return rect;
-	}
+    public Rectangle layout(Graphics graphics, Rectangle rect) {
+        button.setLocation(rect.getRight().x - button.getSize().x - 2, rect.y + 2);
+        return rect;
+    }
 
-	public void draw(Graphics graphics) {
-		// button is drawn as a child of the canvas
-	}
+    public void draw(Graphics graphics) {
+        // button is drawn as a child of the canvas
+    }
 
     public HTMLHoverInfo getTooltip(int x, int y) {
         if (items.size() > 0) {
@@ -117,11 +117,11 @@ class LegendTooltip implements ILegend
             return null;
     }
 
-	public String htmlColor(Color color) {
-		return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
-	}
+    public String htmlColor(Color color) {
+        return String.format("#%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
+    }
 
-	public String htmlText(String text) {
-		return StringEscapeUtils.escapeHtml(text);
-	}
+    public String htmlText(String text) {
+        return StringEscapeUtils.escapeHtml(text);
+    }
 }

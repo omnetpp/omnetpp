@@ -28,22 +28,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public abstract class AddDiscardOpImpl extends SetOperationImpl implements AddDiscardOp {
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected AddDiscardOpImpl() {
+    protected AddDiscardOpImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.ADD_DISCARD_OP;
     }
 

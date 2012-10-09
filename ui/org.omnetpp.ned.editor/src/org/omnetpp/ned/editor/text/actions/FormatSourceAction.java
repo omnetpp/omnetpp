@@ -28,9 +28,9 @@ public class FormatSourceAction extends NedTextEditorAction {
     }
 
     @Override
-	public void update() {
-    	setEnabled(getTextEditor() != null && !getNedFileElement().hasSyntaxError());
-	}
+    public void update() {
+        setEnabled(getTextEditor() != null && !getNedFileElement().hasSyntaxError());
+    }
 
     @Override
     protected void doRun() {
@@ -41,8 +41,8 @@ public class FormatSourceAction extends NedTextEditorAction {
     }
 
     protected NedFileElementEx getNedFileElement() {
-		IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
+        IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         return NedResourcesPlugin.getNedResources().getNedFileElement(file);
-	}
+    }
 
 }

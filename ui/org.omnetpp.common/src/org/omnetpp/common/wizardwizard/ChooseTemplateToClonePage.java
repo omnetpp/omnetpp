@@ -21,7 +21,7 @@ public class ChooseTemplateToClonePage extends TemplateSelectionPage implements 
         text += "<br/><br/>Supported wizard types: " + StringUtils.join(template.getSupportedWizardTypes(), ", ");
         return text;
     }
-    
+
     public boolean isEnabled(CreationContext context) {
         return true;
     }

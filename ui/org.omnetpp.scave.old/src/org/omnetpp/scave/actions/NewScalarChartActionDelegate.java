@@ -12,9 +12,9 @@ package org.omnetpp.scave.actions;
  */
 public class NewScalarChartActionDelegate extends NewDocActionDelegate {
 
-	private static int counter = 0;
+    private static int counter = 0;
 
-	protected String getNewFileName() {
-		return "Untitled scalar chart "+(++counter)+".schart";
-	}
+    protected String getNewFileName() {
+        return "Untitled scalar chart "+(++counter)+".schart";
+    }
 }

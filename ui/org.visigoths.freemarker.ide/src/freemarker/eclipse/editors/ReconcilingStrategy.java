@@ -26,106 +26,106 @@ import freemarker.template.Template;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
 public class ReconcilingStrategy implements IReconcilingStrategy {
-	private FreemarkerEditor fEditor;
+    private FreemarkerEditor fEditor;
     private Template fTemplate;
     //private Template fLastTemplate;
-	private String fError;
+    private String fError;
 
-	public ReconcilingStrategy(FreemarkerEditor anEditor) {
-		fEditor = anEditor;
-	}
+    public ReconcilingStrategy(FreemarkerEditor anEditor) {
+        fEditor = anEditor;
+    }
 
-	public void setDocument(IDocument aDocument) {
-		parse();
-	}
+    public void setDocument(IDocument aDocument) {
+        parse();
+    }
 
-	public void reconcile(DirtyRegion aDirtyRegion, IRegion aRegion) {
-		parse();
-	}
+    public void reconcile(DirtyRegion aDirtyRegion, IRegion aRegion) {
+        parse();
+    }
 
-	public void reconcile(IRegion aPartition) {
-		parse();
-	}
+    public void reconcile(IRegion aPartition) {
+        parse();
+    }
 
-	private void parse() {
-		IFile file = ((IFileEditorInput)fEditor.getEditorInput()).getFile(); 
-		Template template = null;
-		int fErrorLine = 0;
-		try {
-			file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
-			Reader reader = new StringReader(fEditor.getDocument().get());
-			Configuration cfg = new Configuration();
-			template = new Template(file.getName(), reader, cfg);
-			reader.close();
-			fError = "";
-		} catch (ParseException e) {
-			if (e.getMessage() != null) {
-				fError = e.getMessage();
-				try {
-					fErrorLine = e.getLineNumber();
-				} catch (NullPointerException npe) {
-					fErrorLine = 0;
-				}
-					
-			} else {
-				fError = "";
-			}
-		} catch (Exception e) {
-			
+    private void parse() {
+        IFile file = ((IFileEditorInput)fEditor.getEditorInput()).getFile();
+        Template template = null;
+        int fErrorLine = 0;
+        try {
+            file.deleteMarkers(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE);
+            Reader reader = new StringReader(fEditor.getDocument().get());
+            Configuration cfg = new Configuration();
+            template = new Template(file.getName(), reader, cfg);
+            reader.close();
+            fError = "";
+        } catch (ParseException e) {
+            if (e.getMessage() != null) {
+                fError = e.getMessage();
+                try {
+                    fErrorLine = e.getLineNumber();
+                } catch (NullPointerException npe) {
+                    fErrorLine = 0;
+                }
+
+            } else {
+                fError = "";
+            }
+        } catch (Exception e) {
+
         }
         synchronized (this) {
-        	if (template != null) {
-				fTemplate = template;
+            if (template != null) {
+                fTemplate = template;
 
-				// Save last successful parse tree
-				//fLastTemplate = template;
-				
-        	} else {
-        		fTemplate = null;
-        		try {
-        		fEditor.addProblemMarker(fError,fErrorLine);
-        		} catch (Exception e) {
-        			
-        		}
-        	}
-		}
+                // Save last successful parse tree
+                //fLastTemplate = template;
 
-		// Update outline view and display error message in status line
-		Display.getDefault().syncExec(new Runnable() {
-			public void run(){
-				fEditor.updateOutlinePage();
-				fEditor.displayErrorMessage(fError);
-			}
-		});
-	}
-	
-	public Object[] getTemplateRoot() {
-		if(null==fTemplate) {
-			return new Object[0];	
-		} else {
-			if("root element".equals(fTemplate.getRootTreeNode().getDescription())) {
-				return enum2array(fTemplate.getRootTreeNode().children());
-			} else {
-				return new Object[]{fTemplate.getRootTreeNode()};
-			}
-		}
-	}
-	
-	public Template getTemplate() {
-		return fTemplate;
-	}
-    
+            } else {
+                fTemplate = null;
+                try {
+                fEditor.addProblemMarker(fError,fErrorLine);
+                } catch (Exception e) {
+
+                }
+            }
+        }
+
+        // Update outline view and display error message in status line
+        Display.getDefault().syncExec(new Runnable() {
+            public void run(){
+                fEditor.updateOutlinePage();
+                fEditor.displayErrorMessage(fError);
+            }
+        });
+    }
+
+    public Object[] getTemplateRoot() {
+        if(null==fTemplate) {
+            return new Object[0];
+        } else {
+            if("root element".equals(fTemplate.getRootTreeNode().getDescription())) {
+                return enum2array(fTemplate.getRootTreeNode().children());
+            } else {
+                return new Object[]{fTemplate.getRootTreeNode()};
+            }
+        }
+    }
+
+    public Template getTemplate() {
+        return fTemplate;
+    }
+
     @SuppressWarnings("unchecked")
-	private Object[] enum2array(Enumeration e) {
-    	Vector<TemplateElement> temp = new Vector<TemplateElement>();
-    	TemplateElement t;
-    	while(e.hasMoreElements()) {
-    		t = (TemplateElement)e.nextElement();
-    		//if(!"whitespace".equalsIgnoreCase(t.getDescription())) {
-	    		temp.add(t);
-    		//}
-    	}
-    	return temp.toArray();
+    private Object[] enum2array(Enumeration e) {
+        Vector<TemplateElement> temp = new Vector<TemplateElement>();
+        TemplateElement t;
+        while(e.hasMoreElements()) {
+            t = (TemplateElement)e.nextElement();
+            //if(!"whitespace".equalsIgnoreCase(t.getDescription())) {
+                temp.add(t);
+            //}
+        }
+        return temp.toArray();
     }
 }
 

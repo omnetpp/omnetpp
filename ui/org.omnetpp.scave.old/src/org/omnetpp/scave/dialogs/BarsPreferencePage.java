@@ -14,14 +14,14 @@ import org.eclipse.swt.widgets.Control;
 
 public class BarsPreferencePage extends PreferencePage {
 
-	public BarsPreferencePage(String title)
-	{
-		super(title);
-	}
+    public BarsPreferencePage(String title)
+    {
+        super(title);
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		return new BarsPreferencePanel(parent, SWT.NONE);
-	}
+    @Override
+    protected Control createContents(Composite parent) {
+        return new BarsPreferencePanel(parent, SWT.NONE);
+    }
 
 }

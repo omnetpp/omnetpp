@@ -49,7 +49,7 @@ public class LineChartItemProvider
         ITreeItemContentProvider,
         IItemLabelProvider,
         IItemPropertySource {
-	/**
+    /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -59,14 +59,14 @@ public class LineChartItemProvider
         super(adapterFactory);
     }
 
-	/**
+    /**
      * This returns the property descriptors for the adapted class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-				public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
+                public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
         if (itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
@@ -75,13 +75,13 @@ public class LineChartItemProvider
         return itemPropertyDescriptors;
     }
 
-	/**
+    /**
      * This adds a property descriptor for the Line Name Format feature.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected void addLineNameFormatPropertyDescriptor(Object object) {
+    protected void addLineNameFormatPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
@@ -97,18 +97,18 @@ public class LineChartItemProvider
                  null));
     }
 
-	/**
+    /**
      * This returns LineChart.gif.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-				public Object getImage(Object object) {
+                public Object getImage(Object object) {
         return overlayImage(object, getResourceLocator().getImage("full/obj16/LineChart"));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -125,14 +125,14 @@ public class LineChartItemProvider
      * @generated
      */
     @Override
-				public String getText(Object object) {
+                public String getText(Object object) {
         String label = ((LineChart)object).getName();
         return label == null || label.length() == 0 ?
             getString("_UI_LineChart_type") :
             getString("_UI_LineChart_type") + " " + label;
     }
 
-	/**
+    /**
      * This handles model notifications by calling {@link #updateChildren} to update any cached
      * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
      * <!-- begin-user-doc -->
@@ -140,7 +140,7 @@ public class LineChartItemProvider
      * @generated
      */
     @Override
-				public void notifyChanged(Notification notification) {
+                public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
         switch (notification.getFeatureID(LineChart.class)) {
@@ -151,7 +151,7 @@ public class LineChartItemProvider
         super.notifyChanged(notification);
     }
 
-	/**
+    /**
      * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
      * that can be created under this object.
      * <!-- begin-user-doc -->
@@ -159,7 +159,7 @@ public class LineChartItemProvider
      * @generated
      */
     @Override
-				protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
+                protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
     }
 

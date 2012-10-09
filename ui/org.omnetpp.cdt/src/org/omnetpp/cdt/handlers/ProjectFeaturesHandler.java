@@ -22,17 +22,17 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 /**
  * Implements the "Project Features" menu item, which opens the Project Properties dialog
  * with the Project Features page.
- * 
+ *
  * @author Andras
  */
 public class ProjectFeaturesHandler extends AbstractHandler {
-    public static final String PROJECTFEATURES_ID = "org.omnetpp.cdt.ProjectFeatures"; 
-        
+    public static final String PROJECTFEATURES_ID = "org.omnetpp.cdt.ProjectFeatures";
+
     public Object execute(ExecutionEvent event) throws ExecutionException {
         execute();
         return null;
     }
-    
+
     public static void execute() {
         IProject project = getProject();
         if (project != null && project.isAccessible()) {
@@ -44,7 +44,7 @@ public class ProjectFeaturesHandler extends AbstractHandler {
     }
 
     /**
-     * Returns a project from the selection of the active part. Method copied from 
+     * Returns a project from the selection of the active part. Method copied from
      * ProjectPropertyDialogAction (with minor editing).
      */
     private static IProject getProject() {
@@ -52,7 +52,7 @@ public class ProjectFeaturesHandler extends AbstractHandler {
         IWorkbenchPage workbenchPage = workbenchWindow == null ? null : workbenchWindow.getActivePage();
         if (workbenchPage == null)
             return null;
-        
+
         IWorkbenchPart part = workbenchPage.getActivePart();
         Object selection = null;
         if (part instanceof IEditorPart) {
@@ -77,7 +77,7 @@ public class ProjectFeaturesHandler extends AbstractHandler {
             if (sel != null && (sel instanceof IStructuredSelection))
                 selection = ((IStructuredSelection) sel).getFirstElement();
         }
-        
+
         if (selection == null)
             return null;
         if (!(selection instanceof IAdaptable))
@@ -87,5 +87,5 @@ public class ProjectFeaturesHandler extends AbstractHandler {
             return null;
         return resource.getProject();
     }
-    
+
 }

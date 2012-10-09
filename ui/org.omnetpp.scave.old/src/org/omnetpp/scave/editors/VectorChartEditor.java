@@ -17,13 +17,13 @@ import org.omnetpp.scave.model.VectorDatasetStrategy;
  */
 public class VectorChartEditor extends DatasetEditor {
 
-	private static IDatasetStrategy strategy = new VectorDatasetStrategy();
+    private static IDatasetStrategy strategy = new VectorDatasetStrategy();
 
-	public VectorChartEditor() {
-		super(strategy,
-			new IDatasetEditorPage[] {
-				new FilterPanelPage(strategy),
-				new ChartPage(strategy)
-			});
-	}
+    public VectorChartEditor() {
+        super(strategy,
+            new IDatasetEditorPage[] {
+                new FilterPanelPage(strategy),
+                new ChartPage(strategy)
+            });
+    }
 }

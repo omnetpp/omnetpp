@@ -10,5 +10,5 @@ package org.omnetpp.scave.engineext;
 import java.util.EventListener;
 
 public interface IResultFilesChangeListener extends EventListener {
-	public void resultFileManagerChanged(ResultFileManagerChangeEvent event);
+    public void resultFileManagerChanged(ResultFileManagerChangeEvent event);
 }

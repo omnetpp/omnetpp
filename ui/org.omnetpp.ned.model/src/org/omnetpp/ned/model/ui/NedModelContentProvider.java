@@ -38,26 +38,26 @@ public class NedModelContentProvider implements ITreeContentProvider {
 
     public NedModelContentProvider() {
     }
-    
+
     public NedModelContentProvider(int perGroupLimit) {
         this.perGroupLimit = perGroupLimit;
     }
-    
-	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-	}
 
-	public void dispose() {
-	}
+    public void inputChanged(Viewer v, Object oldInput, Object newInput) {
+    }
 
-	public Object[] getElements(Object parent) {
-		return getChildren(parent);
-	}
+    public void dispose() {
+    }
 
-	public Object getParent(Object child) {
-		return ((INedElement)child).getParent();
-	}
+    public Object[] getElements(Object parent) {
+        return getChildren(parent);
+    }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+    public Object getParent(Object child) {
+        return ((INedElement)child).getParent();
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object[] getChildren(Object parent) {
         List result = new ArrayList();
         INedElement currElem = ((INedElement)parent);
@@ -85,7 +85,7 @@ public class NedModelContentProvider implements ITreeContentProvider {
                     (child instanceof TypesElement)) {
                 Object children[] = getChildren(child);
                 List<Object> childList = Arrays.asList(children);
-                if (children.length > perGroupLimit && perGroupLimit != 0) { 
+                if (children.length > perGroupLimit && perGroupLimit != 0) {
                     result.addAll(childList.subList(0, perGroupLimit));
                     result.add("And "+(children.length - perGroupLimit)+" more...");
                 }
@@ -94,9 +94,9 @@ public class NedModelContentProvider implements ITreeContentProvider {
             }
         }
         return result.toArray();
-	}
+    }
 
-	public boolean hasChildren(Object parent) {
+    public boolean hasChildren(Object parent) {
         return getChildren(parent).length > 0;
-	}
+    }
 }

@@ -55,51 +55,51 @@ import org.omnetpp.common.util.GraphicsUtils;
 @SuppressWarnings("restriction")
 public abstract class CachingCanvas extends LargeScrollableCanvas {
 
-	private boolean doCaching = true;
-	private ITileCache tileCache = new XYTileCache();
-	private boolean debug = false;
+    private boolean doCaching = true;
+    private ITileCache tileCache = new XYTileCache();
+    private boolean debug = false;
 
-	/**
-	 * Constructor.
-	 */
-	public CachingCanvas(Composite parent, int style) {
-		super(parent, style);
+    /**
+     * Constructor.
+     */
+    public CachingCanvas(Composite parent, int style) {
+        super(parent, style);
 
-		addPaintListener(new PaintListener() {
-			public void paintControl(final PaintEvent e) {
-				paint(e.gc);
-			}
-		});
-	}
+        addPaintListener(new PaintListener() {
+            public void paintControl(final PaintEvent e) {
+                paint(e.gc);
+            }
+        });
+    }
 
-	/**
-	 * Override base method to limit the size of the virtual canvas.
-	 * This is necessary because of arithmetic overflows could
-	 * happen while generating the tiles.
-	 */
-	@Override
+    /**
+     * Override base method to limit the size of the virtual canvas.
+     * This is necessary because of arithmetic overflows could
+     * happen while generating the tiles.
+     */
+    @Override
     public void setVirtualSize(long width, long height) {
-		width = Math.min(width, Long.MAX_VALUE - 10000);
-		height = Math.min(height, Long.MAX_VALUE - 10000);
-		super.setVirtualSize(width, height);
-	}
+        width = Math.min(width, Long.MAX_VALUE - 10000);
+        height = Math.min(height, Long.MAX_VALUE - 10000);
+        super.setVirtualSize(width, height);
+    }
 
 
 
-	/**
-	 * Returns whether caching is on.
-	 */
-	public boolean getCaching() {
-		return doCaching;
-	}
+    /**
+     * Returns whether caching is on.
+     */
+    public boolean getCaching() {
+        return doCaching;
+    }
 
-	/**
-	 * Turns on/off caching.
-	 */
-	public void setCaching(boolean doCaching) {
-		this.doCaching = doCaching;
-		clearCanvasCache();
-	}
+    /**
+     * Turns on/off caching.
+     */
+    public void setCaching(boolean doCaching) {
+        this.doCaching = doCaching;
+        clearCanvasCache();
+    }
 
     /**
      * Copies the image of the chart to the clipboard.
@@ -142,11 +142,11 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
     }
 
     public void exportToSVG(String fileName) {
-    	;
-    	int width = getClientArea().width, height = getClientArea().height;
-    	GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
+        ;
+        int width = getClientArea().width, height = getClientArea().height;
+        GraphicsSVG graphics = GraphicsSVG.getInstance(new Rectangle(0, -1, width, height));
         try {
-        	SVGGraphics2D g = graphics.getSVGGraphics2D();
+            SVGGraphics2D g = graphics.getSVGGraphics2D();
             g.setClip(0, 0, width, height);
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             graphics.setAntialias(SWT.ON);
@@ -157,7 +157,7 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
             throw new RuntimeException(e);
         }
         finally {
-        	graphics.dispose();
+            graphics.dispose();
         }
     }
 
@@ -196,80 +196,80 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         }
     }
 
-	/**
-	 * Paints the canvas, making use of the cache.
-	 */
-	protected void paint(Graphics graphics) {
-		if (!doCaching)
-			paintWithoutCaching(graphics);
-		else {
-			Rectangle viewportRect = new Rectangle(getViewportRectangle());
-	        Rectangle clip = GraphicsUtils.getClip(graphics);
-			clip = clip.intersect(viewportRect);
-			graphics.setClip(clip);
-			LargeRect lclip = canvasToVirtualRect(clip);
+    /**
+     * Paints the canvas, making use of the cache.
+     */
+    protected void paint(Graphics graphics) {
+        if (!doCaching)
+            paintWithoutCaching(graphics);
+        else {
+            Rectangle viewportRect = new Rectangle(getViewportRectangle());
+            Rectangle clip = GraphicsUtils.getClip(graphics);
+            clip = clip.intersect(viewportRect);
+            graphics.setClip(clip);
+            LargeRect lclip = canvasToVirtualRect(clip);
 
-			ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
-			ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
+            ArrayList<Tile> cachedTiles = new ArrayList<Tile>();
+            ArrayList<LargeRect> missingAreas = new ArrayList<LargeRect>();
 
-			tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles, missingAreas);
-			//Debug.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
+            tileCache.getTiles(lclip, getVirtualWidth(), getVirtualHeight(), cachedTiles, missingAreas);
+            //Debug.println("cache: found "+cachedTiles.size()+" tiles, missing "+missingAreas.size()+" areas");
 
-			// display cached tiles
-			for (Tile tile : cachedTiles) {
-				graphics.drawImage(tile.image, virtualToCanvasX(tile.rect.x), virtualToCanvasY(tile.rect.y));
-				debugDrawTile(graphics, tile.rect, new Color(null,0,255,0));
-			}
+            // display cached tiles
+            for (Tile tile : cachedTiles) {
+                graphics.drawImage(tile.image, virtualToCanvasX(tile.rect.x), virtualToCanvasY(tile.rect.y));
+                debugDrawTile(graphics, tile.rect, new Color(null,0,255,0));
+            }
 
-			// draw missing tiles
-			for (LargeRect lrect : missingAreas) {
-				Rectangle rect = virtualToCanvasRect(lrect);
-				Assert.isTrue(!rect.isEmpty()); // tile cache should not return empty rectangles
+            // draw missing tiles
+            for (LargeRect lrect : missingAreas) {
+                Rectangle rect = virtualToCanvasRect(lrect);
+                Assert.isTrue(!rect.isEmpty()); // tile cache should not return empty rectangles
 
-				Graphics imageGraphics = null;
-				GC imageGC = null;
-				Transform transform = null;
-				Image image = new Image(getDisplay(), rect.width, rect.height);
-				try {
-    				imageGC = new GC(image);
-    				transform = new Transform(imageGC.getDevice());
-    				// KLUDGE: FIXME: XXX: See Eclipse bug database: 245523
-    				// remove the next 3 lines when that bug is fixed, because it is an incorrect workaround
-    				// putting -1.01f does not help either, because the closer you get to -1.0 is the worse
-    				if (rect.y == 1)
+                Graphics imageGraphics = null;
+                GC imageGC = null;
+                Transform transform = null;
+                Image image = new Image(getDisplay(), rect.width, rect.height);
+                try {
+                    imageGC = new GC(image);
+                    transform = new Transform(imageGC.getDevice());
+                    // KLUDGE: FIXME: XXX: See Eclipse bug database: 245523
+                    // remove the next 3 lines when that bug is fixed, because it is an incorrect workaround
+                    // putting -1.01f does not help either, because the closer you get to -1.0 is the worse
+                    if (rect.y == 1)
                         transform.translate(-rect.x, -2f);
-    				else
-    				    transform.translate(-rect.x, -rect.y);
-    				imageGC.setTransform(transform);
-    				imageGC.setClipping(rect.x, rect.y, rect.width, rect.height);
+                    else
+                        transform.translate(-rect.x, -rect.y);
+                    imageGC.setTransform(transform);
+                    imageGC.setClipping(rect.x, rect.y, rect.width, rect.height);
 
-    		        imageGraphics = createGraphics(imageGC);
-				    paintCachableLayer(imageGraphics);
-    	        }
-    	        finally {
-    	            if (imageGraphics != null)
-    	                imageGraphics.dispose();
-    	            if (transform != null)
-    	                transform.dispose();
-    	            if (imageGC != null)
-    	                imageGC.dispose();
-    	        }
+                    imageGraphics = createGraphics(imageGC);
+                    paintCachableLayer(imageGraphics);
+                }
+                finally {
+                    if (imageGraphics != null)
+                        imageGraphics.dispose();
+                    if (transform != null)
+                        transform.dispose();
+                    if (imageGC != null)
+                        imageGC.dispose();
+                }
 
-				// draw the image on the screen, and also add it to the cache
-				graphics.drawImage(image, rect.x, rect.y);
-				tileCache.add(lrect, image);
-				debugDrawTile(graphics, lrect, new Color(null,255,0,0));
-			}
+                // draw the image on the screen, and also add it to the cache
+                graphics.drawImage(image, rect.x, rect.y);
+                tileCache.add(lrect, image);
+                debugDrawTile(graphics, lrect, new Color(null,255,0,0));
+            }
 
-			// paint items that we don't want to cache
-			graphics.setClip(new Rectangle(getClientArea()));
-			paintNoncachableLayer(graphics);
-		}
-	}
+            // paint items that we don't want to cache
+            graphics.setClip(new Rectangle(getClientArea()));
+            paintNoncachableLayer(graphics);
+        }
+    }
 
-	/**
+    /**
      * Paint directly on the graphics
-	 */
+     */
     private void paintWithoutCaching(Graphics graphics) {
         Rectangle clip = GraphicsUtils.getClip(graphics);
         graphics.setClip(clip.intersect(new Rectangle(getViewportRectangle())));
@@ -278,43 +278,43 @@ public abstract class CachingCanvas extends LargeScrollableCanvas {
         paintNoncachableLayer(graphics);
     }
 
-	/**
-	 * Marks the tiles on the screen by drawing a border for them.
-	 */
-	private void debugDrawTile(Graphics graphics, LargeRect rect, Color color) {
-		if (debug) {
-			Rectangle viewportRect = new Rectangle(getViewportRectangle());
-			graphics.setForegroundColor(color);
-			graphics.setLineStyle(SWT.LINE_DOT);
-			Rectangle r = new Rectangle(
-			        (int)(rect.x - getViewportLeft() + viewportRect.x),
-			        (int)(rect.y - getViewportTop() + viewportRect.y),
-			        (int)rect.width-1, (int)rect.height-1);
-			graphics.drawRoundRectangle(r, 30, 30);
-		}
-	}
+    /**
+     * Marks the tiles on the screen by drawing a border for them.
+     */
+    private void debugDrawTile(Graphics graphics, LargeRect rect, Color color) {
+        if (debug) {
+            Rectangle viewportRect = new Rectangle(getViewportRectangle());
+            graphics.setForegroundColor(color);
+            graphics.setLineStyle(SWT.LINE_DOT);
+            Rectangle r = new Rectangle(
+                    (int)(rect.x - getViewportLeft() + viewportRect.x),
+                    (int)(rect.y - getViewportTop() + viewportRect.y),
+                    (int)rect.width-1, (int)rect.height-1);
+            graphics.drawRoundRectangle(r, 30, 30);
+        }
+    }
 
-	/**
-	 * Paint everything in this method that can be cached. This may be called several
-	 * times during a repaint, with different clip rectangles.
-	 *
-	 * IMPORTANT: A transform (translate) is set on the graphics, DO NOT OVERWRITE IT,
-	 * or caching will be messed up.
-	 */
-	protected abstract void paintCachableLayer(Graphics graphics);
+    /**
+     * Paint everything in this method that can be cached. This may be called several
+     * times during a repaint, with different clip rectangles.
+     *
+     * IMPORTANT: A transform (translate) is set on the graphics, DO NOT OVERWRITE IT,
+     * or caching will be messed up.
+     */
+    protected abstract void paintCachableLayer(Graphics graphics);
 
-	/**
-	 * Paint in this method anything that you don't want to be cached
-	 * (selection marks, etc). It will paint over the cachable layer.
-	 */
-	protected abstract void paintNoncachableLayer(Graphics graphics);
+    /**
+     * Paint in this method anything that you don't want to be cached
+     * (selection marks, etc). It will paint over the cachable layer.
+     */
+    protected abstract void paintNoncachableLayer(Graphics graphics);
 
-	/**
-	 * Clears the tile cache. To be called any time the drawing changes.
-	 */
-	public void clearCanvasCache() {
-		tileCache.clear();
-		if (debug)
-			Debug.println("canvas cache cleared");
-	}
+    /**
+     * Clears the tile cache. To be called any time the drawing changes.
+     */
+    public void clearCanvasCache() {
+        tileCache.clear();
+        if (debug)
+            Debug.println("canvas cache cleared");
+    }
 }

@@ -18,7 +18,7 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
 
 /**
  * Figure for a simple module or module interface NED type. Provides an icon in addition to the name
- * of the module. 
+ * of the module.
  *
  * @author andras
  */
@@ -35,15 +35,15 @@ public class ModuleTypeFigure extends NedTypeFigure {
         super();
         titleArea.add(iconFigure, 0); // the 0 index is needed so the problem image will be displayed above iconFigure (z-ordering)
     }
-    
+
     /**
-	 * Adjusts the figure properties using a displayString object
-	 */
-	public void setDisplayString(IDisplayString displayString) {
-	    if (isInnerType())
-	        iconFigure.setTargetSize(24, 24);  // "s" icons
-	    else 
-	        iconFigure.setTargetSize(40, 40); // normal icons
+     * Adjusts the figure properties using a displayString object
+     */
+    public void setDisplayString(IDisplayString displayString) {
+        if (isInnerType())
+            iconFigure.setTargetSize(24, 24);  // "s" icons
+        else
+            iconFigure.setTargetSize(40, 40); // normal icons
 
         // shape
         Dimension size = displayString.getSize(1.0f);
@@ -76,11 +76,11 @@ public class ModuleTypeFigure extends NedTypeFigure {
 
         // default image
         if (image == null && StringUtils.isEmpty(shape))
-            image = getDefaultImage(); 
+            image = getDefaultImage();
 
         iconFigure.setImage(image);
-        
-        // decoration image 
+
+        // decoration image
         iconFigure.setDecorationImage(
                 ImageFactory.getImage(
                         displayString.getAsString(IDisplayString.Prop.IMAGE2),
@@ -90,7 +90,7 @@ public class ModuleTypeFigure extends NedTypeFigure {
 
         titleArea.setConstraint(iconFigure, new Rectangle(0, 0, -1, -1));
         titleArea.setConstraint(nameFigure, new Rectangle(iconFigure.getPreferredSize().width+3, 0, -1, iconFigure.getPreferredSize().height));
-        
+
         invalidateTree();
     }
 
@@ -98,8 +98,8 @@ public class ModuleTypeFigure extends NedTypeFigure {
      * Return an image representing the type if no icon or shape is specified in display string
      */
     protected Image getDefaultImage() {
-        Image image = isInterface() ? 
-                (isInnerType() ? IMG_DEFAULT_INTERFACE_S : IMG_DEFAULT_INTERFACE) : 
+        Image image = isInterface() ?
+                (isInnerType() ? IMG_DEFAULT_INTERFACE_S : IMG_DEFAULT_INTERFACE) :
                     (isInnerType() ? IMG_DEFAULT_SIMPLE_S : IMG_DEFAULT_SIMPLE);
         return image;
     }

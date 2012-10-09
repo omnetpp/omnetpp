@@ -27,43 +27,43 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
 abstract public class ModuleEditPart extends NedEditPart implements NodeEditPart {
 
     @Override
-	protected void createEditPolicies() {
-		super.createEditPolicies();
-		installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedGraphicalNodeEditPolicy());
-	}
+    protected void createEditPolicies() {
+        super.createEditPolicies();
+        installEditPolicy(EditPolicy.GRAPHICAL_NODE_ROLE, new NedGraphicalNodeEditPolicy());
+    }
 
-	/**
-	 * Compute the source connection anchor to be assigned based on the current mouse
-	 * location and available gates.
-	 * @param p current mouse coordinates
-	 * @return The selected connection anchor
-	 */
-	public abstract ConnectionAnchor getConnectionAnchorAt(Point p);
+    /**
+     * Compute the source connection anchor to be assigned based on the current mouse
+     * location and available gates.
+     * @param p current mouse coordinates
+     * @return The selected connection anchor
+     */
+    public abstract ConnectionAnchor getConnectionAnchorAt(Point p);
 
-	/**
-	 * Returns a connection anchor registered for the given gate
-	 */
-	public abstract GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate);
+    /**
+     * Returns a connection anchor registered for the given gate
+     */
+    public abstract GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate);
 
-	public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
-		ConnectionElementEx connection = (ConnectionElementEx) connEditPart.getModel();
-		return getConnectionAnchor(connection, connection.getSrcGateWithIndex());
-	}
+    public ConnectionAnchor getSourceConnectionAnchor(ConnectionEditPart connEditPart) {
+        ConnectionElementEx connection = (ConnectionElementEx) connEditPart.getModel();
+        return getConnectionAnchor(connection, connection.getSrcGateWithIndex());
+    }
 
-	public ConnectionAnchor getSourceConnectionAnchor(Request request) {
-		Point pt = new Point(((DropRequest) request).getLocation());
-		return getConnectionAnchorAt(pt);
-	}
+    public ConnectionAnchor getSourceConnectionAnchor(Request request) {
+        Point pt = new Point(((DropRequest) request).getLocation());
+        return getConnectionAnchorAt(pt);
+    }
 
-	public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
-		ConnectionElementEx connection = (ConnectionElementEx) connEditPart.getModel();
-		return getConnectionAnchor(connection, connection.getDestGateWithIndex());
-	}
+    public ConnectionAnchor getTargetConnectionAnchor(ConnectionEditPart connEditPart) {
+        ConnectionElementEx connection = (ConnectionElementEx) connEditPart.getModel();
+        return getConnectionAnchor(connection, connection.getDestGateWithIndex());
+    }
 
-	public ConnectionAnchor getTargetConnectionAnchor(Request request) {
-		Point pt = new Point(((DropRequest) request).getLocation());
-		return getConnectionAnchorAt(pt);
-	}
+    public ConnectionAnchor getTargetConnectionAnchor(Request request) {
+        Point pt = new Point(((DropRequest) request).getLocation());
+        return getConnectionAnchorAt(pt);
+    }
 
     /**
      * Returns the scale factor of the module

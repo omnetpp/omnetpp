@@ -17,21 +17,21 @@ import org.omnetpp.scave.editors.DatasetEditor;
 
 public class UndoAction extends Action {
 
-	private final IWorkbenchWindow window;
+    private final IWorkbenchWindow window;
 
-	public UndoAction(IWorkbenchWindow window) {
-		this.window = window;
-	}
+    public UndoAction(IWorkbenchWindow window) {
+        this.window = window;
+    }
 
-	public void run() {
-		IEditorPart editor = window.getActivePage().getActiveEditor();
-		if (editor instanceof DatasetEditor) {
-			//DatasetEditor dsEditor = (DatasetEditor)editor;
+    public void run() {
+        IEditorPart editor = window.getActivePage().getActiveEditor();
+        if (editor instanceof DatasetEditor) {
+            //DatasetEditor dsEditor = (DatasetEditor)editor;
 
-			// do something here...
-			MessageDialog.openInformation(window.getShell(),
-					"OMNeT++ Scave Plug-in",
-					"This action is not implemented yet.");
-		}
-	}
+            // do something here...
+            MessageDialog.openInformation(window.getShell(),
+                    "OMNeT++ Scave Plug-in",
+                    "This action is not implemented yet.");
+        }
+    }
 }

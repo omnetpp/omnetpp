@@ -15,22 +15,22 @@ import org.eclipse.swt.internal.SWTEventListener;
 /**
  * This listener interface may be implemented in order to receive
  * CaretEvents.
- * 
+ *
  * @see CaretEvent
- * 
+ *
  * @since 3.5
- */ 
+ */
 public interface CaretListener extends SWTEventListener {
 
 /**
  * This method is called after the caret offset is changed.
- * 
+ *
  * The following event fields are used:<ul>
  * <li>event.caretOffset the new caret offset (input)</li>
  * </ul>
  *
  * @param event the given event
- * 
+ *
  * @see CaretEvent
  */
 public void caretMoved(CaretEvent event);

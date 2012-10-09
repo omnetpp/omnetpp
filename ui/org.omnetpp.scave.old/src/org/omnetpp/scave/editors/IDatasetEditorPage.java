@@ -18,23 +18,23 @@ import org.xml.sax.ContentHandler;
 
 public interface IDatasetEditorPage {
 
-	String getPageTitle();
+    String getPageTitle();
 
-	void setEditor(DatasetEditor editor);
+    void setEditor(DatasetEditor editor);
 
-	void init();
+    void init();
 
-	void dispose();
+    void dispose();
 
-	Control createPageControl(Composite parent);
+    Control createPageControl(Composite parent);
 
-	void finalizePage();
+    void finalizePage();
 
-	void activate();
+    void activate();
 
-	void deactivate();
+    void deactivate();
 
-	void save(XMLWriter writer, IProgressMonitor progressMonitor) throws IOException;
+    void save(XMLWriter writer, IProgressMonitor progressMonitor) throws IOException;
 
-	Map<String,ContentHandler> getLoader(IProgressMonitor progressMonitor);
+    Map<String,ContentHandler> getLoader(IProgressMonitor progressMonitor);
 }

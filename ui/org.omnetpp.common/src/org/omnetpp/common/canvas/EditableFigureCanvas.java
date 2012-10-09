@@ -101,17 +101,17 @@ public class EditableFigureCanvas extends ScrolledComposite {
     }
 
     public void removeFigure(IFigure figure) {
-    	getRootFigure().remove(figure);
+        getRootFigure().remove(figure);
     }
 
-	public IFigure getRootFigure() {
+    public IFigure getRootFigure() {
         return figureCanvas.getRootFigure();
     }
     public void close(IFigure figure) {
-		removeFigure(figure);
-	}
+        removeFigure(figure);
+    }
 
-	public void reveal(IFigure figure) {
+    public void reveal(IFigure figure) {
         Rectangle bounds = figure.getBounds(); //XXX maybe not good if coords are parent-relative
         setOrigin(bounds.x, bounds.y);
     }

@@ -23,11 +23,11 @@ import org.eclipse.swt.widgets.Composite;
  * @author levy
  */
 public class FigureCanvas extends Canvas {
-	protected IFigure rootFigure;
-	protected LightweightSystem lws;
+    protected IFigure rootFigure;
+    protected LightweightSystem lws;
 
-	public FigureCanvas(Composite parent, int style) {
-		super(parent, style);
+    public FigureCanvas(Composite parent, int style) {
+        super(parent, style);
         rootFigure = new Figure() {
             @Override
             public void paint(org.eclipse.draw2d.Graphics graphics) {
@@ -46,9 +46,9 @@ public class FigureCanvas extends Canvas {
 
         lws = new LightweightSystem(this);
         lws.setContents(rootFigure);
-	}
+    }
 
-	public IFigure getRootFigure() {
-		return rootFigure;
-	}
+    public IFigure getRootFigure() {
+        return rootFigure;
+    }
 }

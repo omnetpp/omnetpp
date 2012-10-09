@@ -23,7 +23,7 @@ public class NedHyperlink implements IHyperlink {
     IRegion region;         // the region covered by the hyperlink
     INedElement target;      // the ned element which should be opened
     String text;
-    
+
     /**
      * @param reg The region covered by the link
      * @param element The target NED element that should be opened

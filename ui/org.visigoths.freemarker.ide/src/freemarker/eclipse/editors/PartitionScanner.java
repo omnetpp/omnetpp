@@ -18,19 +18,19 @@
  *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
  *        Visigoth Software Society (http://www.visigoths.org/)."
- *    Alternately, this acknowledgement may appear in the software 
- *    itself, if and wherever such third-party acknowledgements 
+ *    Alternately, this acknowledgement may appear in the software
+ *    itself, if and wherever such third-party acknowledgements
  *    normally appear.
  *
- * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names 
- *    of the project contributors may be used to endorse or promote 
- *    products derived from this software without prior written 
- *    permission. For written permission, please contact 
+ * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names
+ *    of the project contributors may be used to endorse or promote
+ *    products derived from this software without prior written
+ *    permission. For written permission, please contact
  *    visigoths@visigoths.org.
  *
- * 5. Products derived from this software may not be called 
- *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth" 
- *    appear in their names without prior written permission of the 
+ * 5. Products derived from this software may not be called
+ *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth"
+ *    appear in their names without prior written permission of the
  *    Visigoth Software Society.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
@@ -72,17 +72,17 @@ import org.eclipse.jface.text.rules.Token;
  * partitions. Each of the partitions can then apply their own
  * scanners and damage-repair policies within their boundaries. This
  * two-stage scanning is done to simplify the scanning in each stage,
- * and also to minimize repetitive parsing. 
- * 
+ * and also to minimize repetitive parsing.
+ *
  * @version $Id: PartitionScanner.java,v 1.9 2003/12/01 00:57:31 cederberg Exp $
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
 public class PartitionScanner extends RuleBasedPartitionScanner {
-    public final static String PARTITIONING_ID = "__ftl_partitioning"; 
-        
-	public final static String FTL_COMMENT = "__ftl_comment";
-	public final static String FTL_DIRECTIVE = "__ftl_directive";
-	public final static String FTL_INTERPOLATION = "__ftl_interpolation";
+    public final static String PARTITIONING_ID = "__ftl_partitioning";
+
+    public final static String FTL_COMMENT = "__ftl_comment";
+    public final static String FTL_DIRECTIVE = "__ftl_directive";
+    public final static String FTL_INTERPOLATION = "__ftl_interpolation";
     public final static String XML_TAG = "__xml_tag";
     public final static String XML_COMMENT = "__xml_comment";
 
@@ -101,23 +101,23 @@ public class PartitionScanner extends RuleBasedPartitionScanner {
     /**
      * Creates a new partition scanner.
      */
-	public PartitionScanner() {
-		List<PatternRule> rules = new ArrayList<PatternRule>();
+    public PartitionScanner() {
+        List<PatternRule> rules = new ArrayList<PatternRule>();
 
-		IToken ftlComment = new Token(FTL_COMMENT);
-		IToken ftlDirective = new Token(FTL_DIRECTIVE);
+        IToken ftlComment = new Token(FTL_COMMENT);
+        IToken ftlDirective = new Token(FTL_DIRECTIVE);
         IToken ftlInterpolation = new Token(FTL_INTERPOLATION);
         IToken xmlComment = new Token(XML_COMMENT);
-        IToken xmlTag = new Token(XML_TAG);      
+        IToken xmlTag = new Token(XML_TAG);
 
         rules.add(new MultiLineRule("<#--", "-->", ftlComment));
-		rules.add(new DirectiveRule(ftlDirective));
+        rules.add(new DirectiveRule(ftlDirective));
         rules.add(new InterpolationRule(ftlInterpolation));
         rules.add(new XmlCommentRule(xmlComment));
         rules.add(new XmlRule(xmlTag));
 
-		IPredicateRule[] result= new IPredicateRule[rules.size()];
-		rules.toArray(result);
-		setPredicateRules(result);
-	}
+        IPredicateRule[] result= new IPredicateRule[rules.size()];
+        rules.toArray(result);
+        setPredicateRules(result);
+    }
 }

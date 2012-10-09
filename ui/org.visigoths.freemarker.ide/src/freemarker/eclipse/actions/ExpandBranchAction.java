@@ -10,22 +10,22 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
 public class ExpandBranchAction extends Action {
-	
-	private AbstractTreeViewer fViewer;
 
-	public ExpandBranchAction(AbstractTreeViewer aViewer) {
-		fViewer = aViewer;
-		setText("Expand");
-	}
+    private AbstractTreeViewer fViewer;
 
-	/**
-	 * @see org.eclipse.jface.action.IAction#run()
-	 */
-	public void run() {
-		ISelection selection = fViewer.getSelection();
-		if (!selection.isEmpty()) {
-			fViewer.expandToLevel(((IStructuredSelection)selection).getFirstElement(),AbstractTreeViewer.ALL_LEVELS);
-		} 
-	}
+    public ExpandBranchAction(AbstractTreeViewer aViewer) {
+        fViewer = aViewer;
+        setText("Expand");
+    }
+
+    /**
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+        ISelection selection = fViewer.getSelection();
+        if (!selection.isEmpty()) {
+            fViewer.expandToLevel(((IStructuredSelection)selection).getFirstElement(),AbstractTreeViewer.ALL_LEVELS);
+        }
+    }
 
 }

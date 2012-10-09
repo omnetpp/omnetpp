@@ -28,11 +28,11 @@ public class SimulationLaunchConfigurationTabGroup extends AbstractLaunchConfigu
     }
 
     public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-    	List<ILaunchConfigurationTab> tabList = new ArrayList<ILaunchConfigurationTab>();
-    	tabList.add(new OmnetppMainTab());
-    	tabList.add(new EnvironmentTab());
-		tabList.add(new CommonTab());
-    	setTabs(tabList.toArray(new ILaunchConfigurationTab[tabList.size()]));
+        List<ILaunchConfigurationTab> tabList = new ArrayList<ILaunchConfigurationTab>();
+        tabList.add(new OmnetppMainTab());
+        tabList.add(new EnvironmentTab());
+        tabList.add(new CommonTab());
+        setTabs(tabList.toArray(new ILaunchConfigurationTab[tabList.size()]));
     }
 
 }

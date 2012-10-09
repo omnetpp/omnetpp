@@ -169,7 +169,7 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
         if (CDTPropertyManager.getProjectDescription(getProject()) != null)
             for (ICConfigurationDescription cfgDes : CDTPropertyManager.getProjectDescription(getProject()).getConfigurations())
                 ManagedBuildManager.getConfigurationForDescription(cfgDes);  // the magic!
-        
+
         // make the error text label wrap properly; see https://bugs.eclipse.org/bugs/show_bug.cgi?id=9866
         composite.addControlListener(new ControlAdapter(){
             public void controlResized(ControlEvent e){

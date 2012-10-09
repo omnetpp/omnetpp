@@ -29,7 +29,7 @@ import org.omnetpp.common.color.ColorFactory;
  * This is a modified version of <code>org.eclipse.jface.preference.ColorSelector</code>.
  * The reasons to copy and modify it are (1) to make the color image a small rectangle,
  * and (2) to let it support a "grayed" state when the color image displays an X.
- * 
+ *
  * <code>ColorSelector</code> is a wrapper for a button that displays a
  * selected <code>Color</code> and allows the user to change the selection.
  */
@@ -38,7 +38,7 @@ public class ColorSelector extends EventManager {
      * Property name that signifies the selected color of this
      * <code>ColorSelector</code> has changed.
      */
-    public static final String PROP_COLORCHANGE = "colorValue"; 
+    public static final String PROP_COLORCHANGE = "colorValue";
 
     private Button fButton;
     private RGB fColorValue;
@@ -89,7 +89,7 @@ public class ColorSelector extends EventManager {
     }
 
     /**
-     * Return the currently displayed color, or null if no color was selected 
+     * Return the currently displayed color, or null if no color was selected
      * (the button displays an X).
      */
     public RGB getColorValue() {
@@ -97,8 +97,8 @@ public class ColorSelector extends EventManager {
     }
 
     /**
-     * Set the current color value and update the control. A null value is also accepted, 
-     * and will display an X on the button. 
+     * Set the current color value and update the control. A null value is also accepted,
+     * and will display an X on the button.
      */
     public void setColorValue(RGB rgb) {
         fColorValue = rgb;

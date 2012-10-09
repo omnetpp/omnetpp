@@ -16,16 +16,16 @@ import org.omnetpp.test.gui.nededitor.textual.TextuallEditorTestSuite;
 import org.omnetpp.test.gui.nededitor.view.NedViewEditorTestSuite;
 
 public class NedEditorTestSuite
-	extends TestSuite
+    extends TestSuite
 {
-	public NedEditorTestSuite() {
+    public NedEditorTestSuite() {
         addTestSuite(NedFileWizardTest.class);
         addTestSuite(NedPathTest.class);
         addTest(MultipageNedEditorTestSuite.suite());
         addTest(GraphicalEditorTestSuite.suite());
         addTest(TextuallEditorTestSuite.suite());
         addTest(NedViewEditorTestSuite.suite());
-	}
+    }
 
     public static Test suite() {
         return new NedEditorTestSuite();

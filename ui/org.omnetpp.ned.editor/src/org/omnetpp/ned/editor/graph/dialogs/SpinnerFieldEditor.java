@@ -15,12 +15,12 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.util.UIUtils;
 
 /**
- * Represents a spinner control in the Properties dialog. 
- * 
+ * Represents a spinner control in the Properties dialog.
+ *
  * A challenge is that an SWT Spinner control cannot contain an empty string
- * which is required by IFieldEditor; we try to emulate this feature by setting 
- * the text color to the same as the background color. 
- * 
+ * which is required by IFieldEditor; we try to emulate this feature by setting
+ * the text color to the same as the background color.
+ *
  * @author Andras
  */
 public class SpinnerFieldEditor implements IFieldEditor {
@@ -28,7 +28,7 @@ public class SpinnerFieldEditor implements IFieldEditor {
     private boolean grayed = false;
     private Color backgroundColor = Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
     private ControlDecoration problemDecoration;
-    
+
     public SpinnerFieldEditor(Composite parent, int style) {
         spinner = new Spinner(parent, style);
         problemDecoration = new ControlDecoration(spinner, SWT.RIGHT | SWT.TOP);
@@ -47,25 +47,25 @@ public class SpinnerFieldEditor implements IFieldEditor {
                 else if (Display.getCurrent().getFocusControl()==spinner && !isLosingFocus()) {
                     // remove grey or backgroundColor, unless we are called internally because Spinner has lost or is losing focus
                     // note: on Linux we already lost the focus when by the time this method gets called internally due to focus loss
-                    spinner.setForeground(null);  
+                    spinner.setForeground(null);
                 }
             }
 
             private boolean isLosingFocus() {
-            	// Hack: we are losing focus if Spinner's wmKillFocus() is on the stack (Windows-specific)
-            	// or when textDidEndEditing() is on the stack (OS X)
-            	Exception e = new Exception();
+                // Hack: we are losing focus if Spinner's wmKillFocus() is on the stack (Windows-specific)
+                // or when textDidEndEditing() is on the stack (OS X)
+                Exception e = new Exception();
                 e.fillInStackTrace();
                 for (StackTraceElement frame : e.getStackTrace()) {
-                    if (frame.getClassName().endsWith(".Spinner") && 
-                    		(frame.getMethodName().startsWith("wmKillFocus") ||       // Windows
-                    		 frame.getMethodName().startsWith("textDidEndEditing")))  // OS X
+                    if (frame.getClassName().endsWith(".Spinner") &&
+                            (frame.getMethodName().startsWith("wmKillFocus") ||       // Windows
+                             frame.getMethodName().startsWith("textDidEndEditing")))  // OS X
                         return true;
                 }
                 return false;
             }
         });
-        
+
         // cosmetic hack: prevent "hidden" value to be seen when spinner contents is auto-selected when it gains focus
         spinner.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
@@ -86,7 +86,7 @@ public class SpinnerFieldEditor implements IFieldEditor {
             }
         });
     }
-    
+
     public Spinner getControl() {
         return spinner;
     }
@@ -100,7 +100,7 @@ public class SpinnerFieldEditor implements IFieldEditor {
         if (grayed) {
             spinner.setBackground(GREY);
             spinner.setForeground(GREY);
-        } 
+        }
         else {
             spinner.setBackground(null); // default system color
             spinner.setForeground(null);
@@ -108,7 +108,7 @@ public class SpinnerFieldEditor implements IFieldEditor {
     }
 
     public String getText() {
-        return backgroundColor.equals(spinner.getForeground()) ? "" : spinner.getText(); 
+        return backgroundColor.equals(spinner.getForeground()) ? "" : spinner.getText();
     }
 
     public void setText(String text) {
@@ -141,7 +141,7 @@ public class SpinnerFieldEditor implements IFieldEditor {
     public void setMessage(int severity, String text) {
         UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
-    
+
     public void addModifyListener(ModifyListener listener) {
         spinner.addModifyListener(listener);
     }

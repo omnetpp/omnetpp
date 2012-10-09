@@ -31,13 +31,13 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
  */
 public class SubmodulePropertySource extends MergedPropertySource {
 
-	// submodule specific display property description
+    // submodule specific display property description
     protected static class SubmoduleDisplayPropertySource extends DisplayPropertySource {
 
         public SubmoduleDisplayPropertySource(SubmoduleElementEx model) {
             super(model);
             supportedProperties.addAll( EnumSet.range(DisplayString.Prop.X,
-            										  DisplayString.Prop.TOOLTIP));
+                                                      DisplayString.Prop.TOOLTIP));
         }
 
     }

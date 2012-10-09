@@ -7,15 +7,15 @@ public class BufferErrorListener implements JSONErrorListener {
 
     protected StringBuffer buffer;
     private String input;
-    
+
     public BufferErrorListener(StringBuffer buffer) {
         this.buffer = buffer;
     }
-    
+
     public BufferErrorListener() {
         this(new StringBuffer());
     }
-    
+
     public void start(String input) {
         this.input = input;
         buffer.setLength(0);

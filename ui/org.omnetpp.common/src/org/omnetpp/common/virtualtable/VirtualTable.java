@@ -64,23 +64,23 @@ import org.omnetpp.common.ui.IHTMLHoverProvider;
  * - the height of the canvas is equal to the height of the client area of the scrollable composite minus the header's height
  */
 public class VirtualTable<T>
-	extends Composite
-	implements IVirtualContentWidget<T>, ISelectionProvider
+    extends Composite
+    implements IVirtualContentWidget<T>, ISelectionProvider
 {
-	private static final Color LINE_COLOR = ColorFactory.GREY95;
+    private static final Color LINE_COLOR = ColorFactory.GREY95;
 
-	private final static boolean debug = false;
+    private final static boolean debug = false;
 
-	/**
-	 * This is an element close enough to the top of the visible area or null if there are no elements at all.
-	 */
-	protected T fixPointElement;
+    /**
+     * This is an element close enough to the top of the visible area or null if there are no elements at all.
+     */
+    protected T fixPointElement;
 
-	/**
-	 * The distance of the fix point element from the top of the visible area.
-	 * 0 means the fix point element is display as the top visible element, positive value means below it.
-	 */
-	protected int fixPointDistance;
+    /**
+     * The distance of the fix point element from the top of the visible area.
+     * 0 means the fix point element is display as the top visible element, positive value means below it.
+     */
+    protected int fixPointDistance;
 
     /**
      * List of selection change listeners (element type: <code>ISelectionChangedListener</code>).
@@ -89,338 +89,338 @@ public class VirtualTable<T>
      */
     protected ListenerList selectionChangedListeners = new ListenerList();
 
-	/**
-	 * True means a selection change operation is in progress and subsequent ones will be ignored.
-	 */
+    /**
+     * True means a selection change operation is in progress and subsequent ones will be ignored.
+     */
     protected boolean isSelectionChangeInProgress;
 
-	/**
-	 * A list of selected elements;
-	 */
-	protected List<T> selectionElements;
+    /**
+     * A list of selected elements;
+     */
+    protected List<T> selectionElements;
 
-	/**
-	 * The input being show by this table.
-	 */
-	protected Object input;
+    /**
+     * The input being show by this table.
+     */
+    protected Object input;
 
-	/**
-	 * The content provider which will be queried for subsequent elements in the virtual table.
-	 */
-	protected IVirtualTableContentProvider<T> contentProvider;
+    /**
+     * The content provider which will be queried for subsequent elements in the virtual table.
+     */
+    protected IVirtualTableContentProvider<T> contentProvider;
 
-	/**
-	 * Responsible for drawing individual table items.
-	 */
-	protected IVirtualTableRowRenderer<T> rowRenderer;
+    /**
+     * Responsible for drawing individual table items.
+     */
+    protected IVirtualTableRowRenderer<T> rowRenderer;
 
-	/**
-	 * The height in pixels of all rows.
-	 */
-	protected int rowHeight;
+    /**
+     * The height in pixels of all rows.
+     */
+    protected int rowHeight;
 
-	/**
-	 * Indicates whether the table will draw 1 pixels thick lines around cells.
-	 */
-	protected boolean drawLines;
+    /**
+     * Indicates whether the table will draw 1 pixels thick lines around cells.
+     */
+    protected boolean drawLines;
 
-	/**
-	 * Container to support horizontal scrolling.
-	 */
-	protected ScrolledComposite scrolledComposite;
+    /**
+     * Container to support horizontal scrolling.
+     */
+    protected ScrolledComposite scrolledComposite;
 
-	/**
-	 * Container for real and virtual table.
-	 */
-	protected Composite composite;
+    /**
+     * Container for real and virtual table.
+     */
+    protected Composite composite;
 
-	/**
-	 * Used to draw the actual content of the virtual table.
-	 */
-	protected Canvas canvas;
+    /**
+     * Used to draw the actual content of the virtual table.
+     */
+    protected Canvas canvas;
 
-	/**
-	 * Used to draw the header of the virtual table.
-	 */
-	protected Table table;
+    /**
+     * Used to draw the header of the virtual table.
+     */
+    protected Table table;
 
-	/**
-	 * Provides tooltips.
-	 */
-	protected HoverSupport hoverSupport;
+    /**
+     * Provides tooltips.
+     */
+    protected HoverSupport hoverSupport;
 
-	public VirtualTable(Composite parent, int style) {
-		super(parent, style | SWT.V_SCROLL);
+    public VirtualTable(Composite parent, int style) {
+        super(parent, style | SWT.V_SCROLL);
 
-		drawLines = true;
-		setLayout(new FillLayout());
-		setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        drawLines = true;
+        setLayout(new FillLayout());
+        setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
-		createComposite(this);
-		createCanvas(composite);
-		createTable(composite);
+        createComposite(this);
+        createCanvas(composite);
+        createTable(composite);
 
-		scrolledComposite.setContent(composite);
+        scrolledComposite.setContent(composite);
 
-		getVerticalBar().addSelectionListener(new SelectionAdapter() {
-			@Override
+        getVerticalBar().addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
-				ScrollBar scrollBar = (ScrollBar)e.widget;
-				double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
+                ScrollBar scrollBar = (ScrollBar)e.widget;
+                double percentage = (double)scrollBar.getSelection() / (scrollBar.getMaximum() - scrollBar.getThumb());
 
-				if (e.detail == SWT.ARROW_UP)
-					scroll(1);
-				else if (e.detail == SWT.ARROW_DOWN)
-					scroll(-1);
-				else if (e.detail == SWT.PAGE_UP)
-					scroll(getPageJumpCount());
-				else if (e.detail == SWT.PAGE_DOWN)
-					scroll(-getPageJumpCount());
-				else if (percentage == 0)
-					scrollToBegin();
-				else if (percentage == 1)
-					scrollToEnd();
-				else {
-				    // avoid hysteresis (no change for a while in the position when turning to the opposite direction during scrolling)
-	                percentage = (double)scrollBar.getSelection() / scrollBar.getMaximum();
+                if (e.detail == SWT.ARROW_UP)
+                    scroll(1);
+                else if (e.detail == SWT.ARROW_DOWN)
+                    scroll(-1);
+                else if (e.detail == SWT.PAGE_UP)
+                    scroll(getPageJumpCount());
+                else if (e.detail == SWT.PAGE_DOWN)
+                    scroll(-getPageJumpCount());
+                else if (percentage == 0)
+                    scrollToBegin();
+                else if (percentage == 1)
+                    scrollToEnd();
+                else {
+                    // avoid hysteresis (no change for a while in the position when turning to the opposite direction during scrolling)
+                    percentage = (double)scrollBar.getSelection() / scrollBar.getMaximum();
                     relocateFixPoint(contentProvider.getApproximateElementAt(percentage), 0);
                     redraw();
-				}
-			}
-		});
-
-    	hoverSupport = new HoverSupport();
-    	hoverSupport.setHoverSizeConstaints(700, 200);
-    	hoverSupport.adapt(canvas, new IHTMLHoverProvider() {
-			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-				T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
-
-				if (element == null)
-					return null;
-				else
-					return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getRowRenderer().getTooltipText(element)));
-			}
-    	});
-
- 		// recompute table size after the scrollable area size is known
-        Display.getCurrent().asyncExec(new Runnable() {
-			public void run() {
-				recomputeTableSize();
-			}
+                }
+            }
         });
-	}
 
-	private void createComposite(Composite parent) {
-		scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
-		scrolledComposite.getHorizontalBar().setIncrement(10);
-		scrolledComposite.addControlListener(new ControlAdapter() {
-			@Override
+        hoverSupport = new HoverSupport();
+        hoverSupport.setHoverSizeConstaints(700, 200);
+        hoverSupport.adapt(canvas, new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                T element = getElementAtDistanceFromFixPoint(y / getRowHeight() + getTopVisibleElementDistanceFromFixPoint());
+
+                if (element == null)
+                    return null;
+                else
+                    return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getRowRenderer().getTooltipText(element)));
+            }
+        });
+
+        // recompute table size after the scrollable area size is known
+        Display.getCurrent().asyncExec(new Runnable() {
+            public void run() {
+                recomputeTableSize();
+            }
+        });
+    }
+
+    private void createComposite(Composite parent) {
+        scrolledComposite = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
+        scrolledComposite.getHorizontalBar().setIncrement(10);
+        scrolledComposite.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
-				composite.layout();
-		        composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-				scrolledComposite.getVerticalBar().setVisible(false);
-		        scrolledComposite.getHorizontalBar().setPageIncrement(scrolledComposite.getSize().x);
-			}
-		});
+                composite.layout();
+                composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+                scrolledComposite.getVerticalBar().setVisible(false);
+                scrolledComposite.getHorizontalBar().setPageIncrement(scrolledComposite.getSize().x);
+            }
+        });
 
-		composite = new Composite(scrolledComposite, SWT.NONE);
-		composite.setLayout(new VirtualTableCompositeLayout());
-	}
+        composite = new Composite(scrolledComposite, SWT.NONE);
+        composite.setLayout(new VirtualTableCompositeLayout());
+    }
 
-	private void createCanvas(Composite parent) {
-		canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
-		canvas.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent e) {
-				redraw();
-			}
+    private void createCanvas(Composite parent) {
+        canvas = new Canvas(parent, SWT.DOUBLE_BUFFERED);
+        canvas.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+                redraw();
+            }
 
-			public void focusLost(FocusEvent e) {
-				redraw();
-			}
-		});
-		canvas.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				if (fixPointElement == null && input != null && contentProvider != null && contentProvider.getFirstElement() != null)
-					scrollToBegin();
+            public void focusLost(FocusEvent e) {
+                redraw();
+            }
+        });
+        canvas.addPaintListener(new PaintListener() {
+            public void paintControl(PaintEvent e) {
+                if (fixPointElement == null && input != null && contentProvider != null && contentProvider.getFirstElement() != null)
+                    scrollToBegin();
 
-				paint(e.gc);
-			}
-		});
+                paint(e.gc);
+            }
+        });
 
-		canvas.addControlListener(new ControlAdapter() {
-			@Override
+        canvas.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
-				configureVerticalScrollBar();
-				redraw();
-			}
-		});
+                configureVerticalScrollBar();
+                redraw();
+            }
+        });
 
-		canvas.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == SWT.F5)
-					refresh();
-				else if (e.keyCode == SWT.ARROW_LEFT)
-					scrollHorizontal(-10);
-				else if (e.keyCode == SWT.ARROW_RIGHT)
-					scrollHorizontal(10);
-				else if (e.keyCode == SWT.ARROW_UP)
-				    keyUpPressed(e);
-				else if (e.keyCode == SWT.ARROW_DOWN)
-				    keyDownPressed(e);
-				else if (e.keyCode == SWT.PAGE_UP)
-					moveSelection(-getPageJumpCount());
-				else if (e.keyCode == SWT.PAGE_DOWN)
-					moveSelection(getPageJumpCount());
-				else if (e.keyCode == SWT.HOME)
-					gotoBegin();
-				else if (e.keyCode == SWT.END)
-					gotoEnd();
-			}
+        canvas.addKeyListener(new KeyListener() {
+            public void keyPressed(KeyEvent e) {
+                if (e.keyCode == SWT.F5)
+                    refresh();
+                else if (e.keyCode == SWT.ARROW_LEFT)
+                    scrollHorizontal(-10);
+                else if (e.keyCode == SWT.ARROW_RIGHT)
+                    scrollHorizontal(10);
+                else if (e.keyCode == SWT.ARROW_UP)
+                    keyUpPressed(e);
+                else if (e.keyCode == SWT.ARROW_DOWN)
+                    keyDownPressed(e);
+                else if (e.keyCode == SWT.PAGE_UP)
+                    moveSelection(-getPageJumpCount());
+                else if (e.keyCode == SWT.PAGE_DOWN)
+                    moveSelection(getPageJumpCount());
+                else if (e.keyCode == SWT.HOME)
+                    gotoBegin();
+                else if (e.keyCode == SWT.END)
+                    gotoEnd();
+            }
 
-			public void keyReleased(KeyEvent e) {
-			}
-		});
+            public void keyReleased(KeyEvent e) {
+            }
+        });
 
-		canvas.addMouseListener(new MouseAdapter() {
-			@Override
+        canvas.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseDown(MouseEvent e) {
-				if (input != null && contentProvider != null) {
-					T element = getVisibleElementAt(e.y / getRowHeight());
+                if (input != null && contentProvider != null) {
+                    T element = getVisibleElementAt(e.y / getRowHeight());
 
-					if (element != null &&
-						(e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
-						if ((e.stateMask & SWT.MOD1) != 0) {
-							if (selectionElements.contains(element))
-								selectionElements.remove(element);
-							else
-								selectionElements.add(element);
+                    if (element != null &&
+                        (e.button == 1 || selectionElements == null || !selectionElements.contains(element))) {
+                        if ((e.stateMask & SWT.MOD1) != 0) {
+                            if (selectionElements.contains(element))
+                                selectionElements.remove(element);
+                            else
+                                selectionElements.add(element);
 
-							fireSelectionChanged();
-						}
-						else
-							setSelectionElement(element);
-					}
+                            fireSelectionChanged();
+                        }
+                        else
+                            setSelectionElement(element);
+                    }
 
-					redraw();
-				}
-			}
-		});
+                    redraw();
+                }
+            }
+        });
 
-		canvas.addListener(SWT.MouseWheel, new Listener() {
-			public void handleEvent(Event event) {
-				scroll(event.count);
-			}
-		});
-	}
+        canvas.addListener(SWT.MouseWheel, new Listener() {
+            public void handleEvent(Event event) {
+                scroll(event.count);
+            }
+        });
+    }
 
-	protected void keyUpPressed(KeyEvent e) {
+    protected void keyUpPressed(KeyEvent e) {
         moveSelection(-1);
-	}
+    }
 
     protected void keyDownPressed(KeyEvent e) {
         moveSelection(1);
     }
 
-	private void createTable(Composite parent) {
-		table = new Table(parent, SWT.NONE);
-		table.setHeaderVisible(true);
-		table.setLinesVisible(false);
-		table.addControlListener(new ControlAdapter() {
-			@Override
+    private void createTable(Composite parent) {
+        table = new Table(parent, SWT.NONE);
+        table.setHeaderVisible(true);
+        table.setLinesVisible(false);
+        table.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
-				composite.layout();
-			}
-		});
+                composite.layout();
+            }
+        });
 
         table.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	}
+    }
 
-	public TableColumn createColumn() {
-		TableColumn tableColumn = new TableColumn(table, SWT.NONE);
-		tableColumn.addControlListener(new ControlAdapter() {
-			@Override
+    public TableColumn createColumn() {
+        TableColumn tableColumn = new TableColumn(table, SWT.NONE);
+        tableColumn.addControlListener(new ControlAdapter() {
+            @Override
             public void controlResized(ControlEvent e) {
-				recomputeTableSize();
-			}
-		});
+                recomputeTableSize();
+            }
+        });
 
-		return tableColumn;
-	}
+        return tableColumn;
+    }
 
-	public Canvas getCanvas() {
-		return canvas;
-	}
+    public Canvas getCanvas() {
+        return canvas;
+    }
 
-	public boolean getDrawLines() {
-		return drawLines;
-	}
+    public boolean getDrawLines() {
+        return drawLines;
+    }
 
-	public void setDrawLines(boolean drawLines) {
-		this.drawLines = drawLines;
-	}
+    public void setDrawLines(boolean drawLines) {
+        this.drawLines = drawLines;
+    }
 
-	public void setColumnOrder(int[] columnOrder) {
-		table.setColumnOrder(columnOrder);
-	}
+    public void setColumnOrder(int[] columnOrder) {
+        table.setColumnOrder(columnOrder);
+    }
 
-	public Object getInput() {
-		return input;
-	}
+    public Object getInput() {
+        return input;
+    }
 
-	public void setInput(Object input) {
-	    if (input != this.input) {
-    		// remember input
-    		this.input = input;
-    		getContentProvider().inputChanged(null, null, input);
-    		getRowRenderer().setInput(input);
-    		// clear state
-    		clearSelection();
-    		configureVerticalScrollBar();
-    		relocateFixPoint(null, 0);
-	    }
-	}
+    public void setInput(Object input) {
+        if (input != this.input) {
+            // remember input
+            this.input = input;
+            getContentProvider().inputChanged(null, null, input);
+            getRowRenderer().setInput(input);
+            // clear state
+            clearSelection();
+            configureVerticalScrollBar();
+            relocateFixPoint(null, 0);
+        }
+    }
 
-	public IVirtualTableContentProvider<T> getContentProvider() {
-		return contentProvider ;
-	}
+    public IVirtualTableContentProvider<T> getContentProvider() {
+        return contentProvider ;
+    }
 
-	public void setContentProvider(IVirtualTableContentProvider<T> contentProvider) {
-		this.contentProvider = contentProvider;
-		configureVerticalScrollBar();
-	}
+    public void setContentProvider(IVirtualTableContentProvider<T> contentProvider) {
+        this.contentProvider = contentProvider;
+        configureVerticalScrollBar();
+    }
 
-	public IVirtualTableRowRenderer<T> getRowRenderer() {
-		return rowRenderer;
-	}
+    public IVirtualTableRowRenderer<T> getRowRenderer() {
+        return rowRenderer;
+    }
 
-	public void setRowRenderer(IVirtualTableRowRenderer<T> rowRenderer) {
-		this.rowRenderer = rowRenderer;
-	}
+    public void setRowRenderer(IVirtualTableRowRenderer<T> rowRenderer) {
+        this.rowRenderer = rowRenderer;
+    }
 
-	@Override
-	public boolean setFocus() {
-		return canvas.setFocus();
-	}
+    @Override
+    public boolean setFocus() {
+        return canvas.setFocus();
+    }
 
-	@Override
-	public void setMenu(Menu menu) {
-		canvas.setMenu(menu);
-	}
+    @Override
+    public void setMenu(Menu menu) {
+        canvas.setMenu(menu);
+    }
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
         selectionChangedListeners.add(listener);
-	}
+    }
 
-	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         selectionChangedListeners.remove(listener);
-	}
+    }
 
-	protected void fireSelectionChanged() {
-		ISelection selection = getSelection();
+    protected void fireSelectionChanged() {
+        ISelection selection = getSelection();
 
-		if (selection != null)
-			fireSelectionChanged(new SelectionChangedEvent(this, selection));
-	}
+        if (selection != null)
+            fireSelectionChanged(new SelectionChangedEvent(this, selection));
+    }
 
     /**
      * Notifies any selection changed listeners that the viewer's selection has changed.
@@ -442,420 +442,420 @@ public class VirtualTable<T>
         }
     }
 
-	public ISelection getSelection() {
-		return new VirtualTableSelection<T>(getInput(), getSelectionElements());
-	}
+    public ISelection getSelection() {
+        return new VirtualTableSelection<T>(getInput(), getSelectionElements());
+    }
 
-	@SuppressWarnings("unchecked")
-	public void setSelection(ISelection selection) {
-		if (selection instanceof IVirtualTableSelection) {
-    		IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
-    		Object selectionInput = virtualTableSelection.getInput();
-    		if (input != selectionInput)
-				setInput(selectionInput);
-    		boolean isSelectionReallyChanged = !elementListEquals(selectionElements, virtualTableSelection.getElements());
-    		if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
-    		    try {
-    		        isSelectionChangeInProgress = true;
-        			setSelectionElements(virtualTableSelection.getElements());
-        			scrollToSelectionElement();
-        			fireSelectionChanged();
-    		    }
-    		    finally {
-    		        isSelectionChangeInProgress = false;
-    		    }
-    		}
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void setSelection(ISelection selection) {
+        if (selection instanceof IVirtualTableSelection) {
+            IVirtualTableSelection<T> virtualTableSelection = (IVirtualTableSelection<T>)selection;
+            Object selectionInput = virtualTableSelection.getInput();
+            if (input != selectionInput)
+                setInput(selectionInput);
+            boolean isSelectionReallyChanged = !elementListEquals(selectionElements, virtualTableSelection.getElements());
+            if (isSelectionReallyChanged && !isSelectionChangeInProgress) {
+                try {
+                    isSelectionChangeInProgress = true;
+                    setSelectionElements(virtualTableSelection.getElements());
+                    scrollToSelectionElement();
+                    fireSelectionChanged();
+                }
+                finally {
+                    isSelectionChangeInProgress = false;
+                }
+            }
+        }
+    }
 
-	/**
-	 * Removes all selection elements.
-	 */
-	public void clearSelection() {
-		if (selectionElements != null && selectionElements.size() != 0) {
-			selectionElements.clear();
+    /**
+     * Removes all selection elements.
+     */
+    public void clearSelection() {
+        if (selectionElements != null && selectionElements.size() != 0) {
+            selectionElements.clear();
 
-			fireSelectionChanged();
-		}
-	}
+            fireSelectionChanged();
+        }
+    }
 
-	/**
-	 * Returns the current selection.
-	 */
-	public T getSelectionElement() {
-		if (selectionElements != null && selectionElements.size() != 0)
-			return selectionElements.get(0);
-		else
-			return null;
-	}
+    /**
+     * Returns the current selection.
+     */
+    public T getSelectionElement() {
+        if (selectionElements != null && selectionElements.size() != 0)
+            return selectionElements.get(0);
+        else
+            return null;
+    }
 
-	public void setSelectionElement(T element) {
-		Assert.isTrue(element != null);
+    public void setSelectionElement(T element) {
+        Assert.isTrue(element != null);
 
-		selectionElements = new ArrayList<T>();
-		selectionElements.add(element);
+        selectionElements = new ArrayList<T>();
+        selectionElements.add(element);
 
-		fireSelectionChanged();
-	}
+        fireSelectionChanged();
+    }
 
-	/**
-	 * Returns the current selection.
-	 */
-	public List<T> getSelectionElements() {
-		return selectionElements;
-	}
+    /**
+     * Returns the current selection.
+     */
+    public List<T> getSelectionElements() {
+        return selectionElements;
+    }
 
-	/**
-	 * Selects the given elements, and goes to the first one.
-	 */
-	public void setSelectionElements(List<T> elements) {
-		selectionElements = elements;
+    /**
+     * Selects the given elements, and goes to the first one.
+     */
+    public void setSelectionElements(List<T> elements) {
+        selectionElements = elements;
 
-		fireSelectionChanged();
-	}
+        fireSelectionChanged();
+    }
 
-	/**
-	 * Position the selection to the given element and make it visible.
-	 */
-	public void gotoElement(T element) {
-		Assert.isTrue(element != null);
+    /**
+     * Position the selection to the given element and make it visible.
+     */
+    public void gotoElement(T element) {
+        Assert.isTrue(element != null);
 
-		setSelectionElement(element);
-		scrollToElement(element);
-	}
+        setSelectionElement(element);
+        scrollToElement(element);
+    }
 
-	/**
-	 * Position the selection to the closest shown element and make it visible.
-	 */
-	public void gotoClosestElement(T element) {
-		gotoElement(contentProvider.getClosestElement(element));
-	}
+    /**
+     * Position the selection to the closest shown element and make it visible.
+     */
+    public void gotoClosestElement(T element) {
+        gotoElement(contentProvider.getClosestElement(element));
+    }
 
-	/**
-	 * Position the selection to the very beginning of the table.
-	 */
-	public void gotoBegin() {
-		T firstElement = contentProvider.getFirstElement();
+    /**
+     * Position the selection to the very beginning of the table.
+     */
+    public void gotoBegin() {
+        T firstElement = contentProvider.getFirstElement();
 
-		if (firstElement != null)
-			setSelectionElement(firstElement);
+        if (firstElement != null)
+            setSelectionElement(firstElement);
 
-		scrollToBegin();
-	}
+        scrollToBegin();
+    }
 
-	/**
-	 * Position the selection to the very end of the table.
-	 */
-	public void gotoEnd() {
-		T lastElement = contentProvider.getLastElement();
+    /**
+     * Position the selection to the very end of the table.
+     */
+    public void gotoEnd() {
+        T lastElement = contentProvider.getLastElement();
 
-		if (lastElement != null)
-			setSelectionElement(lastElement);
+        if (lastElement != null)
+            setSelectionElement(lastElement);
 
-		scrollToEnd();
-	}
+        scrollToEnd();
+    }
 
-	/**
-	 * Updates the invalid fix point to a valid one staying as close to the current position as it is possible.
-	 */
-	public void stayNear() {
-		if (fixPointElement != null) {
-			relocateFixPoint(contentProvider.getClosestElement(fixPointElement), fixPointDistance);
-			redraw();
-		}
-	}
+    /**
+     * Updates the invalid fix point to a valid one staying as close to the current position as it is possible.
+     */
+    public void stayNear() {
+        if (fixPointElement != null) {
+            relocateFixPoint(contentProvider.getClosestElement(fixPointElement), fixPointDistance);
+            redraw();
+        }
+    }
 
-	/**
-	 * Updates the vertical bar state according to the current canvas and table content sizes.
-	 * Sets minimum, maximum, thumb, page increment, etc.
-	 */
-	public void configureVerticalScrollBar() {
-		ScrollBar verticalBar = getVerticalBar();
-		verticalBar.setMinimum(0);
+    /**
+     * Updates the vertical bar state according to the current canvas and table content sizes.
+     * Sets minimum, maximum, thumb, page increment, etc.
+     */
+    public void configureVerticalScrollBar() {
+        ScrollBar verticalBar = getVerticalBar();
+        verticalBar.setMinimum(0);
 
-		if (contentProvider != null && rowRenderer != null) {
-			long numberOfElements = contentProvider.getApproximateNumberOfElements();
-			verticalBar.setMaximum((int)Math.min(numberOfElements, 1E+6));
-			verticalBar.setThumb((int)((double)verticalBar.getMaximum() * getVisibleElementCount() / numberOfElements));
-			verticalBar.setIncrement(1);
-			verticalBar.setPageIncrement(getPageJumpCount());
-		}
-		else {
-			verticalBar.setMaximum(0);
-			verticalBar.setThumb(0);
-			verticalBar.setIncrement(0);
-			verticalBar.setPageIncrement(0);
-		}
-	}
+        if (contentProvider != null && rowRenderer != null) {
+            long numberOfElements = contentProvider.getApproximateNumberOfElements();
+            verticalBar.setMaximum((int)Math.min(numberOfElements, 1E+6));
+            verticalBar.setThumb((int)((double)verticalBar.getMaximum() * getVisibleElementCount() / numberOfElements));
+            verticalBar.setIncrement(1);
+            verticalBar.setPageIncrement(getPageJumpCount());
+        }
+        else {
+            verticalBar.setMaximum(0);
+            verticalBar.setThumb(0);
+            verticalBar.setIncrement(0);
+            verticalBar.setPageIncrement(0);
+        }
+    }
 
-	/**
-	 * Updates the vertical bar position to reflect the currently displayed elements.
-	 */
-	protected void updateVerticalBarPosition() {
-		T topVisibleElement = getTopVisibleElement();
-		T bottomFullyVisibleElement = getBottomFullyVisibleElement();
-		double topPercentage = topVisibleElement == null ? 0 : contentProvider.getApproximatePercentageForElement(topVisibleElement);
-		double bottomPercentage = bottomFullyVisibleElement == null ? 1 : contentProvider.getApproximatePercentageForElement(bottomFullyVisibleElement);
-		double topWeight = 1 / topPercentage;
-		double bottomWeight = 1 / (1 - bottomPercentage);
-		double percentage;
+    /**
+     * Updates the vertical bar position to reflect the currently displayed elements.
+     */
+    protected void updateVerticalBarPosition() {
+        T topVisibleElement = getTopVisibleElement();
+        T bottomFullyVisibleElement = getBottomFullyVisibleElement();
+        double topPercentage = topVisibleElement == null ? 0 : contentProvider.getApproximatePercentageForElement(topVisibleElement);
+        double bottomPercentage = bottomFullyVisibleElement == null ? 1 : contentProvider.getApproximatePercentageForElement(bottomFullyVisibleElement);
+        double topWeight = 1 / topPercentage;
+        double bottomWeight = 1 / (1 - bottomPercentage);
+        double percentage;
 
-		if (Double.isInfinite(topWeight))
-			percentage = topPercentage;
-		else if (Double.isInfinite(bottomWeight))
-			percentage = bottomPercentage;
-		else
-			percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
+        if (Double.isInfinite(topWeight))
+            percentage = topPercentage;
+        else if (Double.isInfinite(bottomWeight))
+            percentage = bottomPercentage;
+        else
+            percentage = (topPercentage * topWeight + bottomPercentage * bottomWeight) / (topWeight + bottomWeight);
 
-		ScrollBar verticalBar = getVerticalBar();
-		verticalBar.setSelection((int)((verticalBar.getMaximum() - verticalBar.getThumb()) * percentage));
-	}
+        ScrollBar verticalBar = getVerticalBar();
+        verticalBar.setSelection((int)((verticalBar.getMaximum() - verticalBar.getThumb()) * percentage));
+    }
 
-	/**
-	 * Moves the selection with the given number of elements up or down and scrolls if necessary.
-	 */
-	public void moveSelection(int numberOfElements) {
-		T element = getSelectionElement();
+    /**
+     * Moves the selection with the given number of elements up or down and scrolls if necessary.
+     */
+    public void moveSelection(int numberOfElements) {
+        T element = getSelectionElement();
 
-		if (element == null) {
-			element = getTopVisibleElement();
+        if (element == null) {
+            element = getTopVisibleElement();
 
-			if (element == null)
-			    return;
-		}
+            if (element == null)
+                return;
+        }
 
-		element = contentProvider.getNeighbourElement(element, numberOfElements);
+        element = contentProvider.getNeighbourElement(element, numberOfElements);
 
-		if (element == null) {
-			if (numberOfElements < 0)
-				element = contentProvider.getFirstElement();
-			else
-				element = contentProvider.getLastElement();
-		}
+        if (element == null) {
+            if (numberOfElements < 0)
+                element = contentProvider.getFirstElement();
+            else
+                element = contentProvider.getLastElement();
+        }
 
-		if (element != null)
-			setSelectionElement(element);
+        if (element != null)
+            setSelectionElement(element);
 
-		scrollToElement(element);
-	}
+        scrollToElement(element);
+    }
 
-	/**
-	 * Scrolls the visible area horizontally with the given amount of pixels.
-	 */
-	public void scrollHorizontal(int pixel) {
-		Point p = scrolledComposite.getOrigin();
-		scrolledComposite.setOrigin(p.x + pixel, p.y);
-	}
+    /**
+     * Scrolls the visible area horizontally with the given amount of pixels.
+     */
+    public void scrollHorizontal(int pixel) {
+        Point p = scrolledComposite.getOrigin();
+        scrolledComposite.setOrigin(p.x + pixel, p.y);
+    }
 
-	/**
-	 * Scrolls with the given number of elements up or down.
-	 */
-	public void scroll(int numberOfElements) {
-		relocateFixPoint(fixPointElement, fixPointDistance + numberOfElements);
-		redraw();
-	}
+    /**
+     * Scrolls with the given number of elements up or down.
+     */
+    public void scroll(int numberOfElements) {
+        relocateFixPoint(fixPointElement, fixPointDistance + numberOfElements);
+        redraw();
+    }
 
-	/**
-	 * Scroll to the given element making it visible with as little scrolling as it is possible.
-	 */
-	public void scrollToElement(T element) {
-		Assert.isTrue(element != null);
+    /**
+     * Scroll to the given element making it visible with as little scrolling as it is possible.
+     */
+    public void scrollToElement(T element) {
+        Assert.isTrue(element != null);
 
-		T topElement = getTopVisibleElement();
+        T topElement = getTopVisibleElement();
 
-		int maxDistance = getFullyVisibleElementCount();
-		long distance = topElement == null ? maxDistance : contentProvider.getDistanceToElement(topElement, element, maxDistance);
+        int maxDistance = getFullyVisibleElementCount();
+        long distance = topElement == null ? maxDistance : contentProvider.getDistanceToElement(topElement, element, maxDistance);
 
-		if (distance == maxDistance) {
-			T bottomElement = getBottomFullyVisibleElement();
-			distance = bottomElement == null ? maxDistance : contentProvider.getDistanceToElement(bottomElement, element, maxDistance);
+        if (distance == maxDistance) {
+            T bottomElement = getBottomFullyVisibleElement();
+            distance = bottomElement == null ? maxDistance : contentProvider.getDistanceToElement(bottomElement, element, maxDistance);
 
-			if (distance == maxDistance)
-				relocateFixPoint(element, 0);
-			else
-				relocateFixPoint(element, Math.max(0, getFullyVisibleElementCount() - 1));
-		}
+            if (distance == maxDistance)
+                relocateFixPoint(element, 0);
+            else
+                relocateFixPoint(element, Math.max(0, getFullyVisibleElementCount() - 1));
+        }
 
-		redraw();
-	}
+        redraw();
+    }
 
-	/**
-	 * Scroll to the selection element making it visible.
-	 */
-	public void scrollToSelectionElement() {
-		T element = getSelectionElement();
+    /**
+     * Scroll to the selection element making it visible.
+     */
+    public void scrollToSelectionElement() {
+        T element = getSelectionElement();
 
-		if (element != null)
-			scrollToElement(element);
-	}
+        if (element != null)
+            scrollToElement(element);
+    }
 
-	/**
-	 * Scroll to the very beginning making it visible.
-	 */
-	public void scrollToBegin() {
-		relocateFixPoint(contentProvider.getFirstElement(), 0);
-		redraw();
-	}
+    /**
+     * Scroll to the very beginning making it visible.
+     */
+    public void scrollToBegin() {
+        relocateFixPoint(contentProvider.getFirstElement(), 0);
+        redraw();
+    }
 
-	/**
-	 * Scroll to the very end making it visible.
-	 */
-	public void scrollToEnd() {
-		relocateFixPoint(contentProvider.getLastElement(), Math.max(0, getFullyVisibleElementCount() - 1));
-		redraw();
-	}
+    /**
+     * Scroll to the very end making it visible.
+     */
+    public void scrollToEnd() {
+        relocateFixPoint(contentProvider.getLastElement(), Math.max(0, getFullyVisibleElementCount() - 1));
+        redraw();
+    }
 
-	/**
-	 * Relocates fix point and ensures that the first visible row always displays an element.
-	 * If there are more elements than fully visible rows then the last fully visible row will
-	 * also always display an element.
-	 */
-	protected void relocateFixPoint(T element, int distance) {
-		fixPointElement = element;
-		fixPointDistance = distance;
+    /**
+     * Relocates fix point and ensures that the first visible row always displays an element.
+     * If there are more elements than fully visible rows then the last fully visible row will
+     * also always display an element.
+     */
+    protected void relocateFixPoint(T element, int distance) {
+        fixPointElement = element;
+        fixPointDistance = distance;
 
-		if (element != null) {
-			int maxDistance = getVisibleElementCount() * 2;
-			long firstElementDistance = contentProvider.getDistanceToFirstElement(element, maxDistance);
+        if (element != null) {
+            int maxDistance = getVisibleElementCount() * 2;
+            long firstElementDistance = contentProvider.getDistanceToFirstElement(element, maxDistance);
 
-			T topElement = getTopVisibleElement();
-			T bottomElement = getBottomFullyVisibleElement();
+            T topElement = getTopVisibleElement();
+            T bottomElement = getBottomFullyVisibleElement();
 
-			if ((topElement == null || bottomElement == null)) {
-				if (firstElementDistance < maxDistance && topElement == null) {
-					fixPointElement = contentProvider.getFirstElement();
-					fixPointDistance = 0;
-				}
-				else if (isVisible() && bottomElement == null){
-					if (contentProvider.getApproximateNumberOfElements() >= getFullyVisibleElementCount()) {
-						fixPointElement = contentProvider.getLastElement();
-						fixPointDistance = Math.max(0, getFullyVisibleElementCount() - 1);
-					}
-					else {
-						fixPointElement = contentProvider.getFirstElement();
-						fixPointDistance = 0;
-					}
-				}
-			}
-		}
-	}
+            if ((topElement == null || bottomElement == null)) {
+                if (firstElementDistance < maxDistance && topElement == null) {
+                    fixPointElement = contentProvider.getFirstElement();
+                    fixPointDistance = 0;
+                }
+                else if (isVisible() && bottomElement == null){
+                    if (contentProvider.getApproximateNumberOfElements() >= getFullyVisibleElementCount()) {
+                        fixPointElement = contentProvider.getLastElement();
+                        fixPointDistance = Math.max(0, getFullyVisibleElementCount() - 1);
+                    }
+                    else {
+                        fixPointElement = contentProvider.getFirstElement();
+                        fixPointDistance = 0;
+                    }
+                }
+            }
+        }
+    }
 
-	protected void recomputeTableSize() {
-		int size = 0;
-		for (int i = 0; i < table.getColumnCount(); i++)
-			size += table.getColumn(i).getWidth();
+    protected void recomputeTableSize() {
+        int size = 0;
+        for (int i = 0; i < table.getColumnCount(); i++)
+            size += table.getColumn(i).getWidth();
 
-		table.setSize(size, table.getSize().y);
+        table.setSize(size, table.getSize().y);
         composite.setSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-	}
+    }
 
-	protected void paint(GC gc) {
-		Rectangle clipping = gc.getClipping();
-		Transform transform = new Transform(null);
-		gc.getTransform(transform);
-		gc.setBackground(getBackground());
-		gc.fillRectangle(clipping);
+    protected void paint(GC gc) {
+        Rectangle clipping = gc.getClipping();
+        Transform transform = new Transform(null);
+        gc.getTransform(transform);
+        gc.setBackground(getBackground());
+        gc.fillRectangle(clipping);
 
-		if (contentProvider != null && fixPointElement != null) {
-			updateVerticalBarPosition();
+        if (contentProvider != null && fixPointElement != null) {
+            updateVerticalBarPosition();
 
-			for (int i = 0; i < getVisibleElementCount(); i++) {
-				int x = 0;
-				Transform rowTransform = new Transform(null);
-				T element = getElementAtDistanceFromFixPoint(i - fixPointDistance);
-				List<T> selectionElements = getSelectionElements();
-				int[] columnOrder = table.getColumnOrder();
+            for (int i = 0; i < getVisibleElementCount(); i++) {
+                int x = 0;
+                Transform rowTransform = new Transform(null);
+                T element = getElementAtDistanceFromFixPoint(i - fixPointDistance);
+                List<T> selectionElements = getSelectionElements();
+                int[] columnOrder = table.getColumnOrder();
 
-				if (element != null) {
-					boolean isSelectedElement = selectionElements != null && selectionElements.contains(element);
+                if (element != null) {
+                    boolean isSelectedElement = selectionElements != null && selectionElements.contains(element);
 
-					if (isSelectedElement) {
-						gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
-						gc.fillRectangle(new Rectangle(0, i * getRowHeight(), clipping.x + clipping.width, getRowHeight()));
-					}
-					else
-						gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+                    if (isSelectedElement) {
+                        gc.setBackground(Display.getCurrent().getSystemColor(canvas.isFocusControl() ? SWT.COLOR_LIST_SELECTION : SWT.COLOR_WIDGET_BACKGROUND));
+                        gc.fillRectangle(new Rectangle(0, i * getRowHeight(), clipping.x + clipping.width, getRowHeight()));
+                    }
+                    else
+                        gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 
-					if (drawLines) {
-						gc.setForeground(LINE_COLOR);
-						gc.drawLine(0, i * getRowHeight() - 1, clipping.x + clipping.width, i * getRowHeight() - 1);
-					}
+                    if (drawLines) {
+                        gc.setForeground(LINE_COLOR);
+                        gc.drawLine(0, i * getRowHeight() - 1, clipping.x + clipping.width, i * getRowHeight() - 1);
+                    }
 
-					for (int j = 0; j < table.getColumnCount(); j++) {
-					    int y = i * getRowHeight();
-						TableColumn column = table.getColumn(columnOrder[j]);
-						// clipping has to be set explicitly without using the graphics transformation
-						// to work correctly on Mac OS X
+                    for (int j = 0; j < table.getColumnCount(); j++) {
+                        int y = i * getRowHeight();
+                        TableColumn column = table.getColumn(columnOrder[j]);
+                        // clipping has to be set explicitly without using the graphics transformation
+                        // to work correctly on Mac OS X
                         gc.setClipping(new Rectangle(x, y, column.getWidth(), getRowHeight()));
                         // do the transformation afterwards
                         rowTransform.setElements(1, 0, 0, 1, 0, 0);
                         rowTransform.translate(x, y);
-						gc.setTransform(rowTransform);
+                        gc.setTransform(rowTransform);
 
-						if (isSelectedElement && canvas.isFocusControl())
-							gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+                        if (isSelectedElement && canvas.isFocusControl())
+                            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
-						rowRenderer.drawCell(gc, element, columnOrder[j]);
-						x += column.getWidth();
+                        rowRenderer.drawCell(gc, element, columnOrder[j]);
+                        x += column.getWidth();
 
-						if (drawLines) {
-							gc.setForeground(LINE_COLOR);
-							gc.drawLine(0, 0, 0, getRowHeight());
-						}
+                        if (drawLines) {
+                            gc.setForeground(LINE_COLOR);
+                            gc.drawLine(0, 0, 0, getRowHeight());
+                        }
 
-						gc.setTransform(transform);
-						gc.setClipping((Rectangle)null);
-					}
-				}
-			}
-		}
-	}
+                        gc.setTransform(transform);
+                        gc.setClipping((Rectangle)null);
+                    }
+                }
+            }
+        }
+    }
 
-	public void refresh() {
-		redraw();
-	}
+    public void refresh() {
+        redraw();
+    }
 
-	@Override
+    @Override
     public void redraw() {
-		if (debug)
-			Debug.println("Redrawing canvas");
+        if (debug)
+            Debug.println("Redrawing canvas");
 
-		canvas.redraw();
+        canvas.redraw();
 
-		if (contentProvider != null && input != null && fixPointElement != null && isVisible()) {
-			T topElement = getTopVisibleElement();
+        if (contentProvider != null && input != null && fixPointElement != null && isVisible()) {
+            T topElement = getTopVisibleElement();
 
-			if (topElement != null)
-				relocateFixPoint(topElement, 0);
-		}
-	}
+            if (topElement != null)
+                relocateFixPoint(topElement, 0);
+        }
+    }
 
-	protected String getTooltipText(T element) {
-		return null;
-	}
+    protected String getTooltipText(T element) {
+        return null;
+    }
 
-	public int getTopVisibleElementDistanceFromFixPoint() {
-		return -fixPointDistance;
-	}
+    public int getTopVisibleElementDistanceFromFixPoint() {
+        return -fixPointDistance;
+    }
 
-	public int getBottomVisibleElementDistanceFromFixPoint() {
-		return -fixPointDistance + Math.min((int)contentProvider.getApproximateNumberOfElements() - 1, getVisibleElementCount() - 1);
-	}
+    public int getBottomVisibleElementDistanceFromFixPoint() {
+        return -fixPointDistance + Math.min((int)contentProvider.getApproximateNumberOfElements() - 1, getVisibleElementCount() - 1);
+    }
 
-	public int getBottomFullyVisibleElementDistanceFromFixPoint() {
-		return -fixPointDistance + Math.min((int)contentProvider.getApproximateNumberOfElements() - 1, Math.max(0, getFullyVisibleElementCount() - 1));
-	}
+    public int getBottomFullyVisibleElementDistanceFromFixPoint() {
+        return -fixPointDistance + Math.min((int)contentProvider.getApproximateNumberOfElements() - 1, Math.max(0, getFullyVisibleElementCount() - 1));
+    }
 
-	public T getElementAtDistanceFromFixPoint(int distance) {
-		if (fixPointElement == null)
-			return null;
-		else
-			return contentProvider.getNeighbourElement(fixPointElement, distance);
-	}
+    public T getElementAtDistanceFromFixPoint(int distance) {
+        if (fixPointElement == null)
+            return null;
+        else
+            return contentProvider.getNeighbourElement(fixPointElement, distance);
+    }
 
-	public T getVisibleElementAt(int index) {
-		return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint() + index);
-	}
+    public T getVisibleElementAt(int index) {
+        return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint() + index);
+    }
 
     public Point getVisibleElementLocation(T visibleElement) {
         int visibleElementCount = getVisibleElementCount();
@@ -872,132 +872,132 @@ public class VirtualTable<T>
     }
 
     /**
-	 * Returns the top visible element.
-	 */
-	public T getTopVisibleElement() {
-		if (contentProvider == null || fixPointElement == null)
-			return null;
-		else
-			return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint());
-	}
+     * Returns the top visible element.
+     */
+    public T getTopVisibleElement() {
+        if (contentProvider == null || fixPointElement == null)
+            return null;
+        else
+            return getElementAtDistanceFromFixPoint(getTopVisibleElementDistanceFromFixPoint());
+    }
 
-	/**
-	 * Returns the bottom visible element even if it is not fully visible.
-	 */
-	public T getBottomVisibleElement() {
-		if (contentProvider == null || fixPointElement == null)
-			return null;
-		else
-			return getElementAtDistanceFromFixPoint(getBottomVisibleElementDistanceFromFixPoint());
-	}
+    /**
+     * Returns the bottom visible element even if it is not fully visible.
+     */
+    public T getBottomVisibleElement() {
+        if (contentProvider == null || fixPointElement == null)
+            return null;
+        else
+            return getElementAtDistanceFromFixPoint(getBottomVisibleElementDistanceFromFixPoint());
+    }
 
-	/**
-	 * Returns the bottom fully visible element.
-	 */
-	public T getBottomFullyVisibleElement() {
-		if (contentProvider == null || fixPointElement == null)
-			return null;
-		else
-			return getElementAtDistanceFromFixPoint(getBottomFullyVisibleElementDistanceFromFixPoint());
-	}
+    /**
+     * Returns the bottom fully visible element.
+     */
+    public T getBottomFullyVisibleElement() {
+        if (contentProvider == null || fixPointElement == null)
+            return null;
+        else
+            return getElementAtDistanceFromFixPoint(getBottomFullyVisibleElementDistanceFromFixPoint());
+    }
 
-	/**
-	 * Returns the number of visible elements including the one which is not fully visible.
-	 */
-	public int getVisibleElementCount() {
-		int rowHeight = getRowHeight();
-		int height = canvas.getSize().y;
+    /**
+     * Returns the number of visible elements including the one which is not fully visible.
+     */
+    public int getVisibleElementCount() {
+        int rowHeight = getRowHeight();
+        int height = canvas.getSize().y;
 
-		return (int)Math.ceil((double)height / rowHeight);
-	}
+        return (int)Math.ceil((double)height / rowHeight);
+    }
 
-	/**
-	 * Returns the number of visible elements including the one which is not fully visible.
-	 */
-	public int getFullyVisibleElementCount() {
-		int rowHeight = getRowHeight();
-		int height = canvas.getSize().y;
+    /**
+     * Returns the number of visible elements including the one which is not fully visible.
+     */
+    public int getFullyVisibleElementCount() {
+        int rowHeight = getRowHeight();
+        int height = canvas.getSize().y;
 
-		return (int)Math.floor((double)height / rowHeight);
-	}
+        return (int)Math.floor((double)height / rowHeight);
+    }
 
-	/**
-	 * Returns the number of elements that a page jump will skip.
-	 */
-	public int getPageJumpCount() {
-		return Math.max(1, getFullyVisibleElementCount() - 1);
-	}
+    /**
+     * Returns the number of elements that a page jump will skip.
+     */
+    public int getPageJumpCount() {
+        return Math.max(1, getFullyVisibleElementCount() - 1);
+    }
 
-	/**
-	 * Returns the height of rows in pixels.
-	 */
-	public int getRowHeight() {
-		if (rowHeight == 0) {
-			 GC gc = new GC(this);
-			 rowHeight = rowRenderer.getRowHeight(gc);
-			 gc.dispose();
-		}
+    /**
+     * Returns the height of rows in pixels.
+     */
+    public int getRowHeight() {
+        if (rowHeight == 0) {
+             GC gc = new GC(this);
+             rowHeight = rowRenderer.getRowHeight(gc);
+             gc.dispose();
+        }
 
-		return rowHeight;
-	}
+        return rowHeight;
+    }
 
     /**
      * Returns the height of the table header in pixels.
      */
-	public int getHeaderHeight() {
-	    return table.getHeaderHeight();
-	}
+    public int getHeaderHeight() {
+        return table.getHeaderHeight();
+    }
 
-	private boolean elementListEquals(List<T> a, List<T> b) {
-		if (a == b)
-			return true;
+    private boolean elementListEquals(List<T> a, List<T> b) {
+        if (a == b)
+            return true;
 
-		if (a == null || b == null || a.size() != b.size())
-			return false;
+        if (a == null || b == null || a.size() != b.size())
+            return false;
 
-		for (int i = 0; i < a.size(); i++) {
-			T ae = a.get(i);
-			T be = b.get(i);
+        for (int i = 0; i < a.size(); i++) {
+            T ae = a.get(i);
+            T be = b.get(i);
 
-			if (!(ae == null ? be == null : ae.equals(be)))
-				return false;
-		}
+            if (!(ae == null ? be == null : ae.equals(be)))
+                return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 }
 
 class VirtualTableCompositeLayout extends Layout {
-	private final static boolean debug = false;
+    private final static boolean debug = false;
 
-	@Override
-	protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
-		Table table = (Table)composite.getChildren()[1];
-		Rectangle r = composite.getParent().getClientArea();
+    @Override
+    protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
+        Table table = (Table)composite.getChildren()[1];
+        Rectangle r = composite.getParent().getClientArea();
 
-		return new Point(table.getSize().x, r.height);
-	}
+        return new Point(table.getSize().x, r.height);
+    }
 
-	@Override
-	protected void layout(Composite composite, boolean flushCache) {
-		if (composite.getChildren().length == 2) {
-			Canvas canvas = (Canvas)composite.getChildren()[0];
-			Table table = (Table)composite.getChildren()[1];
+    @Override
+    protected void layout(Composite composite, boolean flushCache) {
+        if (composite.getChildren().length == 2) {
+            Canvas canvas = (Canvas)composite.getChildren()[0];
+            Table table = (Table)composite.getChildren()[1];
 
-			Rectangle r = composite.getParent().getClientArea();
-			int headerHeight = table.getHeaderHeight();
+            Rectangle r = composite.getParent().getClientArea();
+            int headerHeight = table.getHeaderHeight();
 
-			if (debug)
-				Debug.println("Relayouting virtual table: " + r.height);
+            if (debug)
+                Debug.println("Relayouting virtual table: " + r.height);
 
-			canvas.setBounds(0, headerHeight, table.getSize().x, r.height - headerHeight);
+            canvas.setBounds(0, headerHeight, table.getSize().x, r.height - headerHeight);
 
-			int sumColumnWidth = 0;
-			for (int i = 0; i < table.getColumnCount(); i++)
-				sumColumnWidth += table.getColumn(i).getWidth();
+            int sumColumnWidth = 0;
+            for (int i = 0; i < table.getColumnCount(); i++)
+                sumColumnWidth += table.getColumn(i).getWidth();
 
-			if (r.width > sumColumnWidth)
-				table.setSize(r.width, table.getSize().y);
-		}
-	}
+            if (r.width > sumColumnWidth)
+                table.setSize(r.width, table.getSize().y);
+        }
+    }
 }

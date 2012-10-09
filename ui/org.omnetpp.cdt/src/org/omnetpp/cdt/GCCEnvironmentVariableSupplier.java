@@ -25,28 +25,28 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * @author Andras
  */
 public class GCCEnvironmentVariableSupplier implements IConfigurationEnvironmentVariableSupplier {
-	public IBuildEnvironmentVariable getPathVariable() {
-	    StringBuilder buff = new StringBuilder();
+    public IBuildEnvironmentVariable getPathVariable() {
+        StringBuilder buff = new StringBuilder();
 
-	    if (Platform.getOS().equals(Platform.OS_WIN32)) {
-	        String mingwBinDir = OmnetppMainPlugin.getMingwBinDir();
-	        if (!StringUtils.isEmpty(mingwBinDir))
-	            buff.append(mingwBinDir).append(';');
+        if (Platform.getOS().equals(Platform.OS_WIN32)) {
+            String mingwBinDir = OmnetppMainPlugin.getMingwBinDir();
+            if (!StringUtils.isEmpty(mingwBinDir))
+                buff.append(mingwBinDir).append(';');
 
-	        String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
-	        if (!StringUtils.isEmpty(msysBinDir))
-	            buff.append(msysBinDir).append(';');
-	    }
+            String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
+            if (!StringUtils.isEmpty(msysBinDir))
+                buff.append(msysBinDir).append(';');
+        }
 
-	    return new BuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND);
-	}
+        return new BuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND);
+    }
 
-	public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration, IEnvironmentVariableProvider provider) {
-		return variableName.equals("PATH") ? getPathVariable() : null;
-	}
+    public IBuildEnvironmentVariable getVariable(String variableName, IConfiguration configuration, IEnvironmentVariableProvider provider) {
+        return variableName.equals("PATH") ? getPathVariable() : null;
+    }
 
-	public IBuildEnvironmentVariable[] getVariables(IConfiguration configuration, IEnvironmentVariableProvider provider) {
-		return new IBuildEnvironmentVariable[] { getPathVariable() };
-	}
+    public IBuildEnvironmentVariable[] getVariables(IConfiguration configuration, IEnvironmentVariableProvider provider) {
+        return new IBuildEnvironmentVariable[] { getPathVariable() };
+    }
 
 }

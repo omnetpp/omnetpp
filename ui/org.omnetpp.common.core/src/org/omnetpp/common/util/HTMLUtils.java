@@ -444,7 +444,7 @@ public class HTMLUtils {
                         "<li>nested ordered list item 2 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum adipiscing tortor diam, eu semper massa. Morbi non dui lectus, ac commodo nulla. Duis mauris leo, ultricies vitae ultrices ac, egestas interdum nisl.</li></ol></li>" +
                     "<li>ordered list item 3 - Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum adipiscing tortor diam, eu semper massa. Morbi non dui lectus, ac commodo nulla. Duis mauris leo, ultricies vitae ultrices ac, egestas interdum nisl.</li></ol>" +
                 "an inline circle <img src='0'/> image" +
-        		"</body></html>";
+                "</body></html>";
         htmlToStyledText(htmlText, styledText, imageMap);
         shell.open();
         shell.setSize(styledText.computeSize(800, -1));

@@ -44,70 +44,70 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class AnalysisImpl extends EObjectImpl implements Analysis {
-	/**
+    /**
      * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getInputs()
      * @generated
      * @ordered
      */
-	protected Inputs inputs;
+    protected Inputs inputs;
 
-	/**
+    /**
      * The cached value of the '{@link #getDatasets() <em>Datasets</em>}' containment reference.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getDatasets()
      * @generated
      * @ordered
      */
-	protected Datasets datasets;
+    protected Datasets datasets;
 
-	/**
+    /**
      * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getChartSheets()
      * @generated
      * @ordered
      */
-	protected ChartSheets chartSheets;
+    protected ChartSheets chartSheets;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected AnalysisImpl() {
+    protected AnalysisImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.ANALYSIS;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Inputs getInputs() {
+    public Inputs getInputs() {
         return inputs;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public NotificationChain basicSetInputs(Inputs newInputs, NotificationChain msgs) {
+    public NotificationChain basicSetInputs(Inputs newInputs, NotificationChain msgs) {
         Inputs oldInputs = inputs;
         inputs = newInputs;
         if (eNotificationRequired()) {
@@ -117,12 +117,12 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         return msgs;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setInputs(Inputs newInputs) {
+    public void setInputs(Inputs newInputs) {
         if (newInputs != inputs) {
             NotificationChain msgs = null;
             if (inputs != null)
@@ -136,21 +136,21 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__INPUTS, newInputs, newInputs));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Datasets getDatasets() {
+    public Datasets getDatasets() {
         return datasets;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public NotificationChain basicSetDatasets(Datasets newDatasets, NotificationChain msgs) {
+    public NotificationChain basicSetDatasets(Datasets newDatasets, NotificationChain msgs) {
         Datasets oldDatasets = datasets;
         datasets = newDatasets;
         if (eNotificationRequired()) {
@@ -160,12 +160,12 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         return msgs;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setDatasets(Datasets newDatasets) {
+    public void setDatasets(Datasets newDatasets) {
         if (newDatasets != datasets) {
             NotificationChain msgs = null;
             if (datasets != null)
@@ -179,21 +179,21 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__DATASETS, newDatasets, newDatasets));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public ChartSheets getChartSheets() {
+    public ChartSheets getChartSheets() {
         return chartSheets;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public NotificationChain basicSetChartSheets(ChartSheets newChartSheets, NotificationChain msgs) {
+    public NotificationChain basicSetChartSheets(ChartSheets newChartSheets, NotificationChain msgs) {
         ChartSheets oldChartSheets = chartSheets;
         chartSheets = newChartSheets;
         if (eNotificationRequired()) {
@@ -203,12 +203,12 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         return msgs;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setChartSheets(ChartSheets newChartSheets) {
+    public void setChartSheets(ChartSheets newChartSheets) {
         if (newChartSheets != chartSheets) {
             NotificationChain msgs = null;
             if (chartSheets != null)
@@ -222,13 +222,13 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.ANALYSIS__CHART_SHEETS, newChartSheets, newChartSheets));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.ANALYSIS__INPUTS:
                 return basicSetInputs(null, msgs);
@@ -240,13 +240,13 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.ANALYSIS__INPUTS:
                 return getInputs();
@@ -258,13 +258,13 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eSet(int featureID, Object newValue) {
+    @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.ANALYSIS__INPUTS:
                 setInputs((Inputs)newValue);
@@ -279,13 +279,13 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.ANALYSIS__INPUTS:
                 setInputs((Inputs)null);
@@ -300,13 +300,13 @@ public class AnalysisImpl extends EObjectImpl implements Analysis {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.ANALYSIS__INPUTS:
                 return inputs != null;

@@ -26,23 +26,23 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 
 /**
- * NED type selection dialog. It can offer types from all projects, or alternatively, 
+ * NED type selection dialog. It can offer types from all projects, or alternatively,
  * combine NED types from three sources:
  * <ul>
  *   <li> toplevel types visible from a given project (see setContextProject())
  *   <li> inner types of a given type (see setEnclosingNedType())
  *   <li> types in an explicitly passed in type list (see setTypeList())
- * </ul> 
- * 
+ * </ul>
+ *
  * If all such parameters are null, the dialog offers all types from all projects.
  * In all cases, the list can be filtered with a predicate.
- * 
- * If new types become available while the dialog is open (e.g due to lazy loading of 
- * NED files), the dialogs is kept up to date. 
- * 
- * By default this dialog allows one item to be selected; call setMultipleSelection(true) 
+ *
+ * If new types become available while the dialog is open (e.g due to lazy loading of
+ * NED files), the dialogs is kept up to date.
+ *
+ * By default this dialog allows one item to be selected; call setMultipleSelection(true)
  * to allow multiple selection.
- * 
+ *
  * @author Andras
  */
 public class NedTypeSelectionDialog extends ElementListSelectionDialog {
@@ -71,7 +71,7 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
 
     public static class NedLabelProvider extends LabelProvider {
         private boolean showProject;  // whether to show which project the type was defined in
-        
+
         @Override
         public Image getImage(Object element) {
             INedTypeInfo nedType = (INedTypeInfo) element;
@@ -122,13 +122,13 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
      * Note: This flag is affected by other setters, so make the call to this method the last one.
      */
     public void setShowProject(boolean showProject) {
-        labelProvider.showProject = showProject;    
+        labelProvider.showProject = showProject;
     }
 
     public boolean getShowProject() {
         return labelProvider.showProject;
     }
-    
+
     /**
      * Sets the context project. When non-null, (filtered) types visible from the given project are offered.
      */
@@ -136,7 +136,7 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
         this.contextProject = contextProject;
         setShowProject(willShowTypesFromAllProjects());
     }
-    
+
     public IProject getContextProject() {
         return contextProject;
     }
@@ -160,7 +160,7 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
         this.typeList = typeList;
         setShowProject(willShowTypesFromAllProjects());
     }
-    
+
     public INedTypeInfo[] getTypeList() {
         return typeList;
     }
@@ -168,14 +168,14 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
     public boolean willShowTypesFromAllProjects() {
         return contextProject == null && enclosingNedType == null && typeList == null;
     }
-    
+
     /**
-     * Sets a filter predicate. When non-null, only types matching the predicate are offered. 
+     * Sets a filter predicate. When non-null, only types matching the predicate are offered.
      */
     public void setTypeFilter(INedTypeResolver.IPredicate typeFilter) {
         this.typeFilter = typeFilter;
     }
-    
+
     public INedTypeResolver.IPredicate getTypeFilter() {
         return typeFilter;
     }
@@ -184,11 +184,11 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
         IPredicate typeFilter = getTypeFilter();
         INedResources nedResources = NedResourcesPlugin.getNedResources();
         Collection<INedTypeInfo> result;
-        
+
         if (willShowTypesFromAllProjects()) {
             if (typeFilter == null)
                 result = nedResources.getToplevelNedTypesFromAllProjects();
-            else 
+            else
                 result = nedResources.getToplevelNedTypesFromAllProjects(typeFilter);
         }
         else {
@@ -197,11 +197,11 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
                 for (INedTypeInfo type : getTypeList())
                     if (typeFilter==null || typeFilter.matches(type))
                         result.add(type);
-            
+
             if (getContextProject() != null) {
                 if (typeFilter == null)
                     result.addAll(nedResources.getToplevelNedTypes(getContextProject()));
-                else 
+                else
                     result.addAll(nedResources.getToplevelNedTypes(typeFilter, getContextProject()));
             }
 
@@ -211,9 +211,9 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
                         result.add(type.getNedTypeInfo());
         }
 
-        return result.toArray(new INedTypeInfo[]{});   
+        return result.toArray(new INedTypeInfo[]{});
     }
-    
+
     @Override
     public int open() {
         setElements(getElementsToShow());
@@ -223,7 +223,7 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
     /**
      * Updates an existing dialog's contents. Most useful when NED types are being loaded
      * while the dialog is already open and the user can interact with it. (This can occur
-     * just after IDE startup when no editors are open, and user hits the Open NED Type button.)   
+     * just after IDE startup when no editors are open, and user hits the Open NED Type button.)
      */
     protected void updateElements(Object[] elements) {
         setListElements(elements);
@@ -234,13 +234,13 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
             // re-enable widgets disabled by initial handleEmptyList() call
             Label _fMessage = (Label)ReflectionUtils.getFieldValue(this, "fMessage");  // fMessage is private...
             Text _fFilterText = (Text)ReflectionUtils.getFieldValue(this, "fFilterText"); // fFilterText ditto...
-            
+
             // inverse of handleEmptyList():
             _fMessage.setEnabled(true);
             _fFilterText.setEnabled(true);
             fFilteredList.setEnabled(true);
             updateOkState();
-            
+
             // plus some code from AbstractElementListSelectionDialog.create():
             validateCurrentSelection();
             _fFilterText.selectAll();
@@ -248,8 +248,8 @@ public class NedTypeSelectionDialog extends ElementListSelectionDialog {
 
         }
     }
-    
-    /** 
+
+    /**
      * Return result[] with the correct type
      */
     @Override

@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Display;
  */
 //XXX revise...
 public class InifileTextEditorHelper {
-	public static final String DEFAULT_CONTEXT_TYPE = "org.omnetpp.inifile.editor.default";
+    public static final String DEFAULT_CONTEXT_TYPE = "org.omnetpp.inifile.editor.default";
 
     /**
      * Convenience method, to return a system default color. Color constants come from SWT class e.g. SWT.COLOR_RED

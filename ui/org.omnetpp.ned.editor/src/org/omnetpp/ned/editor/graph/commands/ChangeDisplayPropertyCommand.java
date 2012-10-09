@@ -37,7 +37,7 @@ public class ChangeDisplayPropertyCommand extends Command {
         this(element, prop);
         setValue(value);
     }
-    
+
     /**
      * Sets the new value to be set. Must be called before execute().
      */

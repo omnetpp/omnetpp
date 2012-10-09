@@ -43,54 +43,54 @@ import org.omnetpp.scave.model.Select;
  * @generated
  */
 public class SelectImpl extends SelectDeselectOpImpl implements Select {
-	/**
+    /**
      * The cached value of the '{@link #getExcepts() <em>Excepts</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getExcepts()
      * @generated
      * @ordered
      */
-	protected EList<Except> excepts;
+    protected EList<Except> excepts;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected SelectImpl() {
+    protected SelectImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.SELECT;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<Except> getExcepts() {
+    public EList<Except> getExcepts() {
         if (excepts == null) {
             excepts = new EObjectContainmentEList<Except>(Except.class, this, ScaveModelPackage.SELECT__EXCEPTS);
         }
         return excepts;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.SELECT__EXCEPTS:
                 return ((InternalEList<?>)getExcepts()).basicRemove(otherEnd, msgs);
@@ -98,13 +98,13 @@ public class SelectImpl extends SelectDeselectOpImpl implements Select {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.SELECT__EXCEPTS:
                 return getExcepts();
@@ -112,14 +112,14 @@ public class SelectImpl extends SelectDeselectOpImpl implements Select {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.SELECT__EXCEPTS:
                 getExcepts().clear();
@@ -129,13 +129,13 @@ public class SelectImpl extends SelectDeselectOpImpl implements Select {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.SELECT__EXCEPTS:
                 getExcepts().clear();
@@ -144,13 +144,13 @@ public class SelectImpl extends SelectDeselectOpImpl implements Select {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.SELECT__EXCEPTS:
                 return excepts != null && !excepts.isEmpty();

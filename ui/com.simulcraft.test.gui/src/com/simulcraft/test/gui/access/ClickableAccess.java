@@ -23,7 +23,7 @@ import com.simulcraft.test.gui.core.InAnyThread;
 import com.simulcraft.test.gui.core.UIStep;
 
 public class ClickableAccess
-	extends Access
+    extends Access
 {
     public static int delayBeforeMouseMove = 300;
     public static int delayAfterMouseMove = 300;
@@ -46,10 +46,10 @@ public class ClickableAccess
     private Ft01 xt = new Ft01() { public double f(double t) { return sin(t*PI/2); } };
     private Ft01 yt = new Ft01() { public double f(double t) { return sqrt(sin(t*PI/2)); } };
 
-	@UIStep
-	public Point getCursorLocation() {
-	    return Display.getCurrent().getCursorLocation();
-	}
+    @UIStep
+    public Point getCursorLocation() {
+        return Display.getCurrent().getCursorLocation();
+    }
 
     @UIStep
     public void clickAbsolute(int button, Point point) {
@@ -93,10 +93,10 @@ public class ClickableAccess
     }
 
     @InAnyThread
-	public void moveMouseAbsolute(int x, int y) {
-	    Point p = getCursorLocation();
+    public void moveMouseAbsolute(int x, int y) {
+        Point p = getCursorLocation();
 
-	    if (p.x != x || p.y != y) {
+        if (p.x != x || p.y != y) {
             postMouseEvent(SWT.MouseMove, 0, p.x, p.y, Access.rescaleTime(delayBeforeMouseMove));
             if (mouseMoveDurationMillis > 0) {
                 log(debug, "moving mouse smoothly from "+p+" to "+new Point(x,y));
@@ -109,15 +109,15 @@ public class ClickableAccess
             }
             postMouseEvent(SWT.MouseMove, 0, x, y, Access.rescaleTime(delayAfterMouseMove));
         }
-	}
+    }
 
     @InAnyThread
-	public void dragMouseAbsolute(int button, Point fromPoint, Point toPoint) {
-	    dragMouseAbsolute(button, fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
-	}
+    public void dragMouseAbsolute(int button, Point fromPoint, Point toPoint) {
+        dragMouseAbsolute(button, fromPoint.x, fromPoint.y, toPoint.x, toPoint.y);
+    }
 
     @InAnyThread
-	public void dragMouseAbsolute(int button, int x1, int y1, int x2, int y2) {
+    public void dragMouseAbsolute(int button, int x1, int y1, int x2, int y2) {
         moveMouseAbsolute(x1, y1);
 
         postMouseEvent(SWT.MouseDown, button, x1, y1);
@@ -131,7 +131,7 @@ public class ClickableAccess
             AnimationEffects.endAnimateDragDrop(x1, y1, x2, y2);
 
         postMouseEvent(SWT.MouseUp, button, x2, y2);
-	}
+    }
 
     public static int getMouseMoveDurationMillis() {
         return mouseMoveDurationMillis;

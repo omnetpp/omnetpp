@@ -37,74 +37,74 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class AddFilterToDatasetAction extends AbstractScaveAction {
 
-	public AddFilterToDatasetAction() {
-		setText("Add Filter Expression to Dataset...");
-		setToolTipText("Add filter expression to dataset");
-		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDFILTERTODATASET));
-	}
+    public AddFilterToDatasetAction() {
+        setText("Add Filter Expression to Dataset...");
+        setToolTipText("Add filter expression to dataset");
+        setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_ADDFILTERTODATASET));
+    }
 
-	@Override
-	protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
-		FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		if (activePanel == null)
-			return;
+    @Override
+    protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
+        FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+        if (activePanel == null)
+            return;
 
-		if (!activePanel.isFilterPatternValid()) {
-			MessageDialog.openWarning(editor.getSite().getShell(), "Error in Filter Expression", "Current filter expression is invalid, please fix that first.");
-			return;
-		}
+        if (!activePanel.isFilterPatternValid()) {
+            MessageDialog.openWarning(editor.getSite().getShell(), "Error in Filter Expression", "Current filter expression is invalid, please fix that first.");
+            return;
+        }
 
-		String filterPattern = activePanel.getFilter().getFilterPattern();
+        String filterPattern = activePanel.getFilter().getFilterPattern();
 
-		if (filterPattern.length()==0 || filterPattern.equals("*")) {
-			MessageDialog.openInformation(
-					editor.getSite().getShell(),
-					"Filter is Empty",
-					"The filter expression is currently empty (matches everything), which means the resulting dataset "+
-					"would include all data from all input files. This is probably not what you intended. "+
-					"Please set some filter condition first.");
-			return;
-		}
+        if (filterPattern.length()==0 || filterPattern.equals("*")) {
+            MessageDialog.openInformation(
+                    editor.getSite().getShell(),
+                    "Filter is Empty",
+                    "The filter expression is currently empty (matches everything), which means the resulting dataset "+
+                    "would include all data from all input files. This is probably not what you intended. "+
+                    "Please set some filter condition first.");
+            return;
+        }
 
-		DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor);
-		dlg.setMessage(
-				"Please select the target dataset below, or create new one.\n"+
-				"This dataset will be modified to include all data from Inputs\n"+
-				"that match the following filter:\n\n  "+
-				filterPattern);
-		if (dlg.open() == Window.OK) {
-			Dataset dataset = (Dataset) dlg.getFirstResult();
-			if (dataset != null) {
-				// add the Add node before the first chart or group,
-				// so they are affected by this action
-				int index = 0;
-				List<DatasetItem> items = dataset.getItems();
-				for (; index < items.size(); ++index) {
-					DatasetItem item = items.get(index);
-					if (item instanceof Chart || item instanceof Group)
-						break;
-				}
+        DatasetSelectionDialog dlg = new DatasetSelectionDialog(editor);
+        dlg.setMessage(
+                "Please select the target dataset below, or create new one.\n"+
+                "This dataset will be modified to include all data from Inputs\n"+
+                "that match the following filter:\n\n  "+
+                filterPattern);
+        if (dlg.open() == Window.OK) {
+            Dataset dataset = (Dataset) dlg.getFirstResult();
+            if (dataset != null) {
+                // add the Add node before the first chart or group,
+                // so they are affected by this action
+                int index = 0;
+                List<DatasetItem> items = dataset.getItems();
+                for (; index < items.size(); ++index) {
+                    DatasetItem item = items.get(index);
+                    if (item instanceof Chart || item instanceof Group)
+                        break;
+                }
 
-				ResultType type = editor.getBrowseDataPage().getActivePanelType();
-				Add addItem = ScaveModelUtil.createAdd(filterPattern, type);
-				Command command = AddCommand.create(
-							editor.getEditingDomain(),
-							dataset,
-							ScaveModelPackage.eINSTANCE.getDataset_Items(),
-							addItem,
-							index);
-				editor.executeCommand(command);
+                ResultType type = editor.getBrowseDataPage().getActivePanelType();
+                Add addItem = ScaveModelUtil.createAdd(filterPattern, type);
+                Command command = AddCommand.create(
+                            editor.getEditingDomain(),
+                            dataset,
+                            ScaveModelPackage.eINSTANCE.getDataset_Items(),
+                            addItem,
+                            index);
+                editor.executeCommand(command);
 
-				// show the dataset
-				editor.showDatasetsPage(); // or: editor.openDataset(dataset);
-				editor.setSelection(new StructuredSelection(addItem));
-			}
-		}
-	}
+                // show the dataset
+                editor.showDatasetsPage(); // or: editor.openDataset(dataset);
+                editor.setSelection(new StructuredSelection(addItem));
+            }
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		String filterString = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
-		return !filterString.equals("");
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        String filterString = editor.getBrowseDataPage().getActivePanel().getFilter().getFilterPattern();
+        return !filterString.equals("");
+    }
 }

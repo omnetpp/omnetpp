@@ -30,19 +30,19 @@ import org.omnetpp.common.util.StringUtils;
 
 /**
  * Utility functions
- *  
+ *
  * @author Andras
  */
 public class ProjectConfigurationUtils {
-    // "Fix it" href values 
+    // "Fix it" href values
     public static final String PROBLEMID_SOURCE_LOCATIONS_DIFFER = "sourceLocationsDiffer";
-    
+
     /**
-     * Analyzes project settings, and returns a report about potential problems. 
-     * Returns null if no problem was found. If addFixItLink is true, it assumes 
-     * the returned text will be displayed in a Link widget, and adds a "Fix it!" 
+     * Analyzes project settings, and returns a report about potential problems.
+     * Returns null if no problem was found. If addFixItLink is true, it assumes
+     * the returned text will be displayed in a Link widget, and adds a "Fix it!"
      * link with a problem ID as href. The link should end up calling the fixProblem()
-     * method. 
+     * method.
      */
     public static String getDiagnosticMessage(IProject project, BuildSpecification buildSpec, boolean addFixItLink) {
         // Check CDT settings
@@ -58,8 +58,8 @@ public class ProjectConfigurationUtils {
                 isOmnetppConfig = true; break;}
         if (!isOmnetppConfig)
             return "The active build configuration \""+ activeConfiguration.getName() + "\" is " +
-            		"not an OMNeT++ configuration. Please re-create the project it with the " +
-            		"New OMNeT++ Project wizard, overwriting the existing project settings.";
+                    "not an OMNeT++ configuration. Please re-create the project it with the " +
+                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
         ICBuildSetting buildSetting = activeConfiguration.getBuildSetting();
         if (buildSetting == null)
             return "No CDT Project Builder. Activate one on the C/C++ Build / Tool Chain Editor page."; //???
@@ -68,7 +68,7 @@ public class ProjectConfigurationUtils {
             return "C/C++ Builder \"" + buildSetting.getName()+ "\" set in the active build configuration " +
                    "is not suitable for OMNeT++. Please re-create the project with the " +
                    "New OMNeT++ Project wizard, overwriting the existing project settings.";
-    
+
         // warn if referenced projects not present or not open
         try {
             List<String> badRefProjs = new ArrayList<String>();
@@ -82,7 +82,7 @@ public class ProjectConfigurationUtils {
             Activator.logError(e);
             return "Cannot query list of referenced projects: " + e.getMessage();
         }
-    
+
         // warn if there're differences in source entries across configurations.
         // first, collect which entries occur in which configurations
         Map<String,List<String>> sourceEntryMap = new HashMap<String, List<String>>(); // srcEntry -> config*
@@ -103,13 +103,13 @@ public class ProjectConfigurationUtils {
                 wrongSourceLocations.add(StringUtils.join(sourceEntryMap.get(e), ",") + ": " + e);
         Collections.sort(wrongSourceLocations);
         if (!wrongSourceLocations.isEmpty())
-            return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ") + 
+            return "Note: Source locations are set up differently across configurations: " + StringUtils.join(wrongSourceLocations, "; ") +
             (addFixItLink ? ProjectConfigurationUtils.makeFixItLinkText(ProjectConfigurationUtils.PROBLEMID_SOURCE_LOCATIONS_DIFFER) : "");
-    
+
         // warn if there's no makefile generated at all
         if (buildSpec.getMakeFolders().isEmpty())
             return "No makefile has been specified for this project.";
-    
+
         // check if build directory exists, and there's a makefile in it
         String buildLocation = activeConfiguration.getBuildSetting().getBuilderCWD().toString();
         IContainer buildFolder = ProjectMakemakePropertyPage.resolveFolderLocation(buildLocation, project, activeConfiguration);
@@ -119,9 +119,9 @@ public class ProjectConfigurationUtils {
             return "Root build folder " + buildFolder.getFullPath().toString() + " is set to \"No Make\"";
         for (IContainer folder : buildSpec.getMakeFolders())
             if (buildSpec.getFolderMakeType(folder) == BuildSpecification.CUSTOM)
-                if (!folder.getFile(new Path("Makefile")).exists())  //XXX or Makefile.vc 
+                if (!folder.getFile(new Path("Makefile")).exists())  //XXX or Makefile.vc
                     return "Custom Makefile folder " + folder.getFullPath().toString() + " contains no Makefile";
-    
+
         return null;
     }
 
@@ -129,15 +129,15 @@ public class ProjectConfigurationUtils {
         return " <a href=\"" + problemId + "\">(Fix it)</a>";
     }
 
-    
+
     /**
      * Fix a problem detected by getDiagnosticMessage()
      */
     public static void fixProblem(IProject project, BuildSpecification buildSpec, String problemId) {
         Shell parentShell = Display.getDefault().getActiveShell();
-        
+
         if (problemId.equals(ProjectConfigurationUtils.PROBLEMID_SOURCE_LOCATIONS_DIFFER)) {
-            // fix the "Source locations differ across configurations" problem: copy the active configuration's 
+            // fix the "Source locations differ across configurations" problem: copy the active configuration's
             // source entry settings to all other configurations
             ICProjectDescription projectDescription = CDTPropertyManager.getProjectDescription(project);
             final ICConfigurationDescription activeConfiguration = projectDescription!=null ? projectDescription.getActiveConfiguration() : null;
@@ -149,10 +149,10 @@ public class ProjectConfigurationUtils {
                     return config.getName() + (config == activeConfiguration ? "  [active]" : "");
                 }
             };
-            
+
             ICConfigurationDescription selectedConfiguration = (ICConfigurationDescription)
-            MessageDialogWithCombo.openAndSelect(parentShell, "Fix Project Setup", 
-                    "This will copy the project's source location and excluded folder settings from one configuration to all others.", 
+            MessageDialogWithCombo.openAndSelect(parentShell, "Fix Project Setup",
+                    "This will copy the project's source location and excluded folder settings from one configuration to all others.",
                     "Copy from:", projectDescription.getConfigurations(), labelProvider, activeConfiguration
                     );
 
@@ -160,7 +160,7 @@ public class ProjectConfigurationUtils {
                 for (ICConfigurationDescription cfg : projectDescription.getConfigurations()) {
                     if (cfg != selectedConfiguration) {
                         try {
-                            // copy the array from selectedConfiguration; the entries themselves seem to be immutable, 
+                            // copy the array from selectedConfiguration; the entries themselves seem to be immutable,
                             // so we don't need to duplicate them
                             cfg.setSourceEntries(selectedConfiguration.getSourceEntries().clone());
                         }
@@ -172,7 +172,7 @@ public class ProjectConfigurationUtils {
                         }
                     }
                 }
-    
+
             }
         }
         else {

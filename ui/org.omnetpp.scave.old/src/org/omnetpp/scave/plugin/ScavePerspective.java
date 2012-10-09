@@ -27,7 +27,7 @@ public class ScavePerspective implements IPerspectiveFactory {
      * @param layout the factory used to add views to the perspective
      */
     public void createInitialLayout(IPageLayout layout) {
-    	layout.addPerspectiveShortcut("org.omnetpp.scave.ScavePerspective");
+        layout.addPerspectiveShortcut("org.omnetpp.scave.ScavePerspective");
         defineActions(layout);
         defineLayout(layout);
     }
@@ -73,10 +73,10 @@ public class ScavePerspective implements IPerspectiveFactory {
         bottomLeft.addView(IPageLayout.ID_OUTLINE);
 
         // Bottom right.
-		//IFolderLayout bottomRight = layout.createFolder(
+        //IFolderLayout bottomRight = layout.createFolder(
         //        "bottomRight", IPageLayout.BOTTOM, (float) 0.66,//$NON-NLS-1$
         //        editorArea);
-		//
-		//bottomRight.addView(IPageLayout.ID_TASK_LIST);
+        //
+        //bottomRight.addView(IPageLayout.ID_TASK_LIST);
     }
 }

@@ -18,7 +18,7 @@ import org.omnetpp.ned.model.INedElement;
  */
 public class NedBeginModelChangeEvent extends NedModelEvent
 {
-	public NedBeginModelChangeEvent(INedElement source) {
-		super(source);
-	}
+    public NedBeginModelChangeEvent(INedElement source) {
+        super(source);
+    }
 }

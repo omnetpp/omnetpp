@@ -19,11 +19,11 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.IDialogConstants;
 
 public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
-    
+
     int width;
     int height;
     int quality;
-    
+
     public JpgFormat() {
         width = 800;
         height = 600;
@@ -45,11 +45,11 @@ public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
     public int getWidth() {
         return width;
     }
-    
+
     public int getHeight() {
         return height;
     }
-    
+
     public int getQuality() {
         return quality;
     }
@@ -66,10 +66,10 @@ public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
             return null;
         }
     }
-    
+
     // TODO edit quality
     private class OptionsDialog extends Dialog {
-        
+
         Text widthText;
         Text heightText;
 
@@ -82,7 +82,7 @@ public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
             super.configureShell(newShell);
             newShell.setText("JPG Export Options");
         }
-        
+
         @Override
         protected Control createDialogArea(Composite parent) {
             Composite composite = (Composite)super.createDialogArea(parent);
@@ -105,7 +105,7 @@ public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
             restoreDialogSettings();
             return composite;
         }
-        
+
         private ModifyListener validator = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 Button okButton = getButton(IDialogConstants.OK_ID);
@@ -121,7 +121,7 @@ public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
             saveDialogSettings();
             super.okPressed();
         }
-        
+
         private int getValue(Text text) {
             int value = NumberUtils.toInt(text.getText(), 0);
             return value > 0 ? value : 0;
@@ -132,7 +132,7 @@ public class JpgFormat implements IGraphicalExportFileFormat, Cloneable {
             settings.put("width", widthText.getText());
             settings.put("height", heightText.getText());
         }
-        
+
         private void restoreDialogSettings() {
             IDialogSettings settings = UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
             String width = settings.get("width");

@@ -36,15 +36,15 @@ public interface INedTypeResolver {
     public static final String NAMESPACE_PROPERTY = "namespace";
     public static final String LICENSE_PROPERTY = "license";
 
-	public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
+    public static final String NEDSYNTAXPROBLEM_MARKERID = "org.omnetpp.ned.core.nedsyntaxproblem";
     public static final String NEDCONSISTENCYPROBLEM_MARKERID = "org.omnetpp.ned.core.nedconsistencyproblem";
 
     /**
-	 * Interface used by filtering methods.
-	 */
-	public interface IPredicate {
-		public boolean matches(INedTypeInfo typeInfo);
-	}
+     * Interface used by filtering methods.
+     */
+    public interface IPredicate {
+        public boolean matches(INedTypeInfo typeInfo);
+    }
 
     // some useful predicates
     public static final IPredicate ALL_FILTER = new IPredicate() {
@@ -77,56 +77,56 @@ public interface INedTypeResolver {
                    !((IModuleTypeElement)component.getNedElement()).isNetwork();
         }
     };
-	
-	/**
-	 * Returns the current value of a counter that gets incremented by every
-	 * NED change. Checking against this counter allows one to invalidate
-	 * cached NED data whenever they potentially become stale.
-	 */
+
+    /**
+     * Returns the current value of a counter that gets incremented by every
+     * NED change. Checking against this counter allows one to invalidate
+     * cached NED data whenever they potentially become stale.
+     */
     public long getLastChangeSerial();
 
-	/**
-	 * INTERNAL Factory method, to be called from INedTypeElement constructors.
-	 */
-	public INedTypeInfo createTypeInfoFor(INedTypeElement node);
+    /**
+     * INTERNAL Factory method, to be called from INedTypeElement constructors.
+     */
+    public INedTypeInfo createTypeInfoFor(INedTypeElement node);
 
-	/**
-	 * Returns NED files in the workspace.
-	 */
-	public Set<IFile> getNedFiles();
+    /**
+     * Returns NED files in the workspace.
+     */
+    public Set<IFile> getNedFiles();
 
-	/**
-	 * Returns the set of NED files in the given project.
-	 */
-	public Set<IFile> getNedFiles(IProject project);
+    /**
+     * Returns the set of NED files in the given project.
+     */
+    public Set<IFile> getNedFiles(IProject project);
 
-	/**
-	 * Returns parsed contents of a NED file. Returns a potentially incomplete tree
-	 * if the file has parse errors; one can call containsNEDErrors() to find out
-	 * if that is the case. Return value is never null. It is an error to invoke
-	 * this method on a non-NED file.
-	 *
-	 * @param file - must not be null
-	 */
-	public NedFileElementEx getNedFileElement(IFile file);
+    /**
+     * Returns parsed contents of a NED file. Returns a potentially incomplete tree
+     * if the file has parse errors; one can call containsNEDErrors() to find out
+     * if that is the case. Return value is never null. It is an error to invoke
+     * this method on a non-NED file.
+     *
+     * @param file - must not be null
+     */
+    public NedFileElementEx getNedFileElement(IFile file);
 
     /**
      * Returns the file this NED element is in.
      */
-	public IFile getNedFile(NedFileElementEx nedFileElement);
+    public IFile getNedFile(NedFileElementEx nedFileElement);
 
-	/**
-	 * Determines if the given file is a NED file that has been loaded.
-	 */
+    /**
+     * Determines if the given file is a NED file that has been loaded.
+     */
     public boolean containsNedFileElement(IFile file);
 
     /**
-     * Determines if a resource is a NED file. It checks the file extension 
-     * (".ned"), whether the file is in one of the NED source folders 
+     * Determines if a resource is a NED file. It checks the file extension
+     * (".ned"), whether the file is in one of the NED source folders
      * designated for the project, and whether it is in an excluded folder.
      */
     public boolean isNedFile(IResource resource);
-	
+
     /**
      * Returns the NED source folders for the given project. This is
      * the list of folders in the ".nedfolders" file, or the project
@@ -134,16 +134,16 @@ public interface INedTypeResolver {
      * is returned if the project is not an OMNeT++ project (does not
      * have the omnetpp nature, or it is not enabled for some reason).
      */
-	public IContainer[] getNedSourceFolders(IProject project);
+    public IContainer[] getNedSourceFolders(IProject project);
 
     /**
-	 * Returns the NED source folder for the given NED file. Returns null if the
-	 * file is outside the project's NED source folders, or the project itself
-	 * does not have the OMNeT++ nature, or that nature is disabled (see
-	 * IProject.isNatureEnabled() on why a nature might be disabled.)
-	 *
-	 * Equivalent to getNedSourceFolderFor(file.getParent()).
-	 */
+     * Returns the NED source folder for the given NED file. Returns null if the
+     * file is outside the project's NED source folders, or the project itself
+     * does not have the OMNeT++ nature, or that nature is disabled (see
+     * IProject.isNatureEnabled() on why a nature might be disabled.)
+     *
+     * Equivalent to getNedSourceFolderFor(file.getParent()).
+     */
     public IContainer getNedSourceFolderFor(IFile file);
 
     /**
@@ -155,26 +155,26 @@ public interface INedTypeResolver {
     public IContainer getNedSourceFolderFor(IContainer folder);
 
     /**
-     * Returns the package name for the given folder ("" for the default package), 
+     * Returns the package name for the given folder ("" for the default package),
      * or null if the folder is outside all NED source folders. Ignores package
      * exclusions.
      */
     public String getPackageFor(IContainer folder);
-    
-	/**
-	 * Returns the expected package name for the given file. "" means the
-	 * default package. Returns null for the toplevel "package.ned" file
-	 * (which in fact is used to *define* the package, so it has no "expected"
-	 * package name), and for files outside the NED source folders defined
-	 * for the project (i.e. for which getNedSourceFolder() returns null.)
-	 * Works for any file, not just for NED files.
-	 */
+
+    /**
+     * Returns the expected package name for the given file. "" means the
+     * default package. Returns null for the toplevel "package.ned" file
+     * (which in fact is used to *define* the package, so it has no "expected"
+     * package name), and for files outside the NED source folders defined
+     * for the project (i.e. for which getNedSourceFolder() returns null.)
+     * Works for any file, not just for NED files.
+     */
     public String getExpectedPackageFor(IFile file);
 
     /**
      * Returns the names of the packages that are roots of disabled package trees.
      * That is, the returned packages and all packages under them are disabled.
-     * NED files are not loaded from disabled packages. 
+     * NED files are not loaded from disabled packages.
      */
     public String[] getExcludedPackageRoots(IProject project);
 
@@ -184,32 +184,32 @@ public interface INedTypeResolver {
      * (see getExcludedPackageRoots()) or it is under one of the them.
      */
     public boolean isPackageEnabled(IProject project, String packageName);
-    
+
     /**
      * Returns the folders that map to the given package in the given project.
      * Folders that do not exist (yet) are also returned. The number of elements
      * returned is less or equal to the number of NED source folders in the project
-     * (i.e. getNedSourceFolders(project).length).  
+     * (i.e. getNedSourceFolders(project).length).
      */
     public IContainer[] getFoldersForPackage(IProject project, String packageName);
-    
-	/**
-	 * Returns the markers for the given element or and the given element and
-	 * its subtree, depending on the 'recursive' argument
-	 *
-	 * IMPORTANT: Do NOT use this method to check whether an element actually
-	 * contains errors! Markers are written out in a background job, and there's
-	 * no guarantee that IFile already contains them. Use getMaxProblemSeverity()
-	 * and the likes from INedElement instead. This method will return the maximum
-	 * of "limit" markers (to constraint the CPU usage for elements containing a lot of errors)
-	 */
+
+    /**
+     * Returns the markers for the given element or and the given element and
+     * its subtree, depending on the 'recursive' argument
+     *
+     * IMPORTANT: Do NOT use this method to check whether an element actually
+     * contains errors! Markers are written out in a background job, and there's
+     * no guarantee that IFile already contains them. Use getMaxProblemSeverity()
+     * and the likes from INedElement instead. This method will return the maximum
+     * of "limit" markers (to constraint the CPU usage for elements containing a lot of errors)
+     */
     public IMarker[] getMarkersForElement(INedElement node, boolean recursive, int limit);
 
     /**
      * Returns a INedElement at the given file/line/column. The NedFileElement
      * is returned if no specific element was found. Returns null if no
      * NED element was found at that position (that may be caused by
-     * missing source region info or when the line/column points outside 
+     * missing source region info or when the line/column points outside
      * the file's range.)
      */
     public INedElement getNedElementAt(IFile file, int line, int column);
@@ -223,11 +223,11 @@ public interface INedTypeResolver {
     public INedElement getNedElementAt(INedElement parent, int line, int column);
 
     /**
-	 * Returns all toplevel (non-inner) types from NED files in all projects,
-	 * including duplicate types. This method is useful for implementing an
-	 * Open NED Type dialog, and for not much else.
-	 */
-	public Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects();
+     * Returns all toplevel (non-inner) types from NED files in all projects,
+     * including duplicate types. This method is useful for implementing an
+     * Open NED Type dialog, and for not much else.
+     */
+    public Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects();
 
     /**
      * Like getToplevelNedTypesFromAllProjects(), but the result is filtered with the given predicate.
@@ -235,11 +235,11 @@ public interface INedTypeResolver {
     public Collection<INedTypeInfo> getToplevelNedTypesFromAllProjects(IPredicate predicate);
 
     /**
-     * Returns the fully qualified names of all toplevel (non-inner) types 
-     * from NED files in all projects, including duplicate types. This method 
+     * Returns the fully qualified names of all toplevel (non-inner) types
+     * from NED files in all projects, including duplicate types. This method
      * is useful for implementing an Open NED Type dialog, and for not much else.
      */
-	public Set<String> getToplevelNedTypeQNamesFromAllProjects();
+    public Set<String> getToplevelNedTypeQNamesFromAllProjects();
 
     /**
      * Returns all toplevel (non-inner) NED types that have the given fully qualified name,
@@ -248,17 +248,17 @@ public interface INedTypeResolver {
     public Set<INedTypeInfo> getToplevelNedTypesFromAllProjects(String qualifiedName);
 
     /**
-	 * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,
-	 * from the given project and its dependent projects.
-	 */
-	public Collection<INedTypeInfo> getToplevelNedTypes(IProject context);
+     * Returns all toplevel (non-inner) types in the NED files, excluding duplicate names,
+     * from the given project and its dependent projects.
+     */
+    public Collection<INedTypeInfo> getToplevelNedTypes(IProject context);
 
     /**
-     * Returns a filtered list of all toplevel (non-inner) types in the NED files, excluding 
-     * duplicate names, from the given project and its dependent projects. 
+     * Returns a filtered list of all toplevel (non-inner) types in the NED files, excluding
+     * duplicate names, from the given project and its dependent projects.
      */
-	public Collection<INedTypeInfo> getToplevelNedTypes(IPredicate predicate, IProject context);
-	
+    public Collection<INedTypeInfo> getToplevelNedTypes(IPredicate predicate, IProject context);
+
     /**
      * Returns all toplevel (non-inner) types in the NED files that implement
      * the given interface, excluding duplicate names, from the given project
@@ -309,23 +309,23 @@ public interface INedTypeResolver {
      */
     public INedTypeInfo getToplevelNedType(String qualifiedName, IProject context);
 
-	/**
+    /**
      * Return a NED type from its fully qualified name, whether toplevel
      * or inner type, from the given project and its dependent projects.
-     * Returns null if not found. 
-     * 
+     * Returns null if not found.
+     *
      * If you are not interested in inner types, use getToplevelNedType().
-	 */
+     */
     public INedTypeInfo getToplevelOrInnerNedType(String qualifiedName, IProject context);
 
     /**
-	 * Looks up the name in the given context, and returns the NED type info,
-	 * or null if it does not exist. Considers imports, etc; inner types are
-	 * also handled.
-	 * @param name  May be a simple name or a qualified name; cannot be null
-	 * @param context May not be null.
-	 */
-	public INedTypeInfo lookupNedType(String name, INedTypeLookupContext context);
+     * Looks up the name in the given context, and returns the NED type info,
+     * or null if it does not exist. Considers imports, etc; inner types are
+     * also handled.
+     * @param name  May be a simple name or a qualified name; cannot be null
+     * @param context May not be null.
+     */
+    public INedTypeInfo lookupNedType(String name, INedTypeLookupContext context);
 
     /**
      * Determines the actual type for a "like" submodule or channel, or null if
@@ -337,56 +337,56 @@ public interface INedTypeResolver {
      * "no such type", which would be very misleading.) The caller should check
      * that the returned type actually implements interfaceType.
      */
-	public INedTypeInfo lookupLikeType(String name, INedTypeInfo interfaceType, IProject context);
+    public INedTypeInfo lookupLikeType(String name, INedTypeInfo interfaceType, IProject context);
 
     /**
      * Return all NED type names matching the predicate, and defined in the given
-     * context. For NedFileElement context this means all the top level type elements defined in 
-     * the given file, for CompoundModule context it returns all inner types (including 
+     * context. For NedFileElement context this means all the top level type elements defined in
+     * the given file, for CompoundModule context it returns all inner types (including
      * the inherited ones if any). Returned names are qualified
      */
     public Set<String> getLocalTypeNames(INedTypeLookupContext context, IPredicate predicate);
 
     /**
-	 * Returns all valid toplevel (non-inner) module names in the NED files,
-	 * from the given project and its dependent projects.
-	 * Returned names are fully qualified.
-	 */
-	public Set<String> getModuleQNames(IProject context);
+     * Returns all valid toplevel (non-inner) module names in the NED files,
+     * from the given project and its dependent projects.
+     * Returned names are fully qualified.
+     */
+    public Set<String> getModuleQNames(IProject context);
 
     /**
-	 * Returns all valid toplevel (non-inner) network names in the NED files,
-	 * from the given project and its dependent projects.
-	 * Returned names are fully qualified.
-	 */
-	public Set<String> getNetworkQNames(IProject context);
+     * Returns all valid toplevel (non-inner) network names in the NED files,
+     * from the given project and its dependent projects.
+     * Returned names are fully qualified.
+     */
+    public Set<String> getNetworkQNames(IProject context);
 
-	/**
-	 * Returns all valid toplevel (non-inner) channel names in the NED files,
-	 * from the given project and its dependent projects.
-	 * Returned names are fully qualified.
-	 */
-	public Set<String> getChannelQNames(IProject context);
+    /**
+     * Returns all valid toplevel (non-inner) channel names in the NED files,
+     * from the given project and its dependent projects.
+     * Returned names are fully qualified.
+     */
+    public Set<String> getChannelQNames(IProject context);
 
-	/**
-	 * Returns all valid toplevel (non-inner) module interface names in the NED files,
-	 * from the given project and its dependent projects.
-	 * Returned names are fully qualified.
-	 */
-	public Set<String> getModuleInterfaceQNames(IProject context);
+    /**
+     * Returns all valid toplevel (non-inner) module interface names in the NED files,
+     * from the given project and its dependent projects.
+     * Returned names are fully qualified.
+     */
+    public Set<String> getModuleInterfaceQNames(IProject context);
 
-	/**
-	 * Returns all valid toplevel (non-inner) channel interface names in the NED files,
-	 * from the given project and its dependent projects.
-	 * Returned names are fully qualified.
-	 */
-	public Set<String> getChannelInterfaceQNames(IProject context);
+    /**
+     * Returns all valid toplevel (non-inner) channel interface names in the NED files,
+     * from the given project and its dependent projects.
+     * Returned names are fully qualified.
+     */
+    public Set<String> getChannelInterfaceQNames(IProject context);
 
-	/**
-	 * Convenience method. Calls getPropertyFor(nedFileElement,propertyName),
-	 * and if a property was found, returns its simple value (getSimpleValue());
-	 * otherwise returns null.
-	 */
+    /**
+     * Convenience method. Calls getPropertyFor(nedFileElement,propertyName),
+     * and if a property was found, returns its simple value (getSimpleValue());
+     * otherwise returns null.
+     */
     public String getSimplePropertyFor(NedFileElementEx nedFileElement, String propertyName);
 
     /**
@@ -420,7 +420,7 @@ public interface INedTypeResolver {
      * Returns true if the given ned type info is a descriptor for a built-in type.
      */
     public boolean isBuiltInDeclaration(INedTypeInfo typeInfo);
-    
+
     /**
      * Generate errors for duplicate types; exposed for NedValidationJob.
      */

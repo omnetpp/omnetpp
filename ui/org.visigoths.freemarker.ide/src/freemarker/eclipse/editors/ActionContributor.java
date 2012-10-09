@@ -18,7 +18,7 @@ public class ActionContributor extends TextEditorActionContributor {
 
     public ActionContributor() {
         super();
-        
+
         // Currently we do not use resource bundles (the text is coming from the action behind the retargetable action)
         fContentAssistProposal= new RetargetTextEditorAction(EditorMessages.getResourceBundle(), "ContentAssistProposal.");
         fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);

@@ -16,17 +16,17 @@ import org.omnetpp.scave.editors.DatasetEditor;
 
 public class CopyAction extends Action {
 
-	private final IWorkbenchWindow window;
+    private final IWorkbenchWindow window;
 
-	public CopyAction(IWorkbenchWindow window) {
-		this.window = window;
-	}
+    public CopyAction(IWorkbenchWindow window) {
+        this.window = window;
+    }
 
-	public void run() {
-		IEditorPart editor = window.getActivePage().getActiveEditor();
-		if (editor instanceof DatasetEditor) {
-			DatasetEditor dsEditor = (DatasetEditor)editor;
-			dsEditor.getFilterPanel().doCopy();
-		}
-	}
+    public void run() {
+        IEditorPart editor = window.getActivePage().getActiveEditor();
+        if (editor instanceof DatasetEditor) {
+            DatasetEditor dsEditor = (DatasetEditor)editor;
+            dsEditor.getFilterPanel().doCopy();
+        }
+    }
 }

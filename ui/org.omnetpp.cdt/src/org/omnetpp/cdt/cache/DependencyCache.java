@@ -415,9 +415,9 @@ public class DependencyCache {
             IIndexFileLocation fileLocation = IndexLocationFactory.getWorkspaceIFL(file);
             IIndexFile[] indexFiles = lockedIndex.getFiles(fileLocation);
             if (indexFiles.length == 0) {
-                // File not in index. Now, normally all cc/h files ARE in the index. However, it may happen (quite 
-                // rarely though) that a header file which is not included by any cc or h file does not immediately 
-                // make it to the index. In the OMNeT++ IDE this can happen when a project is built for the first time: 
+                // File not in index. Now, normally all cc/h files ARE in the index. However, it may happen (quite
+                // rarely though) that a header file which is not included by any cc or h file does not immediately
+                // make it to the index. In the OMNeT++ IDE this can happen when a project is built for the first time:
                 // if an RSVPPacket.h is only included into RSVPPathMsg.msg but RSVPPathMsg_m.cc does not exist yet,
                 // CDT sometimes thinks that RSCPPacket.h is an unused header file and does not index it.
                 // The workaround is to parse the file by means of ITranslationUnit. (We do need the includes from it,
@@ -712,12 +712,12 @@ public class DependencyCache {
     }
 
     public void dumpPerFileDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
-    	Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project, monitor);
-    	for(IContainer con : perFileDependencies.keySet()) {
-    		Debug.println("folder: "+con.getFullPath());
-    		for(IFile file : perFileDependencies.get(con).keySet())
-    			Debug.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
-    	}
+        Map<IContainer, Map<IFile, Set<IFile>>> perFileDependencies = getPerFileDependencies(project, monitor);
+        for(IContainer con : perFileDependencies.keySet()) {
+            Debug.println("folder: "+con.getFullPath());
+            for(IFile file : perFileDependencies.get(con).keySet())
+                Debug.println("  file: "+file.getName()+": "+perFileDependencies.get(con).get(file).toString());
+        }
     }
 
     protected void dumpProjectDelta(ICDescriptionDelta d, String indent) {

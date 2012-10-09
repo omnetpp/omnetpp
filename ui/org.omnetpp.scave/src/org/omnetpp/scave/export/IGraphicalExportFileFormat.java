@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Interface for graphical export file formats
- * 
+ *
  * @author tomi
  */
 public interface IGraphicalExportFileFormat {

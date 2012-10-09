@@ -16,13 +16,13 @@ import org.eclipse.swt.widgets.Control;
  * @author Andras
  */
 public interface IHTMLHoverProvider {
-	/**
-	 * Return a tooltip, or null if there is no tooltip to be shown.
-	 * The (x,y) coordinates are relative to the widget.
-	 *
-	 * @param control 	the control which is hovered over
-	 * @param x 		the x coordinate of the mouse cursor
-	 * @param y			the y coordinate of the mouse cursor
-	 */
-	HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y);
+    /**
+     * Return a tooltip, or null if there is no tooltip to be shown.
+     * The (x,y) coordinates are relative to the widget.
+     *
+     * @param control   the control which is hovered over
+     * @param x         the x coordinate of the mouse cursor
+     * @param y         the y coordinate of the mouse cursor
+     */
+    HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y);
 }

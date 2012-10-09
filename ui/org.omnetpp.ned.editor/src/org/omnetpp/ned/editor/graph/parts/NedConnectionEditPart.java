@@ -46,11 +46,11 @@ import org.omnetpp.ned.model.pojo.ConnectionGroupElement;
 public class NedConnectionEditPart extends AbstractConnectionEditPart
                     implements IReadOnlySupport, INedModelProvider {
 
-	private EditPart sourceEditPartEx;
-	private EditPart targetEditPartEx;
+    private EditPart sourceEditPartEx;
+    private EditPart targetEditPartEx;
     private boolean editable = true;
 
-	@Override
+    @Override
     public void activate() {
         if (isActive()) return;
         super.activate();
@@ -64,27 +64,27 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
 
     @Override
     public void activateFigure() {
-    	// add the connection to the compound module's connection layer instead of the global one
-    	((CompoundModuleEditPart)getParent()).getFigure().
-    	     getSubmoduleArea().getConnectionLayer().add(getConnectionFigure());
+        // add the connection to the compound module's connection layer instead of the global one
+        ((CompoundModuleEditPart)getParent()).getFigure().
+             getSubmoduleArea().getConnectionLayer().add(getConnectionFigure());
     }
 
     @Override
     public void deactivateFigure() {
-    	// remove the connection figure from the parent
-    	getFigure().getParent().remove(getFigure());
-    	getConnectionFigure().setSourceAnchor(null);
-    	getConnectionFigure().setTargetAnchor(null);
+        // remove the connection figure from the parent
+        getFigure().getParent().remove(getFigure());
+        getConnectionFigure().setSourceAnchor(null);
+        getConnectionFigure().setTargetAnchor(null);
     }
 
     @Override
     public EditPart getSource() {
-    	return sourceEditPartEx;
+        return sourceEditPartEx;
     }
 
     @Override
     public EditPart getTarget() {
-    	return targetEditPartEx;
+        return targetEditPartEx;
     }
 
     /**
@@ -95,21 +95,21 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
      */
     @Override
     public void setSource(EditPart editPart) {
-    	if (sourceEditPartEx == editPart)
-    		return;
+        if (sourceEditPartEx == editPart)
+            return;
 
-    	sourceEditPartEx = editPart;
-    	if (sourceEditPartEx != null) {
-    		// attach the connection edit part to the compound module as a parent
-        	if (sourceEditPartEx instanceof CompoundModuleEditPart)
-        		setParent(sourceEditPartEx);
-        	else if (sourceEditPartEx instanceof SubmoduleEditPart)
-        		setParent(sourceEditPartEx.getParent());
-    	}
-    	else if (targetEditPartEx == null)
-    		setParent(null);
-    	if (sourceEditPartEx != null && targetEditPartEx != null)
-    		refresh();
+        sourceEditPartEx = editPart;
+        if (sourceEditPartEx != null) {
+            // attach the connection edit part to the compound module as a parent
+            if (sourceEditPartEx instanceof CompoundModuleEditPart)
+                setParent(sourceEditPartEx);
+            else if (sourceEditPartEx instanceof SubmoduleEditPart)
+                setParent(sourceEditPartEx.getParent());
+        }
+        else if (targetEditPartEx == null)
+            setParent(null);
+        if (sourceEditPartEx != null && targetEditPartEx != null)
+            refresh();
     }
 
     /**
@@ -119,20 +119,20 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
      */
     @Override
     public void setTarget(EditPart editPart) {
-    	if (targetEditPartEx == editPart)
-    		return;
-    	targetEditPartEx = editPart;
-    	if (targetEditPartEx != null) {
-    		// attach the connection edit part to the compound module as a parent
-        	if (targetEditPartEx instanceof CompoundModuleEditPart)
-        		setParent(targetEditPartEx);
-        	else if (targetEditPartEx instanceof SubmoduleEditPart)
-        		setParent(targetEditPartEx.getParent());
-    	}
-    	else if (sourceEditPartEx == null)
-    		setParent(null);
-    	if (sourceEditPartEx != null && targetEditPartEx != null)
-    		refresh();
+        if (targetEditPartEx == editPart)
+            return;
+        targetEditPartEx = editPart;
+        if (targetEditPartEx != null) {
+            // attach the connection edit part to the compound module as a parent
+            if (targetEditPartEx instanceof CompoundModuleEditPart)
+                setParent(targetEditPartEx);
+            else if (targetEditPartEx instanceof SubmoduleEditPart)
+                setParent(targetEditPartEx.getParent());
+        }
+        else if (sourceEditPartEx == null)
+            setParent(null);
+        if (sourceEditPartEx != null && targetEditPartEx != null)
+            refresh();
     }
 
     /**
@@ -152,7 +152,7 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
         ConnectionFigure conn = new ConnectionFigure();
         return conn;
     }
-    
+
     @Override
     public ConnectionFigure getConnectionFigure() {
         return (ConnectionFigure)super.getConnectionFigure();
@@ -182,7 +182,7 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
         }
         if (isConditional || isGroup)
             cfig.setMidpointDecoration(new ConnectionKindFigure(isConditional, isGroup));
-        
+
         // set the error marker on the figure
         ITooltipTextProvider textProvider = new ITooltipTextProvider() {
             public String getTooltipText(int x, int y) {
@@ -235,7 +235,7 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
             // get the command stack of the active editor and execute the command with it
             IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
             if (activeEditor instanceof NedEditor) {
-                Command command = dialog.getResultCommand();            
+                Command command = dialog.getResultCommand();
                 ((NedEditor)activeEditor).getGraphEditor().getEditDomain().getCommandStack().execute(command);
             }
         }
@@ -280,10 +280,10 @@ public class NedConnectionEditPart extends AbstractConnectionEditPart
 
     public INedTypeElement getNedTypeElementToOpen() {
         INedTypeElement typeToOpen = getModel().getEffectiveTypeRef();
-        // detect built-in types (that are not defined in a file) and return null (they cannot be opened) 
+        // detect built-in types (that are not defined in a file) and return null (they cannot be opened)
         if (typeToOpen != null && typeToOpen.getNedTypeInfo().getNedFile()==null)
             return null;
-        
+
         return typeToOpen;  // open the effective type if pressed F3
     }
 }

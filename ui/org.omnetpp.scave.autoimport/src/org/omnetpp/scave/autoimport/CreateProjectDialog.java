@@ -36,59 +36,59 @@ import org.eclipse.swt.widgets.Text;
 
 
 /**
- * Offer creating a project in the given directory or one of its ancestors, 
+ * Offer creating a project in the given directory or one of its ancestors,
  * based on user's choice (combo box).
- * 
+ *
  * @author Andras
  */
 public class CreateProjectDialog extends TitleAreaDialog {
-	// dialog config
+    // dialog config
     private String message;
-	private IProjectDescription[] descriptions;
+    private IProjectDescription[] descriptions;
 
-	// widgets
-	private Text projectNameText;
-	private ComboViewer combo;
+    // widgets
+    private Text projectNameText;
+    private ComboViewer combo;
     private Button okButton;
-    
+
     // result
     private IProjectDescription descriptionResult;
 
     private boolean insideValidation;
 
     public CreateProjectDialog(Shell parentShell, String message, IProjectDescription[] descriptions) {
-		super(parentShell);
+        super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
-		this.descriptions = descriptions;
-		this.message = message;
-	}
-
-	@Override
-    protected void configureShell(Shell shell) {
-        super.configureShell(shell);
-		shell.setText("Create Project");
+        this.descriptions = descriptions;
+        this.message = message;
     }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
+    @Override
+    protected void configureShell(Shell shell) {
+        super.configureShell(shell);
+        shell.setText("Create Project");
+    }
+
+    @Override
+    protected Control createDialogArea(Composite parent) {
         setTitle("Create Project");
         setMessage(message);
 
-		Composite dialogArea = (Composite) super.createDialogArea(parent);
+        Composite dialogArea = (Composite) super.createDialogArea(parent);
 
         Composite composite = new Composite(dialogArea, SWT.NONE);
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(2,false));
 
-		createLabel(composite, "Project root:", parent.getFont());
-		combo = new ComboViewer(composite, SWT.BORDER | SWT.READ_ONLY);
-		combo.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        createLabel(composite, "Project root:", parent.getFont());
+        combo = new ComboViewer(composite, SWT.BORDER | SWT.READ_ONLY);
+        combo.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
         createLabel(composite, "Name:", parent.getFont());
         projectNameText = new Text(composite, SWT.BORDER);
         projectNameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		// create input
+        // create input
         IProjectDescription firstExistingDescription = null;
         for (IProjectDescription description : descriptions)
             if (firstExistingDescription==null && existsOnDisk(description))
@@ -111,7 +111,7 @@ public class CreateProjectDialog extends TitleAreaDialog {
             }
         });
         combo.setInput(descriptions);
-        
+
         IProjectDescription initialSelection = firstExistingDescription;
         if (initialSelection == null)
             initialSelection = descriptions[0];
@@ -137,8 +137,8 @@ public class CreateProjectDialog extends TitleAreaDialog {
         // focus on first field
         combo.getCombo().setFocus();
 
-		return composite;
-	}
+        return composite;
+    }
 
     @SuppressWarnings("deprecation")
     private boolean existsOnDisk(IProjectDescription desc) {
@@ -146,15 +146,15 @@ public class CreateProjectDialog extends TitleAreaDialog {
     }
 
     protected static Label createLabel(Composite parent, String text, Font font) {
-		Label label = new Label(parent, SWT.WRAP);
-		label.setText(text);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
-		label.setFont(font);
-		return label;
-	}
+        Label label = new Label(parent, SWT.WRAP);
+        label.setText(text);
+        label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
+        label.setFont(font);
+        return label;
+    }
 
-	@Override
-	protected void createButtonsForButtonBar(Composite parent) {
+    @Override
+    protected void createButtonsForButtonBar(Composite parent) {
         // create OK and Cancel buttons by default
         okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
@@ -170,31 +170,31 @@ public class CreateProjectDialog extends TitleAreaDialog {
         projectNameText.selectAll();
     }
 
-	protected void validateDialogContents() {
-		// prevent notification loops
-		if (insideValidation) 
-		    return;
-		insideValidation = true;
-		
-		boolean hasError = false;
-		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+    protected void validateDialogContents() {
+        // prevent notification loops
+        if (insideValidation)
+            return;
+        insideValidation = true;
 
-		String projectName = projectNameText.getText();
-		IStatus status = workspace.validateName(projectName, IResource.PROJECT);
-		if (status.getSeverity() == IStatus.ERROR) {
+        boolean hasError = false;
+
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
+        String projectName = projectNameText.getText();
+        IStatus status = workspace.validateName(projectName, IResource.PROJECT);
+        if (status.getSeverity() == IStatus.ERROR) {
             setErrorMessage(status.getMessage());
             hasError = true;
-		}
-		else if (workspace.getRoot().getProject(projectName).exists()) {
-		    setErrorMessage("A project named '" + projectName + "' already exists.");
-		    hasError = true;
-		}
-		else {
-		    // modify name in the project description
-	        IProjectDescription description = getComboSelection();
-	        description.setName(projectName);
-		}
+        }
+        else if (workspace.getRoot().getProject(projectName).exists()) {
+            setErrorMessage("A project named '" + projectName + "' already exists.");
+            hasError = true;
+        }
+        else {
+            // modify name in the project description
+            IProjectDescription description = getComboSelection();
+            description.setName(projectName);
+        }
 
         if (!hasError)
             setErrorMessage(null);
@@ -202,23 +202,23 @@ public class CreateProjectDialog extends TitleAreaDialog {
         if (okButton != null)  // it is initially null
             okButton.setEnabled(!hasError);
 
-		insideValidation = false;
-	}
+        insideValidation = false;
+    }
 
     protected IProjectDescription getComboSelection() {
         IStructuredSelection selection = (IStructuredSelection)combo.getSelection();
         IProjectDescription description = (IProjectDescription) selection.getFirstElement();
         return description;
     }
-	
+
     @Override
-	protected void okPressed() {
-    	// save dialog state into variables, so that client can retrieve them after the dialog was disposed
-        descriptionResult = getComboSelection(); 
+    protected void okPressed() {
+        // save dialog state into variables, so that client can retrieve them after the dialog was disposed
+        descriptionResult = getComboSelection();
         super.okPressed();
     }
 
-	public IProjectDescription getResult() {
-		return descriptionResult;
-	}
+    public IProjectDescription getResult() {
+        return descriptionResult;
+    }
 }

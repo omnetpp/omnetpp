@@ -17,24 +17,24 @@ import org.omnetpp.common.simulation.MessageModel;
 public class CreatePassengerAnimation extends AbstractInfiniteAnimation {
     private MessageModel message;
 
-	public CreatePassengerAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, MessageModel message) {
-		super(animationController, eventNumber, simulationTime);
-		this.message = message;
-	}
+    public CreatePassengerAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, MessageModel message) {
+        super(animationController, eventNumber, simulationTime);
+        this.message = message;
+    }
 
-	@Override
-	public void activate() {
-	    super.activate();
-	    IFigure figure = new ImageFigure();
+    @Override
+    public void activate() {
+        super.activate();
+        IFigure figure = new ImageFigure();
         animationController.setFigure(message, figure);
-	    animationController.getAnimationCanvas().addFigure(figure);
-	}
+        animationController.getAnimationCanvas().addFigure(figure);
+    }
 
-	@Override
-	public void deactivate() {
-	    super.deactivate();
+    @Override
+    public void deactivate() {
+        super.deactivate();
         IFigure figure = animationController.getFigure(message, ImageFigure.class);
         animationController.setFigure(message, ImageFigure.class, null);
         animationController.getAnimationCanvas().removeFigure(figure);
-	}
+    }
 }

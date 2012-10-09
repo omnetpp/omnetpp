@@ -15,12 +15,12 @@ import org.omnetpp.scave.model.ScalarDatasetStrategy;
  */
 public class ScalarDatasetEditor extends DatasetEditor {
 
-	private static IDatasetStrategy strategy = new ScalarDatasetStrategy();
+    private static IDatasetStrategy strategy = new ScalarDatasetStrategy();
 
-	public ScalarDatasetEditor() {
-		super(strategy,
-			new IDatasetEditorPage[] {
-				new FilterPanelPage(strategy)
-			});
-	}
+    public ScalarDatasetEditor() {
+        super(strategy,
+            new IDatasetEditorPage[] {
+                new FilterPanelPage(strategy)
+            });
+    }
 }

@@ -45,74 +45,74 @@ import org.omnetpp.ned.model.pojo.SimpleModuleElement;
  * @author Andras
  */
 public class PerObjectConfigKeyContentProposalProvider extends ContentProposalProvider {
-	private String section;
-	private boolean addEqualSign = false;
-	private IReadonlyInifileDocument doc;
-	private InifileAnalyzer analyzer;
+    private String section;
+    private boolean addEqualSign = false;
+    private IReadonlyInifileDocument doc;
+    private InifileAnalyzer analyzer;
 
-	public PerObjectConfigKeyContentProposalProvider(String section, boolean addEqualSign, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
-		super(true);
-		this.section = section;
-		this.addEqualSign = addEqualSign;
-		this.doc = doc;
-		this.analyzer = analyzer;
-	}
+    public PerObjectConfigKeyContentProposalProvider(String section, boolean addEqualSign, IReadonlyInifileDocument doc, InifileAnalyzer analyzer) {
+        super(true);
+        this.section = section;
+        this.addEqualSign = addEqualSign;
+        this.doc = doc;
+        this.analyzer = analyzer;
+    }
 
-	public void configure(String section, boolean addEqualSign) {
-		this.section = section;
-		this.addEqualSign = addEqualSign;
-	}
+    public void configure(String section, boolean addEqualSign) {
+        this.section = section;
+        this.addEqualSign = addEqualSign;
+    }
 
-	@Override
-	protected List<IContentProposal> getProposalCandidates(String prefix) {
-		ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
-		if (section != null && prefix.contains(".")) {
-			String prefixBase = prefix.substring(0, prefix.lastIndexOf('.'));
-			Set<ObjectKind> possibleObjectKinds = getPossibleObjectKinds(prefixBase);
-			for (ConfigOption e : ConfigRegistry.getPerObjectOptions()) {
-			    if (possibleObjectKinds.contains(e.getObjectKind())) {
-    			    String content = prefixBase + "." + e.getName() + (addEqualSign ? " = " : "");
-    			    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc), getImage(e.getObjectKind())));
-			    }
-			}
-		}
-		return sort(result);
-	}
+    @Override
+    protected List<IContentProposal> getProposalCandidates(String prefix) {
+        ArrayList<IContentProposal> result = new ArrayList<IContentProposal>();
+        if (section != null && prefix.contains(".")) {
+            String prefixBase = prefix.substring(0, prefix.lastIndexOf('.'));
+            Set<ObjectKind> possibleObjectKinds = getPossibleObjectKinds(prefixBase);
+            for (ConfigOption e : ConfigRegistry.getPerObjectOptions()) {
+                if (possibleObjectKinds.contains(e.getObjectKind())) {
+                    String content = prefixBase + "." + e.getName() + (addEqualSign ? " = " : "");
+                    result.add(new ContentProposal(content, content, getConfigHelpText(e, section, doc), getImage(e.getObjectKind())));
+                }
+            }
+        }
+        return sort(result);
+    }
 
-	/**
-	 * Generate help text for the given config entry, to be displayed by the content assistant.
-	 */
-	protected static String getConfigHelpText(ConfigOption entry, String section, IReadonlyInifileDocument doc) {
-		String key = entry.getName();
-		String text = "";
+    /**
+     * Generate help text for the given config entry, to be displayed by the content assistant.
+     */
+    protected static String getConfigHelpText(ConfigOption entry, String section, IReadonlyInifileDocument doc) {
+        String key = entry.getName();
+        String text = "";
 
-		// generate "standard" documentation for it
-		text += "<object-fullpath-pattern>." + key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
-		if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
-			text += ", default: " + entry.getDefaultValue();
-		if (entry.getUnit()!=null)
-			text += ", unit: "+entry.getUnit();
-		text += ">\n\n";
-		text += StringUtils.breakLines(entry.getDescription(), 50) + "\n";  // default tooltip is ~55 chars wide (text is not wrapped: longer lines simply not fully visible!)
+        // generate "standard" documentation for it
+        text += "<object-fullpath-pattern>." + key + " = <" + entry.getDataType().name().replaceFirst("CFG_", "");
+        if (entry.getDefaultValue()!=null && !entry.getDefaultValue().equals(""))
+            text += ", default: " + entry.getDefaultValue();
+        if (entry.getUnit()!=null)
+            text += ", unit: "+entry.getUnit();
+        text += ">\n\n";
+        text += StringUtils.breakLines(entry.getDescription(), 50) + "\n";  // default tooltip is ~55 chars wide (text is not wrapped: longer lines simply not fully visible!)
 
-		return text;
-	}
-	
-	protected static Image getImage(ObjectKind kind) {
-	    switch (kind) {
-	    case KIND_PARAMETER: return InifileUtils.ICON_PROPOSAL_PARAMETERCONFIG;
-	    case KIND_STATISTIC: return InifileUtils.ICON_PROPOSAL_STATISTICCONFIG;
-	    case KIND_MODULE:
-	    case KIND_SIMPLE_MODULE:
-	    case KIND_UNSPECIFIED_TYPE: return InifileUtils.ICON_PROPOSAL_MODULECONFIG;
-	    case KIND_SCALAR: return InifileUtils.ICON_PROPOSAL_SCALARCONFIG;
-	    case KIND_VECTOR: return InifileUtils.ICON_PROPOSAL_VECTORCONFIG;
-	    case KIND_OTHER: //TODO
-	    }
-	    return null;
-	}
-	
-	protected Set<ObjectKind> getPossibleObjectKinds(String objectNamePattern) {
+        return text;
+    }
+
+    protected static Image getImage(ObjectKind kind) {
+        switch (kind) {
+        case KIND_PARAMETER: return InifileUtils.ICON_PROPOSAL_PARAMETERCONFIG;
+        case KIND_STATISTIC: return InifileUtils.ICON_PROPOSAL_STATISTICCONFIG;
+        case KIND_MODULE:
+        case KIND_SIMPLE_MODULE:
+        case KIND_UNSPECIFIED_TYPE: return InifileUtils.ICON_PROPOSAL_MODULECONFIG;
+        case KIND_SCALAR: return InifileUtils.ICON_PROPOSAL_SCALARCONFIG;
+        case KIND_VECTOR: return InifileUtils.ICON_PROPOSAL_VECTORCONFIG;
+        case KIND_OTHER: //TODO
+        }
+        return null;
+    }
+
+    protected Set<ObjectKind> getPossibleObjectKinds(String objectNamePattern) {
         Set<ObjectKind> objectKinds = EnumSet.noneOf(ObjectKind.class);
 
         PatternMatcher nameMatcher = new PatternMatcher(objectNamePattern, true, true, true);
@@ -130,7 +130,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
         } catch (ParamResolutionTimeoutException e) {
             return objectKinds;
         }
-        
+
         // match any parameter?
         for (ParamResolution paramResolution : paramResolutions) {
             if (paramResolution.type != ParamResolution.ParamResolutionType.NED) {
@@ -141,7 +141,7 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
                 }
             }
         }
-        
+
         // match any module name?
         Set<ObjectKind> moduleKinds = EnumSet.of(ObjectKind.KIND_MODULE, ObjectKind.KIND_SIMPLE_MODULE, ObjectKind.KIND_UNSPECIFIED_TYPE);
         for (Map.Entry<String, ISubmoduleOrConnection> entry : modules.entrySet()) {
@@ -182,5 +182,5 @@ public class PerObjectConfigKeyContentProposalProvider extends ContentProposalPr
         //TODO add KIND_OTHER
 
         return objectKinds;
-	}
+    }
 }

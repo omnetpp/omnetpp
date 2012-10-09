@@ -34,20 +34,20 @@ import org.eclipse.emf.ecore.EObject;
  * @generated
  */
 public interface ChartSheets extends EObject {
-	/**
+    /**
      * Returns the value of the '<em><b>Chart Sheets</b></em>' containment reference list.
      * The list contents are of type {@link org.omnetpp.scave.model.ChartSheet}.
      * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Chart Sheets</em>' containment reference isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Chart Sheets</em>' containment reference isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
      * @return the value of the '<em>Chart Sheets</em>' containment reference list.
      * @see org.omnetpp.scave.model.ScaveModelPackage#getChartSheets_ChartSheets()
      * @model containment="true"
      * @generated
      */
-	EList<ChartSheet> getChartSheets();
+    EList<ChartSheet> getChartSheets();
 
 } // ChartSheets

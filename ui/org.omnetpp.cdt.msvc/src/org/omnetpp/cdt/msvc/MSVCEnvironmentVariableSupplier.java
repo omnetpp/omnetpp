@@ -37,18 +37,18 @@ import org.osgi.framework.Version;
  * @author rhornig
  */
 public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmentVariableSupplier,
-	    IManagedIsToolChainSupported {
+        IManagedIsToolChainSupported {
 
-	public IBuildEnvironmentVariable getVariable(String variableName,
-			IConfiguration configuration, IEnvironmentVariableProvider provider) {
-		return createVars().get(variableName);
-	}
+    public IBuildEnvironmentVariable getVariable(String variableName,
+            IConfiguration configuration, IEnvironmentVariableProvider provider) {
+        return createVars().get(variableName);
+    }
 
-	public IBuildEnvironmentVariable[] getVariables(
-			IConfiguration configuration, IEnvironmentVariableProvider provider) {
+    public IBuildEnvironmentVariable[] getVariables(
+            IConfiguration configuration, IEnvironmentVariableProvider provider) {
         Map<String, IBuildEnvironmentVariable> vars = createVars();
-		return vars.values().toArray(new IBuildEnvironmentVariable[vars.size()]);
-	}
+        return vars.values().toArray(new IBuildEnvironmentVariable[vars.size()]);
+    }
 
     /**
      * Returns the VS dir from the preferences; null if unset.
@@ -69,14 +69,14 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
     /**
      * Returns the SDK dir from the preferences; null if unset.
      */
-	public static String getSDKDir() {
-	    String sdkDir = Activator.getDefault().getPreferenceStore().getString(MSVCPreferencePage.PREFKEY_SDKDIR);
-	    return StringUtils.isEmpty(sdkDir) ? null : sdkDir;
-	}
+    public static String getSDKDir() {
+        String sdkDir = Activator.getDefault().getPreferenceStore().getString(MSVCPreferencePage.PREFKEY_SDKDIR);
+        return StringUtils.isEmpty(sdkDir) ? null : sdkDir;
+    }
 
-	/**
-	 * Returns true if the PATH environment variable should be appended to the build-time path.
-	 */
+    /**
+     * Returns true if the PATH environment variable should be appended to the build-time path.
+     */
     public static boolean getAppendPath() {
         return Activator.getDefault().getPreferenceStore().getBoolean(MSVCPreferencePage.PREFKEY_APPENDPATH);
     }
@@ -89,57 +89,57 @@ public class MSVCEnvironmentVariableSupplier implements IConfigurationEnvironmen
         variables.put(var.getName(), var);
     }
 
-	private Map<String, IBuildEnvironmentVariable> createVars() {
-	    Map<String, IBuildEnvironmentVariable> vars = new HashMap<String, IBuildEnvironmentVariable>();
+    private Map<String, IBuildEnvironmentVariable> createVars() {
+        Map<String, IBuildEnvironmentVariable> vars = new HashMap<String, IBuildEnvironmentVariable>();
 
-		// add OMNETPP_ROOT variable because it is needed by the nmake scripts
+        // add OMNETPP_ROOT variable because it is needed by the nmake scripts
         addvar(vars, new BuildEnvironmentVariable("OMNETPP_ROOT", OmnetppMainPlugin.getOmnetppRootDir(), IBuildEnvironmentVariable.ENVVAR_REPLACE));
 
         String vcDir = getVCDir();
-		if (vcDir == null)
-			return vars;
+        if (vcDir == null)
+            return vars;
 
-		// The SDK Location
-		String sdkDir = getSDKDir();
+        // The SDK Location
+        String sdkDir = getSDKDir();
 
-		// INCLUDE
-		StringBuffer buff = new StringBuffer();
+        // INCLUDE
+        StringBuffer buff = new StringBuffer();
 
-		buff.append(new Path(vcDir).append("INCLUDE").toOSString()+";");
+        buff.append(new Path(vcDir).append("INCLUDE").toOSString()+";");
 
-		if (sdkDir != null)
-		    buff.append(new Path(sdkDir).append("Include").toOSString()+";");
+        if (sdkDir != null)
+            buff.append(new Path(sdkDir).append("Include").toOSString()+";");
 
-		addvar(vars, new BuildEnvironmentVariable("INCLUDE", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
+        addvar(vars, new BuildEnvironmentVariable("INCLUDE", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
-		// LIB
-		buff = new StringBuffer();
-		buff.append(new Path(vcDir).append("LIB").toOSString()+";");
-		if (sdkDir != null)
-		    buff.append(new Path(sdkDir).append("Lib").toOSString()+";");
-		addvar(vars, new BuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
+        // LIB
+        buff = new StringBuffer();
+        buff.append(new Path(vcDir).append("LIB").toOSString()+";");
+        if (sdkDir != null)
+            buff.append(new Path(sdkDir).append("Lib").toOSString()+";");
+        addvar(vars, new BuildEnvironmentVariable("LIB", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
-		// PATH
-		buff = new StringBuffer();
+        // PATH
+        buff = new StringBuffer();
 
         String msysDir = OmnetppMainPlugin.getMsysBinDir();
         if (!StringUtils.isEmpty(msysDir))
             buff.append(msysDir+";");
 
-		String vsDir = getVSDir();
-		if (vsDir != null)
-			buff.append(new Path(vsDir).append("Common7\\IDE").toOSString()+";");
+        String vsDir = getVSDir();
+        if (vsDir != null)
+            buff.append(new Path(vsDir).append("Common7\\IDE").toOSString()+";");
 
-		buff.append(new Path(vcDir).append("Bin").toOSString()+";");
+        buff.append(new Path(vcDir).append("Bin").toOSString()+";");
 
         if (sdkDir != null)
             buff.append(new Path(sdkDir).append("Bin").toOSString()+";");
 
         if (getAppendPath())
             buff.append(System.getenv("PATH")+";");
-		addvar(vars, new BuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
+        addvar(vars, new BuildEnvironmentVariable("PATH", buff.toString(), IBuildEnvironmentVariable.ENVVAR_PREPEND));
 
-		return vars;
-	}
+        return vars;
+    }
 
 }

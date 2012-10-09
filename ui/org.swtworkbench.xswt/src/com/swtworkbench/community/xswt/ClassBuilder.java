@@ -32,16 +32,16 @@ public class ClassBuilder {
             builder = new ClassBuilder();
         return builder;
     }
-    
+
     @SuppressWarnings("unchecked")
     public void importPackage(String packageName) {
         this.imports.addLast(packageName);
     }
-    
+
     public void setExtraClassLoader(ClassLoader classLoader) {
         this.extraClassLoader = classLoader;
     }
-    
+
     public ClassLoader getExtraClassLoader() {
         return extraClassLoader;
     }
@@ -65,7 +65,7 @@ public class ClassBuilder {
         }
         return classLoaders;
     }
-    
+
     @SuppressWarnings("unchecked")
     public Class getClass(String className) throws XSWTException {
         Class result = (Class) this.resolvedClasses.get(className);
@@ -83,7 +83,7 @@ public class ClassBuilder {
             return result;
         throw new XSWTException("Unable to resolve class: " + className + "\nCheck the import node for the necessary package name");
     }
-    
+
     @SuppressWarnings("unchecked")
     protected Class getClass(String className, ClassLoader classLoader) throws XSWTException {
         Class result = null;
@@ -104,7 +104,7 @@ public class ClassBuilder {
                 result = classLoader.loadClass(className);
             } catch (Throwable localThrowable) { }
         }
-        
+
         if (result != null) {
             StyleParser.registerClassConstants(result);
             resolvedClasses.put(className, result);

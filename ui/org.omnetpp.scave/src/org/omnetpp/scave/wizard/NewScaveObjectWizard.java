@@ -43,176 +43,176 @@ import org.omnetpp.scave.editors.forms.ScaveObjectEditFormFactory;
  */
 public class NewScaveObjectWizard extends Wizard {
 
-	private ScaveEditor editor;
-	private EditingDomain domain;
-	private EObject parent;
-	private CommandParameter[] childDescriptors;
-	private CommandParameter newChildDescriptor;
+    private ScaveEditor editor;
+    private EditingDomain domain;
+    private EObject parent;
+    private CommandParameter[] childDescriptors;
+    private CommandParameter newChildDescriptor;
 
-	private TypeSelectionWizardPage typeSelectionPage;
-	private EditFieldsWizardPage editFieldsPage;
+    private TypeSelectionWizardPage typeSelectionPage;
+    private EditFieldsWizardPage editFieldsPage;
 
-	public NewScaveObjectWizard(ScaveEditor editor, EObject parent) {
-		this.editor = editor;
-		this.domain = editor.getEditingDomain();
-		this.parent = parent;
-		setWindowTitle("New Object");
-		setHelpAvailable(false);
-		setNeedsProgressMonitor(false);
-		Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
-		childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
-		Assert.isTrue(childDescriptors.length > 0);
-	}
-
-	public NewScaveObjectWizard(ScaveEditor editor, EObject parent, int index, EObject element) {
-		this.editor = editor;
-		this.domain = editor.getEditingDomain();
-		this.parent = parent;
-		setWindowTitle("New Object");
-		setHelpAvailable(false);
-		setNeedsProgressMonitor(false);
-
-		Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
-		childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
-		Assert.isTrue(childDescriptors.length > 0);
-
-		newChildDescriptor = new CommandParameter(parent, null, element, index);
-	}
-
-	/**
-	 * This is result of the wizard.
-	 */
-	public CommandParameter getNewChildDescriptor() {
-		return newChildDescriptor;
-	}
-
-	private void setNewChildDescriptor(CommandParameter newChildDescriptor) {
-		if (this.newChildDescriptor != newChildDescriptor) {
-			this.newChildDescriptor = newChildDescriptor;
-			editFieldsPage.clearControl();
-		}
-	}
-
-	@Override
-	public void addPages() {
-		if (newChildDescriptor == null) {
-			if (childDescriptors.length > 1) {
-				typeSelectionPage = new TypeSelectionWizardPage("Select type", childDescriptors);
-				addPage(typeSelectionPage);
-			}
-			else if (childDescriptors.length == 1) {
-				newChildDescriptor = childDescriptors[0];
-			}
-		}
-
-		editFieldsPage = new EditFieldsWizardPage("Set Attributes");
-		addPage(editFieldsPage);
-	}
-
-	/**
-     * Delay the creation of controls on the edit page.
-     */
-	@Override
-	public void createPageControls(Composite pageContainer) {
-		if (typeSelectionPage != null)
-			typeSelectionPage.createControl(pageContainer);
-		else
-			editFieldsPage.createControl(pageContainer);
+    public NewScaveObjectWizard(ScaveEditor editor, EObject parent) {
+        this.editor = editor;
+        this.domain = editor.getEditingDomain();
+        this.parent = parent;
+        setWindowTitle("New Object");
+        setHelpAvailable(false);
+        setNeedsProgressMonitor(false);
+        Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
+        childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
+        Assert.isTrue(childDescriptors.length > 0);
     }
 
-	@Override
-	public boolean performCancel() {
-		if (newChildDescriptor != null) {
-			newChildDescriptor = null;
-		}
-		return true;
-	}
+    public NewScaveObjectWizard(ScaveEditor editor, EObject parent, int index, EObject element) {
+        this.editor = editor;
+        this.domain = editor.getEditingDomain();
+        this.parent = parent;
+        setWindowTitle("New Object");
+        setHelpAvailable(false);
+        setNeedsProgressMonitor(false);
 
-	@Override
-	public boolean performFinish() {
-		if (newChildDescriptor != null) {
-			editFieldsPage.setNewChildFeatures();
-			return true;
-		}
-		return false;
-	}
+        Collection<?> descriptors = domain.getNewChildDescriptors(parent, null);
+        childDescriptors = (CommandParameter[])descriptors.toArray(new CommandParameter[descriptors.size()]);
+        Assert.isTrue(childDescriptors.length > 0);
 
-	/**
-	 * This is the first page of the wizard.
-	 *
-	 * The user can select the type of the new object here.
-	 *
-	 */
-	class TypeSelectionWizardPage extends WizardPage {
+        newChildDescriptor = new CommandParameter(parent, null, element, index);
+    }
 
-		private CommandParameter[] childrenDescriptors;
+    /**
+     * This is result of the wizard.
+     */
+    public CommandParameter getNewChildDescriptor() {
+        return newChildDescriptor;
+    }
 
-		protected TypeSelectionWizardPage(String pageName, CommandParameter[] childrenDescriptors) {
-			super(pageName);
-			setTitle("Select Type");
-			setDescription("Select type of object to be created");
-			setPageComplete(false);
+    private void setNewChildDescriptor(CommandParameter newChildDescriptor) {
+        if (this.newChildDescriptor != newChildDescriptor) {
+            this.newChildDescriptor = newChildDescriptor;
+            editFieldsPage.clearControl();
+        }
+    }
 
-			// set descriptors of new children
-			this.childrenDescriptors = childrenDescriptors;
-		}
+    @Override
+    public void addPages() {
+        if (newChildDescriptor == null) {
+            if (childDescriptors.length > 1) {
+                typeSelectionPage = new TypeSelectionWizardPage("Select type", childDescriptors);
+                addPage(typeSelectionPage);
+            }
+            else if (childDescriptors.length == 1) {
+                newChildDescriptor = childDescriptors[0];
+            }
+        }
 
-		/**
-		 * Creates the controls of this page.
-		 */
-		public void createControl(Composite parentComposite) {
-			Group radioGroup = new Group(parentComposite, SWT.NONE);
-			radioGroup.setText("Type");
-			radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-			radioGroup.setLayout(new GridLayout());
-			for (int i = 0; i < childrenDescriptors.length; ++i) {
-				final Button radio = new Button(radioGroup, SWT.RADIO);
-				EClass eClass = ((EObject)childrenDescriptors[i].value).eClass();
-				radio.setText(eClass.getName());
-				radio.setVisible(true);
-				radio.setLayoutData(new GridData());
-				final int index = i;
-				radio.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						handleSelectionChanged(radio, index);
-					}
-				});
-			}
-			setControl(radioGroup);
-		}
+        editFieldsPage = new EditFieldsWizardPage("Set Attributes");
+        addPage(editFieldsPage);
+    }
 
-		/**
-		 * This method called when the selection changed.
-		 * It creates a new object with the selected type.
-		 */
-		private void handleSelectionChanged(Button radio, int index) {
-			if (radio.getSelection())
-				setNewChildDescriptor(childrenDescriptors[index]);
-			setPageComplete(radio.getSelection());
-		}
+    /**
+     * Delay the creation of controls on the edit page.
+     */
+    @Override
+    public void createPageControls(Composite pageContainer) {
+        if (typeSelectionPage != null)
+            typeSelectionPage.createControl(pageContainer);
+        else
+            editFieldsPage.createControl(pageContainer);
+    }
 
-	}
+    @Override
+    public boolean performCancel() {
+        if (newChildDescriptor != null) {
+            newChildDescriptor = null;
+        }
+        return true;
+    }
 
-	/**
-	 * This is the second page of the wizard.
-	 *
-	 * The user can set the properties of the new child here.
-	 * It contains the same controls as the Edit page of child.
-	 */
-	class EditFieldsWizardPage extends WizardPage {
+    @Override
+    public boolean performFinish() {
+        if (newChildDescriptor != null) {
+            editFieldsPage.setNewChildFeatures();
+            return true;
+        }
+        return false;
+    }
 
-		IScaveObjectEditForm form;
-		IScaveObjectEditForm.Listener listener;
+    /**
+     * This is the first page of the wizard.
+     *
+     * The user can select the type of the new object here.
+     *
+     */
+    class TypeSelectionWizardPage extends WizardPage {
 
-		protected EditFieldsWizardPage(String pageName) {
-			super(pageName);
-			setPageComplete(false);
+        private CommandParameter[] childrenDescriptors;
+
+        protected TypeSelectionWizardPage(String pageName, CommandParameter[] childrenDescriptors) {
+            super(pageName);
+            setTitle("Select Type");
+            setDescription("Select type of object to be created");
+            setPageComplete(false);
+
+            // set descriptors of new children
+            this.childrenDescriptors = childrenDescriptors;
+        }
+
+        /**
+         * Creates the controls of this page.
+         */
+        public void createControl(Composite parentComposite) {
+            Group radioGroup = new Group(parentComposite, SWT.NONE);
+            radioGroup.setText("Type");
+            radioGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+            radioGroup.setLayout(new GridLayout());
+            for (int i = 0; i < childrenDescriptors.length; ++i) {
+                final Button radio = new Button(radioGroup, SWT.RADIO);
+                EClass eClass = ((EObject)childrenDescriptors[i].value).eClass();
+                radio.setText(eClass.getName());
+                radio.setVisible(true);
+                radio.setLayoutData(new GridData());
+                final int index = i;
+                radio.addSelectionListener(new SelectionAdapter() {
+                    public void widgetSelected(SelectionEvent e) {
+                        handleSelectionChanged(radio, index);
+                    }
+                });
+            }
+            setControl(radioGroup);
+        }
+
+        /**
+         * This method called when the selection changed.
+         * It creates a new object with the selected type.
+         */
+        private void handleSelectionChanged(Button radio, int index) {
+            if (radio.getSelection())
+                setNewChildDescriptor(childrenDescriptors[index]);
+            setPageComplete(radio.getSelection());
+        }
+
+    }
+
+    /**
+     * This is the second page of the wizard.
+     *
+     * The user can set the properties of the new child here.
+     * It contains the same controls as the Edit page of child.
+     */
+    class EditFieldsWizardPage extends WizardPage {
+
+        IScaveObjectEditForm form;
+        IScaveObjectEditForm.Listener listener;
+
+        protected EditFieldsWizardPage(String pageName) {
+            super(pageName);
+            setPageComplete(false);
             listener = new IScaveObjectEditForm.Listener() {
                 public void editFormChanged(IScaveObjectEditForm form) {
                     updateButtonsAndErrorMessage();
                 }
             };
-		}
+        }
 
         /**
          * Creates the controls of this page.
@@ -235,18 +235,18 @@ public class NewScaveObjectWizard extends Wizard {
             updateButtonsAndErrorMessage();
         }
 
-		/**
-		 * This method called when the type of the child has changed,
-		 * so a new form has to be generated.
-		 * It clears the control of this page, so <code>createControl()</code>
-		 * is called again to generate it.
-		 */
-		void clearControl() {
+        /**
+         * This method called when the type of the child has changed,
+         * so a new form has to be generated.
+         * It clears the control of this page, so <code>createControl()</code>
+         * is called again to generate it.
+         */
+        void clearControl() {
             if (form != null)
                 form.removeChangeListener(listener);
-			setControl(null);
-			setPageComplete(false);
-		}
+            setControl(null);
+            setPageComplete(false);
+        }
 
         /**
          * Update button state and error message.
@@ -278,16 +278,16 @@ public class NewScaveObjectWizard extends Wizard {
         }
 
         /**
-		 * Copies the values on the form to the created object.
-		 * Called when the Finish button pressed.
-		 */
-		void setNewChildFeatures() {
-			EObject newChild = (EObject)newChildDescriptor.value;
-			EStructuralFeature[] features = form.getFeatures();
-			for (int i = 0; i < features.length; ++i) {
-				EStructuralFeature feature = features[i];
-				newChild.eSet(feature, form.getValue(feature));
-			}
-		}
-	}
+         * Copies the values on the form to the created object.
+         * Called when the Finish button pressed.
+         */
+        void setNewChildFeatures() {
+            EObject newChild = (EObject)newChildDescriptor.value;
+            EStructuralFeature[] features = form.getFeatures();
+            for (int i = 0; i < features.length; ++i) {
+                EStructuralFeature feature = features[i];
+                newChild.eSet(feature, form.getValue(feature));
+            }
+        }
+    }
 }

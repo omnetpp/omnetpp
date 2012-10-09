@@ -13,22 +13,22 @@ import java.util.ResourceBundle;
 //XXX possibly remove it; we currently don't use resource bundles
 public class InifileEditorMessages {
 
-	private static final String RESOURCE_BUNDLE= InifileEditorMessages.class.getName();
+    private static final String RESOURCE_BUNDLE= InifileEditorMessages.class.getName();
 
-	private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
+    private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
 
-	private InifileEditorMessages() {
-	}
+    private InifileEditorMessages() {
+    }
 
-	public static String getString(String key) {
-		try {
-			return fgResourceBundle.getString(key);
-		} catch (MissingResourceException e) {
-			return "!" + key + "!";//$NON-NLS-2$ //$NON-NLS-1$
-		}
-	}
+    public static String getString(String key) {
+        try {
+            return fgResourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return "!" + key + "!";//$NON-NLS-2$ //$NON-NLS-1$
+        }
+    }
 
-	public static ResourceBundle getResourceBundle() {
-		return fgResourceBundle;
-	}
+    public static ResourceBundle getResourceBundle() {
+        return fgResourceBundle;
+    }
 }

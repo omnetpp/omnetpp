@@ -11,30 +11,30 @@ import freemarker.eclipse.test.util.TokenList;
  */
 public class XmlScannerTest extends AbstractScannerTestCase {
 
-	public XmlScannerTest(String name) {
-		super(name);
-	}
-	
-	public void setUp() {
-		super.text = "<foobar ${foo}=<#-- -->\"bar\" foo=\"te${bar}<#-- bla ${foo} -->xt\" bar=\"foo\"/>";
-		tokens = new TokenList();
-		tokens.addToken(manager.getXmlToken(), 7);
-		tokens.addToken(manager.getWhitespaceToken(), 1);
-		tokens.addToken(manager.getInterpolationToken(),6);
-		tokens.addToken(manager.getXmlToken(),1);
-		tokens.addToken(manager.getCommentToken(),8);
-		tokens.addToken(manager.getStringToken(),5);
-		tokens.addToken(manager.getWhitespaceToken(), 1);
-		tokens.addToken(manager.getXmlToken(),4);
-		tokens.addToken(manager.getStringToken(),3);
-		tokens.addToken(manager.getInterpolationToken(),6);
-		tokens.addToken(manager.getCommentToken(),19);
-		tokens.addToken(manager.getStringToken(),3);
-		tokens.addToken(manager.getWhitespaceToken(), 1);
-		tokens.addToken(manager.getXmlToken(),4);
-		tokens.addToken(manager.getStringToken(),5);
-		tokens.addToken(manager.getXmlToken(),2);
-		super.scanner = new XmlScanner(super.manager);
-		((XmlScanner)scanner).setDefaultReturnToken(manager.getXmlToken());
-	}
+    public XmlScannerTest(String name) {
+        super(name);
+    }
+
+    public void setUp() {
+        super.text = "<foobar ${foo}=<#-- -->\"bar\" foo=\"te${bar}<#-- bla ${foo} -->xt\" bar=\"foo\"/>";
+        tokens = new TokenList();
+        tokens.addToken(manager.getXmlToken(), 7);
+        tokens.addToken(manager.getWhitespaceToken(), 1);
+        tokens.addToken(manager.getInterpolationToken(),6);
+        tokens.addToken(manager.getXmlToken(),1);
+        tokens.addToken(manager.getCommentToken(),8);
+        tokens.addToken(manager.getStringToken(),5);
+        tokens.addToken(manager.getWhitespaceToken(), 1);
+        tokens.addToken(manager.getXmlToken(),4);
+        tokens.addToken(manager.getStringToken(),3);
+        tokens.addToken(manager.getInterpolationToken(),6);
+        tokens.addToken(manager.getCommentToken(),19);
+        tokens.addToken(manager.getStringToken(),3);
+        tokens.addToken(manager.getWhitespaceToken(), 1);
+        tokens.addToken(manager.getXmlToken(),4);
+        tokens.addToken(manager.getStringToken(),5);
+        tokens.addToken(manager.getXmlToken(),2);
+        super.scanner = new XmlScanner(super.manager);
+        ((XmlScanner)scanner).setDefaultReturnToken(manager.getXmlToken());
+    }
 }

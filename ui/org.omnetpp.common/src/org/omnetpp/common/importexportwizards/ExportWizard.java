@@ -31,7 +31,7 @@ public class ExportWizard extends TemplateBasedWizard implements IExportWizard {
     public void addPages() {
         super.addPages();
     }
-    
+
     @Override
     protected IContainer getFolder() {
         return null;

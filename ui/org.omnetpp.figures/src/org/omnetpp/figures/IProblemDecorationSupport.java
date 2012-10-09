@@ -15,10 +15,10 @@ public interface IProblemDecorationSupport {
     public static final int SEVERITY_WARNING = 1;
     public static final int SEVERITY_INFO = 0;
 
-	/**
+    /**
      * Display a "problem" image decoration on the submodule.
      * @param maxSeverity  any of the IMarker.SEVERITY_xxx constants, or -1 for none
      * @param textProvider callback to get the text to be displayed as a tooltip on hover event
      */
-	void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider);
+    void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider);
 }

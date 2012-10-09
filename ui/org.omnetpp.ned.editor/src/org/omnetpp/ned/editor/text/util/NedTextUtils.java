@@ -144,13 +144,13 @@ public class NedTextUtils {
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getSrcModule(), conn.getSrcGate()));
                 if (textBeforeWord.contains("--") && word.equals(conn.getDestGate()))
                     return createInfo(element, wordRegion, lookupGate(compoundModule, conn.getDestModule(), conn.getDestGate()));
-                
+
                 if (dottedWord.equals(conn.getEffectiveType())) {
                     INedElement declElement = lookupTypeElement(dottedWord, element.getEnclosingLookupContext());
                     return createInfo(element, dottedWordRegion, declElement);
                 }
                 return null;
-                
+
             }
 
             return null; // nothing

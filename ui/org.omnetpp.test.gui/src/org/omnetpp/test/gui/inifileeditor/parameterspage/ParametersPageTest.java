@@ -43,9 +43,9 @@ public class ParametersPageTest extends InifileEditorTestCase {
         // check combo contents, and that tree always contains section fallback chain
         prepareTest(
                 "[General]\n **.par1 = 100\n" +
-        		"[Config Foo]\n **.par2 = 200\n" +
-        		"[Config Bar]\n extends = Foo\n **.par3 = 300\n" +
-        		"[Config Hap]\n extends = Foo\n **.par4 = 400\n");
+                "[Config Foo]\n **.par2 = 200\n" +
+                "[Config Bar]\n extends = Foo\n **.par3 = 300\n" +
+                "[Config Hap]\n extends = Foo\n **.par4 = 400\n");
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         ComboAccess combo = parametersPage.findComboAfterLabel("Config.*");
         TreeAccess parametersTree = parametersPage.findTree();

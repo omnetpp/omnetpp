@@ -13,47 +13,47 @@ package org.omnetpp.common.util;
  * @author tomi
  */
 public class CsvWriter {
-	char separator;
-	String delimiter;
-	StringBuffer buffer;
+    char separator;
+    String delimiter;
+    StringBuffer buffer;
 
-	public CsvWriter() {
-		this(',');
-	}
+    public CsvWriter() {
+        this(',');
+    }
 
-	public CsvWriter(char separator) {
-		this(separator, System.getProperty("line.separator"));
-	}
+    public CsvWriter(char separator) {
+        this(separator, System.getProperty("line.separator"));
+    }
 
-	public CsvWriter(char separator, String delimiter) {
-		this.separator = separator;
-		this.delimiter = delimiter;
-		this.buffer = new StringBuffer();
-	}
+    public CsvWriter(char separator, String delimiter) {
+        this.separator = separator;
+        this.delimiter = delimiter;
+        this.buffer = new StringBuffer();
+    }
 
-	public void addField(String value) {
-		buffer.append(escape(value)).append(separator);
-	}
+    public void addField(String value) {
+        buffer.append(escape(value)).append(separator);
+    }
 
-	public void endRecord() {
-		buffer.append(delimiter);
-	}
+    public void endRecord() {
+        buffer.append(delimiter);
+    }
 
-	public String toString() {
-		return buffer.toString();
-	}
+    public String toString() {
+        return buffer.toString();
+    }
 
-	public String escape(String str) {
-		if (str.indexOf(separator) < 0 && str.indexOf(delimiter) < 0 && str.indexOf('"') < 0)
-			return str;
+    public String escape(String str) {
+        if (str.indexOf(separator) < 0 && str.indexOf(delimiter) < 0 && str.indexOf('"') < 0)
+            return str;
 
-		StringBuffer buffer = new StringBuffer(str);
-		for (int i = 0; i < buffer.length(); ++i)
-			if (buffer.charAt(i) == '"')
-				buffer.insert(i++, '"');
-		buffer.insert(0, '"');
-		buffer.append('"');
-		return buffer.toString();
-	}
+        StringBuffer buffer = new StringBuffer(str);
+        for (int i = 0; i < buffer.length(); ++i)
+            if (buffer.charAt(i) == '"')
+                buffer.insert(i++, '"');
+        buffer.insert(0, '"');
+        buffer.append('"');
+        return buffer.toString();
+    }
 }
 

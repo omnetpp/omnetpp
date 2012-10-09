@@ -29,56 +29,56 @@ import org.omnetpp.scave.model.HistogramChart;
 
 public class HistogramChartEditForm extends ChartEditForm {
 
-	public static final String TAB_PLOT = "Plot";
+    public static final String TAB_PLOT = "Plot";
 
-	// Bars
-	private Text baselineText;
-	private Combo barTypeCombo;
-	private Combo dataTypeCombo;
-	private Button showOverflowCellCheckbox;
+    // Bars
+    private Text baselineText;
+    private Combo barTypeCombo;
+    private Combo dataTypeCombo;
+    private Button showOverflowCellCheckbox;
 
-	public HistogramChartEditForm(HistogramChart chart, EObject parent,
-			Map<String, Object> formParameters, ResultFileManager manager) {
-		super(chart, parent, formParameters, manager);
-	}
+    public HistogramChartEditForm(HistogramChart chart, EObject parent,
+            Map<String, Object> formParameters, ResultFileManager manager) {
+        super(chart, parent, formParameters, manager);
+    }
 
-	@Override
-	protected void populateTabFolder(TabFolder tabfolder) {
-		super.populateTabFolder(tabfolder);
-		createTab(TAB_PLOT, tabfolder, 2);
-	}
+    @Override
+    protected void populateTabFolder(TabFolder tabfolder) {
+        super.populateTabFolder(tabfolder);
+        createTab(TAB_PLOT, tabfolder, 2);
+    }
 
-	@Override
-	public void populateTabItem(TabItem item) {
-		super.populateTabItem(item);
-		String name = item.getText();
-		Composite panel = (Composite)item.getControl();
-		if (TAB_PLOT.equals(name)) {
-			baselineText = createTextField("Baseline", panel);
-			barTypeCombo = createComboField("Bar type", panel, HistogramBar.class, false);
-			dataTypeCombo = createComboField("Data type", panel, HistogramDataType.class, false);
-			showOverflowCellCheckbox = createCheckboxField("Show over/underflow cell", panel);
-			showOverflowCellCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-		}
-	}
+    @Override
+    public void populateTabItem(TabItem item) {
+        super.populateTabItem(item);
+        String name = item.getText();
+        Composite panel = (Composite)item.getControl();
+        if (TAB_PLOT.equals(name)) {
+            baselineText = createTextField("Baseline", panel);
+            barTypeCombo = createComboField("Bar type", panel, HistogramBar.class, false);
+            dataTypeCombo = createComboField("Data type", panel, HistogramDataType.class, false);
+            showOverflowCellCheckbox = createCheckboxField("Show over/underflow cell", panel);
+            showOverflowCellCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+        }
+    }
 
-	@Override
-	protected void collectProperties(ChartProperties newProps) {
-		super.collectProperties(newProps);
-		HistogramChartProperties props = (HistogramChartProperties)newProps;
-		props.setBarBaseline(Converter.stringToDouble(baselineText.getText()));
-		props.setBarType(resolveEnum(barTypeCombo.getText(), HistogramBar.class));
-		props.setHistogramDataType(resolveEnum(dataTypeCombo.getText(), HistogramDataType.class));
-		props.setShowOverflowCell(showOverflowCellCheckbox.getSelection());
-	}
+    @Override
+    protected void collectProperties(ChartProperties newProps) {
+        super.collectProperties(newProps);
+        HistogramChartProperties props = (HistogramChartProperties)newProps;
+        props.setBarBaseline(Converter.stringToDouble(baselineText.getText()));
+        props.setBarType(resolveEnum(barTypeCombo.getText(), HistogramBar.class));
+        props.setHistogramDataType(resolveEnum(dataTypeCombo.getText(), HistogramDataType.class));
+        props.setShowOverflowCell(showOverflowCellCheckbox.getSelection());
+    }
 
-	@Override
-	protected void setProperties(ChartProperties props) {
-		super.setProperties(props);
-		HistogramChartProperties histogramProps = (HistogramChartProperties)props;
-		baselineText.setText(StringUtils.defaultString(Converter.doubleToString(histogramProps.getBarBaseline())));
-		barTypeCombo.setText(histogramProps.getBarType()==null ? NO_CHANGE : histogramProps.getBarType().toString());
-		dataTypeCombo.setText(histogramProps.getHistogramDataType()==null ? NO_CHANGE : histogramProps.getHistogramDataType().toString());
-		showOverflowCellCheckbox.setSelection(histogramProps.getShowOverflowCell());
-	}
+    @Override
+    protected void setProperties(ChartProperties props) {
+        super.setProperties(props);
+        HistogramChartProperties histogramProps = (HistogramChartProperties)props;
+        baselineText.setText(StringUtils.defaultString(Converter.doubleToString(histogramProps.getBarBaseline())));
+        barTypeCombo.setText(histogramProps.getBarType()==null ? NO_CHANGE : histogramProps.getBarType().toString());
+        dataTypeCombo.setText(histogramProps.getHistogramDataType()==null ? NO_CHANGE : histogramProps.getHistogramDataType().toString());
+        showOverflowCellCheckbox.setSelection(histogramProps.getShowOverflowCell());
+    }
 }

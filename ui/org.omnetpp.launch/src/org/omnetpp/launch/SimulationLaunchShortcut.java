@@ -640,9 +640,9 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
             } catch (CoreException e) {
                 LaunchPlugin.logError(e);
                 ErrorDialog.openError(
-                        Display.getCurrent().getActiveShell(), 
-                        "Error", 
-                        "Could not collect list of executables from project " + project.getName() + " and its referenced projects.", 
+                        Display.getCurrent().getActiveShell(),
+                        "Error",
+                        "Could not collect list of executables from project " + project.getName() + " and its referenced projects.",
                         e.getStatus());
             }
 

@@ -6,32 +6,32 @@ package org.omnetpp.common.json;
 public class JSONValidatingWriter extends JSONWriter {
 
     private JSONValidator validator;
-    
+
     public JSONValidatingWriter(JSONValidator validator, boolean emitClassName) {
         super(emitClassName);
         this.validator = validator;
     }
-    
+
     public JSONValidatingWriter(JSONValidator validator) {
         this.validator = validator;
     }
-    
+
     public JSONValidatingWriter(JSONErrorListener listener, boolean emitClassName) {
         this(new JSONValidator(listener), emitClassName);
     }
-    
+
     public JSONValidatingWriter(JSONErrorListener listener) {
         this(new JSONValidator(listener));
     }
-    
+
     public JSONValidatingWriter() {
         this(new StdoutStreamErrorListener());
     }
-    
+
     public JSONValidatingWriter(boolean emitClassName) {
         this(new StdoutStreamErrorListener(), emitClassName);
     }
-    
+
     private String validate(String text) {
         validator.validate(text);
         return text;

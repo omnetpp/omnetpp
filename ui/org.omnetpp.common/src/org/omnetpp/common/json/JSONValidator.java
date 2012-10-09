@@ -12,11 +12,11 @@ public class JSONValidator {
     private CharacterIterator it;
     private char c;
     private int col;
-    
+
     public JSONValidator(JSONErrorListener listener) {
         this.listener = listener;
     }
-    
+
     public boolean validate(String input) {
         input = input.trim();
         listener.start(input);
@@ -27,7 +27,7 @@ public class JSONValidator {
 
     private boolean valid(String input) {
         if ("".equals(input)) return true;
-        
+
         boolean ret = true;
         it = new StringCharacterIterator(input);
         c = it.first();
@@ -40,12 +40,12 @@ public class JSONValidator {
                 ret = error("end", col);
             }
         }
-        
+
         return ret;
     }
 
     private boolean value() {
-        return 
+        return
             literal("true") ||
             literal("false") ||
             literal("null") ||
@@ -59,7 +59,7 @@ public class JSONValidator {
         CharacterIterator ci = new StringCharacterIterator(text);
         char t = ci.first();
         if (c != t) return false;
-        
+
         int start = col;
         boolean ret = true;
         for (t = ci.next(); t != CharacterIterator.DONE; t = ci.next()) {
@@ -90,7 +90,7 @@ public class JSONValidator {
             nextCharacter();
             return true;
         }
-        
+
         for(;;) {
             if (prefix) {
                 int start = col;
@@ -106,7 +106,7 @@ public class JSONValidator {
                     nextCharacter();
                 } else if (c == exitCharacter) {
                     break;
-                } else { 
+                } else {
                     return error("comma or " + exitCharacter, col);
                 }
             } else {
@@ -114,7 +114,7 @@ public class JSONValidator {
             }
             skipWhiteSpace();
         }
-        
+
         nextCharacter();
         return true;
     }
@@ -139,7 +139,7 @@ public class JSONValidator {
                 while(Character.isDigit(c)) nextCharacter();
             } else {
                 return error("number", start);
-            }        
+            }
         }
 
         if (c == 'e' || c == 'E') {
@@ -151,7 +151,7 @@ public class JSONValidator {
                 while(Character.isDigit(c)) nextCharacter();
             } else {
                 return error("number", start);
-            }        
+            }
         }
 
         return true;
@@ -159,7 +159,7 @@ public class JSONValidator {
 
     private boolean string() {
         if (c != '"') return false;
-        
+
         int start = col;
         boolean escaped = false;
 
@@ -184,9 +184,9 @@ public class JSONValidator {
         int start = col-1;
         if ("\\\"/bfnrtu".indexOf(c) < 0) {
             return error("escape sequence \\\",\\\\,\\/,\\b,\\f,\\n,\\r,\\t or \\uxxxx", start);
-        } 
+        }
         if (c == 'u') {
-            if (!ishex(nextCharacter()) || !ishex(nextCharacter()) || 
+            if (!ishex(nextCharacter()) || !ishex(nextCharacter()) ||
                     !ishex(nextCharacter()) || !ishex(nextCharacter())) {
                 return error("unicode escape sequence \\uxxxx", start);
             }

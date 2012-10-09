@@ -12,15 +12,15 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class MultipageNedEditorTestSuite
-	extends TestSuite
+    extends TestSuite
 {
-	public MultipageNedEditorTestSuite() {
+    public MultipageNedEditorTestSuite() {
         addTestSuite(OpenFileTest.class);
-		addTestSuite(SaveFileTest.class);
+        addTestSuite(SaveFileTest.class);
         addTestSuite(DeleteOpenFileTest.class);
         addTestSuite(PageChangeTest.class);
         addTestSuite(ExecuteUndoRedoUndoTestSuite.class);
-	}
+    }
 
     public static Test suite() {
         return new MultipageNedEditorTestSuite();

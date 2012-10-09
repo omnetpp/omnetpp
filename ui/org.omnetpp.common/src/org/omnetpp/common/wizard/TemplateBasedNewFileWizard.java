@@ -70,8 +70,8 @@ public abstract class TemplateBasedNewFileWizard extends TemplateBasedWizard imp
         String targetTypeName = StringUtils.capitalize(StringUtils.makeValidIdentifier(fileNameWithoutExt));
         context.setVariableIfMissing("targetTypeName", targetTypeName);
 
-        // variables to help support project, simulation and file wizards with the same template code 
-        context.getVariables().put("targetMainFile", "${targetFileName}"); 
+        // variables to help support project, simulation and file wizards with the same template code
+        context.getVariables().put("targetMainFile", "${targetFileName}");
         return context;
     }
 

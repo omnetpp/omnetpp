@@ -38,42 +38,42 @@ import org.omnetpp.common.wizard.TemplateBasedWizard;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
- * "New OMNeT++ Project" wizard. (This wizard only appears on the UI if the org.omnetpp.cdt 
+ * "New OMNeT++ Project" wizard. (This wizard only appears on the UI if the org.omnetpp.cdt
  * plug-in and the similar wizard contributed by it is absent.)
- * 
+ *
  * @author Andras
  */
 public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INewWizard {
     private WizardNewProjectCreationPage projectCreationPage;
 
-	public static class NewOmnetppProjectCreationPage extends WizardNewProjectCreationPage {
-	    public NewOmnetppProjectCreationPage() {
-	        super("omnetpp project");
-	        setTitle("OMNeT++ Project");
-	        setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/full/wizban/newoprj_wiz.png"));
-	    }
-	}
+    public static class NewOmnetppProjectCreationPage extends WizardNewProjectCreationPage {
+        public NewOmnetppProjectCreationPage() {
+            super("omnetpp project");
+            setTitle("OMNeT++ Project");
+            setImageDescriptor(ImageDescriptor.createFromFile(getClass(),"/icons/full/wizban/newoprj_wiz.png"));
+        }
+    }
 
-	public NewOmnetppProjectWizard() {
-		setWindowTitle("New OMNeT++ Project");
-		setWizardType("project");
-	}
+    public NewOmnetppProjectWizard() {
+        setWindowTitle("New OMNeT++ Project");
+        setWizardType("project");
+    }
 
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-	}
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+    }
 
-	@Override
-	public void addPages() {
-		addPage(projectCreationPage = createProjectCreationPage());
-		projectCreationPage.setTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
-		projectCreationPage.setDescription(isImporting() ? "Import into a new OMNeT++ project" : "Create a new OMNeT++ Project");
+    @Override
+    public void addPages() {
+        addPage(projectCreationPage = createProjectCreationPage());
+        projectCreationPage.setTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
+        projectCreationPage.setDescription(isImporting() ? "Import into a new OMNeT++ project" : "Create a new OMNeT++ Project");
 
-		super.addPages();
-	}
+        super.addPages();
+    }
 
-	/**
-	 * Override if you want to customize the first page
-	 */
+    /**
+     * Override if you want to customize the first page
+     */
     protected WizardNewProjectCreationPage createProjectCreationPage() {
         return new NewOmnetppProjectCreationPage();
     }
@@ -99,23 +99,23 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
         context.setVariableIfMissing("nedPackageName", "${projectname}"); // identifier, with all lowercase
 
         // variables to help support project, simulation and file wizards with the same template code.
-        // Intention: targetTypeName and targetMainFile are the NED type and file of "the network" 
+        // Intention: targetTypeName and targetMainFile are the NED type and file of "the network"
         // in this project; these variables are to be used only in projects where it makes sense.
         context.setVariableIfMissing("targetTypeName", "${projectName}"); // identifier, with upper case first letter
-        context.setVariableIfMissing("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages 
+        context.setVariableIfMissing("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages
         return context;
     }
-    
-	@Override
-	public boolean performFinish() {
+
+    @Override
+    public boolean performFinish() {
         boolean ok = createNewProject(); // create empty project
         if (!ok)
             return false;
         return super.performFinish(); // add templated files
-	}
+    }
 
-	protected boolean createNewProject() {
-		String projectName = getProjectCreationPage().getProjectName();
+    protected boolean createNewProject() {
+        String projectName = getProjectCreationPage().getProjectName();
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         final IProject projectHandle = workspace.getRoot().getProject(projectName);
 
@@ -123,11 +123,11 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
         IPath defaultPath = Platform.getLocation();
         IPath newPath = getProjectCreationPage().getLocationPath();
         if (defaultPath.equals(newPath))
-			newPath = null;
+            newPath = null;
 
         final IProjectDescription description = workspace.newProjectDescription(projectName);
         description.setLocation(newPath);
-        
+
         // define the operation to create a new project
         WorkspaceModifyOperation op = new WorkspaceModifyOperation() {
             protected void execute(IProgressMonitor monitor) throws CoreException {
@@ -162,8 +162,8 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
             if (t instanceof CoreException) {
                 if (((CoreException) t).getStatus().getCode() == IResourceStatus.CASE_VARIANT_EXISTS) {
                     MessageDialog.openError(getShell(), "Creation problems",
-                    		"The project contents directory specified is being used by another project. " +
-                    		"Please enter a new project contents directory.");
+                            "The project contents directory specified is being used by another project. " +
+                            "Please enter a new project contents directory.");
                 }
                 else {
                     ErrorDialog.openError(getShell(), "Creation problems", null, ((CoreException) t).getStatus());
@@ -171,11 +171,11 @@ public class NewOmnetppProjectWizard extends TemplateBasedWizard implements INew
             }
             else {
                 // Unexpected runtime exceptions and errors may still occur.
-            	OmnetppMainPlugin.logError(t);
+                OmnetppMainPlugin.logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
             }
             return false;
         }
         return true;
-	}
+    }
 }

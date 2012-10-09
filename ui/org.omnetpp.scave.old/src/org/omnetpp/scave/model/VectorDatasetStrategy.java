@@ -36,65 +36,65 @@ import org.omnetpp.scave.plugin.ScavePlugin;
 
 public class VectorDatasetStrategy implements IDatasetStrategy {
 
-	public FilterPanel createFilterPanel(Composite parent, int style) {
-		return new FilterPanel(parent, style, this);
-	}
+    public FilterPanel createFilterPanel(Composite parent, int style) {
+        return new FilterPanel(parent, style, this);
+    }
 
-	public FilterPanelComposite createFilterPanelComposite(Composite parent, int style) {
-		return new VectorPanelComposite(parent, style);
-	}
+    public FilterPanelComposite createFilterPanelComposite(Composite parent, int style) {
+        return new VectorPanelComposite(parent, style);
+    }
 
-	public ITableLabelProvider createFilterPanelLabelProvider() {
-		return new VectorTableLabelProvider();
-	}
+    public ITableLabelProvider createFilterPanelLabelProvider() {
+        return new VectorTableLabelProvider();
+    }
 
-	public IDList getAll() {
-		ResultFileManager resultFileManager = ScavePlugin.getDefault().resultFileManager;
-		return resultFileManager.getAllVectors();
-	}
+    public IDList getAll() {
+        ResultFileManager resultFileManager = ScavePlugin.getDefault().resultFileManager;
+        return resultFileManager.getAllVectors();
+    }
 
-	public File loadResultFile(String fileName) {
-		ResultFileManager resultFileManager = ScavePlugin.getDefault().resultFileManager;
-		return resultFileManager.loadVectorFile(fileName);
-	}
+    public File loadResultFile(String fileName) {
+        ResultFileManager resultFileManager = ScavePlugin.getDefault().resultFileManager;
+        return resultFileManager.loadVectorFile(fileName);
+    }
 
-	public boolean isCompatible(IDList idList) {
-		return idList.areAllVectors();
-	}
+    public boolean isCompatible(IDList idList) {
+        return idList.areAllVectors();
+    }
 
-	public TableContentSorter createTableSorter() {
-		return new VectorTableContentSorter();
-	}
+    public TableContentSorter createTableSorter() {
+        return new VectorTableContentSorter();
+    }
 
-	/**
-	 * Create empty line chart.
-	 */
-	public JFreeChart createEmptyChart() {
-		// create dataset
-		XYSeriesCollection xyseriescollection = new XYSeriesCollection();
+    /**
+     * Create empty line chart.
+     */
+    public JFreeChart createEmptyChart() {
+        // create dataset
+        XYSeriesCollection xyseriescollection = new XYSeriesCollection();
 
-		// create chart
-		JFreeChart jfreechart = ChartFactory.createXYLineChart(
-				"Line Chart", "X", "Y",
-				xyseriescollection, PlotOrientation.VERTICAL,
-				true, true, false);
-		jfreechart.setAntiAlias(false);
-		jfreechart.setBackgroundPaint(Color.white);
-		XYPlot xyplot = (XYPlot)jfreechart.getPlot();
-		xyplot.setBackgroundPaint(Color.lightGray);
-		xyplot.setAxisOffset(new RectangleInsets(5D, 5D, 5D, 5D));
-		xyplot.setDomainGridlinePaint(Color.white);
-		xyplot.setRangeGridlinePaint(Color.white);
-		XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
-		xylineandshaperenderer.setShapesVisible(false);
-		xylineandshaperenderer.setShapesFilled(false);
-		NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
-		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		return jfreechart;
-	}
+        // create chart
+        JFreeChart jfreechart = ChartFactory.createXYLineChart(
+                "Line Chart", "X", "Y",
+                xyseriescollection, PlotOrientation.VERTICAL,
+                true, true, false);
+        jfreechart.setAntiAlias(false);
+        jfreechart.setBackgroundPaint(Color.white);
+        XYPlot xyplot = (XYPlot)jfreechart.getPlot();
+        xyplot.setBackgroundPaint(Color.lightGray);
+        xyplot.setAxisOffset(new RectangleInsets(5D, 5D, 5D, 5D));
+        xyplot.setDomainGridlinePaint(Color.white);
+        xyplot.setRangeGridlinePaint(Color.white);
+        XYLineAndShapeRenderer xylineandshaperenderer = (XYLineAndShapeRenderer)xyplot.getRenderer();
+        xylineandshaperenderer.setShapesVisible(false);
+        xylineandshaperenderer.setShapesFilled(false);
+        NumberAxis numberaxis = (NumberAxis)xyplot.getRangeAxis();
+        numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+        return jfreechart;
+    }
 
-	public void updateDataset(JFreeChart chart, IDList idlist) {
-		XYDataset ds = ChartHelper.createXYDataSet(idlist);
-		chart.getXYPlot().setDataset(ds);
-	}
+    public void updateDataset(JFreeChart chart, IDList idlist) {
+        XYDataset ds = ChartHelper.createXYDataSet(idlist);
+        chart.getXYPlot().setDataset(ds);
+    }
 }

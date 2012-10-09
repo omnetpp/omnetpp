@@ -27,57 +27,57 @@ import org.omnetpp.ned.model.ex.ConnectionElementEx;
  */
 public class NedConnectionEndpointTracker extends ConnectionEndpointTracker {
 
-	public NedConnectionEndpointTracker(ConnectionEditPart cep) {
-		super(cep);
-	}
+    public NedConnectionEndpointTracker(ConnectionEditPart cep) {
+        super(cep);
+    }
 
-	@Override
-	protected boolean handleButtonUp(int button) {
-		if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
-		    Command cmd = getCommand();
-		    if (cmd == null || !(cmd instanceof ReconnectCommand))
-		        return false;
-			ReconnectCommand connCommand = (ReconnectCommand)cmd;
+    @Override
+    protected boolean handleButtonUp(int button) {
+        if (stateTransition(STATE_DRAG_IN_PROGRESS, STATE_TERMINAL)) {
+            Command cmd = getCommand();
+            if (cmd == null || !(cmd instanceof ReconnectCommand))
+                return false;
+            ReconnectCommand connCommand = (ReconnectCommand)cmd;
 
-			NedConnectionEditPart connPart = (NedConnectionEditPart)getConnectionEditPart();
-	        CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getModel();
-	        // ask the user about which gates should be connected, ask for both source and destination gates
-	        // FIXME we should extract the direction (src/dest) locally and not from the command
-	        ConnectionElementEx selectedConn = new ConnectionChooser().open(compoundMod, connCommand.getTemplateConnection(), !connCommand.isDestReconnect(), connCommand.isDestReconnect());
+            NedConnectionEditPart connPart = (NedConnectionEditPart)getConnectionEditPart();
+            CompoundModuleElementEx compoundMod = connPart.getCompoundModulePart().getModel();
+            // ask the user about which gates should be connected, ask for both source and destination gates
+            // FIXME we should extract the direction (src/dest) locally and not from the command
+            ConnectionElementEx selectedConn = new ConnectionChooser().open(compoundMod, connCommand.getTemplateConnection(), !connCommand.isDestReconnect(), connCommand.isDestReconnect());
 
-			eraseSourceFeedback();
-			eraseTargetFeedback();
+            eraseSourceFeedback();
+            eraseTargetFeedback();
 
-	    	// if no selection was made, cancel the command
-			if (selectedConn == null)
+            // if no selection was made, cancel the command
+            if (selectedConn == null)
                 // revert the connection change (user cancel - do not execute the command)
-				return false;
+                return false;
 
-			ConnectionElementEx templateConn = connCommand.getTemplateConnection();
-			// copy the selected connection attributes to the command
-			ReconnectCommand.copyConn(selectedConn, templateConn);
+            ConnectionElementEx templateConn = connCommand.getTemplateConnection();
+            // copy the selected connection attributes to the command
+            ReconnectCommand.copyConn(selectedConn, templateConn);
 
-			// execute the command
-	    	setCurrentCommand(connCommand);
-			executeCurrentCommand();
-		}
-		return true;
-	}
+            // execute the command
+            setCurrentCommand(connCommand);
+            executeCurrentCommand();
+        }
+        return true;
+    }
 
-	@Override
-	protected EditPartViewer.Conditional getTargetingConditional() {
-		return new EditPartViewer.Conditional() {
-			public boolean evaluate(EditPart editpart) {
-				// if the target is a compound module, allow attachment only at the borders
-				if (editpart instanceof CompoundModuleEditPart) {
-					CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;
-					return cmep.isOnBorder(getLocation().x, getLocation().y);
-				}
+    @Override
+    protected EditPartViewer.Conditional getTargetingConditional() {
+        return new EditPartViewer.Conditional() {
+            public boolean evaluate(EditPart editpart) {
+                // if the target is a compound module, allow attachment only at the borders
+                if (editpart instanceof CompoundModuleEditPart) {
+                    CompoundModuleEditPart cmep = (CompoundModuleEditPart)editpart;
+                    return cmep.isOnBorder(getLocation().x, getLocation().y);
+                }
 
-				return editpart.getTargetEditPart(getTargetRequest()) != null;
-			}
-		};
-	}
+                return editpart.getTargetEditPart(getTargetRequest()) != null;
+            }
+        };
+    }
 
     @Override
     protected boolean handleDragInProgress() {

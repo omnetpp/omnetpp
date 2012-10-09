@@ -93,7 +93,7 @@ public class RecognizerBase  {
         // add the new expression to the code sequence
         if (uiObjectExpr == null) {
             if (Activator.DEBUG)
-            	System.out.println("could not find a way to identify UI object: " + uiObject);
+                System.out.println("could not find a way to identify UI object: " + uiObject);
             return null; // could not find a way to identify uiObject
         }
         else {
@@ -268,7 +268,7 @@ public class RecognizerBase  {
      * sadly not listed (not returned by Display.getShells()).
      */
     public static void dumpWidgetHierarchy() {
-       	System.out.println("display-root");
+        System.out.println("display-root");
         for (Shell shell : Display.getDefault().getShells())
             dumpWidgetHierarchy(shell, 1);
     }
@@ -278,7 +278,7 @@ public class RecognizerBase  {
     }
 
     protected static void dumpWidgetHierarchy(Control control, int level) {
-       	System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : ""));
+        System.out.println(StringUtils.repeat("  ", level) + control.toString() + (!control.isVisible() ? " (not visible)" : ""));
 
         if (control.getMenu() != null)
             dumpMenu(control.getMenu(), level);

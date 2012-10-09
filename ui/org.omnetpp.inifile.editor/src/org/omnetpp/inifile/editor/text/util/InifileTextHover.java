@@ -29,62 +29,62 @@ import org.omnetpp.inifile.editor.model.InifileHoverUtils;
  * @author Andras
  */
 public class InifileTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
-	private InifileEditorData editorData;
+    private InifileEditorData editorData;
 
 
-	public InifileTextHover(InifileEditorData editorData) {
-		this.editorData = editorData;
-	}
+    public InifileTextHover(InifileEditorData editorData) {
+        this.editorData = editorData;
+    }
 
-	/* (non-Javadoc)
-	 * ITextHover method@see org.eclipse.jface.text.ITextHover#getHoverInfo(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion)
-	 */
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-		// determine line number
-		int lineNumber;
-		try {
-			lineNumber = textViewer.getDocument().getLineOfOffset(hoverRegion.getOffset()) + 1;
-		} catch (BadLocationException e) {
-			return null;
-		}
+    /* (non-Javadoc)
+     * ITextHover method@see org.eclipse.jface.text.ITextHover#getHoverInfo(org.eclipse.jface.text.ITextViewer, org.eclipse.jface.text.IRegion)
+     */
+    public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+        // determine line number
+        int lineNumber;
+        try {
+            lineNumber = textViewer.getDocument().getLineOfOffset(hoverRegion.getOffset()) + 1;
+        } catch (BadLocationException e) {
+            return null;
+        }
 
-		// identify section+key being hovered
-		IReadonlyInifileDocument doc = editorData.getInifileDocument();
-		String section = doc.getSectionForLine(lineNumber);
-		if (section==null)
-			return null;
-		String key = doc.getKeyForLine(lineNumber);
+        // identify section+key being hovered
+        IReadonlyInifileDocument doc = editorData.getInifileDocument();
+        String section = doc.getSectionForLine(lineNumber);
+        if (section==null)
+            return null;
+        String key = doc.getKeyForLine(lineNumber);
 
-		// generate tooltip
-		InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
-		if (key == null)
-			return InifileHoverUtils.getSectionHoverText(section, doc, analyzer, false);
-		else {
-		    return InifileHoverUtils.getEntryHoverText(section, key, hoverRegion, doc, analyzer, textViewer.getDocument());
-		}
-	}
+        // generate tooltip
+        InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
+        if (key == null)
+            return InifileHoverUtils.getSectionHoverText(section, doc, analyzer, false);
+        else {
+            return InifileHoverUtils.getEntryHoverText(section, key, hoverRegion, doc, analyzer, textViewer.getDocument());
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.text.ITextHover#getHoverRegion(org.eclipse.jface.text.ITextViewer, int)
-	 */
-	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-		Point selection= textViewer.getSelectedRange();
-		if (selection.x <= offset && offset < selection.x + selection.y)
-			return new Region(selection.x, selection.y);
-		return new Region(offset, 0);
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.text.ITextHover#getHoverRegion(org.eclipse.jface.text.ITextViewer, int)
+     */
+    public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
+        Point selection= textViewer.getSelectedRange();
+        if (selection.x <= offset && offset < selection.x + selection.y)
+            return new Region(selection.x, selection.y);
+        return new Region(offset, 0);
+    }
 
-	/*
-	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
-	 */
-	public IInformationControlCreator getHoverControlCreator() {
-		return HoverSupport.getHoverControlCreator();
-	}
+    /*
+     * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
+     */
+    public IInformationControlCreator getHoverControlCreator() {
+        return HoverSupport.getHoverControlCreator();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
-	 */
-	public IInformationControlCreator getInformationPresenterControlCreator() {
-		return HoverSupport.getInformationPresenterControlCreator();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
+     */
+    public IInformationControlCreator getInformationPresenterControlCreator() {
+        return HoverSupport.getInformationPresenterControlCreator();
+    }
 }

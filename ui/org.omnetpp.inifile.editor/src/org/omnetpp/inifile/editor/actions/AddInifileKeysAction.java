@@ -36,37 +36,37 @@ import org.omnetpp.inifile.editor.text.actions.InifileTextEditorAction;
 public class AddInifileKeysAction extends ResourceAction {
     public final static String ID = "AddMissingKeys";
 
-	public AddInifileKeysAction() {
+    public AddInifileKeysAction() {
         super(InifileEditorMessages.getResourceBundle(), ID+".");
         setId(ID);
         setActionDefinitionId(InifileTextEditorAction.ACTION_DEFINITION_PREFIX+ID);
 
-	}
+    }
 
-	@Override
-	public void run() {
-		// get active editor
-		IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		IWorkbenchPage page = workbenchWindow.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		if (editor instanceof InifileEditor) {
-			// dig out the inifile analyzer
-			InifileEditor inifileEditor = ((InifileEditor) editor);
-			InifileEditorData editorData = inifileEditor.getEditorData();
-			InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
-			IInifileDocument doc = editorData.getInifileDocument();
-			
-			// does the inifile have sections at all?
-			if (doc.getSectionNames().length==0) {
-				MessageDialog.openConfirm(workbenchWindow.getShell(), "Empty Ini File",
-					"Ini file contains no sections or settings, please choose a NED network first.");
-				doc.addSection(GENERAL, null);
-				doc.addEntry(GENERAL, CFGID_NETWORK.getName(), "", "", null);
-				inifileEditor.gotoEntry(GENERAL, CFGID_NETWORK.getName(), IGotoInifile.Mode.AUTO);
-				return;
-			}
-			
-			// check if analysis is enabled, offer to turn it on
+    @Override
+    public void run() {
+        // get active editor
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage page = workbenchWindow.getActivePage();
+        IEditorPart editor = page.getActiveEditor();
+        if (editor instanceof InifileEditor) {
+            // dig out the inifile analyzer
+            InifileEditor inifileEditor = ((InifileEditor) editor);
+            InifileEditorData editorData = inifileEditor.getEditorData();
+            InifileAnalyzer analyzer = editorData.getInifileAnalyzer();
+            IInifileDocument doc = editorData.getInifileDocument();
+
+            // does the inifile have sections at all?
+            if (doc.getSectionNames().length==0) {
+                MessageDialog.openConfirm(workbenchWindow.getShell(), "Empty Ini File",
+                    "Ini file contains no sections or settings, please choose a NED network first.");
+                doc.addSection(GENERAL, null);
+                doc.addEntry(GENERAL, CFGID_NETWORK.getName(), "", "", null);
+                inifileEditor.gotoEntry(GENERAL, CFGID_NETWORK.getName(), IGotoInifile.Mode.AUTO);
+                return;
+            }
+
+            // check if analysis is enabled, offer to turn it on
             if (!analyzer.isParamResolutionEnabled()) {
                 if (AnalysisDisabledDialog.openDialog(editor.getSite().getShell()))
                     analyzer.setParamResolutionEnabled(true);
@@ -74,27 +74,27 @@ public class AddInifileKeysAction extends ResourceAction {
                     return;
             }
 
-			//XXX what if network name is invalid? check it inside the dialog??
+            //XXX what if network name is invalid? check it inside the dialog??
 
-			// determine currently selected section in the editor...
-			IStructuredSelection editorSelection = (IStructuredSelection) inifileEditor.getSite().getSelectionProvider().getSelection();
-			InifileSelectionItem selectionItem = editorSelection==null ? null : (InifileSelectionItem) editorSelection.getFirstElement();
-			String initialSection = selectionItem==null ? null : selectionItem.getSection();
+            // determine currently selected section in the editor...
+            IStructuredSelection editorSelection = (IStructuredSelection) inifileEditor.getSite().getSelectionProvider().getSelection();
+            InifileSelectionItem selectionItem = editorSelection==null ? null : (InifileSelectionItem) editorSelection.getFirstElement();
+            String initialSection = selectionItem==null ? null : selectionItem.getSection();
 
-			// open the dialog
-			try {
-    			AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), analyzer, initialSection);
-    			if (dialog.open()==Dialog.OK) {
-    				// add user-selected keys to the document
-    				String[] keys = dialog.getKeys();
-    				String section = dialog.getSection();
-    				doc.addEntries(section, keys, null, null, null);
-    			}
-			} catch (RuntimeException e) {
-			    if (!(e.getCause() instanceof ParamResolutionTimeoutException))
-			        throw e;
-			}
-		}
-	}
+            // open the dialog
+            try {
+                AddInifileKeysDialog dialog = new AddInifileKeysDialog(workbenchWindow.getShell(), analyzer, initialSection);
+                if (dialog.open()==Dialog.OK) {
+                    // add user-selected keys to the document
+                    String[] keys = dialog.getKeys();
+                    String section = dialog.getSection();
+                    doc.addEntries(section, keys, null, null, null);
+                }
+            } catch (RuntimeException e) {
+                if (!(e.getCause() instanceof ParamResolutionTimeoutException))
+                    throw e;
+            }
+        }
+    }
 
 }

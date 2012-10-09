@@ -22,15 +22,15 @@ import org.omnetpp.msg.editor.highlight.MsgSyntaxHighlightPartitionScanner;
  */
 public class MsgDocumentSetupParticipant implements IDocumentSetupParticipant {
 
-	public void setup(IDocument document) {
-		if (document instanceof IDocumentExtension3) {
-			IDocumentExtension3 extension3 = (IDocumentExtension3) document;
+    public void setup(IDocument document) {
+        if (document instanceof IDocumentExtension3) {
+            IDocumentExtension3 extension3 = (IDocumentExtension3) document;
 
             // syntax highlighter partitioner setup
             IDocumentPartitioner highlightPartitioner =
                 new FastPartitioner(new MsgSyntaxHighlightPartitionScanner(), MsgSyntaxHighlightPartitionScanner.SUPPORTED_PARTITION_TYPES);
             extension3.setDocumentPartitioner(MsgSyntaxHighlightPartitionScanner.PARTITIONING_ID, highlightPartitioner);
             highlightPartitioner.connect(document);
-		}
-	}
+        }
+    }
 }

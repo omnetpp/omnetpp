@@ -12,7 +12,7 @@ import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 public interface ILegend {
 
-	void clearItems();
+    void clearItems();
 
-	void addItem(Color color, String text, IChartSymbol symbol, boolean drawLine);
+    void addItem(Color color, String text, IChartSymbol symbol, boolean drawLine);
 }

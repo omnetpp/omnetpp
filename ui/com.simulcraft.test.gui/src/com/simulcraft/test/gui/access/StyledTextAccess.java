@@ -20,46 +20,46 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class StyledTextAccess extends CompositeAccess
 {
-	public StyledTextAccess(StyledText styledText) {
-		super(styledText);
-	}
+    public StyledTextAccess(StyledText styledText) {
+        super(styledText);
+    }
 
     @Override
-	public StyledText getControl() {
-		return (StyledText)widget;
-	}
+    public StyledText getControl() {
+        return (StyledText)widget;
+    }
 
-	@UIStep
-	public String getTextContent() {
-		return getControl().getText();
-	}
+    @UIStep
+    public String getTextContent() {
+        return getControl().getText();
+    }
 
-	@UIStep
-	public void moveCursorAfter(String patternString) {
-	    int targetOffset = getOffsetAfter(patternString);
-	    reveal(targetOffset);
-		Point loc = getControl().toDisplay(getControl().getLocationAtOffset(targetOffset));
-		clickAbsolute(LEFT_MOUSE_BUTTON, loc);
-	}
+    @UIStep
+    public void moveCursorAfter(String patternString) {
+        int targetOffset = getOffsetAfter(patternString);
+        reveal(targetOffset);
+        Point loc = getControl().toDisplay(getControl().getLocationAtOffset(targetOffset));
+        clickAbsolute(LEFT_MOUSE_BUTTON, loc);
+    }
 
-	@UIStep
-	public void reveal(int offset) {
-	    // FIXME it moves the offset at the top. it would be enough to show only on the screen
-	    // need to scroll horizontally as well
-	    int lineAtOffset = getControl().getLineAtOffset(offset);
+    @UIStep
+    public void reveal(int offset) {
+        // FIXME it moves the offset at the top. it would be enough to show only on the screen
+        // need to scroll horizontally as well
+        int lineAtOffset = getControl().getLineAtOffset(offset);
         getControl().setTopIndex(lineAtOffset);
-	}
+    }
 
     @UIStep
     public int getOffsetAfter(String patternString) {
         String text = getTextContent();
-		Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
-		Matcher matcher = pattern.matcher(text);
-		boolean matches = matcher.matches();
-		Assert.assertTrue("cannot find "+patternString+" in styled text",matches);
-		int targetOffset = matcher.end(1);
-		matcher.region(matcher.end(), text.length());
-		Assert.assertFalse("more than one match for "+patternString, matcher.matches());
+        Pattern pattern = Pattern.compile(".*(" + patternString + ").*", Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(text);
+        boolean matches = matcher.matches();
+        Assert.assertTrue("cannot find "+patternString+" in styled text",matches);
+        int targetOffset = matcher.end(1);
+        matcher.region(matcher.end(), text.length());
+        Assert.assertFalse("more than one match for "+patternString, matcher.matches());
         return targetOffset;
     }
 

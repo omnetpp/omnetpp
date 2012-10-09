@@ -28,22 +28,22 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ComputeImpl extends ProcessingOpImpl implements Compute {
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected ComputeImpl() {
+    protected ComputeImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.COMPUTE;
     }
 

@@ -27,45 +27,45 @@ import org.omnetpp.inifile.editor.model.IInifileDocument;
  */
 public class RawConfigPage extends FormPage {
 
-	public RawConfigPage(Composite parent, InifileEditor inifileEditor) {
-		super(parent, inifileEditor);
-		setLayout(new GridLayout(1,false));
+    public RawConfigPage(Composite parent, InifileEditor inifileEditor) {
+        super(parent, inifileEditor);
+        setLayout(new GridLayout(1,false));
 
-		// populate with field editors
-		IInifileDocument doc = getInifileDocument();
-		for (ConfigOption e : ConfigRegistry.getOptions()) {
-			String label = "The \""+e.getName()+"\" setting";
-			if (e.getDataType()==ConfigOption.DataType.CFG_BOOL) {
-				CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label, null);
-				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-			}
-			else {
-				TextFieldEditor control = new TextFieldEditor(this, e, doc, this, label, null);
-				control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-			}
-		}
-	}
+        // populate with field editors
+        IInifileDocument doc = getInifileDocument();
+        for (ConfigOption e : ConfigRegistry.getOptions()) {
+            String label = "The \""+e.getName()+"\" setting";
+            if (e.getDataType()==ConfigOption.DataType.CFG_BOOL) {
+                CheckboxFieldEditor control = new CheckboxFieldEditor(this, e, doc, this, label, null);
+                control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+            }
+            else {
+                TextFieldEditor control = new TextFieldEditor(this, e, doc, this, label, null);
+                control.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+            }
+        }
+    }
 
-	@Override
-	public String getPageCategory() {
-		return "(raw)";
-	}
+    @Override
+    public String getPageCategory() {
+        return "(raw)";
+    }
 
-	@Override
-	public boolean setFocus() {
-		return getChildren()[0].setFocus(); // refine if needed
-	}
+    @Override
+    public boolean setFocus() {
+        return getChildren()[0].setFocus(); // refine if needed
+    }
 
-	@Override
-	public void reread() {
-		super.reread();
-		for (Control c : getChildren())
-			if (c instanceof FieldEditor)
-				((FieldEditor) c).reread();
-	}
+    @Override
+    public void reread() {
+        super.reread();
+        for (Control c : getChildren())
+            if (c instanceof FieldEditor)
+                ((FieldEditor) c).reread();
+    }
 
-	@Override
-	public List<ConfigOption> getSupportedKeys() {
-		return new ArrayList<ConfigOption>(); // dummy impl.
-	}
+    @Override
+    public List<ConfigOption> getSupportedKeys() {
+        return new ArrayList<ConfigOption>(); // dummy impl.
+    }
 }

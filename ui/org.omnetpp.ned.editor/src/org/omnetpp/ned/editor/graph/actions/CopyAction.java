@@ -28,40 +28,40 @@ import org.omnetpp.ned.model.interfaces.INedModelProvider;
  * @author Andras
  */
 public class CopyAction extends SelectionAction {
-	public static final String ID = ActionFactory.COPY.getId();
-	public static final String MENUNAME = "&Copy";
-	public static final String TOOLTIP = "Copy to clipboard";
+    public static final String ID = ActionFactory.COPY.getId();
+    public static final String MENUNAME = "&Copy";
+    public static final String TOOLTIP = "Copy to clipboard";
 
-	public CopyAction(IWorkbenchPart part) {
-		super(part);
-		setText(MENUNAME);
-		setId(ID);
-		setToolTipText(TOOLTIP);
-		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-		setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
-		setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
-	}
+    public CopyAction(IWorkbenchPart part) {
+        super(part);
+        setText(MENUNAME);
+        setId(ID);
+        setToolTipText(TOOLTIP);
+        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+        setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+        setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
+    }
 
-	@Override
-	protected boolean calculateEnabled() {
-		return getSelectedObjects().size() > 0;
-	}
+    @Override
+    protected boolean calculateEnabled() {
+        return getSelectedObjects().size() > 0;
+    }
 
-	@Override @SuppressWarnings("unchecked")
-	public void run() {
-		// collect selected editparts
-		List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
-		selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));  // FIXME skip connections that already selected
+    @Override @SuppressWarnings("unchecked")
+    public void run() {
+        // collect selected editparts
+        List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
+        selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));  // FIXME skip connections that already selected
 
-		// translate from editparts to model elements
-		List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
-		for (EditPart editPart : selectedEditParts)
-			if (editPart instanceof INedModelProvider)
-				selectedModelObjects.add(((INedModelProvider)editPart).getModel().deepDup());
+        // translate from editparts to model elements
+        List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
+        for (EditPart editPart : selectedEditParts)
+            if (editPart instanceof INedModelProvider)
+                selectedModelObjects.add(((INedModelProvider)editPart).getModel().deepDup());
 
-		// copy to clipboard
-		if (selectedModelObjects.size() > 0)
-			Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INedElement[]{}));
-	}
+        // copy to clipboard
+        if (selectedModelObjects.size() > 0)
+            Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INedElement[]{}));
+    }
 
 }

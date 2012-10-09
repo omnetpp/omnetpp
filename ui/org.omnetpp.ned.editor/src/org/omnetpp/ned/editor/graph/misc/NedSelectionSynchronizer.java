@@ -29,7 +29,7 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
 
     private boolean linkWithEditor = false;
 
-	/**
+    /**
      * Maps the given editpart from one viewer to an editpart in another viewer.
      * It returns null if there is no corresponding part. Travels along the ancestors
      * towards root, and returns the first matching ancestor.
@@ -49,10 +49,10 @@ public class NedSelectionSynchronizer extends SelectionSynchronizer {
 
     @Override
     public void selectionChanged(SelectionChangedEvent event) {
-    	// we don't want to publish the changes from the editor unless linkWithEditor is set
-    	if (!(event.getSource() instanceof ScrollingGraphicalViewer) || linkWithEditor ) {
-    		// Debug.println("*** ned synchronizer selection changed selection changed from: "+event.getSource());
-    		super.selectionChanged(event);
-    	}
+        // we don't want to publish the changes from the editor unless linkWithEditor is set
+        if (!(event.getSource() instanceof ScrollingGraphicalViewer) || linkWithEditor ) {
+            // Debug.println("*** ned synchronizer selection changed selection changed from: "+event.getSource());
+            super.selectionChanged(event);
+        }
     }
 }

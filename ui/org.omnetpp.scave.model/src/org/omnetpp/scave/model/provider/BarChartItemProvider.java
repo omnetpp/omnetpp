@@ -51,7 +51,7 @@ public class BarChartItemProvider
         ITreeItemContentProvider,
         IItemLabelProvider,
         IItemPropertySource {
-	/**
+    /**
      * This constructs an instance from a factory and a notifier.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -61,14 +61,14 @@ public class BarChartItemProvider
         super(adapterFactory);
     }
 
-	/**
+    /**
      * This returns the property descriptors for the adapted class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-				public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
+                public List<IItemPropertyDescriptor> getPropertyDescriptors(Object object) {
         if (itemPropertyDescriptors == null) {
             super.getPropertyDescriptors(object);
 
@@ -81,13 +81,13 @@ public class BarChartItemProvider
         return itemPropertyDescriptors;
     }
 
-	/**
+    /**
      * This adds a property descriptor for the Group By Fields feature.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected void addGroupByFieldsPropertyDescriptor(Object object) {
+    protected void addGroupByFieldsPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
@@ -103,13 +103,13 @@ public class BarChartItemProvider
                  null));
     }
 
-	/**
+    /**
      * This adds a property descriptor for the Group Name Format feature.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected void addGroupNameFormatPropertyDescriptor(Object object) {
+    protected void addGroupNameFormatPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
@@ -125,13 +125,13 @@ public class BarChartItemProvider
                  null));
     }
 
-	/**
+    /**
      * This adds a property descriptor for the Bar Name Format feature.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected void addBarNameFormatPropertyDescriptor(Object object) {
+    protected void addBarNameFormatPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
@@ -147,13 +147,13 @@ public class BarChartItemProvider
                  null));
     }
 
-	/**
+    /**
      * This adds a property descriptor for the Bar Fields feature.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected void addBarFieldsPropertyDescriptor(Object object) {
+    protected void addBarFieldsPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
@@ -169,13 +169,13 @@ public class BarChartItemProvider
                  null));
     }
 
-	/**
+    /**
      * This adds a property descriptor for the Averaged Fields feature.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected void addAveragedFieldsPropertyDescriptor(Object object) {
+    protected void addAveragedFieldsPropertyDescriptor(Object object) {
         itemPropertyDescriptors.add
             (createItemPropertyDescriptor
                 (((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
@@ -191,18 +191,18 @@ public class BarChartItemProvider
                  null));
     }
 
-	/**
+    /**
      * This returns BarChart.gif.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-				public Object getImage(Object object) {
+                public Object getImage(Object object) {
         return overlayImage(object, getResourceLocator().getImage("full/obj16/BarChart"));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -219,14 +219,14 @@ public class BarChartItemProvider
      * @generated
      */
     @Override
-				public String getText(Object object) {
+                public String getText(Object object) {
         String label = ((BarChart)object).getName();
         return label == null || label.length() == 0 ?
             getString("_UI_BarChart_type") :
             getString("_UI_BarChart_type") + " " + label;
     }
 
-	/**
+    /**
      * This handles model notifications by calling {@link #updateChildren} to update any cached
      * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
      * <!-- begin-user-doc -->
@@ -234,7 +234,7 @@ public class BarChartItemProvider
      * @generated
      */
     @Override
-				public void notifyChanged(Notification notification) {
+                public void notifyChanged(Notification notification) {
         updateChildren(notification);
 
         switch (notification.getFeatureID(BarChart.class)) {
@@ -249,7 +249,7 @@ public class BarChartItemProvider
         super.notifyChanged(notification);
     }
 
-	/**
+    /**
      * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
      * that can be created under this object.
      * <!-- begin-user-doc -->
@@ -257,7 +257,7 @@ public class BarChartItemProvider
      * @generated
      */
     @Override
-				protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
+                protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
         super.collectNewChildDescriptors(newChildDescriptors, object);
     }
 

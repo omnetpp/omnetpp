@@ -137,7 +137,7 @@ public class ParamUtil {
         String paramName = paramDeclaration.getName();
         String paramRelativePath = paramName;
 
-	    // always add the parameter declaration, it will either be overwritten with a total assignment or extended with partial assignments
+        // always add the parameter declaration, it will either be overwritten with a total assignment or extended with partial assignments
         if (!collectParamAssignments(foundParamAssignments, paramDeclaration, true)) {
             // walk up the submodule path starting from the end (i.e. from the deepest submodule)
             outer: for (int i = elementPath.size() - 1; i >= 0; i--) {
@@ -161,7 +161,7 @@ public class ParamUtil {
                         ParamElementEx paramAssignment = paramAssignments.get(name);
 
                         if (collectParamAssignments(foundParamAssignments, paramAssignment, false))
-                        	break outer;
+                            break outer;
                     }
                 }
 
@@ -189,25 +189,25 @@ public class ParamUtil {
         });
     }
 
-	private static boolean collectParamAssignments(ArrayList<ParamElementEx> foundParamAssignments, ParamElementEx paramAssignment, boolean addEmptyValue) {
-	    boolean isEmpty = StringUtils.isEmpty(paramAssignment.getValue());
+    private static boolean collectParamAssignments(ArrayList<ParamElementEx> foundParamAssignments, ParamElementEx paramAssignment, boolean addEmptyValue) {
+        boolean isEmpty = StringUtils.isEmpty(paramAssignment.getValue());
 
-	    if (addEmptyValue || !isEmpty) {
-    		if (!isTotalParamAssignment(paramAssignment))
-    			foundParamAssignments.add(paramAssignment);
-    		else {
-    	    	if (foundParamAssignments.size() != 0)
-    	    		foundParamAssignments.clear();
+        if (addEmptyValue || !isEmpty) {
+            if (!isTotalParamAssignment(paramAssignment))
+                foundParamAssignments.add(paramAssignment);
+            else {
+                if (foundParamAssignments.size() != 0)
+                    foundParamAssignments.clear();
 
-    	    	foundParamAssignments.add(paramAssignment);
+                foundParamAssignments.add(paramAssignment);
 
-    	        if (!paramAssignment.getIsDefault() && !isEmpty)
-    	            return true;
-    		}
-	    }
+                if (!paramAssignment.getIsDefault() && !isEmpty)
+                    return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
     public static String getParamPathElementName(ISubmoduleOrConnection element) {
         return getParamPathElementName(element, true);
@@ -251,7 +251,7 @@ public class ParamUtil {
     }
 
     /**
-     * Expects a module path pattern, and returns true if it matches all module indices 
+     * Expects a module path pattern, and returns true if it matches all module indices
      * at every level, i.e. all bracketed expressions in it are "[*]".
      */
     public static boolean isTotalParamAssignment(String pattern) {

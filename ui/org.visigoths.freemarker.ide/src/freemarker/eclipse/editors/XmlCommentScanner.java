@@ -18,19 +18,19 @@
  *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
  *        Visigoth Software Society (http://www.visigoths.org/)."
- *    Alternately, this acknowledgement may appear in the software 
- *    itself, if and wherever such third-party acknowledgements 
+ *    Alternately, this acknowledgement may appear in the software
+ *    itself, if and wherever such third-party acknowledgements
  *    normally appear.
  *
- * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names 
- *    of the project contributors may be used to endorse or promote 
- *    products derived from this software without prior written 
- *    permission. For written permission, please contact 
+ * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names
+ *    of the project contributors may be used to endorse or promote
+ *    products derived from this software without prior written
+ *    permission. For written permission, please contact
  *    visigoths@visigoths.org.
  *
- * 5. Products derived from this software may not be called 
- *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth" 
- *    appear in their names without prior written permission of the 
+ * 5. Products derived from this software may not be called
+ *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth"
+ *    appear in their names without prior written permission of the
  *    Visigoth Software Society.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED

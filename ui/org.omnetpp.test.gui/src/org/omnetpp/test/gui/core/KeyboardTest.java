@@ -21,16 +21,16 @@ import org.eclipse.swt.SWT;
 
 public class KeyboardTest extends GUITestCase
 {
-	public void testKeyboard() throws Throwable {
-	    WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*");
-	    WorkbenchWindowAccess.getWorkbenchWindow().chooseFromMainMenu("File|New.*|.*Other.*");
-	    TextAccess text = Access.findShellWithTitle("New").findTextAfterLabel("Wizards:");
-	    for (char c=32; c<128; ++c) {
-	        text.typeOver(""+c);
-	        String result = text.getTextContent();
-	        Assert.assertTrue("ASCII: "+(int)c+" expected: '"+c+"' result: '"+result+"'", result.equals(""+c));
-	    }
-	    text.pressKey(SWT.ESC);
-	}
+    public void testKeyboard() throws Throwable {
+        WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*");
+        WorkbenchWindowAccess.getWorkbenchWindow().chooseFromMainMenu("File|New.*|.*Other.*");
+        TextAccess text = Access.findShellWithTitle("New").findTextAfterLabel("Wizards:");
+        for (char c=32; c<128; ++c) {
+            text.typeOver(""+c);
+            String result = text.getTextContent();
+            Assert.assertTrue("ASCII: "+(int)c+" expected: '"+c+"' result: '"+result+"'", result.equals(""+c));
+        }
+        text.pressKey(SWT.ESC);
+    }
 
 }

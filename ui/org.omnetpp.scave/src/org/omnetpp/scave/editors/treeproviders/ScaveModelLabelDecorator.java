@@ -40,11 +40,11 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabelDecorator, IResourceChangeListener {
 
-	LocalResourceManager resourceManager;
+    LocalResourceManager resourceManager;
 
     public ScaveModelLabelDecorator() {
-    	//
-    	resourceManager = new LocalResourceManager(JFaceResources.getResources(PlatformUI.getWorkbench().getDisplay()));
+        //
+        resourceManager = new LocalResourceManager(JFaceResources.getResources(PlatformUI.getWorkbench().getDisplay()));
         // we want to listen for workspace changes
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
     }
@@ -56,18 +56,18 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         super.dispose();
     }
 
-	public Image decorateImage(Image image, Object element) {
-	    int severity = -1;
-		if (element instanceof InputFile) {
-			InputFile inputFile = (InputFile)element;
-			String resourcePath = inputFile.getName();
-			if (resourcePath != null && !containsWildcard(resourcePath)) {
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				IResource resource = root.findMember(resourcePath);
-				if (resource instanceof IFile)
-					severity = maxSeverityLevel((IFile)resource);
-			}
-		}
+    public Image decorateImage(Image image, Object element) {
+        int severity = -1;
+        if (element instanceof InputFile) {
+            InputFile inputFile = (InputFile)element;
+            String resourcePath = inputFile.getName();
+            if (resourcePath != null && !containsWildcard(resourcePath)) {
+                IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                IResource resource = root.findMember(resourcePath);
+                if (resource instanceof IFile)
+                    severity = maxSeverityLevel((IFile)resource);
+            }
+        }
         else if (element instanceof DatasetItem) {
             DatasetItem datasetItem = (DatasetItem)element;
             IFile file = ScaveModelUtil.getFileOfEObject(datasetItem);
@@ -81,22 +81,22 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
                 return resourceManager.createImage(decoratedIcon);
         }
 
-		return null;
-	}
+        return null;
+    }
 
-	public String decorateText(String text, Object element) {
-		return null;
-	}
+    public String decorateText(String text, Object element) {
+        return null;
+    }
 
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
+    public boolean isLabelProperty(Object element, String property) {
+        return false;
+    }
 
-	private boolean containsWildcard(String resourcePath) {
-		return resourcePath.indexOf('?') >= 0 || resourcePath.indexOf('*') >= 0;
-	}
+    private boolean containsWildcard(String resourcePath) {
+        return resourcePath.indexOf('?') >= 0 || resourcePath.indexOf('*') >= 0;
+    }
 
-	private int maxSeverityLevel(IFile file) {
+    private int maxSeverityLevel(IFile file) {
         int maxLevel = -1;
         try {
           IMarker problems[] = file.findMarkers(IMarker.PROBLEM, true, IResource.DEPTH_ZERO);
@@ -107,7 +107,7 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
             return maxLevel;
         }
         return maxLevel;
-	}
+    }
 
     private boolean hasError(IFile file, EObject object) {
         try {
@@ -122,26 +122,26 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
         }
     }
 
-	private DecorationOverlayIcon createDecoratedIcon(Image base, int severity) {
-		if (severity == IMarker.SEVERITY_ERROR)
-			return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
-		else if (severity == IMarker.SEVERITY_WARNING)
-			return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
-		else
-			return null;
-	}
+    private DecorationOverlayIcon createDecoratedIcon(Image base, int severity) {
+        if (severity == IMarker.SEVERITY_ERROR)
+            return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
+        else if (severity == IMarker.SEVERITY_WARNING)
+            return new DecorationOverlayIcon(base, ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_ERROR), IDecoration.BOTTOM_LEFT);
+        else
+            return null;
+    }
 
-	public void resourceChanged(IResourceChangeEvent event) {
+    public void resourceChanged(IResourceChangeEvent event) {
         if (isListenerAttached()) {
-        	final boolean[] someMarkerChanged = new boolean[] {false};
+            final boolean[] someMarkerChanged = new boolean[] {false};
             try {
                 event.getDelta().accept(
                         new IResourceDeltaVisitor() {
                             public boolean visit(IResourceDelta delta) {
                                 // we are interested only in marker annotation changes
                                 if ((delta.getFlags() & IResourceDelta.MARKERS) != 0 &&
-                                		delta.getResource() instanceof IFile) {
-                                	someMarkerChanged[0] = true;
+                                        delta.getResource() instanceof IFile) {
+                                    someMarkerChanged[0] = true;
                                 }
                                 // stop visiting after the first marker change found
                                 return !someMarkerChanged[0];
@@ -154,11 +154,11 @@ public class ScaveModelLabelDecorator extends BaseLabelProvider implements ILabe
             }
 
             if (someMarkerChanged[0])
-            	PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-					public void run() {
-		            	fireLabelProviderChanged(new LabelProviderChangedEvent(ScaveModelLabelDecorator.this));
-					}
-            	});
+                PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+                    public void run() {
+                        fireLabelProviderChanged(new LabelProviderChangedEvent(ScaveModelLabelDecorator.this));
+                    }
+                });
         }
- 	}
+    }
 }

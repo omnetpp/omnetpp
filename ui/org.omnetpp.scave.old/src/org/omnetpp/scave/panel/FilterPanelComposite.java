@@ -18,18 +18,18 @@ import org.eclipse.swt.widgets.Table;
  */
 public abstract class FilterPanelComposite extends Composite {
 
-	public FilterPanelComposite(Composite parent, int style) {
-		super(parent, style);
-	}
+    public FilterPanelComposite(Composite parent, int style) {
+        super(parent, style);
+    }
 
-	public abstract Button getFilterButton();
+    public abstract Button getFilterButton();
 
-	public abstract CCombo getModuleNameCombo();
+    public abstract CCombo getModuleNameCombo();
 
-	public abstract CCombo getRunNameCombo();
+    public abstract CCombo getRunNameCombo();
 
-	public abstract CCombo getNameCombo();
+    public abstract CCombo getNameCombo();
 
-	public abstract Table getTable();
+    public abstract Table getTable();
 
 }

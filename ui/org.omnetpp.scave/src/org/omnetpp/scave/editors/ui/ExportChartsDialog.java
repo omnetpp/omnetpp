@@ -41,7 +41,7 @@ import org.omnetpp.scave.export.NativeChartExport;
 import org.omnetpp.scave.model.Chart;
 
 public class ExportChartsDialog extends Dialog {
-    
+
     private static final String
         KEY_TARGET_FOLDER = "folder",
         KEY_RENDERER = "renderer",
@@ -217,12 +217,12 @@ public class ExportChartsDialog extends Dialog {
 
         selectedRenderer = renderers.get(0);
         updateFileFormats();
-        
+
         restoreDialogSettings();
 
         return composite;
     }
-    
+
     private void updateFileFormats() {
         List<IGraphicalExportFileFormat> newFormats = new ArrayList<IGraphicalExportFileFormat>();
         IChartExport renderer = getSelectedRenderer();
@@ -244,18 +244,18 @@ public class ExportChartsDialog extends Dialog {
 
     protected void validateDialogContents() {
         boolean ok = true;
-        
+
         IContainer folder = getTargetFolderFromControl();
         if (folder == null || !folder.isAccessible())
             ok = false;
 
         if (getSelectedChartsFromTree().isEmpty())
             ok = false;
-            
+
         if (getButton(OK) != null) // it is null during dialog creation
             getButton(OK).setEnabled(ok);
     }
-    
+
     @Override
     protected void okPressed() {
         selectedCharts = getSelectedChartsFromTree();
@@ -264,7 +264,7 @@ public class ExportChartsDialog extends Dialog {
         selectedFormat = getSelectedFileFormat();
 
         saveDialogSettings();
-        
+
         super.okPressed();
     }
 
@@ -277,45 +277,45 @@ public class ExportChartsDialog extends Dialog {
         }
         return result;
     }
-    
+
     protected IContainer getTargetFolderFromControl() {
         try {
             String text = folderText.getText().trim();
             Path path = new Path(text);
             if (path.segmentCount() < 2)
                 return ResourcesPlugin.getWorkspace().getRoot().getProject(text);
-            else 
+            else
                 return ResourcesPlugin.getWorkspace().getRoot().getFolder(path);
-        } 
+        }
         catch (Exception e) {
             return null;
         }
     }
-    
+
     private IDialogSettings getDialogSettings() {
         return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
     }
-    
+
     private void saveDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
         String folder = folderText.getText();
         settings.put(KEY_TARGET_FOLDER, folder);
-        
+
         IChartExport renderer = getSelectedRenderer();
         settings.put(KEY_RENDERER, renderer != null ? renderer.getName() : null);
-        
+
         IGraphicalExportFileFormat format = getSelectedFileFormat();
         settings.put(KEY_FORMAT, format != null ? format.getName() : null);
     }
-    
+
     private void restoreDialogSettings() {
         IDialogSettings settings = getDialogSettings();
 
         String folder = settings.get(KEY_TARGET_FOLDER);
         if (folder != null)
             folderText.setText(folder);
-        
+
         String rendererName = settings.get(KEY_RENDERER);
         IChartExport renderer = getRenderer(rendererName);
         if (renderer == null && !renderers.isEmpty())
@@ -328,7 +328,7 @@ public class ExportChartsDialog extends Dialog {
             selectedFormat = formats.get(0);
         setSelectedFileFormat(selectedFormat);
     }
-    
+
     private IChartExport getSelectedRenderer() {
         return selectedRenderer;
 //        int index = -1;
@@ -339,13 +339,13 @@ public class ExportChartsDialog extends Dialog {
 //            }
 //        return index >= 0 && index < renderers.size() ? renderers.get(index) : null;
     }
-    
+
     private void setSelectedRenderer(IChartExport renderer) {
 //        for (Button radio : rendererRadios)
 //            radio.setSelection(renderer != null && radio.getText().equals(renderer.getName()));
 //        updateFileFormats();
     }
-    
+
     private IChartExport getRenderer(String name) {
         if (name != null) {
             for (IChartExport renderer : renderers)
@@ -354,7 +354,7 @@ public class ExportChartsDialog extends Dialog {
         }
         return null;
     }
-    
+
     private void setSelectedFileFormat(IGraphicalExportFileFormat format) {
         int index = -1;
         for (int i = 0; i < fileFormatCombo.getItemCount(); ++i)
@@ -362,13 +362,13 @@ public class ExportChartsDialog extends Dialog {
                 index = i;
                 break;
             }
-        
+
         if (index >= 0)
             fileFormatCombo.select(index);
         else
             fileFormatCombo.clearSelection();
     }
-    
+
     private IGraphicalExportFileFormat getFileFormat(String name) {
         if (name != null) {
             for (IGraphicalExportFileFormat format : formats)
@@ -382,7 +382,7 @@ public class ExportChartsDialog extends Dialog {
         int index = fileFormatCombo.getSelectionIndex();
         return index >= 0 && index < formats.size() ? formats.get(index) : null;
     }
-    
+
     public IChartExport getChartExporter() {
         return selectedRenderer;
     }

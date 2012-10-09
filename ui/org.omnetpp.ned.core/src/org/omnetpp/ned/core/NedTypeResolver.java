@@ -39,7 +39,7 @@ import org.omnetpp.ned.model.pojo.NedFileElement;
 
 /**
  * Default implementation of INedTypeResolver
- * 
+ *
  * @author Andras
  */
 public class NedTypeResolver implements INedTypeResolver {
@@ -58,31 +58,31 @@ public class NedTypeResolver implements INedTypeResolver {
     protected static class ProjectData {
         // NED Source Folders for the project (contents of the .nedfolders file)
         IContainer[] nedSourceFolders;
-        
+
         // the start package for each NED Source Folder (as defined in root package.ned files)
         // note: array must be the same size as nedSourceFolders
         String[] nedSourceFolderPackages;
 
-        // list of disabled package subtree 
+        // list of disabled package subtree
         String[] excludedPackageRoots;
-        
+
         // all projects we reference, directly or indirectly
         IProject[] referencedProjects;
-        
+
         // non-duplicate toplevel (non-inner) types; keys are fully qualified names
         final Map<String, INedTypeInfo> components = new HashMap<String, INedTypeInfo>();
-        
+
         // duplicate toplevel (non-inner) types; keys are fully qualified names
         final Map<String, List<INedTypeElement>> duplicates = new HashMap<String, List<INedTypeElement>>();
-        
+
         // reserved (used) fully qualified names (contains all names including duplicates)
         final Set<String> reservedNames = new HashSet<String>();
-        
+
         @Override
         public String toString() {
             return "references: " + StringUtils.join(referencedProjects, ",") +
-                    "  nedfolders: " + StringUtils.join(nedSourceFolders, ",") + 
-                    "  nedfolderpackages: " + StringUtils.join(nedSourceFolderPackages, ",") + 
+                    "  nedfolders: " + StringUtils.join(nedSourceFolders, ",") +
+                    "  nedfolderpackages: " + StringUtils.join(nedSourceFolderPackages, ",") +
                     "  excludedpackages: " + StringUtils.join(excludedPackageRoots, "," );
         }
     }
@@ -108,7 +108,7 @@ public class NedTypeResolver implements INedTypeResolver {
         // clone other fields (note: no need to clone nedTypeLookupCache)
         builtInDeclarationsFile = (NedFileElementEx) other.builtInDeclarationsFile.deepDup(this, true);
         lastChangeSerial = other.lastChangeSerial;
-        
+
         // clone projects table
         for (IProject project : other.projects.keySet()) {
             ProjectData projectData = other.projects.get(project);
@@ -119,7 +119,7 @@ public class NedTypeResolver implements INedTypeResolver {
             newProjectData.referencedProjects = projectData.referencedProjects.clone();
             projects.put(project, newProjectData);
         }
-        
+
         internalRehash();
     }
 
@@ -189,7 +189,7 @@ public class NedTypeResolver implements INedTypeResolver {
             long dt = System.currentTimeMillis() - startMillis;
             Debug.println("rehash(): " + dt + "ms, " + nedFiles.size() + " files, " + projects.size() + " projects");
         }
-        
+
     }
 
     /**
@@ -212,7 +212,7 @@ public class NedTypeResolver implements INedTypeResolver {
         for (INedElement child : builtInDeclarationsFile)
             if (child instanceof INedTypeElement)
                 result.add(((INedTypeElement)child).getNedTypeInfo());
-   
+
         return result;
     }
 
@@ -230,11 +230,11 @@ public class NedTypeResolver implements INedTypeResolver {
 
     public synchronized Set<IFile> getNedFiles(IProject project) {
         Set<IFile> files = new HashSet<IFile>();
-    
+
         for (IFile file : nedFiles.keySet())
             if (project.equals(file.getProject()))
                 files.add(file);
-    
+
         return files;
     }
 
@@ -272,7 +272,7 @@ public class NedTypeResolver implements INedTypeResolver {
                     long[] markerElementIds = (long[])attr;
                     if (!recursive)
                         matches = ArrayUtils.contains(markerElementIds, element.getId());
-                    else 
+                    else
                         for (long id : markerElementIds)
                             if (element.findElementWithId(id) != null)
                                 matches = true;
@@ -281,7 +281,7 @@ public class NedTypeResolver implements INedTypeResolver {
                 // if so, collect this marker
                 if (matches)
                     result.add(marker);
-    
+
                 // skip the remaining after reaching limit
                 if (result.size() >= limit)
                     break;
@@ -442,12 +442,12 @@ public class NedTypeResolver implements INedTypeResolver {
         ProjectData projectData = projects.get(context);
         if (projectData == null)
             return null;
-    
+
         // try as toplevel type
         INedTypeInfo typeInfo = projectData.components.get(qualifiedName);
         if (typeInfo != null)
             return typeInfo;
-    
+
         // if not found, try as inner type
         int lastDot = qualifiedName.lastIndexOf('.');
         if (lastDot != -1) {
@@ -514,9 +514,9 @@ public class NedTypeResolver implements INedTypeResolver {
     protected INedTypeInfo doLookupNedType(String name, INedTypeLookupContext lookupContext) {
         rehashIfNeeded();
         Assert.isTrue(lookupContext!=null, "lookupNedType() cannot be called with context==null");
-    
+
         // if (debug) Debug.println("looking up: " + name + " in " + lookupContext.debugString());
-    
+
         // note: this method is to be kept consistent with NEDResourceCache::resolveNedType() in the C++ code
         // note2: partially qualified names are not supported: name must be either simple name or fully qualified
         IProject project = getNedFile(lookupContext.getContainingNedFileElement()).getProject();
@@ -535,15 +535,15 @@ public class NedTypeResolver implements INedTypeResolver {
                 if (!(lookupContext instanceof CompoundModuleElementEx))
                     return null; // no inner type is visible at file level
                 else {
-                    CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) lookupContext; 
+                    CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) lookupContext;
                     // if lookupContext is an inner type itself, go up to toplevel type to make sure an inner type sees its sibling inner type
                     if (compoundModule.getEnclosingLookupContext() instanceof CompoundModuleElementEx)
-                        compoundModule = (CompoundModuleElementEx) compoundModule.getEnclosingLookupContext(); 
+                        compoundModule = (CompoundModuleElementEx) compoundModule.getEnclosingLookupContext();
                     if (type.getEnclosingType() == compoundModule)
                         return type;
                     else if (compoundModule.getNedTypeInfo().getInnerTypes().values().contains(type.getNedElement()))
                         return type;
-                    else 
+                    else
                         return null;
                 }
             }
@@ -551,7 +551,7 @@ public class NedTypeResolver implements INedTypeResolver {
         else {
             // no dot: name is an unqualified name (simple name); so, it can be:
             // (a) inner type, (b) an exactly imported type, (c) from the same package, (d) a wildcard imported type
-    
+
             // inner type?
             if (lookupContext instanceof CompoundModuleElementEx) {
                 // always lookup in the topmost compound module's context because "types:" is not allowed elsewhere
@@ -563,20 +563,20 @@ public class NedTypeResolver implements INedTypeResolver {
                 if (innerType != null)
                     return innerType.getNedTypeInfo();
             }
-    
+
             // exactly imported type?
             // try a shortcut first: if the import doesn't contain wildcards
             List<String> imports = lookupContext.getContainingNedFileElement().getImports();
             for (String importSpec : imports)
                 if (projectData.components.containsKey(importSpec) && (importSpec.endsWith("." + name) || importSpec.equals(name)))
                     return projectData.components.get(importSpec);
-    
+
             // from the same package?
             String packagePrefix = lookupContext.getContainingNedFileElement().getQNameAsPrefix();
             INedTypeInfo samePackageType = projectData.components.get(packagePrefix + name);
             if (samePackageType != null)
                 return samePackageType;
-    
+
             // try harder, using wildcards
             String nameWithDot = "." + name;
             for (String importSpec : imports) {
@@ -605,7 +605,7 @@ public class NedTypeResolver implements INedTypeResolver {
             map2.put(name, type = doLookupLikeType(name, interfaceType, context));
         return type;
     }
-    
+
     protected INedTypeInfo doLookupLikeType(String name, INedTypeInfo interfaceType, IProject context) {
         if (name.contains(".")) {
             // must be a fully qualified name (as we don't accept partially qualified names)
@@ -641,7 +641,7 @@ public class NedTypeResolver implements INedTypeResolver {
                     result.add(element.getNedTypeInfo().getFullyQualifiedName());
             }
         }
-    
+
         return result;
     }
 
@@ -661,7 +661,7 @@ public class NedTypeResolver implements INedTypeResolver {
         // assume file has passed the isNedFile() test
         return file.getName().equals(PACKAGE_NED_FILENAME) && ArrayUtils.contains(getNedSourceFolders(file.getProject()), file.getParent());
     }
-    
+
     public IContainer[] getNedSourceFolders(IProject project) {
         ProjectData projectData = projects.get(project);
         return projectData == null ? new IContainer[0] : projectData.nedSourceFolders;
@@ -676,11 +676,11 @@ public class NedTypeResolver implements INedTypeResolver {
         ProjectData projectData = projects.get(project);
         if (projectData == null)
             return null;
-    
+
         IContainer[] nedSourceFolders = projectData.nedSourceFolders;
         if (nedSourceFolders.length == 1 && nedSourceFolders[0] == project) // shortcut
             return project;
-    
+
         for (IContainer container = folder; !container.equals(project); container = container.getParent())
             if (ArrayUtils.contains(nedSourceFolders, container))
                 return container;
@@ -708,7 +708,7 @@ public class NedTypeResolver implements INedTypeResolver {
         ProjectData projectData = projects.get(project);
         if (projectData == null)
             return null;
-        
+
         // find which NED source folder covers this folder
         int nedSourceFolderIndex = ArrayUtils.INDEX_NOT_FOUND;
         int numLevels = 0;
@@ -718,7 +718,7 @@ public class NedTypeResolver implements INedTypeResolver {
         if (nedSourceFolderIndex == ArrayUtils.INDEX_NOT_FOUND)
             return null; // none
 
-        // assemble package name from NED source folder's package (define by package.ned) and the extra folder levels 
+        // assemble package name from NED source folder's package (define by package.ned) and the extra folder levels
         StringBuilder result = new StringBuilder(40);
         result.append(projectData.nedSourceFolderPackages[nedSourceFolderIndex]);
         IPath path = folder.getFullPath();
@@ -742,11 +742,11 @@ public class NedTypeResolver implements INedTypeResolver {
 
         return getPackageFor(file.getParent());
     }
-    
+
     public IContainer[] getFoldersForPackage(IProject project, String packageName) {
         if (!packageName.matches("([A-Za-z0-9_]+\\.)*[A-Za-z0-9_]+"))
             throw new IllegalArgumentException("Invalid package name: " + packageName);
-        
+
         ProjectData projectData = projects.get(project);
         if (projectData == null)
             return new IContainer[0];
@@ -803,7 +803,7 @@ public class NedTypeResolver implements INedTypeResolver {
             }
         }
     }
-    
+
     public void dumpProjectsTable() {
         Debug.println(projects.size() + " projects:");
         for (IProject project : projects.keySet()) {

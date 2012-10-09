@@ -8,7 +8,7 @@ import org.eclipse.core.resources.IFile;
 
 /**
  * Readonly part of IInifileDocument.
- * 
+ *
  * @author tomi
  */
 public interface IReadonlyInifileDocument {
@@ -120,7 +120,7 @@ public interface IReadonlyInifileDocument {
      * Returns "" if there is no comment (i.e. null is never returned.)
      */
     String getRawSectionComment(String section);
-    
+
     /**
      * Interprets lineNumber as a position into the primary (edited) file,
      * and returns which section it is part of; null is returned for
@@ -153,7 +153,7 @@ public interface IReadonlyInifileDocument {
      * Returns all included files, including indirectly referenced ones
      */
     IFile[] getIncludedFiles();
-    
+
     /**
      * Returns true if there is any cycle in the section inheritance chains.
      */
@@ -163,12 +163,12 @@ public interface IReadonlyInifileDocument {
      * Returns true if the given section is part of a cycle in the inheritance chain.
      */
     boolean isCausingCycle(String section);
-    
+
     /**
      * Returns the collection of cycles found in the section inheritance chains.
      */
     Collection<Set<String>> getSectionChainCycles();
-    
+
     /**
      * Follows the section "extends" chain back to the [General] section, and
      * returns the array of section names (including the given section and
@@ -176,11 +176,11 @@ public interface IReadonlyInifileDocument {
      *
      * The returned chain might by partial, if the section is part of a cycle
      * or the extended sections cannot be linearized due to a conflict.
-     * 
+     *
      * @return a non-empty array starting with {@code section}
      */
     String[] getSectionChain(String section);
-    
+
     /**
      * Returns the names of conflicting sections found while computing the
      * section chain of the given section.

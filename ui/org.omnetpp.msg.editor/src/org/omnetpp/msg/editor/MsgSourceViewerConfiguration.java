@@ -31,44 +31,44 @@ import org.omnetpp.msg.editor.utils.MsgAutoIndentStrategy;
 public class MsgSourceViewerConfiguration extends SourceViewerConfiguration {
 
     @Override
-	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
+    public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
         return new String[] { "    ", "" };
     }
 
-	@Override
-	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-		IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new MsgAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
-		return new IAutoEditStrategy[] { strategy };
-	}
+    @Override
+    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+        IAutoEditStrategy strategy= (IDocument.DEFAULT_CONTENT_TYPE.equals(contentType) ? new MsgAutoIndentStrategy() : new DefaultIndentLineAutoEditStrategy());
+        return new IAutoEditStrategy[] { strategy };
+    }
 
 
-	@Override
-	public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
-		return new String[] {MsgSyntaxHighlightPartitionScanner.MSG_DOC.equals(contentType) ? "// " : null};
-	}
+    @Override
+    public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
+        return new String[] {MsgSyntaxHighlightPartitionScanner.MSG_DOC.equals(contentType) ? "// " : null};
+    }
 
-	@Override
-	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-		PresentationReconciler reconciler= new PresentationReconciler();
+    @Override
+    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+        PresentationReconciler reconciler= new PresentationReconciler();
         // syntax highlighting is using a separate partitioner
-		reconciler.setDocumentPartitioning(MsgSyntaxHighlightPartitionScanner.PARTITIONING_ID);
+        reconciler.setDocumentPartitioning(MsgSyntaxHighlightPartitionScanner.PARTITIONING_ID);
 
         // colorizers for ned code
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new MsgCodeColorizerScanner());
-		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
-		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+        DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new MsgCodeColorizerScanner());
+        reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
         // colorizer for normal ned doc
-		dr = new DefaultDamagerRepairer(new MsgDocColorizerScanner());
-		reconciler.setDamager(dr, MsgSyntaxHighlightPartitionScanner.MSG_DOC);
-		reconciler.setRepairer(dr, MsgSyntaxHighlightPartitionScanner.MSG_DOC);
+        dr = new DefaultDamagerRepairer(new MsgDocColorizerScanner());
+        reconciler.setDamager(dr, MsgSyntaxHighlightPartitionScanner.MSG_DOC);
+        reconciler.setRepairer(dr, MsgSyntaxHighlightPartitionScanner.MSG_DOC);
 
         // colorizer for private ned doc
         dr = new DefaultDamagerRepairer(new MsgPrivateDocColorizerScanner());
-		reconciler.setDamager(dr, MsgSyntaxHighlightPartitionScanner.MSG_PRIVATE_DOC);
-		reconciler.setRepairer(dr, MsgSyntaxHighlightPartitionScanner.MSG_PRIVATE_DOC);
+        reconciler.setDamager(dr, MsgSyntaxHighlightPartitionScanner.MSG_PRIVATE_DOC);
+        reconciler.setRepairer(dr, MsgSyntaxHighlightPartitionScanner.MSG_PRIVATE_DOC);
 
-		return reconciler;
-	}
+        return reconciler;
+    }
 
 }

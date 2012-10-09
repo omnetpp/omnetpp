@@ -23,8 +23,8 @@ import org.eclipse.draw2d.text.TextFlow;
 //FIXME obsolete class, change usages to ITooltipTextProvider, and remove!!!
 public class TooltipFigure extends FlowPage {
 
-	private ITooltipTextProvider textProvider;
-	private String text;
+    private ITooltipTextProvider textProvider;
+    private String text;
     private final TextFlow textFlow;
 
     public TooltipFigure() {
@@ -59,16 +59,16 @@ public class TooltipFigure extends FlowPage {
      * Sets the text provider callback. It is used only if no text is directly set on the figure.
      */
     public void setTextProvider(ITooltipTextProvider textProvider) {
-		this.textProvider = textProvider;
-	}
+        this.textProvider = textProvider;
+    }
 
-	@Override
+    @Override
     public void repaint() {
-    	// set the textFlow content from the text field or from textProvider if no text was directly provided
-		// FIXME check if getTooltipText(-1,-1) correct
-		if (textFlow != null)
-			textFlow.setText(text != null ? text : (textProvider != null ? textProvider.getTooltipText(-1,-1) : null));
-    	super.repaint();
+        // set the textFlow content from the text field or from textProvider if no text was directly provided
+        // FIXME check if getTooltipText(-1,-1) correct
+        if (textFlow != null)
+            textFlow.setText(text != null ? text : (textProvider != null ? textProvider.getTooltipText(-1,-1) : null));
+        super.repaint();
     }
 
     @Override

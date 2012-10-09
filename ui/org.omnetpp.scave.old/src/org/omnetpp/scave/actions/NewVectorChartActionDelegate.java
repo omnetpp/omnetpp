@@ -12,9 +12,9 @@ package org.omnetpp.scave.actions;
  */
 public class NewVectorChartActionDelegate extends NewDocActionDelegate {
 
-	private static int counter = 0;
+    private static int counter = 0;
 
-	protected String getNewFileName() {
-		return "Untitled vector chart "+(++counter)+".vchart";
-	}
+    protected String getNewFileName() {
+        return "Untitled vector chart "+(++counter)+".vchart";
+    }
 }

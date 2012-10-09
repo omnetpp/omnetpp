@@ -14,7 +14,7 @@ import org.eclipse.cdt.managedbuilder.macros.IProjectBuildMacroSupplier;
 
 /**
  * Macro provider, currently empty.
- * 
+ *
  * @author Andras
  */
 public class OmnetppProjectMacroSupplier implements IProjectBuildMacroSupplier {

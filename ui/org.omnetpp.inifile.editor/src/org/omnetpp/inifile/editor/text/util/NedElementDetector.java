@@ -44,8 +44,8 @@ public class NedElementDetector {
     private final IReadonlyInifileDocument doc;
     private final InifileAnalyzer analyzer;
     private final INedTypeResolver nedResolver;
-    
-    
+
+
     public NedElementDetector(IReadonlyInifileDocument doc, InifileAnalyzer analyzer, IDocument textDoc, INedTypeResolver nedResolver) {
         this.textDoc = textDoc;
         this.doc = doc;
@@ -63,7 +63,7 @@ public class NedElementDetector {
             section = doc.getSectionForLine(lineNumber);
             key = doc.getKeyForLine(lineNumber);
         } catch (BadLocationException e) { }
-        
+
         if (section != null && key != null) {
             switch (KeyType.getKeyType(key)) {
                 case CONFIG: result = detectNedElementsInConfigLine(offset, section, key); break;
@@ -73,7 +73,7 @@ public class NedElementDetector {
         }
         return result;
     }
-    
+
     /**
      * Detect NED elements in global config settings.
      * It resolves the referenced network in the "network=..." config lines.
@@ -87,7 +87,7 @@ public class NedElementDetector {
                 INedTypeInfo network = ParamCollector.resolveNetwork(doc, nedResolver, networkName);
                 if (network != null) {
                     int lineNumber = textDoc.getLineOfOffset(offset)+1;
-    
+
                     IRegion linkRegion = getValueRegion(textDoc, lineNumber);
                     if (contains(linkRegion, offset)) {
                         Set<INedElement> elements = new HashSet<INedElement>();
@@ -98,10 +98,10 @@ public class NedElementDetector {
             }
         } catch (BadLocationException e) {
         }
-        
+
         return null;
     }
-    
+
     /**
      * Detect NED elements in parameter setting lines.
      * It resolves module and parameter names in "<module>.<param> = ..." lines.
@@ -110,7 +110,7 @@ public class NedElementDetector {
     {
         try {
             int lineNumber = textDoc.getLineOfOffset(offset)+1;
-    
+
             IRegion keyRegion = getKeyRegion(textDoc, lineNumber);
             IRegion linkRegion = getLinkRegion(textDoc, keyRegion, offset);
             String pattern = getFullNameToBeMatched(textDoc, keyRegion, offset);
@@ -128,7 +128,7 @@ public class NedElementDetector {
           catch (ParamResolutionTimeoutException e) {  /* no hyperlinks if param resolution timed out */ }
         return null;
     }
-    
+
     /**
      * Detect NED elements in per-object setting lines.
      * Resolves module, parameter and statistic names in the following lines:
@@ -141,14 +141,14 @@ public class NedElementDetector {
     protected Pair<IRegion, Set<INedElement>> detectNedElementsInPerObjectConfigLine(int offset, String section, String key) {
         try {
             int lineNumber = textDoc.getLineOfOffset(offset)+1;
-    
+
             IRegion keyRegion = getKeyRegion(textDoc, lineNumber);
             IRegion linkRegion = getLinkRegion(textDoc, keyRegion, offset);
-            
+
             // cut off .<config> part
             int index = key.lastIndexOf('.');
             String pattern = key.substring(0, index);
-    
+
             if (linkRegion != null) {
                 ITimeout timeout = new Timeout(InifileEditor.HYPERLINKDETECTOR_TIMEOUT);
                 PropertyResolution[] resList = analyzer.getPropertyResolutions("statistic", pattern, section, timeout);
@@ -169,12 +169,12 @@ public class NedElementDetector {
           catch (ParamResolutionTimeoutException e) {  /* no hyperlinks if param resolution timed out */ }
         return null;
     }
-    
+
     private static void collectMatchingNedElementsFromParamResolutions(PatternMatcher fullNameMatcher, ParamResolution[] paramResolutions, Set<INedElement> result) {
         for (ParamResolution paramResolution : paramResolutions)
             collectMatchingNedElementsFromParamResolution(fullNameMatcher, paramResolution, result);
     }
-    
+
     private static void collectMatchingNedElementsFromParamResolution(PatternMatcher fullNameMatcher, ParamResolution paramResolution, Set<INedElement> result) {
         String paramFullPath = paramResolution.fullPath + "." + paramResolution.paramDeclaration.getName();
         if (fullNameMatcher.matches(paramFullPath))
@@ -184,12 +184,12 @@ public class NedElementDetector {
             result.add(network);
         collectMatchingNedElementsFromElementPath(fullNameMatcher, paramResolution.elementPath, paramResolution.fullPath, result);
     }
-    
+
     private static void collectMatchingNedElementsFromPropertyResolutions(PatternMatcher fullNameMatcher, PropertyResolution[] propertyResolutions, Set<INedElement> result) {
         for (PropertyResolution propertyResolution : propertyResolutions)
             collectMatchingNedElementsFromPropertyResolution(fullNameMatcher, propertyResolution, result);
     }
-    
+
     private static void collectMatchingNedElementsFromPropertyResolution(PatternMatcher fullNameMatcher, PropertyResolution propertyResolution, Set<INedElement> result) {
         if (fullNameMatcher.matches(propertyResolution.fullPath))
             result.add(propertyResolution.propertyDeclaration);
@@ -199,7 +199,7 @@ public class NedElementDetector {
         String moduleFullPath = propertyResolution.fullPath.substring(0, Math.max(propertyResolution.fullPath.lastIndexOf('.'), 0));
         collectMatchingNedElementsFromElementPath(fullNameMatcher, propertyResolution.elementPath, moduleFullPath, result);
     }
-    
+
     private static void collectMatchingNedElementsFromElementPath(PatternMatcher fullNameMatcher, ISubmoduleOrConnection[] elementPath, String fullPath, Set<INedElement> result) {
         for (int i = elementPath.length - 1; i >= 0; --i) {
             ISubmoduleOrConnection element = elementPath[i];
@@ -208,13 +208,13 @@ public class NedElementDetector {
             fullPath = fullPath.substring(0, Math.max(fullPath.lastIndexOf('.'), 0));
         }
     }
-    
+
     private void collectMatchingModules(PatternMatcher fullNameMatcher, String section, Set<INedElement> elements) {
         addMatchingNetwork(fullNameMatcher, section, elements);
         Map<String,ISubmoduleOrConnection> modules = ParamCollector.collectModules(doc, section, fullNameMatcher, nedResolver, null);
         elements.addAll(modules.values());
     }
-    
+
     private void addMatchingNetwork(PatternMatcher fullNameMatcher, String section, Set<INedElement> elements) {
         String networkName = InifileUtils.lookupNetwork(doc, section);
         INedTypeInfo network = networkName != null ? ParamCollector.resolveNetwork(doc, nedResolver, networkName) : null;
@@ -224,7 +224,7 @@ public class NedElementDetector {
 
     private static INedElement getNetworkElement(ParamResolution resolution) {
         // either the parent of the first element in elementPath
-        if (resolution.elementPath.length >= 2 && 
+        if (resolution.elementPath.length >= 2 &&
             resolution.elementPath[1] != null &&
             resolution.elementPath[1].getCompoundModule() != null)
                 return resolution.elementPath[1].getCompoundModule();
@@ -232,17 +232,17 @@ public class NedElementDetector {
         ParamElementEx param = resolution.paramAssignment!=null ? resolution.paramAssignment : resolution.paramDeclaration;
         return param.getOwner();
     }
-    
+
     private static INedElement getNetworkElement(PropertyResolution resolution) {
         // either the parent of the first element in elementPath
-        if (resolution.elementPath.length >= 2 && 
+        if (resolution.elementPath.length >= 2 &&
             resolution.elementPath[1] != null &&
             resolution.elementPath[1].getCompoundModule() != null)
                 return resolution.elementPath[1].getCompoundModule();
         // or the parent of the property element
         return null; //resolution.propertyDeclaration.getOwner() ?
     }
-    
+
     /**
      * Get position of the key within the line.
      */
@@ -269,13 +269,13 @@ public class NedElementDetector {
             ++end;
         return end > start ? new Region(start+1, end-start-1) : null;
     }
-    
+
     /**
      * Returns that part of key which is to be matched when the cursor is at offset in textDoc.
      * Example:
      *   getOwnerFromKey("aaa.bbb.ccc", 9)  -> "aaa.bbb.ccc"
      *   getOwnerFromKey("aaa.bbb.ccc", 5)  -> "aaa.bbb"
-     * 
+     *
      * @param textDoc the ini file document
      * @param keyRegion the region in the document containing the key
      * @param offset an offset inside the key
@@ -290,7 +290,7 @@ public class NedElementDetector {
             ++end;
         return textDoc.get(keyStart, end-keyStart);
     }
-    
+
     /**
      * Get the position of the value within the line.
      */
@@ -313,18 +313,18 @@ public class NedElementDetector {
             end--;
         return new Region(begin, end-begin);
     }
-    
+
     private static boolean contains(IRegion reg, int offset) {
         return offset >= reg.getOffset() && offset < reg.getOffset() + reg.getLength();
     }
-    
+
     /**
      * Returns the text displayed to disambiguate multiple target elements.
      */
     public static String getLinkText(INedElement element) {
         String text = null;
         INedTypeElement typeElement = null;
-        
+
         if (element instanceof ParamElement) {
             ParamElement param = (ParamElement)element;
             typeElement = param.getEnclosingTypeElement();
@@ -349,10 +349,10 @@ public class NedElementDetector {
         }
         else
             Assert.isTrue(false, "Element is: " + element);
-        
+
         if (typeElement.getNedTypeInfo().isInnerType())
             text = typeElement.getEnclosingTypeElement().getName() + "." + text;
-        
+
         return text;
     }
 }

@@ -33,17 +33,17 @@ import org.omnetpp.ned.model.pojo.SimpleModuleElement;
 public class SimpleModuleElementEx extends SimpleModuleElement implements IModuleTypeElement {
 
     private INedTypeResolver resolver;
-	private INedTypeInfo typeInfo;
-	protected DisplayString displayString = null;
+    private INedTypeInfo typeInfo;
+    protected DisplayString displayString = null;
 
     protected SimpleModuleElementEx(INedTypeResolver resolver) {
         init(resolver);
-	}
+    }
 
     protected SimpleModuleElementEx(INedTypeResolver resolver, INedElement parent) {
-		super(parent);
+        super(parent);
         init(resolver);
-	}
+    }
 
     private void init(INedTypeResolver resolver) {
         Assert.isNotNull(resolver, "This NED element type needs a resolver");
@@ -57,23 +57,23 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     public INedTypeInfo getNedTypeInfo() {
-    	return typeInfo;
+        return typeInfo;
     }
 
     @Override
     public void fireModelEvent(NedModelEvent event) {
-    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
-    		displayString = null;
-    	super.fireModelEvent(event);
+        // invalidate cached display string because NED tree may have changed outside the DisplayString class
+        if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
+            displayString = null;
+        super.fireModelEvent(event);
     }
 
     public boolean isNetwork() {
-    	// this isNetwork property should not be inherited so we look only among the local properties
-    	PropertyElementEx networkPropertyElementEx = getNedTypeInfo().getLocalProperty(IS_NETWORK_PROPERTY, null);
-    	if (networkPropertyElementEx == null)
-    		return false;
-    	String propValue = NedElementUtilEx.getPropertyValue(networkPropertyElementEx);
+        // this isNetwork property should not be inherited so we look only among the local properties
+        PropertyElementEx networkPropertyElementEx = getNedTypeInfo().getLocalProperty(IS_NETWORK_PROPERTY, null);
+        if (networkPropertyElementEx == null)
+            return false;
+        String propValue = NedElementUtilEx.getPropertyValue(networkPropertyElementEx);
         return !StringUtils.equalsIgnoreCase("false", propValue);
     }
 
@@ -82,10 +82,10 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     public DisplayString getDisplayString() {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
+        return displayString;
     }
 
     // "extends" support
@@ -102,12 +102,12 @@ public class SimpleModuleElementEx extends SimpleModuleElement implements IModul
     }
 
     public List<ExtendsElement> getAllExtends() {
-    	return getAllExtendsFrom(this);
+        return getAllExtendsFrom(this);
     }
 
-	public INedTypeLookupContext getParentLookupContext() {
-		return getParentLookupContextFor(this);
-	}
+    public INedTypeLookupContext getParentLookupContext() {
+        return getParentLookupContextFor(this);
+    }
 
     // parameter query support
 

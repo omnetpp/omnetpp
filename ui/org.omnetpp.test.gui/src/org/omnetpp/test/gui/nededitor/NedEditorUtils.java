@@ -29,27 +29,27 @@ import com.simulcraft.test.gui.util.WorkspaceUtils;
 
 public class NedEditorUtils
 {
-	public static void createNewNedFileByWizard(String parentFolder, String fileName, String template) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*"); // so that we have "New|NED file" in the menu
-		workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
-		ShellAccess shell = Access.findShellWithTitle("New NED File");
-		shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
-		shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
-		if (template != null)
-		    shell.findButtonWithLabel(template).selectWithMouseClick();
-		shell.findButtonWithLabel("Finish").selectWithMouseClick();
-		WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
-	}
+    public static void createNewNedFileByWizard(String parentFolder, String fileName, String template) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        WorkbenchUtils.ensurePerspectiveActivated(".*Simul.*"); // so that we have "New|NED file" in the menu
+        workbenchWindow.chooseFromMainMenu("File|New.*|Network Description.*");
+        ShellAccess shell = Access.findShellWithTitle("New NED File");
+        shell.findTextAfterLabel(".*parent folder.*").clickAndTypeOver(parentFolder);
+        shell.findTextAfterLabel("File name.*").clickAndTypeOver(fileName);
+        if (template != null)
+            shell.findButtonWithLabel(template).selectWithMouseClick();
+        shell.findButtonWithLabel("Finish").selectWithMouseClick();
+        WorkspaceUtils.assertFileExists(parentFolder + "/" + fileName); // make sure file got created
+    }
 
-	public static void typeIntoTextualNedEditor(String fileName, String nedSource) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
-		StyledTextAccess styledText = textualEditor.findStyledText();
-		styledText.pressKey('A', SWT.CTRL); // "Select all"
-		styledText.typeIn(nedSource);
-	}
+    public static void typeIntoTextualNedEditor(String fileName, String nedSource) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        MultiPageEditorPartAccess multiPageEditorPart = workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+        TextEditorAccess textualEditor = (TextEditorAccess)multiPageEditorPart.ensureActiveEditor("Text");
+        StyledTextAccess styledText = textualEditor.findStyledText();
+        styledText.pressKey('A', SWT.CTRL); // "Select all"
+        styledText.typeIn(nedSource);
+    }
 
     public static void setDefaultNedPath(String projectName) {
         setNedPath(projectName, null);
@@ -74,10 +74,10 @@ public class NedEditorUtils
         shell.findButtonWithLabel("OK").click();
     }
 
-	public static void assertBothEditorsAreAccessible(String fileName) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		NedEditorAccess nedEditor = (NedEditorAccess) workbenchWindow.findMultiPageEditorPartByTitle(fileName);
-		nedEditor.ensureActiveGraphicalEditor();
-		nedEditor.ensureActiveTextEditor();
-	}
+    public static void assertBothEditorsAreAccessible(String fileName) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        NedEditorAccess nedEditor = (NedEditorAccess) workbenchWindow.findMultiPageEditorPartByTitle(fileName);
+        nedEditor.ensureActiveGraphicalEditor();
+        nedEditor.ensureActiveTextEditor();
+    }
 }

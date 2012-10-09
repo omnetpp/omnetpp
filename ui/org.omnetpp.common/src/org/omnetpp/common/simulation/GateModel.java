@@ -5,63 +5,63 @@ import org.omnetpp.common.displaymodel.IDisplayString;
 public class GateModel {
     private int id;
     private String name;
-	private int index;
-	private int size;
-	private ModuleModel ownerModule;
-	private IDisplayString displayString;
+    private int index;
+    private int size;
+    private ModuleModel ownerModule;
+    private IDisplayString displayString;
 
-	public GateModel(ModuleModel ownerModule, int id) {
-	    this.ownerModule = ownerModule;
-	    this.id = id;
+    public GateModel(ModuleModel ownerModule, int id) {
+        this.ownerModule = ownerModule;
+        this.id = id;
     }
 
     public int getId() {
-		return id;
-	}
+        return id;
+    }
 
-	public void setId(int gateId) {
-		this.id = gateId;
-	}
+    public void setId(int gateId) {
+        this.id = gateId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public int getIndex() {
-		return index;
-	}
+    public int getIndex() {
+        return index;
+    }
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
+    public void setIndex(int index) {
+        this.index = index;
+    }
 
-	public boolean isVector() {
-		return index!=-1;
-	}
+    public boolean isVector() {
+        return index!=-1;
+    }
 
-	public int getVectorSize() {
-		return size;
-	}
+    public int getVectorSize() {
+        return size;
+    }
 
-	public void setSize(int size) {
-		this.size = size;
-	}
+    public void setSize(int size) {
+        this.size = size;
+    }
 
-	public String getFullName() {
-		return size<0 ? name : name+"["+index+"]";
-	}
+    public String getFullName() {
+        return size<0 ? name : name+"["+index+"]";
+    }
 
-	public String getFullPath() {
-		return ownerModule==null ? getFullName() : ownerModule.getFullPath()+"."+getFullName();
-	}
+    public String getFullPath() {
+        return ownerModule==null ? getFullName() : ownerModule.getFullPath()+"."+getFullName();
+    }
 
-	public ModuleModel getOwnerModule() {
-		return ownerModule;
-	}
+    public ModuleModel getOwnerModule() {
+        return ownerModule;
+    }
 
     public int getOwnerModuleId() {
         return ownerModule.getId();

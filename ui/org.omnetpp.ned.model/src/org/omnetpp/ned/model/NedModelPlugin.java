@@ -21,45 +21,45 @@ import org.osgi.framework.BundleContext;
 public class NedModelPlugin extends AbstractUIPlugin {
     public static String PLUGIN_ID;
 
-	//The shared instance.
-	private static NedModelPlugin plugin;
+    //The shared instance.
+    private static NedModelPlugin plugin;
 
-	/**
-	 * The constructor.
-	 */
-	public NedModelPlugin() {
-	    plugin = this;
+    /**
+     * The constructor.
+     */
+    public NedModelPlugin() {
+        plugin = this;
 
         // initialize the model factory to use this factory as default
         // this is called when the plugin is activated
-	    NedElementFactoryEx.setInstance(new NedElementFactoryEx());
+        NedElementFactoryEx.setInstance(new NedElementFactoryEx());
 
-	}
+    }
 
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
+    /**
+     * This method is called upon plug-in activation
+     */
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-	}
+    }
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
-		plugin = null;
-	}
+    /**
+     * This method is called when the plug-in is stopped
+     */
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        super.stop(context);
+        plugin = null;
+    }
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static NedModelPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance.
+     */
+    public static NedModelPlugin getDefault() {
+        return plugin;
+    }
 
     public static void log(Exception e) {
         IStatus status = new Status(Status.ERROR, PLUGIN_ID, 1, e.getMessage(), e);

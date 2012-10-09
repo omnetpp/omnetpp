@@ -87,81 +87,81 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     public final static String IMAGE_LINE_FILTER_MODE = TOOL_IMAGE_DIR + "LineFilterMode.png";
 
     private static EventLogTableContributor singleton;
-	private EventLogTable eventLogTable;
+    private EventLogTable eventLogTable;
 
-	private Separator separatorAction;
-	private EventLogTableAction gotoMessageOriginAction;
-	private EventLogTableAction gotoMessageReuseAction;
+    private Separator separatorAction;
+    private EventLogTableAction gotoMessageOriginAction;
+    private EventLogTableAction gotoMessageReuseAction;
     private EventLogTableAction toggleBookmarkAction;
     private EventLogTableMenuAction typeModeAction;
     private EventLogTableMenuAction nameModeAction;
     private EventLogTableMenuAction lineFilterModeAction;
-	private EventLogTableMenuAction displayModeAction;
-	private EventLogTableAction filterAction;
+    private EventLogTableMenuAction displayModeAction;
+    private EventLogTableAction filterAction;
     private EventLogTableAction refreshAction;
     private EventLogTableAction pinAction;
     private StatusLineContributionItem filterStatus;
 
-	/*************************************************************************************
-	 * CONSTRUCTION
-	 */
+    /*************************************************************************************
+     * CONSTRUCTION
+     */
 
-	public EventLogTableContributor() {
-		this.separatorAction = new Separator();
-		this.gotoMessageOriginAction = createGotoMessageOriginAction();
-		this.gotoMessageReuseAction = createGotoMessageReuseAction();
+    public EventLogTableContributor() {
+        this.separatorAction = new Separator();
+        this.gotoMessageOriginAction = createGotoMessageOriginAction();
+        this.gotoMessageReuseAction = createGotoMessageReuseAction();
         this.toggleBookmarkAction = createToggleBookmarkAction();
         this.typeModeAction = createTypeModeAction();
         this.nameModeAction = createNameModeAction();
-		this.lineFilterModeAction = createLineFilterModeAction();
-		this.displayModeAction = createDisplayModeAction();
-		this.filterAction = createFilterAction();
-		this.refreshAction = createRefreshAction();
-		this.pinAction = createPinAction();
+        this.lineFilterModeAction = createLineFilterModeAction();
+        this.displayModeAction = createDisplayModeAction();
+        this.filterAction = createFilterAction();
+        this.refreshAction = createRefreshAction();
+        this.pinAction = createPinAction();
 
-		this.filterStatus = createFilterStatus();
+        this.filterStatus = createFilterStatus();
 
-		if (singleton == null)
-			singleton = this;
-	}
+        if (singleton == null)
+            singleton = this;
+    }
 
-	public EventLogTableContributor(EventLogTable eventLogTable) {
-		this();
-		this.eventLogTable = eventLogTable;
-		eventLogTable.addSelectionChangedListener(this);
-	}
+    public EventLogTableContributor(EventLogTable eventLogTable) {
+        this();
+        this.eventLogTable = eventLogTable;
+        eventLogTable.addSelectionChangedListener(this);
+    }
 
-	@Override
-	public void dispose() {
+    @Override
+    public void dispose() {
         if (eventLogTable != null)
             eventLogTable.removeSelectionChangedListener(this);
 
-		eventLogTable = null;
-		singleton = null;
+        eventLogTable = null;
+        singleton = null;
 
-		super.dispose();
-	}
+        super.dispose();
+    }
 
-	private IEventLog getEventLog() {
-		return eventLogTable.getEventLog();
-	}
+    private IEventLog getEventLog() {
+        return eventLogTable.getEventLog();
+    }
 
-	public static EventLogTableContributor getDefault() {
-		Assert.isTrue(singleton != null);
+    public static EventLogTableContributor getDefault() {
+        Assert.isTrue(singleton != null);
 
-		return singleton;
-	}
+        return singleton;
+    }
 
-	/*************************************************************************************
-	 * CONTRIBUTIONS
-	 */
+    /*************************************************************************************
+     * CONTRIBUTIONS
+     */
 
     public void contributeToPopupMenu(IMenuManager menuManager) {
-		menuManager.add(createFindTextCommandContributionItem());
+        menuManager.add(createFindTextCommandContributionItem());
         menuManager.add(createFindNextCommandContributionItem());
-		menuManager.add(separatorAction);
+        menuManager.add(separatorAction);
 
-		// goto submenu
+        // goto submenu
         IMenuManager subMenuManager = new MenuManager("Go To");
         menuManager.add(subMenuManager);
         subMenuManager.add(createGotoEventCommandContributionItem());
@@ -195,7 +195,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         showInSubmenu.add(ContributionItemFactory.VIEWS_SHOW_IN.create(workbenchWindow));
         menuManager.add(showInSubmenu);
 
-	}
+    }
 
     private String getShowInMenuLabel() {
         String keyBinding = null;
@@ -210,74 +210,74 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         return NLS.bind("Show In \t{0}", keyBinding);
     }
 
-	@Override
-	public void contributeToToolBar(IToolBarManager toolBarManager) {
-	    contributeToToolBar(toolBarManager, false);
-	}
+    @Override
+    public void contributeToToolBar(IToolBarManager toolBarManager) {
+        contributeToToolBar(toolBarManager, false);
+    }
 
-	public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
+    public void contributeToToolBar(IToolBarManager toolBarManager, boolean view) {
         toolBarManager.add(filterAction);
         toolBarManager.add(lineFilterModeAction);
         toolBarManager.add(separatorAction);
         toolBarManager.add(nameModeAction);
-		toolBarManager.add(displayModeAction);
+        toolBarManager.add(displayModeAction);
         toolBarManager.add(separatorAction);
-		toolBarManager.add(refreshAction);
-		if (view)
-		    toolBarManager.add(pinAction);
-	}
-
-	@Override
-    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
-    	statusLineManager.add(filterStatus);
+        toolBarManager.add(refreshAction);
+        if (view)
+            toolBarManager.add(pinAction);
     }
 
-	@Override
-	public void setActiveEditor(IEditorPart targetEditor) {
-		if (targetEditor instanceof EventLogTableEditor) {
-			EventLogInput eventLogInput;
-			if (eventLogTable != null) {
-				eventLogInput = eventLogTable.getEventLogInput();
-				if (eventLogInput != null)
-					eventLogInput.removeEventLogChangedListener(this);
-                getPage().removePartListener(this);
-				eventLogTable.removeSelectionChangedListener(this);
-			}
-			eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
-			eventLogInput = eventLogTable.getEventLogInput();
-			if (eventLogInput != null)
-				eventLogInput.addEventLogChangedListener(this);
-            getPage().addPartListener(this);
-			eventLogTable.addSelectionChangedListener(this);
-			update();
-		}
-		else
-		    eventLogTable = null;
-	}
+    @Override
+    public void contributeToStatusLine(IStatusLineManager statusLineManager) {
+        statusLineManager.add(filterStatus);
+    }
 
-	public void update() {
-		try {
-	        if (eventLogTable != null) {
-    			for (Field field : EventLogTableContributor.class.getDeclaredFields()) {
-    				Class<?> fieldType = field.getType();
-    				if (fieldType == EventLogTableAction.class || fieldType == EventLogTableMenuAction.class) {
-    					EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
-    					fieldValue.setEnabled(true);
-    					fieldValue.update();
-    					if ((getPage() != null && !(getPage().getActivePart() instanceof EventLogTableEditor)) || eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
-    						fieldValue.setEnabled(false);
-    				}
-    				else if (fieldType == StatusLineContributionItem.class) {
-    					StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
-    					fieldValue.update();
-    				}
-    			}
-	        }
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+    @Override
+    public void setActiveEditor(IEditorPart targetEditor) {
+        if (targetEditor instanceof EventLogTableEditor) {
+            EventLogInput eventLogInput;
+            if (eventLogTable != null) {
+                eventLogInput = eventLogTable.getEventLogInput();
+                if (eventLogInput != null)
+                    eventLogInput.removeEventLogChangedListener(this);
+                getPage().removePartListener(this);
+                eventLogTable.removeSelectionChangedListener(this);
+            }
+            eventLogTable = ((EventLogTableEditor)targetEditor).getEventLogTable();
+            eventLogInput = eventLogTable.getEventLogInput();
+            if (eventLogInput != null)
+                eventLogInput.addEventLogChangedListener(this);
+            getPage().addPartListener(this);
+            eventLogTable.addSelectionChangedListener(this);
+            update();
+        }
+        else
+            eventLogTable = null;
+    }
+
+    public void update() {
+        try {
+            if (eventLogTable != null) {
+                for (Field field : EventLogTableContributor.class.getDeclaredFields()) {
+                    Class<?> fieldType = field.getType();
+                    if (fieldType == EventLogTableAction.class || fieldType == EventLogTableMenuAction.class) {
+                        EventLogTableAction fieldValue = (EventLogTableAction)field.get(this);
+                        fieldValue.setEnabled(true);
+                        fieldValue.update();
+                        if ((getPage() != null && !(getPage().getActivePart() instanceof EventLogTableEditor)) || eventLogTable.getEventLogInput().isLongRunningOperationInProgress())
+                            fieldValue.setEnabled(false);
+                    }
+                    else if (fieldType == StatusLineContributionItem.class) {
+                        StatusLineContributionItem fieldValue = (StatusLineContributionItem)field.get(this);
+                        fieldValue.update();
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private static void gotoEventLogEntry(EventLogTable eventLogTable, EventLogEntry entry, Action action, boolean gotoClosest) {
         String text = action != null ? action.getText() : "Go to";
@@ -297,41 +297,41 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
             MessageDialog.openError(null, text, "No such event");
     }
 
-	/*************************************************************************************
-	 * NOTIFICATIONS
-	 */
+    /*************************************************************************************
+     * NOTIFICATIONS
+     */
 
-	public void selectionChanged(SelectionChangedEvent event) {
-		update();
-	}
+    public void selectionChanged(SelectionChangedEvent event) {
+        update();
+    }
 
-	public void eventLogAppended() {
-		// void
-	}
+    public void eventLogAppended() {
+        // void
+    }
 
     public void eventLogOverwritten() {
         // void
     }
 
-	public void eventLogFilterRemoved() {
-		update();
-	}
+    public void eventLogFilterRemoved() {
+        update();
+    }
 
-	public void eventLogFiltered() {
-		update();
-	}
+    public void eventLogFiltered() {
+        update();
+    }
 
-	public void eventLogLongOperationEnded() {
-		update();
-	}
+    public void eventLogLongOperationEnded() {
+        update();
+    }
 
-	public void eventLogLongOperationStarted() {
-		update();
-	}
+    public void eventLogLongOperationStarted() {
+        update();
+    }
 
-	public void eventLogProgress() {
-		// void
-	}
+    public void eventLogProgress() {
+        // void
+    }
 
     public void partActivated(IWorkbenchPart part) {
         update();
@@ -350,15 +350,15 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
     public void partOpened(IWorkbenchPart part) {
     }
 
-	/*************************************************************************************
-	 * ACTIONS
-	 */
+    /*************************************************************************************
+     * ACTIONS
+     */
 
     private CommandContributionItem createFindTextCommandContributionItem() {
         CommandContributionItemParameter parameter = new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.findText", SWT.PUSH);
         parameter.icon = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SEARCH);
-	    return new CommandContributionItem(parameter);
-	}
+        return new CommandContributionItem(parameter);
+    }
 
     public static class FindTextHandler extends AbstractHandler {
         public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -388,9 +388,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         }
     }
 
-	private CommandContributionItem createGotoEventCauseCommandContributionItem() {
+    private CommandContributionItem createGotoEventCauseCommandContributionItem() {
         return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoEventCause", SWT.PUSH));
-	}
+    }
 
     public static class GotoEventCauseHandler extends AbstractHandler {
         // TODO: setEnabled(getCauseEventLogEntry() != null);
@@ -417,9 +417,9 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         }
     }
 
-	private CommandContributionItem createGotoMessageArrivalCommandContributionItem() {
+    private CommandContributionItem createGotoMessageArrivalCommandContributionItem() {
         return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoMessageArrival", SWT.PUSH));
-	}
+    }
 
     public static class GotoMessageArrivalHandler extends AbstractHandler {
         // TODO: setEnabled(getConsequenceEventLogEntry() != null);
@@ -466,79 +466,79 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         }
     }
 
-	private EventLogTableAction createGotoMessageOriginAction() {
-		return new EventLogTableAction("Go to Message Origin") {
-			@Override
-			protected void doRun() {
-			    gotoEventLogEntry(eventLogTable, getMessageOriginEventLogEntry(), this, false);
-			}
+    private EventLogTableAction createGotoMessageOriginAction() {
+        return new EventLogTableAction("Go to Message Origin") {
+            @Override
+            protected void doRun() {
+                gotoEventLogEntry(eventLogTable, getMessageOriginEventLogEntry(), this, false);
+            }
 
-			@Override
-			public void update() {
-				setEnabled(getMessageOriginEventLogEntry() != null);
-			}
+            @Override
+            public void update() {
+                setEnabled(getMessageOriginEventLogEntry() != null);
+            }
 
-			private EventLogEntry getMessageOriginEventLogEntry() {
-				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+            private EventLogEntry getMessageOriginEventLogEntry() {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-				if (eventLogEntryReference != null) {
-					EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
+                if (eventLogEntryReference != null) {
+                    EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput());
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-					IMessageDependencyList causes = event.getCauses();
+                    IMessageDependencyList causes = event.getCauses();
 
-					for (int i = 0; i < causes.size(); i++) {
-						IMessageDependency cause = causes.get(i);
+                    for (int i = 0; i < causes.size(); i++) {
+                        IMessageDependency cause = causes.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(cause.getCPtr()) &&
-							cause.getMessageEntry().equals(eventLogEntry)) {
-							IEvent causeEvent = cause.getCauseEvent();
+                        if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(cause.getCPtr()) &&
+                            cause.getMessageEntry().equals(eventLogEntry)) {
+                            IEvent causeEvent = cause.getCauseEvent();
 
-							if (causeEvent != null)
-								return causeEvent.getEventEntry();
-						}
-					}
-				}
+                            if (causeEvent != null)
+                                return causeEvent.getEventEntry();
+                        }
+                    }
+                }
 
-				return null;
-			}
-		};
-	}
+                return null;
+            }
+        };
+    }
 
-	private EventLogTableAction createGotoMessageReuseAction() {
-		return new EventLogTableAction("Go to Message Reuse") {
-			@Override
-			protected void doRun() {
-			    gotoEventLogEntry(eventLogTable, getMessageReuseEventLogEntry(), this, true);
-			}
+    private EventLogTableAction createGotoMessageReuseAction() {
+        return new EventLogTableAction("Go to Message Reuse") {
+            @Override
+            protected void doRun() {
+                gotoEventLogEntry(eventLogTable, getMessageReuseEventLogEntry(), this, true);
+            }
 
-			@Override
-			public void update() {
-				setEnabled(getMessageReuseEventLogEntry() != null);
-			}
+            @Override
+            public void update() {
+                setEnabled(getMessageReuseEventLogEntry() != null);
+            }
 
-			private EventLogEntry getMessageReuseEventLogEntry() {
-				EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+            private EventLogEntry getMessageReuseEventLogEntry() {
+                EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-				if (eventLogEntryReference != null) {
+                if (eventLogEntryReference != null) {
                     IEvent event = getEventLog().getEventForEventNumber(eventLogEntryReference.getEventNumber());
-					IMessageDependencyList consequences = event.getConsequences();
+                    IMessageDependencyList consequences = event.getConsequences();
 
-					for (int i = 0; i < consequences.size(); i++) {
-						IMessageDependency consequence = consequences.get(i);
+                    for (int i = 0; i < consequences.size(); i++) {
+                        IMessageDependency consequence = consequences.get(i);
 
-						if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr())) {
-							MessageEntry messageEntry = consequence.getMessageEntry();
+                        if (eventLogTable.getEventLogTableFacade().IMessageDependency_isReuse(consequence.getCPtr())) {
+                            MessageEntry messageEntry = consequence.getMessageEntry();
 
-							if (messageEntry != null)
-								return messageEntry;
-						}
-					}
-				}
+                            if (messageEntry != null)
+                                return messageEntry;
+                        }
+                    }
+                }
 
-				return null;
-			}
-		};
-	}
+                return null;
+            }
+        };
+    }
 
     private CommandContributionItem createGotoPreviousEventCommandContributionItem() {
         return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoPreviousEvent", SWT.PUSH));
@@ -677,16 +677,16 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                 GotoEventDialog dialog = new GotoEventDialog(eventLogTable.getEventLog());
                 if (dialog.open() == Window.OK)
                     eventLogTable.gotoElement(new EventLogEntryReference(dialog.getEvent().getEventEntry()));
-			}
+            }
             return null;
-		}
-	}
+        }
+    }
 
-	private CommandContributionItem createGotoSimulationTimeCommandContributionItem() {
+    private CommandContributionItem createGotoSimulationTimeCommandContributionItem() {
         return new CommandContributionItem(new CommandContributionItemParameter(Workbench.getInstance(), null, "org.omnetpp.eventlogtable.gotoSimulationTime", SWT.PUSH));
-	}
+    }
 
-	public static class GotoSimulationTimeHandler extends AbstractHandler {
+    public static class GotoSimulationTimeHandler extends AbstractHandler {
         // TODO: setEnabled(!getEventLog().isEmpty());
         public Object execute(ExecutionEvent executionEvent) throws ExecutionException {
             IWorkbenchPart part = HandlerUtil.getActivePartChecked(executionEvent);
@@ -696,62 +696,62 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                 if (eventLogEntryReference == null)
                     eventLogEntryReference = eventLogTable.getTopVisibleElement();
                 GotoSimulationTimeDialog dialog = new GotoSimulationTimeDialog(eventLogTable.getEventLog(), eventLogEntryReference.getEvent(eventLogTable.getEventLogInput()).getSimulationTime());
-				if (dialog.open() == Window.OK) {
-					IEvent event = eventLogTable.getEventLog().getEventForSimulationTime(dialog.getSimulationTime(), MatchKind.FIRST_OR_NEXT);
-					if (event != null)
-						eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
-				}
-			}
+                if (dialog.open() == Window.OK) {
+                    IEvent event = eventLogTable.getEventLog().getEventForSimulationTime(dialog.getSimulationTime(), MatchKind.FIRST_OR_NEXT);
+                    if (event != null)
+                        eventLogTable.gotoElement(new EventLogEntryReference(event.getEventEntry()));
+                }
+            }
             return null;
         }
-	}
+    }
 
-	private EventLogTableAction createToggleBookmarkAction() {
-		return new EventLogTableAction("Toggle Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
-			@Override
-			protected void doRun() {
-				try {
-					EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
+    private EventLogTableAction createToggleBookmarkAction() {
+        return new EventLogTableAction("Toggle Bookmark", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_TOGGLE_BOOKMARK)) {
+            @Override
+            protected void doRun() {
+                try {
+                    EventLogEntryReference eventLogEntryReference = eventLogTable.getSelectionElement();
 
-					if (eventLogEntryReference != null) {
-						IEvent event = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent();
-						EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
+                    if (eventLogEntryReference != null) {
+                        IEvent event = eventLogEntryReference.getEventLogEntry(eventLogTable.getEventLogInput()).getEvent();
+                        EventLogInput eventLogInput = (EventLogInput)eventLogTable.getInput();
 
-						boolean found = false;
-						IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
+                        boolean found = false;
+                        IMarker[] markers = eventLogInput.getFile().findMarkers(IMarker.BOOKMARK, true, IResource.DEPTH_ZERO);
 
-						for (IMarker marker : markers)
-							if (marker.getAttribute("EventNumber", "-1").equals(String.valueOf(event.getEventNumber()))) {
-								marker.delete();
-								found = true;
-							}
+                        for (IMarker marker : markers)
+                            if (marker.getAttribute("EventNumber", "-1").equals(String.valueOf(event.getEventNumber()))) {
+                                marker.delete();
+                                found = true;
+                            }
 
-						if (!found) {
+                        if (!found) {
                             InputDialog dialog = new InputDialog(null, "Add Bookmark", "Enter Bookmark name:", "", null);
 
                             if (dialog.open() == Window.OK) {
-    							IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
-    							marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
-    							marker.setAttribute("EventNumber", String.valueOf(event.getEventNumber()));
-    							marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
-							}
-						}
+                                IMarker marker = eventLogInput.getFile().createMarker(IMarker.BOOKMARK);
+                                marker.setAttribute(IMarker.LOCATION, "# " + event.getEventNumber());
+                                marker.setAttribute("EventNumber", String.valueOf(event.getEventNumber()));
+                                marker.setAttribute(IMarker.MESSAGE, dialog.getValue());
+                            }
+                        }
 
-						update();
-						eventLogTable.redraw();
-					}
-				}
-				catch (CoreException e) {
-					throw new RuntimeException(e);
-				}
-			}
+                        update();
+                        eventLogTable.redraw();
+                    }
+                }
+                catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
-			@Override
-			public void update() {
-				setEnabled(eventLogTable.getSelectionElement() != null);
-			}
-		};
-	}
+            @Override
+            public void update() {
+                setEnabled(eventLogTable.getSelectionElement() != null);
+            }
+        };
+    }
 
     private EventLogTableMenuAction createTypeModeAction() {
         return new EventLogTableMenuAction("Type Mode", Action.AS_DROP_DOWN_MENU) {
@@ -806,7 +806,7 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         };
     }
 
-	private EventLogTableMenuAction createNameModeAction() {
+    private EventLogTableMenuAction createNameModeAction() {
         return new EventLogTableMenuAction("Name Mode", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_NAME_MODE)) {
             private AbstractMenuCreator menuCreator;
 
@@ -861,162 +861,162 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         };
     }
 
-	private EventLogTableMenuAction createDisplayModeAction() {
-		return new EventLogTableMenuAction("Display Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
-			private AbstractMenuCreator menuCreator;
+    private EventLogTableMenuAction createDisplayModeAction() {
+        return new EventLogTableMenuAction("Display Mode", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_DISPLAY_MODE)) {
+            private AbstractMenuCreator menuCreator;
 
-			@Override
-			protected void doRun() {
-			    EventLogTable.DisplayMode[] values = EventLogTable.DisplayMode.values();
-				eventLogTable.setDisplayMode(values[(getMenuIndex() + 1) % values.length]);
-				eventLogTable.redraw();
-				update();
-			}
+            @Override
+            protected void doRun() {
+                EventLogTable.DisplayMode[] values = EventLogTable.DisplayMode.values();
+                eventLogTable.setDisplayMode(values[(getMenuIndex() + 1) % values.length]);
+                eventLogTable.redraw();
+                update();
+            }
 
-			@Override
-			protected int getMenuIndex() {
-				return eventLogTable.getDisplayMode().ordinal();
-			}
+            @Override
+            protected int getMenuIndex() {
+                return eventLogTable.getDisplayMode().ordinal();
+            }
 
-			@Override
-			public IMenuCreator getMenuCreator() {
-				if (menuCreator == null) {
-					menuCreator = new AbstractMenuCreator() {
-						@Override
-						protected void createMenu(Menu menu) {
-							addSubMenuItem(menu, "Descriptive", EventLogTable.DisplayMode.DESCRIPTIVE);
-							addSubMenuItem(menu, "Raw", EventLogTable.DisplayMode.RAW);
-						}
+            @Override
+            public IMenuCreator getMenuCreator() {
+                if (menuCreator == null) {
+                    menuCreator = new AbstractMenuCreator() {
+                        @Override
+                        protected void createMenu(Menu menu) {
+                            addSubMenuItem(menu, "Descriptive", EventLogTable.DisplayMode.DESCRIPTIVE);
+                            addSubMenuItem(menu, "Raw", EventLogTable.DisplayMode.RAW);
+                        }
 
-						private void addSubMenuItem(Menu menu, String text, final EventLogTable.DisplayMode displayMode) {
-							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-							subMenuItem.setText(text);
-							subMenuItem.addSelectionListener( new SelectionAdapter() {
-								@Override
+                        private void addSubMenuItem(Menu menu, String text, final EventLogTable.DisplayMode displayMode) {
+                            MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+                            subMenuItem.setText(text);
+                            subMenuItem.addSelectionListener( new SelectionAdapter() {
+                                @Override
                                 public void widgetSelected(SelectionEvent e) {
-									MenuItem menuItem = (MenuItem)e.widget;
+                                    MenuItem menuItem = (MenuItem)e.widget;
 
-									if (menuItem.getSelection()) {
-										eventLogTable.setDisplayMode(displayMode);
-										eventLogTable.redraw();
-										update();
-									}
-								}
-							});
-						}
-					};
-				}
+                                    if (menuItem.getSelection()) {
+                                        eventLogTable.setDisplayMode(displayMode);
+                                        eventLogTable.redraw();
+                                        update();
+                                    }
+                                }
+                            });
+                        }
+                    };
+                }
 
-				return menuCreator;
-			}
-		};
-	}
+                return menuCreator;
+            }
+        };
+    }
 
-	private EventLogTableMenuAction createLineFilterModeAction() {
-		return new EventLogTableMenuAction("Line Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_LINE_FILTER_MODE)) {
-			private AbstractMenuCreator menuCreator;
+    private EventLogTableMenuAction createLineFilterModeAction() {
+        return new EventLogTableMenuAction("Line Filter", Action.AS_DROP_DOWN_MENU, EventLogTablePlugin.getImageDescriptor(IMAGE_LINE_FILTER_MODE)) {
+            private AbstractMenuCreator menuCreator;
 
-			@Override
-			protected void doRun() {
+            @Override
+            protected void doRun() {
                 if (!eventLogTable.hasInput())
                     return;
-				eventLogTable.setLineFilterMode((eventLogTable.getLineFilterMode() + 1) % 5);
-				update();
-			}
+                eventLogTable.setLineFilterMode((eventLogTable.getLineFilterMode() + 1) % 5);
+                update();
+            }
 
-			@Override
-			protected int getMenuIndex() {
+            @Override
+            protected int getMenuIndex() {
                 if (!eventLogTable.hasInput())
                     return 0;
-				return eventLogTable.getLineFilterMode();
-			}
+                return eventLogTable.getLineFilterMode();
+            }
 
-			@Override
-			public IMenuCreator getMenuCreator() {
-				if (menuCreator == null) {
-					menuCreator = new AbstractMenuCreator() {
-						@Override
-						protected void createMenu(Menu menu) {
-							addSubMenuItem(menu, "All", 0);
-							addSubMenuItem(menu, "Events, message sends and log messages", 1);
-							addSubMenuItem(menu, "Events and log messages", 2);
-							addSubMenuItem(menu, "Events", 3);
-							addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
-								@Override
+            @Override
+            public IMenuCreator getMenuCreator() {
+                if (menuCreator == null) {
+                    menuCreator = new AbstractMenuCreator() {
+                        @Override
+                        protected void createMenu(Menu menu) {
+                            addSubMenuItem(menu, "All", 0);
+                            addSubMenuItem(menu, "Events, message sends and log messages", 1);
+                            addSubMenuItem(menu, "Events and log messages", 2);
+                            addSubMenuItem(menu, "Events", 3);
+                            addSubMenuItem(menu, "Custom filter...", new SelectionAdapter() {
+                                @Override
                                 public void widgetSelected(SelectionEvent e) {
-									MenuItem menuItem = (MenuItem)e.widget;
-					                if (!eventLogTable.hasInput())
-					                    return;
+                                    MenuItem menuItem = (MenuItem)e.widget;
+                                    if (!eventLogTable.hasInput())
+                                        return;
 
-									if (menuItem.getSelection()) {
-										InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
-										    @Override
-										    protected Control createDialogArea(Composite parent) {
-										        Control control = super.createDialogArea(parent);
-										        final Text text = getText();
-										        ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(EventLogEntry.class),
-										            ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
-										        commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
-										        commandAdapter.addContentProposalListener(new IContentProposalListener() {
-										            public void proposalAccepted(IContentProposal proposal) {
-										                ContentProposal contentProposal = (ContentProposal)proposal;
+                                    if (menuItem.getSelection()) {
+                                        InputDialog dialog = new InputDialog(null, "Search pattern", "Please enter the search pattern such as: (BS and c(MyMessage))\nSee Event Log Table Raw Mode for other fields and entry types.", null, null) {
+                                            @Override
+                                            protected Control createDialogArea(Composite parent) {
+                                                Control control = super.createDialogArea(parent);
+                                                final Text text = getText();
+                                                ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text, new TextContentAdapter(), new EventLogEntryProposalProvider(EventLogEntry.class),
+                                                    ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "( ".toCharArray(), true);
+                                                commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_IGNORE);
+                                                commandAdapter.addContentProposalListener(new IContentProposalListener() {
+                                                    public void proposalAccepted(IContentProposal proposal) {
+                                                        ContentProposal contentProposal = (ContentProposal)proposal;
                                                         int start = contentProposal.getStartIndex();
                                                         int end =contentProposal.getEndIndex();
                                                         int cursorPosition = contentProposal.getCursorPosition();
                                                         String content = contentProposal.getContent();
-										                text.setSelection(start, end);
-										                text.insert(content);
-										                text.setSelection(start + cursorPosition, start + cursorPosition);
-										            }
-										        });
-										        return control;
-										    }
-										};
+                                                        text.setSelection(start, end);
+                                                        text.insert(content);
+                                                        text.setSelection(start + cursorPosition, start + cursorPosition);
+                                                    }
+                                                });
+                                                return control;
+                                            }
+                                        };
 
-										if (dialog.open() == Window.OK) {
-    										String pattern = dialog.getValue();
-    										if (pattern == null || pattern.equals(""))
-    											pattern = "*";
+                                        if (dialog.open() == Window.OK) {
+                                            String pattern = dialog.getValue();
+                                            if (pattern == null || pattern.equals(""))
+                                                pattern = "*";
 
-    										eventLogTable.setCustomFilter(pattern);
-    										eventLogTable.setLineFilterMode(4);
-    										update();
-										}
-									}
-								}
-							});
-						}
+                                            eventLogTable.setCustomFilter(pattern);
+                                            eventLogTable.setLineFilterMode(4);
+                                            update();
+                                        }
+                                    }
+                                }
+                            });
+                        }
 
-						private void addSubMenuItem(final Menu menu, String text, final int lineFilterMode) {
-							addSubMenuItem(menu, text, new SelectionAdapter() {
-								@Override
+                        private void addSubMenuItem(final Menu menu, String text, final int lineFilterMode) {
+                            addSubMenuItem(menu, text, new SelectionAdapter() {
+                                @Override
                                 public void widgetSelected(SelectionEvent e) {
-									MenuItem menuItem = (MenuItem)e.widget;
+                                    MenuItem menuItem = (MenuItem)e.widget;
 
-									if (menuItem.getSelection()) {
-									    if (!eventLogTable.hasInput())
-									        return;
-										eventLogTable.setLineFilterMode(lineFilterMode);
-										update();
-									}
-								}
-							});
-						}
+                                    if (menuItem.getSelection()) {
+                                        if (!eventLogTable.hasInput())
+                                            return;
+                                        eventLogTable.setLineFilterMode(lineFilterMode);
+                                        update();
+                                    }
+                                }
+                            });
+                        }
 
-						private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
-							MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
-							subMenuItem.setText(text);
-							subMenuItem.addSelectionListener(adapter);
-						}
-					};
-				}
+                        private void addSubMenuItem(Menu menu, String text, SelectionListener adapter) {
+                            MenuItem subMenuItem = new MenuItem(menu, SWT.RADIO);
+                            subMenuItem.setText(text);
+                            subMenuItem.addSelectionListener(adapter);
+                        }
+                    };
+                }
 
-				return menuCreator;
-			}
-		};
-	}
+                return menuCreator;
+            }
+        };
+    }
 
-	private EventLogTableAction createFilterAction() {
+    private EventLogTableAction createFilterAction() {
         return new EventLogTableMenuAction("Filter", Action.AS_DROP_DOWN_MENU, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER)) {
             @Override
             protected void doRun() {
@@ -1073,50 +1073,50 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
                 };
             }
 
-			private void removeFilter() {
+            private void removeFilter() {
                 if (!eventLogTable.hasInput())
                     return;
 
                 final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
-				eventLogInput.runWithProgressMonitor(new Runnable() {
-					public void run() {
-						eventLogInput.removeFilter();
+                eventLogInput.runWithProgressMonitor(new Runnable() {
+                    public void run() {
+                        eventLogInput.removeFilter();
 
-						eventLogTable.setInput(eventLogInput);
+                        eventLogTable.setInput(eventLogInput);
 
-						update();
-					}
-				});
-			}
+                        update();
+                    }
+                });
+            }
 
-			private void filter() {
+            private void filter() {
                 if (!eventLogTable.hasInput())
                     return;
 
                 final EventLogInput eventLogInput = eventLogTable.getEventLogInput();
-				if (eventLogInput.openFilterDialog() == Window.OK) {
+                if (eventLogInput.openFilterDialog() == Window.OK) {
                     eventLogInput.runWithProgressMonitor(new Runnable() {
                         public void run() {
-							eventLogInput.filter();
+                            eventLogInput.filter();
 
-							eventLogTable.setInput(eventLogInput);
+                            eventLogTable.setInput(eventLogInput);
 
-							update();
+                            update();
                         }
                     });
-				}
-			}
-		};
-	}
+                }
+            }
+        };
+    }
 
-	private EventLogTableAction createRefreshAction() {
+    private EventLogTableAction createRefreshAction() {
         return new EventLogTableAction("Refresh", Action.AS_PUSH_BUTTON, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_REFRESH)) {
             @Override
             protected void doRun() {
                 eventLogTable.refresh();
             }
         };
-	}
+    }
 
     private EventLogTableAction createPinAction() {
         return new EventLogTableAction("Pin", Action.AS_CHECK_BOX, ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN)) {
@@ -1155,35 +1155,35 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         }
     }
 
-	private StatusLineContributionItem createFilterStatus() {
-		return new StatusLineContributionItem("Filter") {
-			@Override
-		    public void update() {
-				setText(isFilteredEventLog() ? "Filtered" : "Unfiltered");
-		    }
+    private StatusLineContributionItem createFilterStatus() {
+        return new StatusLineContributionItem("Filter") {
+            @Override
+            public void update() {
+                setText(isFilteredEventLog() ? "Filtered" : "Unfiltered");
+            }
 
-			private boolean isFilteredEventLog() {
-				return eventLogTable.getEventLog() instanceof FilteredEventLog;
-			}
-		};
-	}
+            private boolean isFilteredEventLog() {
+                return eventLogTable.getEventLog() instanceof FilteredEventLog;
+            }
+        };
+    }
 
     private abstract class EventLogTableAction extends Action {
-		public EventLogTableAction(String text) {
-			super(text);
-		}
+        public EventLogTableAction(String text) {
+            super(text);
+        }
 
         public EventLogTableAction(String text, int style) {
             super(text, style);
         }
 
-		public EventLogTableAction(String text, int style, ImageDescriptor image) {
-			super(text, style);
-			setImageDescriptor(image);
-		}
+        public EventLogTableAction(String text, int style, ImageDescriptor image) {
+            super(text, style);
+            setImageDescriptor(image);
+        }
 
-		public void update() {
-		}
+        public void update() {
+        }
 
         @Override
         public void run() {
@@ -1197,89 +1197,89 @@ public class EventLogTableContributor extends EditorActionBarContributor impleme
         }
 
         protected abstract void doRun();
-	}
+    }
 
-	private abstract class EventLogTableMenuAction extends EventLogTableAction {
-		protected ArrayList<Menu> menus = new ArrayList<Menu>();
+    private abstract class EventLogTableMenuAction extends EventLogTableAction {
+        protected ArrayList<Menu> menus = new ArrayList<Menu>();
 
         public EventLogTableMenuAction(String text, int style) {
             super(text, style);
         }
 
-		public EventLogTableMenuAction(String text, int style, ImageDescriptor image) {
-			super(text, style, image);
-		}
+        public EventLogTableMenuAction(String text, int style, ImageDescriptor image) {
+            super(text, style, image);
+        }
 
-		@Override
-		public void update() {
-			for (Menu menu : menus)
-				if (!menu.isDisposed())
-					updateMenu(menu);
-		}
+        @Override
+        public void update() {
+            for (Menu menu : menus)
+                if (!menu.isDisposed())
+                    updateMenu(menu);
+        }
 
-		protected void addMenu(Menu menu) {
-			Assert.isTrue(menu != null);
+        protected void addMenu(Menu menu) {
+            Assert.isTrue(menu != null);
 
-			menus.add(menu);
-			updateMenu(menu);
-		}
+            menus.add(menu);
+            updateMenu(menu);
+        }
 
-		protected void removeMenu(Menu menu) {
-			Assert.isTrue(menu != null);
+        protected void removeMenu(Menu menu) {
+            Assert.isTrue(menu != null);
 
-			menus.remove(menu);
-		}
+            menus.remove(menu);
+        }
 
-		protected abstract int getMenuIndex();
+        protected abstract int getMenuIndex();
 
-		protected void updateMenu(Menu menu) {
-			for (int i = 0; i < menu.getItemCount(); i++) {
-				boolean selection = i == getMenuIndex();
-				MenuItem menuItem = menu.getItem(i);
+        protected void updateMenu(Menu menu) {
+            for (int i = 0; i < menu.getItemCount(); i++) {
+                boolean selection = i == getMenuIndex();
+                MenuItem menuItem = menu.getItem(i);
 
-				if (menuItem.getSelection() != selection)
-					menuItem.setSelection(selection);
-			}
-		}
+                if (menuItem.getSelection() != selection)
+                    menuItem.setSelection(selection);
+            }
+        }
 
-		protected abstract class AbstractMenuCreator implements IMenuCreator {
-			private Menu controlMenu;
+        protected abstract class AbstractMenuCreator implements IMenuCreator {
+            private Menu controlMenu;
 
-			private Menu parentMenu;
+            private Menu parentMenu;
 
-			public void dispose() {
-				if (controlMenu != null) {
-					controlMenu.dispose();
-					removeMenu(controlMenu);
-				}
+            public void dispose() {
+                if (controlMenu != null) {
+                    controlMenu.dispose();
+                    removeMenu(controlMenu);
+                }
 
-				if (parentMenu != null) {
-					parentMenu.dispose();
-					removeMenu(parentMenu);
-				}
-			}
+                if (parentMenu != null) {
+                    parentMenu.dispose();
+                    removeMenu(parentMenu);
+                }
+            }
 
-			public Menu getMenu(Control parent) {
-				if (controlMenu == null) {
-					controlMenu = new Menu(parent);
-					createMenu(controlMenu);
-					addMenu(controlMenu);
-				}
+            public Menu getMenu(Control parent) {
+                if (controlMenu == null) {
+                    controlMenu = new Menu(parent);
+                    createMenu(controlMenu);
+                    addMenu(controlMenu);
+                }
 
-				return controlMenu;
-			}
+                return controlMenu;
+            }
 
-			public Menu getMenu(Menu parent) {
-				if (parentMenu == null) {
-					parentMenu = new Menu(parent);
-					createMenu(parentMenu);
-					addMenu(parentMenu);
-				}
+            public Menu getMenu(Menu parent) {
+                if (parentMenu == null) {
+                    parentMenu = new Menu(parent);
+                    createMenu(parentMenu);
+                    addMenu(parentMenu);
+                }
 
-				return parentMenu;
-			}
+                return parentMenu;
+            }
 
-			protected abstract void createMenu(Menu menu);
-		}
-	}
+            protected abstract void createMenu(Menu menu);
+        }
+    }
 }

@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.pojo.CommentElement;
 
 /**
  * Sets the documentation of a NED type. This includes adding the "//" prefix to lines,
- * creating a CommentElement with type="banner" if needed, and putting the comment into it.  
+ * creating a CommentElement with type="banner" if needed, and putting the comment into it.
  *
  * @author andras
  */
@@ -30,14 +30,14 @@ public class SetDocumentationCommand extends CompoundCommand {
     public SetDocumentationCommand(INedTypeElement typeElement, String doc) {
         this.typeElement = typeElement;
         this.doc = doc;
-    	setLabel("Set Documentation");
+        setLabel("Set Documentation");
     }
 
     @Override
     public boolean canExecute() {
         return true;
     }
-    
+
     @Override
     public void execute() {
         createCommands();

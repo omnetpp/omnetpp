@@ -13,13 +13,13 @@ import org.eclipse.jface.text.rules.IToken;
  * @version $Id: ITokenManager.java,v 1.1 2004/02/05 00:16:23 stephanmueller Exp $
  */
 public interface ITokenManager {
-	public IToken getInterpolationToken();
-	public IToken getXmlToken();
-	public IToken getXmlCommentToken();
-	public IToken getTextToken();
-	public IToken getDirectiveToken();
-	public IToken getStringToken();
-	public IToken getCommentToken();
-	public IToken getWhitespaceToken();
-	public void dispose();
+    public IToken getInterpolationToken();
+    public IToken getXmlToken();
+    public IToken getXmlCommentToken();
+    public IToken getTextToken();
+    public IToken getDirectiveToken();
+    public IToken getStringToken();
+    public IToken getCommentToken();
+    public IToken getWhitespaceToken();
+    public void dispose();
 }

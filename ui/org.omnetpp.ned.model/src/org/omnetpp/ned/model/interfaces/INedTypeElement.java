@@ -21,18 +21,18 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
  */
 public interface INedTypeElement extends IHasResolver, ITypeElement, IHasDisplayString, IHasParameters {
 
-	/**
-	 * Returns the typeinfo belonging to this NED type. This can be trusted
-	 * to be not null for all NED types, including duplicate and invalid ones.
-	 *
-	 * Only null for detached trees that haven't been seen at all by NEDResources
-	 * (i.e. not part of any NED file).
-	 */
-	public INedTypeInfo getNedTypeInfo();
+    /**
+     * Returns the typeinfo belonging to this NED type. This can be trusted
+     * to be not null for all NED types, including duplicate and invalid ones.
+     *
+     * Only null for detached trees that haven't been seen at all by NEDResources
+     * (i.e. not part of any NED file).
+     */
+    public INedTypeInfo getNedTypeInfo();
 
     /**
      * Returns the base object's name (Only the first extends node name returned).
-     * Returns null if no base object exist or the object (or its inheritance chain) 
+     * Returns null if no base object exist or the object (or its inheritance chain)
      * is invalid (i.e. contains a cycle)
      */
     public String getFirstExtends();
@@ -58,6 +58,6 @@ public interface INedTypeElement extends IHasResolver, ITypeElement, IHasDisplay
      * For an inner type it returns the containing compound module type, and
      * for a toplevel type it returns the containing NED file.
      */
-	public INedTypeLookupContext getParentLookupContext();
+    public INedTypeLookupContext getParentLookupContext();
 
 }

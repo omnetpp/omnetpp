@@ -18,23 +18,23 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * Removes the given object from the model. Nothing happens if the object is not part of the model.
  */
 public class RemoveObjectAction extends AbstractScaveAction {
-	private EObject element;
+    private EObject element;
 
-	public RemoveObjectAction(EObject element, String text) {
-		setText(text);
-		setToolTipText("Remove the element");
-		this.element = element;
-	}
+    public RemoveObjectAction(EObject element, String text) {
+        setText(text);
+        setToolTipText("Remove the element");
+        this.element = element;
+    }
 
-	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
-		EditingDomain editingDomain = scaveEditor.getEditingDomain();
-		Command command = RemoveCommand.create(editingDomain, element);
-		scaveEditor.executeCommand(command);
-	}
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection structuredSelection) {
+        EditingDomain editingDomain = scaveEditor.getEditingDomain();
+        Command command = RemoveCommand.create(editingDomain, element);
+        scaveEditor.executeCommand(command);
+    }
 
-	@Override
-	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return !selection.isEmpty();
-	}
+    @Override
+    public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return !selection.isEmpty();
+    }
 }

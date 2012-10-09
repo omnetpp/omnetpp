@@ -12,15 +12,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 
 /**
- * Table control with Add, Edit and Remove buttons, for editing a list of strings. 
- * The labels, Add/Edit dialog titles and messages, input validation etc are all 
+ * Table control with Add, Edit and Remove buttons, for editing a list of strings.
+ * The labels, Add/Edit dialog titles and messages, input validation etc are all
  * customizable.
- * 
+ *
  * @author Levy
  */
 public class EditableList extends AbstractEditableList {
     /**
-     * Creates the compound control. Style refers to the composite that contains all controls of the widget. 
+     * Creates the compound control. Style refers to the composite that contains all controls of the widget.
      */
     public EditableList(Composite parent, int style) {
         super(parent, style);

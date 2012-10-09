@@ -44,14 +44,14 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
     }
 
     @SuppressWarnings("unchecked")
-	protected IFigure createFigure(GraphicalEditPart part, IFigure parent) {
+    protected IFigure createFigure(GraphicalEditPart part, IFigure parent) {
         IFigure child = getCustomFeedbackFigure(part, part.getModel());
 
         if (parent != null) parent.add(child);
 
         Rectangle childBounds = part.getFigure() instanceof ISelectionHandleBounds ?
-        				((ISelectionHandleBounds)part.getFigure()).getHandleBounds().getCopy()
-        				: part.getFigure().getBounds().getCopy();
+                        ((ISelectionHandleBounds)part.getFigure()).getHandleBounds().getCopy()
+                        : part.getFigure().getBounds().getCopy();
 
         IFigure walker = part.getFigure().getParent();
         while (walker != ((GraphicalEditPart) part.getParent()).getFigure()) {
@@ -95,7 +95,7 @@ public class NedResizeEditPolicy extends ResizableEditPolicy {
     @Override
     protected Rectangle getInitialFeedbackBounds() {
         return getHostFigure() instanceof ISelectionHandleBounds ?
-        		((ISelectionHandleBounds)getHostFigure()).getHandleBounds() : getHostFigure().getBounds();
+                ((ISelectionHandleBounds)getHostFigure()).getHandleBounds() : getHostFigure().getBounds();
     }
 
     /* (non-Javadoc)

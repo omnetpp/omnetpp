@@ -19,26 +19,26 @@ import org.omnetpp.scave.views.VectorBrowserView;
 
 
 public class ShowOutputVectorViewAction extends AbstractScaveAction {
-	public ShowOutputVectorViewAction() {
-		setText("Show Output Vector View");
-		setToolTipText("Show Output Vector View");
-	}
+    public ShowOutputVectorViewAction() {
+        setText("Show Output Vector View");
+        setToolTipText("Show Output Vector View");
+    }
 
-	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		try {
-			IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			workbenchPage.showView(VectorBrowserView.ID);
-		}
-		catch (PartInitException e) {
-			IStatus error = ScavePlugin.getErrorStatus(0, "Failed to open Output Vector View", e);
-			ErrorDialog dialog = new ErrorDialog(scaveEditor.getSite().getShell(), null, null, error, IStatus.ERROR);
-			dialog.open();
-		}
-	}
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+        try {
+            IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            workbenchPage.showView(VectorBrowserView.ID);
+        }
+        catch (PartInitException e) {
+            IStatus error = ScavePlugin.getErrorStatus(0, "Failed to open Output Vector View", e);
+            ErrorDialog dialog = new ErrorDialog(scaveEditor.getSite().getShell(), null, null, error, IStatus.ERROR);
+            dialog.open();
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return true;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return true;
+    }
 }

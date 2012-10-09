@@ -34,30 +34,30 @@ import org.omnetpp.ned.editor.graph.misc.LabelCellEditorLocator;
 /**
  * Common base for ModuleTypeFigure and ConnectionTypeFigure. Provides an editable name
  * in a vertical toolbar layout so additional figures can be added if needed (i.g. compound module)
- * below the title. 
+ * below the title.
  *
  * @author rhornig
  */
-abstract public class NedTypeFigure extends Figure implements IDirectEditSupport,   
+abstract public class NedTypeFigure extends Figure implements IDirectEditSupport,
                 IProblemDecorationSupport, ITooltipTextProvider {
 
-	// This is a global hack to increase the text size returned by the textExtents function
-	// on Windows, because it is too small if anti aliased fonts are used. Once 
-	// textExtent works correctly it can be removed
-	static {
-		TextUtilities.INSTANCE = new TextUtilities() {
-		    public Dimension getStringExtents(String s, Font f) {
-		        Dimension stringExtents = FigureUtilities.getStringExtents(s, f);
-				return Platform.OS_WIN32.equals(Platform.getOS()) ? stringExtents.expand(2,0) : stringExtents;
-		    }
+    // This is a global hack to increase the text size returned by the textExtents function
+    // on Windows, because it is too small if anti aliased fonts are used. Once
+    // textExtent works correctly it can be removed
+    static {
+        TextUtilities.INSTANCE = new TextUtilities() {
+            public Dimension getStringExtents(String s, Font f) {
+                Dimension stringExtents = FigureUtilities.getStringExtents(s, f);
+                return Platform.OS_WIN32.equals(Platform.getOS()) ? stringExtents.expand(2,0) : stringExtents;
+            }
 
-		    public Dimension getTextExtents(String s, Font f) {
-		        Dimension textExtents = FigureUtilities.getTextExtents(s, f);
-				return Platform.OS_WIN32.equals(Platform.getOS()) ? textExtents.expand(2,0) : textExtents;
-		    }
-		};
-	}
-	
+            public Dimension getTextExtents(String s, Font f) {
+                Dimension textExtents = FigureUtilities.getTextExtents(s, f);
+                return Platform.OS_WIN32.equals(Platform.getOS()) ? textExtents.expand(2,0) : textExtents;
+            }
+        };
+    }
+
     protected String tmpName;
     protected Label nameFigure = new Label();
     protected Layer titleArea = new Layer();
@@ -65,15 +65,15 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
     protected ITooltipTextProvider problemMarkerTextProvider;
     protected String tooltipText;
 
-    private boolean isInterface; 
-    private boolean isInnerType; 
+    private boolean isInterface;
+    private boolean isInnerType;
 
     public NedTypeFigure() {
-        // all ned types has a vertical toolbar layout. The topmost child is the 
+        // all ned types has a vertical toolbar layout. The topmost child is the
         // title figure (containing an icon,the name of the type and an error indicator figure)
         // Usually this is the only child, but CompoundModuleType contains
         // may additional children where the submodules are displayed or
-        // a compartment where the inner types are present. 
+        // a compartment where the inner types are present.
         ToolbarLayout tb = new ToolbarLayout();
         tb.setSpacing(2);
         tb.setStretchMinorAxis(false);
@@ -83,11 +83,11 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
         nameFigure.setLabelAlignment(PositionConstants.LEFT);
         nameFigure.setTextAlignment(PositionConstants.EAST);
         nameFigure.setTextPlacement(PositionConstants.MIDDLE);
-        
-        titleArea.setLayoutManager(new XYLayout());  // XXX we could use a horizontal toolbar possibly if the problem figure could be placed before the icon (instead of over) 
+
+        titleArea.setLayoutManager(new XYLayout());  // XXX we could use a horizontal toolbar possibly if the problem figure could be placed before the icon (instead of over)
         titleArea.add(problemMarkerFigure, new Rectangle(-1, 0, 16, 16));
         titleArea.add(nameFigure);
-        
+
         add(titleArea);
     }
 
@@ -119,24 +119,24 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
     }
 
     public void setTooltipText(String tttext) {
-    	tooltipText = tttext;
+        tooltipText = tttext;
     }
 
-	public String getTooltipText(int x, int y) {
-		// if there is a problem marker and an associated tooltip text provider
-		// and the cursor is over the marker, delegate to the problem marker text provider
-		if (problemMarkerTextProvider != null && problemMarkerFigure != null) {
-			Rectangle markerBounds = problemMarkerFigure.getBounds().getCopy();
-			translateToParent(markerBounds);
-			translateToAbsolute(markerBounds);
-			if (markerBounds.contains(x, y)) {
-				String text = problemMarkerTextProvider.getTooltipText(x, y);
-				if (text != null)
-					return text;
-			}
-		}
-		return tooltipText;
-	}
+    public String getTooltipText(int x, int y) {
+        // if there is a problem marker and an associated tooltip text provider
+        // and the cursor is over the marker, delegate to the problem marker text provider
+        if (problemMarkerTextProvider != null && problemMarkerFigure != null) {
+            Rectangle markerBounds = problemMarkerFigure.getBounds().getCopy();
+            translateToParent(markerBounds);
+            translateToAbsolute(markerBounds);
+            if (markerBounds.contains(x, y)) {
+                String text = problemMarkerTextProvider.getTooltipText(x, y);
+                if (text != null)
+                    return text;
+            }
+        }
+        return tooltipText;
+    }
 
     public void setProblemDecoration(int maxSeverity, ITooltipTextProvider textProvider) {
         Image image = FigureUtils.getProblemImageFor(maxSeverity);
@@ -156,13 +156,13 @@ abstract public class NedTypeFigure extends Figure implements IDirectEditSupport
     public void setName(String text) {
         nameFigure.setText(text);
     }
-    
+
     // Direct edit support
 
     public String getName() {
         return nameFigure.getText();
     }
-    
+
     public CellEditorLocator getDirectEditCellEditorLocator() {
         return new LabelCellEditorLocator(nameFigure);
     }

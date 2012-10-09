@@ -24,204 +24,204 @@ import org.eclipse.emf.ecore.EFactory;
  * @generated
  */
 public interface ScaveModelFactory extends EFactory {
-	/**
+    /**
      * The singleton instance of the factory.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	ScaveModelFactory eINSTANCE = org.omnetpp.scave.model.impl.ScaveModelFactoryImpl.init();
+    ScaveModelFactory eINSTANCE = org.omnetpp.scave.model.impl.ScaveModelFactoryImpl.init();
 
-	/**
+    /**
      * Returns a new object of class '<em>Dataset</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Dataset</em>'.
      * @generated
      */
-	Dataset createDataset();
+    Dataset createDataset();
 
-	/**
+    /**
      * Returns a new object of class '<em>Add</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Add</em>'.
      * @generated
      */
-	Add createAdd();
+    Add createAdd();
 
-	/**
+    /**
      * Returns a new object of class '<em>Apply</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Apply</em>'.
      * @generated
      */
-	Apply createApply();
+    Apply createApply();
 
-	/**
+    /**
      * Returns a new object of class '<em>Except</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Except</em>'.
      * @generated
      */
-	Except createExcept();
+    Except createExcept();
 
-	/**
+    /**
      * Returns a new object of class '<em>Property</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Property</em>'.
      * @generated
      */
-	Property createProperty();
+    Property createProperty();
 
-	/**
+    /**
      * Returns a new object of class '<em>Group</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Group</em>'.
      * @generated
      */
-	Group createGroup();
+    Group createGroup();
 
-	/**
+    /**
      * Returns a new object of class '<em>Discard</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Discard</em>'.
      * @generated
      */
-	Discard createDiscard();
+    Discard createDiscard();
 
-	/**
+    /**
      * Returns a new object of class '<em>Param</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Param</em>'.
      * @generated
      */
-	Param createParam();
+    Param createParam();
 
-	/**
+    /**
      * Returns a new object of class '<em>Chart Sheet</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Chart Sheet</em>'.
      * @generated
      */
-	ChartSheet createChartSheet();
+    ChartSheet createChartSheet();
 
-	/**
+    /**
      * Returns a new object of class '<em>Analysis</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Analysis</em>'.
      * @generated
      */
-	Analysis createAnalysis();
+    Analysis createAnalysis();
 
-	/**
+    /**
      * Returns a new object of class '<em>Select</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Select</em>'.
      * @generated
      */
-	Select createSelect();
+    Select createSelect();
 
-	/**
+    /**
      * Returns a new object of class '<em>Deselect</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Deselect</em>'.
      * @generated
      */
-	Deselect createDeselect();
+    Deselect createDeselect();
 
-	/**
+    /**
      * Returns a new object of class '<em>Inputs</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Inputs</em>'.
      * @generated
      */
-	Inputs createInputs();
+    Inputs createInputs();
 
-	/**
+    /**
      * Returns a new object of class '<em>Chart Sheets</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Chart Sheets</em>'.
      * @generated
      */
-	ChartSheets createChartSheets();
+    ChartSheets createChartSheets();
 
-	/**
+    /**
      * Returns a new object of class '<em>Datasets</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Datasets</em>'.
      * @generated
      */
-	Datasets createDatasets();
+    Datasets createDatasets();
 
-	/**
+    /**
      * Returns a new object of class '<em>Input File</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Input File</em>'.
      * @generated
      */
-	InputFile createInputFile();
+    InputFile createInputFile();
 
-	/**
+    /**
      * Returns a new object of class '<em>Compute</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Compute</em>'.
      * @generated
      */
-	Compute createCompute();
+    Compute createCompute();
 
-	/**
+    /**
      * Returns a new object of class '<em>Bar Chart</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Bar Chart</em>'.
      * @generated
      */
-	BarChart createBarChart();
+    BarChart createBarChart();
 
-	/**
+    /**
      * Returns a new object of class '<em>Line Chart</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Line Chart</em>'.
      * @generated
      */
-	LineChart createLineChart();
+    LineChart createLineChart();
 
-	/**
+    /**
      * Returns a new object of class '<em>Histogram Chart</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Histogram Chart</em>'.
      * @generated
      */
-	HistogramChart createHistogramChart();
+    HistogramChart createHistogramChart();
 
-	/**
+    /**
      * Returns a new object of class '<em>Scatter Chart</em>'.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return a new object of class '<em>Scatter Chart</em>'.
      * @generated
      */
-	ScatterChart createScatterChart();
+    ScatterChart createScatterChart();
 
-	/**
+    /**
      * Returns a new object of class '<em>Compute Scalar</em>'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -233,10 +233,10 @@ public interface ScaveModelFactory extends EFactory {
     /**
      * Returns the package supported by this factory.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @return the package supported by this factory.
      * @generated
      */
-	ScaveModelPackage getScaveModelPackage();
+    ScaveModelPackage getScaveModelPackage();
 
 } //ScaveModelFactory

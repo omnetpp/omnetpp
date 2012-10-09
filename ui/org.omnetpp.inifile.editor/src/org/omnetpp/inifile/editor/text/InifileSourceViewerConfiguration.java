@@ -42,93 +42,93 @@ import org.omnetpp.inifile.editor.text.util.InifileTextHover;
  * Configuration for a SourceViewer which shows an inifile.
  */
 public class InifileSourceViewerConfiguration extends SourceViewerConfiguration {
-	private InifileEditorData editorData;
+    private InifileEditorData editorData;
 
-	public InifileSourceViewerConfiguration(InifileEditorData editorData) {
-		this.editorData = editorData;
-	}
-
-	@Override
-	public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
-		return new DefaultAnnotationHover();
-	}
-
-	@Override
-	public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-		return null;
-	}
+    public InifileSourceViewerConfiguration(InifileEditorData editorData) {
+        this.editorData = editorData;
+    }
 
     @Override
-	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+    public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+        return new DefaultAnnotationHover();
+    }
 
-		ContentAssistant assistant = new ContentAssistant();
-		//assistant.setDocumentPartitioning(...);
-		assistant.setContentAssistProcessor(new InifileCompletionProcessor(editorData), IDocument.DEFAULT_CONTENT_TYPE);
+    @Override
+    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+        return null;
+    }
 
-		assistant.enableAutoActivation(true);
-		assistant.setAutoActivationDelay(500);
-		assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-		assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+    @Override
+    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+
+        ContentAssistant assistant = new ContentAssistant();
+        //assistant.setDocumentPartitioning(...);
+        assistant.setContentAssistProcessor(new InifileCompletionProcessor(editorData), IDocument.DEFAULT_CONTENT_TYPE);
+
+        assistant.enableAutoActivation(true);
+        assistant.setAutoActivationDelay(500);
+        assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
+        assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
         assistant.setInformationControlCreator(getInformationControlCreator(sourceViewer));
 
-		return assistant;
-	}
+        return assistant;
+    }
 
-	@Override
-	public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
-		return new DefaultTextDoubleClickStrategy();
-	}
+    @Override
+    public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
+        return new DefaultTextDoubleClickStrategy();
+    }
 
-	@Override
-	public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
-		return new String[] { "\t", "    " };
-	}
+    @Override
+    public String[] getIndentPrefixes(ISourceViewer sourceViewer, String contentType) {
+        return new String[] { "\t", "    " };
+    }
 
-	@Override
-	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+    @Override
+    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 
-		PresentationReconciler reconciler= new PresentationReconciler();
+        PresentationReconciler reconciler= new PresentationReconciler();
         // syntax highlighting is using a separate partitioner
-		reconciler.setDocumentPartitioning(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID);
+        reconciler.setDocumentPartitioning(InifileSyntaxHighlightPartitionScanner.PARTITIONING_ID);
 
         // colorizers for inifile code
-		DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new InifileCodeColorizerScanner());
-		reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
-		reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
+        DefaultDamagerRepairer dr = new DefaultDamagerRepairer(new InifileCodeColorizerScanner());
+        reconciler.setDamager(dr, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setRepairer(dr, IDocument.DEFAULT_CONTENT_TYPE);
 
         // colorizer for comments
-		dr = new DefaultDamagerRepairer(new InifileCommentColorizerScanner());
-		reconciler.setDamager(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
-		reconciler.setRepairer(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
+        dr = new DefaultDamagerRepairer(new InifileCommentColorizerScanner());
+        reconciler.setDamager(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
+        reconciler.setRepairer(dr, InifileSyntaxHighlightPartitionScanner.INI_COMMENT);
 
-		return reconciler;
-	}
+        return reconciler;
+    }
 
-	@Override
-	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-		return new InifileTextHover(editorData);
-	}
+    @Override
+    public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+        return new InifileTextHover(editorData);
+    }
 
-	@Override
-	public IReconciler getReconciler(ISourceViewer sourceViewer) {
-		// Installs background NED parsing.
-		// Based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
-		// creates and configures JavaReconciler; that in turn will eventually
-		// result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
-		MonoReconciler reconciler = new MonoReconciler(new InifileReconcileStrategy(editorData), true);
-		reconciler.setIsIncrementalReconciler(false);
-		reconciler.setIsAllowedToModifyDocument(false);
-		reconciler.setProgressMonitor(new NullProgressMonitor());
-		reconciler.setDelay(500);
-		return reconciler;
-	}
+    @Override
+    public IReconciler getReconciler(ISourceViewer sourceViewer) {
+        // Installs background NED parsing.
+        // Based on: JavaSourceViewerConfiguration.getReconciler() in JDT which
+        // creates and configures JavaReconciler; that in turn will eventually
+        // result in calls to org.eclipse.jdt.internal.compiler.parser.Parser.
+        MonoReconciler reconciler = new MonoReconciler(new InifileReconcileStrategy(editorData), true);
+        reconciler.setIsIncrementalReconciler(false);
+        reconciler.setIsAllowedToModifyDocument(false);
+        reconciler.setProgressMonitor(new NullProgressMonitor());
+        reconciler.setDelay(500);
+        return reconciler;
+    }
 
     @Override
     public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
         return new IHyperlinkDetector[] {
-    		new URLHyperlinkDetector(),
-    		new InifileHyperlinkDetector(editorData),
-    		//FIXME new NEDHyperlinkDetector()
+            new URLHyperlinkDetector(),
+            new InifileHyperlinkDetector(editorData),
+            //FIXME new NEDHyperlinkDetector()
         };
     }
 
@@ -136,6 +136,6 @@ public class InifileSourceViewerConfiguration extends SourceViewerConfiguration 
     public IHyperlinkPresenter getHyperlinkPresenter(ISourceViewer sourceViewer) {
         return new MultipleHyperlinkPresenter(new RGB(0, 0, 255));
     }
-    
-    
+
+
 }

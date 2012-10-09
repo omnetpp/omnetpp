@@ -19,12 +19,12 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  */
 @SuppressWarnings("restriction")
 public class SimulationDebugLaunchDelegate extends LocalCDILaunchDelegate {
-	@Override
-	public void launch(ILaunchConfiguration config, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		// check if program name is not provided in this case we should use opp_run as the executable
-    	config = OmnetppLaunchUtils.convertLaunchConfig(config, mode);
+    @Override
+    public void launch(ILaunchConfiguration config, String mode,
+            ILaunch launch, IProgressMonitor monitor) throws CoreException {
+        // check if program name is not provided in this case we should use opp_run as the executable
+        config = OmnetppLaunchUtils.convertLaunchConfig(config, mode);
 
-		super.launch(config, mode, launch, monitor);
-	}
+        super.launch(config, mode, launch, monitor);
+    }
 }

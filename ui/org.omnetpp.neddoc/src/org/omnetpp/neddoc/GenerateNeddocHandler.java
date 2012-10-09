@@ -26,15 +26,15 @@ import org.eclipse.jface.window.Window;
  * @see org.eclipse.core.commands.AbstractHandler
  */
 public class GenerateNeddocHandler extends AbstractHandler {
-	public GenerateNeddocHandler() {
-	}
+    public GenerateNeddocHandler() {
+    }
 
-	/**
-	 * the command has been executed, so extract extract the needed information
-	 * from the application context.
-	 */
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-	    try {
+    /**
+     * the command has been executed, so extract extract the needed information
+     * from the application context.
+     */
+    public Object execute(ExecutionEvent event) throws ExecutionException {
+        try {
             GeneratorConfiguration configuration = NeddocPlugin.getDefault().getGeneratorConfiguration();
             configuration.projects = getSelectedOpenProjects(event).toArray(new IProject[0]);
             GeneratorConfigurationDialog dialog = new GeneratorConfigurationDialog(null, configuration);
@@ -44,36 +44,36 @@ public class GenerateNeddocHandler extends AbstractHandler {
                 for (DocumentationGenerator generator : dialog.getConfiguredDocumentationGenerators())
                     generator.generate();
 
-    	    return null;
-	    }
-	    catch (Exception e) {
-	        throw new RuntimeException(e);
-	    }
-	}
+            return null;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @SuppressWarnings("rawtypes")
     private List<IProject> getSelectedOpenProjects(ExecutionEvent event) {
-		List<IProject> projects = new ArrayList<IProject>();
+        List<IProject> projects = new ArrayList<IProject>();
 
-		EvaluationContext context = (EvaluationContext)event.getApplicationContext();
-		if (context == null || !(context.getDefaultVariable() instanceof List))
-		    return projects;  // empty list
+        EvaluationContext context = (EvaluationContext)event.getApplicationContext();
+        if (context == null || !(context.getDefaultVariable() instanceof List))
+            return projects;  // empty list
 
-		List selection = (List)context.getDefaultVariable();
+        List selection = (List)context.getDefaultVariable();
 
-		// collect the selected projects that are open
-		for (Object element : selection) {
-			IProject project = null;
-			IResource resource = null;
-			if (element instanceof IResource)
-				resource = (IResource) element;
-			else if (element instanceof IAdaptable)
-				resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
-			if (resource != null)
-			    project = resource.getProject();
-			if (project != null && project.isOpen())
-				projects.add(project);
-		}
+        // collect the selected projects that are open
+        for (Object element : selection) {
+            IProject project = null;
+            IResource resource = null;
+            if (element instanceof IResource)
+                resource = (IResource) element;
+            else if (element instanceof IAdaptable)
+                resource = (IResource) ((IAdaptable) element).getAdapter(IResource.class);
+            if (resource != null)
+                project = resource.getProject();
+            if (project != null && project.isOpen())
+                projects.add(project);
+        }
 
         return projects;
     }

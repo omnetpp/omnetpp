@@ -8,5 +8,5 @@
 package org.omnetpp.scave.editors.datatable;
 
 public interface IDataListener {
-	void contentChanged(IDataControl control);
+    void contentChanged(IDataControl control);
 }

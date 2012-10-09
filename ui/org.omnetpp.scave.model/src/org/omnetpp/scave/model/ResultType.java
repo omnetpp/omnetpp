@@ -30,7 +30,7 @@ import org.eclipse.emf.common.util.Enumerator;
  */
 public enum ResultType implements Enumerator
 {
-	/**
+    /**
      * The '<em><b>Scalar</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -38,8 +38,8 @@ public enum ResultType implements Enumerator
      * @generated
      * @ordered
      */
-	SCALAR_LITERAL(1, "scalar", "SCALAR"),
-	/**
+    SCALAR_LITERAL(1, "scalar", "SCALAR"),
+    /**
      * The '<em><b>Vector</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -47,8 +47,8 @@ public enum ResultType implements Enumerator
      * @generated
      * @ordered
      */
-	VECTOR_LITERAL(2, "vector", "VECTOR"),
-	/**
+    VECTOR_LITERAL(2, "vector", "VECTOR"),
+    /**
      * The '<em><b>Histogram</b></em>' literal object.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -56,8 +56,8 @@ public enum ResultType implements Enumerator
      * @generated
      * @ordered
      */
-	HISTOGRAM_LITERAL(3, "histogram", "HISTOGRAM");
-	/**
+    HISTOGRAM_LITERAL(3, "histogram", "HISTOGRAM");
+    /**
      * The '<em><b>Scalar</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
@@ -72,7 +72,7 @@ public enum ResultType implements Enumerator
      */
     public static final int SCALAR = 1;
 
-	/**
+    /**
      * The '<em><b>Vector</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
@@ -87,7 +87,7 @@ public enum ResultType implements Enumerator
      */
     public static final int VECTOR = 2;
 
-	/**
+    /**
      * The '<em><b>Histogram</b></em>' literal value.
      * <!-- begin-user-doc -->
      * <p>
@@ -102,20 +102,20 @@ public enum ResultType implements Enumerator
      */
     public static final int HISTOGRAM = 3;
 
-	/**
+    /**
      * An array of all the '<em><b>Result Type</b></em>' enumerators.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     private static final ResultType[] VALUES_ARRAY =
-		new ResultType[] {
+        new ResultType[] {
             SCALAR_LITERAL,
             VECTOR_LITERAL,
             HISTOGRAM_LITERAL,
         };
 
-	/**
+    /**
      * A public read-only list of all the '<em><b>Result Type</b></em>' enumerators.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -123,7 +123,7 @@ public enum ResultType implements Enumerator
      */
     public static final List<ResultType> VALUES = Collections.unmodifiableList(Arrays.asList(VALUES_ARRAY));
 
-	/**
+    /**
      * Returns the '<em><b>Result Type</b></em>' literal with the specified literal value.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -139,7 +139,7 @@ public enum ResultType implements Enumerator
         return null;
     }
 
-	/**
+    /**
      * Returns the '<em><b>Result Type</b></em>' literal with the specified name.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -155,7 +155,7 @@ public enum ResultType implements Enumerator
         return null;
     }
 
-	/**
+    /**
      * Returns the '<em><b>Result Type</b></em>' literal with the specified integer value.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -170,28 +170,28 @@ public enum ResultType implements Enumerator
         return null;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private final int value;
+    private final int value;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private final String name;
+    private final String name;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private final String literal;
+    private final String literal;
 
-	/**
+    /**
      * Only this class can construct instances.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -203,41 +203,41 @@ public enum ResultType implements Enumerator
         this.literal = literal;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public int getValue() {
+    public int getValue() {
       return value;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getName() {
+    public String getName() {
       return name;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getLiteral() {
+    public String getLiteral() {
       return literal;
     }
 
-	/**
+    /**
      * Returns the literal value of the enumerator, which is its string representation.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         return literal;
     }
 }

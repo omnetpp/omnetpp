@@ -21,17 +21,17 @@ import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.FileUtils;
 
 /**
- * Work around the problem that sometimes when a project is opened, it does not 
- * correctly pick up natures (OMNeT++ Nature and/or C++ nature). This usually 
- * occurs on Windows, and when the IDE has just been started, and projects that 
- * have not been opened before produce it with a greater chance. When the user 
- * closes and re-opens the project, it usually opens correctly. 
- * 
+ * Work around the problem that sometimes when a project is opened, it does not
+ * correctly pick up natures (OMNeT++ Nature and/or C++ nature). This usually
+ * occurs on Windows, and when the IDE has just been started, and projects that
+ * have not been opened before produce it with a greater chance. When the user
+ * closes and re-opens the project, it usually opens correctly.
+ *
  * Until we can determine the root cause of the program and fix it properly,
  * this class is used to automate the workaround: i.e. if the project does not
  * have the natures but from the files it appears it should have, this class
  * closes and re-opens the project.
- *  
+ *
  * @author Andras
  */
 public class OmnetppProjectOpenListener implements IResourceChangeListener {
@@ -54,9 +54,9 @@ public class OmnetppProjectOpenListener implements IResourceChangeListener {
 
             for (int i = 0; i < projectDeltas.length; i++) {
                 IResourceDelta resourceDelta = projectDeltas[i];
-                if ((resourceDelta.getFlags() & IResourceDelta.OPEN) != 0) {  // note: OPEN is sent on both project close and open 
+                if ((resourceDelta.getFlags() & IResourceDelta.OPEN) != 0) {  // note: OPEN is sent on both project close and open
                     IProject project = (IProject) resourceDelta.getResource();
-                    if (project.isOpen()) 
+                    if (project.isOpen())
                         projectOpened(project);
                 }
             }
@@ -78,7 +78,7 @@ public class OmnetppProjectOpenListener implements IResourceChangeListener {
             // project opened OK, remove retry counter
             Integer count = retryCounts.remove(project);
             if (count != null) {
-                OmnetppMainPlugin.getDefault().getLog().log(new Status(IStatus.INFO, OmnetppMainPlugin.PLUGIN_ID, 
+                OmnetppMainPlugin.getDefault().getLog().log(new Status(IStatus.INFO, OmnetppMainPlugin.PLUGIN_ID,
                         "Project " + project.getName() + " opened correctly after " + count + " close/reopen cycle(s)."));
             }
         }
@@ -101,18 +101,18 @@ public class OmnetppProjectOpenListener implements IResourceChangeListener {
                             OmnetppMainPlugin.logError(e);
                         }
                     }});
-            } 
+            }
             else {
                 retryCounts.remove(project);
                 DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
                     public void run() {
-                        OmnetppMainPlugin.getDefault().getLog().log(new Status(IStatus.WARNING, OmnetppMainPlugin.PLUGIN_ID, 
+                        OmnetppMainPlugin.getDefault().getLog().log(new Status(IStatus.WARNING, OmnetppMainPlugin.PLUGIN_ID,
                                 "Project " + project.getName() + " may have opened incorrectly: " +
                                 "it looks like an OMNeT++ and/or CDT C++ project, but was not recognized as such. " +
                                 "Have tried to close and re-open " + MAX_RETRY_COUNT + " times, giving up."
                                 ));
                         Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-                        MessageDialog.openWarning(parentShell, "Warning", 
+                        MessageDialog.openWarning(parentShell, "Warning",
                                 "Project " + project.getName() + " may have opened incorrectly: " +
                                 "it looks like an OMNeT++ and/or CDT C++ project, but was not recognized as such. " +
                                 "Try closing and re-opening the project."
@@ -146,7 +146,7 @@ public class OmnetppProjectOpenListener implements IResourceChangeListener {
                     return false;
             }
         }
-        
+
         return true; // looks OK
     }
 
@@ -160,6 +160,6 @@ public class OmnetppProjectOpenListener implements IResourceChangeListener {
             return false;
         }
     }
-    
-    
+
+
 }

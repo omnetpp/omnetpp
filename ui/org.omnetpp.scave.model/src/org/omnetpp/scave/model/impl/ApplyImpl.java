@@ -43,22 +43,22 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * @generated
  */
 public class ApplyImpl extends ProcessingOpImpl implements Apply {
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected ApplyImpl() {
+    protected ApplyImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.APPLY;
     }
 

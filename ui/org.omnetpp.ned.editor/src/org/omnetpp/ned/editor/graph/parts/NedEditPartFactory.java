@@ -33,7 +33,7 @@ public class NedEditPartFactory implements EditPartFactory {
             return null;
 
         if (model instanceof NedFileElementEx)
-        	child = new NedFileEditPart();
+            child = new NedFileEditPart();
         else if (model instanceof CompoundModuleElementEx)
             child = new CompoundModuleEditPart();
         else if (model instanceof SubmoduleElementEx)

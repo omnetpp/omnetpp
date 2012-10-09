@@ -25,26 +25,26 @@ public class NedSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
 
     public final static String NED_PRIVATE_DOC = "__ned_privatedoc";
     public final static String NED_DOC = "__ned_doc";
-	public final static String[] SUPPORTED_PARTITION_TYPES
+    public final static String[] SUPPORTED_PARTITION_TYPES
         = new String[] { IDocument.DEFAULT_CONTENT_TYPE, NED_PRIVATE_DOC, NED_DOC };
 
-	/**
-	 * Creates the partitioner and sets up the appropriate rules.
-	 */
-	public NedSyntaxHighlightPartitionScanner() {
-		super();
+    /**
+     * Creates the partitioner and sets up the appropriate rules.
+     */
+    public NedSyntaxHighlightPartitionScanner() {
+        super();
 
-		IToken nedDocToken= new Token(NED_DOC);
+        IToken nedDocToken= new Token(NED_DOC);
         IToken nedPrivateDocToken= new Token(NED_PRIVATE_DOC);
 
-		List<IRule> rules= new ArrayList<IRule>();
+        List<IRule> rules= new ArrayList<IRule>();
 
         // Add rule for single line private comments.
         rules.add(new EndOfLineRule("//#", nedPrivateDocToken));
 
         // Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", nedDocToken));
+        rules.add(new EndOfLineRule("//", nedDocToken));
 
-		setPredicateRules(rules.toArray(new IPredicateRule[]{}));
-	}
+        setPredicateRules(rules.toArray(new IPredicateRule[]{}));
+    }
 }

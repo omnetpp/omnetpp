@@ -41,7 +41,7 @@ public class ConnectionPropertySource extends MergedPropertySource {
             // define which properties should be displayed in the property sheet
             // we do not support all properties currently, just color, width and style
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.ROUTING_CONSTRAINT,
-                    								 DisplayString.Prop.CONNECTION_STYLE));
+                                                     DisplayString.Prop.CONNECTION_STYLE));
 
             supportedProperties.addAll(EnumSet.range(DisplayString.Prop.TEXT, DisplayString.Prop.TEXT_COLOR));
             supportedProperties.add(DisplayString.Prop.TOOLTIP);

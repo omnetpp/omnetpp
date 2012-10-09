@@ -41,187 +41,187 @@ import org.omnetpp.scave.engine.RunAttribute;
 // XXX attr: and param: prefixes should be used in field names everywhere!
 public class FilterUtil {
 
-	// separate fields connected with AND operator. The full string is NOT STORED.
-	private Map<String, String> fields = new LinkedHashMap<String, String>();
+    // separate fields connected with AND operator. The full string is NOT STORED.
+    private Map<String, String> fields = new LinkedHashMap<String, String>();
 
-	// if true, the original string contained ORs/NOTs/parens, which means it cannot be
-	// reconstructed from fields[].
-	private boolean lossy = false;
+    // if true, the original string contained ORs/NOTs/parens, which means it cannot be
+    // reconstructed from fields[].
+    private boolean lossy = false;
 
-	public FilterUtil() {
-	}
+    public FilterUtil() {
+    }
 
-	public FilterUtil(String filterPattern) {
-		this(filterPattern, false);
-	}
+    public FilterUtil(String filterPattern) {
+        this(filterPattern, false);
+    }
 
-	public FilterUtil(String filterPattern, boolean lossyAllowed) {
-		if (!isANDPattern(filterPattern)) {
-			if (!lossyAllowed)
-				throw new IllegalArgumentException("Not an AND pattern: "+filterPattern);
-			lossy = true;
-		}
-		parseFields(filterPattern);
-	}
+    public FilterUtil(String filterPattern, boolean lossyAllowed) {
+        if (!isANDPattern(filterPattern)) {
+            if (!lossyAllowed)
+                throw new IllegalArgumentException("Not an AND pattern: "+filterPattern);
+            lossy = true;
+        }
+        parseFields(filterPattern);
+    }
 
-	public FilterUtil(String runName, String moduleName, String dataName) {
-		setField(RUN, runName);
-		setField(MODULE, moduleName);
-		setField(NAME, dataName);
-	}
+    public FilterUtil(String runName, String moduleName, String dataName) {
+        setField(RUN, runName);
+        setField(MODULE, moduleName);
+        setField(NAME, dataName);
+    }
 
-	public FilterUtil(ResultItem item, String[] filterFields) {
-	    Assert.isNotNull(item);
-	    Assert.isNotNull(filterFields);
-	    
-		ResultFile file = item.getFileRun().getFile();
-		Run run = item.getFileRun().getRun();
-		for (String field : filterFields) {
-			if (field == FILE)
-				setField(field, file.getFilePath());
-			else if (field == RUN)
-				setField(field, run.getRunName());
-			else if (field == MODULE)
-				setField(MODULE, item.getModuleName());
-			else if (field == NAME)
-				setField(NAME, item.getName());
-			else if (RunAttribute.isAttributeName(field))
-				setField(field, run.getAttribute(field));
-		}
-	}
+    public FilterUtil(ResultItem item, String[] filterFields) {
+        Assert.isNotNull(item);
+        Assert.isNotNull(filterFields);
 
-	public static String getDefaultField() {
-		return NAME;
-	}
+        ResultFile file = item.getFileRun().getFile();
+        Run run = item.getFileRun().getRun();
+        for (String field : filterFields) {
+            if (field == FILE)
+                setField(field, file.getFilePath());
+            else if (field == RUN)
+                setField(field, run.getRunName());
+            else if (field == MODULE)
+                setField(MODULE, item.getModuleName());
+            else if (field == NAME)
+                setField(NAME, item.getName());
+            else if (RunAttribute.isAttributeName(field))
+                setField(field, run.getAttribute(field));
+        }
+    }
 
-	public String getFilterPattern() {
-		if (lossy)
-			throw new IllegalStateException("Original pattern cannot be reconstructed because it contained OR/NOT/parens");
-		return buildPattern();
-	}
+    public static String getDefaultField() {
+        return NAME;
+    }
 
-	public boolean isLossy() {
-		return lossy;
-	}
+    public String getFilterPattern() {
+        if (lossy)
+            throw new IllegalStateException("Original pattern cannot be reconstructed because it contained OR/NOT/parens");
+        return buildPattern();
+    }
 
-	public String getField(String name) {
-		String value = fields.get(name);
-		return value != null ? value : "";
-	}
+    public boolean isLossy() {
+        return lossy;
+    }
 
-	public void setField(String name, String value) {
-		fields.put(name, value);
-	}
+    public String getField(String name) {
+        String value = fields.get(name);
+        return value != null ? value : "";
+    }
 
-	public Set<String> getFieldNames() {
-	    return fields.keySet();
-	}
+    public void setField(String name, String value) {
+        fields.put(name, value);
+    }
 
-	public boolean containsOnly(String[] fieldNames) {
-		Set<String> allowedNames = new HashSet<String>(Arrays.asList(fieldNames));
-		for (String name : fields.keySet())
-			if (!allowedNames.contains(name))
-				return false;
-		return true;
-	}
+    public Set<String> getFieldNames() {
+        return fields.keySet();
+    }
 
-	private String buildPattern() {
-		StringBuffer sb = new StringBuffer();
-		for (String name : fields.keySet())
-			appendField(sb, name, getField(name));
-		if (sb.length() == 0) sb.append("*");
-		return sb.toString();
-	}
+    public boolean containsOnly(String[] fieldNames) {
+        Set<String> allowedNames = new HashSet<String>(Arrays.asList(fieldNames));
+        for (String name : fields.keySet())
+            if (!allowedNames.contains(name))
+                return false;
+        return true;
+    }
 
-	private void appendField(StringBuffer sb, String attrName, String attrPattern) {
-		if (RunAttribute.isAttributeName(attrName))
-			attrName = "attr:" + attrName;
-		if (attrPattern != null && attrPattern.length() > 0) {
-			if (sb.length() > 0)
-				sb.append(" AND ");
-			sb.append(quoteStringIfNeeded(attrName)).append("(").append(quoteStringIfNeeded(attrPattern)).append(")");
-		}
-	}
+    private String buildPattern() {
+        StringBuffer sb = new StringBuffer();
+        for (String name : fields.keySet())
+            appendField(sb, name, getField(name));
+        if (sb.length() == 0) sb.append("*");
+        return sb.toString();
+    }
 
-	public static boolean needsQuotes(String pattern) {
-		return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
-	}
+    private void appendField(StringBuffer sb, String attrName, String attrPattern) {
+        if (RunAttribute.isAttributeName(attrName))
+            attrName = "attr:" + attrName;
+        if (attrPattern != null && attrPattern.length() > 0) {
+            if (sb.length() > 0)
+                sb.append(" AND ");
+            sb.append(quoteStringIfNeeded(attrName)).append("(").append(quoteStringIfNeeded(attrPattern)).append(")");
+        }
+    }
 
-	public static String quoteStringIfNeeded(String str) {
-		return needsQuotes(str) ? Common.quoteString(str) : str;
-	}
+    public static boolean needsQuotes(String pattern) {
+        return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
+    }
 
-	public static boolean isValidPattern(String pattern) {
-		try {
-			ResultFileManager.checkPattern(pattern);
-		} catch (Exception e) {
-			return false; // bogus
-		}
-		return true;
-	}
+    public static String quoteStringIfNeeded(String str) {
+        return needsQuotes(str) ? Common.quoteString(str) : str;
+    }
 
-	public static boolean isANDPattern(String pattern) {
-		if (!isValidPattern(pattern))
-			return false; // a bogus pattern is not an "AND" pattern
-		Node node = MatchExpressionSyntax.parseFilter(pattern);
-		FilterNodeVisitor visitor = new FilterNodeVisitor();
-		node.accept(visitor);
-		return visitor.isANDPattern;
-	}
+    public static boolean isValidPattern(String pattern) {
+        try {
+            ResultFileManager.checkPattern(pattern);
+        } catch (Exception e) {
+            return false; // bogus
+        }
+        return true;
+    }
 
-	private void parseFields(String pattern) {
-		// Note: here we allow non-AND patterns which cannot be represented, but
-		// at least the fields can be extracted.
-		Node node = MatchExpressionSyntax.parseFilter(pattern);
-		FilterNodeVisitor visitor = new FilterNodeVisitor();
-		node.accept(visitor);
-		for (Map.Entry<String,String> entry : visitor.fields.entrySet()) {
-			String name = entry.getKey();
-			String value = entry.getValue();
-			if (name.startsWith("attr:"))
-				name = name.substring(5);
-			else if (name.startsWith("param:"))
-				name = name.substring(6);
-			setField(name, value);
-		}
-	}
+    public static boolean isANDPattern(String pattern) {
+        if (!isValidPattern(pattern))
+            return false; // a bogus pattern is not an "AND" pattern
+        Node node = MatchExpressionSyntax.parseFilter(pattern);
+        FilterNodeVisitor visitor = new FilterNodeVisitor();
+        node.accept(visitor);
+        return visitor.isANDPattern;
+    }
 
-	/**
-	 * Collects fields, and determines whether this is an "AND" pattern
-	 */
-	private static class FilterNodeVisitor implements INodeVisitor {
-		public boolean isANDPattern = true;
-		public Map<String,String> fields = new HashMap<String, String>();
+    private void parseFields(String pattern) {
+        // Note: here we allow non-AND patterns which cannot be represented, but
+        // at least the fields can be extracted.
+        Node node = MatchExpressionSyntax.parseFilter(pattern);
+        FilterNodeVisitor visitor = new FilterNodeVisitor();
+        node.accept(visitor);
+        for (Map.Entry<String,String> entry : visitor.fields.entrySet()) {
+            String name = entry.getKey();
+            String value = entry.getValue();
+            if (name.startsWith("attr:"))
+                name = name.substring(5);
+            else if (name.startsWith("param:"))
+                name = name.substring(6);
+            setField(name, value);
+        }
+    }
 
-		public boolean visit(Node node) {
-			switch (node.type) {
-			case Node.UNARY_OPERATOR_EXPR:
-				isANDPattern = false;
-				break;
-			case Node.BINARY_OPERATOR_EXPR:
-				if (node.getOperator().getType() != TokenType.AND)
-					isANDPattern = false;
-				break;
-			case Node.PATTERN:
-				if (!node.getPattern().isEmpty())
-					fields.put(FilterUtil.getDefaultField(), node.getPatternString());
-				break;
-			case Node.FIELDPATTERN:
-				if (!node.getPattern().isEmpty())
-					fields.put(node.getFieldName(), node.getPatternString());
-				break;
-			case Node.PARENTHESISED_EXPR:
-			case Node.ROOT:
-				break;
-			default: Assert.isTrue(false);
-			}
-			return true;
-		}
+    /**
+     * Collects fields, and determines whether this is an "AND" pattern
+     */
+    private static class FilterNodeVisitor implements INodeVisitor {
+        public boolean isANDPattern = true;
+        public Map<String,String> fields = new HashMap<String, String>();
 
-		public void visit(Token token) {}
-	}
+        public boolean visit(Node node) {
+            switch (node.type) {
+            case Node.UNARY_OPERATOR_EXPR:
+                isANDPattern = false;
+                break;
+            case Node.BINARY_OPERATOR_EXPR:
+                if (node.getOperator().getType() != TokenType.AND)
+                    isANDPattern = false;
+                break;
+            case Node.PATTERN:
+                if (!node.getPattern().isEmpty())
+                    fields.put(FilterUtil.getDefaultField(), node.getPatternString());
+                break;
+            case Node.FIELDPATTERN:
+                if (!node.getPattern().isEmpty())
+                    fields.put(node.getFieldName(), node.getPatternString());
+                break;
+            case Node.PARENTHESISED_EXPR:
+            case Node.ROOT:
+                break;
+            default: Assert.isTrue(false);
+            }
+            return true;
+        }
 
-	public String toString() {
-		return getFilterPattern();
-	}
+        public void visit(Token token) {}
+    }
+
+    public String toString() {
+        return getFilterPattern();
+    }
 }

@@ -46,39 +46,39 @@ import org.omnetpp.common.util.StringUtils;
 public class ProjectUtils {
     public static final String NEDFOLDERS_FILENAME = ".nedfolders";
 
-	/**
-	 * Checks whether the provided project is open, has the OMNeT++ nature,
-	 * and it is enabled.
-	 */
-	public static boolean isOpenOmnetppProject(IProject project) throws CoreException {
-	    // project is open, nature is set and also enabled
-	    return project.isAccessible() && project.isNatureEnabled(IConstants.OMNETPP_NATURE_ID);
-	}
+    /**
+     * Checks whether the provided project is open, has the OMNeT++ nature,
+     * and it is enabled.
+     */
+    public static boolean isOpenOmnetppProject(IProject project) throws CoreException {
+        // project is open, nature is set and also enabled
+        return project.isAccessible() && project.isNatureEnabled(IConstants.OMNETPP_NATURE_ID);
+    }
 
-	/**
-	 * Returns all open projects with the OMNeT++ nature. Based on isOpenOmnetppProject().
-	 */
-	public static IProject[] getOmnetppProjects() throws CoreException {
-		List<IProject> omnetppProjects = new ArrayList<IProject>();
+    /**
+     * Returns all open projects with the OMNeT++ nature. Based on isOpenOmnetppProject().
+     */
+    public static IProject[] getOmnetppProjects() throws CoreException {
+        List<IProject> omnetppProjects = new ArrayList<IProject>();
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects())
-        	if (isOpenOmnetppProject(project))
-        		omnetppProjects.add(project);
+            if (isOpenOmnetppProject(project))
+                omnetppProjects.add(project);
         return omnetppProjects.toArray(new IProject[]{});
-	}
+    }
 
-	/**
-	 * Same as getOmnetppProjects(), but CoreExceptions are caught and displayed 
-	 * in an error dialog and an empty project list is returned.
-	 */
-	public static IProject[] getOmnetppProjectsSafely(Shell parentForErrorDialog) {
-	    try {
-	        return getOmnetppProjects();
-	    }
-	    catch (CoreException e) {
-	        ErrorDialog.openError(parentForErrorDialog, "Error", "Could not get list of open OMNeT++ projects", e.getStatus());
-	        return new IProject[0];
-	    }
-	}
+    /**
+     * Same as getOmnetppProjects(), but CoreExceptions are caught and displayed
+     * in an error dialog and an empty project list is returned.
+     */
+    public static IProject[] getOmnetppProjectsSafely(Shell parentForErrorDialog) {
+        try {
+            return getOmnetppProjects();
+        }
+        catch (CoreException e) {
+            ErrorDialog.openError(parentForErrorDialog, "Error", "Could not get list of open OMNeT++ projects", e.getStatus());
+            return new IProject[0];
+        }
+    }
 
     /**
      * Returns all open projects.
@@ -93,17 +93,17 @@ public class ProjectUtils {
         return openProjects.toArray(new IProject[]{});
     }
 
-	/**
-	 * Returns the transitive closure of OMNeT++ projects referenced from the given project,
-	 * excluding the project itself. Nonexistent and closed projects are ignored.
-	 *
-	 * Potential CoreExceptions are re-thrown as RuntimeException.
-	 */
-	public static IProject[] getAllReferencedOmnetppProjects(IProject project) throws CoreException {
+    /**
+     * Returns the transitive closure of OMNeT++ projects referenced from the given project,
+     * excluding the project itself. Nonexistent and closed projects are ignored.
+     *
+     * Potential CoreExceptions are re-thrown as RuntimeException.
+     */
+    public static IProject[] getAllReferencedOmnetppProjects(IProject project) throws CoreException {
         return getAllReferencedProjects(project, true, false);
-	}
+    }
 
-	/**
+    /**
      * Returns the transitive closure of all projects referenced from the given project,
      * excluding the project itself. Nonexistent and closed projects are ignored.
      */
@@ -119,34 +119,34 @@ public class ProjectUtils {
         return result.toArray(new IProject[]{});
     }
 
-	// helper for getAllReferencedOmnetppProjects()
-	private static void collectReferencedProjects(IProject project, boolean requireOmnetppNature, Set<IProject> result) throws CoreException {
-		for (IProject dependency : project.getReferencedProjects()) {
-			if ((requireOmnetppNature ? isOpenOmnetppProject(dependency) : dependency.isAccessible()) && !result.contains(dependency)) {
-				result.add(dependency);
-				collectReferencedProjects(dependency, requireOmnetppNature, result);
-			}
-		}
-	}
+    // helper for getAllReferencedOmnetppProjects()
+    private static void collectReferencedProjects(IProject project, boolean requireOmnetppNature, Set<IProject> result) throws CoreException {
+        for (IProject dependency : project.getReferencedProjects()) {
+            if ((requireOmnetppNature ? isOpenOmnetppProject(dependency) : dependency.isAccessible()) && !result.contains(dependency)) {
+                result.add(dependency);
+                collectReferencedProjects(dependency, requireOmnetppNature, result);
+            }
+        }
+    }
 
     /**
      * Add the given project as referenced project.
      */
-	public static void addReferencedProject(IProject toProject, IProject project, IProgressMonitor monitor) throws CoreException {
-		IProjectDescription description = toProject.getDescription();
-		IProject[] referencedProjects = description.getReferencedProjects();
-		if (!ArrayUtils.contains(referencedProjects, project)) {
-			referencedProjects = (IProject[])ArrayUtils.add(referencedProjects, project);
-			description.setReferencedProjects(referencedProjects);
-			toProject.setDescription(description, monitor);
-		}
-	}
+    public static void addReferencedProject(IProject toProject, IProject project, IProgressMonitor monitor) throws CoreException {
+        IProjectDescription description = toProject.getDescription();
+        IProject[] referencedProjects = description.getReferencedProjects();
+        if (!ArrayUtils.contains(referencedProjects, project)) {
+            referencedProjects = (IProject[])ArrayUtils.add(referencedProjects, project);
+            description.setReferencedProjects(referencedProjects);
+            toProject.setDescription(description, monitor);
+        }
+    }
 
-	/**
-	 * Return the list of all open projects that directly or indirectly reference the given project.
-	 * Note: to obtain the list of open projects that directly reference it, use IProject.getReferencingProjects().
-	 */
-	public static IProject[] getAllReferencingProjects(IProject project, boolean includeSelf) throws CoreException {
+    /**
+     * Return the list of all open projects that directly or indirectly reference the given project.
+     * Note: to obtain the list of open projects that directly reference it, use IProject.getReferencingProjects().
+     */
+    public static IProject[] getAllReferencingProjects(IProject project, boolean includeSelf) throws CoreException {
         Set<IProject> result = new HashSet<IProject>();
         if (includeSelf && project.isAccessible())
             result.add(project);
@@ -164,13 +164,13 @@ public class ProjectUtils {
         }
     }
 
-	/**
-	 * In case of CoreException it simply return false.
-	 */
+    /**
+     * In case of CoreException it simply return false.
+     */
     public static boolean hasOmnetppNature(IProject project) {
         try {
-        	if (project == null)
-        		return false;
+            if (project == null)
+                return false;
             IProjectDescription description = project.getDescription();
             String[] natures = description.getNatureIds();
             return ArrayUtils.contains(natures, IConstants.OMNETPP_NATURE_ID);
@@ -264,7 +264,7 @@ public class ProjectUtils {
     }
 
     /**
-     * Utility function to convert a string to a byte array, using the 
+     * Utility function to convert a string to a byte array, using the
      * encoding of a resource (IFile). Useful for saving the string into
      * the given file.
      */
@@ -338,5 +338,5 @@ public class ProjectUtils {
     private static String getProjectRelativePathOf(IProject project, IContainer container) {
         return container.equals(project) ? "." : container.getProjectRelativePath().toString();
     }
-    
+
 }

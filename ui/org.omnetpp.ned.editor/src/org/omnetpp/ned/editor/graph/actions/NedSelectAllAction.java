@@ -19,7 +19,7 @@ import org.omnetpp.ned.editor.graph.parts.ModuleEditPart;
 import org.omnetpp.ned.editor.graph.parts.TypesEditPart;
 
 /**
- * Same as a the SelectAllAction but handles selects only all the submodules inside a 
+ * Same as a the SelectAllAction but handles selects only all the submodules inside a
  * compound module if the compound module or any submodule is selected. If other toplevel
  * types is selected then all top level will be selected.
  *
@@ -34,8 +34,8 @@ public class NedSelectAllAction extends SelectAllAction {
     }
 
     // TODO handle select all connections in the current compound module too
-	@Override
-	@SuppressWarnings("unchecked")
+    @Override
+    @SuppressWarnings("unchecked")
     public void run() {
         GraphicalViewer viewer = (GraphicalViewer)wbp.getAdapter(GraphicalViewer.class);
         if (viewer != null) {
@@ -53,7 +53,7 @@ public class NedSelectAllAction extends SelectAllAction {
             for (Object child : parentEP.getChildren())
                 if (!(child instanceof TypesEditPart))
                     children.add(child);
-            
+
             viewer.setSelection(new StructuredSelection(children));
         }
     }

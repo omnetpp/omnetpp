@@ -36,8 +36,8 @@ public class NedFileRemovedEvent extends NedModelChangeEvent {
      * Returns the file that was removed from NEDResources.
      */
     public IFile getFile() {
-		return file;
-	}
+        return file;
+    }
 
     @Override
     public String toString() {

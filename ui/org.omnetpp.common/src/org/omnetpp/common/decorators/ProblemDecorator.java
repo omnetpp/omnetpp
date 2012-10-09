@@ -34,7 +34,7 @@ import org.omnetpp.common.image.ImageFactory;
 public class ProblemDecorator implements ILightweightLabelDecorator, IResourceChangeListener {
 
     private ListenerList fListeners;
-	private final static int quadrant = IDecoration.BOTTOM_LEFT;
+    private final static int quadrant = IDecoration.BOTTOM_LEFT;
     private final static int checkDepth = IResource.DEPTH_INFINITE;
 
     public ProblemDecorator() {
@@ -68,11 +68,11 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
         return maxLevel;
     }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.ILightweightLabelDecorator#decorate(java.lang.Object, org.eclipse.jface.viewers.IDecoration)
      * checks the resource for warning and error markers and decorates the image
-	 */
-	public void decorate(Object element, IDecoration decoration) {
+     */
+    public void decorate(Object element, IDecoration decoration) {
         if (element instanceof IResource) {
             IResource resource = (IResource)element;
             int sevLevel = maxSeverityLevel(resource, checkDepth);
@@ -83,14 +83,14 @@ public class ProblemDecorator implements ILightweightLabelDecorator, IResourceCh
             if (sevLevel == IMarker.SEVERITY_WARNING)
                 decoration.addOverlay(ImageFactory.getDescriptor(ImageFactory.DECORATOR_IMAGE_WARNING), quadrant);
         }
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
-	 */
-	public boolean isLabelProperty(Object element, String property) {
-		return false;
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.viewers.IBaseLabelProvider#isLabelProperty(java.lang.Object, java.lang.String)
+     */
+    public boolean isLabelProperty(Object element, String property) {
+        return false;
+    }
 
     public void addListener(ILabelProviderListener listener) {
         if (fListeners == null) {

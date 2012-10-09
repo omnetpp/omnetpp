@@ -18,19 +18,19 @@
  *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
  *        Visigoth Software Society (http://www.visigoths.org/)."
- *    Alternately, this acknowledgement may appear in the software 
- *    itself, if and wherever such third-party acknowledgements 
+ *    Alternately, this acknowledgement may appear in the software
+ *    itself, if and wherever such third-party acknowledgements
  *    normally appear.
  *
- * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names 
- *    of the project contributors may be used to endorse or promote 
- *    products derived from this software without prior written 
- *    permission. For written permission, please contact 
+ * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names
+ *    of the project contributors may be used to endorse or promote
+ *    products derived from this software without prior written
+ *    permission. For written permission, please contact
  *    visigoths@visigoths.org.
  *
- * 5. Products derived from this software may not be called 
- *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth" 
- *    appear in their names without prior written permission of the 
+ * 5. Products derived from this software may not be called
+ *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth"
+ *    appear in their names without prior written permission of the
  *    Visigoth Software Society.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
@@ -58,9 +58,9 @@ package freemarker.eclipse.editors;
 import org.eclipse.jface.text.rules.ICharacterScanner;
 
 /**
- * A class containing utility methods. In particular, this class 
- * contains metods for performing the lexical analysis needed for 
- * correct syntax highlighting.  
+ * A class containing utility methods. In particular, this class
+ * contains metods for performing the lexical analysis needed for
+ * correct syntax highlighting.
  *
  * @author  <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  * @author  <a href="mailto:per&#64;percederberg.net">Per Cederberg</a>
@@ -71,42 +71,42 @@ public class FreemarkerTools {
     /**
      * The FreeMarker comment start character sequence.
      */
-    private static final char[] COMMENT_START = "<#--".toCharArray(); 
+    private static final char[] COMMENT_START = "<#--".toCharArray();
 
     /**
      * The FreeMarker comment end character sequence.
      */
-    private static final char[] COMMENT_END = "-->".toCharArray(); 
+    private static final char[] COMMENT_END = "-->".toCharArray();
 
     /**
      * The XML comment start character sequence.
      */
-    private static final char[] XML_COMMENT_START = "<!--".toCharArray(); 
+    private static final char[] XML_COMMENT_START = "<!--".toCharArray();
 
     /**
      * The XML comment end character sequence.
      */
-    private static final char[] XML_COMMENT_END = "-->".toCharArray(); 
+    private static final char[] XML_COMMENT_END = "-->".toCharArray();
 
     /**
      * Checks for a FreeMarker comment start. If a matching character
      * sequence was detected, it will be read. If no match was found
      * starting at the first character returned by the scanner, false
-     * will be returned and any characters read will be unread 
+     * will be returned and any characters read will be unread
      * (leaving the scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if a comment start was read, or
      *         false otherwise
      */
     public static boolean readCommentStart(ICharacterScanner scanner) {
         return readSequence(scanner, COMMENT_START);
     }
-    
+
     /**
      * Reads characters until a FreeMarker comment end is found.
-     * 
+     *
      * @param scanner        the character scanner
      */
     public static void readCommentEnd(ICharacterScanner scanner) {
@@ -126,14 +126,14 @@ public class FreemarkerTools {
     }
 
     /**
-     * Checks for a FreeMarker directive start. If a matching 
-     * character sequence was detected, it will be read. If no match 
-     * was found starting at the first character returned by the 
-     * scanner, false will be returned and any characters read will 
+     * Checks for a FreeMarker directive start. If a matching
+     * character sequence was detected, it will be read. If no match
+     * was found starting at the first character returned by the
+     * scanner, false will be returned and any characters read will
      * be unread (leaving the scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if a directive start was read, or
      *         false otherwise
      */
@@ -164,11 +164,11 @@ public class FreemarkerTools {
     }
 
     /**
-     * Reads characters until a FreeMarker directive end is found. 
-     * This method attempts to detect and handle '>' characters used 
-     * inside parenthesized expressions, as well as quoted strings 
+     * Reads characters until a FreeMarker directive end is found.
+     * This method attempts to detect and handle '>' characters used
+     * inside parenthesized expressions, as well as quoted strings
      * and FreeMarker comments.
-     * 
+     *
      * @param scanner        the character scanner
      */
     public static void readDirectiveEnd(ICharacterScanner scanner) {
@@ -191,19 +191,19 @@ public class FreemarkerTools {
             } else if (c == ')') {
                 parens--;
             }
-        } while (c != ICharacterScanner.EOF 
+        } while (c != ICharacterScanner.EOF
               && (c != '>' || parens > 0));
     }
 
     /**
-     * Checks for a FreeMarker interpolation start. If a matching 
-     * character sequence was detected, it will be read. If no match 
-     * was found starting at the first character returned by the 
-     * scanner, false will be returned and any characters read will 
+     * Checks for a FreeMarker interpolation start. If a matching
+     * character sequence was detected, it will be read. If no match
+     * was found starting at the first character returned by the
+     * scanner, false will be returned and any characters read will
      * be unread (leaving the scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if an interpolation start was read, or
      *         false otherwise
      */
@@ -225,21 +225,21 @@ public class FreemarkerTools {
     }
 
     /**
-     * Reads characters until a FreeMarker comment end is found. This 
+     * Reads characters until a FreeMarker comment end is found. This
      * method attempts to detect and handle quoted strings and hash
-     * literals inside the interpolation. 
-     * 
+     * literals inside the interpolation.
+     *
      * @param scanner        the character scanner
      */
     public static void readInterpolationEnd(ICharacterScanner scanner) {
         int  c;
 
         do {
-        	c = scanner.read();
+            c = scanner.read();
             if (c == '"') {
                 readQuoteEnd(scanner);
             } else if (c == '{') {
-            	readHashEnd(scanner);
+                readHashEnd(scanner);
             }
         } while (c != ICharacterScanner.EOF && c != '}');
     }
@@ -248,51 +248,51 @@ public class FreemarkerTools {
      * Checks for a literal hash start. If a matching character
      * sequence was detected, it will be read. If no match was found
      * starting at the first character returned by the scanner, false
-     * will be returned and any characters read will be unread 
+     * will be returned and any characters read will be unread
      * (leaving the scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if a literal hash start was read, or
      *         false otherwise
      */
     public static boolean readHashStart(ICharacterScanner scanner) {
-    	if (scanner.read() != '{') {
-    		scanner.unread();
-    		return false;
-    	} else {
-    		return true;
-    	}
+        if (scanner.read() != '{') {
+            scanner.unread();
+            return false;
+        } else {
+            return true;
+        }
     }
-    
+
     /**
-	 * Reads characters until a literal hash end is found.
-     * 
+     * Reads characters until a literal hash end is found.
+     *
      * @param scanner        the character scanner
-	 */
-	public static void readHashEnd(ICharacterScanner scanner) {
-		int  c;
+     */
+    public static void readHashEnd(ICharacterScanner scanner) {
+        int  c;
 
-		do {
-			c = scanner.read();
-			if (c == '"') {
-				readQuoteEnd(scanner);
-			} else if (c == '{') {
-				readHashEnd(scanner);
-			}
-			
-		} while (c != ICharacterScanner.EOF && c != '}');
-	}
+        do {
+            c = scanner.read();
+            if (c == '"') {
+                readQuoteEnd(scanner);
+            } else if (c == '{') {
+                readHashEnd(scanner);
+            }
 
-	/**
+        } while (c != ICharacterScanner.EOF && c != '}');
+    }
+
+    /**
      * Checks for a quoted string start. If a matching character
      * sequence was detected, it will be read. If no match was found
      * starting at the first character returned by the scanner, false
-     * will be returned and any characters read will be unread 
+     * will be returned and any characters read will be unread
      * (leaving the scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if a quoted string start was read, or
      *         false otherwise
      */
@@ -306,10 +306,10 @@ public class FreemarkerTools {
     }
 
     /**
-     * Reads characters until a quote end is found. This method 
+     * Reads characters until a quote end is found. This method
      * attempts to detect and handle character escapes inside the
-     * quoted string. 
-     * 
+     * quoted string.
+     *
      * @param scanner        the character scanner
      */
     public static void readQuoteEnd(ICharacterScanner scanner) {
@@ -338,11 +338,11 @@ public class FreemarkerTools {
     public static boolean readXmlCommentStart(ICharacterScanner scanner) {
         return readSequence(scanner, XML_COMMENT_START);
     }
-    
+
     /**
      * Reads characters until an XML comment end is found. This
      * method attempts to detect and handle FreeMarker comments,
-     * directives and interpolations inside the XML comment. 
+     * directives and interpolations inside the XML comment.
      *
      * @param scanner        the character scanner
      */
@@ -379,14 +379,14 @@ public class FreemarkerTools {
     }
 
     /**
-     * Checks for an XML tag start. If a matching character sequence 
-     * was detected, it will be read. If no match was found starting 
-     * at the first character returned by the scanner, false will be 
-     * returned and any characters read will be unread (leaving the 
+     * Checks for an XML tag start. If a matching character sequence
+     * was detected, it will be read. If no match was found starting
+     * at the first character returned by the scanner, false will be
+     * returned and any characters read will be unread (leaving the
      * scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if an XML tag start was read, or
      *         false otherwise
      */
@@ -400,15 +400,15 @@ public class FreemarkerTools {
     }
 
     /**
-     * Reads characters until an XML tag end is found. This method 
+     * Reads characters until an XML tag end is found. This method
      * attempts to detect and handle FreeMarker comments, directives
-     * and interpolations inside the tag. 
-     * 
+     * and interpolations inside the tag.
+     *
      * @param scanner        the character scanner
      */
     public static void readXmlTagEnd(ICharacterScanner scanner) {
         int  c;
-        
+
         do {
             c = scanner.read();
             if (c == '$' || c == '#') {
@@ -430,25 +430,25 @@ public class FreemarkerTools {
             }
         } while (c != ICharacterScanner.EOF && c != '>');
     }
-    
+
     /**
-     * Checks for a character sequence. If a matching sequence was 
-     * detected, it will be read. If no match was found starting at 
-     * the first character returned by the scanner, false will be 
-     * returned and any characters read will be unread (leaving the 
+     * Checks for a character sequence. If a matching sequence was
+     * detected, it will be read. If no match was found starting at
+     * the first character returned by the scanner, false will be
+     * returned and any characters read will be unread (leaving the
      * scanner in the original state).
-     * 
+     *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if a character sequence was read, or
      *         false otherwise
      */
-    private static boolean readSequence(ICharacterScanner scanner, 
+    private static boolean readSequence(ICharacterScanner scanner,
                                         char[] chars) {
 
         int  pos = 0;
         int  c;
-        
+
         do {
             c = scanner.read();
             if (chars[pos] != c) {

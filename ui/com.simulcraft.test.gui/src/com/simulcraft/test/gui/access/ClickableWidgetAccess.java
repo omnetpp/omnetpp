@@ -19,45 +19,45 @@ import com.simulcraft.test.gui.core.UIStep;
 public abstract class ClickableWidgetAccess
     extends WidgetAccess
 {
-	public ClickableWidgetAccess(Widget widget) {
-		super(widget);
-	}
+    public ClickableWidgetAccess(Widget widget) {
+        super(widget);
+    }
 
-	protected abstract Point getAbsolutePointToClick();
+    protected abstract Point getAbsolutePointToClick();
 
-	protected abstract Point toAbsolute(Point point);
+    protected abstract Point toAbsolute(Point point);
 
-	protected abstract Menu getContextMenu();
+    protected abstract Menu getContextMenu();
 
-	@UIStep
-	public void click(int button) {
-		clickAbsolute(button, getAbsolutePointToClick());
-	}
+    @UIStep
+    public void click(int button) {
+        clickAbsolute(button, getAbsolutePointToClick());
+    }
 
-	@UIStep
-	public void click() {
-		click(Access.LEFT_MOUSE_BUTTON);
-	}
+    @UIStep
+    public void click() {
+        click(Access.LEFT_MOUSE_BUTTON);
+    }
 
-	@UIStep
-	public void rightClick() {
-		click(Access.RIGHT_MOUSE_BUTTON);
-	}
+    @UIStep
+    public void rightClick() {
+        click(Access.RIGHT_MOUSE_BUTTON);
+    }
 
-	@UIStep
-	public void doubleClick() {
-		doubleClickAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick());
-	}
+    @UIStep
+    public void doubleClick() {
+        doubleClickAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick());
+    }
 
-	@UIStep
-	public MenuAccess activateContextMenuWithMouseClick() {
+    @UIStep
+    public MenuAccess activateContextMenuWithMouseClick() {
         rightClick();
         MenuAccess menu = new MenuAccess(getContextMenu());
         menu.assertVisible();
         return menu;
-	}
+    }
 
-	@UIStep
+    @UIStep
     public MenuAccess activateContextMenuWithMouseClick(Point point) {
         clickAbsolute(Access.RIGHT_MOUSE_BUTTON, toAbsolute(point));
         MenuAccess menu = new MenuAccess(getContextMenu());
@@ -65,20 +65,20 @@ public abstract class ClickableWidgetAccess
         return menu;
     }
 
-	@InBackgroundThread
-	public void chooseFromContextMenu(String labelPath) {
-		MenuAccess menuAccess = activateContextMenuWithMouseClick();
-		for (String label : labelPath.split("\\|"))
-			menuAccess = menuAccess.activateMenuItemWithMouse(label);
-	}
+    @InBackgroundThread
+    public void chooseFromContextMenu(String labelPath) {
+        MenuAccess menuAccess = activateContextMenuWithMouseClick();
+        for (String label : labelPath.split("\\|"))
+            menuAccess = menuAccess.activateMenuItemWithMouse(label);
+    }
 
     @InAnyThread
-	public void dragToAbsolute(int x, int y) {
-	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));
-	}
+    public void dragToAbsolute(int x, int y) {
+        dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), new Point(x,y));
+    }
 
     @InAnyThread
-	public void dragTo(ClickableWidgetAccess target) {
-	    dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());
-	}
+    public void dragTo(ClickableWidgetAccess target) {
+        dragMouseAbsolute(LEFT_MOUSE_BUTTON, getAbsolutePointToClick(), target.getAbsolutePointToClick());
+    }
 }

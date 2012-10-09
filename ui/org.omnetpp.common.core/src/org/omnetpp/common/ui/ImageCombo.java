@@ -96,8 +96,8 @@ import org.eclipse.swt.widgets.Widget;
  */
 public final class ImageCombo extends Composite {
 
-	private static final boolean gtk = "gtk".equals(SWT.getPlatform());
-	private boolean dontDrop = false;
+    private static final boolean gtk = "gtk".equals(SWT.getPlatform());
+    private boolean dontDrop = false;
 
     Text text;
     Table table;
@@ -141,7 +141,7 @@ public ImageCombo (Composite parent, int style) {
     super (parent, style = checkStyle (style));
 
     int textStyle = SWT.SINGLE;
-	if(gtk) textStyle |= SWT.BORDER;
+    if(gtk) textStyle |= SWT.BORDER;
     if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
     if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
     text = new Text (this, textStyle);
@@ -149,7 +149,7 @@ public ImageCombo (Composite parent, int style) {
     // Issue: in readonly mode, text background becomes gray which is not consistent with the native Windows widget
     // Workaround: manually set the background to SWT.COLOR_LIST_BACKGROUND
     if ((textStyle & SWT.READ_ONLY) != 0)
-    	text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
+        text.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
     //EC Andras
     int arrowStyle = SWT.ARROW | SWT.DOWN;
     if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
@@ -204,8 +204,8 @@ public ImageCombo (Composite parent, int style) {
     initAccessible();
 }
 static int checkStyle (int style) {
-	int mask = gtk ? SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT :
-						SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+    int mask = gtk ? SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT :
+                        SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
     return style & mask;
 }
 /**
@@ -318,23 +318,23 @@ public void addSelectionListener(SelectionListener listener) {
 void arrowEvent (Event event) {
     switch (event.type) {
         case SWT.FocusIn: {
-			if(gtk) {
-				setFocus();
-				return;
-			}
-			handleFocus (SWT.FocusIn);
+            if(gtk) {
+                setFocus();
+                return;
+            }
+            handleFocus (SWT.FocusIn);
             break;
         }
         case SWT.Selection: {
-			if(gtk) {
-				if(!dontDrop) {
-					dropDown (!isDropped ());
-				}
-				dontDrop = false;
-			}
-			else {
-				dropDown (!isDropped ());
-			}
+            if(gtk) {
+                if(!dontDrop) {
+                    dropDown (!isDropped ());
+                }
+                dontDrop = false;
+            }
+            else {
+                dropDown (!isDropped ());
+            }
             break;
         }
     }
@@ -424,13 +424,13 @@ void createPopup(int selectionIndex) {
         // Issue: list selection doesn't follow mouse like native Windows combo
         // Solution: add mouse listener
         table.addMouseMoveListener(new MouseMoveListener() {
-			public void mouseMove(MouseEvent e) {
-				TableItem item = table.getItem(new Point(e.x, e.y));
-				if (item != null) {
-					int index = ArrayUtils.indexOf(table.getItems(), item);
-					table.setSelection(index);
-				}
-			}
+            public void mouseMove(MouseEvent e) {
+                TableItem item = table.getItem(new Point(e.x, e.y));
+                if (item != null) {
+                    int index = ArrayUtils.indexOf(table.getItems(), item);
+                    table.setSelection(index);
+                }
+            }
         });
         //EC Andras
 
@@ -525,7 +525,7 @@ void dropDown (boolean drop) {
     popup.setVisible (true);
     //BC Andras
     if (table.getColumns()[0].getWidth() <= 0)
-    	table.getColumns()[0].setWidth(width - 2*table.getBorderWidth() - 2);
+        table.getColumns()[0].setWidth(width - 2*table.getBorderWidth() - 2);
     //EC Andras
     table.setFocus ();
 }
@@ -1033,18 +1033,18 @@ void popupEvent(Event event) {
             dropDown (false);
             break;
         case SWT.Deactivate:
-			// when the popup shell is deactivated by clicking the button,
-			// we receive two Deactivate events on Win32, whereas on GTK
-			// we first receive one Deactivation event from the shell and
-			// then a Selection event from the button.
-			// as a work-around, set a flag (dontDrop) if running GTK
-			if(gtk) {
-				Point loc = arrow.toControl(getDisplay().getCursorLocation());
-				Point size = arrow.getSize();
-				if((loc.x >= 0) && (loc.y >= 0) && (loc.x < size.x) && (loc.y < size.y)) {
-					dontDrop = true;
-				}
-			}
+            // when the popup shell is deactivated by clicking the button,
+            // we receive two Deactivate events on Win32, whereas on GTK
+            // we first receive one Deactivation event from the shell and
+            // then a Selection event from the button.
+            // as a work-around, set a flag (dontDrop) if running GTK
+            if(gtk) {
+                Point loc = arrow.toControl(getDisplay().getCursorLocation());
+                Point size = arrow.getSize();
+                if((loc.x >= 0) && (loc.y >= 0) && (loc.x < size.x) && (loc.y < size.y)) {
+                    dontDrop = true;
+                }
+            }
             dropDown (false);
             break;
     }

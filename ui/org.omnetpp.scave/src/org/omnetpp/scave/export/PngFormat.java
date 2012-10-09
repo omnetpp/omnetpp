@@ -19,10 +19,10 @@ import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.editors.ui.IDialogConstants;
 
 public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
-    
+
     private int width;
     private int height;
-    
+
     public PngFormat() {
         this.width = 600;
         this.height = 400;
@@ -43,7 +43,7 @@ public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
     public int getWidth() {
         return width;
     }
-    
+
     public int getHeight() {
         return height;
     }
@@ -60,9 +60,9 @@ public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
             return null;
         }
     }
-    
+
     class OptionsDialog extends Dialog {
-        
+
         Text widthText;
         Text heightText;
 
@@ -75,7 +75,7 @@ public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
             super.configureShell(newShell);
             newShell.setText("PNG Export options");
         }
-        
+
         @Override
         protected Control createDialogArea(Composite parent) {
             Composite composite = (Composite)super.createDialogArea(parent);
@@ -98,7 +98,7 @@ public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
             restoreDialogSettings();
             return composite;
         }
-        
+
         private ModifyListener validator = new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 Button okButton = getButton(IDialogConstants.OK_ID);
@@ -114,7 +114,7 @@ public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
             saveDialogSettings();
             super.okPressed();
         }
-        
+
         private int getValue(Text text) {
             int value = NumberUtils.toInt(text.getText(), 0);
             return value > 0 ? value : 0;
@@ -125,7 +125,7 @@ public final class PngFormat implements IGraphicalExportFileFormat, Cloneable {
             settings.put("width", widthText.getText());
             settings.put("height", heightText.getText());
         }
-        
+
         private void restoreDialogSettings() {
             IDialogSettings settings = UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
             String width = settings.get("width");

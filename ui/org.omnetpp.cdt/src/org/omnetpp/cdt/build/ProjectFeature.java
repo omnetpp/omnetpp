@@ -27,8 +27,8 @@ public class ProjectFeature {
     private Set<String> extraSourceFolders = new LinkedHashSet<String>(); // C++ folders outside those defined by NED packages
     private String compileFlags;
     private String linkerFlags;
-    
-    public ProjectFeature(   
+
+    public ProjectFeature(
             String id,
             String name,
             String description,
@@ -38,7 +38,7 @@ public class ProjectFeature {
             Set<String> nedPackages,
             Set<String> extraSourceFolders,
             String compileFlags,
-            String linkerFlags) 
+            String linkerFlags)
     {
         this.id = id;
         this.name = name;
@@ -50,7 +50,7 @@ public class ProjectFeature {
         this.extraSourceFolders = extraSourceFolders;
         this.compileFlags = compileFlags;
         this.linkerFlags = linkerFlags;
-        
+
         Assert.isNotNull(id);
         Assert.isNotNull(name);
         Assert.isNotNull(description);
@@ -65,7 +65,7 @@ public class ProjectFeature {
     public static boolean isValidId(String id) {
         return id.matches("[a-zA-Z_][a-zA-Z0-9_]*");
     }
-    
+
     /**
      * Feature ID. Also used as preprocessor symbol, with the "WITH_" prefix.
      */
@@ -79,14 +79,14 @@ public class ProjectFeature {
     public String getName() {
         return name;
     }
-    
+
     /**
      * Detailed, typically multi-line information about this feature.
      */
     public String getDescription() {
         return description;
     }
-    
+
     /**
      * Returns true of feature should be enabled initially.
      */
@@ -95,7 +95,7 @@ public class ProjectFeature {
     }
 
     /**
-     * Labels of this feature, e.g. "examples", "protocols", "routing", etc. 
+     * Labels of this feature, e.g. "examples", "protocols", "routing", etc.
      * Suitable for filtering on the UI.
      */
     public Set<String> getLabels() {
@@ -108,19 +108,19 @@ public class ProjectFeature {
     public Set<String> getDependencies() {
         return dependencies;
     }
-    
+
     public Set<String> getNedPackages() {
         return nedPackages;
     }
-    
+
     public Set<String> getExtraSourceFolders() {
         return extraSourceFolders;
     }
-    
+
     public String getCompileFlags() {
         return compileFlags;
     }
-    
+
     public String getLinkerFlags() {
         return linkerFlags;
     }

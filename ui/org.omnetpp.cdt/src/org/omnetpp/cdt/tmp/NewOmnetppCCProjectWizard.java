@@ -38,23 +38,23 @@ import org.omnetpp.ide.OmnetppMainPlugin;
 
 public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 
-	NewOmnetppCCProjectWizardPage page;
+    NewOmnetppCCProjectWizardPage page;
 
-	public NewOmnetppCCProjectWizard() {
-		setWindowTitle("New OMNeT++ project");
-	}
+    public NewOmnetppCCProjectWizard() {
+        setWindowTitle("New OMNeT++ project");
+    }
 
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-	}
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+    }
 
-	@Override
-	public void addPages() {
-		page = new NewOmnetppCCProjectWizardPage();
-		addPage(page);
-	}
+    @Override
+    public void addPages() {
+        page = new NewOmnetppCCProjectWizardPage();
+        addPage(page);
+    }
 
-	@Override
-	public boolean performFinish() {
+    @Override
+    public boolean performFinish() {
         IProject project = createNewProject();
         try {
 //            IProjectType pt = ManagedBuildManager.getProjectType("cdt.managedbuild.target.gnu.mingw.exe");
@@ -72,7 +72,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             e.printStackTrace();
         }
         return project != null;
-	}
+    }
 
 //    public void createStandardProject(IProject project)  throws CoreException {
 //        ICProjectDescriptionManager mngr = CoreModel.getDefault().getProjectDescriptionManager();
@@ -114,16 +114,16 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 
 
 
-	private IProject createNewProject() {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String projectName = page.getProjectName();
+    private IProject createNewProject() {
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        String projectName = page.getProjectName();
         final IProject projectHandle =  workspace.getRoot().getProject(projectName);
 
         // get a project descriptor
         IPath defaultPath = Platform.getLocation();
         IPath newPath = page.getLocationPath();
         if (defaultPath.equals(newPath))
-			newPath = null;
+            newPath = null;
 
         // create project description. Note: we'add the nature after project creation,
         // so that builders get properly configured (Project.create() doesn't do it).
@@ -147,7 +147,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             if (t instanceof CoreException) {
                 if (((CoreException) t).getStatus().getCode() == IResourceStatus.CASE_VARIANT_EXISTS) {
                     MessageDialog.openError(getShell(), "Creation problems",
-                    		"The project contents directory specified is being used by another project. Please enter a new project contents directory.");
+                            "The project contents directory specified is being used by another project. Please enter a new project contents directory.");
                 }
                 else {
                     ErrorDialog.openError(getShell(), "Creation problems", null, ((CoreException) t).getStatus());
@@ -155,14 +155,14 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
             }
             else {
                 // Unexpected runtime exceptions and errors may still occur.
-            	OmnetppMainPlugin.getDefault().logError(t);
+                OmnetppMainPlugin.getDefault().logError(t);
                 MessageDialog.openError(getShell(), "Creation problems", "Internal error: " + t.getMessage());
             }
             return null;
         }
 
         return projectHandle;
-	}
+    }
 
     private void createProject(IProjectDescription description, IProject projectHandle, IProgressMonitor monitor) throws CoreException, OperationCanceledException {
         try {
@@ -170,7 +170,7 @@ public class NewOmnetppCCProjectWizard extends Wizard implements INewWizard {
 
             projectHandle.create(description, new SubProgressMonitor(monitor, 1000));
             if (monitor.isCanceled())
-				throw new OperationCanceledException();
+                throw new OperationCanceledException();
 
             projectHandle.open(IResource.BACKGROUND_REFRESH, new SubProgressMonitor(monitor, 1000));
 

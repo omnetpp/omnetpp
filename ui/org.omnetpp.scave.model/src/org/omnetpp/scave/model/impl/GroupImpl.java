@@ -47,95 +47,95 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class GroupImpl extends DatasetItemImpl implements Group {
-	/**
+    /**
      * The cached value of the '{@link #getItems() <em>Items</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getItems()
      * @generated
      * @ordered
      */
-	protected EList<DatasetItem> items;
+    protected EList<DatasetItem> items;
 
-	/**
+    /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected static final String NAME_EDEFAULT = null;
+    protected static final String NAME_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected String name = NAME_EDEFAULT;
+    protected String name = NAME_EDEFAULT;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected GroupImpl() {
+    protected GroupImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.GROUP;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<DatasetItem> getItems() {
+    public EList<DatasetItem> getItems() {
         if (items == null) {
             items = new EObjectContainmentEList<DatasetItem>(DatasetItem.class, this, ScaveModelPackage.GROUP__ITEMS);
         }
         return items;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setName(String newName) {
+    public void setName(String newName) {
         String oldName = name;
         name = newName;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.GROUP__NAME, oldName, name));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.GROUP__ITEMS:
                 return ((InternalEList<?>)getItems()).basicRemove(otherEnd, msgs);
@@ -143,13 +143,13 @@ public class GroupImpl extends DatasetItemImpl implements Group {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.GROUP__ITEMS:
                 return getItems();
@@ -159,14 +159,14 @@ public class GroupImpl extends DatasetItemImpl implements Group {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.GROUP__ITEMS:
                 getItems().clear();
@@ -179,13 +179,13 @@ public class GroupImpl extends DatasetItemImpl implements Group {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.GROUP__ITEMS:
                 getItems().clear();
@@ -197,13 +197,13 @@ public class GroupImpl extends DatasetItemImpl implements Group {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.GROUP__ITEMS:
                 return items != null && !items.isEmpty();
@@ -213,13 +213,13 @@ public class GroupImpl extends DatasetItemImpl implements Group {
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

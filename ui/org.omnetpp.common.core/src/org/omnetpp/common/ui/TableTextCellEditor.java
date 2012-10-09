@@ -84,23 +84,23 @@ import org.omnetpp.common.util.ReflectionUtils;
  */
 //TODO up/down support when used with a Tree
 public class TableTextCellEditor extends CellEditor {
-	public interface IActivationListener {
-		public void activate();
-	}
+    public interface IActivationListener {
+        public void activate();
+    }
 
-	private final ColumnViewer fViewer; // a TableViewer or a TreeViewer
-	private final int fColumn;
-	//[Andras] private final String fProperty;
+    private final ColumnViewer fViewer; // a TableViewer or a TreeViewer
+    private final int fColumn;
+    //[Andras] private final String fProperty;
     /**
-	 * The editor's value on activation. This value is reset to the
-	 * cell when the editor is left via ESC key.
-	 */
-	String fOriginalValue;
-	//[Andras]
-	// SubjectControlContentAssistant fContentAssistant;
-	private IActivationListener fActivationListener;
-	//[Andras]
-	ContentAssistCommandAdapter fContentAssistAdapter;
+     * The editor's value on activation. This value is reset to the
+     * cell when the editor is left via ESC key.
+     */
+    String fOriginalValue;
+    //[Andras]
+    // SubjectControlContentAssistant fContentAssistant;
+    private IActivationListener fActivationListener;
+    //[Andras]
+    ContentAssistCommandAdapter fContentAssistAdapter;
 
     protected Text text;
 
@@ -109,67 +109,67 @@ public class TableTextCellEditor extends CellEditor {
     private boolean isSelectable = false;
 
     private static final int defaultStyle = SWT.SINGLE;
-	private ModifyListener fModifyListener;
+    private ModifyListener fModifyListener;
 
-	public TableTextCellEditor(ColumnViewer tableViewer, int column) {
-		super((Composite)tableViewer.getControl(), defaultStyle);
-		fViewer= tableViewer;
-		fColumn= column;
-		//[Andras] fProperty= (String) tableViewer.getColumnProperties()[column];
-	}
+    public TableTextCellEditor(ColumnViewer tableViewer, int column) {
+        super((Composite)tableViewer.getControl(), defaultStyle);
+        fViewer= tableViewer;
+        fColumn= column;
+        //[Andras] fProperty= (String) tableViewer.getColumnProperties()[column];
+    }
 
-	@Override
+    @Override
     public void activate() {
-		super.activate();
-		if (fActivationListener != null)
-			fActivationListener.activate();
-		fOriginalValue= text.getText();
-	}
+        super.activate();
+        if (fActivationListener != null)
+            fActivationListener.activate();
+        fOriginalValue= text.getText();
+    }
 
 //[Andras]
-//	private void fireModifyEvent(Object newValue) {
-//		fTableViewer.getCellModifier().modify(
-//				((IStructuredSelection) fTableViewer.getSelection()).getFirstElement(),
-//				fProperty, newValue);
-//	}
+//  private void fireModifyEvent(Object newValue) {
+//      fTableViewer.getCellModifier().modify(
+//              ((IStructuredSelection) fTableViewer.getSelection()).getFirstElement(),
+//              fProperty, newValue);
+//  }
 
-	@Override
+    @Override
     protected void focusLost() {
 //[Andras]
-//		if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
-//			// skip focus lost if it went to the content assist popup
-//		}
-		if (fContentAssistAdapter != null && ReflectionUtils.getFieldValue(fContentAssistAdapter, "popup") != null) {  // work around private field...
+//      if (fContentAssistant != null && fContentAssistant.hasProposalPopupFocus()) {
+//          // skip focus lost if it went to the content assist popup
+//      }
+        if (fContentAssistAdapter != null && ReflectionUtils.getFieldValue(fContentAssistAdapter, "popup") != null) {  // work around private field...
             // skip focus lost if it went to the content assist popup
-		}
-		else {
-		    // [Andras]
-		    super.focusLost();
-		}
-	}
+        }
+        else {
+            // [Andras]
+            super.focusLost();
+        }
+    }
 
 //[Andras]
-//	public void setContentAssistant(SubjectControlContentAssistant assistant) {
-//		fContentAssistant= assistant;
-//	}
+//  public void setContentAssistant(SubjectControlContentAssistant assistant) {
+//      fContentAssistant= assistant;
+//  }
 //
-//	public void setActivationListener(IActivationListener listener) {
-//	    fActivationListener= listener;
-//	}
+//  public void setActivationListener(IActivationListener listener) {
+//      fActivationListener= listener;
+//  }
 
-	//[Andras]
-	public ContentAssistCommandAdapter getContentAssistAdapter() {
+    //[Andras]
+    public ContentAssistCommandAdapter getContentAssistAdapter() {
         return fContentAssistAdapter;
     }
 
-	//[Andras]
-	public void setContentAssistAdapter(ContentAssistCommandAdapter contentAssistAdapter) {
+    //[Andras]
+    public void setContentAssistAdapter(ContentAssistCommandAdapter contentAssistAdapter) {
         fContentAssistAdapter = contentAssistAdapter;
     }
 
-	public Text getText() {
-		return text;
-	}
+    public Text getText() {
+        return text;
+    }
 
     protected void checkDeleteable() {
         boolean oldIsDeleteable = isDeleteable;
@@ -196,121 +196,121 @@ public class TableTextCellEditor extends CellEditor {
         }
     }
 
-	private ModifyListener getModifyListener() {
-	    if (fModifyListener == null) {
-	        fModifyListener = new ModifyListener() {
-	            public void modifyText(ModifyEvent e) {
-	                editOccured(e);
-	            }
-	        };
-	    }
-	    return fModifyListener;
-	}
+    private ModifyListener getModifyListener() {
+        if (fModifyListener == null) {
+            fModifyListener = new ModifyListener() {
+                public void modifyText(ModifyEvent e) {
+                    editOccured(e);
+                }
+            };
+        }
+        return fModifyListener;
+    }
 
     /* (non-Javadoc)
      * Method declared on CellEditor.
      */
     @Override
     protected Control createControl(Composite parent) {
-		//workaround for bug 58777: don't accept focus listeners on the text control
-		final Control[] textControl= new Control[1];
-		Composite result= new Composite(parent, SWT.NONE) {
-			@Override
+        //workaround for bug 58777: don't accept focus listeners on the text control
+        final Control[] textControl= new Control[1];
+        Composite result= new Composite(parent, SWT.NONE) {
+            @Override
             public void addListener(int eventType, final Listener listener) {
-				if (eventType != SWT.FocusIn && eventType != SWT.FocusOut) {
-					textControl[0].addListener(eventType, listener);
-				}
-			}
-		};
+                if (eventType != SWT.FocusIn && eventType != SWT.FocusOut) {
+                    textControl[0].addListener(eventType, listener);
+                }
+            }
+        };
         result.setFont(parent.getFont());
         result.setBackground(parent.getBackground());
-		result.setLayout(new FillLayout());
+        result.setLayout(new FillLayout());
 
         text = new Text(result, getStyle());
-		textControl[0]= text;
+        textControl[0]= text;
         text.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 handleDefaultSelection(e);
             }
         });
-		text.addKeyListener(new KeyAdapter() {
-			@Override
+        text.addKeyListener(new KeyAdapter() {
+            @Override
             public void keyPressed(KeyEvent e) {
-				// support switching rows while editing:
-				if (e.stateMask == SWT.MOD1 || e.stateMask == SWT.MOD2) {
-					if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN) {
-					    // allow starting multi-selection even if in edit mode
-						deactivate();
-						e.doit= false;
-						return;
-					}
-				}
+                // support switching rows while editing:
+                if (e.stateMask == SWT.MOD1 || e.stateMask == SWT.MOD2) {
+                    if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN) {
+                        // allow starting multi-selection even if in edit mode
+                        deactivate();
+                        e.doit= false;
+                        return;
+                    }
+                }
 
-				if (e.stateMask != SWT.NONE)
-					return;
+                if (e.stateMask != SWT.NONE)
+                    return;
 
-				switch (e.keyCode) {
+                switch (e.keyCode) {
 
-				case SWT.ARROW_DOWN :
-				    e.doit= false;
-					if (fViewer instanceof TableViewer) {
-						int nextRow= ((TableViewer)fViewer).getTable().getSelectionIndex() + 1;
-						if (nextRow < ((TableViewer)fViewer).getTable().getItemCount())
-						    editTableRow(nextRow);
-					}
-					else if (fViewer instanceof TreeViewer) {
+                case SWT.ARROW_DOWN :
+                    e.doit= false;
+                    if (fViewer instanceof TableViewer) {
+                        int nextRow= ((TableViewer)fViewer).getTable().getSelectionIndex() + 1;
+                        if (nextRow < ((TableViewer)fViewer).getTable().getItemCount())
+                            editTableRow(nextRow);
+                    }
+                    else if (fViewer instanceof TreeViewer) {
                         editTreeRow(1);
                     }
-					break;
+                    break;
 
-				case SWT.ARROW_UP :
-				    e.doit= false;
-					if (fViewer instanceof TableViewer) {
-						int prevRow= ((TableViewer)fViewer).getTable().getSelectionIndex() - 1;
-						if (prevRow >= 0)
-						    editTableRow(prevRow);
-					}
-					else if (fViewer instanceof TreeViewer) {
+                case SWT.ARROW_UP :
+                    e.doit= false;
+                    if (fViewer instanceof TableViewer) {
+                        int prevRow= ((TableViewer)fViewer).getTable().getSelectionIndex() - 1;
+                        if (prevRow >= 0)
+                            editTableRow(prevRow);
+                    }
+                    else if (fViewer instanceof TreeViewer) {
                         editTreeRow(-1);
                     }
-					break;
+                    break;
 
-				case SWT.F2 :
-					e.doit= false;
-					deactivate();
-					break;
-				}
-			}
+                case SWT.F2 :
+                    e.doit= false;
+                    deactivate();
+                    break;
+                }
+            }
 
-			private void editTableRow(int row) {
-				((TableViewer)fViewer).getTable().setSelection(row);
-				IStructuredSelection newSelection= (IStructuredSelection) fViewer.getSelection();
-				if (newSelection.size() == 1)
-					fViewer.editElement(newSelection.getFirstElement(), fColumn);
-			}
+            private void editTableRow(int row) {
+                ((TableViewer)fViewer).getTable().setSelection(row);
+                IStructuredSelection newSelection= (IStructuredSelection) fViewer.getSelection();
+                if (newSelection.size() == 1)
+                    fViewer.editElement(newSelection.getFirstElement(), fColumn);
+            }
 
-			private void editTreeRow(int delta) {
-			    // determine index of current line within parent
-			    Tree tree = ((TreeViewer)fViewer).getTree();
-			    if (tree.getSelectionCount()==0)
-			        return;
-			    TreeItem current = tree.getSelection()[0];
-			    TreeItem[] items = current.getParentItem().getItems();
-			    int index = ArrayUtils.indexOf(items, current);
-			    Assert.isTrue(index != -1, "item not found in its parent");
+            private void editTreeRow(int delta) {
+                // determine index of current line within parent
+                Tree tree = ((TreeViewer)fViewer).getTree();
+                if (tree.getSelectionCount()==0)
+                    return;
+                TreeItem current = tree.getSelection()[0];
+                TreeItem[] items = current.getParentItem().getItems();
+                int index = ArrayUtils.indexOf(items, current);
+                Assert.isTrue(index != -1, "item not found in its parent");
 
-			    // edit line index + delta within the same parent
-			    index += delta;
-			    if (index >= 0 && index < items.length) {
-			        tree.setSelection(items[index]);
-	                IStructuredSelection newSelection= (IStructuredSelection) fViewer.getSelection();
-	                if (newSelection.size() == 1)
-	                    fViewer.editElement(newSelection.getFirstElement(), fColumn);
-			    }
-			}
+                // edit line index + delta within the same parent
+                index += delta;
+                if (index >= 0 && index < items.length) {
+                    tree.setSelection(items[index]);
+                    IStructuredSelection newSelection= (IStructuredSelection) fViewer.getSelection();
+                    if (newSelection.size() == 1)
+                        fViewer.editElement(newSelection.getFirstElement(), fColumn);
+                }
+            }
 
-		});
+        });
         text.addKeyListener(new KeyAdapter() {
             // hook key pressed - see PR 14201
             @Override
@@ -356,14 +356,14 @@ public class TableTextCellEditor extends CellEditor {
         text.setText("");//$NON-NLS-1$
         text.addModifyListener(getModifyListener());
 
-		return result;
+        return result;
     }
 
     @Override
     protected void fireCancelEditor() {
-		/* bug 58540: change signature refactoring interaction: validate as you type [refactoring] */
-    	text.setText(fOriginalValue);
-		super.fireApplyEditorValue();
+        /* bug 58540: change signature refactoring interaction: validate as you type [refactoring] */
+        text.setText(fOriginalValue);
+        super.fireApplyEditorValue();
     }
 
     /**
@@ -422,7 +422,7 @@ public class TableTextCellEditor extends CellEditor {
             setErrorMessage("Invalid value: "+value);
         }
         valueChanged(oldValidState, newValidState);
-		//[Andras] fireModifyEvent(text.getText()); // update model on-the-fly
+        //[Andras] fireModifyEvent(text.getText()); // update model on-the-fly
     }
 
     @Override

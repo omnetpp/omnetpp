@@ -109,7 +109,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     }
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected Command getCloneCommand(ChangeBoundsRequest request) {
         CompoundCommand compoundCmd = new CompoundCommand();
 
@@ -156,20 +156,20 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     protected Command getCreateCommand(CreateRequest request) {
         INedElement element = (INedElement)request.getNewObject();
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx)getHost().getModel();
-    	// submodule creation
-    	if (element instanceof SubmoduleElementEx) {
-	        // do no allow dropping a submodule on the compound module title
+        // submodule creation
+        if (element instanceof SubmoduleElementEx) {
+            // do no allow dropping a submodule on the compound module title
             Point p = request.getLocation();
             if (((CompoundModuleEditPart)getHost()).isOnBorder(p.x, p.y))
                 return UnexecutableCommand.INSTANCE;
 
             CreateSubmoduleCommand create = new CreateSubmoduleCommand(compoundModule, (SubmoduleElementEx)element);
-    	    create.setConstraint((Rectangle)getConstraintFor(request));
-    	    create.setLabel("Create submodule");
-    	    return create;
-    	}
+            create.setConstraint((Rectangle)getConstraintFor(request));
+            create.setLabel("Create submodule");
+            return create;
+        }
 
-    	// inner type creation
+        // inner type creation
         if (!isAllowedType(element) || !isInsertable(element))
             return UnexecutableCommand.INSTANCE;
 
@@ -196,7 +196,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
         INedElement element = (INedElement)childToAdd.getModel();
 
         // if the add is not targeted to the title/border i.e. it is dropped inside
-        // a the submodule area (and the added element is a type), we should 
+        // a the submodule area (and the added element is a type), we should
         // create a new submodule with that type instead of creating an inner type
         // (CloneCommand does this exactly so we reuse it)
         Point p = ((ChangeBoundsRequest)currentRequest).getLocation();
@@ -335,7 +335,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
     protected Rectangle getConstraintForClone(GraphicalEditPart part, ChangeBoundsRequest request) {
         IFigure figure = part.getFigure();
         Rectangle bounds = new PrecisionRectangle(
-                          figure instanceof ISubmoduleConstraint ? ((ISubmoduleConstraint)figure).getShapeBounds() 
+                          figure instanceof ISubmoduleConstraint ? ((ISubmoduleConstraint)figure).getShapeBounds()
                                                                    : figure.getBounds());
 
         figure.translateToAbsolute(bounds);
@@ -358,33 +358,33 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      */
     protected Rectangle getConstraintFor(ChangeBoundsRequest request, GraphicalEditPart child) {
         IFigure childFig = child.getFigure();
-    	Rectangle rect = new PrecisionRectangle(
-    	                  childFig instanceof ISubmoduleConstraint ? ((ISubmoduleConstraint)childFig).getShapeBounds() 
-    	                                                           : childFig.getBounds());
-    	Rectangle original = rect.getCopy();
-    	child.getFigure().translateToAbsolute(rect);
-    	rect = request.getTransformedRectangle(rect);
-    	child.getFigure().translateToRelative(rect);
-    	rect.translate(getLayoutOrigin().getNegated());
+        Rectangle rect = new PrecisionRectangle(
+                          childFig instanceof ISubmoduleConstraint ? ((ISubmoduleConstraint)childFig).getShapeBounds()
+                                                                   : childFig.getBounds());
+        Rectangle original = rect.getCopy();
+        child.getFigure().translateToAbsolute(rect);
+        rect = request.getTransformedRectangle(rect);
+        child.getFigure().translateToRelative(rect);
+        rect.translate(getLayoutOrigin().getNegated());
 
-    	if (request.getSizeDelta().width == 0 && request.getSizeDelta().height == 0) {
-    		Rectangle cons = getCurrentConstraintFor(child);
-    		if (cons != null) //Bug 86473 allows for unintended use of this method
-    			rect.setSize(cons.width, cons.height);
-    	} else { // resize
-    		Dimension minSize = getMinimumSizeFor(child);
-    		if (rect.width < minSize.width) {
-    			rect.width = minSize.width;
-    			if (rect.x > (original.right() - minSize.width))
-    				rect.x = original.right() - minSize.width;
-    		}
-    		if (rect.height < minSize.height) {
-    			rect.height = minSize.height;
-    			if (rect.y > (original.bottom() - minSize.height))
-    				rect.y = original.bottom() - minSize.height;
-    		}
-    	}
-    	return getConstraintFor(rect);
+        if (request.getSizeDelta().width == 0 && request.getSizeDelta().height == 0) {
+            Rectangle cons = getCurrentConstraintFor(child);
+            if (cons != null) //Bug 86473 allows for unintended use of this method
+                rect.setSize(cons.width, cons.height);
+        } else { // resize
+            Dimension minSize = getMinimumSizeFor(child);
+            if (rect.width < minSize.width) {
+                rect.width = minSize.width;
+                if (rect.x > (original.right() - minSize.width))
+                    rect.x = original.right() - minSize.width;
+            }
+            if (rect.height < minSize.height) {
+                rect.height = minSize.height;
+                if (rect.y > (original.bottom() - minSize.height))
+                    rect.y = original.bottom() - minSize.height;
+            }
+        }
+        return getConstraintFor(rect);
     }
 
     /**
@@ -395,7 +395,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * @return a Rectangle
      */
     public Rectangle getConstraintFor(Point p) {
-    	return new Rectangle(p, DEFAULT_SIZE);
+        return new Rectangle(p, DEFAULT_SIZE);
     }
 
     /**
@@ -405,7 +405,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      */
     protected Rectangle getCurrentConstraintFor(GraphicalEditPart child) {
         IFigure childFig = child.getFigure();
-        if (childFig instanceof ISubmoduleConstraint) 
+        if (childFig instanceof ISubmoduleConstraint)
             return ((ISubmoduleConstraint)childFig).getShapeBounds();
         else
             return childFig.getBounds();
@@ -419,7 +419,7 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * @return the minumum size
      */
     protected Dimension getMinimumSizeFor(GraphicalEditPart child) {
-    	return new Dimension(8, 8);
+        return new Dimension(8, 8);
     }
 
     /**
@@ -427,11 +427,11 @@ public class CompoundModuleLayoutEditPolicy extends ConstrainedLayoutEditPolicy 
      * @see LayoutEditPolicy#showSizeOnDropFeedback(CreateRequest)
      */
     protected void showSizeOnDropFeedback(CreateRequest request) {
-    	Point p = new Point(request.getLocation().getCopy());
-    	IFigure feedback = getSizeOnDropFeedback(request);
-    	feedback.translateToRelative(p);
-    	Dimension size = request.getSize().getCopy();
-    	feedback.translateToRelative(size);
-    	feedback.setBounds(new Rectangle(p, size).expand(getCreationFeedbackOffset(request)));
+        Point p = new Point(request.getLocation().getCopy());
+        IFigure feedback = getSizeOnDropFeedback(request);
+        feedback.translateToRelative(p);
+        Dimension size = request.getSize().getCopy();
+        feedback.translateToRelative(size);
+        feedback.setBounds(new Rectangle(p, size).expand(getCreationFeedbackOffset(request)));
     }
 }

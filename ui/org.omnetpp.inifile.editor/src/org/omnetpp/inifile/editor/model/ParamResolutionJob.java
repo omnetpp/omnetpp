@@ -18,12 +18,12 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
  * Job for performing the parameter resolution asynchronously.
- * 
+ *
  * It works on a read-only copy of the ini file and returns the result in its status.
- * 
+ *
  * The actual work is factored out to the ParamCollector class, so
  * they can be called directly too.
- * 
+ *
  * @author tomi
  */
 class ParamResolutionJob extends Job {
@@ -33,13 +33,13 @@ class ParamResolutionJob extends Job {
 
     private IInifileDocument doc;
     private int retryCount;
-    
+
     public ParamResolutionJob(IInifileDocument doc) {
         super("Ini file analysis");
         this.doc = doc;
         setPriority(SHORT);
     }
-    
+
     @Override
     protected IStatus run(IProgressMonitor monitor) {
         IStatus status = tryRun(monitor);
@@ -59,18 +59,18 @@ class ParamResolutionJob extends Job {
         }
         return status;
     }
-    
+
     private IStatus tryRun(IProgressMonitor monitor) {
         final IReadonlyInifileDocument docCopy = doc.getImmutableCopy();
         final INedResources nedResources = NedResourcesPlugin.getNedResources();
-        final INedTypeResolver nedResolver = nedResources.getImmutableCopy(); 
-        
+        final INedTypeResolver nedResolver = nedResources.getImmutableCopy();
+
         List<Entry> entries = new ArrayList<Entry>();
         String[] sections = docCopy.getSectionNames();
         monitor.beginTask("Analyzing " + docCopy.getDocumentFile().getName(), sections.length * 100);
-        
+
         long startTime = System.currentTimeMillis();
-        
+
         class SubMonitor extends SubProgressMonitor {
             public SubMonitor(IProgressMonitor monitor, int ticks) {
                 super(monitor, ticks);
@@ -81,12 +81,12 @@ class ParamResolutionJob extends Job {
                 return super.isCanceled() || !doc.isImmutableCopyUpToDate(docCopy) || !nedResources.isImmutableCopyUpToDate(nedResolver);
             }
         };
-        
+
         try {
             for (String activeSection : sections) {
                 if (monitor.isCanceled() || !doc.isImmutableCopyUpToDate(docCopy) || !nedResources.isImmutableCopyUpToDate(nedResolver))
                     throw new OperationCanceledException();
-                
+
                 monitor.subTask("Resolving module parameters and properties.");
                 Entry entry =
                     ParamCollector.collectParametersAndProperties(docCopy, nedResolver, activeSection, new SubMonitor(monitor, 100));
@@ -105,7 +105,7 @@ class ParamResolutionJob extends Job {
         } finally {
             monitor.done();
         }
-        
+
         Debug.println("ParamResolutionJob: completed in "+(System.currentTimeMillis()-startTime)+"ms");
         return new ParamResolutionStatus(entries, docCopy, nedResolver);
     }

@@ -1,5 +1,5 @@
 /*
- * 
+ *
  */
 package freemarker.eclipse.test;
 
@@ -16,21 +16,21 @@ import freemarker.eclipse.test.util.TokenList;
  */
 public class PartitionScannerTest extends AbstractScannerTestCase {
 
-	private IToken DIRECTIVE_TOKEN = new Token(PartitionScanner.FTL_DIRECTIVE);
-	private IToken DEFAULT_TOKEN = new Token(null);
-	private IToken COMMENT_TOKEN = new Token(PartitionScanner.FTL_COMMENT);
-	
-	public PartitionScannerTest(String name) {
-		super(name);
-	}
-	
-	public void setUp() {
-		tokens = new TokenList();
-		text = "<#if foo>bar</#if>";
-		scanner = new PartitionScanner();
-		tokens.addToken(DIRECTIVE_TOKEN,9);
-		tokens.addToken(DEFAULT_TOKEN,3);
-		tokens.addToken(DIRECTIVE_TOKEN,6);
-	}
+    private IToken DIRECTIVE_TOKEN = new Token(PartitionScanner.FTL_DIRECTIVE);
+    private IToken DEFAULT_TOKEN = new Token(null);
+    private IToken COMMENT_TOKEN = new Token(PartitionScanner.FTL_COMMENT);
+
+    public PartitionScannerTest(String name) {
+        super(name);
+    }
+
+    public void setUp() {
+        tokens = new TokenList();
+        text = "<#if foo>bar</#if>";
+        scanner = new PartitionScanner();
+        tokens.addToken(DIRECTIVE_TOKEN,9);
+        tokens.addToken(DEFAULT_TOKEN,3);
+        tokens.addToken(DIRECTIVE_TOKEN,6);
+    }
 
 }

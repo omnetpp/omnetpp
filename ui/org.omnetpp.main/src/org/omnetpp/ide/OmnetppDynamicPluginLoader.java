@@ -32,19 +32,19 @@ import org.osgi.framework.wiring.FrameworkWiring;
 /**
  * Handles the automatic installation / deinstallation of plugin jar files
  * from the project's "plugins" folder.
- * 
+ *
  *   NOTE:The p2 system automatically uninstalls all plugins during the startup
  *   that were not installed via p2. This means that each dynamic plugin is freshly installed
  *   on each IDE restart or on each project close/open meaning that persistent data
- *   for the plugin is not kept. 
+ *   for the plugin is not kept.
  */
 public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
 
     private static final String OMNETPP_BUNDLE_MARKER = "omnetpp_bundle";
     public static final String PLUGINS_FOLDER = "plugins";
-    
+
     protected BundleContext bundleContext;
-    
+
     public OmnetppDynamicPluginLoader(BundleContext bundleContext) throws BundleException {
         this.bundleContext = bundleContext;
         installOmnetppDynamicBundlesInAllOpenProjects();
@@ -78,7 +78,7 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
                             // visit the workspace children
                             if (resource.getProject() == null)
                                 return true;
-                            
+
                             // ignore closed and non omnetpp projects
                             if (!resource.getProject().isOpen() || !ProjectUtils.hasOmnetppNature(resource.getProject()))
                                 return false;
@@ -86,11 +86,11 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
                             // process children if the resource is not a plugin
                             if (!isJarFileInPluginsFolder(resource))
                                 return true;
-                            
+
                             int kind = resourceDelta.getKind();
                             if (kind == IResourceDelta.ADDED && resource.isAccessible()) {
                                 installBundle(resource);
-                                startPlugins[0] = true;  // request to start plugins after installing after processing the delta 
+                                startPlugins[0] = true;  // request to start plugins after installing after processing the delta
                             }
                             else if (kind == IResourceDelta.REMOVED)
                                 uninstallBundle(resource);
@@ -115,7 +115,7 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
             } catch (CoreException e) {
                 OmnetppMainPlugin.logError(e);
             }
-            
+
             // after installing all new plugins try to start (resolve and activate) them
             if (startPlugins[0])
                 startOmnetppDynamicBundles();
@@ -131,47 +131,47 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
         Bundle systemBundle = bundleContext.getBundle(0);
         FrameworkStartLevel fs = (FrameworkStartLevel)systemBundle.adapt(FrameworkStartLevel.class);
         int origStartLevel = fs.getInitialBundleStartLevel();
-        fs.setInitialBundleStartLevel(5); // start level for workspace installed bundles. normal IDE plugins are on level 4 
+        fs.setInitialBundleStartLevel(5); // start level for workspace installed bundles. normal IDE plugins are on level 4
 
         // install the bundle
         Bundle bundle = bundleContext.installBundle(bundleResource.getLocationURI().toString());
-        
+
         // restore run level
-        fs.setInitialBundleStartLevel(origStartLevel);  
-        
-        // mark the bundle with a marker file in the bundle instance area 
+        fs.setInitialBundleStartLevel(origStartLevel);
+
+        // mark the bundle with a marker file in the bundle instance area
         // so we will recognize later that it was installed from an omnetpp project
         bundle.getDataFile(OMNETPP_BUNDLE_MARKER).createNewFile();
     }
 
     /**
-     * Uninstall a bundle and stop all bundles immediately that depend on it 
+     * Uninstall a bundle and stop all bundles immediately that depend on it
      */
     protected void uninstallBundle(IResource bundleResource) throws BundleException {
         Bundle bundle = bundleContext.installBundle(bundleResource.getLocationURI().toString());
         bundle.uninstall();
-        
+
         // access the system bundle
         Bundle systemBundle = bundleContext.getBundle(0);
         FrameworkWiring fw = (FrameworkWiring)systemBundle.adapt(FrameworkWiring.class);
         // stop current bundle pending for uninstallation because otherwise other running bundles
-        // depending on this would keep it active  
+        // depending on this would keep it active
         fw.refreshBundles(Arrays.asList(new Bundle[] { bundle }));
     }
 
     /**
-     * List dynamic omnetpp plugins that are available in this project. 
+     * List dynamic omnetpp plugins that are available in this project.
      * (closed projects or projects that has no omnetpp nature return no plugins)
      */
     protected static List<IResource> getBundleFilesFrom(IProject project) {
         List<IResource> result = new ArrayList<IResource>();
         if (project.isAccessible() && ProjectUtils.hasOmnetppNature(project)) {
-        	IFolder plugins = project.getFolder(PLUGINS_FOLDER);
-        	if (plugins.exists())
+            IFolder plugins = project.getFolder(PLUGINS_FOLDER);
+            if (plugins.exists())
                 try {
                     for (IResource resource : plugins.members())
-                    	if (isJarFileInPluginsFolder(resource))
-                    		result.add(resource);
+                        if (isJarFileInPluginsFolder(resource))
+                            result.add(resource);
                 } catch (CoreException e) {
                     OmnetppMainPlugin.logError(e);
                 }
@@ -179,7 +179,7 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
 
         return result;
     }
-    
+
     private static boolean isJarFileInPluginsFolder(IResource resource) {
         // must be a file with jar extension
         if (!(resource instanceof IFile) || !"jar".equals(((IFile)resource).getFileExtension()))
@@ -194,7 +194,7 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
      * Dynamic omnetpp plugins are marked with a file in the bundle's data directory.
      * This must be called after each plugin installation, so a plugin
      * that became resolvable because of the latest installations (i.e. we
-     * installed a plugin on which the plugin depended on) will be started.  
+     * installed a plugin on which the plugin depended on) will be started.
      */
     public void startOmnetppDynamicBundles() {
         Bundle[] bundles = bundleContext.getBundles();
@@ -223,7 +223,6 @@ public class OmnetppDynamicPluginLoader implements IResourceChangeListener {
                         OmnetppMainPlugin.logError(e);
                     }
     }
-    
+
 }
 
-    

@@ -7,7 +7,7 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
 
 /**
  * Default implementation of INedTypeResolver
- * 
+ *
  * @author Andras
  */
 public class ImmutableNedTypeResolver extends NedTypeResolver {
@@ -16,7 +16,7 @@ public class ImmutableNedTypeResolver extends NedTypeResolver {
             ImmutableNedTypeResolver.this.modelChanged(event);
         }
     };
-    
+
     protected ImmutableNedTypeResolver(NedTypeResolver other) {
         super(other);
 
@@ -24,7 +24,7 @@ public class ImmutableNedTypeResolver extends NedTypeResolver {
         for (NedFileElementEx fileElement : nedElementFiles.keySet())
             fileElement.addNedChangeListener(listener);
     }
-    
+
     protected void modelChanged(NedModelEvent event) {
         if (event instanceof NedMarkerChangeEvent)
             return; // that's OK

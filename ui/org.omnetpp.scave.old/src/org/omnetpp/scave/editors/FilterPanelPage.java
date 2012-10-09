@@ -29,82 +29,82 @@ import org.xml.sax.ContentHandler;
 
 public class FilterPanelPage implements IDatasetEditorPage {
 
-	private DatasetEditor editor;
+    private DatasetEditor editor;
 
-	/** Allows us common handling of scalars and vectors */
-	private IDatasetStrategy strategy;
+    /** Allows us common handling of scalars and vectors */
+    private IDatasetStrategy strategy;
 
-	/** The Data panel that appears on the first page */
-	private FilterPanel filterPanel;
+    /** The Data panel that appears on the first page */
+    private FilterPanel filterPanel;
 
-	public FilterPanelPage(IDatasetStrategy strategy) {
-		this.strategy = strategy;
-	}
+    public FilterPanelPage(IDatasetStrategy strategy) {
+        this.strategy = strategy;
+    }
 
-	public String getPageTitle() {
-		return "Data";
-	}
+    public String getPageTitle() {
+        return "Data";
+    }
 
-	public FilterPanel getFilterPanel() {
-		return filterPanel;
-	}
+    public FilterPanel getFilterPanel() {
+        return filterPanel;
+    }
 
-	public IDListModel getDataset() {
-		return editor.getDataset();
-	}
+    public IDListModel getDataset() {
+        return editor.getDataset();
+    }
 
-	public void setEditor(DatasetEditor editor) {
-		this.editor = editor;
-	}
+    public void setEditor(DatasetEditor editor) {
+        this.editor = editor;
+    }
 
-	public void init() {
-	}
+    public void init() {
+    }
 
-	public void dispose() {
-		filterPanel.dispose();
-	}
+    public void dispose() {
+        filterPanel.dispose();
+    }
 
-	public Control createPageControl(Composite parent) {
-		filterPanel = strategy.createFilterPanel(parent, SWT.NONE);
-		filterPanel.setStatusLineManager(editor.getStatusLineManager());
-		filterPanel.setDataset(getDataset());
-		setupDragSource(filterPanel.getPanel().getTable());
-		editor.setupDropTarget(filterPanel.getPanel());
-		return filterPanel.getPanel();
-	}
+    public Control createPageControl(Composite parent) {
+        filterPanel = strategy.createFilterPanel(parent, SWT.NONE);
+        filterPanel.setStatusLineManager(editor.getStatusLineManager());
+        filterPanel.setDataset(getDataset());
+        setupDragSource(filterPanel.getPanel().getTable());
+        editor.setupDropTarget(filterPanel.getPanel());
+        return filterPanel.getPanel();
+    }
 
-	public void finalizePage() {
-		// add change listener that updates the dirty flag
-		getDataset().addListener(new IModelChangeListener() {
-			public void handleChange() {
-				editor.markDirty();
-			}
-		});
-		filterPanel.refresh();
-	}
+    public void finalizePage() {
+        // add change listener that updates the dirty flag
+        getDataset().addListener(new IModelChangeListener() {
+            public void handleChange() {
+                editor.markDirty();
+            }
+        });
+        filterPanel.refresh();
+    }
 
-	public void activate() {
-	}
+    public void activate() {
+    }
 
-	public void deactivate() {
-	}
+    public void deactivate() {
+    }
 
-	public void save(XMLWriter writer, IProgressMonitor progressMonitor) {
-		IDListIO.save(getDataset().get(), writer, progressMonitor);
-	}
+    public void save(XMLWriter writer, IProgressMonitor progressMonitor) {
+        IDListIO.save(getDataset().get(), writer, progressMonitor);
+    }
 
-	public Map<String, ContentHandler> getLoader(IProgressMonitor progressMonitor) {
-		return IDListIO.getContentHandlers(getDataset().get(), progressMonitor);
-	}
+    public Map<String, ContentHandler> getLoader(IProgressMonitor progressMonitor) {
+        return IDListIO.getContentHandlers(getDataset().get(), progressMonitor);
+    }
 
-	protected void setupDragSource(Control dragSourceControl) {
-		// make table d&d source for IDLists
-		DragSource dragSrc = new DragSource(dragSourceControl, DND.DROP_DEFAULT | DND.DROP_COPY);
-		dragSrc.setTransfer(new Transfer[] { IDListTransfer.getInstance() });
-		dragSrc.addDragListener(new DragSourceAdapter() {
-			public void dragSetData(DragSourceEvent event) {
-				event.data = filterPanel.getSelection();
-			}
-		});
-	}
+    protected void setupDragSource(Control dragSourceControl) {
+        // make table d&d source for IDLists
+        DragSource dragSrc = new DragSource(dragSourceControl, DND.DROP_DEFAULT | DND.DROP_COPY);
+        dragSrc.setTransfer(new Transfer[] { IDListTransfer.getInstance() });
+        dragSrc.addDragListener(new DragSourceAdapter() {
+            public void dragSetData(DragSourceEvent event) {
+                event.data = filterPanel.getSelection();
+            }
+        });
+    }
 }

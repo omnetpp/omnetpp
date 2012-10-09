@@ -22,7 +22,7 @@ public class IDEUtils {
         return Display.getCurrent().getActiveShell();
     }
 
-    /** 
+    /**
      * Opens a standard message dialog, with a closable details message.
      */
     public static boolean openConfirm(final String title, final String message, final String detailsMessage) {
@@ -34,7 +34,7 @@ public class IDEUtils {
         return result[0];
     }
 
-    /** 
+    /**
      * Opens a standard message dialog, with an closable details message.
      */
     public static boolean openQuestion(final String title, final String message, final String detailsMessage) {
@@ -46,7 +46,7 @@ public class IDEUtils {
         return result[0];
     }
 
-    /** 
+    /**
      * Opens a standard message dialog, with an closable details message.
      */
     public static void openError(final String title, final String message, final String detailsMessage) {
@@ -56,7 +56,7 @@ public class IDEUtils {
             }});
     }
 
-    /** 
+    /**
      * Opens a standard message dialog, with an closable details message.
      */
     public static void openWarning(final String title, final String message, final String detailsMessage) {
@@ -66,7 +66,7 @@ public class IDEUtils {
             }});
     }
 
-    /** 
+    /**
      * Opens a standard message dialog, with an closable details message.
      */
     public static void openInformation(final String title, final String message, final String detailsMessage) {

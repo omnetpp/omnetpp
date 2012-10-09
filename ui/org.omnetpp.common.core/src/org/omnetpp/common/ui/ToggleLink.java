@@ -98,11 +98,11 @@ public class ToggleLink extends Composite {
     }
 
     public void addSelectionListener (SelectionListener listener) {
-    	link.addSelectionListener(listener);
+        link.addSelectionListener(listener);
     }
 
     public void removeSelectionListener (SelectionListener listener) {
-    	link.removeSelectionListener(listener);
+        link.removeSelectionListener(listener);
     }
 
 }

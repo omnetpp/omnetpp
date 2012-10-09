@@ -20,7 +20,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 public interface PaintObjectListener extends SWTEventListener {
 /**
  * This method is called when an object needs to be drawn.
- * 
+ *
  * <p>
  * The following event fields are used:<ul>
  * <li>event.x the x location (input)</li>
@@ -32,7 +32,7 @@ public interface PaintObjectListener extends SWTEventListener {
  * </ul>
  *
  * @param event the event
- * 
+ *
  * @see PaintObjectEvent
  * @see StyledText#addPaintObjectListener(PaintObjectListener)
  */

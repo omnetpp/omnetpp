@@ -12,15 +12,15 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class GraphicalEditorTestSuite
-	extends TestSuite
+    extends TestSuite
 {
-	public GraphicalEditorTestSuite() {
+    public GraphicalEditorTestSuite() {
         addTestSuite(CreateWithGraphicalEditorTest.class);
-		addTestSuite(DeleteWithGraphicalEditorTest.class);
+        addTestSuite(DeleteWithGraphicalEditorTest.class);
         addTestSuite(CreateComplexModelWithGraphicalEditorTest.class);
         addTestSuite(AutoLayoutTest.class);
         addTestSuite(ConnectionChooserTest.class);
-	}
+    }
 
     public static Test suite() {
         return new GraphicalEditorTestSuite();

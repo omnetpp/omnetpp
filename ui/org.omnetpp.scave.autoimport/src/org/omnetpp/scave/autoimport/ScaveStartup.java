@@ -52,9 +52,9 @@ import org.omnetpp.scave.wizard.ScaveWizardUtil;
 
 
 /**
- * Offers the user to auto-import as project the directory that contains the 
+ * Offers the user to auto-import as project the directory that contains the
  * files listed on the command-line.
- * 
+ *
  * @author Andras
  */
 public class ScaveStartup implements IStartup {
@@ -63,48 +63,48 @@ public class ScaveStartup implements IStartup {
     public static final int ARGS_ANFFILES = 2;
     public static final int ARGS_RESULTFILES = 3;
     public static final int ARGS_ANFFILE_AND_RESULTSFILES = 4; // 1stf arg is ANF, followed by result files
-    
+
     private int invocationType;  // one of the ARGS_ constants above
     private String[] cleansedArgs;
-    
-    public static final String SYNOPSIS = 
-        "scave -h or --help\n" + 
-        "scave ANFFILE...\n" + 
-        "scave [RESULTFILE | DIR]...\n" + 
+
+    public static final String SYNOPSIS =
+        "scave -h or --help\n" +
+        "scave ANFFILE...\n" +
+        "scave [RESULTFILE | DIR]...\n" +
         "scave NEW_ANFFILE [RESULTFILE | DIR]...\n";
-    
-    public static final String DESCRIPTION =  // note: only per-paragraph newlines! 
-        "Opens the given ANFFILE(s) in editors, or create and open NEW_ANFFILE " + 
-        "with the given RESULTFILE(s) and DIR(s) as input. If only RESULTFILE(s) " + 
-        "and DIR(s) are specified, the program will prompt for the name of the " + 
-        "new ANF file to be created." + 
-        "\n" + 
-        "The -h option displays the synopsis. The --help option displays the " + 
-        "synopsis and the full description (this message)." + 
-        "\n" + 
-        "ANFFILE should be an existing analysis file with the .anf extension. " + 
-        "The .anf file name extension is mandatory and case sensitive. ANF files " + 
-        "are created with this program, and describe the \"recipe\" for the result " + 
-        "analysis (list of input files, processing steps to take, charts to " + 
-        "create.)" + 
-        "\n" + 
-        "NEW_ANFFILE should be the name of an ANF file to be created. If NEW_ANFFILE " + 
-        "exists, the user will be prompted for confirmation to overwrite the file. " + 
-        "\n" + 
-        "RESULTFILE should be an OMNeT++ output vector file (.vec extension) or " + 
-        "an output scalar file (.sca extension). The file name extensions are " + 
-        "mandatory and case sensitive. Wildcards are also accepted (e.g. " + 
-        "Foo-*.vec or results/*.sca); note that wildcard characters need to be " + 
-        "protected against shell expansion (e.g. 'Foo-*.vec' or Foo-\\*.vec). " + 
-        "The file name(s) or pattern(s) will be stored in the ANF file as inputs. " + 
-        "The pattern(s) will expanded and the result file(s) loaded dynamically " + 
-        "for the result analysis, so RESULTFILEs that do not name currently " + 
-        "existing files will also be accepted." + 
-        "\n" + 
-        "DIR should be the the name of an existing directory. It will be added " + 
-        "to the ANF file as DIR/*.vec and DIR/*.sca, that is, it will expand to " + 
+
+    public static final String DESCRIPTION =  // note: only per-paragraph newlines!
+        "Opens the given ANFFILE(s) in editors, or create and open NEW_ANFFILE " +
+        "with the given RESULTFILE(s) and DIR(s) as input. If only RESULTFILE(s) " +
+        "and DIR(s) are specified, the program will prompt for the name of the " +
+        "new ANF file to be created." +
+        "\n" +
+        "The -h option displays the synopsis. The --help option displays the " +
+        "synopsis and the full description (this message)." +
+        "\n" +
+        "ANFFILE should be an existing analysis file with the .anf extension. " +
+        "The .anf file name extension is mandatory and case sensitive. ANF files " +
+        "are created with this program, and describe the \"recipe\" for the result " +
+        "analysis (list of input files, processing steps to take, charts to " +
+        "create.)" +
+        "\n" +
+        "NEW_ANFFILE should be the name of an ANF file to be created. If NEW_ANFFILE " +
+        "exists, the user will be prompted for confirmation to overwrite the file. " +
+        "\n" +
+        "RESULTFILE should be an OMNeT++ output vector file (.vec extension) or " +
+        "an output scalar file (.sca extension). The file name extensions are " +
+        "mandatory and case sensitive. Wildcards are also accepted (e.g. " +
+        "Foo-*.vec or results/*.sca); note that wildcard characters need to be " +
+        "protected against shell expansion (e.g. 'Foo-*.vec' or Foo-\\*.vec). " +
+        "The file name(s) or pattern(s) will be stored in the ANF file as inputs. " +
+        "The pattern(s) will expanded and the result file(s) loaded dynamically " +
+        "for the result analysis, so RESULTFILEs that do not name currently " +
+        "existing files will also be accepted." +
+        "\n" +
+        "DIR should be the the name of an existing directory. It will be added " +
+        "to the ANF file as DIR/*.vec and DIR/*.sca, that is, it will expand to " +
         "all result files in that directory.\n";
-    
+
     /**
      * Entry point. Invoked by the platform.
      */
@@ -121,7 +121,7 @@ public class ScaveStartup implements IStartup {
      */
     private void processCommandLine() {
         // fill in invocationType and cleansedArgs
-        analyzeCommandLine();  
+        analyzeCommandLine();
 
         if (invocationType == ARGS_HELP) {
             displayHelp();
@@ -131,7 +131,7 @@ public class ScaveStartup implements IStartup {
         // import or open projects to make files accessible
         if (!ensureFilesAreAvailableInWorkspace())
             return;
-        
+
         // open or create ANF files, etc.
         switch (invocationType) {
             case ARGS_NONE: break;
@@ -148,7 +148,7 @@ public class ScaveStartup implements IStartup {
     private void analyzeCommandLine() {
         String args[] = Platform.getCommandLineArgs();
 
-        // synopsis: 
+        // synopsis:
         // - no args
         // - existing-anffiles
         // - existing-resultfiles-and-dirs...
@@ -164,7 +164,7 @@ public class ScaveStartup implements IStartup {
             cleansedArgs = args;
             return;
         }
-        
+
         // we only deal with directories, and ANF, VEC and SCA files
         List<String> bogusArgs = new ArrayList<String>();
         for (String arg : args)
@@ -184,7 +184,7 @@ public class ScaveStartup implements IStartup {
         else if (args[0].endsWith(".anf")) {
             // either several existing ANF files, or a maybe-nonexistent and file and several result files and dirs
             boolean hasResultFilesOrDirs = false;
-            for (String arg : args) 
+            for (String arg : args)
                 if (new File(arg).isDirectory() || arg.endsWith(".vec") || arg.endsWith(".sca"))
                     hasResultFilesOrDirs = true;
             if (hasResultFilesOrDirs) {
@@ -198,9 +198,9 @@ public class ScaveStartup implements IStartup {
                     for (String anfFile : extraAnfFiles)
                         args = (String[]) ArrayUtils.removeElement(args, anfFile);
                 }
-                
+
                 // note: do NOT check that result file exist, because they may contain wildcards, future files etc!
-                
+
                 invocationType = ARGS_ANFFILE_AND_RESULTSFILES;
             }
             else {
@@ -222,7 +222,7 @@ public class ScaveStartup implements IStartup {
             // note: do NOT check that result file exist, because they may contain wildcards, future files etc!
             invocationType = ARGS_RESULTFILES;
         }
-        
+
         cleansedArgs = args;
     }
 
@@ -230,7 +230,7 @@ public class ScaveStartup implements IStartup {
         String[] args = cleansedArgs;
         if (args[0].equals("-h")) {
             // synopsis
-            String synopsys = 
+            String synopsys =
                 "Usage:\n" + StringUtils.indentLines(SYNOPSIS, "   ") + "\n" +
                 "Type scave --help for more information.";
             MessageDialog.openInformation(getParentShell(), "Usage", synopsys);
@@ -265,7 +265,7 @@ public class ScaveStartup implements IStartup {
     /**
      * Create, import or create projects so that the files given as command line args
      * become accessible in the workspace.
-     * 
+     *
      * @return true on (probable) success, false on failure or user cancellation.
      */
     private boolean ensureFilesAreAvailableInWorkspace() {
@@ -275,7 +275,7 @@ public class ScaveStartup implements IStartup {
         // check if all files are available via the workspace
         if (args.length > 0 && availableInOpenProjects(args))
             return true;
-        
+
         // find common ancestor of all files
         File workingDir = new File((String) System.getProperties().get("user.dir"));
         File commonDir = args.length == 0 ? workingDir : determineCommonDir(args);
@@ -283,7 +283,7 @@ public class ScaveStartup implements IStartup {
             MessageDialog.openError(getParentShell(), "Error", "Error: Cannot create a project that covers all input files. Please create project(s) manually, or move/soft link files and start this program again.");
             return false;
         }
-        
+
         // maybe a closed project contains it, offer opening the project
         IProject project = findOpenOrClosedProjectContaining(commonDir); // actually there may be more than one such project (projects may overlap), but oh well...
         if (project != null) {
@@ -295,8 +295,8 @@ public class ScaveStartup implements IStartup {
             }
             return false;
         }
-        
-        // bring up "Create Project" dialog to choose between project locations below (stored in IProjectDescription objects) 
+
+        // bring up "Create Project" dialog to choose between project locations below (stored in IProjectDescription objects)
         IProjectDescription[] descriptions = collectPotentialProjectDescriptions(commonDir);
         if (descriptions.length == 0) {
             if (args.length == 0)
@@ -310,8 +310,8 @@ public class ScaveStartup implements IStartup {
         }
 
         // now really bring up the dialog
-        String message = args.length == 0 ? 
-                "Do you want to create a project to make files in the current directory accessible?" : 
+        String message = args.length == 0 ?
+                "Do you want to create a project to make files in the current directory accessible?" :
                     "Create a project to make your files accessible in the workspace.";
         CreateProjectDialog dialog = new CreateProjectDialog(getParentShell(), message, descriptions);
         if (dialog.open() == Dialog.OK) {
@@ -367,7 +367,7 @@ public class ScaveStartup implements IStartup {
     }
 
     /**
-     * Find first project that covers the given filesystem path. 
+     * Find first project that covers the given filesystem path.
      */
     private IProject findOpenOrClosedProjectContaining(File dir) {
         // note: this implementation ignores linked dirs inside the projects
@@ -379,7 +379,7 @@ public class ScaveStartup implements IStartup {
         }
         return null;
     }
-    
+
     private boolean isPrefixOf(File prefix, File file) {
         while (file != null) {
             if (file.equals(prefix))
@@ -392,13 +392,13 @@ public class ScaveStartup implements IStartup {
     /**
      * Collect a list of places where we'll offer to create a project; this is the
      * "common" directory of files, and all ancestor directories.
-     *  
+     *
      * Invalid locations (such as the dirs that contain the whole workspace)
-     * are filtered out. 
-     * 
+     * are filtered out.
+     *
      * The result may be zero length, e.g. when dir is the workspace dir or its
      * ancestor.
-     * 
+     *
      * We return the result as a list of project descriptions, for convenience.
      * (Essentially we use them as (location, projectName) pairs.)
      */
@@ -409,7 +409,7 @@ public class ScaveStartup implements IStartup {
         while (dir != null) {
             IStatus status = workspace.validateProjectLocation(null, new Path(dir.getAbsolutePath()));
             if (status.getSeverity() != IStatus.ERROR) {
-                IProjectDescription description = null; 
+                IProjectDescription description = null;
                 try {
                     File projectFile = new File(dir.getPath() + File.separator + IProjectDescription.DESCRIPTION_FILE_NAME);
                     description = workspace.loadProjectDescription(new Path(projectFile.getPath()));
@@ -447,12 +447,12 @@ public class ScaveStartup implements IStartup {
     }
 
     /**
-     * Create or import a project. Actually, if the project description was obtained 
+     * Create or import a project. Actually, if the project description was obtained
      * by reading it from disk then it's "import", and if it was created from scratch
      * then it is "create".
-     * 
+     *
      * Project will also be opened.
-     * 
+     *
      * This a synchronous operation, i.e. we'll return only when the whole thing is done.
      */
     @SuppressWarnings("deprecation")
@@ -476,16 +476,16 @@ public class ScaveStartup implements IStartup {
                 }
             };
             new ProgressMonitorDialog(getParentShell()).run(true, true, op);
-        } 
+        }
         catch (InterruptedException e) {
             // cancelled
         }
         catch (InvocationTargetException e) {
             showErrorDialog("Error creating project " + description.getName(), e.getCause());
-        } 
+        }
     }
 
-    /** 
+    /**
      * Open project in a synchronous operation, i.e. we'll return only when the whole thing is done.
      */
     private void openProject(final IProject project) {
@@ -502,13 +502,13 @@ public class ScaveStartup implements IStartup {
                 }
             };
             new ProgressMonitorDialog(getParentShell()).run(true, true, op);
-        } 
+        }
         catch (InterruptedException e) {
             // cancelled
         }
         catch (InvocationTargetException e) {
             showErrorDialog("Error opening project " + project.getName(), e);
-        } 
+        }
     }
 
     /**
@@ -535,10 +535,10 @@ public class ScaveStartup implements IStartup {
     }
 
     /**
-     * Invokes the New ANF File wizard. The ANF file will have the given args 
+     * Invokes the New ANF File wizard. The ANF file will have the given args
      * (sca/vec files and directories) as inputs. Directories will be added
      * as "DIR/*.vec" and "DIR/*.sca".
-     * 
+     *
      * All args are filesystem paths (absolute or working directory relative).
      */
     private void createAnfFileForResults(String[] resultFileAndDirArgs) {
@@ -547,7 +547,7 @@ public class ScaveStartup implements IStartup {
 
         String arg0 = resultFileAndDirArgs.length==0 ? "." : resultFileAndDirArgs[0];
         IResource placeHintForAnfFile = new File(arg0).isDirectory() ? findContainerInWorkspace(arg0) : findFileArgInWorkspace(arg0);
-        
+
         ScaveModelWizard wizard = new ScaveModelWizard();
         wizard.init(PlatformUI.getWorkbench(), new StructuredSelection(placeHintForAnfFile));
         wizard.setInitialInputFiles(inputFiles.toArray(new String[]{}));
@@ -558,7 +558,7 @@ public class ScaveStartup implements IStartup {
     /**
      * Creates and opens an ANF file, with the given name (and location), and with the given
      * result files as inputs. Directories will be added as "DIR/*.vec" and "DIR/*.sca".
-     * 
+     *
      * All args are filesystem paths (absolute or working directory relative).
      */
     @SuppressWarnings("deprecation")
@@ -576,7 +576,7 @@ public class ScaveStartup implements IStartup {
 
         // collect the strings that will be written into the "Inputs" section of the ANF file
         List<String> inputFiles = produceAnfFileInputs(resultFileAndDirArgs, null);
-        
+
         // save ANF file
         try {
             ScaveWizardUtil.createAnfFile(anfFile, inputFiles.toArray(new String[]{}));
@@ -584,13 +584,13 @@ public class ScaveStartup implements IStartup {
         catch (Exception e) {
             showErrorDialog("Cannot create '" + anfFile.getFullPath() + "'", e);
             return;
-        } 
-        
+        }
+
         // select in Project Explorer or Navigator
         IStructuredSelection selection = new StructuredSelection(anfFile);
         selectAndRevealInView(IPageLayout.ID_PROJECT_EXPLORER, selection);
         selectAndRevealInView(IPageLayout.ID_RES_NAV, selection);
-        
+
         // open an editor on the new file.
         try {
             IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
@@ -605,18 +605,18 @@ public class ScaveStartup implements IStartup {
     /**
      * Inputs are filesystem paths (absolute or working directory relative); the method
      * converts them to workspace full paths, for putting them into an ANF files' "inputs" part.
-     * 
-     * If the ANF file is given, files under the ANF file's directory will be returned as 
+     *
+     * If the ANF file is given, files under the ANF file's directory will be returned as
      * relative to that directory.
      */
     private List<String> produceAnfFileInputs(String[] resultFileAndDirArgs, IFile optAnfFileToBeRelativeTo) {
         // produce a list of strings to be used as "inputs" in the ANF file.
-        // Relative paths policy: files that are in the same folder or below the ANF file will be 
+        // Relative paths policy: files that are in the same folder or below the ANF file will be
         // stored with relative path, others are stored with absolute workspace path
 
         boolean makeRelativePaths = optAnfFileToBeRelativeTo!=null;
         IPath anfFolderFullPath = optAnfFileToBeRelativeTo==null ? null : optAnfFileToBeRelativeTo.getParent().getFullPath();
-        
+
         List<String> inputFiles = new ArrayList<String>();
         List<String> bogusArgs = new ArrayList<String>();
 
@@ -624,7 +624,7 @@ public class ScaveStartup implements IStartup {
             if (new File(arg).isDirectory()) {
                 // add "*.sca" and "*.vec" in that directory
                 IContainer folder = findContainerInWorkspace(arg);
-                if (folder == null) 
+                if (folder == null)
                     bogusArgs.add(arg);
                 else {
                     IPath path = makeRelativePaths && anfFolderFullPath.isPrefixOf(folder.getFullPath()) ?
@@ -650,10 +650,10 @@ public class ScaveStartup implements IStartup {
             MessageDialog.openWarning(getParentShell(), "Warning", "The following files are not accessible in the workspace and will be ignored (there is no open project that contains them):\n  "+ StringUtils.join(bogusArgs, "\n  "));
 
         //TODO warn about items that don't match any file?
-        
+
         return inputFiles;
     }
-    
+
     private IFile findFileArgInWorkspace(String arg) {
         IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
         IFile[] candidates = root.findFilesForLocationURI(new File(arg).toURI());
@@ -682,7 +682,7 @@ public class ScaveStartup implements IStartup {
         if (view != null)
             ((ISetSelectionTarget)view).selectReveal(selection);
     }
-    
+
     private void showErrorDialog(String message, Throwable e) {
         if (e != null && !StringUtils.isEmpty(e.getMessage()))
             message += ": " + e.getMessage();

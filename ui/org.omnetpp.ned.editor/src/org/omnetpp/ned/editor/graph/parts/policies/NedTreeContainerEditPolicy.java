@@ -27,17 +27,17 @@ import org.omnetpp.ned.model.INedElement;
 public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
 
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected Command getMoveChildrenCommand(ChangeBoundsRequest request) {
         CompoundCommand command = new CompoundCommand();
         int newIndex = findIndexOfTreeItemAt(request.getLocation());
         EditPart insertBeforeEditPart = null;
         if (newIndex >= 0 && newIndex < getHost().getChildren().size() )
-        	insertBeforeEditPart = (EditPart)getHost().getChildren().get(newIndex);
+            insertBeforeEditPart = (EditPart)getHost().getChildren().get(newIndex);
 
         for (EditPart editPart2move : (List<EditPart>)request.getEditParts()) {
             if (insertBeforeEditPart == null ||
-            		insertBeforeEditPart.getModel() == editPart2move.getModel()) {
+                    insertBeforeEditPart.getModel() == editPart2move.getModel()) {
               command.add(UnexecutableCommand.INSTANCE);
               return command;
             }
@@ -46,14 +46,14 @@ public class NedTreeContainerEditPolicy extends TreeContainerEditPolicy {
         return command;
     }
 
-	@Override
-	protected Command getAddCommand(ChangeBoundsRequest request) {
-		return null;
-	}
+    @Override
+    protected Command getAddCommand(ChangeBoundsRequest request) {
+        return null;
+    }
 
-	@Override
-	protected Command getCreateCommand(CreateRequest request) {
-		return null;
-	}
+    @Override
+    protected Command getCreateCommand(CreateRequest request) {
+        return null;
+    }
 
 }

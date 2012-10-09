@@ -81,14 +81,14 @@ public class NewSimulationWizard extends TemplateBasedWizard  implements INewWiz
 
         String simulationFolderName = folder.getName();
         context.getVariables().put("simulationFolderName", simulationFolderName);
-        
+
         String simulationName = StringUtils.capitalize(StringUtils.makeValidIdentifier(simulationFolderName));
         context.getVariables().put("simulationName", simulationName);
 
-        // variables to help support project, simulation and file wizards with the same template code. 
+        // variables to help support project, simulation and file wizards with the same template code.
         // Intention: targetTypeName and targetMainFile are the NED type and file of "the network" in this simulation.
         context.setVariableIfMissing("targetTypeName", "${simulationName}"); // may be customized on further pages
-        context.setVariableIfMissing("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages 
+        context.setVariableIfMissing("targetMainFile", "${targetTypeName}.ned"); // let targetTypeName be edited on pages
 
         // NED-related stuff
         String packageName = NedResourcesPlugin.getNedResources().getPackageFor(folder);

@@ -93,10 +93,10 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     // caches the result of expression parsing
     private Map<String,INedElement> expressionCache = new HashMap<String, INedElement>();
     private static final INedElement BOGUS_EXPRESSION = NedElementFactoryEx.getInstance().createElement(INedElement.NED_UNKNOWN); // special value to signal syntax error
-    
+
     // whether a job to call readMissingNedFiles() has been scheduled
     private boolean isLoadingInProgress = false;
-    
+
     // job that performs NED validation in the background
     private Job nedValidationJob;
 
@@ -123,10 +123,10 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     protected NedResources() {
         NedElement.setDefaultNedTypeResolver(this);
         createBuiltInNedTypes();
-        
+
         // build the project table on init
         rebuildProjectsTable();
-        
+
         // register as a workspace listener
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this);
     }
@@ -162,7 +162,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
 
         if (targetTree.getSyntaxProblemMaxCumulatedSeverity() == INedElement.SEVERITY_NONE) {
             long startTime = System.currentTimeMillis();
-            
+
             NedTreeDifferenceUtils.Applier treeDifferenceApplier = new NedTreeDifferenceUtils.Applier();
             NedTreeDifferenceUtils.applyTreeDifferences(currentTree, targetTree, treeDifferenceApplier);
 
@@ -184,7 +184,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             long dt = System.currentTimeMillis() - startTime;
             if (dt > 100)
                 Debug.println("setNedFileText(): textual changes applied as tree differences in " + dt + "ms");
-            
+
         }
         else {
             // mark the tree as having a syntax error, so that the graphical doesn't allow editing
@@ -272,11 +272,11 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
 
         // store
         storeNedFileModel(file, tree);
-        
+
         // if this is a package.ned, expected package names might have changed
         if (isSourceFolderPackageNedFile(file))
             rebuildProjectsTable();
-        
+
         invalidate();
     }
 
@@ -297,12 +297,12 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             // if this was a package.ned, expected package names might have changed
             if (isSourceFolderPackageNedFile(file))
                 rebuildProjectsTable();
-            
+
             // remove all NED markers (otherwise they'll stay forever)
             ProblemMarkerSynchronizer sync = new ProblemMarkerSynchronizer();
             sync.register(file);
             sync.runAsWorkspaceJob();
-            
+
             // fire notification.
             nedModelChanged(new NedFileRemovedEvent(file));
         }
@@ -312,7 +312,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     protected synchronized void storeNedFileModel(IFile file, NedFileElementEx tree) {
         Assert.isTrue(tree.getResolver() == this, "cannot use another resolver than the one that created the element");
         Assert.isTrue(!connectCount.containsKey(file), "cannot replace the tree while an editor is open");
-        
+
         NedFileElementEx oldTree = nedFiles.get(file);
         // if the new tree has changed, we have to rehash everything
         if (oldTree == null || !NedTreeUtil.isNedTreeEqual(oldTree, tree)) {
@@ -414,10 +414,10 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
                 NedSourceFoldersConfiguration config = ProjectUtils.readNedFoldersFile(project);
                 projectData.nedSourceFolders = config.getSourceFolders();
                 projectData.excludedPackageRoots = config.getExcludedPackages();
-                projectData.nedSourceFolderPackages = new String[projectData.nedSourceFolders.length]; 
+                projectData.nedSourceFolderPackages = new String[projectData.nedSourceFolders.length];
                 for (int i=0; i<projectData.nedSourceFolders.length; i++) {
                     IFile packageNedFile = projectData.nedSourceFolders[i].getFile(new Path(PACKAGE_NED_FILENAME));
-                    projectData.nedSourceFolderPackages[i] = containsNedFileElement(packageNedFile) ? 
+                    projectData.nedSourceFolderPackages[i] = containsNedFileElement(packageNedFile) ?
                             StringUtils.nullToEmpty(getNedFileElement(packageNedFile).getPackage()) : "";
                 }
                 tmp.put(project, projectData);
@@ -427,7 +427,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
             return;
         }
 
-        // replace table with updated one 
+        // replace table with updated one
         projects.clear();
         projects.putAll(tmp);
 
@@ -474,7 +474,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     public boolean isLoadingInProgress() {
         return isLoadingInProgress;
     }
-    
+
     /**
      * Reads NED files that are not yet loaded (not in our nedFiles table).
      * This should be run on startup and after rebuildProjectsTable();
@@ -525,7 +525,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
         if (tree != null)
             return tree==BOGUS_EXPRESSION ? null : tree;
 
-        // parse, and cache the result (BOGUS_EXPRESSION is uses so we can distinguish "not cached" 
+        // parse, and cache the result (BOGUS_EXPRESSION is uses so we can distinguish "not cached"
         // from "syntax error" without an extra expressionCache.contains() call)
         tree = NedTreeUtil.parseNedExpression(expression);
         expressionCache.put(expression, tree==null ? BOGUS_EXPRESSION : tree);
@@ -551,7 +551,7 @@ public class NedResources extends NedTypeResolver implements INedResources, IRes
     protected void nedModelChanged(NedModelEvent event) {
         if (event instanceof NedModelChangeEvent)
             immutableCopy = null; // invalidate
-        
+
         if (nedModelChangeNotificationDisabled)
             return;
 

@@ -26,14 +26,14 @@ public class ConnectionTypeFigure extends NedTypeFigure {
         titleArea.add(connectionFigure, 0); // the 0 index is needed so the problem image will be displayed above connectionFigure (z-ordering)
         connectionFigure.setArrowHeadEnabled(true);
     }
-    
+
     /**
-	 * Adjusts the figure properties using a displayString object
-	 */
-	public void setDisplayString(IDisplayString dps) {
-	    
-	    // we currently ignore the display strings of interfaces 
-	    int lineWidth = isInterface() ? 1 : dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1);
+     * Adjusts the figure properties using a displayString object
+     */
+    public void setDisplayString(IDisplayString dps) {
+
+        // we currently ignore the display strings of interfaces
+        int lineWidth = isInterface() ? 1 : dps.getAsInt(IDisplayString.Prop.CONNECTION_WIDTH, 1);
         Color lineColor = isInterface() ? ColorFactory.GREY65 : ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.CONNECTION_COLOR));
         String lineStyle = isInterface() ? "da" : dps.getAsString(IDisplayString.Prop.CONNECTION_STYLE);
 
@@ -46,8 +46,8 @@ public class ConnectionTypeFigure extends NedTypeFigure {
 
         titleArea.setConstraint(connectionFigure, new Rectangle(0,0,width, height));
         titleArea.setConstraint(nameFigure, new Rectangle(width+4, 2, -1, height));
-        
+
         invalidateTree();
-	}
-	
+    }
+
 }

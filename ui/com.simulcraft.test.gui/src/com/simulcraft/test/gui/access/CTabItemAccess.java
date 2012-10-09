@@ -19,14 +19,14 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class CTabItemAccess extends ClickableWidgetAccess
 {
-	public CTabItemAccess(CTabItem cTabItem) {
-		super(cTabItem);
-	}
+    public CTabItemAccess(CTabItem cTabItem) {
+        super(cTabItem);
+    }
 
     @Override
-	public CTabItem getWidget() {
-		return (CTabItem)widget;
-	}
+    public CTabItem getWidget() {
+        return (CTabItem)widget;
+    }
 
     @UIStep
     public CTabFolderAccess getCTabFolder() {
@@ -35,32 +35,32 @@ public class CTabItemAccess extends ClickableWidgetAccess
 
     @UIStep
     public boolean isClosable() {
-		return (Boolean)ReflectionUtils.getFieldValue(getWidget(), "showClose");
+        return (Boolean)ReflectionUtils.getFieldValue(getWidget(), "showClose");
     }
 
-	@Override
-	protected Menu getContextMenu() {
-		return null;
-	}
+    @Override
+    protected Menu getContextMenu() {
+        return null;
+    }
 
-	@Override
-	protected Point getAbsolutePointToClick() {
-		return toAbsolute(getCenter(getWidget().getBounds()));
-	}
+    @Override
+    protected Point getAbsolutePointToClick() {
+        return toAbsolute(getCenter(getWidget().getBounds()));
+    }
 
-	@Override
-	protected Point toAbsolute(Point point) {
+    @Override
+    protected Point toAbsolute(Point point) {
         return getWidget().getParent().toDisplay(point);
-	}
+    }
 
-	@UIStep
-	public void clickOnCloseIcon() {
-		Assert.assertTrue("CTabItem is not closable", isClosable());
-		Rectangle rect = (Rectangle)ReflectionUtils.getFieldValue(getWidget(), "closeRect");
-		Assert.assertTrue("Close icon is not yet displayed", rect != null && !rect.isEmpty());
-		Point center = new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
-		clickAbsolute(LEFT_MOUSE_BUTTON, getWidget().getParent().toDisplay(center));
-	}
+    @UIStep
+    public void clickOnCloseIcon() {
+        Assert.assertTrue("CTabItem is not closable", isClosable());
+        Rectangle rect = (Rectangle)ReflectionUtils.getFieldValue(getWidget(), "closeRect");
+        Assert.assertTrue("Close icon is not yet displayed", rect != null && !rect.isEmpty());
+        Point center = new Point(rect.x + rect.width / 2, rect.y + rect.height / 2);
+        clickAbsolute(LEFT_MOUSE_BUTTON, getWidget().getParent().toDisplay(center));
+    }
 
     @UIStep
     public CTabItemAccess reveal() {

@@ -37,8 +37,8 @@ public class NedTypeEditPart extends NedEditPart {
         renameValidator = new TypeNameValidator(getModel());
     }
 
-	@Override
-	protected void refreshVisuals() {
+    @Override
+    protected void refreshVisuals() {
         super.refreshVisuals();
 
         // set name
@@ -50,12 +50,12 @@ public class NedTypeEditPart extends NedEditPart {
 
         getFigure().setName(nameToDisplay);
 
-    	// update visual properties
+        // update visual properties
         getFigure().setInterface(getModel() instanceof IInterfaceTypeElement);
         getFigure().setInnerType(getModel().getEnclosingTypeElement() != null);
         DisplayString displayString = getModel().getDisplayString();
         getFigure().setDisplayString(displayString);
-	}
+    }
 
     @Override
     public INedTypeElement getNedTypeElementToOpen() {

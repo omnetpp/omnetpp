@@ -73,7 +73,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     public final static String VAR_NED_PATH = "opp_ned_path";
     public final static String VAR_SHARED_LIBS = "opp_shared_libs";
 
-    protected static final int MAX_TOOLTIP_CHARS = 50000;  
+    protected static final int MAX_TOOLTIP_CHARS = 50000;
 
     // UI widgets
     protected Button fProgOppRunButton;
@@ -130,12 +130,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         debugLaunchMode = ILaunchManager.DEBUG_MODE.equals(getLaunchConfigurationDialog().getMode());
         runTooltip = debugLaunchMode ? "The run number that should be executed (default: 0)"
                 : "The run number(s) that should be executed (eg.: 0,2,7,9..11 or * for all runs) (default: 0)";
-		final ScrolledComposite scollComp = new ScrolledComposite( parent, SWT.V_SCROLL | SWT.H_SCROLL );
-		scollComp.setExpandHorizontal(true);
-		scollComp.setExpandVertical(true);
+        final ScrolledComposite scollComp = new ScrolledComposite( parent, SWT.V_SCROLL | SWT.H_SCROLL );
+        scollComp.setExpandHorizontal(true);
+        scollComp.setExpandVertical(true);
 
 
-		final Composite comp = SWTFactory.createComposite(scollComp, 1, 1, GridData.FILL_HORIZONTAL);
+        final Composite comp = SWTFactory.createComposite(scollComp, 1, 1, GridData.FILL_HORIZONTAL);
         createWorkingDirGroup(comp, 1);
         createSimulationGroup(comp, 1);
         createOptionsGroup(comp, 1);
@@ -145,10 +145,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         more.setControls(new Control[] { advancedGroup });
 
         more.addSelectionListener(new SelectionAdapter() {
-        	@Override
-        	public void widgetSelected(SelectionEvent e) {
-        		scollComp.setMinSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-        	}
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                scollComp.setMinSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+            }
         });
 
         scollComp.setMinSize(comp.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -162,17 +162,17 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             // working directory init
             setWorkingDirectoryText(config.getAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, "").trim());
             String exeName = config.getAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, "");
-           	fProgOtherButton.setSelection(StringUtils.isNotBlank(exeName));
+            fProgOtherButton.setSelection(StringUtils.isNotBlank(exeName));
             fProgOppRunButton.setSelection(StringUtils.isBlank(exeName));
-			fProgText.setText(exeName);
+            fProgText.setText(exeName);
 
             fInifileText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_INI_FILES,"" ).trim());
 
             updateDialogStateInProgress = true;  // disable the change notification until we finish filling all controls and we are in consistent state
                                                  // disable only AFTER setting the INI file so the configuration selection combo is filled out automatically
-            
+
             setConfigName(config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim());
-            
+
             if (debugLaunchMode)
                 fRunText.setText(config.getAttribute(IOmnetppLaunchConstants.OPP_RUNNUMBER_FOR_DEBUG, ""));
             else
@@ -263,21 +263,21 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_SHOWDEBUGVIEW, fShowDebugViewButton.getSelection());
 
         try {
-        	Set<IResource> assocRes = new HashSet<IResource>();
-        	if (configuration.getMappedResources() != null)
-        		assocRes.addAll(Arrays.asList(configuration.getMappedResources()));
-        	if (getIniFiles() != null)
-        		assocRes.addAll(Arrays.asList(getIniFiles()));
-			configuration.setMappedResources((IResource[]) assocRes.toArray(new IResource[assocRes.size()]));
-		} catch (CoreException e) {
-			LaunchPlugin.logError(e);
-		}
+            Set<IResource> assocRes = new HashSet<IResource>();
+            if (configuration.getMappedResources() != null)
+                assocRes.addAll(Arrays.asList(configuration.getMappedResources()));
+            if (getIniFiles() != null)
+                assocRes.addAll(Arrays.asList(getIniFiles()));
+            configuration.setMappedResources((IResource[]) assocRes.toArray(new IResource[assocRes.size()]));
+        } catch (CoreException e) {
+            LaunchPlugin.logError(e);
+        }
         // clear the run info text, so next time it will be re-requested
         infoText = null;
     }
 
     public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-    	prepareLaunchConfig(configuration);
+        prepareLaunchConfig(configuration);
     }
 
     /**
@@ -307,7 +307,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         }
 
         if (StringUtils.isEmpty(defExe))
-        	defExe = getDefaultExeName(defWorkDir);
+            defExe = getDefaultExeName(defWorkDir);
 
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_WORKING_DIRECTORY, defWorkDir);
         configuration.setAttribute(IOmnetppLaunchConstants.OPP_EXECUTABLE, defExe);
@@ -324,20 +324,20 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
     }
 
     protected static String getDefaultExeName(String defWorkDir) {
-    	if (StringUtils.isEmpty(defWorkDir))
-    		return "";
+        if (StringUtils.isEmpty(defWorkDir))
+            return "";
 
-    	String progs = StringUtils.substituteVariables("${opp_simprogs:"+defWorkDir+"}", "");
+        String progs = StringUtils.substituteVariables("${opp_simprogs:"+defWorkDir+"}", "");
 
         // return the first program from the list
         String [] splitProgs  = StringUtils.split(progs, ' ');
         if (splitProgs.length > 0)
-        	return splitProgs[0];
+            return splitProgs[0];
 
-		return "";
-	}
+        return "";
+    }
 
-	/**
+    /**
      * Fills the config combo with the config section values from the inifiles
      */
     protected void updateDialogState() {
@@ -349,7 +349,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fProgText.setEnabled(fProgOtherButton.getSelection());
         fBrowseForBinaryButton.setEnabled(fProgOtherButton.getSelection());
         if (fProgOppRunButton.getSelection())
-        	fProgText.setText("");
+            fProgText.setText("");
 
         // update the config combo
         IFile[] inifiles = getIniFiles();
@@ -395,17 +395,17 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
      * configuration or NULL.
      */
     private IContainer getWorkingDirectory(){
-    	String expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
-    	if (expandedPath.length() > 0) {
-    		IPath newPath = new Path(expandedPath);
-    		if (newPath.segmentCount() == 0)
-    			return null;
-    		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
-    		if (resource instanceof IContainer)
-    			return (IContainer)resource;
-    		// not a container - we cannot convert
-    		return null;
-    	}
+        String expandedPath = StringUtils.substituteVariables(getWorkingDirectoryText());
+        if (expandedPath.length() > 0) {
+            IPath newPath = new Path(expandedPath);
+            if (newPath.segmentCount() == 0)
+                return null;
+            IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(newPath);
+            if (resource instanceof IContainer)
+                return (IContainer)resource;
+            // not a container - we cannot convert
+            return null;
+        }
         return null;
     }
 
@@ -633,8 +633,8 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
             for (Object resource : dialog.getResult()) {
                 if (resource instanceof IFile && workingDirectory != null) {
                     libfiles += removePrefixSuffixFromName(
-                    		      OmnetppLaunchUtils.makeRelativePathTo(((IFile)resource).getFullPath(), workingDirectory.getFullPath())
-                    		      ,prefix, "."+extension)+" ";
+                                  OmnetppLaunchUtils.makeRelativePathTo(((IFile)resource).getFullPath(), workingDirectory.getFullPath())
+                                  ,prefix, "."+extension)+" ";
                 }
             }
             fLibraryText.setText(libfiles.trim());
@@ -645,10 +645,10 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
      * Removes the given suffix and prefix from the NAME part of the path.
      */
     private String removePrefixSuffixFromName(IPath path, String namePrefix, String nameSuffix) {
-    	String lastSeg = path.lastSegment();
-    	lastSeg = StringUtils.removeStart(lastSeg, namePrefix);
-    	lastSeg = StringUtils.removeEnd(lastSeg, nameSuffix);
-    	return path.removeLastSegments(1).append(lastSeg).toString();
+        String lastSeg = path.lastSegment();
+        lastSeg = StringUtils.removeStart(lastSeg, namePrefix);
+        lastSeg = StringUtils.removeEnd(lastSeg, nameSuffix);
+        return path.removeLastSegments(1).append(lastSeg).toString();
     }
 
     protected void handleBrowseInifileButtonSelected() {
@@ -738,7 +738,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
 
 
     protected Composite createSimulationGroup(Composite parent, int colSpan) {
-    	Composite composite = SWTFactory.createGroup(parent, "Simulation", 4, colSpan, GridData.FILL_HORIZONTAL);
+        Composite composite = SWTFactory.createGroup(parent, "Simulation", 4, colSpan, GridData.FILL_HORIZONTAL);
         GridLayout ld = (GridLayout)composite.getLayout();
         ld.marginHeight = 1;
 
@@ -924,7 +924,7 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         Button button = SWTFactory.createRadioButton(comp, label);
         button.setLayoutData(new GridData());
         button.addSelectionListener(defaultSelectionAdapter);
-    	return button;
+        return button;
     }
 
 }

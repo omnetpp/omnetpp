@@ -8,29 +8,29 @@ import freemarker.template.Template;
 
 public class ImportCollectionNode {
 
-	private Object[] children = {};
-	private static final String TEXT = "import declarations";
-	
-	public ImportCollectionNode(Template t) {
-		List imports = t.getImports();
-		children = new Object[imports.size()];
-		LibraryLoad ll;
-		for(int i = 0;i<imports.size();i++) {
-			ll = (LibraryLoad)imports.get(i);
-			children[i] = new ImportNode(ll,this);
-		}
-		Arrays.sort(children,OutlineContentProvider.COMPARATOR);
-	}
+    private Object[] children = {};
+    private static final String TEXT = "import declarations";
 
-	public Object[] getChildren() {
-		return children;
-	}
+    public ImportCollectionNode(Template t) {
+        List imports = t.getImports();
+        children = new Object[imports.size()];
+        LibraryLoad ll;
+        for(int i = 0;i<imports.size();i++) {
+            ll = (LibraryLoad)imports.get(i);
+            children[i] = new ImportNode(ll,this);
+        }
+        Arrays.sort(children,OutlineContentProvider.COMPARATOR);
+    }
 
-	public boolean hasChildren() {
-		return (children.length>0);
-	}
+    public Object[] getChildren() {
+        return children;
+    }
 
-	public String toString() {
-		return TEXT;
-	}
+    public boolean hasChildren() {
+        return (children.length>0);
+    }
+
+    public String toString() {
+        return TEXT;
+    }
 }

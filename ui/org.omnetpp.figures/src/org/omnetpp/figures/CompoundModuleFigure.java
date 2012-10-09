@@ -45,7 +45,7 @@ import org.omnetpp.figures.routers.CompoundModuleConnectionRouter;
 // FIXME check for invalidate() calls. Maybe we should change it to repaint() ???
 // FIXME module size is not calculated again if we relayout the content
 public class CompoundModuleFigure extends LayeredPane
-				implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
+                implements IAnchorBounds, ISelectionHandleBounds, ILayerSupport, ISelectableFigure {
 
     public static final Color ERROR_BACKGROUND_COLOR = ColorFactory.RED;
     public static final Color ERROR_BORDER_COLOR = ColorFactory.RED4;
@@ -72,74 +72,74 @@ public class CompoundModuleFigure extends LayeredPane
     // TODO implement ruler
     protected float scale = 1.0f;
     protected String unit = "px";
-	private int seed = 0;
-	private int oldCumulativeHashCode;
-	private boolean isSelected;
+    private int seed = 0;
+    private int oldCumulativeHashCode;
+    private boolean isSelected;
 
     // background layer to provide background coloring, images and grid drawing
     class BackgroundLayer extends Layer {
-		@Override
-		protected void paintFigure(Graphics graphics) {
-			graphics.pushState();
+        @Override
+        protected void paintFigure(Graphics graphics) {
+            graphics.pushState();
 
             // draw outer non playground area
-	        graphics.setBackgroundColor(ColorFactory.DARK_GREY);
-	        graphics.fillRectangle(getClientArea());
+            graphics.setBackgroundColor(ColorFactory.DARK_GREY);
+            graphics.fillRectangle(getClientArea());
 
-	        // get the size of the viewport (which is actually the module size)
-	        Rectangle viewportRect = new Rectangle(new Point(0,0), this.getSize());
-	        // draw a solid background
-	        graphics.setBackgroundColor(moduleBackgroundColor);
-	        graphics.fillRectangle(viewportRect);
+            // get the size of the viewport (which is actually the module size)
+            Rectangle viewportRect = new Rectangle(new Point(0,0), this.getSize());
+            // draw a solid background
+            graphics.setBackgroundColor(moduleBackgroundColor);
+            graphics.fillRectangle(viewportRect);
 
-	        // draw and clip background image
-	        graphics.clipRect(viewportRect);
-	        if (backgroundImage != null) {
-	            Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
-	            if (backgroundImageArrangement.toLowerCase().startsWith("t"))
-					for (int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
-						for (int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
-							graphics.drawImage(backgroundImage, x, y);
-	            else if (backgroundImageArrangement.toLowerCase().startsWith("s"))
-	            	graphics.drawImage(backgroundImage, imageRect, viewportRect);
-	            else if (backgroundImageArrangement.toLowerCase().startsWith("c")) {
-	            	Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
-	            	graphics.drawImage(backgroundImage, centerPoint);
-	            } else
-	            	graphics.drawImage(backgroundImage, viewportRect.getLocation());
-	        }
+            // draw and clip background image
+            graphics.clipRect(viewportRect);
+            if (backgroundImage != null) {
+                Rectangle imageRect = new Rectangle(backgroundImage.getBounds());
+                if (backgroundImageArrangement.toLowerCase().startsWith("t"))
+                    for (int y = viewportRect.y; y<viewportRect.bottom(); y += imageRect.height)
+                        for (int x = viewportRect.x; x<viewportRect.right(); x += imageRect.width)
+                            graphics.drawImage(backgroundImage, x, y);
+                else if (backgroundImageArrangement.toLowerCase().startsWith("s"))
+                    graphics.drawImage(backgroundImage, imageRect, viewportRect);
+                else if (backgroundImageArrangement.toLowerCase().startsWith("c")) {
+                    Point centerPoint = viewportRect.getCenter().translate(-imageRect.width/2, -imageRect.height/2);
+                    graphics.drawImage(backgroundImage, centerPoint);
+                } else
+                    graphics.drawImage(backgroundImage, viewportRect.getLocation());
+            }
 
-	        // =============================================================================
-	        // draw the grid
-	        if (gridTickDistance > 0 && gridColor != null) {
+            // =============================================================================
+            // draw the grid
+            if (gridTickDistance > 0 && gridColor != null) {
 
-	        	graphics.setForegroundColor(gridColor);
-	        	double minorTickDistance = 0;
-	        	if (gridNoOfMinorTics > 1)
-	        		minorTickDistance = (double)gridTickDistance / gridNoOfMinorTics;
+                graphics.setForegroundColor(gridColor);
+                double minorTickDistance = 0;
+                if (gridNoOfMinorTics > 1)
+                    minorTickDistance = (double)gridTickDistance / gridNoOfMinorTics;
 
-	        	// horizontal grid
-	        	for (int y = viewportRect.y; y<viewportRect.bottom(); y += gridTickDistance) {
-	        		graphics.setLineStyle(SWT.LINE_SOLID);
-	        		graphics.drawLine(viewportRect.x, y, viewportRect.right(), y);
-	        		// minor ticks
-	        		graphics.setLineStyle(SWT.LINE_DOT);
-	        		for (double my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
-		        		graphics.drawLine(viewportRect.x, (int)my, viewportRect.right(), (int)my);
-	        	}
-	        	// vertical grid
-	        	for (int x = viewportRect.x; x<viewportRect.right(); x += gridTickDistance) {
-	        		graphics.setLineStyle(SWT.LINE_SOLID);
-	        		graphics.drawLine(x, viewportRect.y, x, viewportRect.bottom());
-	        		// minor ticks
-	        		graphics.setLineStyle(SWT.LINE_DOT);
-	        		for (double mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
-		        		graphics.drawLine((int)mx, viewportRect.y, (int)mx,viewportRect.bottom());
-	        	}
-	        }
-	        // restore the graphics state
-	        graphics.popState();
-		}
+                // horizontal grid
+                for (int y = viewportRect.y; y<viewportRect.bottom(); y += gridTickDistance) {
+                    graphics.setLineStyle(SWT.LINE_SOLID);
+                    graphics.drawLine(viewportRect.x, y, viewportRect.right(), y);
+                    // minor ticks
+                    graphics.setLineStyle(SWT.LINE_DOT);
+                    for (double my = y;  my < y+gridTickDistance && my < viewportRect.bottom() && minorTickDistance > 1; my+=minorTickDistance)
+                        graphics.drawLine(viewportRect.x, (int)my, viewportRect.right(), (int)my);
+                }
+                // vertical grid
+                for (int x = viewportRect.x; x<viewportRect.right(); x += gridTickDistance) {
+                    graphics.setLineStyle(SWT.LINE_SOLID);
+                    graphics.drawLine(x, viewportRect.y, x, viewportRect.bottom());
+                    // minor ticks
+                    graphics.setLineStyle(SWT.LINE_DOT);
+                    for (double mx = x;  mx < x+gridTickDistance && mx < viewportRect.right() && minorTickDistance > 1; mx+=minorTickDistance)
+                        graphics.drawLine((int)mx, viewportRect.y, (int)mx,viewportRect.bottom());
+                }
+            }
+            // restore the graphics state
+            graphics.popState();
+        }
     }
 
     // main layer used to display submodules
@@ -155,12 +155,12 @@ public class CompoundModuleFigure extends LayeredPane
 
         @Override
         public Dimension getPreferredSize(int wHint, int hHint) {
-			return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
-		}
+            return layouter.getPreferredSize(this, backgroundSize.width, backgroundSize.height);
+        }
 
         @Override
         public Dimension getMinimumSize(int wHint, int hHint) {
-        	return new Dimension(8,8);
+            return new Dimension(8,8);
         }
     }
 
@@ -199,7 +199,7 @@ public class CompoundModuleFigure extends LayeredPane
 //        FanRouter fr = new FanRouter();
 //        fr.setSeparation(10);
 //        CompoundModuleShortestPathConnectionRouter spcr =
-//        	new CompoundModuleShortestPathConnectionRouter(submoduleLayer);
+//          new CompoundModuleShortestPathConnectionRouter(submoduleLayer);
 //        spcr.setSpacing(10);
 //        fr.setNextRouter(spcr);
 // use this for fan router
@@ -241,86 +241,86 @@ public class CompoundModuleFigure extends LayeredPane
      * Returns the bounds where the anchors should be placed in parent coordinate system.
      */
     public Rectangle getAnchorBounds() {
-    	Rectangle box = getClientArea().shrink(BORDER_SNAP_WIDTH, BORDER_SNAP_WIDTH);
-    	translateToParent(box);
-    	return box;
+        Rectangle box = getClientArea().shrink(BORDER_SNAP_WIDTH, BORDER_SNAP_WIDTH);
+        translateToParent(box);
+        return box;
     }
 
-	/**
-	 * Adjusts compound module background parameters
-	 */
-	protected void setBackground(Image image, String arrangement, Color backgroundColor, Color borderColor, int borderWidth) {
-		moduleBackgroundColor = backgroundColor==null ? ERROR_BACKGROUND_COLOR : backgroundColor;
-		moduleBorderColor = borderColor==null ? ERROR_BORDER_COLOR : borderColor;
-		moduleBorderWidth = borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth;
+    /**
+     * Adjusts compound module background parameters
+     */
+    protected void setBackground(Image image, String arrangement, Color backgroundColor, Color borderColor, int borderWidth) {
+        moduleBackgroundColor = backgroundColor==null ? ERROR_BACKGROUND_COLOR : backgroundColor;
+        moduleBorderColor = borderColor==null ? ERROR_BORDER_COLOR : borderColor;
+        moduleBorderWidth = borderWidth < 0 ? ERROR_BORDER_WIDTH : borderWidth;
 
-		// the global background is the same as the border color
-		setBackgroundColor(moduleBorderColor);
+        // the global background is the same as the border color
+        setBackgroundColor(moduleBorderColor);
 
-		// background image
-		backgroundImage = image;
-		backgroundImageArrangement = arrangement != null ? arrangement : "";
+        // background image
+        backgroundImage = image;
+        backgroundImageArrangement = arrangement != null ? arrangement : "";
 
         getBorder().setColor(moduleBorderColor);
         getBorder().setWidth(moduleBorderWidth);
-	}
+    }
 
-	/**
-	 * Adjusts grid parameters.
-	 * @param tickDistance Maximum distance between two ticks measured in pixels
-	 * @param noOfTics Number of minor ticks between two major one
-	 * @param gridColor Grid color
-	 */
-	protected void setGrid(int tickDistance, int noOfTics, Color gridColor) {
-		this.gridTickDistance = tickDistance;
-		this.gridNoOfMinorTics = noOfTics;
-		this.gridColor = gridColor;
-	}
+    /**
+     * Adjusts grid parameters.
+     * @param tickDistance Maximum distance between two ticks measured in pixels
+     * @param noOfTics Number of minor ticks between two major one
+     * @param gridColor Grid color
+     */
+    protected void setGrid(int tickDistance, int noOfTics, Color gridColor) {
+        this.gridTickDistance = tickDistance;
+        this.gridNoOfMinorTics = noOfTics;
+        this.gridColor = gridColor;
+    }
 
-	/**
-	 * Scaling and unit support.
-	 * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
-	 * @param unit the unit of the dimension
-	 */
-	protected void setScale(float scale, String unit) {
-		this.scale = scale;
-		this.unit = unit;
-		invalidate();
-	}
+    /**
+     * Scaling and unit support.
+     * @param scale scale value (a value of 18 means: 1 unit = 18 pixels)
+     * @param unit the unit of the dimension
+     */
+    protected void setScale(float scale, String unit) {
+        this.scale = scale;
+        this.unit = unit;
+        invalidate();
+    }
 
-	/**
-	 * Returns the scale from the display string.
-	 */
-	public float getScale() {
-		return scale;
-	}
+    /**
+     * Returns the scale from the display string.
+     */
+    public float getScale() {
+        return scale;
+    }
 
-	/**
-	 * Adjusts the figure properties using a displayString object
-	 * @param dps The display string object containing the properties
-	 */
+    /**
+     * Adjusts the figure properties using a displayString object
+     * @param dps The display string object containing the properties
+     */
     public void setDisplayString(IDisplayString dps) {
-		// OPTIMIZATION: do not change anything if the display string has not changed
-		int newCumulativeHashCode = dps.cumulativeHashCode();
-		if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
-			return;
+        // OPTIMIZATION: do not change anything if the display string has not changed
+        int newCumulativeHashCode = dps.cumulativeHashCode();
+        if (oldCumulativeHashCode != 0 && newCumulativeHashCode == oldCumulativeHashCode)
+            return;
 
-		this.oldCumulativeHashCode = newCumulativeHashCode;
+        this.oldCumulativeHashCode = newCumulativeHashCode;
 
-		// background color / image
+        // background color / image
         Image imgback = ImageFactory.getImage(
-        		dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
+                dps.getAsString(IDisplayString.Prop.MODULE_IMAGE), null, null, 0);
 
         // decode the image arrangement
         String imageArrangementStr = dps.getAsString(IDisplayString.Prop.MODULE_IMAGE_ARRANGEMENT);
 
         // set the background
         setBackground(
-        		imgback,
-        		imageArrangementStr,
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_FILL_COLOR)),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDER_COLOR)),
-        		dps.getAsInt(IDisplayString.Prop.MODULE_BORDER_WIDTH, -1));
+                imgback,
+                imageArrangementStr,
+                ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_FILL_COLOR)),
+                ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_BORDER_COLOR)),
+                dps.getAsInt(IDisplayString.Prop.MODULE_BORDER_WIDTH, -1));
 
         // scaling support
         setScale(
@@ -329,9 +329,9 @@ public class CompoundModuleFigure extends LayeredPane
 
         // grid support
         setGrid(
-        		dps.unitToPixel(dps.getAsInt(IDisplayString.Prop.MODULE_GRID_DISTANCE, -1), null),
-        		dps.getAsInt(IDisplayString.Prop.MODULE_GRID_SUBDIVISION, -1),
-        		ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
+                dps.unitToPixel(dps.getAsInt(IDisplayString.Prop.MODULE_GRID_DISTANCE, -1), null),
+                dps.getAsInt(IDisplayString.Prop.MODULE_GRID_SUBDIVISION, -1),
+                ColorFactory.asColor(dps.getAsString(IDisplayString.Prop.MODULE_GRID_COLOR)));
 
         // finally set the location and size using the models helper methods
         // if the size is specified in the display string we should set it as preferred size
@@ -343,8 +343,8 @@ public class CompoundModuleFigure extends LayeredPane
         int newSeed = dps.getAsInt(IDisplayString.Prop.MODULE_LAYOUT_SEED, 1);
         // if the seed changed we explicitly have to force a re-layout
 
-		if (seed != newSeed) {
-        	seed  = newSeed;
+        if (seed != newSeed) {
+            seed  = newSeed;
             layouter.setSeed(seed);
             layouter.requestFullLayout();
             // a full new layout must be executed before any repainting occurs otherwise
@@ -353,47 +353,47 @@ public class CompoundModuleFigure extends LayeredPane
             layouter.layout(submoduleLayer);
         }
 
-		layouter.invalidate();
+        layouter.invalidate();
         repaint();
-	}
+    }
 
-	@Override
-	public void paint(Graphics graphics) {
-	    super.paint(graphics);
+    @Override
+    public void paint(Graphics graphics) {
+        super.paint(graphics);
         if (isSelected) {
             graphics.setForegroundColor(ColorFactory.RED);
             Rectangle r = getHandleBounds();
             graphics.drawRectangle(r.x, r.y, r.width - 1, r.height - 1);
         }
-	}
+    }
 
     public Dimension getBackgroundSize() {
         return backgroundSize;
     }
 
     public Layer getBackgroundLayer() {
-    	return backgroundLayer;
+        return backgroundLayer;
     }
 
-	public Layer getBackgroundDecorationLayer() {
-		return backDecorationLayer;
-	}
+    public Layer getBackgroundDecorationLayer() {
+        return backDecorationLayer;
+    }
 
-	public Layer getConnectionLayer() {
-		return connectionLayer;
-	}
+    public Layer getConnectionLayer() {
+        return connectionLayer;
+    }
 
-	public Layer getSubmoduleLayer() {
-		return submoduleLayer;
-	}
+    public Layer getSubmoduleLayer() {
+        return submoduleLayer;
+    }
 
-	public Layer getForegroundDecorationLayer() {
-		return frontDecorationLayer;
-	}
+    public Layer getForegroundDecorationLayer() {
+        return frontDecorationLayer;
+    }
 
-	public Layer getMessageLayer() {
-		return messageLayer;
-	}
+    public Layer getMessageLayer() {
+        return messageLayer;
+    }
 
     @Override
     public CompoundModuleLineBorder getBorder() {

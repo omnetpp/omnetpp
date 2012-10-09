@@ -15,37 +15,37 @@ import org.omnetpp.scave.engine.ScaveExport;
 
 public class OctaveExportWizard extends AbstractExportWizard {
 
-	public static final String ID = "org.omnetpp.scave.wizard.OctaveExportWizard";
+    public static final String ID = "org.omnetpp.scave.wizard.OctaveExportWizard";
 
-	public OctaveExportWizard() {
-		setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
-	}
+    public OctaveExportWizard() {
+        setDialogSettings(UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName()));
+    }
 
-	@Override
-	public void addPages() {
-		page = new OctaveExportPage("Octave export", "Export in Octave text format", null);
-		addPage(page);
-	}
+    @Override
+    public void addPages() {
+        page = new OctaveExportPage("Octave export", "Export in Octave text format", null);
+        addPage(page);
+    }
 
-	@Override
-	protected ScaveExport createExporter() {
-		return ExporterFactory.createExporter("octave");
-	}
+    @Override
+    protected ScaveExport createExporter() {
+        return ExporterFactory.createExporter("octave");
+    }
 
-	/*---------------------
-	 *        Pages
-	 *---------------------*/
+    /*---------------------
+     *        Pages
+     *---------------------*/
 
-	static class OctaveExportPage extends ExportWizardPage
-	{
-		protected OctaveExportPage(String pageName, String title,
-				ImageDescriptor titleImage) {
-			super(pageName, title, titleImage);
-		}
+    static class OctaveExportPage extends ExportWizardPage
+    {
+        protected OctaveExportPage(String pageName, String title,
+                ImageDescriptor titleImage) {
+            super(pageName, title, titleImage);
+        }
 
-		@Override
-		protected String[] getFileDialogFilterExtensions() {
-			return new String[] { "*.octave", "*.*" };
-		}
-	}
+        @Override
+        protected String[] getFileDialogFilterExtensions() {
+            return new String[] { "*.octave", "*.*" };
+        }
+    }
 }

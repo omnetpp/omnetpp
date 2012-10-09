@@ -34,87 +34,87 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionCallback;
  */
 public class GenerateComputedFileJob extends WorkspaceJob
 {
-	private static final boolean debug = true;
+    private static final boolean debug = true;
 
-	ProcessingOp operation;
-	ResultFileManager manager;
-	CompletionCallback callback;
+    ProcessingOp operation;
+    ResultFileManager manager;
+    CompletionCallback callback;
 
 
-	public GenerateComputedFileJob(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
-		super("Generate computed file");
-		Assert.isNotNull(operation.getComputedFile());
-		this.operation = operation;
-		this.manager = manager;
-		this.callback = callback;
-	}
+    public GenerateComputedFileJob(ProcessingOp operation, ResultFileManager manager, CompletionCallback callback) {
+        super("Generate computed file");
+        Assert.isNotNull(operation.getComputedFile());
+        this.operation = operation;
+        this.manager = manager;
+        this.callback = callback;
+    }
 
-	public ProcessingOp getOperation() {
-		return operation;
-	}
+    public ProcessingOp getOperation() {
+        return operation;
+    }
 
-	public CompletionCallback getCallback() {
-		return callback;
-	}
+    public CompletionCallback getCallback() {
+        return callback;
+    }
 
-	@Override
-	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-		long startTime = 0;
-		if (debug)
-			startTime = System.currentTimeMillis();
+    @Override
+    public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+        long startTime = 0;
+        if (debug)
+            startTime = System.currentTimeMillis();
 
-		try {
-			if (monitor != null)
-				monitor.beginTask("Generate computed file", 100);
+        try {
+            if (monitor != null)
+                monitor.beginTask("Generate computed file", 100);
 
-			final Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
-			if (dataset == null)
-				return ScavePlugin.getErrorStatus(0, "Operation removed from the dataset.", null);
+            final Dataset dataset = ScaveModelUtil.findEnclosingDataset(operation);
+            if (dataset == null)
+                return ScavePlugin.getErrorStatus(0, "Operation removed from the dataset.", null);
 
-			if (monitor != null)
-				monitor.subTask("Build dataflow network");
+            if (monitor != null)
+                monitor.subTask("Build dataflow network");
 
-			final long[] computationHash = new long[1];
-			DataflowManager network = ResultFileManager.callWithReadLock(manager, new Callable<DataflowManager>() {
-				public DataflowManager call() {
-					computationHash[0] = DatasetManager.getComputationHash(operation, manager);
-					DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
-					return builder.build(dataset, operation, operation.getComputedFile());
-				}
-			});
+            final long[] computationHash = new long[1];
+            DataflowManager network = ResultFileManager.callWithReadLock(manager, new Callable<DataflowManager>() {
+                public DataflowManager call() {
+                    computationHash[0] = DatasetManager.getComputationHash(operation, manager);
+                    DataflowNetworkBuilder builder = new DataflowNetworkBuilder(manager);
+                    return builder.build(dataset, operation, operation.getComputedFile());
+                }
+            });
 
-			if (debug) network.dump();
+            if (debug) network.dump();
 
-			IProgressMonitor subMonitor = null;
-			if (monitor != null) {
-				monitor.worked(10);
-				monitor.subTask("Execute dataflow network");
-				subMonitor = new SubProgressMonitor(monitor, 90);
-			}
+            IProgressMonitor subMonitor = null;
+            if (monitor != null) {
+                monitor.worked(10);
+                monitor.subTask("Execute dataflow network");
+                subMonitor = new SubProgressMonitor(monitor, 90);
+            }
 
-			try {
-				network.execute(subMonitor);
-			}
-			finally {
-				network.delete();
-				network = null;
-			}
+            try {
+                network.execute(subMonitor);
+            }
+            finally {
+                network.delete();
+                network = null;
+            }
 
-			if (monitor != null && monitor.isCanceled())
-				return Status.CANCEL_STATUS;
+            if (monitor != null && monitor.isCanceled())
+                return Status.CANCEL_STATUS;
 
-			operation.setComputationHash(computationHash[0]);
-			return Status.OK_STATUS;
-		} catch (Exception e) {
-			return ScavePlugin.getErrorStatus(e);
-		}
-		finally {
-			if (monitor != null)
-				monitor.done();
-			if (debug) {
-				long endTime = System.currentTimeMillis();
-				Debug.format("Generated computed file in %s ms%n", endTime - startTime);
-			}
-		}
-	}
+            operation.setComputationHash(computationHash[0]);
+            return Status.OK_STATUS;
+        } catch (Exception e) {
+            return ScavePlugin.getErrorStatus(e);
+        }
+        finally {
+            if (monitor != null)
+                monitor.done();
+            if (debug) {
+                long endTime = System.currentTimeMillis();
+                Debug.format("Generated computed file in %s ms%n", endTime - startTime);
+            }
+        }
+    }
 }

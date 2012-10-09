@@ -128,17 +128,17 @@ public class ParametersDialog extends TitleAreaDialog {
     private static final int BUTTON_ADD_ID = 500;
     private static final int BUTTON_REMOVE_ID = 501;
 
-	private final String dialogTitle;
-	private final List<ParamLine> paramLines;
+    private final String dialogTitle;
+    private final List<ParamLine> paramLines;
 
-	// widgets
+    // widgets
     private TableViewer listViewer;
     private Command resultCommand = UnexecutableCommand.INSTANCE;
     private final IHasParameters parameterProvider;
     private HoverSupport hoverSupport;
     private boolean cellEdited;
 
-	// sizing constants
+    // sizing constants
     private final static int SIZING_SELECTION_WIDGET_HEIGHT = 200;
     private final static int SIZING_SELECTION_WIDGET_WIDTH = 800;
 
@@ -498,7 +498,7 @@ public class ParametersDialog extends TitleAreaDialog {
                 String canoncialValue = removeDefaultAroundValue(strippedValue);
 
                 paramElement.setValue(canoncialValue);
-				paramElement.setIsDefault(!canoncialValue.equals(strippedValue));
+                paramElement.setIsDefault(!canoncialValue.equals(strippedValue));
 
             }
         }
@@ -635,12 +635,12 @@ public class ParametersDialog extends TitleAreaDialog {
         return params;
     }
 
-	@Override
+    @Override
     protected void configureShell(Shell shell) {
-		super.configureShell(shell);
-		if (dialogTitle != null)
-			shell.setText(dialogTitle);
-	}
+        super.configureShell(shell);
+        if (dialogTitle != null)
+            shell.setText(dialogTitle);
+    }
 
     @Override
     protected Control createDialogArea(Composite parent) {
@@ -655,14 +655,14 @@ public class ParametersDialog extends TitleAreaDialog {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setLayout(new GridLayout(1,false));
 
-		// table group
+        // table group
         Group group = new Group(composite, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setText("Defined parameters");
-		group.setLayout(new GridLayout(1, false));
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        group.setText("Defined parameters");
+        group.setLayout(new GridLayout(1, false));
 
         // table and buttons
-		listViewer = createAndConfigureTable(group);
+        listViewer = createAndConfigureTable(group);
         GridData data = new GridData(GridData.FILL_BOTH);
         data.heightHint = SIZING_SELECTION_WIDGET_HEIGHT;
         data.widthHint = SIZING_SELECTION_WIDGET_WIDTH;
@@ -721,19 +721,19 @@ public class ParametersDialog extends TitleAreaDialog {
         return composite;
     }
 
-	protected Label createLabel(Composite composite, String text) {
-		Label label = new Label(composite, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
-		label.setText(text);
-		return label;
-	}
+    protected Label createLabel(Composite composite, String text) {
+        Label label = new Label(composite, SWT.NONE);
+        label.setLayoutData(new GridData(SWT.END, SWT.BEGINNING, true, false));
+        label.setText(text);
+        return label;
+    }
 
     private void addEditButtons(Composite composite) {
         Composite buttonComposite = new Composite(composite, SWT.NONE);
         GridLayout layout = new GridLayout();
         layout.numColumns = 0;
-		layout.marginWidth = 0;
-		layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
+        layout.marginWidth = 0;
+        layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
         buttonComposite.setLayout(layout);
         buttonComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, true, false));
 
@@ -808,9 +808,9 @@ public class ParametersDialog extends TitleAreaDialog {
 
     @Override
     protected void createButtonsForButtonBar(Composite parent) {
-		createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-		createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
-	}
+        createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
+    }
 
     private TableColumn addTableColumn(final Table table, String label, int width) {
         final TableColumn column = new TableColumn(table, SWT.NONE);
@@ -948,7 +948,7 @@ public class ParametersDialog extends TitleAreaDialog {
     }
 
     @Override
-	protected void okPressed() {
+    protected void okPressed() {
        INedElement parametersElement = getFirstParametersChild();
        ParametersElement newParametersElement = null;
        if (parametersElement != null)

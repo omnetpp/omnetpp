@@ -16,16 +16,16 @@ import org.omnetpp.ned.model.INedElement;
  */
 public interface IHasName extends INedElement {
 
-	static String DEFAULT_TYPE_NAME = "Unnamed";
+    static String DEFAULT_TYPE_NAME = "Unnamed";
 
-	/**
-	 * Returns name attribute
-	 */
-	public String getName();
+    /**
+     * Returns name attribute
+     */
+    public String getName();
 
-	/**
-	 * Sets name attribute
-	 */
-	public void setName(String name);
+    /**
+     * Sets name attribute
+     */
+    public void setName(String name);
 
 }

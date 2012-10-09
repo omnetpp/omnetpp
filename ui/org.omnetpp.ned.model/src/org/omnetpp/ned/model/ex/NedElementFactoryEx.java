@@ -49,9 +49,9 @@ public class NedElementFactoryEx extends NedElementFactory {
     public INedElement createElement(INedTypeResolver resolver, String tagname) {
         return createElement(resolver, tagname, null);
     }
-    
-	public INedElement createElement(INedTypeResolver resolver, String tagname, INedElement parent) {
-	    // NED elements that need a resolver
+
+    public INedElement createElement(INedTypeResolver resolver, String tagname, INedElement parent) {
+        // NED elements that need a resolver
         if (tagname.equals(NedFileElementEx.getStaticTagName()))
             return new NedFileElementEx(resolver, parent);
         if (tagname.equals(CompoundModuleElementEx.getStaticTagName()))
@@ -68,7 +68,7 @@ public class NedElementFactoryEx extends NedElementFactory {
             return new ChannelInterfaceElementEx(resolver, parent);
         if (tagname.equals(ModuleInterfaceElementEx.getStaticTagName()))
             return new ModuleInterfaceElementEx(resolver, parent);
-        
+
         // other NED elements
         if (tagname.equals(GateElementEx.getStaticTagName()))
             return new GateElementEx(parent);
@@ -92,13 +92,13 @@ public class NedElementFactoryEx extends NedElementFactory {
             return new EnumElementEx(parent);
 
         return super.createElement(tagname, parent);
-	}
+    }
 
     public INedElement createElement(INedTypeResolver resolver, int tagcode) {
         return createElement(resolver, tagcode, null);
     }
 
-	public INedElement createElement(INedTypeResolver resolver, int tagcode, INedElement parent) {
+    public INedElement createElement(INedTypeResolver resolver, int tagcode, INedElement parent) {
         // NED elements that need a resolver
         if (tagcode==NED_NED_FILE)
             return new NedFileElementEx(resolver, parent);
@@ -139,6 +139,6 @@ public class NedElementFactoryEx extends NedElementFactory {
         if (tagcode==NED_ENUM)
             return new EnumElementEx(parent);
 
-		return super.createElement(tagcode, parent);
-	}
+        return super.createElement(tagcode, parent);
+    }
 }

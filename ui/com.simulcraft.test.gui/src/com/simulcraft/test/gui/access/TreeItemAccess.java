@@ -22,55 +22,55 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class TreeItemAccess extends ClickableWidgetAccess
 {
-	public TreeItemAccess(TreeItem treeItem) {
-		super(treeItem);
-	}
+    public TreeItemAccess(TreeItem treeItem) {
+        super(treeItem);
+    }
 
     @Override
-	public TreeItem getWidget() {
-		return (TreeItem)widget;
-	}
+    public TreeItem getWidget() {
+        return (TreeItem)widget;
+    }
 
-	@UIStep
-	public TreeAccess getTree() {
-	    return (TreeAccess) createAccess(getWidget().getParent());
-	}
+    @UIStep
+    public TreeAccess getTree() {
+        return (TreeAccess) createAccess(getWidget().getParent());
+    }
 
-	@UIStep
-	public TreeItemAccess reveal() {
-   		getWidget().getParent().showItem(getWidget());
-		return this;
-	}
+    @UIStep
+    public TreeItemAccess reveal() {
+        getWidget().getParent().showItem(getWidget());
+        return this;
+    }
 
-	@Override @UIStep
-	protected Point getAbsolutePointToClick() {
-	    Point point = toAbsolute(getCenter(getWidget().getBounds()));
+    @Override @UIStep
+    protected Point getAbsolutePointToClick() {
+        Point point = toAbsolute(getCenter(getWidget().getBounds()));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
-	}
+    }
 
-	@Override
+    @Override
     protected Point toAbsolute(Point point) {
         return getWidget().getParent().toDisplay(point);
-	}
+    }
 
-	/**
-	 * Useful for selecting a tree item without incidentally activating its cell editor.
-	 */
-	@UIStep
-	public void clickLeftEdge() {
+    /**
+     * Useful for selecting a tree item without incidentally activating its cell editor.
+     */
+    @UIStep
+    public void clickLeftEdge() {
         Rectangle bounds = getWidget().getBounds();
         Point point = getWidget().getParent().toDisplay(new Point(1, bounds.y+bounds.height/2));
         Assert.assertTrue("point to click is scrolled out", getTree().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width", bounds.width > 0);
         clickAbsolute(LEFT_MOUSE_BUTTON, point);
-	}
+    }
 
-	@Override
-	protected Menu getContextMenu() {
-		return (Menu)getWidget().getParent().getMenu();
-	}
+    @Override
+    protected Menu getContextMenu() {
+        return (Menu)getWidget().getParent().getMenu();
+    }
 
     @UIStep
     public void ensureChecked(boolean state) {

@@ -26,32 +26,32 @@ import org.omnetpp.common.util.StringUtils;
 import com.simulcraft.test.gui.core.UIStep;
 
 public class FigureAccess
-	extends ClickableAccess
+    extends ClickableAccess
 {
-	protected IFigure figure;
+    protected IFigure figure;
 
-	public FigureAccess(IFigure figure) {
-		this.figure = figure;
-	}
+    public FigureAccess(IFigure figure) {
+        this.figure = figure;
+    }
 
-	public IFigure getFigure() {
+    public IFigure getFigure() {
         return figure;
     }
 
-	public IFigure getRootFigure() {
-		IFigure currentFigure = figure;
+    public IFigure getRootFigure() {
+        IFigure currentFigure = figure;
 
-		while (currentFigure.getParent() != null)
-			currentFigure = currentFigure.getParent();
+        while (currentFigure.getParent() != null)
+            currentFigure = currentFigure.getParent();
 
-		return currentFigure;
-	}
+        return currentFigure;
+    }
 
-	public Canvas getCanvas() {
-		IFigure rootFigure = getRootFigure();
-		LightweightSystem lightweightSystem = (LightweightSystem)ReflectionUtils.getFieldValue(rootFigure, "this$0");
-		return (Canvas)ReflectionUtils.getFieldValue(lightweightSystem, "canvas");
-	}
+    public Canvas getCanvas() {
+        IFigure rootFigure = getRootFigure();
+        LightweightSystem lightweightSystem = (LightweightSystem)ReflectionUtils.getFieldValue(rootFigure, "this$0");
+        return (Canvas)ReflectionUtils.getFieldValue(lightweightSystem, "canvas");
+    }
 
     public FigureAccess getDescendantFigure(Class<? extends IFigure> clazz) {
         return (FigureAccess) createAccess(findDescendantFigure(figure, clazz));
@@ -74,8 +74,8 @@ public class FigureAccess
         return null;
     }
 
-	@UIStep
-	public void click(int button) {
+    @UIStep
+    public void click(int button) {
         reveal();
         IFigure rootFigure = getRootFigure();
         Rectangle bounds = getAbsoluteBounds();
@@ -89,7 +89,7 @@ public class FigureAccess
                 click(button, p);
                 return;
             }
-	}
+    }
 
     @UIStep
     public void click(int button, org.eclipse.swt.graphics.Point point) {
@@ -108,56 +108,56 @@ public class FigureAccess
 
     public Rectangle getAbsoluteBounds() {
         Rectangle r = figure.getBounds().getCopy();
-		figure.translateToAbsolute(r);
+        figure.translateToAbsolute(r);
         return r;
     }
 
-	protected org.eclipse.swt.graphics.Point toDisplay(Point point) {
-		return toDisplay(point.x, point.y);
-	}
+    protected org.eclipse.swt.graphics.Point toDisplay(Point point) {
+        return toDisplay(point.x, point.y);
+    }
 
-	protected org.eclipse.swt.graphics.Point toDisplay(org.eclipse.swt.graphics.Point point) {
-		return toDisplay(point.x, point.y);
-	}
+    protected org.eclipse.swt.graphics.Point toDisplay(org.eclipse.swt.graphics.Point point) {
+        return toDisplay(point.x, point.y);
+    }
 
-	public org.eclipse.swt.graphics.Point toDisplay(int x, int y) {
-		Point point = new Point(x, y);
-		figure.translateToAbsolute(point);
-		return getCanvas().toDisplay(point.x, point.y);
-	}
+    public org.eclipse.swt.graphics.Point toDisplay(int x, int y) {
+        Point point = new Point(x, y);
+        figure.translateToAbsolute(point);
+        return getCanvas().toDisplay(point.x, point.y);
+    }
 
 
-	@UIStep
-	public void reveal() {
-	    // TODO rather call the viewer's reveal (see. FlyoutPaletteCompositeAccess.reveal()
-	    // copied from ScrollingGraphicalViewer.reveal(EditPart)
-	    IFigure target = getFigure();
-	    Viewport port = ((FigureCanvas)getCanvas()).getViewport();
-	    Rectangle exposeRegion = target.getBounds().getCopy();
-	    target = target.getParent();
-	    while (target != null && target != port) {
-	        target.translateToParent(exposeRegion);
-	        target = target.getParent();
-	    }
-	    exposeRegion.expand(5, 5);
+    @UIStep
+    public void reveal() {
+        // TODO rather call the viewer's reveal (see. FlyoutPaletteCompositeAccess.reveal()
+        // copied from ScrollingGraphicalViewer.reveal(EditPart)
+        IFigure target = getFigure();
+        Viewport port = ((FigureCanvas)getCanvas()).getViewport();
+        Rectangle exposeRegion = target.getBounds().getCopy();
+        target = target.getParent();
+        while (target != null && target != port) {
+            target.translateToParent(exposeRegion);
+            target = target.getParent();
+        }
+        exposeRegion.expand(5, 5);
 
-	    Dimension viewportSize = port.getClientArea().getSize();
+        Dimension viewportSize = port.getClientArea().getSize();
 
-	    Point topLeft = exposeRegion.getTopLeft();
-	    Point bottomRight = exposeRegion.getBottomRight().translate(viewportSize.getNegated());
-	    Point finalLocation = new Point();
-	    if (viewportSize.width < exposeRegion.width)
-	        finalLocation.x = Math.min(bottomRight.x, Math.max(topLeft.x, port.getViewLocation().x));
-	    else
-	        finalLocation.x = Math.min(topLeft.x, Math.max(bottomRight.x, port.getViewLocation().x));
+        Point topLeft = exposeRegion.getTopLeft();
+        Point bottomRight = exposeRegion.getBottomRight().translate(viewportSize.getNegated());
+        Point finalLocation = new Point();
+        if (viewportSize.width < exposeRegion.width)
+            finalLocation.x = Math.min(bottomRight.x, Math.max(topLeft.x, port.getViewLocation().x));
+        else
+            finalLocation.x = Math.min(topLeft.x, Math.max(bottomRight.x, port.getViewLocation().x));
 
-	    if (viewportSize.height < exposeRegion.height)
-	        finalLocation.y = Math.min(bottomRight.y, Math.max(topLeft.y, port.getViewLocation().y));
-	    else
-	        finalLocation.y = Math.min(topLeft.y, Math.max(bottomRight.y, port.getViewLocation().y));
+        if (viewportSize.height < exposeRegion.height)
+            finalLocation.y = Math.min(bottomRight.y, Math.max(topLeft.y, port.getViewLocation().y));
+        else
+            finalLocation.y = Math.min(topLeft.y, Math.max(bottomRight.y, port.getViewLocation().y));
 
-	    ((FigureCanvas)getCanvas()).scrollSmoothTo(finalLocation.x, finalLocation.y);
-	}
+        ((FigureCanvas)getCanvas()).scrollSmoothTo(finalLocation.x, finalLocation.y);
+    }
 
     public Rectangle getBounds() {
         return getFigure().getBounds();

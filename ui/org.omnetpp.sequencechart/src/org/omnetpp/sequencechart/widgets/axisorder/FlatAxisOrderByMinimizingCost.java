@@ -27,8 +27,8 @@ public class FlatAxisOrderByMinimizingCost {
     private static int TIME_LIMIT = 1000; // in milliseconds
 
     public FlatAxisOrderByMinimizingCost(EventLogInput eventLogInput) {
-		this.eventLogInput = eventLogInput;
-	}
+        this.eventLogInput = eventLogInput;
+    }
 
     public int[] calculateOrdering(ModuleTreeItem[] axisModules, Map<Integer, Integer> moduleIdToAxisModuleIndexMap) {
         IntIntMap cppModuleIdToAxisModuleIndexMap = getCppModuleIdToAxisModuleIndexMap(moduleIdToAxisModuleIndexMap);
@@ -39,7 +39,7 @@ public class FlatAxisOrderByMinimizingCost {
         bubbleSort(orderedAxisModules, axisMessageDependecyWeightMatrix);
 
         return getAxisModulePositions(axisModules, orderedAxisModules);
-	}
+    }
 
     private int[] getAxisModulePositions(ModuleTreeItem[] axisModules, ModuleTreeItem[] orderedAxisModules) {
         int numberOfAxes = axisModules.length;

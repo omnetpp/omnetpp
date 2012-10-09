@@ -17,33 +17,33 @@ import org.eclipse.ui.texteditor.MarkerAnnotation;
  */
 public class AnnotationHover implements IAnnotationHover {
 
-	public String getHoverInfo(ISourceViewer aViewer, int aLine) {
-		String info = null;
-		IMarker marker = getMarkerForLine(aViewer, aLine);
-		if (marker != null) {
-			String message = marker.getAttribute(IMarker.MESSAGE, (String)null);
-			if (message != null && message.trim().length() > 0) {
-				info = message.trim();
-			}
-		}
-		return info;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected IMarker getMarkerForLine(ISourceViewer aViewer, int aLine) {
-		IMarker marker = null;
-		IAnnotationModel model = aViewer.getAnnotationModel();
-		if (model != null) {
-			Iterator e = model.getAnnotationIterator();
-			if(e.hasNext()) {
-				Object o = e.next();
-				if (o instanceof MarkerAnnotation) {
-					MarkerAnnotation a = (MarkerAnnotation)o;
-					marker = a.getMarker();
-				}	
-			}
-		}
-		return marker;
-	}
+    public String getHoverInfo(ISourceViewer aViewer, int aLine) {
+        String info = null;
+        IMarker marker = getMarkerForLine(aViewer, aLine);
+        if (marker != null) {
+            String message = marker.getAttribute(IMarker.MESSAGE, (String)null);
+            if (message != null && message.trim().length() > 0) {
+                info = message.trim();
+            }
+        }
+        return info;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected IMarker getMarkerForLine(ISourceViewer aViewer, int aLine) {
+        IMarker marker = null;
+        IAnnotationModel model = aViewer.getAnnotationModel();
+        if (model != null) {
+            Iterator e = model.getAnnotationIterator();
+            if(e.hasNext()) {
+                Object o = e.next();
+                if (o instanceof MarkerAnnotation) {
+                    MarkerAnnotation a = (MarkerAnnotation)o;
+                    marker = a.getMarker();
+                }
+            }
+        }
+        return marker;
+    }
 
 }

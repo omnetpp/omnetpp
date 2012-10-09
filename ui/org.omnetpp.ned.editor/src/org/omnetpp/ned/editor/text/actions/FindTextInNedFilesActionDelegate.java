@@ -45,10 +45,10 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
     public static final String ID = "performTextSearchWorkspace";
 
     public FindTextInNedFilesActionDelegate() {
-		setId(ID);
-		setActionDefinitionId(NedTextEditorAction.ACTION_DEFINITION_PREFIX + ID);
-		setText("Search Text in NED Files"); // looks like it's still needed for the context menu?
-	}
+        setId(ID);
+        setActionDefinitionId(NedTextEditorAction.ACTION_DEFINITION_PREFIX + ID);
+        setText("Search Text in NED Files"); // looks like it's still needed for the context menu?
+    }
 
     @Override
     public void run() {
@@ -89,7 +89,7 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
     }
 
     @Override
-	protected ISearchQuery createQuery(TextSearchQueryProvider provider, final String searchText) throws CoreException {
+    protected ISearchQuery createQuery(TextSearchQueryProvider provider, final String searchText) throws CoreException {
         // we only want to search in NED files. Ignore the provider, and create the query ourselves.
         FileTextSearchScope scope = FileTextSearchScope.newSearchScope(
                 new IResource[] {ResourcesPlugin.getWorkspace().getRoot()},
@@ -104,7 +104,7 @@ public class FindTextInNedFilesActionDelegate extends RetrieverAction {
                 return "'" + searchText + "' - " + StringUtils.formatCounted(matches, "match") + " in workspace NED files";
             }
         };
-	}
+    }
 
     protected String escape(String searchText) {
         return StringUtils.containsNone(searchText, "*?+.^$()[]{}|\\") ? searchText : Pattern.quote(searchText);

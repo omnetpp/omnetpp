@@ -20,31 +20,31 @@ import org.omnetpp.common.CommonPlugin;
  * @author Andras
  */
 public class ShowViewAction extends Action {
-	private String viewID;
+    private String viewID;
 
-	/**
+    /**
      * A generic view displayer. the action's id is the same as the view id
-	 * @param viewID to be shown
-	 */
-	public ShowViewAction(String viewID) {
+     * @param viewID to be shown
+     */
+    public ShowViewAction(String viewID) {
         setId(viewID);
-		IViewDescriptor viewDesc = PlatformUI.getWorkbench().getViewRegistry().find(viewID);
-		if (viewDesc == null)
-			throw new IllegalArgumentException("No such view registered: "+viewID);
-		this.viewID = viewID;
-		setText("Show " + viewDesc.getLabel());
-		setToolTipText("Open the "+viewDesc.getLabel()+" view");
-		setImageDescriptor(viewDesc.getImageDescriptor());
-	}
+        IViewDescriptor viewDesc = PlatformUI.getWorkbench().getViewRegistry().find(viewID);
+        if (viewDesc == null)
+            throw new IllegalArgumentException("No such view registered: "+viewID);
+        this.viewID = viewID;
+        setText("Show " + viewDesc.getLabel());
+        setToolTipText("Open the "+viewDesc.getLabel()+" view");
+        setImageDescriptor(viewDesc.getImageDescriptor());
+    }
 
-	@Override
-	public void run() {
-		try {
-			IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			workbenchPage.showView(viewID);
-		}
-		catch (PartInitException e) {
-			CommonPlugin.logError(e);
-		}
-	}
+    @Override
+    public void run() {
+        try {
+            IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            workbenchPage.showView(viewID);
+        }
+        catch (PartInitException e) {
+            CommonPlugin.logError(e);
+        }
+    }
 }

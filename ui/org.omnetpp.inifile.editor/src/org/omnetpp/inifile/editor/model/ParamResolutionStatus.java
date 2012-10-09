@@ -9,11 +9,11 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 /**
  * OK status returned by ParamResolutionJob on successful completion.
  * It stores the result of the parameter resolution.
- * 
+ *
  * @author tomi
  */
 public class ParamResolutionStatus extends Status {
-    
+
     public static class Entry {
         String section;
         List<ParamResolution> paramResolutions;

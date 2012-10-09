@@ -37,7 +37,7 @@ import com.swtworkbench.community.xswt.metalogger.Logger;
 
 public class XSWTPreview extends ViewPart {
     public static final String VIEW_ID = "com.swtworkbench.community.xswt.editor.views.XSWTPreview";
-    
+
     public XSWTPreview() {
     }
 
@@ -112,22 +112,22 @@ public class XSWTPreview extends ViewPart {
     }
 
     public void createPartControl(Composite parent) {
-        // in the original XSWT code, there were two SashForms here, to allow resizing the 
-        // composite. However, sashes were not easily discoverable by the user, and also awkward 
-        // because the sashes could not be minimized again (see hardcoded DRAG_MINIMUM=20 in SashForm), 
+        // in the original XSWT code, there were two SashForms here, to allow resizing the
+        // composite. However, sashes were not easily discoverable by the user, and also awkward
+        // because the sashes could not be minimized again (see hardcoded DRAG_MINIMUM=20 in SashForm),
         // and also the whole thing seems unnecessary because the view itself can be resized as well,
         // so I removed the sashes. --Andras
         this.parent = parent;
         getSite().getWorkbenchWindow().getPartService().addPartListener(partListener);
         IWorkspace workspace = ResourcesPlugin.getWorkspace();
         workspace.addResourceChangeListener(resourceChangeListener, 1);
-        
+
         Composite compositeFrame0 = new Composite(parent, SWT.NONE);
         GridLayout gridLayout = new GridLayout();
         gridLayout.marginWidth = 0;
         gridLayout.marginHeight = 0;
         compositeFrame0.setLayout(gridLayout);
-        
+
         Composite compositeFrame = new Composite(compositeFrame0, SWT.NONE);
         compositeFrame.setBackground(new Color(compositeFrame.getDisplay(), 100, 200, 120)); // green frame
         gridLayout = new GridLayout();
@@ -135,7 +135,7 @@ public class XSWTPreview extends ViewPart {
         gridLayout.marginHeight = 2;
         compositeFrame.setLayout(gridLayout);
         compositeFrame.setLayoutData(new GridData(1808));
-        
+
         compositeMain = new Composite(compositeFrame, SWT.NONE);
         compositeMain.setLayout(new GridLayout());
         compositeMain.setLayoutData(new GridData(1808));

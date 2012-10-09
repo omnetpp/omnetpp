@@ -53,25 +53,25 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
     }
 
     public IConnectableElement getSrcModuleRef() {
-    	return resolveConnectedModule(getSrcModule());
+        return resolveConnectedModule(getSrcModule());
     }
 
     public IConnectableElement getDestModuleRef() {
-    	return resolveConnectedModule(getDestModule());
+        return resolveConnectedModule(getDestModule());
     }
 
     /**
      * Sets the source module of the connection
      */
     public void setSrcModuleRef(IConnectableElement srcModule) {
-    	setSrcModule(connectedModuleName(srcModule));
+        setSrcModule(connectedModuleName(srcModule));
     }
 
     /**
      * Sets the destination module of the connection
      */
     public void setDestModuleRef(IConnectableElement destModule) {
-    	setDestModule(connectedModuleName(destModule));
+        setDestModule(connectedModuleName(destModule));
     }
 
     protected String connectedModuleName(IConnectableElement module) {
@@ -85,76 +85,76 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
 
         CompoundModuleElementEx compoundModule = getCompoundModule();
         if (compoundModule == null)
-        	return null; // this is a detached connection
+            return null; // this is a detached connection
         else
-        	return moduleName.equals("") ? compoundModule : compoundModule.getSubmoduleByName(moduleName);
+            return moduleName.equals("") ? compoundModule : compoundModule.getSubmoduleByName(moduleName);
     }
 
     /**
-	 * Returns the identifier of the source module instance the connection connected to
-	 */
-	//FIXME factor out common part with next one
-	public String getSrcModuleWithIndex() {
-		String module = getSrcModule();
-		if (getSrcModuleIndex() != null && !"".equals(getSrcModuleIndex()))
-			module += "["+getSrcModuleIndex()+"]";
+     * Returns the identifier of the source module instance the connection connected to
+     */
+    //FIXME factor out common part with next one
+    public String getSrcModuleWithIndex() {
+        String module = getSrcModule();
+        if (getSrcModuleIndex() != null && !"".equals(getSrcModuleIndex()))
+            module += "["+getSrcModuleIndex()+"]";
 
-		return module;
-	}
+        return module;
+    }
 
-	/**
-	 * Returns the identifier of the destination gate instance the connection connected to
-	 */
-	public String getDestModuleWithIndex() {
-		String module = getDestModule();
-		if (getDestModuleIndex() != null && !"".equals(getDestModuleIndex()))
-			module += "["+getDestModuleIndex()+"]";
+    /**
+     * Returns the identifier of the destination gate instance the connection connected to
+     */
+    public String getDestModuleWithIndex() {
+        String module = getDestModule();
+        if (getDestModuleIndex() != null && !"".equals(getDestModuleIndex()))
+            module += "["+getDestModuleIndex()+"]";
 
-		return module;
-	}
+        return module;
+    }
 
-	/**
-	 * Returns the fully qualified src gate name (with module, index, gate, index)
-	 */
-	public String getSrcGateFullyQualified() {
-		String result = getSrcModuleWithIndex();
-		if (!"".equals(result)) result += ".";
-		result += getSrcGateWithIndex();
-		return result;
-	}
+    /**
+     * Returns the fully qualified src gate name (with module, index, gate, index)
+     */
+    public String getSrcGateFullyQualified() {
+        String result = getSrcModuleWithIndex();
+        if (!"".equals(result)) result += ".";
+        result += getSrcGateWithIndex();
+        return result;
+    }
 
-	/**
-	 * Returns the fully qualified dest gate name (with module, index, gate, index)
-	 */
-	public String getDestGateFullyQualified() {
-		String result = getDestModuleWithIndex();
-		if (!"".equals(result)) result += ".";
-		result += getDestGateWithIndex();
-		return result;
-	}
+    /**
+     * Returns the fully qualified dest gate name (with module, index, gate, index)
+     */
+    public String getDestGateFullyQualified() {
+        String result = getDestModuleWithIndex();
+        if (!"".equals(result)) result += ".";
+        result += getDestGateWithIndex();
+        return result;
+    }
 
-	/**
-	 * Returns the identifier of the source gate instance the connection is connected to
-	 */
-	public String getSrcGateWithIndex() {
-		return getGateNameWithIndex(getSrcGate(), getSrcGateSubg(), getSrcGateIndex(), getSrcGatePlusplus());
-	}
+    /**
+     * Returns the identifier of the source gate instance the connection is connected to
+     */
+    public String getSrcGateWithIndex() {
+        return getGateNameWithIndex(getSrcGate(), getSrcGateSubg(), getSrcGateIndex(), getSrcGatePlusplus());
+    }
 
-	/**
-	 * Returns the identifier of the destination gate instance the connection is connected to
-	 */
-	public String getDestGateWithIndex() {
-		return getGateNameWithIndex(getDestGate(), getDestGateSubg(), getDestGateIndex(), getDestGatePlusplus());
-	}
+    /**
+     * Returns the identifier of the destination gate instance the connection is connected to
+     */
+    public String getDestGateWithIndex() {
+        return getGateNameWithIndex(getDestGate(), getDestGateSubg(), getDestGateIndex(), getDestGatePlusplus());
+    }
 
     public static String getGateNameWithIndex(String name, int subgate, String index, boolean isPlusPlus) {
-		String gate = name;
-		if (subgate == NED_SUBGATE_I) gate += "$i";
-		if (subgate == NED_SUBGATE_O) gate += "$o";
-		if (isPlusPlus) gate += "++";
-		if (StringUtils.isNotEmpty(index)) gate += "["+index+"]";
-		return gate;
-	}
+        String gate = name;
+        if (subgate == NED_SUBGATE_I) gate += "$i";
+        if (subgate == NED_SUBGATE_O) gate += "$o";
+        if (isPlusPlus) gate += "++";
+        if (StringUtils.isNotEmpty(index)) gate += "["+index+"]";
+        return gate;
+    }
 
     /**
      * Returns the name of the source gate (gate name plus subgate, but without index)
@@ -179,17 +179,17 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
 
     @Override
     public void fireModelEvent(NedModelEvent event) {
-    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
-    		displayString = null;
-    	super.fireModelEvent(event);
+        // invalidate cached display string because NED tree may have changed outside the DisplayString class
+        if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
+            displayString = null;
+        super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
+        return displayString;
     }
 
     public DisplayString getDisplayString(INedTypeElement actualType) {
@@ -204,7 +204,7 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
      * connection is not part of the model (i.e. has no compound module parent).
      */
     public CompoundModuleElementEx getCompoundModule() {
-    	return (CompoundModuleElementEx)getEnclosingTypeElement();
+        return (CompoundModuleElementEx)getEnclosingTypeElement();
     }
 
     /**
@@ -242,9 +242,9 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
     }
 
     public INedTypeInfo getNedTypeInfo() {
-    	INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
-    	INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
-		return (typeElement instanceof IChannelKindTypeElement) ? typeInfo : null;
+        INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
+        INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
+        return (typeElement instanceof IChannelKindTypeElement) ? typeInfo : null;
     }
 
     public INedTypeElement getEffectiveTypeRef() {
@@ -260,9 +260,9 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
 
         ParametersElement parametersElement = getFirstParametersChild();
         if (parametersElement != null)
-        	for (INedElement currChild : parametersElement)
-        		if (currChild instanceof ParamElementEx)
-        			result.add((ParamElementEx)currChild);
+            for (INedElement currChild : parametersElement)
+                if (currChild instanceof ParamElementEx)
+                    result.add((ParamElementEx)currChild);
 
         return result;
     }
@@ -330,7 +330,7 @@ public class ConnectionElementEx extends ConnectionElement implements ISubmodule
 
         return chain;
     }
-    
+
     @Override
     public String toString() {
         String arrow = getIsBidirectional() ? "<-->" : "-->";

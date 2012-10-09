@@ -32,39 +32,39 @@ import org.eclipse.emf.edit.domain.EditingDomain;
  * @author Andras
  */
 public class NonnotifyingReparentCommand extends CompoundCommand {
-	private EObject oldParent;
-	private EObject newParent;
+    private EObject oldParent;
+    private EObject newParent;
 
-	public NonnotifyingReparentCommand(EditingDomain editingDomain, EObject element, EObject newParent, int index) {
-		Assert.isTrue(element != null && newParent != null);
-		this.oldParent = element.eContainer();
-		this.newParent = newParent;
-		append(RemoveCommand.create(editingDomain, element));
-		append(AddCommand.create(editingDomain, newParent, null, element));
-	}
+    public NonnotifyingReparentCommand(EditingDomain editingDomain, EObject element, EObject newParent, int index) {
+        Assert.isTrue(element != null && newParent != null);
+        this.oldParent = element.eContainer();
+        this.newParent = newParent;
+        append(RemoveCommand.create(editingDomain, element));
+        append(AddCommand.create(editingDomain, newParent, null, element));
+    }
 
-	@Override
-	public void execute() {
-		boolean oldEDeliver = oldParent.eDeliver();
-		oldParent.eSetDeliver(false);
-		super.execute();
-		oldParent.eSetDeliver(oldEDeliver);
-	}
+    @Override
+    public void execute() {
+        boolean oldEDeliver = oldParent.eDeliver();
+        oldParent.eSetDeliver(false);
+        super.execute();
+        oldParent.eSetDeliver(oldEDeliver);
+    }
 
-	@Override
-	public void redo() {
-		boolean oldEDeliver = oldParent.eDeliver();
-		oldParent.eSetDeliver(false);
-		super.redo();
-		oldParent.eSetDeliver(oldEDeliver);
-	}
+    @Override
+    public void redo() {
+        boolean oldEDeliver = oldParent.eDeliver();
+        oldParent.eSetDeliver(false);
+        super.redo();
+        oldParent.eSetDeliver(oldEDeliver);
+    }
 
-	@Override
-	public void undo() {
-		boolean oldEDeliver = newParent.eDeliver();
-		newParent.eSetDeliver(false);
-		super.undo();
-		newParent.eSetDeliver(oldEDeliver);
-	}
+    @Override
+    public void undo() {
+        boolean oldEDeliver = newParent.eDeliver();
+        newParent.eSetDeliver(false);
+        super.undo();
+        newParent.eSetDeliver(oldEDeliver);
+    }
 
 }

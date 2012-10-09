@@ -84,10 +84,10 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
 
                 // If we have a selection on an inner element, find the first element up that may have a C++ implementation
                 // or stop at the top level NedFileElement
-                while (nedElement!=null && !(nedElement instanceof INedTypeElement || nedElement instanceof ISubmoduleOrConnection 
+                while (nedElement!=null && !(nedElement instanceof INedTypeElement || nedElement instanceof ISubmoduleOrConnection
                                              || nedElement instanceof NedFileElementEx))
                     nedElement = nedElement.getParent();
-                
+
                 // if the whole file is selected find the first simple module element that may
                 // have C++ implementation. Or try a Channel if no simple module exist in the file
                 if (nedElement instanceof NedFileElementEx) {
@@ -98,10 +98,10 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                     if (implicitSelection != null)
                         nedElement = implicitSelection;
                 }
-                
+
                 if (nedElement instanceof ISubmoduleOrConnection)
                     nedElement = ((ISubmoduleOrConnection)nedElement).getEffectiveTypeRef();
-                
+
                 if (nedElement instanceof SimpleModuleElement || nedElement instanceof ChannelElement) {
                     INedTypeElement nedTypeElement = (INedTypeElement)nedElement;
                     if (nedTypeElement.getNedTypeInfo().getProject() != null) // not a built-in type
@@ -136,7 +136,7 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
                     if(!openNearbyCppFile(page, editedFile)) {
                         MessageDialog.openError(window.getShell(), "Not Found", "C++ class '"+className+"' not found in project '"+project.getName()+"' and its referenced projects.");
                     }
-                        
+
                 }
             }
         }
@@ -165,7 +165,7 @@ public class GotoCppDefinitionForNedTypeHandler extends AbstractHandler {
         }
         return false;
     }
-    
+
     private boolean gotoCppDefinition(IWorkbenchPage page, IProject[] projects, String qualifiedClassName) {
         IIndexManager manager = CCorePlugin.getIndexManager();
 

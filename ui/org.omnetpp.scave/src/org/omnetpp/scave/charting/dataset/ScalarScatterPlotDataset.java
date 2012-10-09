@@ -29,96 +29,96 @@ import org.omnetpp.scave.model2.IsoLineData;
  */
 public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAveragedXYDataset {
 
-	private XYDataset scalars;      // first rows contains X values,
-	                        		// other rows contain Y values (NaN if missing)
-	private String[] keys;
+    private XYDataset scalars;      // first rows contains X values,
+                                    // other rows contain Y values (NaN if missing)
+    private String[] keys;
 
-	public ScalarScatterPlotDataset(XYDataset scalars, IsoLineData[] isoLineId) {
-		this.scalars = scalars;
-		this.keys = computeKeys(this.scalars, isoLineId);
-	}
+    public ScalarScatterPlotDataset(XYDataset scalars, IsoLineData[] isoLineId) {
+        this.scalars = scalars;
+        this.keys = computeKeys(this.scalars, isoLineId);
+    }
 
-	public String getTitle(String format) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getTitle(String format) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public int getSeriesCount() {
-		return keys.length;
-	}
+    public int getSeriesCount() {
+        return keys.length;
+    }
 
-	public String getSeriesKey(int series) {
-		return keys[series];
-	}
-	
+    public String getSeriesKey(int series) {
+        return keys[series];
+    }
+
     public String getSeriesTitle(int series, String format) {
         return getSeriesKey(series); // TODO
     }
 
-	public int getItemCount(int series) {
-		return scalars.getColumnCount();
-	}
+    public int getItemCount(int series) {
+        return scalars.getColumnCount();
+    }
 
-	public double getX(int series, int item) {
-		return scalars.getValue(0, item).getMean();
-	}
+    public double getX(int series, int item) {
+        return scalars.getValue(0, item).getMean();
+    }
 
-	public BigDecimal getPreciseX(int series, int item) {
-		return new BigDecimal(getX(series, item));
-	}
+    public BigDecimal getPreciseX(int series, int item) {
+        return new BigDecimal(getX(series, item));
+    }
 
-	public Statistics getXStatistics(int series, int item) {
-		return scalars.getValue(0, item);
-	}
+    public Statistics getXStatistics(int series, int item) {
+        return scalars.getValue(0, item);
+    }
 
-	public double getY(int series, int item) {
-		return scalars.getValue(series+1, item).getMean();
-	}
+    public double getY(int series, int item) {
+        return scalars.getValue(series+1, item).getMean();
+    }
 
-	public BigDecimal getPreciseY(int series, int item) {
-		return new BigDecimal(getY(series, item));
-	}
+    public BigDecimal getPreciseY(int series, int item) {
+        return new BigDecimal(getY(series, item));
+    }
 
-	public Statistics getYStatistics(int series, int item) {
-		return scalars.getValue(series+1, item);
-	}
+    public Statistics getYStatistics(int series, int item) {
+        return scalars.getValue(series+1, item);
+    }
 
-	private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);
-	private static final ResultItemField NAME = new ResultItemField(ResultItemField.NAME);
+    private static final ResultItemField MODULE = new ResultItemField(ResultItemField.MODULE);
+    private static final ResultItemField NAME = new ResultItemField(ResultItemField.NAME);
 
-	private static String[] computeKeys(XYDataset data, IsoLineData[] isoLineId) {
-		// each row has the same value of the iso scalars
-		StringBuilder sb = new StringBuilder();
-		if (isoLineId != null) {
-		    // produce "name1=value1 name2=value2 ..."
-			for (int i = 0; i < isoLineId.length; ++i) {
-				if (i == 0)
-					sb.append(" - ");
-				else
-					sb.append(" ");
+    private static String[] computeKeys(XYDataset data, IsoLineData[] isoLineId) {
+        // each row has the same value of the iso scalars
+        StringBuilder sb = new StringBuilder();
+        if (isoLineId != null) {
+            // produce "name1=value1 name2=value2 ..."
+            for (int i = 0; i < isoLineId.length; ++i) {
+                if (i == 0)
+                    sb.append(" - ");
+                else
+                    sb.append(" ");
 
-				// add "name=value"; leave out where value is empty (that's usually
-				// an itervar which is missing from the given run)
-				IsoLineData isoData = isoLineId[i];
-				if (!StringUtils.isEmpty(isoData.getValue())) {
-				    if (isoData.getModuleName() != null && isoData.getDataName() != null)
-				        sb.append(isoData.getModuleName()).append(" ").append(isoData.getDataName());
-				    else
-				        sb.append(isoData.getAttributeName());
-				    sb.append("=").append(isoData.getValue());
+                // add "name=value"; leave out where value is empty (that's usually
+                // an itervar which is missing from the given run)
+                IsoLineData isoData = isoLineId[i];
+                if (!StringUtils.isEmpty(isoData.getValue())) {
+                    if (isoData.getModuleName() != null && isoData.getDataName() != null)
+                        sb.append(isoData.getModuleName()).append(" ").append(isoData.getDataName());
+                    else
+                        sb.append(isoData.getAttributeName());
+                    sb.append("=").append(isoData.getValue());
                 }
-			}
-		}
-		String isoScalarValues = sb.toString();
+            }
+        }
+        String isoScalarValues = sb.toString();
 
-		// first row contains the common X coordinates
-		// name the lines after their Y data
-		String[] keys = new String[data.getRowCount()-1];
-		for (int i=0; i<keys.length; ++i) {
-			keys[i] = data.getRowField(i+1, MODULE) + " " +
-					   data.getRowField(i+1, NAME) +
-					   isoScalarValues;
-		}
-		return keys;
-	}
+        // first row contains the common X coordinates
+        // name the lines after their Y data
+        String[] keys = new String[data.getRowCount()-1];
+        for (int i=0; i<keys.length; ++i) {
+            keys[i] = data.getRowField(i+1, MODULE) + " " +
+                       data.getRowField(i+1, NAME) +
+                       isoScalarValues;
+        }
+        return keys;
+    }
 }

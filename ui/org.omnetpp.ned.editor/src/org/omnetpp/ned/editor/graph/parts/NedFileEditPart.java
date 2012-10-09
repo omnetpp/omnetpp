@@ -47,12 +47,12 @@ public class NedFileEditPart extends NedEditPart {
 
     @Override
     public boolean isEditable() {
-    	NedFileElementEx nedFileElement = getModel();
-    	return super.isEditable() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError();
+        NedFileElementEx nedFileElement = getModel();
+        return super.isEditable() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError();
     }
 
     @Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public Object getAdapter(Class adapter) {
         if (adapter == SnapToHelper.class) {
             List snapStrategies = new ArrayList();
@@ -72,14 +72,14 @@ public class NedFileEditPart extends NedEditPart {
 
     @Override
     protected void refreshVisuals() {
-    	super.refreshVisuals();
-   		getFigure().setProblemMessage(!getModel().hasSyntaxError() ? null : "Syntax error, the graphical editor content may be outdated and invalid. Please fix the syntax errors first.");
-   		getFigure().setPackageName(getModel().getPackage());
+        super.refreshVisuals();
+        getFigure().setProblemMessage(!getModel().hasSyntaxError() ? null : "Syntax error, the graphical editor content may be outdated and invalid. Please fix the syntax errors first.");
+        getFigure().setPackageName(getModel().getPackage());
     }
 
     @Override
     protected List<INedTypeElement> getModelChildren() {
-    	return getModel().getTopLevelTypeNodes();
+        return getModel().getTopLevelTypeNodes();
     }
 
     @Override
@@ -88,15 +88,15 @@ public class NedFileEditPart extends NedEditPart {
     }
 
     @Override
-	public NedFileElementEx getModel() {
-		return (NedFileElementEx)super.getModel();
-	}
+    public NedFileElementEx getModel() {
+        return (NedFileElementEx)super.getModel();
+    }
 
     @Override
     protected IFigure createFigure() {
         return new NedFileFigure();
     }
-    
+
     @Override
     public NedFileFigure getFigure() {
         return (NedFileFigure)super.getFigure();

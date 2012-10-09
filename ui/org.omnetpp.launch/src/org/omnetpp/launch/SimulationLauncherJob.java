@@ -70,8 +70,8 @@ public class SimulationLauncherJob extends Job {
     protected IStatus run(IProgressMonitor monitor) {
         IStatus status;
         try {
-		SubMonitor smon = SubMonitor.convert(monitor, "", 1);
-		status = launchSimulation(configuration, launch, smon.newChild(1), runNo);
+        SubMonitor smon = SubMonitor.convert(monitor, "", 1);
+        status = launchSimulation(configuration, launch, smon.newChild(1), runNo);
         }
         catch (CoreException e) {
             return e.getStatus();
@@ -94,9 +94,9 @@ public class SimulationLauncherJob extends Job {
             monitor.subTask("Run #"+runNo+" - Initializing");
 
         monitor.setWorkRemaining(100);
-        
+
         String additionalArgs = " -r "+runNo;
-        
+
         // calculate the command-line for display purposes (dump to the console before start)
         String[] cmdLineArgs = OmnetppLaunchUtils.createCommandLine(configuration, additionalArgs);
         IPath workingDir = OmnetppLaunchUtils.getWorkingDirectoryPath(configuration);
@@ -119,23 +119,23 @@ public class SimulationLauncherJob extends Job {
 
         // setup a stream monitor on the process output, so we can track the progress
         if (reportProgress)
-        	iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
-        		int prevPct = 0;
-        		public void streamAppended(String text, IStreamMonitor ismon) {
-        			int pct = OmnetppLaunchUtils.getProgressInPercent(text);
-        			if (pct >= 0) {
-        				monitor.worked(pct - prevPct);
-        				prevPct = pct;
-        			}
+            iprocess.getStreamsProxy().getOutputStreamMonitor().addListener(new IStreamListener () {
+                int prevPct = 0;
+                public void streamAppended(String text, IStreamMonitor ismon) {
+                    int pct = OmnetppLaunchUtils.getProgressInPercent(text);
+                    if (pct >= 0) {
+                        monitor.worked(pct - prevPct);
+                        prevPct = pct;
+                    }
 
-        			if (OmnetppLaunchUtils.isWaitingForUserInput(text))
-        			    monitor.setTaskName("Run #"+runNo+" - Waiting for user input... (Switch to console)");
-        			else
-        			    monitor.setTaskName("Run #"+runNo+" - Executing ("+prevPct+"%)");
-        		}
-        	});
+                    if (OmnetppLaunchUtils.isWaitingForUserInput(text))
+                        monitor.setTaskName("Run #"+runNo+" - Waiting for user input... (Switch to console)");
+                    else
+                        monitor.setTaskName("Run #"+runNo+" - Executing ("+prevPct+"%)");
+                }
+            });
         else
-        	monitor.worked(50);
+            monitor.worked(50);
 
         // poll the state of the monitor and terminate the process if cancel was requested
         while (!iprocess.isTerminated()) {

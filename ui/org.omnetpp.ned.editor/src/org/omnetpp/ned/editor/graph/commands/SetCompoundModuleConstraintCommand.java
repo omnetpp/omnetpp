@@ -23,7 +23,7 @@ public class SetCompoundModuleConstraintCommand extends Command {
     private CompoundModuleElementEx module;
 
     public SetCompoundModuleConstraintCommand(CompoundModuleElementEx newModule) {
-    	super();
+        super();
         module = newModule;
     }
 

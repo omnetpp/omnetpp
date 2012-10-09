@@ -56,13 +56,13 @@ public class NedModelLabelProvider extends LabelProvider {
         this.prefixWithParent = prefixWithParent;
     }
 
-	@Override
+    @Override
     public String getText(Object obj) {
-	    if (obj instanceof INedTypeInfo)
-	        obj = ((INedTypeInfo)obj).getNedElement();
+        if (obj instanceof INedTypeInfo)
+            obj = ((INedTypeInfo)obj).getNedElement();
 
-	    if (!(obj instanceof INedElement))
-	        return obj.toString();
+        if (!(obj instanceof INedElement))
+            return obj.toString();
 
         INedElement model = (INedElement)obj;
         String label = "???";
@@ -142,15 +142,15 @@ public class NedModelLabelProvider extends LabelProvider {
         }
 
         return label;
-	}
+    }
 
-	private String parentPrefixFor(INedElement node) {
-	    if (!prefixWithParent)
-	        return "";
+    private String parentPrefixFor(INedElement node) {
+        if (!prefixWithParent)
+            return "";
 
-	    // produce "TypeName." or "TypeName.submoduleName." or "Typename.<conn>."
-	    String prefix = "";
-	    INedElement e = node.getParent();
+        // produce "TypeName." or "TypeName.submoduleName." or "Typename.<conn>."
+        String prefix = "";
+        INedElement e = node.getParent();
         while (e != null) {
             if (e instanceof SubmoduleElementEx) {
                 SubmoduleElementEx ee = (SubmoduleElementEx)e;
@@ -171,11 +171,11 @@ public class NedModelLabelProvider extends LabelProvider {
         }
         return "";
 
-	}
+    }
 
-	private static String bracketizeIfNotEmpty(String attr) {
-		return attr==null || attr.equals("") ? "" : "["+attr+"]";
-	}
+    private static String bracketizeIfNotEmpty(String attr) {
+        return attr==null || attr.equals("") ? "" : "["+attr+"]";
+    }
 
     private static String getSourceWithoutComments(INedElement element) {
         INedElement node = element.deepDup();
@@ -231,7 +231,7 @@ public class NedModelLabelProvider extends LabelProvider {
         }
 
         return image;
-	}
+    }
 
     /**
      * Returns the default label/icon provider for NED model trees

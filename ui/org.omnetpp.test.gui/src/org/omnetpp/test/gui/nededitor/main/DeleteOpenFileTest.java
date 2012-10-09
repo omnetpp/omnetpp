@@ -20,18 +20,18 @@ import org.omnetpp.test.gui.nededitor.NedFileTestCase;
  * @author Andras
  */
 public class DeleteOpenFileTest
-	extends NedFileTestCase
+    extends NedFileTestCase
 {
-	public void testOpenFile() throws Throwable {
-		createFileWithContent("simple Test {}");
-		openFileFromProjectExplorerView();
-		WorkbenchUtils.ensureViewActivated("General", "Outline");
+    public void testOpenFile() throws Throwable {
+        createFileWithContent("simple Test {}");
+        openFileFromProjectExplorerView();
+        WorkbenchUtils.ensureViewActivated("General", "Outline");
         WorkbenchUtils.ensureViewActivated("General", "Properties");
-		findNedEditor().ensureActiveGraphicalEditor();
+        findNedEditor().ensureActiveGraphicalEditor();
 
-		WorkspaceUtils.assertFileExists("/" + projectName + "/" + fileName);
-		WorkspaceUtils.ensureFileNotExists(projectName, fileName);
+        WorkspaceUtils.assertFileExists("/" + projectName + "/" + fileName);
+        WorkspaceUtils.ensureFileNotExists(projectName, fileName);
 
-		WorkbenchUtils.ensureViewActivated("General", "Outline");  // give views a chance to crash
-	}
+        WorkbenchUtils.ensureViewActivated("General", "Outline");  // give views a chance to crash
+    }
 }

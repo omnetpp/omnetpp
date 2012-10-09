@@ -72,16 +72,16 @@ abstract public class NedBasePropertySource implements IPropertySource2 {
     public static String convertQNameToDisplayName(String qname) {
         if (qname==null || !qname.contains("."))
             return qname;
-        
+
         return StringUtils.substringAfterLast(qname, ".")+" ("+StringUtils.substringBeforeLast(qname, ".")+")";
     }
-    
+
     /**
-     * Returns all possible type values in a display friendly format "Name (packagename)" 
-     * that can be used in a given element for the type, likeType or extends attribute. 
+     * Returns all possible type values in a display friendly format "Name (packagename)"
+     * that can be used in a given element for the type, likeType or extends attribute.
      * Removes the name corresponding to the element (to eliminate self recursion)
-     * and also the name of the compound module containing the element (for submodules and inner types), 
-     * because that would cause loops in the type hierarchy.  
+     * and also the name of the compound module containing the element (for submodules and inner types),
+     * because that would cause loops in the type hierarchy.
      * Predicate can specify what kind of types to return (INedResources.MODULE_FILTER etc.)
      */
     public List<String> getPossibleTypeDisplayNames(INedElement element, IPredicate predicate) {
@@ -95,22 +95,22 @@ abstract public class NedBasePropertySource implements IPropertySource2 {
             // remove the containing type
             typeNames.remove(((CompoundModuleElementEx)context).getNedTypeInfo().getFullyQualifiedName());
         }
-        
+
         // remove the name of the element itself to avoid self recursion
-        if (element instanceof INedTypeElement) 
+        if (element instanceof INedTypeElement)
             typeNames.remove(((INedTypeElement)element).getNedTypeInfo().getFullyQualifiedName());
-        
+
         // convert to display friendly names
         for(int i=0; i<typeNames.size(); ++i)
             typeNames.set(i, convertQNameToDisplayName(typeNames.get(i)));
-        
+
         Collections.sort(typeNames);
         return typeNames;
     }
-    
+
     /**
      * Returns the fully qualified name using the provided context from the simple name.
-     * If the lookup is unsuccessful it returns the name unchanged. 
+     * If the lookup is unsuccessful it returns the name unchanged.
      */
     public String lookupFullyQualifiedName(INedTypeLookupContext context, String name) {
         INedTypeInfo typeInfo = NedElement.resolveTypeName(name, context);

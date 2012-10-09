@@ -40,191 +40,191 @@ import org.omnetpp.scave.engine.ResultItemFields;
  */
 public class ResultItemFormatter {
 
-	private static final String fieldSpecifierRE = "(?<!\\\\)\\$\\{([a-zA-Z-_]+)\\}";
-	private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
+    private static final String fieldSpecifierRE = "(?<!\\\\)\\$\\{([a-zA-Z-_]+)\\}";
+    private static final Pattern fsPattern = Pattern.compile(fieldSpecifierRE);
 
-	private static final Map<String,IResultItemFormatter> formatters;
+    private static final Map<String,IResultItemFormatter> formatters;
 
-	static {
-		formatters = new HashMap<String,IResultItemFormatter>();
-		formatters.put("title_or_name", new TitleOrNameFormatter());
-		for (String field : ResultItemFields.getFieldNames().toArray()) {
-			IResultItemFormatter formatter = null;
-			if (field.equals(FILE))
-				formatter = new FileNameFormatter();
-			else if (field.equals(RUN))
-				formatter = new RunNameFormatter();
-			else if (field.equals(MODULE))
-				formatter = new ModuleNameFormatter();
-			else if (field.equals(NAME))
-				formatter = new DataNameFormatter();
-			else
-				formatter = new RunAttributeFormatter(field);
-			if (formatter != null)
-				formatters.put(field, formatter);
-		}
-	}
+    static {
+        formatters = new HashMap<String,IResultItemFormatter>();
+        formatters.put("title_or_name", new TitleOrNameFormatter());
+        for (String field : ResultItemFields.getFieldNames().toArray()) {
+            IResultItemFormatter formatter = null;
+            if (field.equals(FILE))
+                formatter = new FileNameFormatter();
+            else if (field.equals(RUN))
+                formatter = new RunNameFormatter();
+            else if (field.equals(MODULE))
+                formatter = new ModuleNameFormatter();
+            else if (field.equals(NAME))
+                formatter = new DataNameFormatter();
+            else
+                formatter = new RunAttributeFormatter(field);
+            if (formatter != null)
+                formatters.put(field, formatter);
+        }
+    }
 
-	public static String[] formatResultItems(String format, ResultItem[] items) {
-		return formatResultItems(format, Arrays.asList(items));
-	}
+    public static String[] formatResultItems(String format, ResultItem[] items) {
+        return formatResultItems(format, Arrays.asList(items));
+    }
 
-	public static String[] formatResultItems(String format, Collection<? extends ResultItem> items) {
-		Object[] formatObjects = parseFormatString(format);
-		String[] names = new String[items.size()];
-		int i = 0;
-		for (ResultItem item : items)
-			names[i++] = formatResultItem(formatObjects, item);
-		return names;
-	}
+    public static String[] formatResultItems(String format, Collection<? extends ResultItem> items) {
+        Object[] formatObjects = parseFormatString(format);
+        String[] names = new String[items.size()];
+        int i = 0;
+        for (ResultItem item : items)
+            names[i++] = formatResultItem(formatObjects, item);
+        return names;
+    }
 
-	public static String formatResultItem(String format, ResultItem item) {
-		return formatResultItem(parseFormatString(format), item);
-	}
+    public static String formatResultItem(String format, ResultItem item) {
+        return formatResultItem(parseFormatString(format), item);
+    }
 
-	private static String formatResultItem(Object[] format, ResultItem item) {
-		StrBuilder sb = new StrBuilder();
-		for (Object formatObj : format) {
-			format(formatObj, item, sb);
-		}
-		return sb.toString();
-	}
+    private static String formatResultItem(Object[] format, ResultItem item) {
+        StrBuilder sb = new StrBuilder();
+        for (Object formatObj : format) {
+            format(formatObj, item, sb);
+        }
+        return sb.toString();
+    }
 
-	public static String formatMultipleResultItem(String format, ResultItem[] items) {
-		return formatMultipleResultItem(parseFormatString(format), Arrays.asList(items));
-	}
+    public static String formatMultipleResultItem(String format, ResultItem[] items) {
+        return formatMultipleResultItem(parseFormatString(format), Arrays.asList(items));
+    }
 
-	private static String formatMultipleResultItem(Object[] format, Collection<? extends ResultItem> items) {
-		StrBuilder sb = new StrBuilder();
-		for (Object formatObj : format) {
-			format(formatObj, items, sb);
-		}
-		return sb.toString();
-	}
+    private static String formatMultipleResultItem(Object[] format, Collection<? extends ResultItem> items) {
+        StrBuilder sb = new StrBuilder();
+        for (Object formatObj : format) {
+            format(formatObj, items, sb);
+        }
+        return sb.toString();
+    }
 
-	private static void format(Object formatObj, ResultItem item, StrBuilder sb) {
-		if (formatObj instanceof String)
-			sb.append(formatObj);
-		else if (formatObj instanceof IResultItemFormatter)
-			sb.append(((IResultItemFormatter)formatObj).format(item));
-	}
+    private static void format(Object formatObj, ResultItem item, StrBuilder sb) {
+        if (formatObj instanceof String)
+            sb.append(formatObj);
+        else if (formatObj instanceof IResultItemFormatter)
+            sb.append(((IResultItemFormatter)formatObj).format(item));
+    }
 
-	@SuppressWarnings("unchecked")
-	private static void format(Object formatObj, Collection<? extends ResultItem> items, StrBuilder sb) {
-		if (formatObj instanceof String)
-			sb.append(formatObj);
-		else if (formatObj instanceof IResultItemFormatter) {
-			Set<String> strings = new ListOrderedSet();
-			IResultItemFormatter formatter = (IResultItemFormatter)formatObj;
-			for (ResultItem item : items) {
-				String str = formatter.format(item);
-				boolean added = strings.add(str);
-				if (added && strings.size() > 3) {
-					strings.remove(str);
-					strings.add("...");
-					break;
-				}
-			}
-			if (strings.size() > 1) sb.append('{');
-			sb.appendWithSeparators(strings, ",");
-			if (strings.size() > 1) sb.append('}');
-		}
-	}
+    @SuppressWarnings("unchecked")
+    private static void format(Object formatObj, Collection<? extends ResultItem> items, StrBuilder sb) {
+        if (formatObj instanceof String)
+            sb.append(formatObj);
+        else if (formatObj instanceof IResultItemFormatter) {
+            Set<String> strings = new ListOrderedSet();
+            IResultItemFormatter formatter = (IResultItemFormatter)formatObj;
+            for (ResultItem item : items) {
+                String str = formatter.format(item);
+                boolean added = strings.add(str);
+                if (added && strings.size() > 3) {
+                    strings.remove(str);
+                    strings.add("...");
+                    break;
+                }
+            }
+            if (strings.size() > 1) sb.append('{');
+            sb.appendWithSeparators(strings, ",");
+            if (strings.size() > 1) sb.append('}');
+        }
+    }
 
-	public static Object[] parseFormatString(String format) {
-		List<Object> formatObjs = new ArrayList<Object>();
-		Matcher matcher = fsPattern.matcher(format);
-		int start = 0, len = format.length();
-		while (start < len) {
-		    if (matcher.find(start)) {
-		    	// add previous characters as fixed string
-				if (matcher.start() != start)
-				    formatObjs.add(unquoteDollar(format.substring(start, matcher.start())));
+    public static Object[] parseFormatString(String format) {
+        List<Object> formatObjs = new ArrayList<Object>();
+        Matcher matcher = fsPattern.matcher(format);
+        int start = 0, len = format.length();
+        while (start < len) {
+            if (matcher.find(start)) {
+                // add previous characters as fixed string
+                if (matcher.start() != start)
+                    formatObjs.add(unquoteDollar(format.substring(start, matcher.start())));
 
-				String fieldName = matcher.group(1);
-				IResultItemFormatter formatter = getFormatter(fieldName);
-				if (formatter != null)
-					formatObjs.add(formatter);
-				else
-					formatObjs.add(format.substring(matcher.start(), matcher.end()));
+                String fieldName = matcher.group(1);
+                IResultItemFormatter formatter = getFormatter(fieldName);
+                if (formatter != null)
+                    formatObjs.add(formatter);
+                else
+                    formatObjs.add(format.substring(matcher.start(), matcher.end()));
                 start = matcher.end();
-		    }
-		    else {
-				// No more valid format specifiers.
-				// The rest of the string is fixed text
-				formatObjs.add(unquoteDollar(format.substring(start)));
-				break;
-		    }
-		}
-		return formatObjs.toArray();
-	}
-	
-	private static String unquoteDollar(String str) {
-	    return str.replace("\\$", "$");
-	}
+            }
+            else {
+                // No more valid format specifiers.
+                // The rest of the string is fixed text
+                formatObjs.add(unquoteDollar(format.substring(start)));
+                break;
+            }
+        }
+        return formatObjs.toArray();
+    }
 
-	public static boolean isPlainFormat(String format) {
-		return !fsPattern.matcher(format).find();
-	}
+    private static String unquoteDollar(String str) {
+        return str.replace("\\$", "$");
+    }
 
-	private static IResultItemFormatter getFormatter(String field) {
-		if ("index".equals(field))
-			return new IndexFormatter();
-		else {
-		    IResultItemFormatter resultItemFormatter = formatters.get(field);
+    public static boolean isPlainFormat(String format) {
+        return !fsPattern.matcher(format).find();
+    }
 
-		    if (resultItemFormatter != null)
-		        return resultItemFormatter;
-		    else
-		        return new ResultItemAttributeFormatter(field);
-		}
-	}
+    private static IResultItemFormatter getFormatter(String field) {
+        if ("index".equals(field))
+            return new IndexFormatter();
+        else {
+            IResultItemFormatter resultItemFormatter = formatters.get(field);
 
-	interface IResultItemFormatter
-	{
-		String format(ResultItem item);
-	}
+            if (resultItemFormatter != null)
+                return resultItemFormatter;
+            else
+                return new ResultItemAttributeFormatter(field);
+        }
+    }
 
-	static class FileNameFormatter implements IResultItemFormatter
-	{
-		public String format(ResultItem item) {
-			return item.getFileRun().getFile().getFilePath();
-		}
-	}
+    interface IResultItemFormatter
+    {
+        String format(ResultItem item);
+    }
 
-	static class RunNameFormatter implements IResultItemFormatter
-	{
-		public String format(ResultItem item) {
-			return item.getFileRun().getRun().getRunName();
-		}
-	}
+    static class FileNameFormatter implements IResultItemFormatter
+    {
+        public String format(ResultItem item) {
+            return item.getFileRun().getFile().getFilePath();
+        }
+    }
 
-	static class ModuleNameFormatter implements IResultItemFormatter
-	{
-		public String format(ResultItem item) {
-			return item.getModuleName();
-		}
-	}
+    static class RunNameFormatter implements IResultItemFormatter
+    {
+        public String format(ResultItem item) {
+            return item.getFileRun().getRun().getRunName();
+        }
+    }
 
-	static class DataNameFormatter implements IResultItemFormatter
-	{
-		public String format(ResultItem item) {
-			return item.getName();
-		}
-	}
+    static class ModuleNameFormatter implements IResultItemFormatter
+    {
+        public String format(ResultItem item) {
+            return item.getModuleName();
+        }
+    }
 
-	static class RunAttributeFormatter implements IResultItemFormatter
-	{
-		private String attrName;
+    static class DataNameFormatter implements IResultItemFormatter
+    {
+        public String format(ResultItem item) {
+            return item.getName();
+        }
+    }
 
-		public RunAttributeFormatter(String attrName) {
-			this.attrName = attrName;
-		}
+    static class RunAttributeFormatter implements IResultItemFormatter
+    {
+        private String attrName;
 
-		public String format(ResultItem item) {
-	        return item.getFileRun().getRun().getAttribute(attrName);
-		}
-	}
+        public RunAttributeFormatter(String attrName) {
+            this.attrName = attrName;
+        }
+
+        public String format(ResultItem item) {
+            return item.getFileRun().getRun().getAttribute(attrName);
+        }
+    }
 
     static class ResultItemAttributeFormatter implements IResultItemFormatter
     {
@@ -243,14 +243,14 @@ public class ResultItemFormatter {
         }
     }
 
-	static class IndexFormatter implements IResultItemFormatter
-	{
-		int index;
+    static class IndexFormatter implements IResultItemFormatter
+    {
+        int index;
 
-		public String format(ResultItem item) {
-			return String.valueOf(index++);
-		}
-	}
+        public String format(ResultItem item) {
+            return String.valueOf(index++);
+        }
+    }
 
     static class TitleOrNameFormatter implements IResultItemFormatter
     {

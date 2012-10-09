@@ -25,92 +25,92 @@ import org.eclipse.ui.editors.text.ILocationProvider;
 // FIXME delete me
 public class NonExistingFileEditorInput_OLD implements IEditorInput, ILocationProvider {
 
-	private static int fgNonExisting= 0;
+    private static int fgNonExisting= 0;
 
-	private File fFile;
-	private String fName;
+    private File fFile;
+    private String fName;
 
-	public NonExistingFileEditorInput_OLD(File file, String namePrefix) {
-		super();
-		fFile= file;
-		++fgNonExisting;
-		fName= namePrefix + " " + fgNonExisting; //$NON-NLS-1$
-	}
+    public NonExistingFileEditorInput_OLD(File file, String namePrefix) {
+        super();
+        fFile= file;
+        ++fgNonExisting;
+        fName= namePrefix + " " + fgNonExisting; //$NON-NLS-1$
+    }
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#exists()
-	 */
-	public boolean exists() {
-		return false;
-	}
+    /*
+     * @see org.eclipse.ui.IEditorInput#exists()
+     */
+    public boolean exists() {
+        return false;
+    }
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
-	 */
-	public ImageDescriptor getImageDescriptor() {
-		return null;
-	}
+    /*
+     * @see org.eclipse.ui.IEditorInput#getImageDescriptor()
+     */
+    public ImageDescriptor getImageDescriptor() {
+        return null;
+    }
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#getName()
-	 */
-	public String getName() {
-		return fName;
-	}
+    /*
+     * @see org.eclipse.ui.IEditorInput#getName()
+     */
+    public String getName() {
+        return fName;
+    }
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#getPersistable()
-	 */
-	public IPersistableElement getPersistable() {
-		return null;
-	}
+    /*
+     * @see org.eclipse.ui.IEditorInput#getPersistable()
+     */
+    public IPersistableElement getPersistable() {
+        return null;
+    }
 
-	/*
-	 * @see org.eclipse.ui.IEditorInput#getToolTipText()
-	 */
-	public String getToolTipText() {
-		return fName;
-	}
+    /*
+     * @see org.eclipse.ui.IEditorInput#getToolTipText()
+     */
+    public String getToolTipText() {
+        return fName;
+    }
 
-	/*
-	 * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
-	 */
-	public Object getAdapter(Class adapter) {
-		if (ILocationProvider.class.equals(adapter))
-			return this;
-		return Platform.getAdapterManager().getAdapter(this, adapter);
-	}
+    /*
+     * @see org.eclipse.core.runtime.IAdaptable#getAdapter(java.lang.Class)
+     */
+    public Object getAdapter(Class adapter) {
+        if (ILocationProvider.class.equals(adapter))
+            return this;
+        return Platform.getAdapterManager().getAdapter(this, adapter);
+    }
 
-	/*
-	 * @see org.eclipse.ui.editors.text.ILocationProvider#getPath(java.lang.Object)
-	 */
-	public IPath getPath(Object element) {
-		if (element instanceof NonExistingFileEditorInput_OLD) {
-			NonExistingFileEditorInput_OLD input= (NonExistingFileEditorInput_OLD) element;
-			return Path.fromOSString(input.fFile.getAbsolutePath());
-		}
-		return null;
-	}
+    /*
+     * @see org.eclipse.ui.editors.text.ILocationProvider#getPath(java.lang.Object)
+     */
+    public IPath getPath(Object element) {
+        if (element instanceof NonExistingFileEditorInput_OLD) {
+            NonExistingFileEditorInput_OLD input= (NonExistingFileEditorInput_OLD) element;
+            return Path.fromOSString(input.fFile.getAbsolutePath());
+        }
+        return null;
+    }
 
-	/*
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object o) {
-		if (o == this)
-			return true;
+    /*
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
 
-		if (o instanceof NonExistingFileEditorInput_OLD) {
-			NonExistingFileEditorInput_OLD input = (NonExistingFileEditorInput_OLD) o;
-			return fFile.equals(input.fFile);
-		}
+        if (o instanceof NonExistingFileEditorInput_OLD) {
+            NonExistingFileEditorInput_OLD input = (NonExistingFileEditorInput_OLD) o;
+            return fFile.equals(input.fFile);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/*
-	 * @see java.lang.Object#hashCode()
-	 */
-	public int hashCode() {
-		return fFile.hashCode();
-	}
+    /*
+     * @see java.lang.Object#hashCode()
+     */
+    public int hashCode() {
+        return fFile.hashCode();
+    }
 }

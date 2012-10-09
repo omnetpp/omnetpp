@@ -29,66 +29,66 @@ import org.omnetpp.scave.wizard.OctaveExportWizard;
  */
 public class ExportDataAction extends AbstractScaveAction {
 
-	/** output formats */
-	public static final String
-		CSV		= "csv",
-		MATLAB	= "matlab",
-		OCTAVE	= "octave";
+    /** output formats */
+    public static final String
+        CSV     = "csv",
+        MATLAB  = "matlab",
+        OCTAVE  = "octave";
 
-	public static final String[] FORMATS = {CSV, OCTAVE };  // We do not provide MATLAB format
+    public static final String[] FORMATS = {CSV, OCTAVE };  // We do not provide MATLAB format
 
-	String format;
+    String format;
 
-	public ExportDataAction(String format) {
-		this.format = format;
-		if (CSV.equals(format)) {
-			setText("CSV...");
-			setToolTipText("Exports selected data in CSV format.");
-		}
-		else if (MATLAB.equals(format)) {
-			setText("Matlab...");
-			setToolTipText("Exports selected data as a Matlab script.");
-		}
-		else if (OCTAVE.equals(format)) {
-			setText("Octave...");
-			setToolTipText("Exports selected data in Octave text format.");
-		}
-	}
+    public ExportDataAction(String format) {
+        this.format = format;
+        if (CSV.equals(format)) {
+            setText("CSV...");
+            setToolTipText("Exports selected data in CSV format.");
+        }
+        else if (MATLAB.equals(format)) {
+            setText("Matlab...");
+            setToolTipText("Exports selected data as a Matlab script.");
+        }
+        else if (OCTAVE.equals(format)) {
+            setText("Octave...");
+            setToolTipText("Exports selected data in Octave text format.");
+        }
+    }
 
-	@Override
-	protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
-		if (selection != null) {
-			final IWorkbenchWizard wizard = createWizard();
-			if (wizard != null) {
-				ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
-					public Object call() throws Exception {
-						wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
-						return null;
-					}
-				});
-				WizardDialog dialog = new WizardDialog(scaveEditor.getSite().getShell(), wizard);
-				dialog.open();
-			}
-		}
-	}
+    @Override
+    protected void doRun(final ScaveEditor scaveEditor, final IStructuredSelection selection) {
+        if (selection != null) {
+            final IWorkbenchWizard wizard = createWizard();
+            if (wizard != null) {
+                ResultFileManager.callWithReadLock(scaveEditor.getResultFileManager(), new Callable<Object>() {
+                    public Object call() throws Exception {
+                        wizard.init(scaveEditor.getSite().getWorkbenchWindow().getWorkbench(), selection);
+                        return null;
+                    }
+                });
+                WizardDialog dialog = new WizardDialog(scaveEditor.getSite().getShell(), wizard);
+                dialog.open();
+            }
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor,
-			IStructuredSelection selection) {
-		return selection instanceof IDListSelection ||
-				(selection instanceof IStructuredSelection &&
-				 (selection.getFirstElement() instanceof Dataset ||
-				  selection.getFirstElement() instanceof DatasetItem));
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor,
+            IStructuredSelection selection) {
+        return selection instanceof IDListSelection ||
+                (selection instanceof IStructuredSelection &&
+                 (selection.getFirstElement() instanceof Dataset ||
+                  selection.getFirstElement() instanceof DatasetItem));
+    }
 
-	private AbstractExportWizard createWizard() {
-		if (CSV.equals(format))
-			return new CsvExportWizard();
-		else if (MATLAB.equals(format))
-			return new MatlabExportWizard();
-		else if (OCTAVE.equals(format))
-			return new OctaveExportWizard();
-		else
-			return null;
-	}
+    private AbstractExportWizard createWizard() {
+        if (CSV.equals(format))
+            return new CsvExportWizard();
+        else if (MATLAB.equals(format))
+            return new MatlabExportWizard();
+        else if (OCTAVE.equals(format))
+            return new OctaveExportWizard();
+        else
+            return null;
+    }
 }

@@ -17,22 +17,22 @@ import java.util.ResourceBundle;
  */
 public class NedEditorMessages {
 
-	private static final String RESOURCE_BUNDLE= NedEditorMessages.class.getName();
+    private static final String RESOURCE_BUNDLE= NedEditorMessages.class.getName();
 
-	private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
+    private static ResourceBundle fgResourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
 
-	private NedEditorMessages() {
-	}
+    private NedEditorMessages() {
+    }
 
-	public static String getString(String key) {
-		try {
-			return fgResourceBundle.getString(key);
-		} catch (MissingResourceException e) {
-			return "!" + key + "!";
-		}
-	}
+    public static String getString(String key) {
+        try {
+            return fgResourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return "!" + key + "!";
+        }
+    }
 
-	public static ResourceBundle getResourceBundle() {
-		return fgResourceBundle;
-	}
+    public static ResourceBundle getResourceBundle() {
+        return fgResourceBundle;
+    }
 }

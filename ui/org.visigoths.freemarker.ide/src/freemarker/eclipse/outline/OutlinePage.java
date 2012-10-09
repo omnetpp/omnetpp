@@ -15,87 +15,87 @@ import freemarker.eclipse.editors.FreemarkerEditor;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
 public class OutlinePage extends ContentOutlinePage {
-	private FreemarkerEditor fEditor;
-	private Object fInput;
-	private String fSelectedNodeID;
-	private OutlineLabelProvider fLabelProvider;
-	
-	/**
-	 * Creates a content outline page using the given editor.
-	 */
-	public OutlinePage(FreemarkerEditor anEditor) {
-		fEditor = anEditor;
-	}
+    private FreemarkerEditor fEditor;
+    private Object fInput;
+    private String fSelectedNodeID;
+    private OutlineLabelProvider fLabelProvider;
 
-	/**
-	 * @see org.eclipse.ui.part.IPart#createControl(Composite)
-	 */
-	public void createControl(Composite aParent) {
-		super.createControl(aParent);
+    /**
+     * Creates a content outline page using the given editor.
+     */
+    public OutlinePage(FreemarkerEditor anEditor) {
+        fEditor = anEditor;
+    }
 
-		fLabelProvider = new OutlineLabelProvider();
+    /**
+     * @see org.eclipse.ui.part.IPart#createControl(Composite)
+     */
+    public void createControl(Composite aParent) {
+        super.createControl(aParent);
 
-		// Init tree viewer
-		TreeViewer viewer = getTreeViewer();
-		viewer.setContentProvider(new OutlineContentProvider(fEditor));
-		viewer.setLabelProvider(fLabelProvider);
-		viewer.addSelectionChangedListener(this);
-		if (fInput != null) {
-			viewer.setInput(fInput);
-		}
-		// Refresh outline according to initial cursor position
-		update();
-	}
+        fLabelProvider = new OutlineLabelProvider();
 
-	/**
-	 * @see org.eclipse.jface.viewers.ISelectionProvider#selectionChanged(SelectionChangedEvent)
-	 */
-	public void selectionChanged(SelectionChangedEvent anEvent) {
-		super.selectionChanged(anEvent);
-		ISelection selection = anEvent.getSelection();
+        // Init tree viewer
+        TreeViewer viewer = getTreeViewer();
+        viewer.setContentProvider(new OutlineContentProvider(fEditor));
+        viewer.setLabelProvider(fLabelProvider);
+        viewer.addSelectionChangedListener(this);
+        if (fInput != null) {
+            viewer.setInput(fInput);
+        }
+        // Refresh outline according to initial cursor position
+        update();
+    }
 
-		if (!selection.isEmpty()) {
-			Object tmp = ((IStructuredSelection) selection).getFirstElement();
-			if (tmp instanceof MacroNode) {
-				MacroNode node = (MacroNode) tmp;
-				fEditor.selectTextRange(
-					node.getBeginLine(),
-					node.getBeginColumn(),
-					1);
-			}
-		}
-	}
+    /**
+     * @see org.eclipse.jface.viewers.ISelectionProvider#selectionChanged(SelectionChangedEvent)
+     */
+    public void selectionChanged(SelectionChangedEvent anEvent) {
+        super.selectionChanged(anEvent);
+        ISelection selection = anEvent.getSelection();
 
-	/**
-	 * Sets the input of the outline page.
-	 */
-	public void setInput(Object aInput) {
-		fInput = aInput;
-		update();
-	}
+        if (!selection.isEmpty()) {
+            Object tmp = ((IStructuredSelection) selection).getFirstElement();
+            if (tmp instanceof MacroNode) {
+                MacroNode node = (MacroNode) tmp;
+                fEditor.selectTextRange(
+                    node.getBeginLine(),
+                    node.getBeginColumn(),
+                    1);
+            }
+        }
+    }
 
-	/**
-	 * Updates the outline page.
-	 */
-	public void update() {
-		TreeViewer viewer = getTreeViewer();
-		if (viewer != null) {
-			Control control = viewer.getControl();
-			if (control != null && !control.isDisposed()) {
-				viewer.removeSelectionChangedListener(this);
-				control.setRedraw(false);
-				viewer.setInput(fInput);
-				control.setRedraw(true);
-				viewer.addSelectionChangedListener(this);
-			}
-		}
-	}
+    /**
+     * Sets the input of the outline page.
+     */
+    public void setInput(Object aInput) {
+        fInput = aInput;
+        update();
+    }
 
-	/**
-	 * @see org.eclipse.ui.part.Page#dispose()
-	 */
-	public void dispose() {
-		super.dispose();
-	}
+    /**
+     * Updates the outline page.
+     */
+    public void update() {
+        TreeViewer viewer = getTreeViewer();
+        if (viewer != null) {
+            Control control = viewer.getControl();
+            if (control != null && !control.isDisposed()) {
+                viewer.removeSelectionChangedListener(this);
+                control.setRedraw(false);
+                viewer.setInput(fInput);
+                control.setRedraw(true);
+                viewer.addSelectionChangedListener(this);
+            }
+        }
+    }
+
+    /**
+     * @see org.eclipse.ui.part.Page#dispose()
+     */
+    public void dispose() {
+        super.dispose();
+    }
 
 }

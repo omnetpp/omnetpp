@@ -54,12 +54,12 @@ public class SubmoduleElementEx extends SubmoduleElement
 
     protected SubmoduleElementEx(INedTypeResolver resolver) {
         init(resolver);
-	}
+    }
 
     protected SubmoduleElementEx(INedTypeResolver resolver, INedElement parent) {
-		super(parent);
+        super(parent);
         init(resolver);
-	}
+    }
 
     private void init(INedTypeResolver resolver) {
         Assert.isNotNull(resolver, "This NED element type needs a resolver");
@@ -80,76 +80,76 @@ public class SubmoduleElementEx extends SubmoduleElement
 
     @Override
     public void fireModelEvent(NedModelEvent event) {
-    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
-    		displayString = null;
-    	super.fireModelEvent(event);
+        // invalidate cached display string because NED tree may have changed outside the DisplayString class
+        if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
+            displayString = null;
+        super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getEffectiveTypeRef()));
+        return displayString;
     }
 
     public DisplayString getDisplayString(INedTypeElement actualType) {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(actualType.getDisplayString());
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(actualType.getDisplayString());
+        return displayString;
     }
 
-	/**
-	 * Returns the compound module containing the definition of this submodule
-	 */
-	public CompoundModuleElementEx getCompoundModule() {
+    /**
+     * Returns the compound module containing the definition of this submodule
+     */
+    public CompoundModuleElementEx getCompoundModule() {
         INedElement parent = getParent();
         while (parent != null && !(parent instanceof CompoundModuleElementEx))
             parent = parent.getParent();
         return (CompoundModuleElementEx)parent;
-	}
+    }
 
-	// connection related methods
+    // connection related methods
 
-	/**
-	 * Returns the list of all source connections that connect to this node and defined
-	 * in the parent compound module. Connections defined in derived modules
-	 * are NOT included here
-	 */
-	public List<ConnectionElementEx> getSrcConnections() {
-		return getCompoundModule().getSrcConnectionsFor(getName());
-	}
+    /**
+     * Returns the list of all source connections that connect to this node and defined
+     * in the parent compound module. Connections defined in derived modules
+     * are NOT included here
+     */
+    public List<ConnectionElementEx> getSrcConnections() {
+        return getCompoundModule().getSrcConnectionsFor(getName());
+    }
 
     /**
      * Returns the list of all connections that connect to this node and defined in the
      * parent compound module. Connections defined in derived modules are
      * NOT included here
      */
-	public List<ConnectionElementEx> getDestConnections() {
-		return getCompoundModule().getDestConnectionsFor(getName());
-	}
+    public List<ConnectionElementEx> getDestConnections() {
+        return getCompoundModule().getDestConnectionsFor(getName());
+    }
 
-	@Override
+    @Override
     public String debugString() {
         return "submodule: "+getName();
     }
 
     // type support
-	public String getEffectiveType() {
-		String likeType = getLikeType();
-		return StringUtils.isEmpty(likeType) ? getType() : likeType;
-	}
+    public String getEffectiveType() {
+        String likeType = getLikeType();
+        return StringUtils.isEmpty(likeType) ? getType() : likeType;
+    }
 
-	public INedTypeInfo getNedTypeInfo() {
-	    if (cachedTypeInfoSerial != getResolver().getLastChangeSerial()) {
-	        // determine and cache typeInfo
-	        INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
-	        INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
-	        cachedTypeInfo = (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
-	        cachedTypeInfoSerial = getResolver().getLastChangeSerial();
-	    }
-	    return cachedTypeInfo;
+    public INedTypeInfo getNedTypeInfo() {
+        if (cachedTypeInfoSerial != getResolver().getLastChangeSerial()) {
+            // determine and cache typeInfo
+            INedTypeInfo typeInfo = resolveTypeName(getEffectiveType(), getCompoundModule());
+            INedTypeElement typeElement = typeInfo==null ? null : typeInfo.getNedElement();
+            cachedTypeInfo = (typeElement instanceof IModuleKindTypeElement) ? typeInfo : null;
+            cachedTypeInfoSerial = getResolver().getLastChangeSerial();
+        }
+        return cachedTypeInfo;
     }
 
     public INedTypeElement getEffectiveTypeRef() {
@@ -166,9 +166,9 @@ public class SubmoduleElementEx extends SubmoduleElement
 
         ParametersElement parametersElement = getFirstParametersChild();
         if (parametersElement != null)
-        	for (INedElement currChild : parametersElement)
-        		if (currChild instanceof ParamElementEx)
-        			result.add((ParamElementEx)currChild);
+            for (INedElement currChild : parametersElement)
+                if (currChild instanceof ParamElementEx)
+                    result.add((ParamElementEx)currChild);
 
         return result;
     }
@@ -195,7 +195,7 @@ public class SubmoduleElementEx extends SubmoduleElement
         Map<String, ParamElementEx> result = new HashMap<String, ParamElementEx>();
 
         if (submoduleType != null)
-        	result.putAll(submoduleType.getParamAssignments());
+            result.putAll(submoduleType.getParamAssignments());
 
         // add local parameter assignments
         for (ParamElementEx ownParam : getOwnParams())
@@ -248,9 +248,9 @@ public class SubmoduleElementEx extends SubmoduleElement
 
         GatesElement gatesElement = getFirstGatesChild();
         if (gatesElement != null)
-        	for (INedElement currChild : gatesElement)
-        		if (currChild instanceof GateElementEx)
-        			result.add((GateElementEx)currChild);
+            for (INedElement currChild : gatesElement)
+                if (currChild instanceof GateElementEx)
+                    result.add((GateElementEx)currChild);
 
         return result;
     }
@@ -275,7 +275,7 @@ public class SubmoduleElementEx extends SubmoduleElement
         Map<String, GateElementEx> result = new HashMap<String, GateElementEx>();
 
         if (moduleType != null)
-        	result.putAll(moduleType.getGateSizes());
+            result.putAll(moduleType.getGateSizes());
 
         // add local gatesizes
         for (GateElementEx ownGate : getOwnGates())

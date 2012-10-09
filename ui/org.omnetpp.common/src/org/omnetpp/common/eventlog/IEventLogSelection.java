@@ -19,34 +19,34 @@ import org.omnetpp.eventlog.engine.IEventLog;
  * @author andras, levy
  */
 public interface IEventLogSelection extends ISelection {
-	/**
-	 * The EventLogInput object we are dealing with. All selected Events
-	 * belong to this EventLogInput. Never returns null.
-	 */
-	public EventLogInput getEventLogInput();
+    /**
+     * The EventLogInput object we are dealing with. All selected Events
+     * belong to this EventLogInput. Never returns null.
+     */
+    public EventLogInput getEventLogInput();
 
-	/**
-	 * The EventLog object we are dealing with. All selected Events
-	 * belong to this EventLog. Never returns null.
-	 */
-	public IEventLog getEventLog();
+    /**
+     * The EventLog object we are dealing with. All selected Events
+     * belong to this EventLog. Never returns null.
+     */
+    public IEventLog getEventLog();
 
-	/**
-	 * The list of selected event numbers. The returned list MUST NOT be modified
-	 * by clients. Never returns null.
-	 */
-	public List<Long> getEventNumbers();
+    /**
+     * The list of selected event numbers. The returned list MUST NOT be modified
+     * by clients. Never returns null.
+     */
+    public List<Long> getEventNumbers();
 
-	/**
-	 * Returns the first event number in the selection, or null.
-	 */
-	public Long getFirstEventNumber();
+    /**
+     * Returns the first event number in the selection, or null.
+     */
+    public Long getFirstEventNumber();
 
     /**
      * The list of selected simulation times. The returned list MUST NOT be modified
      * by clients. Never returns null.
      */
-	public List<BigDecimal> getSimulationTimes();
+    public List<BigDecimal> getSimulationTimes();
 
     /**
      * Returns the first simulation time in the selection, or null.

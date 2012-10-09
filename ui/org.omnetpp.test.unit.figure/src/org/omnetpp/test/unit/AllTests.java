@@ -5,12 +5,12 @@ import junit.framework.TestSuite;
 
 public class AllTests {
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite("figure and layout testsuite");
-		//$JUnit-BEGIN$
+    public static Test suite() {
+        TestSuite suite = new TestSuite("figure and layout testsuite");
+        //$JUnit-BEGIN$
 
-		//$JUnit-END$
-		return suite;
-	}
+        //$JUnit-END$
+        return suite;
+    }
 
 }

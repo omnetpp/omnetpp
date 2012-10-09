@@ -27,65 +27,65 @@ import org.omnetpp.scave.charting.properties.ChartDefaults;
 public class Title {
 
     private boolean visible = true;
-	private String text;
-	private Font font;
-	private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
-	private Rectangle bounds;
+    private String text;
+    private Font font;
+    private Color color = ChartDefaults.DEFAULT_TITLE_COLOR;
+    private Rectangle bounds;
 
-	public Title() {
-	}
+    public Title() {
+    }
 
-	public Title(String text, Font font) {
-		this.text = text;
-		this.font = font;
-	}
+    public Title(String text, Font font) {
+        this.text = text;
+        this.font = font;
+    }
 
     public void setVisible(boolean value) {
         visible = value;
     }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	public Font getFont() {
-		return font;
-	}
+    public Font getFont() {
+        return font;
+    }
 
-	public void setFont(Font font) {
-		this.font = font;
-	}
+    public void setFont(Font font) {
+        this.font = font;
+    }
 
-	public Rectangle layout(Graphics graphics, Rectangle parent) {
-		if (!visible || text == null || text.length() == 0)
-			return parent;
+    public Rectangle layout(Graphics graphics, Rectangle parent) {
+        if (!visible || text == null || text.length() == 0)
+            return parent;
 
-		TextLayout textLayout = new TextLayout(Display.getDefault());
-		textLayout.setFont(font);
-		textLayout.setText(text);
-		textLayout.setWidth(parent.width);
-		textLayout.setAlignment(SWT.CENTER);
-		org.eclipse.swt.graphics.Rectangle rect = textLayout.getBounds();
-		textLayout.dispose();
-		bounds = new Rectangle(parent.x + (parent.width - rect.width) / 2, parent.y, rect.width, rect.height);
+        TextLayout textLayout = new TextLayout(Display.getDefault());
+        textLayout.setFont(font);
+        textLayout.setText(text);
+        textLayout.setWidth(parent.width);
+        textLayout.setAlignment(SWT.CENTER);
+        org.eclipse.swt.graphics.Rectangle rect = textLayout.getBounds();
+        textLayout.dispose();
+        bounds = new Rectangle(parent.x + (parent.width - rect.width) / 2, parent.y, rect.width, rect.height);
 
-		return new Rectangle(parent.x, Math.min(bounds.y + bounds.height, parent.y + parent.height),
-				parent.width, Math.max(parent.height - bounds.height, 0));
-	}
+        return new Rectangle(parent.x, Math.min(bounds.y + bounds.height, parent.y + parent.height),
+                parent.width, Math.max(parent.height - bounds.height, 0));
+    }
 
-	public void draw(Graphics graphics) {
-		if (!visible || text == null || text.length() == 0 || bounds == null)
-			return;
+    public void draw(Graphics graphics) {
+        if (!visible || text == null || text.length() == 0 || bounds == null)
+            return;
 
-		TextLayout textLayout = new TextLayout(Display.getDefault());
-		textLayout.setText(text);
-		textLayout.setWidth(bounds.width);
-		textLayout.setAlignment(SWT.CENTER);
-		textLayout.setStyle(new TextStyle(font, color, null), 0, Integer.MAX_VALUE);
+        TextLayout textLayout = new TextLayout(Display.getDefault());
+        textLayout.setText(text);
+        textLayout.setWidth(bounds.width);
+        textLayout.setAlignment(SWT.CENTER);
+        textLayout.setStyle(new TextStyle(font, color, null), 0, Integer.MAX_VALUE);
         if (!GraphicsUtils.isSVGGraphics(graphics)) {
             graphics.setBackgroundColor(ChartDefaults.DEFAULT_INSETS_BACKGROUND_COLOR);
             graphics.fillRectangle(0, 0, bounds.width, bounds.height);
@@ -98,5 +98,5 @@ public class Title {
             graphics.drawText(text.substring(lineOffsets[i], lineOffsets[i + 1]), lineBounds.x, lineBounds.y);
         }
         textLayout.dispose();
-	}
+    }
 }

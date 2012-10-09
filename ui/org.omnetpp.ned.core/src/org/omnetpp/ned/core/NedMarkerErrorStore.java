@@ -26,40 +26,40 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
  * @author Andras
  */
 public class NedMarkerErrorStore extends AbstractNedErrorStore {
-    /** 
-     * Marker attribute; stores the Id or Ids (as Long or long[]) of the element the marker refers to, 
+    /**
+     * Marker attribute; stores the Id or Ids (as Long or long[]) of the element the marker refers to,
      * and the Id of the element's original (INedElement.getOriginal())
      */
-    public static final String NEDELEMENT_ID = "nedelement-id"; 
+    public static final String NEDELEMENT_ID = "nedelement-id";
 
     private IFile file;
-	private String markerType;
+    private String markerType;
     private ProblemMarkerSynchronizer markerSync;
     private int problemsAdded = 0;
     private Set<INedElement> affectedElements = new HashSet<INedElement>();
-    
+
 
     public NedMarkerErrorStore(ProblemMarkerSynchronizer markerSync) {
-    	this(markerSync, markerSync.getBaseMarkerType());
+        this(markerSync, markerSync.getBaseMarkerType());
     }
 
     public NedMarkerErrorStore(ProblemMarkerSynchronizer markerSync, String markerType) {
-    	this.markerType = markerType;
-		this.markerSync = markerSync;
-	}
+        this.markerType = markerType;
+        this.markerSync = markerSync;
+    }
 
     public void setFile(IFile file) {
         this.file = file;
         markerSync.register(file);
     }
-    
-	public void add(int severity, INedElement context, int line, String message) {
-	    Assert.isNotNull(file, "setFile() needs to be called first");
-		Assert.isNotNull(context);
+
+    public void add(int severity, INedElement context, int line, String message) {
+        Assert.isNotNull(file, "setFile() needs to be called first");
+        Assert.isNotNull(context);
         problemsAdded++;
 
-		// create would-be marker
-		Map<String, Object> markerAttrs = new HashMap<String, Object>();
+        // create would-be marker
+        Map<String, Object> markerAttrs = new HashMap<String, Object>();
         markerAttrs.put(IMarker.MESSAGE, message);
         markerAttrs.put(IMarker.SEVERITY, severity);
         markerAttrs.put(IMarker.LINE_NUMBER, line);
@@ -70,19 +70,19 @@ public class NedMarkerErrorStore extends AbstractNedErrorStore {
         markerSync.addMarker(file, markerType, markerAttrs);
 
         if (markerType.equals(INedTypeResolver.NEDSYNTAXPROBLEM_MARKERID))
-        	context.syntaxProblemMarkerAdded(severity);
+            context.syntaxProblemMarkerAdded(severity);
         else if (markerType.equals(INedTypeResolver.NEDCONSISTENCYPROBLEM_MARKERID))
-        	context.consistencyProblemMarkerAdded(severity);
+            context.consistencyProblemMarkerAdded(severity);
         else
-        	throw new IllegalArgumentException(); // wrong marker type
+            throw new IllegalArgumentException(); // wrong marker type
         affectedElements.add(context);
     }
 
-	public int getNumProblems() {
-		return problemsAdded;
-	}
-	
-	public Set<INedElement> getAffectedElements() {
+    public int getNumProblems() {
+        return problemsAdded;
+    }
+
+    public Set<INedElement> getAffectedElements() {
         return affectedElements;
     }
 

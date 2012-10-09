@@ -18,19 +18,19 @@
  *    any, must include the following acknowledgement:
  *       "This product includes software developed by the
  *        Visigoth Software Society (http://www.visigoths.org/)."
- *    Alternately, this acknowledgement may appear in the software 
- *    itself, if and wherever such third-party acknowledgements 
+ *    Alternately, this acknowledgement may appear in the software
+ *    itself, if and wherever such third-party acknowledgements
  *    normally appear.
  *
- * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names 
- *    of the project contributors may be used to endorse or promote 
- *    products derived from this software without prior written 
- *    permission. For written permission, please contact 
+ * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names
+ *    of the project contributors may be used to endorse or promote
+ *    products derived from this software without prior written
+ *    permission. For written permission, please contact
  *    visigoths@visigoths.org.
  *
- * 5. Products derived from this software may not be called 
- *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth" 
- *    appear in their names without prior written permission of the 
+ * 5. Products derived from this software may not be called
+ *    "FreeMarker" or "Visigoth" nor may "FreeMarker" or "Visigoth"
+ *    appear in their names without prior written permission of the
  *    Visigoth Software Society.
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
@@ -82,7 +82,7 @@ import freemarker.eclipse.preferences.IPreferenceConstants;
  * important of these objects is the presentation reconciler, that is
  * the object that handles all the coloring (and color repairs) of
  * the editor text.
- * 
+ *
  * @version $Id: Configuration.java,v 1.10 2004/02/05 00:16:23 stephanmueller Exp $
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  * @author <a href="mailto:per&#64;percederberg.net">Per Cederberg</a>
@@ -246,12 +246,12 @@ public class Configuration extends SourceViewerConfiguration
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         PresentationReconciler reconciler = new PresentationReconciler();
         DefaultDamagerRepairer dr;
-        
+
         boolean xmlHighlighting = true;
         try {
-        	xmlHighlighting = FreemarkerPlugin.getInstance().getPreferenceStore().getBoolean(XML_HIGHLIGHTING);
+            xmlHighlighting = FreemarkerPlugin.getInstance().getPreferenceStore().getBoolean(XML_HIGHLIGHTING);
         } catch (NullPointerException npe) {
-        	
+
         }
 
         dr = new DefaultDamagerRepairer(getDefaultScanner());
@@ -274,21 +274,21 @@ public class Configuration extends SourceViewerConfiguration
             dr = new DefaultDamagerRepairer(getXmlCommentScanner());
             reconciler.setDamager(dr, PartitionScanner.XML_COMMENT);
             reconciler.setRepairer(dr, PartitionScanner.XML_COMMENT);
-        
+
             dr = new SimpleDamagerRepairer(getXmlTagScanner());
             reconciler.setDamager(dr, PartitionScanner.XML_TAG);
             reconciler.setRepairer(dr, PartitionScanner.XML_TAG);
         }
-        
+
         return reconciler;
     }
 
 
     /**
      * A simple presentation damager and repairer. This only differs
-     * from the default damager and repairer by marking the whole 
-     * partition as damaged upon every change. This is not efficient 
-     * for large partitions, but allows the usage of stateful 
+     * from the default damager and repairer by marking the whole
+     * partition as damaged upon every change. This is not efficient
+     * for large partitions, but allows the usage of stateful
      * scanners within a partition.
      *
      * @version $Id: Configuration.java,v 1.10 2004/02/05 00:16:23 stephanmueller Exp $
@@ -298,21 +298,21 @@ public class Configuration extends SourceViewerConfiguration
 
         /**
          * Creates a new simple damager and repairer.
-         * 
+         *
          * @param scanner        the lexical scanner to use
          */
         public SimpleDamagerRepairer(ITokenScanner scanner) {
             super(scanner);
         }
-        
+
         /**
          * Returns the region damaged in the document presentation.
-         * The damage region returned by this method is always the 
+         * The damage region returned by this method is always the
          * whole partition.
          *
          * @param partition      the document partition
          * @param e              the document change event
-         * @param documentPartitioningChanged a flag set if the 
+         * @param documentPartitioningChanged a flag set if the
          *                       partitioning was changed
          */
         public IRegion getDamageRegion(ITypedRegion partition,
@@ -333,7 +333,7 @@ public class Configuration extends SourceViewerConfiguration
         assistant.setDocumentPartitioning(PartitionScanner.PARTITIONING_ID);
         assistant.setContentAssistProcessor(new FtlExpressionCompletionProcessor(), PartitionScanner.FTL_INTERPOLATION);
         assistant.setContentAssistProcessor(new FtlDirectiveCompletionProcessor(), PartitionScanner.FTL_DIRECTIVE);
-        
+
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(500);
         assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
@@ -342,5 +342,5 @@ public class Configuration extends SourceViewerConfiguration
 
         return assistant;
     }
-    
+
 }

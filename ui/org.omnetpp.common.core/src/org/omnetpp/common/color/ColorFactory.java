@@ -579,35 +579,35 @@ public class ColorFactory {
     static {
 
         goodDarkColors = new Color[] {
-        		ColorFactory.asColor("darkblue"),
-        		ColorFactory.asColor("red2"),
-        		ColorFactory.asColor("darkGreen"),
-        		ColorFactory.asColor("orange"),
-        		ColorFactory.asColor("#008000"),
-        		ColorFactory.asColor("darkGrey"),
-        		ColorFactory.asColor("#a00000"),
-        		ColorFactory.asColor("#008080"),
-        		ColorFactory.asColor("cyan"),
-        		ColorFactory.asColor("#808000"),
-        		ColorFactory.asColor("#8080ff"),
-        		ColorFactory.asColor("yellow"),
-        		ColorFactory.asColor("black"),
-        		ColorFactory.asColor("purple"),
+                ColorFactory.asColor("darkblue"),
+                ColorFactory.asColor("red2"),
+                ColorFactory.asColor("darkGreen"),
+                ColorFactory.asColor("orange"),
+                ColorFactory.asColor("#008000"),
+                ColorFactory.asColor("darkGrey"),
+                ColorFactory.asColor("#a00000"),
+                ColorFactory.asColor("#008080"),
+                ColorFactory.asColor("cyan"),
+                ColorFactory.asColor("#808000"),
+                ColorFactory.asColor("#8080ff"),
+                ColorFactory.asColor("yellow"),
+                ColorFactory.asColor("black"),
+                ColorFactory.asColor("purple"),
         };
 
         goodLightColors = new Color[] {
-        		ColorFactory.asColor("lightCyan"),
-        		ColorFactory.asColor("lightCoral"),
-        		ColorFactory.asColor("lightBlue"),
-        		ColorFactory.asColor("lightGreen"),
-        		ColorFactory.asColor("lightYellow"),
-        		ColorFactory.asColor("plum1"),
-        		ColorFactory.asColor("lightSalmon"),
-        		ColorFactory.asColor("lightPink"),
-        		ColorFactory.asColor("lightGrey"),
-        		ColorFactory.asColor("mediumPurple"),
+                ColorFactory.asColor("lightCyan"),
+                ColorFactory.asColor("lightCoral"),
+                ColorFactory.asColor("lightBlue"),
+                ColorFactory.asColor("lightGreen"),
+                ColorFactory.asColor("lightYellow"),
+                ColorFactory.asColor("plum1"),
+                ColorFactory.asColor("lightSalmon"),
+                ColorFactory.asColor("lightPink"),
+                ColorFactory.asColor("lightGrey"),
+                ColorFactory.asColor("mediumPurple"),
         };
-	};
+    };
 
     /**
      * Label provider that displays color rectangles.
@@ -711,8 +711,8 @@ public class ColorFactory {
      * nonexistent color.
      */
     public static Color asColor(String value, Color defaultColor) {
-    	Color color = asColor(value);
-    	return color == null ? defaultColor : color;
+        Color color = asColor(value);
+        return color == null ? defaultColor : color;
     }
 
     /**
@@ -735,24 +735,24 @@ public class ColorFactory {
         return image;
     }
 
-	/**
-	 * Returns a "good" dark color.
-	 */
+    /**
+     * Returns a "good" dark color.
+     */
     public static Color getGoodDarkColor(int i) {
-		return goodDarkColors[i % goodDarkColors.length];
-	}
+        return goodDarkColors[i % goodDarkColors.length];
+    }
 
-	/**
-	 * Returns a "good" light color.
-	 */
+    /**
+     * Returns a "good" light color.
+     */
     public static Color getGoodLightColor(int i) {
-		return goodLightColors[i % goodLightColors.length];
-	}
+        return goodLightColors[i % goodLightColors.length];
+    }
 
     /**
      * Returns all registered color names.
      */
-	public static String[] getColorNames() {
+    public static String[] getColorNames() {
         ArrayList<String> keys = new ArrayList<String>();
         for (Object key : stringToRgbMap.getKeySet())
             keys.add((String)key);

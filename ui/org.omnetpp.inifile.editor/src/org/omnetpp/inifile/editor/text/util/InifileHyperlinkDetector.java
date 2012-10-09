@@ -28,11 +28,11 @@ import org.omnetpp.ned.model.INedElement;
  * @author Andras
  */
 public class InifileHyperlinkDetector implements IHyperlinkDetector {
-	private InifileEditorData editorData;
+    private InifileEditorData editorData;
 
-	public InifileHyperlinkDetector(InifileEditorData editorData) {
-		this.editorData = editorData;
-	}
+    public InifileHyperlinkDetector(InifileEditorData editorData) {
+        this.editorData = editorData;
+    }
 
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
         IDocument textDoc = textViewer.getDocument();

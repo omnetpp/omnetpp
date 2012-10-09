@@ -22,11 +22,11 @@ public class IDListContentProvider implements IStructuredContentProvider {
      * Converts the input IntVector into Integer[]
      */
     public Object[] getElements(Object inputElement) {
-    	IDList vec = (IDList)inputElement;
+        IDList vec = (IDList)inputElement;
         int sz = (int)vec.size();
         Object[] array = new Long[sz];
         for (int i=0; i<sz; i++)
-        	array[i] = Long.valueOf(vec.get(i));
+            array[i] = Long.valueOf(vec.get(i));
         return array;
     }
 

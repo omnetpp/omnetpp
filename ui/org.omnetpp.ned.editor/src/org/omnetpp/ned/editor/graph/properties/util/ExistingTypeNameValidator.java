@@ -24,9 +24,9 @@ public class ExistingTypeNameValidator implements ICellEditorValidator {
 
     public String isValid(Object newText) {
         // accept empty type names too
-        if (StringUtils.isEmpty((String)newText)) 
+        if (StringUtils.isEmpty((String)newText))
             return null;
-        
+
         if (!values.contains(newText) )
             return "Type name is not available. Value is not stored.";
 

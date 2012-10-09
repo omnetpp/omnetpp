@@ -18,14 +18,14 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public final class ExtendedModifyEvent extends TypedEvent {
-	/** start offset of the new text */
-	public int start;			
-	/** length of the new text */
-	public int length;
-	/** replaced text or empty string if no text was replaced */
-	public String replacedText;
-	
-	static final long serialVersionUID = 3258696507027830832L;
+    /** start offset of the new text */
+    public int start;
+    /** length of the new text */
+    public int length;
+    /** replaced text or empty string if no text was replaced */
+    public String replacedText;
+
+    static final long serialVersionUID = 3258696507027830832L;
 
 /**
  * Constructs a new instance of this class based on the
@@ -34,9 +34,9 @@ public final class ExtendedModifyEvent extends TypedEvent {
  * @param e the event containing the information
  */
 public ExtendedModifyEvent(StyledTextEvent e) {
-	super(e);
-	start = e.start;
-	length = e.end - e.start;
-	replacedText = e.text;
+    super(e);
+    start = e.start;
+    length = e.end - e.start;
+    replacedText = e.text;
 }
 }

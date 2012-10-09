@@ -18,11 +18,11 @@ import org.eclipse.draw2d.geometry.Rectangle;
  */
 public class GateAnchor extends ChopboxAnchor {
     public GateAnchor(IFigure owner) {
-    	super(owner);
+        super(owner);
     }
 
     @Override
     protected Rectangle getBox() {
-    	return getOwner() instanceof IAnchorBounds ? ((IAnchorBounds)getOwner()).getAnchorBounds() : super.getBox();
+        return getOwner() instanceof IAnchorBounds ? ((IAnchorBounds)getOwner()).getAnchorBounds() : super.getBox();
     }
 }

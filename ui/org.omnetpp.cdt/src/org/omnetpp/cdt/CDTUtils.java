@@ -46,7 +46,7 @@ public class CDTUtils {
     public static boolean isMsvcConfiguration(ICConfigurationDescription configuration) {
         return configuration.getId().contains(".msvc."); // for lack of a better way...
     }
-    
+
     /**
      * Returns the source locations from the given source entries. (This method does not access CDT state.)
      */
@@ -147,7 +147,7 @@ public class CDTUtils {
         ICFolderDescription newFolderDesc = (ICFolderDescription) configuration.getResourceDescription(folder.getProjectRelativePath(), false); //FIXME check last arg: maybe "false"?
         return configuration.createFolderDescription(folder.getProjectRelativePath(), newFolderDesc);
     }
-    
+
     /**
      * Adds, overwrites or removes a macro in the given languageSettings. For the latter case (remove),
      * specify value==null. (Note: A languageSetting is part of folderDescriptions in ICConfiguration.)
@@ -157,7 +157,7 @@ public class CDTUtils {
         int k = findSettingByName(settingEntries, name);
         if (value == null) {
             // remove
-            if (k != -1) 
+            if (k != -1)
                 settingEntries = (ICLanguageSettingEntry[]) ArrayUtils.remove(settingEntries, k);
         }
         else {
@@ -187,8 +187,8 @@ public class CDTUtils {
                 return i;
         return -1;
     }
-    
-    
+
+
     /**
      * Causes CDT to forget discovered include paths, and invoke the toolchain's
      * ScannerInfoCollector class again. This is important because we use ScannerInfoCollector

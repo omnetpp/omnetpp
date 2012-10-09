@@ -49,51 +49,51 @@ import org.omnetpp.scave.model.Inputs;
 
 public class InputsPage extends ScaveEditorPage {
 
-	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
-	private Section inputFilesSection = null;
-	private Section dataSection = null;
-	private SashForm sashform = null;
+    private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
+    private Section inputFilesSection = null;
+    private Section dataSection = null;
+    private SashForm sashform = null;
 
-	private Runnable scheduledUpdate;
+    private Runnable scheduledUpdate;
 
-	public InputsPage(Composite parent, ScaveEditor scaveEditor) {
-		super(parent, SWT.V_SCROLL, scaveEditor);
-		initialize();
-	}
+    public InputsPage(Composite parent, ScaveEditor scaveEditor) {
+        super(parent, SWT.V_SCROLL, scaveEditor);
+        initialize();
+    }
 
-	public TreeViewer getInputFilesTreeViewer() {
-		InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
-		return panel.getTreeViewer();
-	}
+    public TreeViewer getInputFilesTreeViewer() {
+        InputFilesPanel panel = (InputFilesPanel)inputFilesSection.getClient();
+        return panel.getTreeViewer();
+    }
 
-	public TreeViewer getFileRunTreeViewer() {
-		DataPanel panel = (DataPanel)dataSection.getClient();
-		return panel.getFileRunTreeViewer();
-	}
+    public TreeViewer getFileRunTreeViewer() {
+        DataPanel panel = (DataPanel)dataSection.getClient();
+        return panel.getFileRunTreeViewer();
+    }
 
-	public TreeViewer getRunFileTreeViewer() {
-		DataPanel panel = (DataPanel)dataSection.getClient();
-		return panel.getRunFileTreeViewer();
-	}
+    public TreeViewer getRunFileTreeViewer() {
+        DataPanel panel = (DataPanel)dataSection.getClient();
+        return panel.getRunFileTreeViewer();
+    }
 
-	public TreeViewer getLogicalDataTreeViewer() {
-		DataPanel panel = (DataPanel)dataSection.getClient();
-		return panel.getLogicalTreeViewer();
-	}
+    public TreeViewer getLogicalDataTreeViewer() {
+        DataPanel panel = (DataPanel)dataSection.getClient();
+        return panel.getLogicalTreeViewer();
+    }
 
-	private void initialize() {
-		// set up UI
-		setPageTitle("Inputs");
-		setFormTitle("Inputs");
-		setExpandHorizontal(true);
-		setExpandVertical(true);
-		setBackground(ColorFactory.WHITE);
-		getBody().setLayout(new GridLayout());
-		createSashForm();
-		createInputFilesSection();
-		createDataSection();
+    private void initialize() {
+        // set up UI
+        setPageTitle("Inputs");
+        setFormTitle("Inputs");
+        setExpandHorizontal(true);
+        setExpandVertical(true);
+        setBackground(ColorFactory.WHITE);
+        getBody().setLayout(new GridLayout());
+        createSashForm();
+        createInputFilesSection();
+        createDataSection();
 
-		// configure viewers
+        // configure viewers
         scaveEditor.configureTreeViewer(getInputFilesTreeViewer());
 
         getFileRunTreeViewer().setContentProvider(new InputsFileRunViewContentProvider());
@@ -144,7 +144,7 @@ public class InputsPage extends ScaveEditorPage {
         setupResultFileDropTarget(getLogicalDataTreeViewer().getControl());
 
         // set contents
-		Analysis analysis = scaveEditor.getAnalysis();
+        Analysis analysis = scaveEditor.getAnalysis();
         getInputFilesTreeViewer().setInput(analysis.getInputs());
 
         ResultFileManager manager = scaveEditor.getResultFileManager();
@@ -154,109 +154,109 @@ public class InputsPage extends ScaveEditorPage {
 
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
-        
+
         if (enableGuiTest) {
-        	getInputFilesTreeViewer().getTree().setData(WIDGET_ID, INPUT_FILES_TREE);
-        	getFileRunTreeViewer().getTree().setData(WIDGET_ID, FILE_RUN_VIEW_TREE_ID);
-        	getRunFileTreeViewer().getTree().setData(WIDGET_ID, RUN_FILE_VIEW_TREE_ID);
-        	getLogicalDataTreeViewer().getTree().setData(WIDGET_ID, LOGICAL_VIEW_TREE_ID);
+            getInputFilesTreeViewer().getTree().setData(WIDGET_ID, INPUT_FILES_TREE);
+            getFileRunTreeViewer().getTree().setData(WIDGET_ID, FILE_RUN_VIEW_TREE_ID);
+            getRunFileTreeViewer().getTree().setData(WIDGET_ID, RUN_FILE_VIEW_TREE_ID);
+            getLogicalDataTreeViewer().getTree().setData(WIDGET_ID, LOGICAL_VIEW_TREE_ID);
         }
-	}
+    }
 
-	/**
-	 * This method initializes formToolkit
-	 *
-	 * @return org.eclipse.ui.forms.widgets.FormToolkit
-	 */
-	private FormToolkit getFormToolkit() {
-		if (formToolkit == null)
-			formToolkit = new FormToolkit2(Display.getCurrent());
-		return formToolkit;
-	}
+    /**
+     * This method initializes formToolkit
+     *
+     * @return org.eclipse.ui.forms.widgets.FormToolkit
+     */
+    private FormToolkit getFormToolkit() {
+        if (formToolkit == null)
+            formToolkit = new FormToolkit2(Display.getCurrent());
+        return formToolkit;
+    }
 
-	private void createSashForm() {
-		sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
-		getFormToolkit().adapt(sashform);
-		//sashform.setBackground(this.getBackground());
-		sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
-											GridData.GRAB_VERTICAL |
-											GridData.FILL_BOTH));
-	}
+    private void createSashForm() {
+        sashform = new CustomSashForm(getBody(), SWT.VERTICAL | SWT.SMOOTH);
+        getFormToolkit().adapt(sashform);
+        //sashform.setBackground(this.getBackground());
+        sashform.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL |
+                                            GridData.GRAB_VERTICAL |
+                                            GridData.FILL_BOTH));
+    }
 
-	/**
-	 * This method initializes inputFilesSection
-	 */
-	private void createInputFilesSection() {
-		inputFilesSection = getFormToolkit().createSection(sashform,
-				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		inputFilesSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-		inputFilesSection.setText("Input files");
-		inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis. Wildcards (*,?) can also be used to specify multiple files.");
-		inputFilesSection.setExpanded(true);
-		InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
-		inputFilesSection.setClient(inputFilesPanel);
+    /**
+     * This method initializes inputFilesSection
+     */
+    private void createInputFilesSection() {
+        inputFilesSection = getFormToolkit().createSection(sashform,
+                Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
+        inputFilesSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+        inputFilesSection.setText("Input files");
+        inputFilesSection.setDescription("Add or drag & drop result files (*.sca or *.vec) that should be used in this analysis. Wildcards (*,?) can also be used to specify multiple files.");
+        inputFilesSection.setExpanded(true);
+        InputFilesPanel inputFilesPanel = new InputFilesPanel(inputFilesSection, SWT.NONE);
+        inputFilesSection.setClient(inputFilesPanel);
 
-		// buttons
-		configureViewerButton(
-				inputFilesPanel.getAddFileButton(),
-				inputFilesPanel.getTreeViewer(),
-				new AddResultFileAction());
-		configureViewerButton(
-				inputFilesPanel.getAddWildcardButton(),
-				inputFilesPanel.getTreeViewer(),
-				new AddWildcardResultFileAction());
-		configureViewerButton(
-				inputFilesPanel.getEditButton(),
-				inputFilesPanel.getTreeViewer(),
-				new EditAction());
-		configureViewerButton(
-				inputFilesPanel.getRemoveFileButton(),
-				inputFilesPanel.getTreeViewer(),
-				new RemoveAction());
-		inputFilesPanel.getRemoveFileButton().setText("Remove"); // override the text "Delete" that comes from the action
-	}
+        // buttons
+        configureViewerButton(
+                inputFilesPanel.getAddFileButton(),
+                inputFilesPanel.getTreeViewer(),
+                new AddResultFileAction());
+        configureViewerButton(
+                inputFilesPanel.getAddWildcardButton(),
+                inputFilesPanel.getTreeViewer(),
+                new AddWildcardResultFileAction());
+        configureViewerButton(
+                inputFilesPanel.getEditButton(),
+                inputFilesPanel.getTreeViewer(),
+                new EditAction());
+        configureViewerButton(
+                inputFilesPanel.getRemoveFileButton(),
+                inputFilesPanel.getTreeViewer(),
+                new RemoveAction());
+        inputFilesPanel.getRemoveFileButton().setText("Remove"); // override the text "Delete" that comes from the action
+    }
 
-	/**
-	 * This method initializes dataSection
-	 */
-	private void createDataSection() {
-		dataSection = getFormToolkit().createSection(sashform,
-				Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
-		dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
-		dataSection.setText("Data");
-		dataSection.setDescription("Here you can browse the result files and their contents.");
-		//dataSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
-		DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
-		dataSection.setClient(dataPanel);
+    /**
+     * This method initializes dataSection
+     */
+    private void createDataSection() {
+        dataSection = getFormToolkit().createSection(sashform,
+                Section.DESCRIPTION | ExpandableComposite.TITLE_BAR);
+        dataSection.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, true));
+        dataSection.setText("Data");
+        dataSection.setDescription("Here you can browse the result files and their contents.");
+        //dataSection.setExpanded(true); XXX SWT bug: must be after setText() if present, otherwise text won't appear!
+        DataPanel dataPanel = new DataPanel(dataSection, SWT.NONE);
+        dataSection.setClient(dataPanel);
 
-		// double-clicks
-		configureViewerDefaultAction(
-				dataPanel.getFileRunTreeViewer(),
-				new SetFilterAction());
-		configureViewerDefaultAction(
-				dataPanel.getRunFileTreeViewer(),
-				new SetFilterAction());
-		configureViewerDefaultAction(
-				dataPanel.getLogicalTreeViewer(),
-				new SetFilterAction());
-	}
+        // double-clicks
+        configureViewerDefaultAction(
+                dataPanel.getFileRunTreeViewer(),
+                new SetFilterAction());
+        configureViewerDefaultAction(
+                dataPanel.getRunFileTreeViewer(),
+                new SetFilterAction());
+        configureViewerDefaultAction(
+                dataPanel.getLogicalTreeViewer(),
+                new SetFilterAction());
+    }
 
-	@Override
-	public boolean gotoObject(Object object) {
-		if (object instanceof InputFile) {
-			TreeViewer viewer = getInputFilesTreeViewer();
-			viewer.reveal(object);
-			return true;
-		}
-		else if (object instanceof Inputs) {
-			return true;
-		}
+    @Override
+    public boolean gotoObject(Object object) {
+        if (object instanceof InputFile) {
+            TreeViewer viewer = getInputFilesTreeViewer();
+            viewer.reveal(object);
+            return true;
+        }
+        else if (object instanceof Inputs) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public void selectionChanged(ISelection selection) {
-		setViewerSelectionNoNotify(getInputFilesTreeViewer(), selection);
-	}
+    @Override
+    public void selectionChanged(ISelection selection) {
+        setViewerSelectionNoNotify(getInputFilesTreeViewer(), selection);
+    }
 }

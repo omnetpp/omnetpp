@@ -44,17 +44,17 @@ import org.omnetpp.common.util.ReflectionUtils;
  *  3. basically, the whole layout management is a complete mess
  */
 public class OmnetppPreferencePage
-	extends FieldEditorPreferencePage
-	implements IWorkbenchPreferencePage {
+    extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage {
 
-	public OmnetppPreferencePage() {
-		super(GRID);
-		setPreferenceStore(CommonPlugin.getConfigurationPreferenceStore());
-	}
+    public OmnetppPreferencePage() {
+        super(GRID);
+        setPreferenceStore(CommonPlugin.getConfigurationPreferenceStore());
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     @Override
-	public String getErrorMessage() {
+    public String getErrorMessage() {
         for (Object object : (List)ReflectionUtils.getFieldValue(this, "fields")) {
             if (object instanceof StringFieldEditor) {
                 StringFieldEditor fieldEditor = (StringFieldEditor)object;
@@ -64,11 +64,11 @@ public class OmnetppPreferencePage
         }
 
         return null;
-	}
+    }
 
-	@Override
+    @Override
     public void createFieldEditors() {
-		Composite parent = getFieldEditorParent();
+        Composite parent = getFieldEditorParent();
         final Group group = createGroup(parent, "OMNeT++", 3, 3, GridData.FILL_HORIZONTAL);
         Composite spacer = createComposite(group, 3, 3, GridData.FILL_HORIZONTAL);
         createLabel(spacer, "Install location is the directory where the Makefile.inc or configuser.vc is located.", 3);
@@ -106,53 +106,53 @@ public class OmnetppPreferencePage
 //                UIUtils.dumpWidgetHierarchy(finalParent);
 //            }
 //        });
-	}
+    }
 
-	protected void addAndFillIntoGrid(FieldEditor editor, Composite parent, int numColumns) {
+    protected void addAndFillIntoGrid(FieldEditor editor, Composite parent, int numColumns) {
         addField(editor);
     }
 
-	// from SWTFactory
-	protected static Group createGroup(Composite parent, String text, int columns, int hspan, int fill) {
-	    Group g = new Group(parent, SWT.NONE);
-	    g.setLayout(new GridLayout(columns, false));
-	    g.setText(text);
-	    g.setFont(parent.getFont());
-	    GridData gd = new GridData(fill);
-	    gd.horizontalSpan = hspan;
-	    g.setLayoutData(gd);
-	    return g;
-	}
+    // from SWTFactory
+    protected static Group createGroup(Composite parent, String text, int columns, int hspan, int fill) {
+        Group g = new Group(parent, SWT.NONE);
+        g.setLayout(new GridLayout(columns, false));
+        g.setText(text);
+        g.setFont(parent.getFont());
+        GridData gd = new GridData(fill);
+        gd.horizontalSpan = hspan;
+        g.setLayoutData(gd);
+        return g;
+    }
 
     // from SWTFactory
-	protected static Composite createComposite(Composite parent, int columns, int hspan, int fill) {
-	    Composite g = new Composite(parent, SWT.NONE);
-	    g.setLayout(new GridLayout(columns, false));
-	    g.setFont(parent.getFont());
-	    GridData gd = new GridData(fill);
-	    gd.horizontalSpan = hspan;
-	    g.setLayoutData(gd);
-	    return g;
-	}
+    protected static Composite createComposite(Composite parent, int columns, int hspan, int fill) {
+        Composite g = new Composite(parent, SWT.NONE);
+        g.setLayout(new GridLayout(columns, false));
+        g.setFont(parent.getFont());
+        GridData gd = new GridData(fill);
+        gd.horizontalSpan = hspan;
+        g.setLayoutData(gd);
+        return g;
+    }
 
     // from SWTFactory
-	protected static Label createLabel(Composite parent, String text, int hspan) {
-	    Label l = new Label(parent, SWT.WRAP);
-	    l.setFont(parent.getFont());
-	    l.setText(text);
-	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-	    gd.horizontalSpan = hspan;
-	    gd.grabExcessHorizontalSpace = false;
-	    //gd.horizontalIndent = 10;
-	    l.setLayoutData(gd);
-	    return l;
-	}
+    protected static Label createLabel(Composite parent, String text, int hspan) {
+        Label l = new Label(parent, SWT.WRAP);
+        l.setFont(parent.getFont());
+        l.setText(text);
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = hspan;
+        gd.grabExcessHorizontalSpace = false;
+        //gd.horizontalIndent = 10;
+        l.setLayoutData(gd);
+        return l;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
+     */
+    public void init(IWorkbench workbench) {
+    }
 
     public static boolean isGraphvizDotAvailable() {
         IPreferenceStore store = CommonPlugin.getConfigurationPreferenceStore();

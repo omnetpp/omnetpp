@@ -14,38 +14,38 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class InputFilesPanel extends TreeWithButtonsPanel {
 
-	private Button addFileButton;
-	private Button addWildcardButton;
-	private Button removeFileButton;
-	private Button editButton;
+    private Button addFileButton;
+    private Button addWildcardButton;
+    private Button removeFileButton;
+    private Button editButton;
 
-	public InputFilesPanel(Composite parent, int style) {
-		super(parent, style);
-		initialize();
-	}
+    public InputFilesPanel(Composite parent, int style) {
+        super(parent, style);
+        initialize();
+    }
 
-	private void initialize() {
-		Composite buttonPanel = getButtonPanel();
-		FormToolkit toolkit = getFormToolkit();
-		addFileButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
-		addWildcardButton = toolkit.createButton(buttonPanel, "Add wildcard...", SWT.NONE);
-		editButton = toolkit.createButton(buttonPanel, "Edit", SWT.NONE);
-		removeFileButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
-	}
+    private void initialize() {
+        Composite buttonPanel = getButtonPanel();
+        FormToolkit toolkit = getFormToolkit();
+        addFileButton = toolkit.createButton(buttonPanel, "Add...", SWT.NONE);
+        addWildcardButton = toolkit.createButton(buttonPanel, "Add wildcard...", SWT.NONE);
+        editButton = toolkit.createButton(buttonPanel, "Edit", SWT.NONE);
+        removeFileButton = toolkit.createButton(buttonPanel, "Remove", SWT.NONE);
+    }
 
-	public Button getAddFileButton() {
-		return addFileButton;
-	}
+    public Button getAddFileButton() {
+        return addFileButton;
+    }
 
-	public Button getAddWildcardButton() {
-		return addWildcardButton;
-	}
+    public Button getAddWildcardButton() {
+        return addWildcardButton;
+    }
 
-	public Button getEditButton() {
-		return editButton;
-	}
+    public Button getEditButton() {
+        return editButton;
+    }
 
-	public Button getRemoveFileButton() {
-		return removeFileButton;
-	}
+    public Button getRemoveFileButton() {
+        return removeFileButton;
+    }
 }

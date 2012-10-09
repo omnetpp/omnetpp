@@ -22,37 +22,37 @@ import org.eclipse.swt.widgets.Control;
  * @author Andras
  */
 public class BorderedComposite extends Composite {
-	protected static final Color BORDER_BACKGROUND_COLOR = new Color(null, 228, 228, 228);
-	protected static final Color BORDER_FOREGROUND_COLOR = new Color(null, 128, 128, 128);
+    protected static final Color BORDER_BACKGROUND_COLOR = new Color(null, 228, 228, 228);
+    protected static final Color BORDER_FOREGROUND_COLOR = new Color(null, 128, 128, 128);
 
-	private int borderSize = 4;
+    private int borderSize = 4;
 
-	public BorderedComposite(Composite parent, int style) {
-		super(parent, style);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.marginWidth = borderSize;
-		fillLayout.marginHeight = borderSize;
-		setLayout(fillLayout);
-		this.addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				int halfBorderSize = borderSize / 2;
-				Point size = getSize();
-				GC gc = e.gc;
-				gc.setLineWidth(borderSize);
-				gc.setForeground(BORDER_BACKGROUND_COLOR);
-				gc.drawRectangle(halfBorderSize, halfBorderSize, size.x - borderSize, size.y - borderSize);
-				gc.setForeground(BORDER_FOREGROUND_COLOR);
-				gc.setLineWidth(1);
-				gc.drawRoundRectangle(1, 1, size.x - 2, size.y - 2, borderSize * 2, borderSize *2);
-			}
-		});
-	}
+    public BorderedComposite(Composite parent, int style) {
+        super(parent, style);
+        FillLayout fillLayout = new FillLayout();
+        fillLayout.marginWidth = borderSize;
+        fillLayout.marginHeight = borderSize;
+        setLayout(fillLayout);
+        this.addPaintListener(new PaintListener() {
+            public void paintControl(PaintEvent e) {
+                int halfBorderSize = borderSize / 2;
+                Point size = getSize();
+                GC gc = e.gc;
+                gc.setLineWidth(borderSize);
+                gc.setForeground(BORDER_BACKGROUND_COLOR);
+                gc.drawRectangle(halfBorderSize, halfBorderSize, size.x - borderSize, size.y - borderSize);
+                gc.setForeground(BORDER_FOREGROUND_COLOR);
+                gc.setLineWidth(1);
+                gc.drawRoundRectangle(1, 1, size.x - 2, size.y - 2, borderSize * 2, borderSize *2);
+            }
+        });
+    }
 
-	public int getBorderSize() {
-		return borderSize;
-	}
+    public int getBorderSize() {
+        return borderSize;
+    }
 
-	public Control getChild() {
-		return getChildren()[0];
-	}
+    public Control getChild() {
+        return getChildren()[0];
+    }
 }

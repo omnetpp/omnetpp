@@ -13,7 +13,7 @@ import org.omnetpp.ned.model.INedElement;
 import org.omnetpp.ned.model.interfaces.IHasName;
 
 /**
- * Removes a NED element. Useful as a building block for higher level 
+ * Removes a NED element. Useful as a building block for higher level
  * compound commands.
  *
  * @author andras
@@ -24,7 +24,7 @@ public class RemoveCommand extends Command {
     private INedElement nextSibling;
 
     public RemoveCommand(INedElement element) {
-    	this.element = element;
+        this.element = element;
     }
 
     @Override
@@ -32,7 +32,7 @@ public class RemoveCommand extends Command {
         parent = element.getParent();
         nextSibling = element.getNextSibling();
         Assert.isNotNull(parent);
-        
+
         String label = "Delete";
         if (element instanceof IHasName)
             label += " "+((IHasName)element).getName();

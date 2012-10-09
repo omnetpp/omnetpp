@@ -52,135 +52,135 @@ public class SequenceChartEditor
     extends EventLogEditor
     implements ISequenceChartProvider, INavigationLocationProvider, IGotoMarker, IShowInSource, IShowInTargetList
 {
-	private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
+    private ResourceChangeListener resourceChangeListener = new ResourceChangeListener();
 
-	private SequenceChart sequenceChart;
+    private SequenceChart sequenceChart;
 
-	private ISelectionListener selectionListener;
+    private ISelectionListener selectionListener;
 
-	public SequenceChart getSequenceChart() {
-		return sequenceChart;
-	}
+    public SequenceChart getSequenceChart() {
+        return sequenceChart;
+    }
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		super.init(site, input);
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+    @Override
+    public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+        super.init(site, input);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
 
-		IContextService contextService = (IContextService)site.getService(IContextService.class);
+        IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.SequenceChart");
 
-		// try to open the log view
-		try {
-			// Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
-			if (site.getPage().getPerspective() != null)
-				site.getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
-		}
-		catch (PartInitException e) {
-			SequenceChartPlugin.getDefault().logException(e);
-		}
-	}
+        // try to open the log view
+        try {
+            // Eclipse feature: during startup, showView() throws "Abnormal Workbench Condition" because perspective is null
+            if (site.getPage().getPerspective() != null)
+                site.getPage().showView("org.omnetpp.eventlogtable.editors.EventLogTableView");
+        }
+        catch (PartInitException e) {
+            SequenceChartPlugin.getDefault().logException(e);
+        }
+    }
 
-	@Override
-	public void dispose() {
-		if (resourceChangeListener != null)
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+    @Override
+    public void dispose() {
+        if (resourceChangeListener != null)
+            ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
 
-		if (selectionListener != null)
-			getSite().getPage().removeSelectionListener(selectionListener);
+        if (selectionListener != null)
+            getSite().getPage().removeSelectionListener(selectionListener);
 
-		super.dispose();
-	}
+        super.dispose();
+    }
 
-	@Override
-	public void createPartControl(Composite parent) {
-		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
-		sequenceChart.setInput(eventLogInput);
-		sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
-		sequenceChart.setWorkbenchPart(this);
+    @Override
+    public void createPartControl(Composite parent) {
+        sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
+        sequenceChart.setInput(eventLogInput);
+        sequenceChart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        sequenceChart.setSequenceChartContributor(SequenceChartContributor.getDefault());
+        sequenceChart.setWorkbenchPart(this);
 
-		getSite().setSelectionProvider(sequenceChart);
-		addLocationProviderPaintListener(sequenceChart);
+        getSite().setSelectionProvider(sequenceChart);
+        addLocationProviderPaintListener(sequenceChart);
 
-		// follow selection
-		selectionListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (followSelection && part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
-					IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+        // follow selection
+        selectionListener = new ISelectionListener() {
+            public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+                if (followSelection && part != SequenceChartEditor.this && selection instanceof IEventLogSelection) {
+                    IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
 
-					if (eventLogSelection.getEventLogInput() == sequenceChart.getInput()) {
-						sequenceChart.setSelection(selection);
-						markLocation();
-					}
-				}
-			}
-		};
-		getSite().getPage().addSelectionListener(selectionListener);
-	}
+                    if (eventLogSelection.getEventLogInput() == sequenceChart.getInput()) {
+                        sequenceChart.setSelection(selection);
+                        markLocation();
+                    }
+                }
+            }
+        };
+        getSite().getPage().addSelectionListener(selectionListener);
+    }
 
-	@Override
-	public void setFocus() {
-		sequenceChart.setFocus();
-	}
+    @Override
+    public void setFocus() {
+        sequenceChart.setFocus();
+    }
 
-	public class SequenceChartLocation implements INavigationLocation {
-		// TODO: ambiguous when restored
-		private org.omnetpp.common.engine.BigDecimal startSimulationTime;
+    public class SequenceChartLocation implements INavigationLocation {
+        // TODO: ambiguous when restored
+        private org.omnetpp.common.engine.BigDecimal startSimulationTime;
 
-		private org.omnetpp.common.engine.BigDecimal endSimulationTime;
+        private org.omnetpp.common.engine.BigDecimal endSimulationTime;
 
-		public SequenceChartLocation(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime) {
-			this.startSimulationTime = startSimulationTime;
-			this.endSimulationTime = endSimulationTime;
-		}
+        public SequenceChartLocation(org.omnetpp.common.engine.BigDecimal startSimulationTime, org.omnetpp.common.engine.BigDecimal endSimulationTime) {
+            this.startSimulationTime = startSimulationTime;
+            this.endSimulationTime = endSimulationTime;
+        }
 
-		public void dispose() {
-			// void
-		}
+        public void dispose() {
+            // void
+        }
 
-		public Object getInput() {
-			return SequenceChartEditor.this.getEditorInput();
-		}
+        public Object getInput() {
+            return SequenceChartEditor.this.getEditorInput();
+        }
 
-		public String getText() {
-			return SequenceChartEditor.this.getPartName() + ": " + startSimulationTime + "s - " + endSimulationTime + "s";
-		}
+        public String getText() {
+            return SequenceChartEditor.this.getPartName() + ": " + startSimulationTime + "s - " + endSimulationTime + "s";
+        }
 
-		public boolean mergeInto(INavigationLocation currentLocation) {
+        public boolean mergeInto(INavigationLocation currentLocation) {
             return equals(currentLocation);
-		}
+        }
 
-		public void releaseState() {
-			// void
-		}
+        public void releaseState() {
+            // void
+        }
 
-		public void restoreLocation() {
-			sequenceChart.zoomToSimulationTimeRange(startSimulationTime, endSimulationTime);
-		}
+        public void restoreLocation() {
+            sequenceChart.zoomToSimulationTimeRange(startSimulationTime, endSimulationTime);
+        }
 
-		public void restoreState(IMemento memento) {
-		    String value = memento.getString("StartSimulationTime");
+        public void restoreState(IMemento memento) {
+            String value = memento.getString("StartSimulationTime");
             if (value != null)
                 startSimulationTime = org.omnetpp.common.engine.BigDecimal.parse(value);
 
             value = memento.getString("EndSimulationTime");
             if (value != null)
                 endSimulationTime = org.omnetpp.common.engine.BigDecimal.parse(value);
-		}
+        }
 
-		public void saveState(IMemento memento) {
+        public void saveState(IMemento memento) {
             memento.putString("StartSimulationTime", startSimulationTime.toString());
             memento.putString("EndSimulationTime", endSimulationTime.toString());
-		}
+        }
 
-		public void setInput(Object input) {
-			SequenceChartEditor.this.setInput((IFileEditorInput)input);
-		}
+        public void setInput(Object input) {
+            SequenceChartEditor.this.setInput((IFileEditorInput)input);
+        }
 
-		public void update() {
-			// void
-		}
+        public void update() {
+            // void
+        }
 
         @Override
         public int hashCode() {
@@ -221,32 +221,32 @@ public class SequenceChartEditor
         private SequenceChartEditor getOuterType() {
             return SequenceChartEditor.this;
         }
-	}
+    }
 
-	public INavigationLocation createEmptyNavigationLocation() {
-		return new SequenceChartLocation(org.omnetpp.common.engine.BigDecimal.getZero(), org.omnetpp.common.engine.BigDecimal.getNaN());
-	}
+    public INavigationLocation createEmptyNavigationLocation() {
+        return new SequenceChartLocation(org.omnetpp.common.engine.BigDecimal.getZero(), org.omnetpp.common.engine.BigDecimal.getNaN());
+    }
 
-	@Override
-	protected boolean canCreateNavigationLocation() {
-		return !eventLogInput.isCanceled() && super.canCreateNavigationLocation();
-	}
+    @Override
+    protected boolean canCreateNavigationLocation() {
+        return !eventLogInput.isCanceled() && super.canCreateNavigationLocation();
+    }
 
-	public INavigationLocation createNavigationLocation() {
-		if (!canCreateNavigationLocation())
-			return null;
-		else
-			return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
-	}
+    public INavigationLocation createNavigationLocation() {
+        if (!canCreateNavigationLocation())
+            return null;
+        else
+            return new SequenceChartLocation(sequenceChart.getViewportLeftSimulationTime(), sequenceChart.getViewportRightSimulationTime());
+    }
 
     public void gotoMarker(IMarker marker)
     {
-		long eventNumber = Long.parseLong(marker.getAttribute("EventNumber", "-1"));
-		sequenceChart.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber));
+        long eventNumber = Long.parseLong(marker.getAttribute("EventNumber", "-1"));
+        sequenceChart.gotoElement(eventLogInput.getEventLog().getEventForEventNumber(eventNumber));
     }
 
-	private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
-		public void resourceChanged(IResourceChangeEvent event) {
+    private class ResourceChangeListener implements IResourceChangeListener, IResourceDeltaVisitor {
+        public void resourceChanged(IResourceChangeEvent event) {
             try {
                 // close editor on project close
                 if (event.getType() == IResourceChangeEvent.PRE_CLOSE) {
@@ -264,26 +264,26 @@ public class SequenceChartEditor
                 IResourceDelta delta = event.getDelta();
 
                 if (delta != null)
-                	delta.accept(this);
+                    delta.accept(this);
             }
             catch (CoreException e) {
-            	throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
-		}
+        }
 
         public boolean visit(IResourceDelta delta) {
             if (delta != null && delta.getResource() != null && delta.getResource().equals(eventLogInput.getFile())) {
-            	Display.getDefault().asyncExec(new Runnable() {
-					public void run() {
+                Display.getDefault().asyncExec(new Runnable() {
+                    public void run() {
                         if (!sequenceChart.isDisposed())
                             sequenceChart.clearCanvasCacheAndRedraw();
-					}
-            	});
+                    }
+                });
             }
 
             return true;
         }
-	}
+    }
 
     /* (non-Javadoc)
      * Method declared on IShowInSource

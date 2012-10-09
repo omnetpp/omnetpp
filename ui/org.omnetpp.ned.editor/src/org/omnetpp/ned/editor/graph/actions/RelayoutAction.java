@@ -28,57 +28,57 @@ import org.omnetpp.ned.model.ex.CompoundModuleElementEx;
  */
 public class RelayoutAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
-	public static final String ID = "Relayout";
-	public static final String MENUNAME = "Re-&layout";
-	public static final String TOOLTIP = "Re-layout compound module";
-	public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_LAYOUT);
+    public static final String ID = "Relayout";
+    public static final String MENUNAME = "Re-&layout";
+    public static final String TOOLTIP = "Re-layout compound module";
+    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_LAYOUT);
 
-	GroupRequest request;
+    GroupRequest request;
 
-	public RelayoutAction(IWorkbenchPart part) {
-		super(part);
-		setText(MENUNAME);
-		setId(ID);
-		setToolTipText(TOOLTIP);
-		setImageDescriptor(IMAGE);
-		setHoverImageDescriptor(IMAGE);
-	}
+    public RelayoutAction(IWorkbenchPart part) {
+        super(part);
+        setText(MENUNAME);
+        setId(ID);
+        setToolTipText(TOOLTIP);
+        setImageDescriptor(IMAGE);
+        setHoverImageDescriptor(IMAGE);
+    }
 
-	/**
-	 * This command can be executed when a single compound module or a submodule is selected
-	 */
-	@Override
+    /**
+     * This command can be executed when a single compound module or a submodule is selected
+     */
+    @Override
     protected boolean calculateEnabled() {
-		// only support a single selected object
-		if (getSelectedObjects().size() != 1)
-			return false;
-		if (getSelectedObjects().get(0) instanceof CompoundModuleEditPart)
-			return true;
+        // only support a single selected object
+        if (getSelectedObjects().size() != 1)
+            return false;
+        if (getSelectedObjects().get(0) instanceof CompoundModuleEditPart)
+            return true;
         if (getSelectedObjects().get(0) instanceof SubmoduleEditPart)
             return true;
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Created and returns a command for the request from the containing compound module
-	 */
-	@SuppressWarnings("unchecked")
-	private Command getCommand() {
-		List selEditParts = getSelectedObjects();
+    /**
+     * Created and returns a command for the request from the containing compound module
+     */
+    @SuppressWarnings("unchecked")
+    private Command getCommand() {
+        List selEditParts = getSelectedObjects();
 
-		if (!calculateEnabled())
-			return null;
+        if (!calculateEnabled())
+            return null;
 
-		// get the parent of the currently selected
-		CompoundModuleElementEx compoundModuleElementEx
-			= ((ModuleEditPart)selEditParts.get(0)).getCompoundModulePart().getModel();
-		// create command that changes the compound modules layout seed
-		return new ChangeLayoutSeedCommand(compoundModuleElementEx);
-	}
+        // get the parent of the currently selected
+        CompoundModuleElementEx compoundModuleElementEx
+            = ((ModuleEditPart)selEditParts.get(0)).getCompoundModulePart().getModel();
+        // create command that changes the compound modules layout seed
+        return new ChangeLayoutSeedCommand(compoundModuleElementEx);
+    }
 
-	@Override
+    @Override
     public void run() {
-		execute(getCommand());
-	}
+        execute(getCommand());
+    }
 
 }

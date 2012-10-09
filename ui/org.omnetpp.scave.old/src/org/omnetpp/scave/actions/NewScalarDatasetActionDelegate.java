@@ -12,9 +12,9 @@ package org.omnetpp.scave.actions;
  */
 public class NewScalarDatasetActionDelegate extends NewDocActionDelegate {
 
-	private static int counter = 0;
+    private static int counter = 0;
 
-	protected String getNewFileName() {
-		return "Untitled scalar dataset "+(++counter)+".sdataset";
-	}
+    protected String getNewFileName() {
+        return "Untitled scalar dataset "+(++counter)+".sdataset";
+    }
 }

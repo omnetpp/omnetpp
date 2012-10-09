@@ -46,7 +46,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
     @Override
     protected IFigure createFigure() {
         SubmoduleFigure fig = new SubmoduleFigureEx();
-        
+
         // set the pin decoration image for the image (The compound module requests an auto-layout
         // if we add an figure without pin. ie. submodule created in the text editor without
         // a display string
@@ -55,7 +55,7 @@ public class SubmoduleEditPart extends ModuleEditPart {
         // range figure should appear on the background decoration layer
         fig.setRangeFigureLayer(getCompoundModulePart().getFigure().
                 getSubmoduleArea().getBackgroundDecorationLayer());
-        
+
         gateAnchor = new GateAnchor(fig);
         return fig;
     }
@@ -74,24 +74,24 @@ public class SubmoduleEditPart extends ModuleEditPart {
         return (SubmoduleElementEx)super.getModel();
     }
 
-	/**
-	 * Compute the source connection anchor to be assigned based on the current mouse
-	 * location and available gates.
-	 * @param p current mouse coordinates
-	 * @return The selected connection anchor
-	 */
-	@Override
+    /**
+     * Compute the source connection anchor to be assigned based on the current mouse
+     * location and available gates.
+     * @param p current mouse coordinates
+     * @return The selected connection anchor
+     */
+    @Override
     public ConnectionAnchor getConnectionAnchorAt(Point p) {
         return gateAnchor;
-	}
+    }
 
-	/**
-	 * Returns a connection anchor registered for the given gate
-	 */
-	@Override
+    /**
+     * Returns a connection anchor registered for the given gate
+     */
+    @Override
     public GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate) {
         return gateAnchor;
-	}
+    }
 
     /**
      * Returns a list of connections for which this is the srcModule.
@@ -119,13 +119,13 @@ public class SubmoduleEditPart extends ModuleEditPart {
         super.refreshVisuals();
         // define the properties that determine the visual appearance
 
-    	// set module name and vector size
-    	SubmoduleFigure submoduleFigure = getFigure();
+        // set module name and vector size
+        SubmoduleFigure submoduleFigure = getFigure();
         submoduleFigure.setName(NedElementUtilEx.getFullName(getModel()));
         submoduleFigure.setAlpha(getModel().isDynamic() ? 64 : 255);
 
-    	// parse a display string, so it's easier to get values from it.
-    	// for other visual properties
+        // parse a display string, so it's easier to get values from it.
+        // for other visual properties
         DisplayString dps = getModel().getDisplayString();
 
         // get the scale factor for this submodule (coming from the containing compound module's display string)

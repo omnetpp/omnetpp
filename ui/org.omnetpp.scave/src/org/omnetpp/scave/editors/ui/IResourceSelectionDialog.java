@@ -23,17 +23,17 @@ import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.util.StringUtils;
 
 public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
-    
+
     private static final int PROJECT_OR_FOLDER = IResource.PROJECT | IResource.FOLDER;
-    
+
     int resourceType;
-    
+
     public IResourceSelectionDialog(Shell shell, int resourceType) {
         super(shell, new WorkbenchLabelProvider(), new TreeContentProvider(resourceType));
         Assert.isLegal(resourceType == IResource.FILE || resourceType == IResource.FOLDER ||
                        resourceType == IResource.PROJECT || resourceType == PROJECT_OR_FOLDER);
         this.resourceType = resourceType;
-        
+
         String resourceTypeStr = resourceTypeAsString(resourceType);
         setTitle("Select " + resourceTypeStr);
         setMessage("Select " + resourceTypeStr.toLowerCase());
@@ -41,7 +41,7 @@ public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
         setComparator(new ResourceComparator(ResourceComparator.NAME));
         setAllowMultiple(false);
     }
-    
+
     private static String resourceTypeAsString(int resourceType) {
         switch (resourceType) {
         case IResource.FILE: return "File";
@@ -51,16 +51,16 @@ public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
         default: Assert.isTrue(false); return null;
         }
     }
-    
+
     public void setInitialSelection(IResource resource) {
         if (resourceType == IResource.FOLDER)
             while (!resource.exists())
                 resource = resource.getParent();
-        
+
         if (resource.exists() && resource.getType() == resourceType)
             super.setInitialSelection(resource);
     }
-    
+
     public void setInitialSelection(String resourcePath) {
       if (!StringUtils.isEmpty(resourcePath)) {
           try {
@@ -79,19 +79,19 @@ public class IResourceSelectionDialog extends ElementTreeSelectionDialog {
           catch (IllegalArgumentException e) { } // on bad file name syntax
       }
     }
-    
+
     public IResource getSelectedResource() {
       Object[] result = getResult();
       return result.length > 0 && result[0] instanceof IResource ? (IResource)result[0] : null;
     }
-    
+
     private static class TreeContentProvider extends WorkbenchContentProvider {
         private final int resourceType;
-        
+
         public TreeContentProvider(int resourceType) {
             this.resourceType = resourceType;
         }
-        
+
         @Override
         public Object[] getChildren(Object element) {
             Object[] children = super.getChildren(element);

@@ -106,7 +106,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
     // overridden so child figures are always removed from their direct parent
     // because both submoduleFigures and TypesFigures can be removed.
-    // Submodule figures are removed from the contentPane (SubmoduleLayer) 
+    // Submodule figures are removed from the contentPane (SubmoduleLayer)
     // while TypesFigure removed directly from the child list
     @Override
     protected void removeChildVisual(EditPart childEditPart) {
@@ -147,7 +147,7 @@ public class CompoundModuleEditPart extends ModuleEditPart {
 
         // return all submodule including inherited ones
         result.addAll(getModel().getSubmodules());
-    	return result;
+        return result;
     }
 
     /**
@@ -179,38 +179,38 @@ public class CompoundModuleEditPart extends ModuleEditPart {
         compoundModuleFigure.setNetwork(compoundModuleModel.isNetwork());
         compoundModuleFigure.setInterface(compoundModuleModel instanceof IInterfaceTypeElement);
         compoundModuleFigure.setInnerType(compoundModuleModel.getEnclosingTypeElement() != null);
-    	compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString());
+        compoundModuleFigure.setDisplayString(compoundModuleModel.getDisplayString());
     }
 
-	/**
-	 * Returns whether the compound module is selectable (mouse is over the bordering area)
-	 * for the selection tool based on the current mouse target coordinates.
-	 * Coordinates are viewport relative.
-	 */
-	public boolean isOnBorder(int x, int y) {
-		return getFigure().isOnBorder(x, y);
-	}
+    /**
+     * Returns whether the compound module is selectable (mouse is over the bordering area)
+     * for the selection tool based on the current mouse target coordinates.
+     * Coordinates are viewport relative.
+     */
+    public boolean isOnBorder(int x, int y) {
+        return getFigure().isOnBorder(x, y);
+    }
 
-	/**
-	 * Compute the source connection anchor to be assigned based on the current mouse
-	 * location and available gates.
-	 * @param p current mouse coordinates
-	 * @return The selected connection anchor
-	 */
-	@Override
+    /**
+     * Compute the source connection anchor to be assigned based on the current mouse
+     * location and available gates.
+     * @param p current mouse coordinates
+     * @return The selected connection anchor
+     */
+    @Override
     public ConnectionAnchor getConnectionAnchorAt(Point p) {
         return new CompoundModuleGateAnchor(getFigure().getSubmoduleArea());
-	}
+    }
 
-	/**
-	 * Returns a connection anchor registered for the given gate
-	 */
-	@Override
+    /**
+     * Returns a connection anchor registered for the given gate
+     */
+    @Override
     public GateAnchor getConnectionAnchor(ConnectionElementEx connection, String gate) {
-	    CompoundModuleGateAnchor gateAnchor = new CompoundModuleGateAnchor(getFigure().getSubmoduleArea());
+        CompoundModuleGateAnchor gateAnchor = new CompoundModuleGateAnchor(getFigure().getSubmoduleArea());
         gateAnchor.setEdgeConstraint(getRoutingConstraintPosition(connection.getDisplayString().getAsString(Prop.ROUTING_CONSTRAINT)));
         return gateAnchor;
-	}
+    }
 
     private int getRoutingConstraintPosition(String routingConstraint) {
         int position;

@@ -191,7 +191,7 @@ public class ExpressionEvaluator {
     /**
      * Creates an evaluator for expressions that might contain
      * statistic references. The references are resolved to items
-     * in the specified {@code input} list. 
+     * in the specified {@code input} list.
      */
     ExpressionEvaluator(ResultFileManager manager, IDList input) {
         this.manager = manager;
@@ -213,7 +213,7 @@ public class ExpressionEvaluator {
      * Evaluates the expression in the given environment.
      * The result is multiple value in general, because
      * the statistic names might refer to multiple statistics
-     * (e.g. with different module names).  
+     * (e.g. with different module names).
      */
     List<Value> evaluate(Expr expr, Environment env) {
         ExprEvaluator visitor = new ExprEvaluator();

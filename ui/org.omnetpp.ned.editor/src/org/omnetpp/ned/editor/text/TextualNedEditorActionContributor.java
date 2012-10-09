@@ -42,38 +42,38 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
     private RetargetTextEditorAction fCorrectIndentationAction;
     private RetargetTextEditorAction fFindTextInNedFilesAction;
 
-	/**
-	 * Default constructor.
-	 */
-	public TextualNedEditorActionContributor() {
-		super();
-		// Currently we do not use resource bundles (the text is coming from the action behind the retargetable action)
-		fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.");
-		fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+    /**
+     * Default constructor.
+     */
+    public TextualNedEditorActionContributor() {
+        super();
+        // Currently we do not use resource bundles (the text is coming from the action behind the retargetable action)
+        fContentAssistProposal= new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), "ContentAssistProposal.");
+        fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
 
-		fConvertToNewFormatAction = createRetargetAction(ConvertToNewFormatAction.ID);
-		fFormatSourceAction = createRetargetAction(FormatSourceAction.ID);
-		fGotoDeclarationAction = createRetargetAction(GotoDeclarationAction.ID);
-		fOrganizeImportsAction = createRetargetAction(OrganizeImportsAction.ID);
-		fToggleCommentAction = createRetargetAction(ToggleCommentAction.ID);
-		fCorrectIndentationAction = createRetargetAction(CorrectIndentationAction.ID);
-		fFindTextInNedFilesAction = createRetargetAction(FindTextInNedFilesActionDelegate.ID);
-	}
+        fConvertToNewFormatAction = createRetargetAction(ConvertToNewFormatAction.ID);
+        fFormatSourceAction = createRetargetAction(FormatSourceAction.ID);
+        fGotoDeclarationAction = createRetargetAction(GotoDeclarationAction.ID);
+        fOrganizeImportsAction = createRetargetAction(OrganizeImportsAction.ID);
+        fToggleCommentAction = createRetargetAction(ToggleCommentAction.ID);
+        fCorrectIndentationAction = createRetargetAction(CorrectIndentationAction.ID);
+        fFindTextInNedFilesAction = createRetargetAction(FindTextInNedFilesActionDelegate.ID);
+    }
 
-	private static RetargetTextEditorAction createRetargetAction(String id) {
-	    RetargetTextEditorAction action = new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), id+".");
-	    action.setActionDefinitionId(NedTextEditorAction.ACTION_DEFINITION_PREFIX + id);
-	    return action;
-	}
+    private static RetargetTextEditorAction createRetargetAction(String id) {
+        RetargetTextEditorAction action = new RetargetTextEditorAction(NedEditorMessages.getResourceBundle(), id+".");
+        action.setActionDefinitionId(NedTextEditorAction.ACTION_DEFINITION_PREFIX + id);
+        return action;
+    }
 
-	/*
-	 * @see IEditorActionBarContributor#setActiveEditor(IEditorPart)
-	 */
-	@Override
-	public void setActiveEditor(IEditorPart part) {
-		super.setActiveEditor(part);
+    /*
+     * @see IEditorActionBarContributor#setActiveEditor(IEditorPart)
+     */
+    @Override
+    public void setActiveEditor(IEditorPart part) {
+        super.setActiveEditor(part);
 
-		ITextEditor editor= null;
+        ITextEditor editor= null;
         if (part instanceof ITextEditor)
             editor= (ITextEditor) part;
 
@@ -86,15 +86,15 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
         fToggleCommentAction.setAction(getAction(editor, ToggleCommentAction.ID));
         fCorrectIndentationAction.setAction(getAction(editor, CorrectIndentationAction.ID));
         fFindTextInNedFilesAction.setAction(getAction(editor, FindTextInNedFilesActionDelegate.ID));
-	}
+    }
 
-	@Override
-	public void contributeToMenu(IMenuManager menuManager) {
-	    super.contributeToMenu(menuManager);
-	    IMenuManager sourceMenu = menuManager.findMenuUsingPath("source");
-	    // create a new Source menu if no Source menu present in the main menu
+    @Override
+    public void contributeToMenu(IMenuManager menuManager) {
+        super.contributeToMenu(menuManager);
+        IMenuManager sourceMenu = menuManager.findMenuUsingPath("source");
+        // create a new Source menu if no Source menu present in the main menu
         if (sourceMenu == null)
-        	sourceMenu = new MenuManager("Source");
+            sourceMenu = new MenuManager("Source");
         sourceMenu.add(fToggleCommentAction);
         sourceMenu.add(new Separator());
         sourceMenu.add(fCorrectIndentationAction);
@@ -105,6 +105,6 @@ public class TextualNedEditorActionContributor extends TextEditorActionContribut
         sourceMenu.add(new Separator());
         sourceMenu.add(fContentAssistProposal);
         menuManager.insertAfter(IWorkbenchActionConstants.M_EDIT, sourceMenu);
-	}
+    }
 
 }

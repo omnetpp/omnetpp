@@ -39,9 +39,9 @@ import org.omnetpp.scave.engine.XYDataset;
  */
 public class ScalarDataset implements IAveragedScalarDataset {
 
-	private ResultItemFields rowFields, columnFields;
+    private ResultItemFields rowFields, columnFields;
 
-	/** The row keys. */
+    /** The row keys. */
     private List<String> rowKeys;
 
     /** The column keys. */
@@ -56,22 +56,22 @@ public class ScalarDataset implements IAveragedScalarDataset {
      * determines the columns.
      */
     public ScalarDataset(IDList idlist, List<String> groupByFields, List<String> barFields,
-    						List<String> averagedFields, ResultFileManager manager) {
-   		computeFields(groupByFields, barFields, averagedFields, idlist, manager);
-   		DataSorter sorter = new DataSorter(manager);
-    	this.data = sorter.groupAndAggregate(idlist, rowFields, columnFields);
-    	this.data.sortRows();
-    	this.data.sortColumns();
-    	this.rowKeys = computeRowKeys(this.data, rowFields);
-    	this.columnKeys = computeColumnKeys(this.data, columnFields);
+                            List<String> averagedFields, ResultFileManager manager) {
+        computeFields(groupByFields, barFields, averagedFields, idlist, manager);
+        DataSorter sorter = new DataSorter(manager);
+        this.data = sorter.groupAndAggregate(idlist, rowFields, columnFields);
+        this.data.sortRows();
+        this.data.sortColumns();
+        this.rowKeys = computeRowKeys(this.data, rowFields);
+        this.columnKeys = computeColumnKeys(this.data, columnFields);
     }
 
     public String getTitle(String format) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	/**
+    /**
      * Returns the row count.
      *
      * @return The row count.
@@ -121,140 +121,140 @@ public class ScalarDataset implements IAveragedScalarDataset {
      * @return The value.
      */
     public double getValue(int row, int column) {
-       	return data.getValue(row, column).getMean();
+        return data.getValue(row, column).getMean();
     }
 
-	/**
-	 * Returns the statistics for a given row and column.
-	 *
-	 * @see IScalarDataset#getStatistics(int, int)
-	 */
+    /**
+     * Returns the statistics for a given row and column.
+     *
+     * @see IScalarDataset#getStatistics(int, int)
+     */
     public Statistics getStatistics(int row, int column) {
-		return data.getValue(row, column);
-	}
+        return data.getValue(row, column);
+    }
 
     private void computeFields(List<String> groupByFields, List<String> barFields, List<String> averagedFields,
-    							IDList idlist, ResultFileManager manager) {
-   		List<String> fields = Arrays.asList(ResultItemFields.getFieldNames().toArray());
-   		List<String> rowFields = new ArrayList<String>();
-   		List<String> columnFields = new ArrayList<String>();
-   		List<String> unusedFields = new ArrayList<String>();
-   		unusedFields.addAll(fields);
+                                IDList idlist, ResultFileManager manager) {
+        List<String> fields = Arrays.asList(ResultItemFields.getFieldNames().toArray());
+        List<String> rowFields = new ArrayList<String>();
+        List<String> columnFields = new ArrayList<String>();
+        List<String> unusedFields = new ArrayList<String>();
+        unusedFields.addAll(fields);
 
-   		if (groupByFields != null) {
-   			rowFields.addAll(groupByFields);
-   			unusedFields.removeAll(groupByFields);
-   		}
-   		if (barFields != null) {
-   			columnFields.addAll(barFields);
-   			unusedFields.removeAll(barFields);
-   		}
-   		if (averagedFields != null)
-   			unusedFields.removeAll(averagedFields);
+        if (groupByFields != null) {
+            rowFields.addAll(groupByFields);
+            unusedFields.removeAll(groupByFields);
+        }
+        if (barFields != null) {
+            columnFields.addAll(barFields);
+            unusedFields.removeAll(barFields);
+        }
+        if (averagedFields != null)
+            unusedFields.removeAll(averagedFields);
 
-   		if (!unusedFields.isEmpty()) {
-	   		Map<String,List<String>> dependencies = buildDependencyMap(fields, idlist, manager);
-	   		rowFields = addDependentFields(rowFields, unusedFields, dependencies);
-	   		columnFields = addDependentFields(columnFields, unusedFields, dependencies);
-	   		applyDefaults(rowFields, columnFields, unusedFields);
-   		}
+        if (!unusedFields.isEmpty()) {
+            Map<String,List<String>> dependencies = buildDependencyMap(fields, idlist, manager);
+            rowFields = addDependentFields(rowFields, unusedFields, dependencies);
+            columnFields = addDependentFields(columnFields, unusedFields, dependencies);
+            applyDefaults(rowFields, columnFields, unusedFields);
+        }
 
-   		//Debug.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
-   		//Debug.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
+        //Debug.format("Row fields: %s%n", StringUtils.formatList(rowFields, "%s", ","));
+        //Debug.format("Column fields: %s%n", StringUtils.formatList(columnFields, "%s", ","));
 
-   		this.rowFields = new ResultItemFields(StringVector.fromArray(rowFields.toArray(new String[rowFields.size()])));
-   		this.columnFields = new ResultItemFields(StringVector.fromArray(columnFields.toArray(new String[columnFields.size()])));
+        this.rowFields = new ResultItemFields(StringVector.fromArray(rowFields.toArray(new String[rowFields.size()])));
+        this.columnFields = new ResultItemFields(StringVector.fromArray(columnFields.toArray(new String[columnFields.size()])));
     }
 
     private Map<String,List<String>> buildDependencyMap(List<String> fields, IDList idlist, ResultFileManager manager) {
-    	int size = fields.size();
-    	Map<String,List<String>> map = new HashMap<String,List<String>>();
-    	List<String> dependents;
-    	for (int i = 0; i < size; ++i) {
-    		ResultItemField f1 = new ResultItemField(fields.get(i));
-    		map.put(f1.getName(), dependents = new ArrayList<String>());
-    		for (int j = 0; j < size; ++j) {
-    			ResultItemField f2 = new ResultItemField(fields.get(j));
-    			if (i == j)
-    				dependents.add(f2.getName());
-    			else if (f1.getID() == RUN_ID && f2.getID() == RUN_ATTR_ID)
-    				dependents.add(f2.getName());
-    			else if (f1.getName().equals(REPLICATION) &&
-    					 (f2.getName().equals(MEASUREMENT) || f2.getName().equals(EXPERIMENT)))
-    				dependents.add(f2.getName());
-    			else if (f1.getName().equals(MEASUREMENT) && f2.getName().equals(EXPERIMENT))
-    				dependents.add(f2.getName());
-    		}
-    	}
-    	return map;
+        int size = fields.size();
+        Map<String,List<String>> map = new HashMap<String,List<String>>();
+        List<String> dependents;
+        for (int i = 0; i < size; ++i) {
+            ResultItemField f1 = new ResultItemField(fields.get(i));
+            map.put(f1.getName(), dependents = new ArrayList<String>());
+            for (int j = 0; j < size; ++j) {
+                ResultItemField f2 = new ResultItemField(fields.get(j));
+                if (i == j)
+                    dependents.add(f2.getName());
+                else if (f1.getID() == RUN_ID && f2.getID() == RUN_ATTR_ID)
+                    dependents.add(f2.getName());
+                else if (f1.getName().equals(REPLICATION) &&
+                         (f2.getName().equals(MEASUREMENT) || f2.getName().equals(EXPERIMENT)))
+                    dependents.add(f2.getName());
+                else if (f1.getName().equals(MEASUREMENT) && f2.getName().equals(EXPERIMENT))
+                    dependents.add(f2.getName());
+            }
+        }
+        return map;
     }
 
     private static List<String> addDependentFields(List<String> fields, List<String> unusedFields, Map<String,List<String>> dependencies) {
-    	if (unusedFields.isEmpty())
-    		return fields;
+        if (unusedFields.isEmpty())
+            return fields;
 
-   		List<String> result = new ArrayList<String>();
-    	for (String field1 : fields) {
-    		result.add(field1);
-   			for (String field2 : dependencies.get(field1)) {
-   				int index = unusedFields.indexOf(field2);
-   				if (index >= 0) {
-   					result.add(field2);
-   					unusedFields.remove(index);
-   				}
-   			}
-   		}
-    	return result;
+        List<String> result = new ArrayList<String>();
+        for (String field1 : fields) {
+            result.add(field1);
+            for (String field2 : dependencies.get(field1)) {
+                int index = unusedFields.indexOf(field2);
+                if (index >= 0) {
+                    result.add(field2);
+                    unusedFields.remove(index);
+                }
+            }
+        }
+        return result;
     }
 
     private static void applyDefaults(List<String> rowFields, List<String> columnFields, List<String> unusedFields) {
-    	for (String field : unusedFields) {
-    		if (field.equals(MODULE) || field.equals(EXPERIMENT))
-    			rowFields.add(field);
-    		else if (field.equals(NAME) || field.equals(MEASUREMENT))
-    			columnFields.add(field);
-    		// other fields are averaged
-    	}
+        for (String field : unusedFields) {
+            if (field.equals(MODULE) || field.equals(EXPERIMENT))
+                rowFields.add(field);
+            else if (field.equals(NAME) || field.equals(MEASUREMENT))
+                columnFields.add(field);
+            // other fields are averaged
+        }
     }
 
     private static final ResultItemField[] allFields = new ResultItemField[] {
-    	new ResultItemField(FILE), new ResultItemField(RUN), new ResultItemField(MODULE),
-    	new ResultItemField(NAME),
-    	new ResultItemField(EXPERIMENT), new ResultItemField(MEASUREMENT), new ResultItemField(REPLICATION)
+        new ResultItemField(FILE), new ResultItemField(RUN), new ResultItemField(MODULE),
+        new ResultItemField(NAME),
+        new ResultItemField(EXPERIMENT), new ResultItemField(MEASUREMENT), new ResultItemField(REPLICATION)
     };
     private static final char separator = ';';
 
     private static List<String> computeRowKeys(XYDataset data, ResultItemFields rowFields) {
-    	int count = data.getRowCount();
+        int count = data.getRowCount();
         List<String> keys = new ArrayList<String>(count);
-    	for (int i = 0; i < count; ++i) {
-        	StringBuffer sb = new StringBuffer();
-        	for (ResultItemField field : allFields) {
-        		if (rowFields.hasField(field)) {
-        		    String value = data.getRowField(i, field);
-        		    // don't append if all rows have the same value
-        	        for (int j = 0; j < count; ++j) {
-        	            if (!value.equals(data.getRowField(j, field))) {
+        for (int i = 0; i < count; ++i) {
+            StringBuffer sb = new StringBuffer();
+            for (ResultItemField field : allFields) {
+                if (rowFields.hasField(field)) {
+                    String value = data.getRowField(i, field);
+                    // don't append if all rows have the same value
+                    for (int j = 0; j < count; ++j) {
+                        if (!value.equals(data.getRowField(j, field))) {
                             sb.append(value).append(separator);
                             break;
-        	            }
-        	        }
-        		}
-        	}
-        	if (sb.length() > 0)  // delete last separator
-        		sb.deleteCharAt(sb.length()-1);
-        	keys.add(sb.toString());
-    	}
-    	return keys;
+                        }
+                    }
+                }
+            }
+            if (sb.length() > 0)  // delete last separator
+                sb.deleteCharAt(sb.length()-1);
+            keys.add(sb.toString());
+        }
+        return keys;
     }
 
     private static List<String> computeColumnKeys(XYDataset data, ResultItemFields columnFields) {
-    	int count = data.getColumnCount();
-    	List<String> keys = new ArrayList<String>(count);
-    	for (int i = 0; i < count; ++i) {
-        	StringBuffer sb = new StringBuffer();
-        	for (ResultItemField field : allFields) {
-        		if (columnFields.hasField(field)) {
+        int count = data.getColumnCount();
+        List<String> keys = new ArrayList<String>(count);
+        for (int i = 0; i < count; ++i) {
+            StringBuffer sb = new StringBuffer();
+            for (ResultItemField field : allFields) {
+                if (columnFields.hasField(field)) {
                     String value = data.getColumnField(i, field);
                     // don't append if all columns have the same value
                     for (int j = 0; j < count; ++j) {
@@ -263,12 +263,12 @@ public class ScalarDataset implements IAveragedScalarDataset {
                             break;
                         }
                     }
-        		}
-        	}
-        	if (sb.length() > 0)  // delete last separator
-        		sb.deleteCharAt(sb.length()-1);
-        	keys.add(sb.toString());
-    	}
-    	return keys;
+                }
+            }
+            if (sb.length() > 0)  // delete last separator
+                sb.deleteCharAt(sb.length()-1);
+            keys.add(sb.toString());
+        }
+        return keys;
     }
 }

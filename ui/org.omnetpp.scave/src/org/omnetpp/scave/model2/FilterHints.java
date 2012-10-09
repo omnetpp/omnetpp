@@ -33,67 +33,67 @@ import org.omnetpp.scave.model2.FilterField.Kind;
  */
 public class FilterHints {
 
-	private static final String[] EMPTY = new String[0];
+    private static final String[] EMPTY = new String[0];
 
-	private Map<FilterField,String[]> hints = new HashMap<FilterField, String[]>();
+    private Map<FilterField,String[]> hints = new HashMap<FilterField, String[]>();
 
-	public FilterHints() {
-	}
+    public FilterHints() {
+    }
 
-	public FilterHints(final ResultFileManager manager, final ResultType type) {
-		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-			public Object call() throws Exception {
-				init(manager, ScaveModelUtil.getAllIDs(manager, type));
-				return null;
-			}
-		});
-	}
+    public FilterHints(final ResultFileManager manager, final ResultType type) {
+        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            public Object call() throws Exception {
+                init(manager, ScaveModelUtil.getAllIDs(manager, type));
+                return null;
+            }
+        });
+    }
 
-	public FilterHints(final ResultFileManager manager, final IDList idlist) {
-		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-			public Object call() throws Exception {
-				init(manager, idlist);
-				return null;
-			}
-		});
-	}
+    public FilterHints(final ResultFileManager manager, final IDList idlist) {
+        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            public Object call() throws Exception {
+                init(manager, idlist);
+                return null;
+            }
+        });
+    }
 
-	private void init(ResultFileManager manager, IDList idlist) {
-		manager.checkReadLock();
-		ResultFileList fileList = manager.getUniqueFiles(idlist);
-		RunList runList = manager.getUniqueRuns(idlist);
+    private void init(ResultFileManager manager, IDList idlist) {
+        manager.checkReadLock();
+        ResultFileList fileList = manager.getUniqueFiles(idlist);
+        RunList runList = manager.getUniqueRuns(idlist);
 
-		setHints(FILE, manager.getFilePathFilterHints(fileList).toArray());
-		setHints(RUN, manager.getRunNameFilterHints(runList).toArray());
-		setHints(MODULE, manager.getModuleFilterHints(idlist).toArray());
-		setHints(NAME, manager.getNameFilterHints(idlist).toArray());
-		for (String attrName : manager.getUniqueAttributeNames(idlist).keys().toArray())
-			setHints(Kind.ItemField, attrName, manager.getResultItemAttributeFilterHints(idlist, attrName).toArray());
-		for (String attrName : manager.getUniqueRunAttributeNames(runList).keys().toArray())
-			setHints(Kind.RunAttribute, attrName, manager.getRunAttributeFilterHints(runList, attrName).toArray());
-		for (String paramName : manager.getUniqueModuleParamNames(runList).keys().toArray())
-			setHints(Kind.ModuleParam, paramName, manager.getModuleParamFilterHints(runList, paramName).toArray());
-	}
+        setHints(FILE, manager.getFilePathFilterHints(fileList).toArray());
+        setHints(RUN, manager.getRunNameFilterHints(runList).toArray());
+        setHints(MODULE, manager.getModuleFilterHints(idlist).toArray());
+        setHints(NAME, manager.getNameFilterHints(idlist).toArray());
+        for (String attrName : manager.getUniqueAttributeNames(idlist).keys().toArray())
+            setHints(Kind.ItemField, attrName, manager.getResultItemAttributeFilterHints(idlist, attrName).toArray());
+        for (String attrName : manager.getUniqueRunAttributeNames(runList).keys().toArray())
+            setHints(Kind.RunAttribute, attrName, manager.getRunAttributeFilterHints(runList, attrName).toArray());
+        for (String paramName : manager.getUniqueModuleParamNames(runList).keys().toArray())
+            setHints(Kind.ModuleParam, paramName, manager.getModuleParamFilterHints(runList, paramName).toArray());
+    }
 
-	public FilterField[] getFields() {
-		Set<FilterField> keys = hints.keySet();
-		FilterField[] fields = keys.toArray(new FilterField[keys.size()]);
-		Arrays.sort(fields);
-		return fields;
-	}
+    public FilterField[] getFields() {
+        Set<FilterField> keys = hints.keySet();
+        FilterField[] fields = keys.toArray(new FilterField[keys.size()]);
+        Arrays.sort(fields);
+        return fields;
+    }
 
-	public String[] getHints(FilterField field) {
-		if (hints.containsKey(field))
-			return hints.get(field);
-		else
-			return EMPTY;
-	}
+    public String[] getHints(FilterField field) {
+        if (hints.containsKey(field))
+            return hints.get(field);
+        else
+            return EMPTY;
+    }
 
-	private void setHints(FilterField field, String[] value) {
-		this.hints.put(field, value);
-	}
+    private void setHints(FilterField field, String[] value) {
+        this.hints.put(field, value);
+    }
 
-	private void setHints(Kind kind, String name, String[] value) {
-		this.hints.put(new FilterField(kind, name), value);
-	}
+    private void setHints(Kind kind, String name, String[] value) {
+        this.hints.put(new FilterField(kind, name), value);
+    }
 }

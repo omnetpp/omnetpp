@@ -43,101 +43,101 @@ import org.omnetpp.scave.model.SetOperation;
  * @generated
  */
 public abstract class SetOperationImpl extends EObjectImpl implements SetOperation {
-	/**
+    /**
      * The cached value of the '{@link #getSourceDataset() <em>Source Dataset</em>}' reference.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getSourceDataset()
      * @generated
      * @ordered
      */
-	protected Dataset sourceDataset;
+    protected Dataset sourceDataset;
 
-	/**
+    /**
      * The default value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getFilterPattern()
      * @generated
      * @ordered
      */
-	protected static final String FILTER_PATTERN_EDEFAULT = null;
+    protected static final String FILTER_PATTERN_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getFilterPattern()
      * @generated
      * @ordered
      */
-	protected String filterPattern = FILTER_PATTERN_EDEFAULT;
+    protected String filterPattern = FILTER_PATTERN_EDEFAULT;
 
-	/**
+    /**
      * The default value of the '{@link #getType() <em>Type</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getType()
      * @generated
      * @ordered
      */
-	protected static final ResultType TYPE_EDEFAULT = ResultType.SCALAR_LITERAL;
+    protected static final ResultType TYPE_EDEFAULT = ResultType.SCALAR_LITERAL;
 
-	/**
+    /**
      * The cached value of the '{@link #getType() <em>Type</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getType()
      * @generated
      * @ordered
      */
-	protected ResultType type = TYPE_EDEFAULT;
+    protected ResultType type = TYPE_EDEFAULT;
 
-	/**
+    /**
      * The default value of the '{@link #getCachedIDs() <em>Cached IDs</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getCachedIDs()
      * @generated
      * @ordered
      */
-	protected static final Object CACHED_IDS_EDEFAULT = null;
+    protected static final Object CACHED_IDS_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getCachedIDs() <em>Cached IDs</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getCachedIDs()
      * @generated
      * @ordered
      */
-	protected Object cachedIDs = CACHED_IDS_EDEFAULT;
+    protected Object cachedIDs = CACHED_IDS_EDEFAULT;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected SetOperationImpl() {
+    protected SetOperationImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.SET_OPERATION;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Dataset getSourceDataset() {
+    public Dataset getSourceDataset() {
         if (sourceDataset != null && sourceDataset.eIsProxy()) {
             InternalEObject oldSourceDataset = (InternalEObject)sourceDataset;
             sourceDataset = (Dataset)eResolveProxy(oldSourceDataset);
@@ -149,97 +149,97 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
         return sourceDataset;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Dataset basicGetSourceDataset() {
+    public Dataset basicGetSourceDataset() {
         return sourceDataset;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setSourceDataset(Dataset newSourceDataset) {
+    public void setSourceDataset(Dataset newSourceDataset) {
         Dataset oldSourceDataset = sourceDataset;
         sourceDataset = newSourceDataset;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SET_OPERATION__SOURCE_DATASET, oldSourceDataset, sourceDataset));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getFilterPattern() {
+    public String getFilterPattern() {
         return filterPattern;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setFilterPattern(String newFilterPattern) {
+    public void setFilterPattern(String newFilterPattern) {
         String oldFilterPattern = filterPattern;
         filterPattern = newFilterPattern;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SET_OPERATION__FILTER_PATTERN, oldFilterPattern, filterPattern));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public ResultType getType() {
+    public ResultType getType() {
         return type;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setType(ResultType newType) {
+    public void setType(ResultType newType) {
         ResultType oldType = type;
         type = newType == null ? TYPE_EDEFAULT : newType;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SET_OPERATION__TYPE, oldType, type));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public Object getCachedIDs() {
+    public Object getCachedIDs() {
         return cachedIDs;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setCachedIDs(Object newCachedIDs) {
+    public void setCachedIDs(Object newCachedIDs) {
         Object oldCachedIDs = cachedIDs;
         cachedIDs = newCachedIDs;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.SET_OPERATION__CACHED_IDS, oldCachedIDs, cachedIDs));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
                 if (resolve) return getSourceDataset();
@@ -254,13 +254,13 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eSet(int featureID, Object newValue) {
+    @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
                 setSourceDataset((Dataset)newValue);
@@ -278,13 +278,13 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
                 setSourceDataset((Dataset)null);
@@ -302,13 +302,13 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.SET_OPERATION__SOURCE_DATASET:
                 return sourceDataset != null;
@@ -322,13 +322,13 @@ public abstract class SetOperationImpl extends EObjectImpl implements SetOperati
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

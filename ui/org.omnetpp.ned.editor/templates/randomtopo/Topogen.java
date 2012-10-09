@@ -7,13 +7,13 @@ import java.util.Random;
 import java.util.Set;
 
 /**
- * Simple topology generator. It can produce a connected graph with a given 
+ * Simple topology generator. It can produce a connected graph with a given
  * number of nodes and edges, and no multiple connections between any two nodes.
- * 
+ *
  * Strategy: build a connected tree, then add edges. To add an edge, we pick a
  * node (prefer leaf nodes), and connect it to a nearby node. "Nearby" nodes
  * are found using Dijkstra's algorithm.
- * 
+ *
  * @author Andras
  */
 public class Topogen {
@@ -25,7 +25,7 @@ public class Topogen {
 
     public Topogen() {
     }
-    
+
     public Topogen(int edges, int nodes, long seed) {
         this.edges = edges;
         this.nodes = nodes;
@@ -71,11 +71,11 @@ public class Topogen {
     public void setParam2(double param2) {
         this.param2 = param2;
     }
-    
+
     /**
-     * Generates a connected graph with the given number of nodes and edges, and 
+     * Generates a connected graph with the given number of nodes and edges, and
      * no multiple connections between any two nodes.
-     * 
+     *
      * Returns the edge list representation of the generated graph.
      * For each node index i, the list contains the list of its neighbors.
      */
@@ -84,11 +84,11 @@ public class Topogen {
             throw new IllegalArgumentException("Not enough edges to form a connected tree; need at least #nodes-1");
         if (edges > nodes*(nodes-1)/2) // full graph
             throw new IllegalArgumentException("Cannot have that many edges without having multiple edges between nodes");
-        
+
         List<Set<Integer>> graph = new ArrayList<Set<Integer>>();
-        
+
         Random rng = new Random(seed);
-        
+
         // add nodes and links to form a connected tree
         for (int i = 0; i < nodes; i++) {
             graph.add(new HashSet<Integer>());
@@ -98,7 +98,7 @@ public class Topogen {
                 graph.get(existing).add(i);
             }
         }
-        
+
         // then create additional edges until we reach the desired count
         for (int i = 0; i < edges-nodes+1; i++) {
             // pick a random node which is not connected to all others yet
@@ -107,25 +107,25 @@ public class Topogen {
             // then pick a src node, from the beginning of the list (prefer small node degrees)
             int index = geom(srcCandidates.size()*param1, srcCandidates.size(), rng);
             int src = srcCandidates.get(index);
-        
+
             // calculate the distances to all others
             int[] dist = dijkstra(graph, src);
-            
+
             // sort nodes based on their distances to src, discarding src and its neighbors
             List<Integer> destCandidates = new ArrayList<Integer>();
             while (true) {
                 int k = findMin(dist);
-                if (dist[k] == Integer.MAX_VALUE) 
+                if (dist[k] == Integer.MAX_VALUE)
                     break;
                 if (dist[k] >= 2)
                     destCandidates.add(k);
                 dist[k] = Integer.MAX_VALUE;
             }
-            
+
             // then pick one node to connect to; try to pick one nearer src (i.e. at smaller indices in v[])
             index = geom(destCandidates.size()*param2, destCandidates.size(), rng);
             int dest = destCandidates.get(index);
-            
+
             // add link
             graph.get(src).add(dest);
             graph.get(dest).add(src);
@@ -152,7 +152,7 @@ public class Topogen {
 
     private int[] dijkstra(List<Set<Integer>> graph, int source) {
         // based on: http://en.wikipedia.org/wiki/Dijkstra%27s_algorithms
-        
+
         // setup
         int n = graph.size();
         int[] dist = new int[n];
@@ -161,8 +161,8 @@ public class Topogen {
 
         // Q := the set of all nodes in Graph
         Set<Integer> Q = new HashSet<Integer>();
-        for (int i=0; i<n; i++) 
-            Q.add(i);  
+        for (int i=0; i<n; i++)
+            Q.add(i);
 
         // All nodes in the graph are unoptimized - thus are in Q
         while (!Q.isEmpty()) {
@@ -174,7 +174,7 @@ public class Topogen {
 
             if (dist[u] == Integer.MAX_VALUE)
                 break; // all remaining vertices are inaccessible from source
-            
+
             Q.remove(u);
             for (int v : graph.get(u)) {    // u's neighbors still in Q
                 if (Q.contains(v)) {
@@ -202,7 +202,7 @@ public class Topogen {
         } while (d >= upper);
         return d;
     }
-    
+
     /**
      * Returns the graph in readable string form.
      */

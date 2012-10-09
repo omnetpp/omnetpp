@@ -221,7 +221,7 @@ public abstract class ContentTemplate implements IContentTemplate {
         if (context.getFolder() == null)
             throw new IllegalStateException("This method cannot be used when context.getFolder() is null");
     }
-    
+
     public ClassLoader getClassLoader() {
         if (classLoader == null)
             classLoader = createClassLoader();
@@ -279,8 +279,8 @@ public abstract class ContentTemplate implements IContentTemplate {
             SETOUTPUT_MARKER +
             "</#macro>\n" +
             "\n" +
-            "<#function iif condition truevalue falsevalue=\"\">\n" + 
-            "    <#if condition><#return truevalue><#else><#return falsevalue></#if>\n" + 
+            "<#function iif condition truevalue falsevalue=\"\">\n" +
+            "    <#if condition><#return truevalue><#else><#return falsevalue></#if>\n" +
             "</#function>\n" +
             "\n";
 
@@ -360,8 +360,8 @@ public abstract class ContentTemplate implements IContentTemplate {
      * Evaluates the given template, but does not create any file in the workspace;
      * in fact, non-blank output is reported via the unhandledOutput() method.
      * (The template code can still create files via FileUtils.) The method returns
-     * the template processing environment, which allows the caller to access the 
-     * variables set by the template code. 
+     * the template processing environment, which allows the caller to access the
+     * variables set by the template code.
      */
     protected Environment processTemplateForSideEffects(Configuration freemarkerConfiguration, String fileName, CreationContext context) throws CoreException {
         // classLoader stuff -- see freemarker.template.utility.ClassUtil.forName(String)
@@ -380,7 +380,7 @@ public abstract class ContentTemplate implements IContentTemplate {
             if (!StringUtils.isBlank(content))
                 unhandledOutput(fileName, content);
             return env;
-        } 
+        }
         catch (Exception e) {
             throw CommonPlugin.wrapIntoCoreException(e);
         }
@@ -390,7 +390,7 @@ public abstract class ContentTemplate implements IContentTemplate {
     }
 
     /**
-     * Invoked when a template that's supposed to generate no or blank output generates content. 
+     * Invoked when a template that's supposed to generate no or blank output generates content.
      */
     protected void unhandledOutput(String fileName, String content) {
         throw new RuntimeException("Template " + fileName + " generated non-blank output: " + StringUtils.abbreviate(content.trim(), 30));

@@ -54,26 +54,26 @@ import org.omnetpp.ned.core.NedResourcesPlugin;
  * @author Andras
  */
 public class NedSourceFoldersPropertyPage extends PropertyPage {
-	private CheckboxTreeViewer folderTree;
-	private EditableList excludedPackagesList;
-	private NedSourceFoldersConfiguration editedConfig;
+    private CheckboxTreeViewer folderTree;
+    private EditableList excludedPackagesList;
+    private NedSourceFoldersConfiguration editedConfig;
 
-	/**
-	 * Constructor.
-	 */
-	public NedSourceFoldersPropertyPage() {
-		super();
-	}
-	
-	/**
-	 * @see PreferencePage#createContents(Composite)
-	 */
-	protected Control createContents(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		composite.setLayout(new GridLayout(1, false));
+    /**
+     * Constructor.
+     */
+    public NedSourceFoldersPropertyPage() {
+        super();
+    }
 
-		final IProject project = getProject();
+    /**
+     * @see PreferencePage#createContents(Composite)
+     */
+    protected Control createContents(Composite parent) {
+        Composite composite = new Composite(parent, SWT.NONE);
+        composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        composite.setLayout(new GridLayout(1, false));
+
+        final IProject project = getProject();
 
         createWrapLabel(composite,
                 "NED Source Folders are root folders for the NED package hierarchy. " +
@@ -89,15 +89,15 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
         Composite upperPart = new Composite(composite, SWT.NONE);
         upperPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         upperPart.setLayout(new GridLayout(1, false));
-        
+
         // Source folders tree
         Label label = new Label(upperPart, SWT.NONE);
         label.setText("&NED Source Folders for project '" + project.getName() + "':");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-		folderTree = new CheckboxTreeViewer(upperPart, SWT.BORDER);
-		folderTree.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		((GridData)folderTree.getTree().getLayoutData()).heightHint = convertHeightInCharsToPixels(8);
+        folderTree = new CheckboxTreeViewer(upperPart, SWT.BORDER);
+        folderTree.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        ((GridData)folderTree.getTree().getLayoutData()).heightHint = convertHeightInCharsToPixels(8);
 
         Composite lowerPart = new Composite(composite, SWT.NONE);
         lowerPart.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
@@ -107,46 +107,46 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
         label = new Label(lowerPart, SWT.NONE);
         label.setText("&Excluded package subtrees:");
         label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-        
+
         excludedPackagesList = new EditableList(lowerPart, SWT.NONE);
         excludedPackagesList.setAddDialogMessage("Package name to exclude:");
         excludedPackagesList.setEditDialogMessage("Package name to exclude:");
         excludedPackagesList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         ((GridData)excludedPackagesList.getLayoutData()).heightHint = convertHeightInCharsToPixels(8);
 
-		// configure package tree
-		folderTree.setLabelProvider(new WorkbenchLabelProvider());
+        // configure package tree
+        folderTree.setLabelProvider(new WorkbenchLabelProvider());
 
-		folderTree.setContentProvider(new WorkbenchContentProvider() {
-	        @Override
-	        public Object[] getChildren(Object element) {
-	            List<Object> filteredChildren = new ArrayList<Object>();
-	            for (Object child : super.getChildren(element)) {
-	                if ((child==project || child instanceof IFolder) && !((IResource)child).getName().startsWith("."))
-	                    filteredChildren.add(child);
-	            }
-	            return filteredChildren.toArray();
-	        }
-	    });
+        folderTree.setContentProvider(new WorkbenchContentProvider() {
+            @Override
+            public Object[] getChildren(Object element) {
+                List<Object> filteredChildren = new ArrayList<Object>();
+                for (Object child : super.getChildren(element)) {
+                    if ((child==project || child instanceof IFolder) && !((IResource)child).getName().startsWith("."))
+                        filteredChildren.add(child);
+                }
+                return filteredChildren.toArray();
+            }
+        });
 
-		folderTree.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				if (event.getChecked()) {
-			        // when a folder is checked, uncheck its subtree and all parents up to the root
-					IResource e = (IResource)event.getElement();
-					folderTree.setSubtreeChecked(e, false);
-					folderTree.setChecked(e, true);
-				    for (IResource current=e.getParent(); current!=null; current=current.getParent())
-				    	folderTree.setChecked(current, false);
-				}
-				
-				// update working copy
-				IContainer[] folders = (IContainer[]) ArrayUtils.addAll(new IContainer[]{}, folderTree.getCheckedElements());
-				editedConfig.setSourceFolders(folders);
-			}
-		});
+        folderTree.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
+                if (event.getChecked()) {
+                    // when a folder is checked, uncheck its subtree and all parents up to the root
+                    IResource e = (IResource)event.getElement();
+                    folderTree.setSubtreeChecked(e, false);
+                    folderTree.setChecked(e, true);
+                    for (IResource current=e.getParent(); current!=null; current=current.getParent())
+                        folderTree.setChecked(current, false);
+                }
 
-		folderTree.setInput(project.getParent());
+                // update working copy
+                IContainer[] folders = (IContainer[]) ArrayUtils.addAll(new IContainer[]{}, folderTree.getCheckedElements());
+                editedConfig.setSourceFolders(folders);
+            }
+        });
+
+        folderTree.setInput(project.getParent());
 
         excludedPackagesList.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
@@ -155,7 +155,7 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
             }
         });
 
-		// load configuration and populate page
+        // load configuration and populate page
         try {
             editedConfig = NedResourcesPlugin.getNedSourceFoldersEditingManager().getConfig(getContainer(), getProject());
         }
@@ -163,7 +163,7 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
             errorDialog("Cannot read NED Source Folders list: ", e);
             editedConfig = new NedSourceFoldersConfiguration(new IContainer[0], new String[0]);
         }
-        
+
         for (IContainer folder : editedConfig.getSourceFolders()) {
             folderTree.setChecked(folder, true);
             for (IResource current=folder.getParent(); current!=null; current=current.getParent())
@@ -176,24 +176,24 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
         Arrays.sort(excludedPackages);
         excludedPackagesList.setItems(excludedPackages);
 
-		return composite;
-	}
+        return composite;
+    }
 
     private IProject getProject() {
         return (IProject) getElement().getAdapter(IProject.class);
     }
 
     protected Label createWrapLabel(Composite parent, String text, int hspan, int wrapwidth) {
-	    // code from SWTFactory (debug.internal.ui)
-	    Label l = new Label(parent, SWT.NONE | SWT.WRAP);
-	    l.setFont(parent.getFont());
-	    l.setText(text);
-	    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-	    gd.horizontalSpan = hspan;
-	    gd.widthHint = wrapwidth;
-	    l.setLayoutData(gd);
-	    return l;
-	}
+        // code from SWTFactory (debug.internal.ui)
+        Label l = new Label(parent, SWT.NONE | SWT.WRAP);
+        l.setFont(parent.getFont());
+        l.setText(text);
+        GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+        gd.horizontalSpan = hspan;
+        gd.widthHint = wrapwidth;
+        l.setLayoutData(gd);
+        return l;
+    }
 
     protected Button createButton(Composite parent, String text, String tooltip) {
         Button button = new Button(parent, SWT.PUSH);
@@ -214,28 +214,28 @@ public class NedSourceFoldersPropertyPage extends PropertyPage {
         }
     }
 
-	protected void performDefaults() {
-		folderTree.setCheckedElements(new Object[] { getProject() });
+    protected void performDefaults() {
+        folderTree.setCheckedElements(new Object[] { getProject() });
         editedConfig.setSourceFolders(new IContainer[] { getProject() });
-	}
+    }
 
-	public boolean performOk() {
+    public boolean performOk() {
         if (WorkspaceJob.getJobManager().find(ResourcesPlugin.FAMILY_MANUAL_BUILD).length != 0) {
             MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Cannot update settings while build is in progress.");
             return false;
         }
-	    try {
-	        ProjectUtils.saveNedFoldersFile(getProject(), editedConfig);
-	        return true;
-	    }
-	    catch (CoreException e) {
-	        errorDialog("Could not store NED Source Folders list: ", e);
+        try {
+            ProjectUtils.saveNedFoldersFile(getProject(), editedConfig);
+            return true;
+        }
+        catch (CoreException e) {
+            errorDialog("Could not store NED Source Folders list: ", e);
             return false;
-	    }
-	}
+        }
+    }
 
-	protected void errorDialog(String message, Throwable e) {
-		IStatus status = new Status(IMarker.SEVERITY_ERROR, NedResourcesPlugin.PLUGIN_ID, e.getMessage(), e);
-		ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
-	}
+    protected void errorDialog(String message, Throwable e) {
+        IStatus status = new Status(IMarker.SEVERITY_ERROR, NedResourcesPlugin.PLUGIN_ID, e.getMessage(), e);
+        ErrorDialog.openError(Display.getCurrent().getActiveShell(), "Error", message, status);
+    }
 }

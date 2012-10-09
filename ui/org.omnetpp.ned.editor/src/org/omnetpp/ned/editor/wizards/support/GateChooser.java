@@ -47,11 +47,11 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
     // widgets
     private ComboViewer comboViewer;
     private Text text;
-    
+
     // needed because we cannot get nedType in one step
     private IProject contextProject;
     private String nedTypeName;
-    
+
     public GateChooser(Composite parent, int style) {
         super(parent, style);
         setLayout(new FillLayout());
@@ -60,7 +60,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
 
     public void setGateFilter(int filter) {
         this.filter = filter;
-        
+
         if (nedType != null)
             comboViewer.setInput(getMatchingGates());  // re-run filter
     }
@@ -98,7 +98,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
                 comboViewer.setLabelProvider(NedModelLabelProvider.getInstance());
                 layout(true);
             }
-            
+
             // set/refresh gate list, and select 1st one
             List<GateElementEx> gates = getMatchingGates();
             comboViewer.setInput(gates);
@@ -106,7 +106,7 @@ public class GateChooser extends Composite implements IWidgetAdapterExt {
                 comboViewer.setSelection(new StructuredSelection(gates.get(0)));
         }
     }
-    
+
     protected List<GateElementEx> getMatchingGates() {
         Map<String, GateElementEx> gateDecls = nedType.getGateDeclarations();
         List<GateElementEx> result = new ArrayList<GateElementEx>();

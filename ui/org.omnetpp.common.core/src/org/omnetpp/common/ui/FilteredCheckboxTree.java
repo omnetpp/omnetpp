@@ -42,14 +42,14 @@ import org.eclipse.ui.progress.WorkbenchJob;
 /**
  * A FilteredChecboxTree.  This tree stores all the tree elements internally, and keeps the
  * check state in sync.  This way, even if an element is filtered, the caller can get and set the
- * checked state.  
- * 
+ * checked state.
+ *
  * The internal representation is additive.  That is, elements are never removed from the internal
  * representation.  This is OK since the PDE launch Dialog never changes the elements once
- * the view is opened.  If any other tree is based on this code, they may want to address this issue. 
- * 
+ * the view is opened.  If any other tree is based on this code, they may want to address this issue.
+ *
  * This is not public because it was customized for the Launch Dialog.
- * 
+ *
  * Code copied from: org.eclipse.pde.internal.ui.launcher.FilteredCheckboxTree. --Andras
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -81,8 +81,8 @@ public class FilteredCheckboxTree extends FilteredTree {
      */
     protected WorkbenchJob doCreateRefreshJob() {
         // Since refresh job is private, we have to get a handle to it
-        // when it is created, and store it locally.  
-        // 
+        // when it is created, and store it locally.
+        //
         // See: 218903: [Viewers] support extensibility of the refresh job in FilteredTree
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=218903
         WorkbenchJob job = super.doCreateRefreshJob();
@@ -105,7 +105,7 @@ public class FilteredCheckboxTree extends FilteredTree {
     }
 
     /**
-     * Get the number of pixels the tree viewer is from the top of the filtered 
+     * Get the number of pixels the tree viewer is from the top of the filtered
      * checkbox tree viewer.  This is  useful if you wish to align buttons with the
      * tree.
      * @return the offset of the Tree from the top of the container
@@ -123,7 +123,7 @@ public class FilteredCheckboxTree extends FilteredTree {
     /**
      * Classes which implement this interface deal with notifications from the
      * filtered checkbox tree viewer.  The notifications are fired before a refresh
-     * happens. 
+     * happens.
      */
     interface PreRefreshNotifier {
         public void preRefresh(FilterableCheckboxTreeViewer viewer, boolean filtered);
@@ -131,7 +131,7 @@ public class FilteredCheckboxTree extends FilteredTree {
 
     /**
      * A CheckboxTreeViewer that maintains an internal representation of all the nodes.
-     * 
+     *
      */
     public class FilterableCheckboxTreeViewer extends CheckboxTreeViewer {
         static final String NONE = "none"; //$NON-NLS-1$
@@ -232,7 +232,7 @@ public class FilteredCheckboxTree extends FilteredTree {
         }
 
         /**
-         * DO NOT USE THIS METHOD! It appears to be bogus: simply returns empty list if tree hasn't been filtered 
+         * DO NOT USE THIS METHOD! It appears to be bogus: simply returns empty list if tree hasn't been filtered
          * --Andras
          */
         public Object[] getCheckedElements() {
@@ -364,7 +364,7 @@ public class FilteredCheckboxTree extends FilteredTree {
         }
 
         /*
-         * Set the checked state 
+         * Set the checked state
          */
         private void doApplyCheckedState(Item item, Object element) {
             // update the item first
@@ -436,7 +436,7 @@ public class FilteredCheckboxTree extends FilteredTree {
         }
 
         /**
-         * Computes the checked state from a tree item 
+         * Computes the checked state from a tree item
          */
         private String getItemState(TreeItem item) {
             if (item.getChecked() && item.getGrayed()) {
@@ -453,7 +453,7 @@ public class FilteredCheckboxTree extends FilteredTree {
     } // end of FilterableCheckboxTreeViewer
 
     public void setEnabled(boolean enabled) {
-        if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0) { // filter uses FilteredTree new look, not native 
+        if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0) { // filter uses FilteredTree new look, not native
             int filterColor = enabled ? SWT.COLOR_LIST_BACKGROUND : SWT.COLOR_WIDGET_BACKGROUND;
             filterComposite.setBackground(getDisplay().getSystemColor(filterColor));
         }

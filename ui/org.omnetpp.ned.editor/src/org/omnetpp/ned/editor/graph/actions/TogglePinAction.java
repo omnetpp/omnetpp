@@ -30,24 +30,24 @@ import org.omnetpp.ned.model.interfaces.IConnectableElement;
  */
 public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction {
 
-	public static final String ID = "Pinned";
-	public static final String MENUNAME = "Pi&nned";
-	public static final String TOOLTIP = "Pins the module to a location";
-	public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
+    public static final String ID = "Pinned";
+    public static final String MENUNAME = "Pi&nned";
+    public static final String TOOLTIP = "Pins the module to a location";
+    public static final ImageDescriptor IMAGE = ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_UNPIN);
 
-	public TogglePinAction(IWorkbenchPart part) {
-		super(part, IAction.AS_CHECK_BOX);
-		setText(MENUNAME);
-		setId(ID);
-		setToolTipText(TOOLTIP);
-		setImageDescriptor(IMAGE);
-		setHoverImageDescriptor(IMAGE);
-	}
+    public TogglePinAction(IWorkbenchPart part) {
+        super(part, IAction.AS_CHECK_BOX);
+        setText(MENUNAME);
+        setId(ID);
+        setToolTipText(TOOLTIP);
+        setImageDescriptor(IMAGE);
+        setHoverImageDescriptor(IMAGE);
+    }
 
-	/**
-	 * This command can be executed ONLY on submodules that have fixed location
-	 */
-	@Override
+    /**
+     * This command can be executed ONLY on submodules that have fixed location
+     */
+    @Override
     protected boolean calculateEnabled() {
         Command cmd = getCommand();
         if (cmd == null) {
@@ -55,11 +55,11 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
             return false;
         }
         return cmd.canExecute();
-	}
+    }
 
-	@Override
-	protected void refresh() {
-	    int size = getSelectedObjects().size();
+    @Override
+    protected void refresh() {
+        int size = getSelectedObjects().size();
         if (size > 0) {
             Object primarySelection = getSelectedObjects().get(size-1);
             Point loc = null;
@@ -68,10 +68,10 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
                 if (model instanceof IConnectableElement)
                     loc = ((IConnectableElement)model).getDisplayString().getLocation(null);
             }
-	        setChecked(loc != null);
-	    }
-	    super.refresh();
-	}
+            setChecked(loc != null);
+        }
+        super.refresh();
+    }
 
     @Override
     public void run() {
@@ -116,7 +116,7 @@ public class TogglePinAction extends org.eclipse.gef.ui.actions.SelectionAction 
             // otherwise create a command that deletes the location from the display string
             SetConstraintCommand cmd = new SetConstraintCommand(smodule, scale, null);
             // pin the module at the current temporary location if it is not fixed
-            Point loc = ((ISubmoduleConstraint)child.getFigure()).getCenterLocation(); 
+            Point loc = ((ISubmoduleConstraint)child.getFigure()).getCenterLocation();
             cmd.setPinLocation(isChecked() ? loc : null);
             return cmd;
         }

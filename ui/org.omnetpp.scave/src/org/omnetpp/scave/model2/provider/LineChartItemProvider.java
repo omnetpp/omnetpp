@@ -22,27 +22,27 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * @author tomi
  */
 public class LineChartItemProvider extends
-		org.omnetpp.scave.model.provider.LineChartItemProvider {
+        org.omnetpp.scave.model.provider.LineChartItemProvider {
 
-	public LineChartItemProvider(AdapterFactory adapterFactory) {
-		super(adapterFactory);
-	}
+    public LineChartItemProvider(AdapterFactory adapterFactory) {
+        super(adapterFactory);
+    }
 
-	/**
-	 * Set the default type of new Select/Deselect children to 'Vector'.
-	 */
-	@Override
-	protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
-		super.collectNewChildDescriptors(newChildDescriptors, object);
+    /**
+     * Set the default type of new Select/Deselect children to 'Vector'.
+     */
+    @Override
+    protected void collectNewChildDescriptors(Collection<Object> newChildDescriptors, Object object) {
+        super.collectNewChildDescriptors(newChildDescriptors, object);
 
-		if (object instanceof LineChart) {
-			for (Object descriptor : newChildDescriptors) {
-				CommandParameter param = (CommandParameter)descriptor;
-				if (param.value instanceof SelectDeselectOp) {
-					SelectDeselectOp op = (SelectDeselectOp)param.value;
-					op.setType(ResultType.VECTOR_LITERAL);
-				}
-			}
-		}
-	}
+        if (object instanceof LineChart) {
+            for (Object descriptor : newChildDescriptors) {
+                CommandParameter param = (CommandParameter)descriptor;
+                if (param.value instanceof SelectDeselectOp) {
+                    SelectDeselectOp op = (SelectDeselectOp)param.value;
+                    op.setType(ResultType.VECTOR_LITERAL);
+                }
+            }
+        }
+    }
 }

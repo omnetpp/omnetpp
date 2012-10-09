@@ -102,64 +102,64 @@ import org.omnetpp.scave.model2.IScaveEditorContext;
 //TODO label provider: print attributes in "quotes"
 public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLocationProvider {
 
-	public static final String
-		ACTIVE_PAGE = "ActivePage",
-		PAGE = "Page",
-		PAGE_ID = "PageId";
+    public static final String
+        ACTIVE_PAGE = "ActivePage",
+        PAGE = "Page",
+        PAGE_ID = "PageId";
 
-	private InputsPage inputsPage;
-	private BrowseDataPage browseDataPage;
-	private DatasetsAndChartsPage datasetsPage;
-	private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
+    private InputsPage inputsPage;
+    private BrowseDataPage browseDataPage;
+    private DatasetsAndChartsPage datasetsPage;
+    private Map<EObject,ScaveEditorPage> closablePages = new LinkedHashMap<EObject,ScaveEditorPage>();
 
-	/**
-	 *  ResultFileManager containing all files of the analysis.
-	 */
-	private ResultFileManagerEx manager = new ResultFileManagerEx();
+    /**
+     *  ResultFileManager containing all files of the analysis.
+     */
+    private ResultFileManagerEx manager = new ResultFileManagerEx();
 
-	/**
-	 * Loads/unloads result files in manager, according to changes in the model and in the workspace.
-	 */
-	private ResultFilesTracker tracker;
+    /**
+     * Loads/unloads result files in manager, according to changes in the model and in the workspace.
+     */
+    private ResultFilesTracker tracker;
 
-	/**
-	 *
-	 */
-	private ComputedScalarManager computedScalarManager;
+    /**
+     *
+     */
+    private ComputedScalarManager computedScalarManager;
 
-	/**
-	 * Updates pages when the model changed.
-	 */
-	private INotifyChangedListener pageUpdater = new INotifyChangedListener() {
-		public void notifyChanged(Notification notification) {
-			updatePages(notification);
-		}
-	};
+    /**
+     * Updates pages when the model changed.
+     */
+    private INotifyChangedListener pageUpdater = new INotifyChangedListener() {
+        public void notifyChanged(Notification notification) {
+            updatePages(notification);
+        }
+    };
 
-	/**
-	 * Temporary datasets and charts are added to this resource.
-	 * The resource is not saved.
-	 */
-	private Resource tempResource;
+    /**
+     * Temporary datasets and charts are added to this resource.
+     * The resource is not saved.
+     */
+    private Resource tempResource;
 
-	/**
-	 * Factory of Scave objects.
-	 */
-	private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
+    /**
+     * Factory of Scave objects.
+     */
+    private static final ScaveModelFactory factory = ScaveModelFactory.eINSTANCE;
 
-	/**
-	 * Scave model package.
-	 */
-	private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+    /**
+     * Scave model package.
+     */
+    private static final ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
 
-	/**
-	 * Implements IScaveEditorContext to provide access to some
-	 * components of this editor.
-	 * The class implemented as an Adapter, so it can be associated with
-	 * model objects (EObjects).
-	 */
-	class ScaveEditorContextAdapter extends AdapterImpl implements IScaveEditorContext
-	{
+    /**
+     * Implements IScaveEditorContext to provide access to some
+     * components of this editor.
+     * The class implemented as an Adapter, so it can be associated with
+     * model objects (EObjects).
+     */
+    class ScaveEditorContextAdapter extends AdapterImpl implements IScaveEditorContext
+    {
         public ResultFileManagerEx getResultFileManager() {
             return ScaveEditor.this.getResultFileManager();
         }
@@ -175,116 +175,116 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         public ILabelProvider getScaveModelLavelProvider() {
             return new AdapterFactoryLabelProvider(ScaveEditor.this.getAdapterFactory());
         }
-	}
+    }
 
-	private ScaveEditorContextAdapter editorContextAdapter = new ScaveEditorContextAdapter();
+    private ScaveEditorContextAdapter editorContextAdapter = new ScaveEditorContextAdapter();
 
-	/**
-	 * The constructor.
-	 */
-	public ScaveEditor() {
-	    computedScalarManager = new ComputedScalarManager();
-	}
+    /**
+     * The constructor.
+     */
+    public ScaveEditor() {
+        computedScalarManager = new ComputedScalarManager();
+    }
 
-	public ResultFileManagerEx getResultFileManager() {
-		return manager;
-	}
+    public ResultFileManagerEx getResultFileManager() {
+        return manager;
+    }
 
-	public ComputedScalarManager getComputedScalarManager() {
-	    return computedScalarManager;
-	}
+    public ComputedScalarManager getComputedScalarManager() {
+        return computedScalarManager;
+    }
 
-	public InputsPage getInputsPage() {
-		return inputsPage;
-	}
+    public InputsPage getInputsPage() {
+        return inputsPage;
+    }
 
-	public BrowseDataPage getBrowseDataPage() {
-		return browseDataPage;
-	}
+    public BrowseDataPage getBrowseDataPage() {
+        return browseDataPage;
+    }
 
-	public DatasetsAndChartsPage getDatasetsPage() {
-		return datasetsPage;
-	}
+    public DatasetsAndChartsPage getDatasetsPage() {
+        return datasetsPage;
+    }
 
-	@Override
-	public void init(IEditorSite site, IEditorInput editorInput)
-		throws PartInitException {
+    @Override
+    public void init(IEditorSite site, IEditorInput editorInput)
+        throws PartInitException {
 
-		if (!(editorInput instanceof IFileEditorInput))
+        if (!(editorInput instanceof IFileEditorInput))
             throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + editorInput.getName(),
                 "Please make sure the project is open before trying to open a file in it.");
-		IFile fileInput = ((IFileEditorInput)editorInput).getFile();
-		if (!editorInput.exists())
-			throw new PartInitException("Missing Input: Resource '" + fileInput.getFullPath().toString() + "' does not exists");
-		File javaFile = fileInput.getLocation().toFile();
-		if (!javaFile.exists())
-			throw new PartInitException("Missing Input: Scave file '" + javaFile.toString() + "' does not exists");
+        IFile fileInput = ((IFileEditorInput)editorInput).getFile();
+        if (!editorInput.exists())
+            throw new PartInitException("Missing Input: Resource '" + fileInput.getFullPath().toString() + "' does not exists");
+        File javaFile = fileInput.getLocation().toFile();
+        if (!javaFile.exists())
+            throw new PartInitException("Missing Input: Scave file '" + javaFile.toString() + "' does not exists");
 
-		// add part listener to save the editor state *before* it is disposed
-		final IWorkbenchPage page = site.getPage();
-		page.addPartListener(new IPartListener() {
-			public void partActivated(IWorkbenchPart part) {}
-			public void partBroughtToTop(IWorkbenchPart part) {}
-			public void partDeactivated(IWorkbenchPart part) {}
-			public void partOpened(IWorkbenchPart part) {}
-			public void partClosed(IWorkbenchPart part) {
-				if (part == ScaveEditor.this) {
-					page.removePartListener(this);
-					saveState();
-				}
-			}
-		});
+        // add part listener to save the editor state *before* it is disposed
+        final IWorkbenchPage page = site.getPage();
+        page.addPartListener(new IPartListener() {
+            public void partActivated(IWorkbenchPart part) {}
+            public void partBroughtToTop(IWorkbenchPart part) {}
+            public void partDeactivated(IWorkbenchPart part) {}
+            public void partOpened(IWorkbenchPart part) {}
+            public void partClosed(IWorkbenchPart part) {
+                if (part == ScaveEditor.this) {
+                    page.removePartListener(this);
+                    saveState();
+                }
+            }
+        });
 
-		// init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
-		super.init(site, editorInput);
-	}
+        // init super. Note that this does not load the model yet -- it's done in createModel() called from createPages().
+        super.init(site, editorInput);
+    }
 
-	@Override
-	public void dispose() {
-		if (tracker!=null) {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
-		}
+    @Override
+    public void dispose() {
+        if (tracker!=null) {
+            ResourcesPlugin.getWorkspace().removeResourceChangeListener(tracker);
+        }
 
-		if (tracker != null) adapterFactory.removeListener(tracker);
-		adapterFactory.removeListener(pageUpdater);
+        if (tracker != null) adapterFactory.removeListener(tracker);
+        adapterFactory.removeListener(pageUpdater);
 
-		computedScalarManager.removeMarkers();
-		computedScalarManager.dispose();
+        computedScalarManager.removeMarkers();
+        computedScalarManager.dispose();
 
-		if (manager != null) {
-			// deactivate the tracker explicitly, because it might receive a notification
-			// in case of the ScaveEditor.dispose() was called from a notification.
-			boolean trackerInactive = true;
-			if (tracker != null) {
-				trackerInactive = tracker.deactivate();
-				tracker = null;
-			}
-			// it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
-			if (trackerInactive)
-				manager.dispose();
-			manager = null;
-		}
-		super.dispose();
-	}
+        if (manager != null) {
+            // deactivate the tracker explicitly, because it might receive a notification
+            // in case of the ScaveEditor.dispose() was called from a notification.
+            boolean trackerInactive = true;
+            if (tracker != null) {
+                trackerInactive = tracker.deactivate();
+                tracker = null;
+            }
+            // it would get garbage-collected anyway, but the sooner the better because it may have allocated large amounts of data
+            if (trackerInactive)
+                manager.dispose();
+            manager = null;
+        }
+        super.dispose();
+    }
 
-	@Override
-	public void createModel() {
-		super.createModel();
+    @Override
+    public void createModel() {
+        super.createModel();
 
-		// ensure mandatory objects exist.
-		// it is ensured that these objects can not be replaced
-		// or deleted from the model (using commands)
-		// see AnalysisItemProvider
-		Analysis analysis = getAnalysis();
-		if (analysis.getInputs()==null)
-			analysis.setInputs(factory.createInputs());
-		if (analysis.getDatasets()==null)
-			analysis.setDatasets(factory.createDatasets());
-		if (analysis.getChartSheets()==null)
-			analysis.setChartSheets(factory.createChartSheets());
+        // ensure mandatory objects exist.
+        // it is ensured that these objects can not be replaced
+        // or deleted from the model (using commands)
+        // see AnalysisItemProvider
+        Analysis analysis = getAnalysis();
+        if (analysis.getInputs()==null)
+            analysis.setInputs(factory.createInputs());
+        if (analysis.getDatasets()==null)
+            analysis.setDatasets(factory.createDatasets());
+        if (analysis.getChartSheets()==null)
+            analysis.setChartSheets(factory.createChartSheets());
 
-		// create resource for temporary charts and datasets
-		tempResource = createTempResource();
+        // create resource for temporary charts and datasets
+        tempResource = createTempResource();
 
         // create an adapter factory, that associates editorContextAdapter to Resource objects.
         // Therefore the editor context can be accessed from model objects by calling
@@ -298,44 +298,44 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
         });
 
 
-		IFile inputFile = ((IFileEditorInput)getEditorInput()).getFile();
-		tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
+        IFile inputFile = ((IFileEditorInput)getEditorInput()).getFile();
+        tracker = new ResultFilesTracker(manager, analysis.getInputs(), inputFile.getParent().getFullPath());
 
-		computedScalarManager.init(editorContextAdapter, inputFile);
+        computedScalarManager.init(editorContextAdapter, inputFile);
 
-		// listen to model changes
-		adapterFactory.addListener(tracker);
-		adapterFactory.addListener(pageUpdater);
+        // listen to model changes
+        adapterFactory.addListener(tracker);
+        adapterFactory.addListener(pageUpdater);
 
-		// listen to resource changes: create, delete, modify
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
-	}
+        // listen to resource changes: create, delete, modify
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(tracker);
+    }
 
-	protected Resource createTempResource() {
-		IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
-		IPath tempResourcePath = modelFile.getFile().getFullPath().addFileExtension("temp");
-		URI resourceURI = URI.createPlatformResourceURI(tempResourcePath.toString(), true);;
-		Resource resource = editingDomain.getResourceSet().createResource(resourceURI);
-		Analysis analysis = factory.createAnalysis();
-		analysis.setInputs(factory.createInputs());
-		analysis.setDatasets(factory.createDatasets());
-		analysis.setChartSheets(factory.createChartSheets());
-		resource.getContents().add(analysis);
-		return resource;
-	}
+    protected Resource createTempResource() {
+        IFileEditorInput modelFile = (IFileEditorInput)getEditorInput();
+        IPath tempResourcePath = modelFile.getFile().getFullPath().addFileExtension("temp");
+        URI resourceURI = URI.createPlatformResourceURI(tempResourcePath.toString(), true);;
+        Resource resource = editingDomain.getResourceSet().createResource(resourceURI);
+        Analysis analysis = factory.createAnalysis();
+        analysis.setInputs(factory.createInputs());
+        analysis.setDatasets(factory.createDatasets());
+        analysis.setChartSheets(factory.createChartSheets());
+        resource.getContents().add(analysis);
+        return resource;
+    }
 
-	/**
-	 * Prevent saving the temporary resource.
-	 */
-	@Override
-	protected boolean isSaveable(Resource resource) {
-		return resource != tempResource;
-	}
+    /**
+     * Prevent saving the temporary resource.
+     */
+    @Override
+    protected boolean isSaveable(Resource resource) {
+        return resource != tempResource;
+    }
 
-	@Override
-	protected void doCreatePages() {
-		// add fixed pages: Inputs, Browse Data, Datasets
-		FillLayout layout = new FillLayout();
+    @Override
+    protected void doCreatePages() {
+        // add fixed pages: Inputs, Browse Data, Datasets
+        FillLayout layout = new FillLayout();
         getContainer().setLayout(layout);
 
         getTabFolder().setMRUVisible(true);
@@ -352,657 +352,657 @@ public class ScaveEditor extends AbstractEMFModelEditor implements INavigationLo
 
         // now we can restore chart pages (and other closable pages)
         ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-			public Object call() throws Exception {
-		        restoreState();
+            public Object call() throws Exception {
+                restoreState();
                 return null;
-			}
+            }
         });
 
         final CTabFolder tabfolder = getTabFolder();
-		tabfolder.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				int newPageIndex = tabfolder.indexOf((CTabItem) e.item);
-				pageChangedByUser(newPageIndex);
-			}
-		});
-	}
-
-	protected CTabFolder getTabFolder() {
-		return (CTabFolder)getContainer();
-	}
-
-	@Override
-	protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
-		contentOutlineViewer.setInput(getAnalysis());
-	}
-
-	/** Override base method to set the property source provider. */
-	@Override
-	public IPropertySheetPage getPropertySheetPage() {
-		if (propertySheetPage == null) {
-			// this will initialize propertySheetPage
-			super.getPropertySheetPage();
-			propertySheetPage.setPropertySourceProvider(
-				new ScavePropertySourceProvider(adapterFactory, manager));
-			return propertySheetPage;
-		}
-		else
-			return super.getPropertySheetPage();
-	}
-
-	/**
-	 * Adds a fixed (non-closable) editor page at the last position
-	 */
-	public int addScaveEditorPage(ScaveEditorPage page) {
-		int index = addPage(page);
-		setPageText(index, page.getPageTitle());
-		return index;
-	}
-
-	/**
-	 * Adds a closable editor page at the last position
-	 */
-	public int addClosableScaveEditorPage(ScaveEditorPage page) {
-		int index = getPageCount();
-		addClosablePage(index, page);
-		setPageText(index, page.getPageTitle());
-		return index;
-	}
-
-	public ScaveEditorPage getActiveEditorPage() {
-		int i = getActivePage();
-		if (i >= 0)
-			return getEditorPage(i);
-		else
-			return null;
-	}
-
-	public ScaveEditorPage getEditorPage(int pageIndex) {
-		Control page = getControl(pageIndex);
-		if (page instanceof ScaveEditorPage)
-			return (ScaveEditorPage)page;
-		else
-			return null;
-	}
-
-	public ChartCanvas getActiveChartCanvas() {
-		ScaveEditorPage activePage = getActiveEditorPage();
-		return activePage != null ? activePage.getActiveChartCanvas() : null;
-	}
-
-	/**
-	 * Returns the edited resource.
-	 */
-	public Resource getResource() {
-    	return (Resource)editingDomain.getResourceSet().getResources().get(0);
-	}
-
-	/**
-     * Utility method: Returns the Analysis object from the resource.
-     */
-	public Analysis getAnalysis() {
-    	Resource resource = getResource();
-    	Analysis analysis = (Analysis)resource.getContents().get(0);
-    	return analysis;
+        tabfolder.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                int newPageIndex = tabfolder.indexOf((CTabItem) e.item);
+                pageChangedByUser(newPageIndex);
+            }
+        });
     }
 
-	/**
-	 * Returns the temporary analysis object.
-	 */
-	public Analysis getTempAnalysis() {
-		return (Analysis)tempResource.getContents().get(0);
-	}
+    protected CTabFolder getTabFolder() {
+        return (CTabFolder)getContainer();
+    }
 
-	/**
-	 * Returns true if the object is a temporary object, i.e. it is not saved in
-	 * the analysis file.
-	 */
-	public boolean isTemporaryObject(EObject object) {
-		return object.eResource() == tempResource;
-	}
+    @Override
+    protected void initializeContentOutlineViewer(Viewer contentOutlineViewer) {
+        contentOutlineViewer.setInput(getAnalysis());
+    }
 
-	/**
-	 * Opens a new editor page for the {@code object} (Dataset, Chart or ChartSheet),
-	 * or switches to it if already opened.
-	 */
-	public ScaveEditorPage open(Object object) {
-		if (object instanceof Dataset)
-			return openDataset((Dataset)object);
-		else if (object instanceof Chart)
-			return openChart((Chart)object);
-		else if (object instanceof ChartSheet)
-			return openChartSheet((ChartSheet)object);
-		else
-			return null;
-	}
+    /** Override base method to set the property source provider. */
+    @Override
+    public IPropertySheetPage getPropertySheetPage() {
+        if (propertySheetPage == null) {
+            // this will initialize propertySheetPage
+            super.getPropertySheetPage();
+            propertySheetPage.setPropertySourceProvider(
+                new ScavePropertySourceProvider(adapterFactory, manager));
+            return propertySheetPage;
+        }
+        else
+            return super.getPropertySheetPage();
+    }
 
-	/**
-	 * Opens the given chart on a new editor page, or switches to it
-	 * if already opened.
-	 */
-	public ScaveEditorPage openChart(Chart chart) {
-		return openClosablePage(chart);
-	}
+    /**
+     * Adds a fixed (non-closable) editor page at the last position
+     */
+    public int addScaveEditorPage(ScaveEditorPage page) {
+        int index = addPage(page);
+        setPageText(index, page.getPageTitle());
+        return index;
+    }
 
-	/**
-	 * Opens the given dataset on a new editor page, or switches to it
-	 * if already opened.
-	 */
-	public ScaveEditorPage openDataset(Dataset dataset) {
-		return openClosablePage(dataset);
-	}
+    /**
+     * Adds a closable editor page at the last position
+     */
+    public int addClosableScaveEditorPage(ScaveEditorPage page) {
+        int index = getPageCount();
+        addClosablePage(index, page);
+        setPageText(index, page.getPageTitle());
+        return index;
+    }
 
-	/**
-	 * Opens the given chart sheet on a new editor page, or switches to it
-	 * if already opened.
-	 */
-	public ScaveEditorPage openChartSheet(ChartSheet chartSheet) {
-		return openClosablePage(chartSheet);
-	}
+    public ScaveEditorPage getActiveEditorPage() {
+        int i = getActivePage();
+        if (i >= 0)
+            return getEditorPage(i);
+        else
+            return null;
+    }
 
-	/**
-	 * Opens the given <code>object</code> (dataset/chart/chartsheet), or
-	 * switches to it if already opened.
-	 */
-	private ScaveEditorPage openClosablePage(EObject object) {
-		int pageIndex = getOrCreateClosablePage(object);
-		setActivePage(pageIndex);
-		return getEditorPage(pageIndex);
-	}
+    public ScaveEditorPage getEditorPage(int pageIndex) {
+        Control page = getControl(pageIndex);
+        if (page instanceof ScaveEditorPage)
+            return (ScaveEditorPage)page;
+        else
+            return null;
+    }
 
-	/**
-	 * Closes the page displaying the given <code>object</code>.
-	 * If no such page, nothing happens.
-	 */
-	public void closePage(EObject object) {
-		Control page = closablePages.get(object);
-		if (page != null) {
-			removePage(page);
-		}
-	}
+    public ChartCanvas getActiveChartCanvas() {
+        ScaveEditorPage activePage = getActiveEditorPage();
+        return activePage != null ? activePage.getActiveChartCanvas() : null;
+    }
 
-	public void showInputsPage() {
-		showPage(getInputsPage());
-	}
+    /**
+     * Returns the edited resource.
+     */
+    public Resource getResource() {
+        return (Resource)editingDomain.getResourceSet().getResources().get(0);
+    }
 
-	public void showBrowseDataPage() {
-		showPage(getBrowseDataPage());
-	}
+    /**
+     * Utility method: Returns the Analysis object from the resource.
+     */
+    public Analysis getAnalysis() {
+        Resource resource = getResource();
+        Analysis analysis = (Analysis)resource.getContents().get(0);
+        return analysis;
+    }
 
-	public void showDatasetsPage() {
-		showPage(getDatasetsPage());
-	}
+    /**
+     * Returns the temporary analysis object.
+     */
+    public Analysis getTempAnalysis() {
+        return (Analysis)tempResource.getContents().get(0);
+    }
 
-	public void showPage(ScaveEditorPage page) {
-		int pageIndex = findPage(page);
-		if (pageIndex >= 0)
-			setActivePage(pageIndex);
-	}
+    /**
+     * Returns true if the object is a temporary object, i.e. it is not saved in
+     * the analysis file.
+     */
+    public boolean isTemporaryObject(EObject object) {
+        return object.eResource() == tempResource;
+    }
 
-	public void gotoObject(Object object) {
-		if (object instanceof EObject) {
-			EObject eobject = (EObject)object;
-			if (getAnalysis() == null || eobject.eResource() != getAnalysis().eResource())
-				return;
-		}
+    /**
+     * Opens a new editor page for the {@code object} (Dataset, Chart or ChartSheet),
+     * or switches to it if already opened.
+     */
+    public ScaveEditorPage open(Object object) {
+        if (object instanceof Dataset)
+            return openDataset((Dataset)object);
+        else if (object instanceof Chart)
+            return openChart((Chart)object);
+        else if (object instanceof ChartSheet)
+            return openChartSheet((ChartSheet)object);
+        else
+            return null;
+    }
 
-		ScaveEditorPage activePage = getActiveEditorPage();
-		if (activePage != null) {
-			if (activePage.gotoObject(object))
-				return;
-		}
-		int activePageIndex = -1;
-		for (int pageIndex = getPageCount()-1; pageIndex >= 0; --pageIndex) {
-			ScaveEditorPage page = getEditorPage(pageIndex);
-			if (page != null && page.gotoObject(object)) {
-				activePageIndex = pageIndex;
-				break;
-			}
-		}
-		if (activePageIndex >= 0) {
-			setActivePage(activePageIndex);
-		}
-	}
+    /**
+     * Opens the given chart on a new editor page, or switches to it
+     * if already opened.
+     */
+    public ScaveEditorPage openChart(Chart chart) {
+        return openClosablePage(chart);
+    }
+
+    /**
+     * Opens the given dataset on a new editor page, or switches to it
+     * if already opened.
+     */
+    public ScaveEditorPage openDataset(Dataset dataset) {
+        return openClosablePage(dataset);
+    }
+
+    /**
+     * Opens the given chart sheet on a new editor page, or switches to it
+     * if already opened.
+     */
+    public ScaveEditorPage openChartSheet(ChartSheet chartSheet) {
+        return openClosablePage(chartSheet);
+    }
+
+    /**
+     * Opens the given <code>object</code> (dataset/chart/chartsheet), or
+     * switches to it if already opened.
+     */
+    private ScaveEditorPage openClosablePage(EObject object) {
+        int pageIndex = getOrCreateClosablePage(object);
+        setActivePage(pageIndex);
+        return getEditorPage(pageIndex);
+    }
+
+    /**
+     * Closes the page displaying the given <code>object</code>.
+     * If no such page, nothing happens.
+     */
+    public void closePage(EObject object) {
+        Control page = closablePages.get(object);
+        if (page != null) {
+            removePage(page);
+        }
+    }
+
+    public void showInputsPage() {
+        showPage(getInputsPage());
+    }
+
+    public void showBrowseDataPage() {
+        showPage(getBrowseDataPage());
+    }
+
+    public void showDatasetsPage() {
+        showPage(getDatasetsPage());
+    }
+
+    public void showPage(ScaveEditorPage page) {
+        int pageIndex = findPage(page);
+        if (pageIndex >= 0)
+            setActivePage(pageIndex);
+    }
+
+    public void gotoObject(Object object) {
+        if (object instanceof EObject) {
+            EObject eobject = (EObject)object;
+            if (getAnalysis() == null || eobject.eResource() != getAnalysis().eResource())
+                return;
+        }
+
+        ScaveEditorPage activePage = getActiveEditorPage();
+        if (activePage != null) {
+            if (activePage.gotoObject(object))
+                return;
+        }
+        int activePageIndex = -1;
+        for (int pageIndex = getPageCount()-1; pageIndex >= 0; --pageIndex) {
+            ScaveEditorPage page = getEditorPage(pageIndex);
+            if (page != null && page.gotoObject(object)) {
+                activePageIndex = pageIndex;
+                break;
+            }
+        }
+        if (activePageIndex >= 0) {
+            setActivePage(activePageIndex);
+        }
+    }
 
 
-	public void setPageTitle(ScaveEditorPage page, String title) {
-		int pageIndex = findPage(page);
-		if (pageIndex >= 0)
-			setPageText(pageIndex, title);
-	}
+    public void setPageTitle(ScaveEditorPage page, String title) {
+        int pageIndex = findPage(page);
+        if (pageIndex >= 0)
+            setPageText(pageIndex, title);
+    }
 
-	private void createInputsPage() {
-		inputsPage = new InputsPage(getContainer(), this);
-		addScaveEditorPage(inputsPage);
-	}
+    private void createInputsPage() {
+        inputsPage = new InputsPage(getContainer(), this);
+        addScaveEditorPage(inputsPage);
+    }
 
-	private void createBrowseDataPage() {
-		browseDataPage = new BrowseDataPage(getContainer(), this);
-		addScaveEditorPage(browseDataPage);
-	}
+    private void createBrowseDataPage() {
+        browseDataPage = new BrowseDataPage(getContainer(), this);
+        addScaveEditorPage(browseDataPage);
+    }
 
-	private void createDatasetsPage() {
-		datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
+    private void createDatasetsPage() {
+        datasetsPage = new DatasetsAndChartsPage(getContainer(), this);
         addScaveEditorPage(datasetsPage);
-	}
+    }
 
-	/**
-	 * Creates a closable page. These pages are closed automatically when the
-	 * displayed object (chart/dataset/chart sheet) is removed from the model.
-	 * Their tabs contain a small (x), so the user can also close them.
-	 */
-	private int createClosablePage(EObject object) {
-		ScaveEditorPage page;
-		if (object instanceof Dataset)
-			page = new DatasetPage(getContainer(), this, (Dataset)object);
-		else if (object instanceof Chart)
-			page = new ChartPage(getContainer(), this, (Chart)object);
-		else if (object instanceof ChartSheet)
-			page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
-		else
-			throw new IllegalArgumentException("Cannot create editor page for " + object);
+    /**
+     * Creates a closable page. These pages are closed automatically when the
+     * displayed object (chart/dataset/chart sheet) is removed from the model.
+     * Their tabs contain a small (x), so the user can also close them.
+     */
+    private int createClosablePage(EObject object) {
+        ScaveEditorPage page;
+        if (object instanceof Dataset)
+            page = new DatasetPage(getContainer(), this, (Dataset)object);
+        else if (object instanceof Chart)
+            page = new ChartPage(getContainer(), this, (Chart)object);
+        else if (object instanceof ChartSheet)
+            page = new ChartSheetPage(getContainer(), this, (ChartSheet)object);
+        else
+            throw new IllegalArgumentException("Cannot create editor page for " + object);
 
-		int pageIndex = addClosableScaveEditorPage(page);
-		closablePages.put(object, page);
-		return pageIndex;
-	}
+        int pageIndex = addClosableScaveEditorPage(page);
+        closablePages.put(object, page);
+        return pageIndex;
+    }
 
-	@Override
-	protected void pageClosed(Control control) {
-		Assert.isTrue(closablePages.containsValue(control));
+    @Override
+    protected void pageClosed(Control control) {
+        Assert.isTrue(closablePages.containsValue(control));
 
-		// remove it from the map
-		Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
-		while (entries.hasNext()) {
-			Map.Entry<EObject, ScaveEditorPage> entry = entries.next();
-			if (control.equals(entry.getValue()))
-				entries.remove();
-		}
-	}
+        // remove it from the map
+        Iterator<Map.Entry<EObject,ScaveEditorPage>> entries = closablePages.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<EObject, ScaveEditorPage> entry = entries.next();
+            if (control.equals(entry.getValue()))
+                entries.remove();
+        }
+    }
 
-	/**
-	 * Returns the page displaying {@code object}.
-	 * The {@code object} expected to be a Dataset, Chart or ChartSheet.
-	 */
-	protected ScaveEditorPage getClosableEditorPage(EObject object) {
-		return closablePages.get(object);
-	}
+    /**
+     * Returns the page displaying {@code object}.
+     * The {@code object} expected to be a Dataset, Chart or ChartSheet.
+     */
+    protected ScaveEditorPage getClosableEditorPage(EObject object) {
+        return closablePages.get(object);
+    }
 
-	/**
-	 * Returns the page displaying <code>object</code>. If the object already has a page
-	 * it is returned, otherwise a new page created.
-	 */
-	private int getOrCreateClosablePage(EObject object) {
-		Control page = closablePages.get(object);
-		int pageIndex = page != null ? findPage(page) : createClosablePage(object);
-		Assert.isTrue(pageIndex >= 0);
-		return pageIndex;
-	}
+    /**
+     * Returns the page displaying <code>object</code>. If the object already has a page
+     * it is returned, otherwise a new page created.
+     */
+    private int getOrCreateClosablePage(EObject object) {
+        Control page = closablePages.get(object);
+        int pageIndex = page != null ? findPage(page) : createClosablePage(object);
+        Assert.isTrue(pageIndex >= 0);
+        return pageIndex;
+    }
 
-	@Override
-	public void handleSelectionChange(ISelection selection) {
-		super.handleSelectionChange(selection);
+    @Override
+    public void handleSelectionChange(ISelection selection) {
+        super.handleSelectionChange(selection);
 
-		inputsPage.selectionChanged(selection);
-		browseDataPage.selectionChanged(selection);
-		datasetsPage.selectionChanged(selection);
-		for (Control page : closablePages.values())
-			((ScaveEditorPage)page).selectionChanged(selection);
-	}
+        inputsPage.selectionChanged(selection);
+        browseDataPage.selectionChanged(selection);
+        datasetsPage.selectionChanged(selection);
+        for (Control page : closablePages.values())
+            ((ScaveEditorPage)page).selectionChanged(selection);
+    }
 
-	class ScaveEditorContentOutlinePage extends MyContentOutlinePage
-	{
-		@Override
-		public void createControl(Composite parent) {
-			super.createControl(parent);
-			TreeViewer viewer = getTreeViewer();
-			Tree tree = viewer.getTree();
-			if (tree != null) {
-				tree.addSelectionListener(new SelectionAdapter () {
-					public void widgetDefaultSelected(SelectionEvent e) {
-						if (e.item instanceof TreeItem) {
-							TreeItem item = (TreeItem)e.item;
-							open(item.getData());
-						}
-					}
-				});
-			}
-		}
-	}
+    class ScaveEditorContentOutlinePage extends MyContentOutlinePage
+    {
+        @Override
+        public void createControl(Composite parent) {
+            super.createControl(parent);
+            TreeViewer viewer = getTreeViewer();
+            Tree tree = viewer.getTree();
+            if (tree != null) {
+                tree.addSelectionListener(new SelectionAdapter () {
+                    public void widgetDefaultSelected(SelectionEvent e) {
+                        if (e.item instanceof TreeItem) {
+                            TreeItem item = (TreeItem)e.item;
+                            open(item.getData());
+                        }
+                    }
+                });
+            }
+        }
+    }
 
 
-	@Override
-	public IContentOutlinePage getContentOutlinePage() {
-		if (contentOutlinePage == null) {
-			contentOutlinePage = new ScaveEditorContentOutlinePage();
-			contentOutlinePage.addSelectionChangedListener(selectionChangedListener);
-			contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
-				public void selectionChanged(SelectionChangedEvent event) {
-					contentOutlineSelectionChanged(event.getSelection());
-				}
-			});
-		}
+    @Override
+    public IContentOutlinePage getContentOutlinePage() {
+        if (contentOutlinePage == null) {
+            contentOutlinePage = new ScaveEditorContentOutlinePage();
+            contentOutlinePage.addSelectionChangedListener(selectionChangedListener);
+            contentOutlinePage.addSelectionChangedListener(new ISelectionChangedListener() {
+                public void selectionChanged(SelectionChangedEvent event) {
+                    contentOutlineSelectionChanged(event.getSelection());
+                }
+            });
+        }
 
-		return contentOutlinePage;
-	}
+        return contentOutlinePage;
+    }
 
-	protected void contentOutlineSelectionChanged(ISelection selection) {
-		if (selection instanceof IStructuredSelection) {
-			Object object = ((IStructuredSelection)selection).getFirstElement();
-			//Debug.println("Selected: "+object);
-			if (object != null)
-				gotoObject(object);
-		}
-	}
+    protected void contentOutlineSelectionChanged(ISelection selection) {
+        if (selection instanceof IStructuredSelection) {
+            Object object = ((IStructuredSelection)selection).getFirstElement();
+            //Debug.println("Selected: "+object);
+            if (object != null)
+                gotoObject(object);
+        }
+    }
 
-	/**
-	 * Adds the given workspace file to Inputs.
-	 */
-	public void addWorkspaceFileToInputs(IFile resource) {
-		String resourcePath = resource.getFullPath().toPortableString();
+    /**
+     * Adds the given workspace file to Inputs.
+     */
+    public void addWorkspaceFileToInputs(IFile resource) {
+        String resourcePath = resource.getFullPath().toPortableString();
 
-		// add resourcePath to Inputs if not already there
-		Inputs inputs = getAnalysis().getInputs();
-		boolean found = false;
-		for (Object inputFileObj : inputs.getInputs()) {
-			InputFile inputFile = (InputFile)inputFileObj;
-			if (inputFile.getName().equals(resourcePath))
-				found = true;
-		}
+        // add resourcePath to Inputs if not already there
+        Inputs inputs = getAnalysis().getInputs();
+        boolean found = false;
+        for (Object inputFileObj : inputs.getInputs()) {
+            InputFile inputFile = (InputFile)inputFileObj;
+            if (inputFile.getName().equals(resourcePath))
+                found = true;
+        }
 
-		if (!found) {
-			// use the EMF.Edit Framework's command interface to do the job (undoable)
-			InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
-			inputFile.setName(resourcePath);
-			Command command = AddCommand.create(getEditingDomain(), inputs, pkg.getInputs_Inputs(), inputFile);
-			executeCommand(command);
-		}
-	}
+        if (!found) {
+            // use the EMF.Edit Framework's command interface to do the job (undoable)
+            InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
+            inputFile.setName(resourcePath);
+            Command command = AddCommand.create(getEditingDomain(), inputs, pkg.getInputs_Inputs(), inputFile);
+            executeCommand(command);
+        }
+    }
 
-	/**
-	 * Utility function: finds an IFile for an existing file given with OS path. Returns null if the file was not found.
-	 */
-	public static IFile findFileInWorkspace(String fileName) {
-		IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
-		IFile iFile = null;
-		for (IFile f : iFiles) {
-			if (f.exists()) {
-				iFile = f;
-				break;
-			}
-		}
-		return iFile;
-	}
+    /**
+     * Utility function: finds an IFile for an existing file given with OS path. Returns null if the file was not found.
+     */
+    public static IFile findFileInWorkspace(String fileName) {
+        IFile[] iFiles = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocation(new Path(fileName));
+        IFile iFile = null;
+        for (IFile f : iFiles) {
+            if (f.exists()) {
+                iFile = f;
+                break;
+            }
+        }
+        return iFile;
+    }
 
-	/**
-	 * Utility function to access the active editor in the workbench.
-	 */
-	public static ScaveEditor getActiveScaveEditor(IWorkbench workbench) {
-		if (workbench.getActiveWorkbenchWindow() != null) {
-			IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-			if (page != null) {
-				IEditorPart part = page.getActiveEditor();
-				if (part instanceof ScaveEditor)
-					return (ScaveEditor)part;
-			}
-		}
-		return null;
-	}
+    /**
+     * Utility function to access the active editor in the workbench.
+     */
+    public static ScaveEditor getActiveScaveEditor(IWorkbench workbench) {
+        if (workbench.getActiveWorkbenchWindow() != null) {
+            IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
+            if (page != null) {
+                IEditorPart part = page.getActiveEditor();
+                if (part instanceof ScaveEditor)
+                    return (ScaveEditor)part;
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Utility method.
-	 */
-	public void executeCommand(Command command) {
-		getEditingDomain().getCommandStack().execute(command);
-	}
+    /**
+     * Utility method.
+     */
+    public void executeCommand(Command command) {
+        getEditingDomain().getCommandStack().execute(command);
+    }
 
-	public ISelectionChangedListener getSelectionChangedListener() {
-		return selectionChangedListener;
-	}
+    public ISelectionChangedListener getSelectionChangedListener() {
+        return selectionChangedListener;
+    }
 
-	/**
-	 * Updates the pages.
-	 * Registered as a listener on model changes.
-	 */
- 	@SuppressWarnings("unchecked")
-	private void updatePages(Notification notification) {
-		if (notification.isTouch())
-			return;
+    /**
+     * Updates the pages.
+     * Registered as a listener on model changes.
+     */
+    @SuppressWarnings("unchecked")
+    private void updatePages(Notification notification) {
+        if (notification.isTouch())
+            return;
 
-		// close pages whose content was deleted, except temporary datasets/charts
-		// (temporary objects are not deleted, but they can be moved into the persistent analysis)
-		if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
-			List<Object> deletedObjects = null;
-			switch (notification.getEventType()) {
-			case Notification.REMOVE:
-				deletedObjects = new ArrayList<Object>();
-				deletedObjects.add(notification.getOldValue());
-				break;
-			case Notification.REMOVE_MANY:
-				deletedObjects = (List<Object>)notification.getOldValue();
-				break;
-			}
+        // close pages whose content was deleted, except temporary datasets/charts
+        // (temporary objects are not deleted, but they can be moved into the persistent analysis)
+        if (notification.getNotifier() instanceof EObject && !isTemporaryObject((EObject)notification.getNotifier())) {
+            List<Object> deletedObjects = null;
+            switch (notification.getEventType()) {
+            case Notification.REMOVE:
+                deletedObjects = new ArrayList<Object>();
+                deletedObjects.add(notification.getOldValue());
+                break;
+            case Notification.REMOVE_MANY:
+                deletedObjects = (List<Object>)notification.getOldValue();
+                break;
+            }
 
-			if (deletedObjects != null) {
-				for (Object object : deletedObjects) {
-					if (object instanceof EObject) {
-						TreeIterator<EObject> contents = ((EObject)object).eAllContents();
-						// iterate on contents including object
-						for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
-							if (next instanceof Dataset) {
-								closePage((Dataset)next);
-							}
-							else if (next instanceof Chart) {
-								closePage((Chart)next);
-								contents.prune();
-							}
-							else if (next instanceof ChartSheet) {
-								closePage((ChartSheet)next);
-								contents.prune();
-							}
-						}
-					}
-				}
-			}
-		}
+            if (deletedObjects != null) {
+                for (Object object : deletedObjects) {
+                    if (object instanceof EObject) {
+                        TreeIterator<EObject> contents = ((EObject)object).eAllContents();
+                        // iterate on contents including object
+                        for (Object next = object; next != null; next = contents.hasNext() ? contents.next() : null) {
+                            if (next instanceof Dataset) {
+                                closePage((Dataset)next);
+                            }
+                            else if (next instanceof Chart) {
+                                closePage((Chart)next);
+                                contents.prune();
+                            }
+                            else if (next instanceof ChartSheet) {
+                                closePage((ChartSheet)next);
+                                contents.prune();
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-		// update contents of pages
-		int pageCount = getPageCount();
-		for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
-			Control control = getControl(pageIndex);
-			if (control instanceof ScaveEditorPage) {
-				ScaveEditorPage page = (ScaveEditorPage)control;
-				page.updatePage(notification);
-			}
-		}
-	}
+        // update contents of pages
+        int pageCount = getPageCount();
+        for (int pageIndex = 0; pageIndex < pageCount; ++pageIndex) {
+            Control control = getControl(pageIndex);
+            if (control instanceof ScaveEditorPage) {
+                ScaveEditorPage page = (ScaveEditorPage)control;
+                page.updatePage(notification);
+            }
+        }
+    }
 
-	@Override
-	protected void pageChange(int newPageIndex) {
-		super.pageChange(newPageIndex);
-		Control page = getControl(newPageIndex);
-		if (page instanceof ScaveEditorPage) {
-			((ScaveEditorPage)page).pageActivated();
-		}
+    @Override
+    protected void pageChange(int newPageIndex) {
+        super.pageChange(newPageIndex);
+        Control page = getControl(newPageIndex);
+        if (page instanceof ScaveEditorPage) {
+            ((ScaveEditorPage)page).pageActivated();
+        }
 
-		fakeSelectionChange();
-	}
+        fakeSelectionChange();
+    }
 
-	/**
-	 * Pretends that a selection change has taken place. This is e.g. useful for updating
-	 * the enabled/disabled/pushed etc state of actions (AbstractScaveAction) whose
-	 * isApplicable() method is hooked on selection changes.
-	 */
-	public void fakeSelectionChange() {
-		setSelection(getSelection());
-	}
+    /**
+     * Pretends that a selection change has taken place. This is e.g. useful for updating
+     * the enabled/disabled/pushed etc state of actions (AbstractScaveAction) whose
+     * isApplicable() method is hooked on selection changes.
+     */
+    public void fakeSelectionChange() {
+        setSelection(getSelection());
+    }
 
-	/*
-	 * PageId
-	 */
-	private static final String TEMPORARY = "t:";
-	private static final String PERSISTENT = "p:";
+    /*
+     * PageId
+     */
+    private static final String TEMPORARY = "t:";
+    private static final String PERSISTENT = "p:";
 
-	String getPageId(ScaveEditorPage page) {
-		if (page == null)
-			return null;
-		else if (page.equals(inputsPage))
-			return "Inputs";
-		else if (page.equals(browseDataPage))
-			return "BrowseData";
-		else if (page.equals(datasetsPage))
-			return "Datasets";
-		else {
-			for (Map.Entry<EObject, ScaveEditorPage> entry : closablePages.entrySet()) {
-				EObject object = entry.getKey();
-				ScaveEditorPage editorPage = entry.getValue();
-				if (page.equals(editorPage)) {
-					Resource resource = object.eResource();
-					String prefix = resource == tempResource ? TEMPORARY : PERSISTENT;
-					String uri = resource != null ? resource.getURIFragment(object) : null;
-					return uri != null ? prefix + uri : null;
-				}
-			}
-		}
-		return null;
-	}
+    String getPageId(ScaveEditorPage page) {
+        if (page == null)
+            return null;
+        else if (page.equals(inputsPage))
+            return "Inputs";
+        else if (page.equals(browseDataPage))
+            return "BrowseData";
+        else if (page.equals(datasetsPage))
+            return "Datasets";
+        else {
+            for (Map.Entry<EObject, ScaveEditorPage> entry : closablePages.entrySet()) {
+                EObject object = entry.getKey();
+                ScaveEditorPage editorPage = entry.getValue();
+                if (page.equals(editorPage)) {
+                    Resource resource = object.eResource();
+                    String prefix = resource == tempResource ? TEMPORARY : PERSISTENT;
+                    String uri = resource != null ? resource.getURIFragment(object) : null;
+                    return uri != null ? prefix + uri : null;
+                }
+            }
+        }
+        return null;
+    }
 
-	ScaveEditorPage restorePage(String pageId) {
-		if (pageId == null)
-			return null;
-		if (pageId.equals("Inputs")) {
-			setActivePage(findPage(inputsPage));
-			return inputsPage;
-		}
-		else if (pageId.equals("BrowseData")) {
-			setActivePage(findPage(browseDataPage));
-			return browseDataPage;
-		}
-		else if (pageId.equals("Datasets")) {
-			setActivePage(findPage(datasetsPage));
-			return datasetsPage;
-		}
-		else {
-			EObject object = null;
-			String uri = null;
-			Resource resource = null;
-			if (pageId.startsWith(TEMPORARY)) {
-				uri = pageId.substring(TEMPORARY.length());
-				resource = tempResource;
-			}
-			else if (pageId.startsWith(PERSISTENT)) {
-				uri = pageId.substring(PERSISTENT.length());
-				resource = getResource();
-			}
+    ScaveEditorPage restorePage(String pageId) {
+        if (pageId == null)
+            return null;
+        if (pageId.equals("Inputs")) {
+            setActivePage(findPage(inputsPage));
+            return inputsPage;
+        }
+        else if (pageId.equals("BrowseData")) {
+            setActivePage(findPage(browseDataPage));
+            return browseDataPage;
+        }
+        else if (pageId.equals("Datasets")) {
+            setActivePage(findPage(datasetsPage));
+            return datasetsPage;
+        }
+        else {
+            EObject object = null;
+            String uri = null;
+            Resource resource = null;
+            if (pageId.startsWith(TEMPORARY)) {
+                uri = pageId.substring(TEMPORARY.length());
+                resource = tempResource;
+            }
+            else if (pageId.startsWith(PERSISTENT)) {
+                uri = pageId.substring(PERSISTENT.length());
+                resource = getResource();
+            }
 
-			try {
-				if (resource != null && uri != null)
-					object = resource.getEObject(uri);
-			} catch (Exception e) {}
+            try {
+                if (resource != null && uri != null)
+                    object = resource.getEObject(uri);
+            } catch (Exception e) {}
 
-			if (object != null)
-				return open(object);
-		}
-		return null;
-	}
+            if (object != null)
+                return open(object);
+        }
+        return null;
+    }
 
-	/*
-	 * Per input persistent state.
-	 */
-	private IFile getInputFile() {
-		IEditorInput input = getEditorInput();
-		if (input instanceof IFileEditorInput)
-			return ((IFileEditorInput)input).getFile();
-		else
-			return null;
-	}
+    /*
+     * Per input persistent state.
+     */
+    private IFile getInputFile() {
+        IEditorInput input = getEditorInput();
+        if (input instanceof IFileEditorInput)
+            return ((IFileEditorInput)input).getFile();
+        else
+            return null;
+    }
 
-	private void saveState(IMemento memento) {
-		memento.putInteger(ACTIVE_PAGE, getActivePage());
-		for (EObject openedObject : closablePages.keySet()) {
-			ScaveEditorPage page = closablePages.get(openedObject);
-			IMemento pageMemento = memento.createChild(PAGE);
-			pageMemento.putString(PAGE_ID, getPageId(page));
-			page.saveState(pageMemento);
-		}
-	}
+    private void saveState(IMemento memento) {
+        memento.putInteger(ACTIVE_PAGE, getActivePage());
+        for (EObject openedObject : closablePages.keySet()) {
+            ScaveEditorPage page = closablePages.get(openedObject);
+            IMemento pageMemento = memento.createChild(PAGE);
+            pageMemento.putString(PAGE_ID, getPageId(page));
+            page.saveState(pageMemento);
+        }
+    }
 
-	private void restoreState(IMemento memento) {
-		for (IMemento pageMemento : memento.getChildren(PAGE)) {
-			String pageId = pageMemento.getString(PAGE_ID);
-			if (pageId != null) {
-				ScaveEditorPage page = restorePage(pageId);
-					if (page != null)
-						page.restoreState(pageMemento);
-			}
-		}
-		int activePage = memento.getInteger(ACTIVE_PAGE);
-		if (activePage >= 0 && activePage < getPageCount())
-			setActivePage(activePage);
-	}
+    private void restoreState(IMemento memento) {
+        for (IMemento pageMemento : memento.getChildren(PAGE)) {
+            String pageId = pageMemento.getString(PAGE_ID);
+            if (pageId != null) {
+                ScaveEditorPage page = restorePage(pageId);
+                    if (page != null)
+                        page.restoreState(pageMemento);
+            }
+        }
+        int activePage = memento.getInteger(ACTIVE_PAGE);
+        if (activePage >= 0 && activePage < getPageCount())
+            setActivePage(activePage);
+    }
 
-	private void saveState() {
-		try {
-			IFile file = getInputFile();
-			if (file != null) {
-				ScaveEditorMemento memento = new ScaveEditorMemento();
-				saveState(memento);
-				memento.save(file);
-			}
-		} catch (Exception e) {
-//			MessageDialog.openError(getSite().getShell(),
-//									"Saving editor state",
-//									"Error occured while saving editor state: "+e.getMessage());
-			ScavePlugin.logError(e);
-		}
-	}
+    private void saveState() {
+        try {
+            IFile file = getInputFile();
+            if (file != null) {
+                ScaveEditorMemento memento = new ScaveEditorMemento();
+                saveState(memento);
+                memento.save(file);
+            }
+        } catch (Exception e) {
+//          MessageDialog.openError(getSite().getShell(),
+//                                  "Saving editor state",
+//                                  "Error occured while saving editor state: "+e.getMessage());
+            ScavePlugin.logError(e);
+        }
+    }
 
-	private void restoreState() {
-		try {
-			IFile file = getInputFile();
-			if (file != null) {
-				ScaveEditorMemento memento = new ScaveEditorMemento(file);
-				restoreState(memento);
-			}
-		}
-		catch (CoreException e) {
-			ScavePlugin.log(e.getStatus());
-		}
-		catch (Exception e) {
-//			MessageDialog.openError(getSite().getShell(),
-//					"Restoring editor state",
-//					"Error occured while restoring editor state: "+e.getMessage());
-			ScavePlugin.logError(e);
-		}
-	}
+    private void restoreState() {
+        try {
+            IFile file = getInputFile();
+            if (file != null) {
+                ScaveEditorMemento memento = new ScaveEditorMemento(file);
+                restoreState(memento);
+            }
+        }
+        catch (CoreException e) {
+            ScavePlugin.log(e.getStatus());
+        }
+        catch (Exception e) {
+//          MessageDialog.openError(getSite().getShell(),
+//                  "Restoring editor state",
+//                  "Error occured while restoring editor state: "+e.getMessage());
+            ScavePlugin.logError(e);
+        }
+    }
 
-	/*
-	 * Navigation
-	 */
-	public INavigationLocation createEmptyNavigationLocation() {
-		return new ScaveNavigationLocation(this, true);
-	}
+    /*
+     * Navigation
+     */
+    public INavigationLocation createEmptyNavigationLocation() {
+        return new ScaveNavigationLocation(this, true);
+    }
 
-	public INavigationLocation createNavigationLocation() {
-		return new ScaveNavigationLocation(this, false);
-	}
+    public INavigationLocation createNavigationLocation() {
+        return new ScaveNavigationLocation(this, false);
+    }
 
-	public void markNavigationLocation() {
-		getSite().getPage().getNavigationHistory().markLocation(this);
-	}
+    public void markNavigationLocation() {
+        getSite().getPage().getNavigationHistory().markLocation(this);
+    }
 
-	public void pageChangedByUser(int newPageIndex) {
-		Control page = getControl(newPageIndex);
-		if (page instanceof ScaveEditorPage) {
-			markNavigationLocation();
-		}
-	}
+    public void pageChangedByUser(int newPageIndex) {
+        Control page = getControl(newPageIndex);
+        if (page instanceof ScaveEditorPage) {
+            markNavigationLocation();
+        }
+    }
 
-	/*
-	 * IGotoMarker
-	 */
-	@Override
-	public void gotoMarker(IMarker marker) {
+    /*
+     * IGotoMarker
+     */
+    @Override
+    public void gotoMarker(IMarker marker) {
         try {
             if (marker.getType().equals(Markers.COMPUTESCALAR_PROBLEMMARKER_ID)) {
                 Object object = marker.getAttribute(Markers.EOBJECT_MARKERATTR_ID);

@@ -82,7 +82,7 @@ public class SaveAsChooser extends Composite implements IWidgetAdapter {
 
     protected String browse() {
         SaveAsDialog dialog = new SaveAsDialog(getShell());
-        
+
         // select current file in the dialog
         String fileName = getTextControl().getText().trim();
         if (!fileName.equals("")) {

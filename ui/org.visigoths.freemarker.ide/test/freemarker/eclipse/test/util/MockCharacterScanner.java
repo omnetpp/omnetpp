@@ -13,30 +13,30 @@ import org.eclipse.jface.text.rules.ICharacterScanner;
  */
 public class MockCharacterScanner implements ICharacterScanner {
 
-	private int pos = 0;
-	private String text = "";
+    private int pos = 0;
+    private String text = "";
 
-	public MockCharacterScanner(String text) {
-		this.text = text;
-	}
+    public MockCharacterScanner(String text) {
+        this.text = text;
+    }
 
-	public int getColumn() {
-		throw new UnsupportedOperationException();
-	}
+    public int getColumn() {
+        throw new UnsupportedOperationException();
+    }
 
-	public char[][] getLegalLineDelimiters() {
-		return new char[][] { "\n".toCharArray()};
-	}
+    public char[][] getLegalLineDelimiters() {
+        return new char[][] { "\n".toCharArray()};
+    }
 
-	public int read() {
-		return text.charAt(pos++);
-	}
+    public int read() {
+        return text.charAt(pos++);
+    }
 
-	public void unread() {
-		pos--;
-	}
+    public void unread() {
+        pos--;
+    }
 
-	public int getPos() {
-		return pos;
-	}
+    public int getPos() {
+        return pos;
+    }
 }

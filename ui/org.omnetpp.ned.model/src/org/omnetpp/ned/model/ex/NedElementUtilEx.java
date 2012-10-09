@@ -50,66 +50,66 @@ import org.omnetpp.ned.model.pojo.PropertyKeyElement;
  * @author rhornig, andras
  */
 public class NedElementUtilEx implements NedElementTags, NedElementConstants {
-	public static final String DISPLAY_PROPERTY = "display";
+    public static final String DISPLAY_PROPERTY = "display";
 
-	//XXX move to NedElement
-	public static boolean isDisplayStringUpToDate(DisplayString displayStringObject, IHasDisplayString owner) {
-		// Note: cannot call owner.getDisplayString() here, as it also wants to update the fallback, etc.
-		String displayStringLiteral = StringUtils.nullToEmpty(getDisplayStringLiteral(owner));
-		String cachedDisplayString = displayStringObject == null ? "" : displayStringObject.toString();
-		return displayStringLiteral.equals(cachedDisplayString);
-	}
+    //XXX move to NedElement
+    public static boolean isDisplayStringUpToDate(DisplayString displayStringObject, IHasDisplayString owner) {
+        // Note: cannot call owner.getDisplayString() here, as it also wants to update the fallback, etc.
+        String displayStringLiteral = StringUtils.nullToEmpty(getDisplayStringLiteral(owner));
+        String cachedDisplayString = displayStringObject == null ? "" : displayStringObject.toString();
+        return displayStringLiteral.equals(cachedDisplayString);
+    }
 
-	/**
-	 * Returns the display string of the given element (submodule, connection or
-	 * toplevel type) in an unparsed form, from the NED tree.
-	 *
-	 * Returns null if the NED tree doesn't contain a display string.
-	 */
-	public static String getDisplayStringLiteral(IHasDisplayString node) {
-		// look for the "display" property inside the parameters section (if it exists)
+    /**
+     * Returns the display string of the given element (submodule, connection or
+     * toplevel type) in an unparsed form, from the NED tree.
+     *
+     * Returns null if the NED tree doesn't contain a display string.
+     */
+    public static String getDisplayStringLiteral(IHasDisplayString node) {
+        // look for the "display" property inside the parameters section (if it exists)
         INedElement parametersNode = node.getFirstChildWithTag(NED_PARAMETERS);
         if (parametersNode != null)
-        	for (INedElement currElement : parametersNode)
-        		if (currElement instanceof PropertyElement) {
-        			PropertyElement currProp = (PropertyElement)currElement;
-        			if (DISPLAY_PROPERTY.equals(currProp.getName()))
-        				return getPropertyValue(currProp);
-        		}
+            for (INedElement currElement : parametersNode)
+                if (currElement instanceof PropertyElement) {
+                    PropertyElement currProp = (PropertyElement)currElement;
+                    if (DISPLAY_PROPERTY.equals(currProp.getName()))
+                        return getPropertyValue(currProp);
+                }
         return null;
-	}
+    }
 
-	/**
-	 * Sets the display string of a given node in the NED tree,
-	 * by creating or updating the LiteralElement that contains the
-	 * "@display" property in the tree. If the value to be set is empty,
-	 * the method removes the display string.
-	 *
-	 * Returns the LiteralElement which was created/updated, or null if the 
-	 * display string was removed.
-	 */
-	public static LiteralElement setDisplayStringLiteral(IHasDisplayString node, String displayString) {
-	    boolean remove = displayString.equals("");
-	    
-		// look for the "parameters" block
-		INedElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
-		if (paramsNode == null) {
-		    if (remove)
-		        return null;
-			paramsNode = NedElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
-            ((ParametersElement)paramsNode).setIsImplicit(true);
-			node.appendChild(paramsNode);
-		}
+    /**
+     * Sets the display string of a given node in the NED tree,
+     * by creating or updating the LiteralElement that contains the
+     * "@display" property in the tree. If the value to be set is empty,
+     * the method removes the display string.
+     *
+     * Returns the LiteralElement which was created/updated, or null if the
+     * display string was removed.
+     */
+    public static LiteralElement setDisplayStringLiteral(IHasDisplayString node, String displayString) {
+        boolean remove = displayString.equals("");
 
-		// look for the first property parameter named "display"
-		INedElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, DISPLAY_PROPERTY);
-		if (displayPropertyNode == null) {
+        // look for the "parameters" block
+        INedElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
+        if (paramsNode == null) {
             if (remove)
                 return null;
-			displayPropertyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY);
-			((PropertyElement)displayPropertyNode).setName(DISPLAY_PROPERTY);
-			paramsNode.appendChild(displayPropertyNode);
-		}
+            paramsNode = NedElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
+            ((ParametersElement)paramsNode).setIsImplicit(true);
+            node.appendChild(paramsNode);
+        }
+
+        // look for the first property parameter named "display"
+        INedElement displayPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, DISPLAY_PROPERTY);
+        if (displayPropertyNode == null) {
+            if (remove)
+                return null;
+            displayPropertyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY);
+            ((PropertyElement)displayPropertyNode).setName(DISPLAY_PROPERTY);
+            paramsNode.appendChild(displayPropertyNode);
+        }
 
         // if displayString was set to "" (empty), we want to delete the whole display property node
         if (remove) {
@@ -119,63 +119,63 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
             return null;
         }
 
-		// look for the property key
-		INedElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyElement.ATT_NAME, "");
-		if (propertyKeyNode == null) {
-			propertyKeyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY_KEY);
-			displayPropertyNode.appendChild(propertyKeyNode);
-		}
+        // look for the property key
+        INedElement propertyKeyNode = displayPropertyNode.getFirstChildWithAttribute(NED_PROPERTY_KEY, PropertyKeyElement.ATT_NAME, "");
+        if (propertyKeyNode == null) {
+            propertyKeyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY_KEY);
+            displayPropertyNode.appendChild(propertyKeyNode);
+        }
 
-		// look up or create the LiteralElement
-		LiteralElement literalElement = (LiteralElement)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
-		if (literalElement == null)
-			literalElement = (LiteralElement)NedElementFactoryEx.getInstance().createElement(NED_LITERAL);
+        // look up or create the LiteralElement
+        LiteralElement literalElement = (LiteralElement)propertyKeyNode.getFirstChildWithTag(NED_LITERAL);
+        if (literalElement == null)
+            literalElement = (LiteralElement)NedElementFactoryEx.getInstance().createElement(NED_LITERAL);
 
-		// fill in the LiteralElement. if()'s are there to minimize the number of notifications
-		if (literalElement.getType() != NED_CONST_STRING)
-			literalElement.setType(NED_CONST_STRING);
-		if (!displayString.equals(literalElement.getValue()))
-			literalElement.setValue(displayString);
-		// invalidate the text representation, so that next time the code will
-		// be generated from VALUE, not from the text attribute
-		if (literalElement.getText() != null)
-			literalElement.setText(null);
-		// if new, add it only here (also to minimize notifications)
-		if (literalElement.getParent() == null)
-			propertyKeyNode.appendChild(literalElement);
-		return literalElement;
-	}
+        // fill in the LiteralElement. if()'s are there to minimize the number of notifications
+        if (literalElement.getType() != NED_CONST_STRING)
+            literalElement.setType(NED_CONST_STRING);
+        if (!displayString.equals(literalElement.getValue()))
+            literalElement.setValue(displayString);
+        // invalidate the text representation, so that next time the code will
+        // be generated from VALUE, not from the text attribute
+        if (literalElement.getText() != null)
+            literalElement.setText(null);
+        // if new, add it only here (also to minimize notifications)
+        if (literalElement.getParent() == null)
+            propertyKeyNode.appendChild(literalElement);
+        return literalElement;
+    }
 
-	/**
-	 * Sets the value of the given boolean property on a node. If value is true adds it to the tree otherwise removes it.
-	 * @param value
-	 */
-	public static void setBooleanProperty(IHasParameters node, String propertyName, boolean value) {
-		// look for the "parameters" block
-		INedElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
+    /**
+     * Sets the value of the given boolean property on a node. If value is true adds it to the tree otherwise removes it.
+     * @param value
+     */
+    public static void setBooleanProperty(IHasParameters node, String propertyName, boolean value) {
+        // look for the "parameters" block
+        INedElement paramsNode = node.getFirstChildWithTag(NED_PARAMETERS);
 
-		if (paramsNode == null) {
-			if (value == false) return; // optimize away property node for default value
+        if (paramsNode == null) {
+            if (value == false) return; // optimize away property node for default value
 
-			paramsNode = NedElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
+            paramsNode = NedElementFactoryEx.getInstance().createElement(NED_PARAMETERS);
             ((ParametersElement)paramsNode).setIsImplicit(true);
-			node.appendChild(paramsNode);
-		}
+            node.appendChild(paramsNode);
+        }
 
-		// look for the first property parameter named "display"
-		INedElement isBooleanPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, propertyName);
+        // look for the first property parameter named "display"
+        INedElement isBooleanPropertyNode = paramsNode.getFirstChildWithAttribute(NED_PROPERTY, PropertyElement.ATT_NAME, propertyName);
 
-		// first we always remove the original node (so all its children will be discarded)
-		if (isBooleanPropertyNode !=null)
-			paramsNode.removeChild(isBooleanPropertyNode);
-		// create and add a new node if needed
-		if (value) {
-			isBooleanPropertyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY);
-			((PropertyElement)isBooleanPropertyNode).setIsImplicit(node instanceof CompoundModuleElement);
-			((PropertyElement)isBooleanPropertyNode).setName(propertyName);
-			paramsNode.appendChild(isBooleanPropertyNode);
-		}
-	}
+        // first we always remove the original node (so all its children will be discarded)
+        if (isBooleanPropertyNode !=null)
+            paramsNode.removeChild(isBooleanPropertyNode);
+        // create and add a new node if needed
+        if (value) {
+            isBooleanPropertyNode = NedElementFactoryEx.getInstance().createElement(NED_PROPERTY);
+            ((PropertyElement)isBooleanPropertyNode).setIsImplicit(node instanceof CompoundModuleElement);
+            ((PropertyElement)isBooleanPropertyNode).setName(propertyName);
+            paramsNode.appendChild(isBooleanPropertyNode);
+        }
+    }
 
     /**
      * Returns the name of the first "extends" node (or null if none present)
@@ -206,17 +206,17 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
                 extendsElement.setName(ext);
     }
 
-	/**
-	 * Returns the value of the given property (assigned to the first key (default value))
-	 */
-	public static String getPropertyValue(PropertyElement prop) {
-		PropertyKeyElement pkn = prop.getFirstPropertyKeyChild();
-		if (pkn == null ) return null;
-		LiteralElement ln = pkn.getFirstLiteralChild();
-		if (ln == null ) return null;
+    /**
+     * Returns the value of the given property (assigned to the first key (default value))
+     */
+    public static String getPropertyValue(PropertyElement prop) {
+        PropertyKeyElement pkn = prop.getFirstPropertyKeyChild();
+        if (pkn == null ) return null;
+        LiteralElement ln = pkn.getFirstLiteralChild();
+        if (ln == null ) return null;
 
-		return ln.getValue();
-	}
+        return ln.getValue();
+    }
 
     /**
      * Returns the name of component but stripped any digits from the right ie: "name123" would be "name"
@@ -296,7 +296,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * Selects a name for a type, ensuring that the name will be unique in the given context.
      * (i.e. in a package for top level types or inside a top-level type for inner types)
      * The context must be a {@link NedFileElementEx} for top level elements or
-     * {@link CompoundModuleElementEx} for inner types 
+     * {@link CompoundModuleElementEx} for inner types
      */
     public static String getUniqueNameForType(String currentName, INedTypeLookupContext context) {
         Set<String> reservedNames;
@@ -306,12 +306,12 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
             INedTypeResolver res = context.getResolver();
             IProject project = res.getNedFile((NedFileElementEx)context).getProject();
             reservedNames = res.getReservedQNames(project);
-            currentQName = context.getQNameAsPrefix() + currentName; 
+            currentQName = context.getQNameAsPrefix() + currentName;
         } else if (context instanceof CompoundModuleElementEx) {
             // inner type (we can work with unqualified names)
             CompoundModuleElementEx containerElement = (CompoundModuleElementEx)context;
             reservedNames = containerElement.getNedTypeInfo().getInnerTypes().keySet();
-            currentQName = currentName; 
+            currentQName = currentName;
         } else {
             Assert.isTrue(false, "Unique name ganeration is implemented only for NedFile and CompoundModule contexts.");
             return currentName;
@@ -350,7 +350,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     /**
-     * Checks whether the provided string is valid NED identifier in the 
+     * Checks whether the provided string is valid NED identifier in the
      * "friendly" notation "SimpleName (pac.kage.name)"  or the formal notation "pac.kage.name.SimpleName"
      */
     public static boolean isValidFriendlyQualifiedIdentifier(String str) {
@@ -367,25 +367,25 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      * module.
      */
     public static void renameSubmoduleInConnections(CompoundModuleElementEx compoundModule, String oldSubmoduleName, String newSubmoduleName) {
-		INedElement connectionsNode = compoundModule.getFirstConnectionsChild();
-		if (connectionsNode != null)
-			doRenameSubmoduleInConnections(connectionsNode, oldSubmoduleName, newSubmoduleName);
-	}
+        INedElement connectionsNode = compoundModule.getFirstConnectionsChild();
+        if (connectionsNode != null)
+            doRenameSubmoduleInConnections(connectionsNode, oldSubmoduleName, newSubmoduleName);
+    }
 
-	protected static void doRenameSubmoduleInConnections(INedElement parent, String oldName, String newName) {
-		for (INedElement child : parent) {
-			if (child instanceof ConnectionElementEx) {
-				ConnectionElementEx conn = (ConnectionElementEx) child;
-				if (conn.getSrcModule().equals(oldName))
-					conn.setSrcModule(newName);
-				if (conn.getDestModule().equals(oldName))
-					conn.setDestModule(newName);
-			}
-			else if (child instanceof ConnectionGroupElement) {
-				doRenameSubmoduleInConnections(child, oldName, newName);
-			}
-		}
-	}
+    protected static void doRenameSubmoduleInConnections(INedElement parent, String oldName, String newName) {
+        for (INedElement child : parent) {
+            if (child instanceof ConnectionElementEx) {
+                ConnectionElementEx conn = (ConnectionElementEx) child;
+                if (conn.getSrcModule().equals(oldName))
+                    conn.setSrcModule(newName);
+                if (conn.getDestModule().equals(oldName))
+                    conn.setDestModule(newName);
+            }
+            else if (child instanceof ConnectionGroupElement) {
+                doRenameSubmoduleInConnections(child, oldName, newName);
+            }
+        }
+    }
 
     /**
      * Determines what import is necessary so that simple name can be used instead of the fully qualified type name.
@@ -403,7 +403,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
                 // it already means the same type we want: just use short name
                 modifiedName.append(simpleName);
                 return null;
-            } 
+            }
             else {
                 // something else with the same simple name is already visible, so leave fully qualified name
                 modifiedName.append(fullyQualifiedTypeName);
@@ -487,15 +487,15 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
      *
      * Returns the newly created ImportElement, or null if no import got added.
      * (I.e. it returns null as well if an existing import already covered this type.)
-     * 
-     * The new import is inserted at the beginning rather than after 
-     * the last import so the trailing new lines (in the trailing comment 
-     * of the last import) will not appear between the import lines. 
+     *
+     * The new import is inserted at the beginning rather than after
+     * the last import so the trailing new lines (in the trailing comment
+     * of the last import) will not appear between the import lines.
      */
-	public static ImportElement addImportFor(ISubmoduleOrConnection submoduleOrConnection) {
-	    String typeOrLikeType = getTypeOrLikeType(submoduleOrConnection);
+    public static ImportElement addImportFor(ISubmoduleOrConnection submoduleOrConnection) {
+        String typeOrLikeType = getTypeOrLikeType(submoduleOrConnection);
         if (StringUtils.isEmpty(typeOrLikeType))
-	            return null;
+                return null;
 
         CompoundModuleElementEx compoundModule = (CompoundModuleElementEx) submoduleOrConnection.getEnclosingTypeElement();
 
@@ -506,74 +506,74 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
 
         if (importElement != null)
             compoundModule.getContainingNedFileElement().insertImport(importElement);
-       
-		return importElement;
-	}
 
-	/**
-	 * Sets whichever of "type" and "like-type" is already set on the element
-	 */
-	public static void setTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection, String value) {
-		if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
-			submoduleOrConnection.setLikeType(value);
-		else
-			submoduleOrConnection.setType(value);
-	}
+        return importElement;
+    }
 
-	/**
-	 * Returns whichever of "type" and "like-type" is already set on the element
-	 */
-	public static String getTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection) {
-	    if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
-	        return submoduleOrConnection.getLikeType();
-	    else
-	        return submoduleOrConnection.getType();
-	}
+    /**
+     * Sets whichever of "type" and "like-type" is already set on the element
+     */
+    public static void setTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection, String value) {
+        if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
+            submoduleOrConnection.setLikeType(value);
+        else
+            submoduleOrConnection.setType(value);
+    }
 
-	/**
-	 * Given an import that contains "*" or "**" as wildcard, this method returns
-	 * the corresponding regex that can be used to check whether a fully qualified
-	 * type name matches the import.
-	 */
-	public static String importToRegex(String importSpec) {
-		return importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
-	}
+    /**
+     * Returns whichever of "type" and "like-type" is already set on the element
+     */
+    public static String getTypeOrLikeType(ISubmoduleOrConnection submoduleOrConnection) {
+        if (StringUtils.isNotEmpty(submoduleOrConnection.getLikeType()))
+            return submoduleOrConnection.getLikeType();
+        else
+            return submoduleOrConnection.getType();
+    }
 
-	public interface INedElementVisitor {
-		void visit(INedElement element);
-	}
+    /**
+     * Given an import that contains "*" or "**" as wildcard, this method returns
+     * the corresponding regex that can be used to check whether a fully qualified
+     * type name matches the import.
+     */
+    public static String importToRegex(String importSpec) {
+        return importSpec.replace(".", "\\.").replace("**", ".*").replace("*", "[^.]*");
+    }
 
-	public static void visitNedTree(INedElement element, INedElementVisitor visitor) {
-		visitor.visit(element);
-		for (INedElement child : element)
-			visitNedTree(child, visitor);
-	}
+    public interface INedElementVisitor {
+        void visit(INedElement element);
+    }
 
-	public static CommentElement createCommentElement(String locId, String content) {
-		CommentElement comment = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT);
-		comment.setLocid(locId);
-		comment.setContent(content);
-		return comment;
-	}
+    public static void visitNedTree(INedElement element, INedElementVisitor visitor) {
+        visitor.visit(element);
+        for (INedElement child : element)
+            visitNedTree(child, visitor);
+    }
+
+    public static CommentElement createCommentElement(String locId, String content) {
+        CommentElement comment = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT);
+        comment.setLocid(locId);
+        comment.setContent(content);
+        return comment;
+    }
 
 
     public static void collectProperties(INedElement node, Map<String, Map<String, PropertyElementEx>> map) {
-   		INedElement propertyParent = node instanceof IHasParameters ? node.getFirstChildWithTag(NED_PARAMETERS) : node;
+        INedElement propertyParent = node instanceof IHasParameters ? node.getFirstChildWithTag(NED_PARAMETERS) : node;
 
-    	if (propertyParent != null) {
-    		for (INedElement child : propertyParent) {
-    			if (child instanceof PropertyElementEx) {
-    			    PropertyElementEx property = (PropertyElementEx)child;
-    				String name = property.getName();
-    				Map<String, PropertyElementEx> propertyMap = map.get(name);
-    				if (propertyMap == null) {
-    					propertyMap = new HashMap<String, PropertyElementEx>();
-    					map.put(name, propertyMap);
-    				}
-    				propertyMap.put(property.getIndex(), property);
-    			}
-    		}
-    	}
+        if (propertyParent != null) {
+            for (INedElement child : propertyParent) {
+                if (child instanceof PropertyElementEx) {
+                    PropertyElementEx property = (PropertyElementEx)child;
+                    String name = property.getName();
+                    Map<String, PropertyElementEx> propertyMap = map.get(name);
+                    if (propertyMap == null) {
+                        propertyMap = new HashMap<String, PropertyElementEx>();
+                        map.put(name, propertyMap);
+                    }
+                    propertyMap.put(property.getIndex(), property);
+                }
+            }
+        }
     }
 
     public static PropertyElementEx getProperty(IHasProperties element, String name, String index) {
@@ -610,7 +610,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     public static void addPropertyValues(IHasProperties element, String propertyName, String propertyIndex, Collection<String> values) {
-    	NedElementFactoryEx factory = NedElementFactoryEx.getInstance();
+        NedElementFactoryEx factory = NedElementFactoryEx.getInstance();
         PropertyElementEx propertyElement = NedElementUtilEx.getProperty(element, propertyName, propertyIndex);
 
         if (propertyElement == null) {
@@ -647,7 +647,7 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     public static void addLabels(IHasProperties element, Collection<String> labels) {
         addPropertyValues(element, "labels", null, labels);
     }
-    
+
 
     /**
      * Converts a fully qualified NED type name to a user-friendly form, "SimpleName (package.name)".
@@ -657,11 +657,11 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
     }
 
     /**
-     * Parses a user-friendly NED type name ("SimpleName (package.name)" syntax) into a 
+     * Parses a user-friendly NED type name ("SimpleName (package.name)" syntax) into a
      * fully qualified name. No error is thrown: spaces and invalid characters are simply
-     * removed from the string. 
-     * 
-     * Simple names and already fully qualified names are accepted 
+     * removed from the string.
+     *
+     * Simple names and already fully qualified names are accepted
      * and returned verbatim (after trimming surrounding spaces).
      */
     public static String friendlyTypeNameToQName(String displayedName) {
@@ -669,10 +669,10 @@ public class NedElementUtilEx implements NedElementTags, NedElementConstants {
             return null;
         if (!displayedName.contains("("))
             return displayedName.trim();
-    
-        // swap the parts before and after the opening parenthesis 
+
+        // swap the parts before and after the opening parenthesis
         String result = displayedName.replaceAll("(.*)\\((.*)", "$2.$1");
-        
+
         // throw out invalid characters
         result = result.replaceAll("[^A-Za-z0-9_.]", "");
         return result;

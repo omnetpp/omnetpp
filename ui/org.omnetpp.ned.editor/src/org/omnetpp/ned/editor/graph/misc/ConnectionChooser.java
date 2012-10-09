@@ -364,58 +364,58 @@ public class ConnectionChooser {
         }
     }
     /**
-	 * Creates a template connection object from the provided gates and modules.
-	 * If the module is a vector, it uses module[0] syntax
-	 * If the gate is a vector uses either gate[0] or gate++ syntax depending whether the gate size was specified.
-	 * If the specified gates are incompatible (eg: labels do not match) it returns <code>null</code>
-	 */
-	private ConnectionElementEx createTemplateConnection(IConnectableElement srcMod, GateElement srcGate,
-						                                 IConnectableElement destMod, GateElement destGate)
-	{
+     * Creates a template connection object from the provided gates and modules.
+     * If the module is a vector, it uses module[0] syntax
+     * If the gate is a vector uses either gate[0] or gate++ syntax depending whether the gate size was specified.
+     * If the specified gates are incompatible (eg: labels do not match) it returns <code>null</code>
+     */
+    private ConnectionElementEx createTemplateConnection(IConnectableElement srcMod, GateElement srcGate,
+                                                         IConnectableElement destMod, GateElement destGate)
+    {
         INedTypeResolver resolver = NedResourcesPlugin.getNedResources();
         ConnectionElementEx conn = (ConnectionElementEx)NedElementFactoryEx.getInstance().createElement(resolver, NedElementTags.NED_CONNECTION);
-		// set the source and dest module names.
-		// if compound module, name must be empty
-		// for Submodules name must be the submodule name
-		if (srcMod instanceof SubmoduleElementEx) {
-			SubmoduleElementEx smodNode = (SubmoduleElementEx)srcMod;
-			conn.setSrcModule(smodNode.getName());
-			if (StringUtils.isNotBlank(smodNode.getVectorSize()))
-					conn.setSrcModuleIndex(DEFAULT_INDEX);
-		} else
-			conn.setSrcModule("");
+        // set the source and dest module names.
+        // if compound module, name must be empty
+        // for Submodules name must be the submodule name
+        if (srcMod instanceof SubmoduleElementEx) {
+            SubmoduleElementEx smodNode = (SubmoduleElementEx)srcMod;
+            conn.setSrcModule(smodNode.getName());
+            if (StringUtils.isNotBlank(smodNode.getVectorSize()))
+                    conn.setSrcModuleIndex(DEFAULT_INDEX);
+        } else
+            conn.setSrcModule("");
 
-		if (destMod instanceof SubmoduleElementEx) {
-			SubmoduleElementEx dmodNode = (SubmoduleElementEx)destMod;
-			conn.setDestModule(dmodNode.getName());
-			if (StringUtils.isNotBlank(dmodNode.getVectorSize()))
-					conn.setDestModuleIndex(DEFAULT_INDEX);
-		} else
-			conn.setDestModule("");
+        if (destMod instanceof SubmoduleElementEx) {
+            SubmoduleElementEx dmodNode = (SubmoduleElementEx)destMod;
+            conn.setDestModule(dmodNode.getName());
+            if (StringUtils.isNotBlank(dmodNode.getVectorSize()))
+                    conn.setDestModuleIndex(DEFAULT_INDEX);
+        } else
+            conn.setDestModule("");
 
-		// set the possible gates
-		conn.setSrcGate(srcGate.getName());
-		conn.setDestGate(destGate.getName());
-		
-		// if both side is bidirectional gate, use a bidirectional connection
-		boolean useBidir = srcGate.getType() == GateElement.NED_GATETYPE_INOUT && destGate.getType() == GateElement.NED_GATETYPE_INOUT;
-		conn.setIsBidirectional(useBidir);
+        // set the possible gates
+        conn.setSrcGate(srcGate.getName());
+        conn.setDestGate(destGate.getName());
 
-		// check if we have a module vector and add an index to it.
-		if (srcGate.getIsVector())
-			if (srcMod.getGateSizes().containsKey(srcGate.getName()))
-			    conn.setSrcGateIndex(DEFAULT_INDEX);
-			else
-			    conn.setSrcGatePlusplus(true);
+        // if both side is bidirectional gate, use a bidirectional connection
+        boolean useBidir = srcGate.getType() == GateElement.NED_GATETYPE_INOUT && destGate.getType() == GateElement.NED_GATETYPE_INOUT;
+        conn.setIsBidirectional(useBidir);
 
-		if (destGate.getIsVector())
-			if (destMod.getGateSizes().containsKey(destGate.getName()))
-			    conn.setDestGateIndex(DEFAULT_INDEX);
-			else
-			    conn.setDestGatePlusplus(true);
+        // check if we have a module vector and add an index to it.
+        if (srcGate.getIsVector())
+            if (srcMod.getGateSizes().containsKey(srcGate.getName()))
+                conn.setSrcGateIndex(DEFAULT_INDEX);
+            else
+                conn.setSrcGatePlusplus(true);
 
-		return conn;
-	}
+        if (destGate.getIsVector())
+            if (destMod.getGateSizes().containsKey(destGate.getName()))
+                conn.setDestGateIndex(DEFAULT_INDEX);
+            else
+                conn.setDestGatePlusplus(true);
+
+        return conn;
+    }
 
     /**
      * Returns gates with the given type (in, out, inout) of the given compound module

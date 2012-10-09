@@ -29,17 +29,17 @@ import org.omnetpp.common.util.StringUtils;
  * @author rhornig
  */
 public class NedDocColorizerScanner extends RuleBasedScanner {
-    
+
     /**
      * IRule to detect recognized HTML tags.
-     *  
-     * Note: We need our own IRule, because apparently no built-in class can handle this task properly. 
-     * SingleLineRule cannot be used for the <foo>, </foo>, <foo/> cases, as it expects an 
+     *
+     * Note: We need our own IRule, because apparently no built-in class can handle this task properly.
+     * SingleLineRule cannot be used for the <foo>, </foo>, <foo/> cases, as it expects an
      * endSequence -- or if you pass in "" or null, the token will last till the end of the line.
-     * WordRule is also out of question, because it is built upon IWordDetector that cannot detect 
-     * XML tags: it only has isWordStart() and isWordPart() methods (there's no isWordEnd()), 
+     * WordRule is also out of question, because it is built upon IWordDetector that cannot detect
+     * XML tags: it only has isWordStart() and isWordPart() methods (there's no isWordEnd()),
      * so it cannot isolate "<foo>" from a "<foo>bar" string.
-     * 
+     *
      * @author Andras
      */
     public static class XmlTagRule implements IRule {
@@ -47,7 +47,7 @@ public class NedDocColorizerScanner extends RuleBasedScanner {
         private IToken token;
         private StringBuffer buffer = new StringBuffer();
         private final static char[] ENDTAG_CHARS = new char[] {' ', '\t', '>'};
-        
+
         public XmlTagRule(String[] recognizedTags, IToken token) {
             this.recognizedTags = new HashSet<String>(Arrays.asList(recognizedTags));
             this.token = token;
@@ -87,26 +87,26 @@ public class NedDocColorizerScanner extends RuleBasedScanner {
     }
 
     /**
-	 * Create a new neddoc scanner for the given color provider.
-	 */
-	 public NedDocColorizerScanner() {
-		super();
+     * Create a new neddoc scanner for the given color provider.
+     */
+     public NedDocColorizerScanner() {
+        super();
         // this is the default token for a comment
         setDefaultReturnToken(SyntaxHighlightHelper.docDefaultToken);
 
-		List<IRule> list = new ArrayList<IRule>();
+        List<IRule> list = new ArrayList<IRule>();
 
         // Add rules for supported HTML tags
-		list.add(new XmlTagRule(SyntaxHighlightHelper.highlightDocTags, SyntaxHighlightHelper.docTagToken));
-        
+        list.add(new XmlTagRule(SyntaxHighlightHelper.highlightDocTags, SyntaxHighlightHelper.docTagToken));
+
         // Add word rule for keywords
         WordRule keywordRule = new WordRule(new SyntaxHighlightHelper.NedAtWordDetector(), Token.UNDEFINED);
         for (String keyword : SyntaxHighlightHelper.highlightDocKeywords)
             keywordRule.addWord("@" + keyword, SyntaxHighlightHelper.docKeywordToken);
         list.add(keywordRule);
 
-		IRule[] result = new IRule[list.size()];
-		list.toArray(result);
-		setRules(result);
-	}
+        IRule[] result = new IRule[list.size()];
+        list.toArray(result);
+        setRules(result);
+    }
 }

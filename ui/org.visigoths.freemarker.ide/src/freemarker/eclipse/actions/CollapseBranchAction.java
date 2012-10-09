@@ -10,22 +10,22 @@ import org.eclipse.jface.viewers.IStructuredSelection;
  * @author <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  */
 public class CollapseBranchAction extends Action {
-	
-	private AbstractTreeViewer fViewer;
 
-	public CollapseBranchAction(AbstractTreeViewer aViewer) {
-		fViewer = aViewer;
-		setText("Collapse");
-	}
+    private AbstractTreeViewer fViewer;
 
-	/**
-	 * @see org.eclipse.jface.action.IAction#run()
-	 */
-	public void run() {
-		ISelection selection = fViewer.getSelection();
-		if (!selection.isEmpty()) {
-			fViewer.collapseToLevel(((IStructuredSelection)selection).getFirstElement(),AbstractTreeViewer.ALL_LEVELS);
-		} 
-	}
+    public CollapseBranchAction(AbstractTreeViewer aViewer) {
+        fViewer = aViewer;
+        setText("Collapse");
+    }
+
+    /**
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+        ISelection selection = fViewer.getSelection();
+        if (!selection.isEmpty()) {
+            fViewer.collapseToLevel(((IStructuredSelection)selection).getFirstElement(),AbstractTreeViewer.ALL_LEVELS);
+        }
+    }
 
 }

@@ -28,7 +28,7 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class HistogramChartImpl extends ChartImpl implements HistogramChart {
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -37,13 +37,13 @@ public class HistogramChartImpl extends ChartImpl implements HistogramChart {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-				protected EClass eStaticClass() {
+                protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.HISTOGRAM_CHART;
     }
 

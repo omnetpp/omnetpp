@@ -28,15 +28,15 @@ public class OrganizeImportsAction extends NedTextEditorAction {
     }
 
     @Override
-	public void update() {
-    	setEnabled(getTextEditor() != null && !getNedFileElement().hasSyntaxError());
-	}
+    public void update() {
+        setEnabled(getTextEditor() != null && !getNedFileElement().hasSyntaxError());
+    }
 
-	@Override
-	protected void doRun() {
+    @Override
+    protected void doRun() {
         NedFileElementEx nedFileElement = getNedFileElement();
         if (nedFileElement.hasSyntaxError())
-        	return; // don't mess with the source while it has syntax error
+            return; // don't mess with the source while it has syntax error
 
         // update the tree to avoid loosing text changes
         TextualNedEditor textualNedEditor = (TextualNedEditor)getTextEditor();
@@ -52,8 +52,8 @@ public class OrganizeImportsAction extends NedTextEditorAction {
         ((TextualNedEditor)getTextEditor()).pullChangesFromNedResources();
     }
 
-	protected NedFileElementEx getNedFileElement() {
-	    IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
+    protected NedFileElementEx getNedFileElement() {
+        IFile file = ((FileEditorInput)getTextEditor().getEditorInput()).getFile();
         return NedResourcesPlugin.getNedResources().getNedFileElement(file);
-	}
+    }
 }

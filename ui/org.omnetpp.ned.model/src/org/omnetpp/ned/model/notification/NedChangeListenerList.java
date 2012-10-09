@@ -44,14 +44,14 @@ public class NedChangeListenerList extends ListenerList {
     public void fireModelChanged(final NedModelEvent event) {
         if (enabled) {
             for (final Object listener : getListeners()) {
-				SafeRunner.run(new ISafeRunnable() {
-					public void handleException(Throwable e) {
-						// exception logged in SafeRunner#run
-					}
-					public void run() throws Exception {
-						((INedChangeListener)listener).modelChanged(event);
-					}
-				});
+                SafeRunner.run(new ISafeRunnable() {
+                    public void handleException(Throwable e) {
+                        // exception logged in SafeRunner#run
+                    }
+                    public void run() throws Exception {
+                        ((INedChangeListener)listener).modelChanged(event);
+                    }
+                });
             }
         }
     }

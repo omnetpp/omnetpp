@@ -23,14 +23,14 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * It can optionally use an inifile as additional input for parameter values, etc.
  */
 class ModuleTreeVisitor  implements IModuleTreeVisitor {
-    
+
     private final IReadonlyInifileDocument doc; // null if running without an inifile
     private final String[] sectionChain; // null if running without an inifile
     private final IProgressMonitor monitor;
     private final boolean collectParameters;
     private final String[] propertiesToCollect;     // names of properties to be collected, null if none
     private final PatternMatcher moduleNamePattern;
-    
+
     private final List<ParamResolution> paramResolutions;
     private final List<PropertyResolution> propertyResolutions;
     private final Map<String,ISubmoduleOrConnection> modules;
@@ -38,7 +38,7 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     protected Stack<ISubmoduleOrConnection> elementPath = new Stack<ISubmoduleOrConnection>();
     protected Stack<INedTypeInfo> typeInfoPath = new Stack<INedTypeInfo>();
     protected Stack<String> fullPathStack = new Stack<String>();  //XXX performance: use cumulative names, so that StringUtils.join() can be eliminated (like: "Net", "Net.node[*]", "Net.node[*].ip" etc)
-    
+
     /**
      * For traversing a given NED element or NED type.
      */
@@ -49,12 +49,12 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         this.collectParameters = collectParameters;
         this.propertiesToCollect = propertiesToCollect;
         this.moduleNamePattern = moduleNamePattern;
-        
+
         this.paramResolutions = collectParameters ? new ArrayList<ParamResolution>() : null;
         this.propertyResolutions = propertiesToCollect != null ? new ArrayList<PropertyResolution>() : null;
         this.modules = moduleNamePattern != null ? new HashMap<String,ISubmoduleOrConnection>() : null;
     }
-    
+
     /**
      * For traversing the configured network.
      */
@@ -72,15 +72,15 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         this.propertyResolutions = propertiesToCollect != null ? new ArrayList<PropertyResolution>() : null;
         this.modules = moduleNamePattern != null ? new HashMap<String,ISubmoduleOrConnection>() : null;
     }
-    
+
     public List<ParamResolution> getParamResolutions() {
         return paramResolutions;
     }
-    
+
     public List<PropertyResolution> getPropertyResolutions() {
         return propertyResolutions;
     }
-    
+
     public Map<String,ISubmoduleOrConnection> getModules() {
         return modules;
     }
@@ -88,22 +88,22 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
     public boolean enter(ISubmoduleOrConnection element, INedTypeInfo typeInfo) {
         if (monitor != null && monitor.isCanceled())
             throw new OperationCanceledException();
-        
+
         elementPath.push(element);
         typeInfoPath.push(typeInfo);
 
         fullPathStack.push(element == null ? typeInfo.getName() : ParamUtil.getParamPathElementName(element));
         String fullPath = StringUtils.join(fullPathStack, ".");
-        
+
         if (moduleNamePattern == null || moduleNamePattern.matches(fullPath)) {
             if (moduleNamePattern != null && element != null)
                 modules.put(fullPath,element);
-            
+
             // collect parameters
             if (collectParameters) {
                 ParamCollector.resolveModuleParameters(paramResolutions, fullPath, typeInfoPath, elementPath, sectionChain, doc);
             }
-            
+
             // collect properties
             if (propertiesToCollect != null) {
                 String activeSection = sectionChain != null ? sectionChain[0] : null;
@@ -111,10 +111,10 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
                     ParamCollector.resolveModuleProperties(propertyName, propertyResolutions, fullPath, typeInfoPath, elementPath, activeSection);
             }
         }
-        
+
         return true;
     }
-    
+
     public void leave() {
         elementPath.pop();
         typeInfoPath.pop();
@@ -133,7 +133,7 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
 
         // TODO: we should probably return a string array, because if the submodule is a vector,
         // different indices may have different NED types.
-       
+
         if (!collectParameters)
             return null;
 
@@ -141,7 +141,7 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
         String likeExpr = element.getLikeExpr();
 
         //XXX this code is a near duplicate of one in InifileUtils
-        
+
         // note: the following lookup order is based on src/sim/netbuilder code, namely cNEDNetworkBuilder::getSubmoduleTypeName()
 
         // first, try to use expression between angle braces from the NED file
@@ -176,13 +176,13 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
                 String value = doc.getValue(chosenKey.section, chosenKey.key);
                 try {
                     return Common.parseQuotedString(value);
-                } 
+                }
                 catch (RuntimeException e) {
                     return null; // it is something we don't understand
                 }
             }
         }
-        
+
         // then, use **.typename=default() expressions from NED deep param assignments
         // XXX this is not implemented yet
 
@@ -194,18 +194,18 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
 
     protected String evaluateLikeExpr(String likeExpr) {
         // understands string literals and references to parent module parameters;
-        // return null for anything else (i.e. when we are not sophisticated enough to figure it out) 
+        // return null for anything else (i.e. when we are not sophisticated enough to figure it out)
         if (likeExpr.charAt(0) == '"') {
             try {
                 // looks like a string literal
                 return Common.parseQuotedString(likeExpr);
-            } 
+            }
             catch (RuntimeException e) {
                 return null;  // nope
             }
         }
         else if (likeExpr.matches("[A-Za-z_][A-Za-z0-9_]*")) {
-            // identifier: it should be parameter of the parent module; we should look up and 
+            // identifier: it should be parameter of the parent module; we should look up and
             // return its value (note: we cannot use InifileUtils.resolveLikeParam() here yet)
             String fullPath = StringUtils.join(fullPathStack, ".");
             ParamResolution res = null;
@@ -219,16 +219,16 @@ class ModuleTreeVisitor  implements IModuleTreeVisitor {
                 return null; // likely unassigned
             try {
                 return Common.parseQuotedString(value);
-            } 
+            }
             catch (RuntimeException e) {
                 return null; // value is not a string literal
             }
         }
         else {
-            return null; 
+            return null;
         }
     }
-    
+
     private static String getParamValue(ParamResolution res, IReadonlyInifileDocument doc) {
         return getParamValue(res, doc, true);
     }

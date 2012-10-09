@@ -45,111 +45,111 @@ import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
 //XXX disable Combo when value is not editable (comes from included file)?
 //XXX set up content assist (like in TextFieldEditor)
 public class ComboFieldEditor extends FieldEditor {
-	private Combo combo;
-	private Label label;
-	private Button resetButton;
-	private boolean isEdited;
-	private ControlDecoration problemDecoration;
+    private Combo combo;
+    private Label label;
+    private Button resetButton;
+    private boolean isEdited;
+    private ControlDecoration problemDecoration;
 
-	public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-		super(parent, SWT.NONE, entry, inifile, formPage, hints);
+    public ComboFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+        super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
-		// layout
-		GridLayout gridLayout = new GridLayout(3, false);
-		gridLayout.marginHeight = 2;
-		setLayout(gridLayout);
+        // layout
+        GridLayout gridLayout = new GridLayout(3, false);
+        gridLayout.marginHeight = 2;
+        setLayout(gridLayout);
 
-		// child widgets
-		label = createLabel(entry, labelText+":");
-		combo = createCombo();
-		addTooltipSupport(combo);
-		resetButton = createResetButton();
+        // child widgets
+        label = createLabel(entry, labelText+":");
+        combo = createCombo();
+        addTooltipSupport(combo);
+        resetButton = createResetButton();
 
-		problemDecoration = new ControlDecoration(combo, SWT.LEFT | SWT.TOP);
-		problemDecoration.setShowOnlyOnFocus(false);
+        problemDecoration = new ControlDecoration(combo, SWT.LEFT | SWT.TOP);
+        problemDecoration.setShowOnlyOnFocus(false);
 
-		// set layout data
-		label.setLayoutData(new GridData());
-		int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
-		combo.setLayoutData(new GridData(width, SWT.DEFAULT));
-		((GridData)combo.getLayoutData()).horizontalIndent = 3; // room for the decoration
-		resetButton.setLayoutData(new GridData());
+        // set layout data
+        label.setLayoutData(new GridData());
+        int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
+        combo.setLayoutData(new GridData(width, SWT.DEFAULT));
+        ((GridData)combo.getLayoutData()).horizontalIndent = 3; // room for the decoration
+        resetButton.setLayoutData(new GridData());
 
-		reread();
+        reread();
 
-		// enable Reset button on editing
-		combo.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				if (!isEdited) {
-					isEdited = true;
-					combo.setForeground(null);
-					resetButton.setEnabled(true);
-				}
-			}
-		});
-		// commit the editfield on Enter
-		combo.addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				commit();
-			}
-		});
+        // enable Reset button on editing
+        combo.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                if (!isEdited) {
+                    isEdited = true;
+                    combo.setForeground(null);
+                    resetButton.setEnabled(true);
+                }
+            }
+        });
+        // commit the editfield on Enter
+        combo.addSelectionListener(new SelectionAdapter() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                commit();
+            }
+        });
 
-		// commit on losing focus
-		addFocusListenerTo(combo);
+        // commit on losing focus
+        addFocusListenerTo(combo);
 
-		// when the background gets clicked, transfer focus to the text widget
-		addFocusTransfer(label, combo);
-		addFocusTransfer(this, combo);
+        // when the background gets clicked, transfer focus to the text widget
+        addFocusTransfer(label, combo);
+        addFocusTransfer(this, combo);
 
-	}
+    }
 
-	protected Combo createCombo() {
-		Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER);
-		return combo;
-	}
+    protected Combo createCombo() {
+        Combo combo = new Combo(this, SWT.SINGLE | SWT.BORDER);
+        return combo;
+    }
 
-	@Override
-	public void reread() {
-		// update text and reset button
-		String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
-		String value = getValueFromFile(GENERAL, key);
-		if (value==null) {
-			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
-			combo.setText(defaultValue);
-			//textField.setForeground(ColorFactory.asColor("darkGreen"));
-			combo.setForeground(ColorFactory.GREY50);
-			resetButton.setEnabled(false);
-		}
-		else {
-			combo.setText(value);
-			combo.setForeground(null);
-			resetButton.setEnabled(true);
-		}
-		isEdited = false;
+    @Override
+    public void reread() {
+        // update text and reset button
+        String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
+        String value = getValueFromFile(GENERAL, key);
+        if (value==null) {
+            String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
+            combo.setText(defaultValue);
+            //textField.setForeground(ColorFactory.asColor("darkGreen"));
+            combo.setForeground(ColorFactory.GREY50);
+            resetButton.setEnabled(false);
+        }
+        else {
+            combo.setText(value);
+            combo.setForeground(null);
+            resetButton.setEnabled(true);
+        }
+        isEdited = false;
 
-		// update problem decoration
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
-		problemDecoration.setImage(getProblemImage(markers, true, true));
-		problemDecoration.setDescriptionText(getProblemsText(markers));
-		redraw(); // otherwise an obsolete error decoration doesn't disappear
-	}
+        // update problem decoration
+        IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
+        problemDecoration.setImage(getProblemImage(markers, true, true));
+        problemDecoration.setDescriptionText(getProblemsText(markers));
+        redraw(); // otherwise an obsolete error decoration doesn't disappear
+    }
 
-	public void setComboContents(List<String> list) {
+    public void setComboContents(List<String> list) {
         String oldValue = combo.getText();
-	    combo.removeAll();
-	    for (String i : list)
-	        combo.add(i);
-	    combo.setText(oldValue);
-	    reread();
-	}
+        combo.removeAll();
+        for (String i : list)
+            combo.add(i);
+        combo.setText(oldValue);
+        reread();
+    }
 
-	@Override
-	public void commit() {
-		if (isEdited) {
-			String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
-			String value = combo.getText();
-			setValueInFile(GENERAL, key, value);
-			isEdited = false;
-		}
-	}
+    @Override
+    public void commit() {
+        if (isEdited) {
+            String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
+            String value = combo.getText();
+            setValueInFile(GENERAL, key, value);
+            isEdited = false;
+        }
+    }
 }

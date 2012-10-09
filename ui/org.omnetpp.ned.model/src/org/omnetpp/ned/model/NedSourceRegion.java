@@ -26,35 +26,35 @@ public class NedSourceRegion {
     /**
      * Constructor.
      */
-	public NedSourceRegion(int startLine, int startColumn, int endLine, int endColumn) {
-		this.startLine = startLine;
-		this.startColumn = startColumn;
-		this.endLine = endLine;
-		this.endColumn = endColumn;
-	}
+    public NedSourceRegion(int startLine, int startColumn, int endLine, int endColumn) {
+        this.startLine = startLine;
+        this.startColumn = startColumn;
+        this.endLine = endLine;
+        this.endColumn = endColumn;
+    }
 
-	/**
-	 * Returns true if the stored region intersects with the given line.
-	 */
+    /**
+     * Returns true if the stored region intersects with the given line.
+     */
     public boolean containsLine(int line) {
-		return getStartLine()<=line && getEndLine()>=line;
-	}
+        return getStartLine()<=line && getEndLine()>=line;
+    }
 
-	/**
-	 * Returns true if given line:column position falls inside the stored
-	 * [start,end) range.
-	 */
-	public boolean contains(int line, int column) {
-		if (getStartLine()>line || getEndLine()<line)  // obvious non-match
-			return false;
-		return (line!=getStartLine() || column>=getStartColumn()) &&
-		       (line!=getEndLine() || column<getEndColumn());
-	}
+    /**
+     * Returns true if given line:column position falls inside the stored
+     * [start,end) range.
+     */
+    public boolean contains(int line, int column) {
+        if (getStartLine()>line || getEndLine()<line)  // obvious non-match
+            return false;
+        return (line!=getStartLine() || column>=getStartColumn()) &&
+               (line!=getEndLine() || column<getEndColumn());
+    }
 
-	@Override
-	public String toString() {
-		return ""+getStartLine()+":"+getStartColumn()+"-"+getEndLine()+":"+getEndColumn();
-	}
+    @Override
+    public String toString() {
+        return ""+getStartLine()+":"+getStartColumn()+"-"+getEndLine()+":"+getEndColumn();
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -65,19 +65,19 @@ public class NedSourceRegion {
         return getStartLine()==o.getStartLine() && getEndLine()==o.getEndLine() && getStartColumn()==o.getStartColumn() && getEndColumn()==o.getEndColumn();
     }
 
-	public int getStartLine() {
-		return startLine;
-	}
+    public int getStartLine() {
+        return startLine;
+    }
 
-	public int getStartColumn() {
-		return startColumn;
-	}
+    public int getStartColumn() {
+        return startColumn;
+    }
 
-	public int getEndLine() {
-		return endLine;
-	}
+    public int getEndLine() {
+        return endLine;
+    }
 
-	public int getEndColumn() {
-		return endColumn;
-	}
+    public int getEndColumn() {
+        return endColumn;
+    }
 }

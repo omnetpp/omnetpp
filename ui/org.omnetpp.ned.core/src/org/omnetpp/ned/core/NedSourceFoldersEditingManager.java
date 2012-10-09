@@ -10,7 +10,7 @@ import org.omnetpp.common.project.ProjectUtils;
  * When more than one property pages edit the ".nedfolders" file, they can
  * communicate via NedSourceFoldersEditingManager, i.e. can edit the same
  * working copy.
- * 
+ *
  * @author Andras
  */
 public class NedSourceFoldersEditingManager {

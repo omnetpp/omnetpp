@@ -6,7 +6,7 @@ import org.omnetpp.layout.engine.ForceDirectedGraphLayouter;
 import org.omnetpp.layout.engine.GraphLayouterEnvironment;
 
 public class NativeForceDirectedLayoutAlgorithm extends ForceDirectedGraphLayouter implements ILayoutAlgorithm {
-    
+
     public NativeForceDirectedLayoutAlgorithm(GraphLayouterEnvironment environment) {
         Assert.isNotNull(environment);
         setEnvironment(environment);
@@ -26,21 +26,21 @@ public class NativeForceDirectedLayoutAlgorithm extends ForceDirectedGraphLayout
 
     public void setDefaultEdgeLength(int edgeLength) {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void setMaxIterations(int iterations) {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void setRepulsiveForce(double force) {
         // TODO Auto-generated method stub
-        
+
     }
 
     public void setAttractionForce(double force) {
         // TODO Auto-generated method stub
-        
+
     }
 }

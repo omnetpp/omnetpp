@@ -35,11 +35,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 /**
- * A list control with Add, Edit and Remove buttons for editing list of strings. 
- * The actual list control is created by a factory method. The labels, Add/Edit dialog 
+ * A list control with Add, Edit and Remove buttons for editing list of strings.
+ * The actual list control is created by a factory method. The labels, Add/Edit dialog
  * titles and messages, input validation etc are all customizable.
  * Selection and content changes can be listened to.
- * 
+ *
  * @author Levy, Andras
  */
 public abstract class AbstractEditableList extends Composite implements ISelectionProvider {
@@ -57,17 +57,17 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
     protected ListenerList selectionChangedListeners = new ListenerList();
 
     /**
-     * Creates the compound control. Style refers to the composite that contains all controls of the widget. 
+     * Creates the compound control. Style refers to the composite that contains all controls of the widget.
      */
-	public AbstractEditableList(Composite parent, int style) {
-		super(parent, style);
-		GridLayout gridLayout = new GridLayout(2, false);
-		gridLayout.marginWidth = 0;
-		gridLayout.marginHeight = 0;
-		setLayout(gridLayout);
+    public AbstractEditableList(Composite parent, int style) {
+        super(parent, style);
+        GridLayout gridLayout = new GridLayout(2, false);
+        gridLayout.marginWidth = 0;
+        gridLayout.marginHeight = 0;
+        setLayout(gridLayout);
 
-		table = createTable();
-		table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
+        table = createTable();
+        table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 3));
         table.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -79,15 +79,15 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
             }
         });
 
-		addButton = new Button(this, SWT.NONE);
-		addButton.setText("Add...");
-		addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
-		addButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				onAddButton();
-			}
-		});
+        addButton = new Button(this, SWT.NONE);
+        addButton.setText("Add...");
+        addButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+        addButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                onAddButton();
+            }
+        });
 
         editButton = new Button(this, SWT.NONE);
         editButton.setText("Edit...");
@@ -99,29 +99,29 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
             }
         });
 
-		removeButton = new Button(this, SWT.NONE);
-		removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
-		removeButton.setText("Remove");
-		removeButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				onRemoveButton();
-			}
-		});
+        removeButton = new Button(this, SWT.NONE);
+        removeButton.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, false, false));
+        removeButton.setText("Remove");
+        removeButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                onRemoveButton();
+            }
+        });
 
         inputValidator = new IInputValidator() {
             public String isValid(String newText) {
                 return isValidNewItem(newText);
             }
         };
-        
+
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
                 onSelectionChange(); // by the time the list has already been filled with content
             }
         });
 
-	}
+    }
 
     /**
      * Creates the table control.
@@ -131,7 +131,7 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
     public Table getTable() {
         return table;
     }
-    
+
     public String getAddDialogTitle() {
         return addDialogTitle;
     }
@@ -236,7 +236,7 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
                 return item;
         return null;
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         table.setEnabled(enabled);
@@ -254,7 +254,7 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
             strings[i] = selectedItems[i].getText();
         return new StructuredSelection(strings);
     }
-    
+
     public void setSelection(ISelection selection) {
         List<TableItem> l = new ArrayList<TableItem>();
         for (Object e : ((IStructuredSelection)selection).toList()) {
@@ -264,8 +264,8 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
         }
         table.setSelection(l.toArray(new TableItem[]{}));
     }
-    
-    
+
+
     /**
      * Adds a selection changed listener. It will be notified not only on selection changes
      * but also on content changes.
@@ -325,7 +325,7 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
     }
 
     /**
-     * Override if you need a different Remove button behavior 
+     * Override if you need a different Remove button behavior
      */
     protected void onRemoveButton() {
         remove(getSelectionIndices());
@@ -343,12 +343,12 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
         }
         fireSelectionChanged();
     }
-    
+
     protected void setEnabled(Control control, boolean enabled) {
         if (control.getEnabled() != enabled)
             control.setEnabled(enabled);
     }
-    
+
     /**
      * Override if you need a different Add dialog.
      */
@@ -388,6 +388,6 @@ public abstract class AbstractEditableList extends Composite implements ISelecti
      * Returns the list control contents
      */
     public List<String> getItemsAsList() {
-	    return Arrays.asList(getItems());
+        return Arrays.asList(getItems());
     }
 }

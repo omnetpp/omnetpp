@@ -17,28 +17,28 @@ import freemarker.eclipse.FreemarkerPlugin;
 
 /**
  * Provides completion proposals inside FreeMarker directives.
- * 
+ *
  * @author <a href="mailto:andras@omnetpp.org">Andras Varga</a>
  */
 public class FtlDirectiveCompletionProcessor implements IContentAssistProcessor {
     // directive names, copied out from FMParser.jj
     public static final String[] DIRECTIVES = {
-        "assign", "attempt", "break", "case", "compress", "default", "else", "elseif", 
-        "escape", "fallback", "flush", "function", "global", "if", "import", "include", 
-        "list", "local", "lt", "macro", "nested", "noescape", "noparse", "nt", "recover", 
+        "assign", "attempt", "break", "case", "compress", "default", "else", "elseif",
+        "escape", "fallback", "flush", "function", "global", "if", "import", "include",
+        "list", "local", "lt", "macro", "nested", "noescape", "noparse", "nt", "recover",
         "recurse", "return", "rt", "setting", "stop", "switch", "t", "visit",
     };
 
     public static final String[] DIRECTIVE_ENDTAGS = {
-        "assign", "attempt", "compress", "escape", "function", "global", "if", 
+        "assign", "attempt", "compress", "escape", "function", "global", "if",
         "list", "local", "macro", "noescape", "noparse", "setting", "switch",
     };
-    
+
     public static final String[] DIRECTIVE_TEMPLATES = {
         "<#if {condition}> ... </#if>",
         "<#if {condition}> ... <#else> ... </#if>",
         "<#if {condition}> ... <#elseif {condition2}> ... <#else> ... </#if>",
-        "<#switch {value}> <#case {refValue1}> ... <#break>  <#default> ... </#switch>", 
+        "<#switch {value}> <#case {refValue1}> ... <#break>  <#default> ... </#switch>",
         "<#list {sequence} as {item}> ... </#list>",
         "<#list {sequence} as {item}> ... <#if {condition}><#break></#if> ... </#list>",
         "<#include {path}>",
@@ -117,7 +117,7 @@ public class FtlDirectiveCompletionProcessor implements IContentAssistProcessor 
         ICompletionProposal[] expressionProposals = expressionCompletion.computeCompletionProposals(viewer, documentOffset);
         if (expressionProposals != null)
             result.addAll(Arrays.asList(expressionProposals));
-        
+
         return result.toArray(new ICompletionProposal[result.size()]);
     }
 

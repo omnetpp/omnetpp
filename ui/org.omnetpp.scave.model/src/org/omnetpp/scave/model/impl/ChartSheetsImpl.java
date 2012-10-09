@@ -47,54 +47,54 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
-	/**
+    /**
      * The cached value of the '{@link #getChartSheets() <em>Chart Sheets</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getChartSheets()
      * @generated
      * @ordered
      */
-	protected EList<ChartSheet> chartSheets;
+    protected EList<ChartSheet> chartSheets;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected ChartSheetsImpl() {
+    protected ChartSheetsImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.CHART_SHEETS;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<ChartSheet> getChartSheets() {
+    public EList<ChartSheet> getChartSheets() {
         if (chartSheets == null) {
             chartSheets = new EObjectContainmentEList<ChartSheet>(ChartSheet.class, this, ScaveModelPackage.CHART_SHEETS__CHART_SHEETS);
         }
         return chartSheets;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
                 return ((InternalEList<?>)getChartSheets()).basicRemove(otherEnd, msgs);
@@ -102,13 +102,13 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
                 return getChartSheets();
@@ -116,14 +116,14 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
                 getChartSheets().clear();
@@ -133,13 +133,13 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
                 getChartSheets().clear();
@@ -148,13 +148,13 @@ public class ChartSheetsImpl extends EObjectImpl implements ChartSheets {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEETS__CHART_SHEETS:
                 return chartSheets != null && !chartSheets.isEmpty();

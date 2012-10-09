@@ -21,52 +21,52 @@ import org.omnetpp.scave.engine.IDList;
  */
 public class IDListTransfer extends ByteArrayTransfer {
 
-	private static final String TYPENAME = "SCAVE_IDLIST";
+    private static final String TYPENAME = "SCAVE_IDLIST";
 
-	private static final int TYPEID = registerType(TYPENAME);
+    private static final int TYPEID = registerType(TYPENAME);
 
-	private static IDListTransfer _instance = new IDListTransfer();
+    private static IDListTransfer _instance = new IDListTransfer();
 
-	public static IDListTransfer getInstance() {
-		return _instance;
-	}
+    public static IDListTransfer getInstance() {
+        return _instance;
+    }
 
-	public void javaToNative(Object object, TransferData transferData) {
-		if (!validate(object) || !isSupportedType(transferData)) {
-			DND.error(DND.ERROR_INVALID_DATA);
-		}
-		// original ByteArrayOutputStream code was too slow, using native code
-		IDList idlist = (IDList) object;
-		byte[] buffer = new byte[8*(int)idlist.size()];
-		idlist.toByteArray(buffer);
-		super.javaToNative(buffer, transferData);
-	}
+    public void javaToNative(Object object, TransferData transferData) {
+        if (!validate(object) || !isSupportedType(transferData)) {
+            DND.error(DND.ERROR_INVALID_DATA);
+        }
+        // original ByteArrayOutputStream code was too slow, using native code
+        IDList idlist = (IDList) object;
+        byte[] buffer = new byte[8*(int)idlist.size()];
+        idlist.toByteArray(buffer);
+        super.javaToNative(buffer, transferData);
+    }
 
-	public Object nativeToJava(TransferData transferData) {
-		if (isSupportedType(transferData)) {
-			byte[] buffer = (byte[]) super.nativeToJava(transferData);
-			if (buffer == null)
-				return null;
-			// original ByteArrayInputStream code was too slow, using native code
-			IDList idlist = new IDList();
-			idlist.fromByteArray(buffer);
-			return idlist;
-		}
+    public Object nativeToJava(TransferData transferData) {
+        if (isSupportedType(transferData)) {
+            byte[] buffer = (byte[]) super.nativeToJava(transferData);
+            if (buffer == null)
+                return null;
+            // original ByteArrayInputStream code was too slow, using native code
+            IDList idlist = new IDList();
+            idlist.fromByteArray(buffer);
+            return idlist;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	protected String[] getTypeNames() {
-		return new String[] { TYPENAME };
-	}
+    protected String[] getTypeNames() {
+        return new String[] { TYPENAME };
+    }
 
-	protected int[] getTypeIds() {
-		return new int[] { TYPEID };
-	}
+    protected int[] getTypeIds() {
+        return new int[] { TYPEID };
+    }
 
-	protected boolean validate(Object object) {
-		if (object == null || !(object instanceof IDList))
-			return false;
-		return true;
-	}
+    protected boolean validate(Object object) {
+        if (object == null || !(object instanceof IDList))
+            return false;
+        return true;
+    }
 }

@@ -40,10 +40,10 @@ public class FullScreenHandler extends AbstractHandler {
 
     private ArrayList<Control> children = new ArrayList<Control>();
 
-	public FullScreenHandler() {
-	}
+    public FullScreenHandler() {
+    }
 
-	@Override
+    @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {
         Shell shell = Workbench.getInstance().getActiveWorkbenchWindow().getShell();
         if (shell.getFullScreen()) {
@@ -68,5 +68,5 @@ public class FullScreenHandler extends AbstractHandler {
             shell.setFullScreen(true);
         }
         return null;
-	}
+    }
 }

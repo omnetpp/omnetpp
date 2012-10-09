@@ -17,7 +17,7 @@ import org.omnetpp.ned.model.ex.NedElementUtilEx;
 /**
  * Generic name validator used for checking whether the name is not empty and contains only allowed characters
  * and not a reserved keyword.
- * 
+ *
  * @author rhornig, andras (cleanup)
  */
 public class NedNameValidator implements ICellEditorValidator {
@@ -25,7 +25,7 @@ public class NedNameValidator implements ICellEditorValidator {
         if (StringUtils.isBlank((String)value))
             return "Invalid identifier: Name must not be empty";
 
-        if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(value)) // must check this first, because NedElementUtilEx.isValidIdentifier() also checks this 
+        if (Arrays.asList(NedElementConstants.RESERVED_NED_KEYWORDS).contains(value)) // must check this first, because NedElementUtilEx.isValidIdentifier() also checks this
             return "Invalid identifier: '" + value + "' is a reserved keyword.";
 
         if (!NedElementUtilEx.isValidIdentifier((String)value))

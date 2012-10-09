@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Message dialog with a combo on it.
- * 
+ *
  * @author Andras
  */
 public class MessageDialogWithCombo extends MessageDialog {
@@ -30,7 +30,7 @@ public class MessageDialogWithCombo extends MessageDialog {
     private Object result;
 
     public MessageDialogWithCombo(Shell parentShell, String dialogTitle, Image dialogTitleImage, String dialogMessage, String comboLabel,
-            int dialogImageType, String[] dialogButtonLabels, int defaultIndex, 
+            int dialogImageType, String[] dialogButtonLabels, int defaultIndex,
             Object comboInput, ILabelProvider comboLabelProvider, Object comboInitialSelection) {
         super(parentShell, dialogTitle, dialogTitleImage, dialogMessage, dialogImageType, dialogButtonLabels, defaultIndex);
         this.comboLabel = comboLabel;
@@ -38,7 +38,7 @@ public class MessageDialogWithCombo extends MessageDialog {
         this.comboLabelProvider = comboLabelProvider;
         this.comboInitialSelection = comboInitialSelection;
     }
-    
+
     @Override
     protected Control createCustomArea(Composite parent) {
         Composite composite = new Composite(parent, SWT.NONE);
@@ -55,13 +55,13 @@ public class MessageDialogWithCombo extends MessageDialog {
         comboViewer.setSelection(new StructuredSelection(comboInitialSelection));
         return comboViewer.getControl();
     }
-    
+
     @Override
     protected void buttonPressed(int buttonId) {
         result = ((IStructuredSelection)comboViewer.getSelection()).getFirstElement();
         super.buttonPressed(buttonId);
     }
-    
+
     public Object getResult() {
         return result;
     }
@@ -72,9 +72,9 @@ public class MessageDialogWithCombo extends MessageDialog {
     public static Object openAndSelect(Shell parent, String title, String message, String comboLabel,
             Object comboInput, ILabelProvider comboLabelProvider, Object comboInitialSelection) {
         MessageDialogWithCombo dialog = new MessageDialogWithCombo(parent, title, null, message, comboLabel,
-                QUESTION, new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0, 
+                QUESTION, new String[] { IDialogConstants.OK_LABEL, IDialogConstants.CANCEL_LABEL }, 0,
                 comboInput, comboLabelProvider, comboInitialSelection);
         return dialog.open() == 0 ? dialog.getResult() : null;
     }
-    
+
 }

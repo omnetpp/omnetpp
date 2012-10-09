@@ -49,117 +49,117 @@ import org.omnetpp.inifile.editor.model.ConfigOption.DataType;
  */
 //XXX disable Text when value is not editable (comes from included file)?
 public class TextFieldEditor extends FieldEditor {
-	private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
-	private Text textField;
-	private Label label;
-	private Button resetButton;
-	private boolean isEdited;
-	private ControlDecoration problemDecoration;
+    private static final char[] AUTOACTIVATION_CHARS = null; // "( ".toCharArray();
+    private Text textField;
+    private Label label;
+    private Button resetButton;
+    private boolean isEdited;
+    private ControlDecoration problemDecoration;
 
-	public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-		super(parent, SWT.NONE, entry, inifile, formPage, hints);
+    public TextFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+        super(parent, SWT.NONE, entry, inifile, formPage, hints);
 
-		// layout
-		GridLayout gridLayout = new GridLayout(3, false);
-		gridLayout.marginHeight = 2;
-		setLayout(gridLayout);
+        // layout
+        GridLayout gridLayout = new GridLayout(3, false);
+        gridLayout.marginHeight = 2;
+        setLayout(gridLayout);
 
-		// child widgets
-		label = createLabel(entry, labelText+":");
-		textField = createContentAssistField();
-		addTooltipSupport(textField);
-		resetButton = createResetButton();
+        // child widgets
+        label = createLabel(entry, labelText+":");
+        textField = createContentAssistField();
+        addTooltipSupport(textField);
+        resetButton = createResetButton();
 
-		problemDecoration = new ControlDecoration(textField, SWT.LEFT | SWT.TOP);
-		problemDecoration.setShowOnlyOnFocus(false);
+        problemDecoration = new ControlDecoration(textField, SWT.LEFT | SWT.TOP);
+        problemDecoration.setShowOnlyOnFocus(false);
 
-		// set layout data
-		label.setLayoutData(new GridData());
-		int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
-		textField.setLayoutData(new GridData(width, SWT.DEFAULT));
-		((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for the decoration
-		resetButton.setLayoutData(new GridData());
+        // set layout data
+        label.setLayoutData(new GridData());
+        int width = (entry.getDataType()==DataType.CFG_INT || entry.getDataType()==DataType.CFG_DOUBLE) ? 80 : 250;
+        textField.setLayoutData(new GridData(width, SWT.DEFAULT));
+        ((GridData)textField.getLayoutData()).horizontalIndent = 3; // room for the decoration
+        resetButton.setLayoutData(new GridData());
 
-		reread();
+        reread();
 
-		// enable Reset button on editing
-		textField.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				if (!isEdited) {
-					isEdited = true;
-					textField.setForeground(null);
-					resetButton.setEnabled(true);
-				}
-			}
-		});
-		// commit the editfield on Enter
-		textField.addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				commit();
-			}
-		});
+        // enable Reset button on editing
+        textField.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                if (!isEdited) {
+                    isEdited = true;
+                    textField.setForeground(null);
+                    resetButton.setEnabled(true);
+                }
+            }
+        });
+        // commit the editfield on Enter
+        textField.addSelectionListener(new SelectionAdapter() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                commit();
+            }
+        });
 
-		// commit on losing focus, select all on gaining focus, etc.
-		addFocusListenerTo(textField);
-		textField.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				textField.selectAll();
-			}
-		});
+        // commit on losing focus, select all on gaining focus, etc.
+        addFocusListenerTo(textField);
+        textField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                textField.selectAll();
+            }
+        });
 
-		// when the background gets clicked, transfer focus to the text widget
-		addFocusTransfer(label, textField);
-		addFocusTransfer(this, textField);
+        // when the background gets clicked, transfer focus to the text widget
+        addFocusTransfer(label, textField);
+        addFocusTransfer(this, textField);
 
-	}
+    }
 
-	protected Text createContentAssistField() {
-		Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
+    protected Text createContentAssistField() {
+        Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
         String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
-		InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, key, inifile, null, false);
-		if (proposalProvider.isContentAssistAvailable()) {
-			// only make it a content assist field if proposals are really available
-			ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
-					new TextContentAdapter(), proposalProvider,
-					ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, AUTOACTIVATION_CHARS, true);
-			commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
-		}
-		return text;
-	}
+        InifileValueContentProposalProvider proposalProvider = new InifileValueContentProposalProvider(GENERAL, key, inifile, null, false);
+        if (proposalProvider.isContentAssistAvailable()) {
+            // only make it a content assist field if proposals are really available
+            ContentAssistCommandAdapter commandAdapter = new ContentAssistCommandAdapter(text,
+                    new TextContentAdapter(), proposalProvider,
+                    ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, AUTOACTIVATION_CHARS, true);
+            commandAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+        }
+        return text;
+    }
 
-	@Override
-	public void reread() {
-		// update text and reset button
-		String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
-		String value = getValueFromFile(GENERAL, key);
-		if (value==null) {
-			String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
-			textField.setText(defaultValue);
-			//textField.setForeground(ColorFactory.asColor("darkGreen"));
-			textField.setForeground(ColorFactory.GREY50);
-			resetButton.setEnabled(false);
-		}
-		else {
-			textField.setText(value);
-			textField.setForeground(null);
-			resetButton.setEnabled(true);
-		}
-		isEdited = false;
+    @Override
+    public void reread() {
+        // update text and reset button
+        String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
+        String value = getValueFromFile(GENERAL, key);
+        if (value==null) {
+            String defaultValue = entry.getDefaultValue()==null ? "" : entry.getDefaultValue().toString();
+            textField.setText(defaultValue);
+            //textField.setForeground(ColorFactory.asColor("darkGreen"));
+            textField.setForeground(ColorFactory.GREY50);
+            resetButton.setEnabled(false);
+        }
+        else {
+            textField.setText(value);
+            textField.setForeground(null);
+            resetButton.setEnabled(true);
+        }
+        isEdited = false;
 
-		// update problem decoration
-		IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
-		problemDecoration.setImage(getProblemImage(markers, true, true));
-		problemDecoration.setDescriptionText(getProblemsText(markers));
-		redraw(); // otherwise an obsolete error decoration doesn't disappear
-	}
+        // update problem decoration
+        IMarker[] markers = InifileUtils.getProblemMarkersFor(GENERAL, key, inifile);
+        problemDecoration.setImage(getProblemImage(markers, true, true));
+        problemDecoration.setDescriptionText(getProblemsText(markers));
+        redraw(); // otherwise an obsolete error decoration doesn't disappear
+    }
 
-	@Override
-	public void commit() {
-		if (isEdited) {
-			String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
-			String value = textField.getText();
-			setValueInFile(GENERAL, key, value);
-			isEdited = false;
-		}
-	}
+    @Override
+    public void commit() {
+        if (isEdited) {
+            String key = entry.isPerObject() ? "**."+entry.getName() : entry.getName();
+            String value = textField.getText();
+            setValueInFile(GENERAL, key, value);
+            isEdited = false;
+        }
+    }
 }

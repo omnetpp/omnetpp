@@ -23,14 +23,14 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
 
     /**
      * Returns the display string for this submodule or connection, assuming
-     * that the actual type is the module or channel type passed in the <code>actualType</code> 
-     * parameter. This is useful when the submodule/channel is defined with the "like" 
+     * that the actual type is the module or channel type passed in the <code>actualType</code>
+     * parameter. This is useful when the submodule/channel is defined with the "like"
      * keyword, and the actual submodule type is known (and not only the <code>likeType</code>).
-     * The actual type usually comes from an ini file or some other source outside the INedElement 
-     * tree. 
-     * 
+     * The actual type usually comes from an ini file or some other source outside the INedElement
+     * tree.
+     *
      * Note that it cannot be assumed that for a submodule the actualType is a module type
-     * (and not a channel) and vica versa, because the NED source or inifile values may be 
+     * (and not a channel) and vica versa, because the NED source or inifile values may be
      * bogus.
      */
     public DisplayString getDisplayString(INedTypeElement actualType);
@@ -47,7 +47,7 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
     public void setType(String type);
 
     /**
-     * For a parametric submodule or connection, it returns the interface name as it occurs 
+     * For a parametric submodule or connection, it returns the interface name as it occurs
      * after the "like" keyword in the NED source; otherwise it returns null or the empty string.
      */
     public String getLikeType();
@@ -58,7 +58,7 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
     public void setLikeType(String type);
 
     /**
-     * For a parametric submodule or connection, it returns the type name expression as it occurs 
+     * For a parametric submodule or connection, it returns the type name expression as it occurs
      * between the angle brackets in the NED source; otherwise it returns null or the empty string.
      */
     public String getLikeExpr();
@@ -82,7 +82,7 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
 
     /**
      * Returns the type, or the likeType if type was not specified. For connections with
-     * implicit type (i.e. where getType()==""), it returns one of "ned.IdealChannel", 
+     * implicit type (i.e. where getType()==""), it returns one of "ned.IdealChannel",
      * "ned.DelayChannel" or "ned.DatarateChannel", based on the parameter assignments
      * in the connection's "parameters" section.
      */
@@ -104,5 +104,5 @@ public interface ISubmoduleOrConnection extends IHasName, IHasResolver, IHasDisp
      * or not a type that's accepted at the given place (e.g. a channel for submodule type).
      */
     public INedTypeElement getEffectiveTypeRef();
-     
+
 }

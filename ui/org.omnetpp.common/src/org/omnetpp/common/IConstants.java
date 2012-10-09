@@ -23,19 +23,19 @@ public interface IConstants extends ICoreConstants {
 
     // views
     public static final String NEW_VERSION_VIEW_ID = "org.omnetpp.main.NewVersionView";
-	public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ModuleParameters";
-	public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
+    public static final String MODULEPARAMETERS_VIEW_ID = "org.omnetpp.inifile.ModuleParameters";
+    public static final String MODULEHIERARCHY_VIEW_ID = "org.omnetpp.inifile.ModuleHierarchy";
     public static final String NEDINHERITANCE_VIEW_ID = "org.omnetpp.inifile.NedInheritance";
-	public static final String DATASET_VIEW_ID = "org.omnetpp.scave.DatasetView";
-	public static final String VECTORBROWSER_VIEW_ID = "org.omnetpp.scave.VectorBrowserView";
+    public static final String DATASET_VIEW_ID = "org.omnetpp.scave.DatasetView";
+    public static final String VECTORBROWSER_VIEW_ID = "org.omnetpp.scave.VectorBrowserView";
     public static final String ANIMATION_VIEW_ID = "org.omnetpp.animation.editors.AnimationView";
-	public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";
-	public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
+    public static final String SEQUENCECHART_VIEW_ID = "org.omnetpp.sequencechart.editors.SequenceChartView";
+    public static final String EVENTLOG_VIEW_ID = "org.omnetpp.eventlogtable.editors.EventLogTableView";
 
     // wizards
-	public static final String NEW_NEDFILE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewNedFile";
-	public static final String NEW_MSGFILE_WIZARD_ID = "org.omnetpp.msg.editor.wizards.NewMsgFile";
-	public static final String NEW_INIFILE_WIZARD_ID = "org.omnetpp.inifile.editor.wizards.NewIniFile";
+    public static final String NEW_NEDFILE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewNedFile";
+    public static final String NEW_MSGFILE_WIZARD_ID = "org.omnetpp.msg.editor.wizards.NewMsgFile";
+    public static final String NEW_INIFILE_WIZARD_ID = "org.omnetpp.inifile.editor.wizards.NewIniFile";
     public static final String NEW_SIMPLE_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewSimpleModule";
     public static final String NEW_COMPOUND_MODULE_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewCompoundModule";
     public static final String NEW_NETWORK_WIZARD_ID = "org.omnetpp.ned.editor.wizards.NewNetwork";
@@ -49,11 +49,11 @@ public interface IConstants extends ICoreConstants {
     public static final String NEW_OMNETPP_CLASS_WIZARD_ID = "org.omnetpp.cdt.wizards.NewOmnetppClass";
 
     // preference IDs
-	public static final String PREF_OMNETPP_ROOT = "omnetppRoot";
-	public static final String PREF_COPYRIGHT_LINE = "copyrightLine";
+    public static final String PREF_OMNETPP_ROOT = "omnetppRoot";
+    public static final String PREF_COPYRIGHT_LINE = "copyrightLine";
     public static final String PREF_DEFAULT_LICENSE = "defaultLicense";
     public static final String PREF_CUSTOM_LICENSE_HEADER = "customLicenseHeader";
-	public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
-	public static final String PREF_DOXYGEN_EXECUTABLE = "doxygenExecutable";
-	public static final String PREF_GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
+    public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
+    public static final String PREF_DOXYGEN_EXECUTABLE = "doxygenExecutable";
+    public static final String PREF_GRAPHVIZ_DOT_EXECUTABLE = "graphvizDotExecutable";
 }

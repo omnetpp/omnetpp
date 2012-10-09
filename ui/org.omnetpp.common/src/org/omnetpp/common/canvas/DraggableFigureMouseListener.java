@@ -54,8 +54,8 @@ public class DraggableFigureMouseListener implements MouseListener, MouseMotionL
     }
 
     public void mouseReleased(MouseEvent me) {
-    	dragOperation = 0;
-    	dragStart = null;
+        dragOperation = 0;
+        dragStart = null;
     }
 
     public void mouseDragged(MouseEvent me) {
@@ -101,22 +101,22 @@ public class DraggableFigureMouseListener implements MouseListener, MouseMotionL
     public void mouseMoved(MouseEvent me) {
         dragOperation = getBorderMoveResizeDragOperation(me.x, me.y, figure.getBounds());
 
-    	Cursor cursor;
-    	switch (dragOperation) {
-    	case SWT.LEFT: cursor = CURSOR_SIZEW; break;
-    	case SWT.RIGHT: cursor = CURSOR_SIZEE; break;
-    	case SWT.TOP: cursor = CURSOR_SIZEN; break;
-    	case SWT.BOTTOM: cursor = CURSOR_SIZES; break;
+        Cursor cursor;
+        switch (dragOperation) {
+        case SWT.LEFT: cursor = CURSOR_SIZEW; break;
+        case SWT.RIGHT: cursor = CURSOR_SIZEE; break;
+        case SWT.TOP: cursor = CURSOR_SIZEN; break;
+        case SWT.BOTTOM: cursor = CURSOR_SIZES; break;
 
-    	case SWT.LEFT|SWT.TOP: cursor = CURSOR_SIZENW; break;
-    	case SWT.RIGHT|SWT.TOP: cursor = CURSOR_SIZENE; break;
-    	case SWT.LEFT|SWT.BOTTOM: cursor = CURSOR_SIZESW; break;
-    	case SWT.RIGHT|SWT.BOTTOM: cursor = CURSOR_SIZESE; break;
+        case SWT.LEFT|SWT.TOP: cursor = CURSOR_SIZENW; break;
+        case SWT.RIGHT|SWT.TOP: cursor = CURSOR_SIZENE; break;
+        case SWT.LEFT|SWT.BOTTOM: cursor = CURSOR_SIZESW; break;
+        case SWT.RIGHT|SWT.BOTTOM: cursor = CURSOR_SIZESE; break;
 
-    	case SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM: cursor = CURSOR_SIZEALL; break;
-    	default: cursor = CURSOR_ARROW;
-    	}
-    	figure.setCursor(cursor);
+        case SWT.LEFT|SWT.RIGHT|SWT.TOP|SWT.BOTTOM: cursor = CURSOR_SIZEALL; break;
+        default: cursor = CURSOR_ARROW;
+        }
+        figure.setCursor(cursor);
     }
 
     private int clip(int x, int min, int max) {

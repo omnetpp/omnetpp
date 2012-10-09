@@ -9,47 +9,47 @@ import org.osgi.framework.BundleContext;
  */
 public class CustomAnimationPlugin extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static String PLUGIN_ID;
+    // The plug-in ID
+    public static String PLUGIN_ID;
 
-	// The shared instance
-	private static CustomAnimationPlugin plugin;
+    // The shared instance
+    private static CustomAnimationPlugin plugin;
 
-	/**
-	 * The constructor
-	 */
-	public CustomAnimationPlugin() {
+    /**
+     * The constructor
+     */
+    public CustomAnimationPlugin() {
         plugin = this;
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
     public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
+        plugin = null;
+        super.stop(context);
+    }
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static CustomAnimationPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance
+     *
+     * @return the shared instance
+     */
+    public static CustomAnimationPlugin getDefault() {
+        return plugin;
+    }
 
     /**
      * Returns an image descriptor for the image file at the given

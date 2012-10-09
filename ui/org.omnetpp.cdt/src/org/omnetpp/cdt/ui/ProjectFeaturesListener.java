@@ -30,7 +30,7 @@ import org.omnetpp.common.util.UIUtils;
  * source folders and exclusions, preprocessor symbols etc.) reasonably in sync
  * with the enabled project features. This is achieved by listening on various
  * resource change events.
- * 
+ *
  * In principle, it should do the following:
  * <ul>
  * <li>when a project is created (e.g. via import), it should silently (no
@@ -45,7 +45,7 @@ import org.omnetpp.common.util.UIUtils;
  * open (the Properties dialog edits its own working copy of the config, so
  * fixing the original copy would only create confusion.)
  * </ul>
- * 
+ *
  * Currently it does the following:
  * <ul>
  * <li>when an ".oppfeatures" file is created, and it updates CDT and NED
@@ -56,19 +56,19 @@ import org.omnetpp.common.util.UIUtils;
  * <li>at project build, we also perform the checks and offer the user to fix
  * any inconsistency (this is done in MakefileBuilder)
  * </ul>
- * 
+ *
  * We could also listen on CDT config changes, folder creation notifications
  * etc., but this is not done (it was too aggressive and annoying).
- * 
+ *
  * @author Andras
  */
 public class ProjectFeaturesListener implements IResourceChangeListener /*,ICProjectDescriptionListener*/ {
 
     public void hookListeners() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this, IResourceChangeEvent.POST_CHANGE);
-        //CoreModel.getDefault().addCProjectDescriptionListener(this, CProjectDescriptionEvent.APPLIED); 
+        //CoreModel.getDefault().addCProjectDescriptionListener(this, CProjectDescriptionEvent.APPLIED);
     }
-    
+
     public void unhookListeners() {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
         //CoreModel.getDefault().removeCProjectDescriptionListener(this);
@@ -97,7 +97,7 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
                 protected boolean isFeaturesDescriptionFile(IResource resource) throws CoreException {
                     return (resource.getParent() instanceof IProject &&   // note: least costly/more selective checks first
                             resource instanceof IFile &&
-                            resource.getName().equals(ProjectFeaturesManager.PROJECTFEATURES_FILENAME) && 
+                            resource.getName().equals(ProjectFeaturesManager.PROJECTFEATURES_FILENAME) &&
                             ProjectUtils.isOpenOmnetppProject(resource.getProject()));
                 }
 
@@ -112,7 +112,7 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
         Display.getDefault().asyncExec(new Runnable() {
             public void run() {
                 try {
-                    // we need to run it in asyncExec() because the workspace is locked during a resource change 
+                    // we need to run it in asyncExec() because the workspace is locked during a resource change
                     // notification so we would not be able to save the updated CDT configuration
                     ProjectFeaturesManager features = new ProjectFeaturesManager(project);
                     if (features.loadFeaturesFile()) {
@@ -144,7 +144,7 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
 
                 }
             }
-        } 
+        }
         catch (CoreException e) {
             Activator.logError("Error checking project state wrt. project features", e);
         }
@@ -162,16 +162,16 @@ public class ProjectFeaturesListener implements IResourceChangeListener /*,ICPro
             }
         }
     }
-    
+
     protected boolean isOkToFixConfigProblems(IProject project, List<Problem> problems) {
         List<String> problemTexts = new ArrayList<String>();
         for (Problem p : problems)
             problemTexts.add(p.toString());
         Shell parentShell = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell();
-        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency", 
+        return ProblemsMessageDialog.openConfirm(parentShell, "Project Setup Inconsistency",
                 "Some configuration settings in project \"" + project.getName() + "\" do not correspond " +
-                "to the enabled project features. Do you want to fix the project state?", 
+                "to the enabled project features. Do you want to fix the project state?",
                 problemTexts, UIUtils.ICON_ERROR);
     }
-    
+
 }

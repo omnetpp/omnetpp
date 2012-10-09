@@ -38,17 +38,17 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  * It opens a chart page to display the chart.
  */
 public class CreateTempChartAction extends AbstractScaveAction {
-	static int counter = 0;
+    static int counter = 0;
 
-	public CreateTempChartAction() {
-		setText("Plot");
-		setToolTipText("Plot");
-		setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
-	}
+    public CreateTempChartAction() {
+        setText("Plot");
+        setToolTipText("Plot");
+        setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_PLOT));
+    }
 
-	@Override
-	protected void doRun(ScaveEditor editor, final IStructuredSelection selection) {
-		IDListSelection idListSelection = (IDListSelection)selection;
+    @Override
+    protected void doRun(ScaveEditor editor, final IStructuredSelection selection) {
+        IDListSelection idListSelection = (IDListSelection)selection;
         ResultFileManager manager = idListSelection.getResultFileManager();
         if (idListSelection.getScalarsCount() != 0) {
             IDList idList = IDList.fromArray(idListSelection.getScalarIDs());
@@ -62,33 +62,33 @@ public class CreateTempChartAction extends AbstractScaveAction {
             IDList idList = IDList.fromArray(idListSelection.getHistogramIDs());
             openChart(editor, manager, ResultType.HISTOGRAM_LITERAL, idList);
         }
-	}
+    }
 
     protected void openChart(final ScaveEditor editor, final ResultFileManager manager, final ResultType type, final IDList idList) {
         Chart chart = ResultFileManager.callWithReadLock(manager, new Callable<Chart>() {
-			public Chart call() {
-			    Dataset dataset = ScaveModelUtil.createTemporaryDataset("dataset", idList, new String[] { FILE, CONFIGNAME, RUNNUMBER }, manager);
-		        String chartTitle = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), "temp" + ++counter);
-		        Chart chart = ScaveModelUtil.createChart(chartTitle, type);
-		        dataset.getItems().add(chart);
-		        Command command = AddCommand.create(editor.getEditingDomain(), editor.getTempAnalysis().getDatasets(), ScaveModelPackage.eINSTANCE.getDatasets_Datasets(), dataset);
+            public Chart call() {
+                Dataset dataset = ScaveModelUtil.createTemporaryDataset("dataset", idList, new String[] { FILE, CONFIGNAME, RUNNUMBER }, manager);
+                String chartTitle = StringUtils.defaultIfEmpty(DatasetManager.defaultTitle(ScaveModelUtil.getResultItems(idList, manager)), "temp" + ++counter);
+                Chart chart = ScaveModelUtil.createChart(chartTitle, type);
+                dataset.getItems().add(chart);
+                Command command = AddCommand.create(editor.getEditingDomain(), editor.getTempAnalysis().getDatasets(), ScaveModelPackage.eINSTANCE.getDatasets_Datasets(), dataset);
 
-		        // Do not use the CommandStack of the editor, because it would make it dirty
-		        // and the Add command undoable from the UI.
-		        // It's safe to use a separate command stack, because the operations on the
-		        // temporary resource does not interfere with the operations on the persistent resource.
-		        CommandStack commandStack = new BasicCommandStack();
-		        commandStack.execute(command);
-		        commandStack.flush();
+                // Do not use the CommandStack of the editor, because it would make it dirty
+                // and the Add command undoable from the UI.
+                // It's safe to use a separate command stack, because the operations on the
+                // temporary resource does not interfere with the operations on the persistent resource.
+                CommandStack commandStack = new BasicCommandStack();
+                commandStack.execute(command);
+                commandStack.flush();
                 return chart;
-			}
-		});
+            }
+        });
 
-		editor.openChart(chart);
+        editor.openChart(chart);
     }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-	    return selection instanceof IDListSelection && !selection.isEmpty();
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return selection instanceof IDListSelection && !selection.isEmpty();
+    }
 }

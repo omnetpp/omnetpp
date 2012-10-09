@@ -19,23 +19,23 @@ import org.eclipse.swt.graphics.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class LineBackgroundEvent extends TypedEvent {
-	
-	/**
-	 * line start offset
-	 */
-	public int lineOffset;
-	
-	/**
-	 * line text
-	 */
-	public String lineText;
-	
-	/**
-	 * line background color
-	 */
-	public Color lineBackground; 
-	
-	static final long serialVersionUID = 3978711687853324342L;
+
+    /**
+     * line start offset
+     */
+    public int lineOffset;
+
+    /**
+     * line text
+     */
+    public String lineText;
+
+    /**
+     * line background color
+     */
+    public Color lineBackground;
+
+    static final long serialVersionUID = 3978711687853324342L;
 
 /**
  * Constructs a new instance of this class based on the
@@ -44,10 +44,10 @@ public class LineBackgroundEvent extends TypedEvent {
  * @param e the event containing the information
  */
 public LineBackgroundEvent(StyledTextEvent e) {
-	super(e);
-	lineOffset = e.detail;
-	lineText = e.text;
-	lineBackground = e.lineBackground;
+    super(e);
+    lineOffset = e.detail;
+    lineText = e.text;
+    lineBackground = e.lineBackground;
 }
 }
 

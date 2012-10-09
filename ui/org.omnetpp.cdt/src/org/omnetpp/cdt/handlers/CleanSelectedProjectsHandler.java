@@ -24,23 +24,23 @@ import org.eclipse.ui.handlers.HandlerUtil;
 /**
  * Implements the "Clean Local" action. This action cleans exactly the selected projects,
  * and not their referenced projects or projects that reference the selected ones.
- * 
+ *
  * @author rhornig
  */
 public class CleanSelectedProjectsHandler implements IHandler {
-	
-	public Object execute(ExecutionEvent ev) throws ExecutionException {
-		final String JOB_NAME = "Cleaning selected projects";
-		final ExecutionEvent event = ev;
-		WorkspaceJob cleanJob = new WorkspaceJob(JOB_NAME) {
+
+    public Object execute(ExecutionEvent ev) throws ExecutionException {
+        final String JOB_NAME = "Cleaning selected projects";
+        final ExecutionEvent event = ev;
+        WorkspaceJob cleanJob = new WorkspaceJob(JOB_NAME) {
             public boolean belongsTo(Object family) {
                 return ResourcesPlugin.FAMILY_MANUAL_BUILD.equals(family);
             }
-            
+
             public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
-        		try {
-        			ISelection selection = HandlerUtil.getCurrentSelectionChecked(event);
-        			IProject[] selectedProjects = getSelectedCdtProjects(selection);
+                try {
+                    ISelection selection = HandlerUtil.getCurrentSelectionChecked(event);
+                    IProject[] selectedProjects = getSelectedCdtProjects(selection);
                     monitor.beginTask(JOB_NAME, selectedProjects.length);
                     for (int i = 0; i < selectedProjects.length; i++) {
                         ((IProject) selectedProjects[i]).build(
@@ -48,8 +48,8 @@ public class CleanSelectedProjectsHandler implements IHandler {
                                 new SubProgressMonitor(monitor, 1));
                     }
                 } catch (ExecutionException e) {
-					// just skip the command execution (no selection present)
-				} finally {
+                    // just skip the command execution (no selection present)
+                } finally {
                     monitor.done();
                 }
                 //see if a build was requested
@@ -59,46 +59,46 @@ public class CleanSelectedProjectsHandler implements IHandler {
         cleanJob.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
         cleanJob.setUser(true);
         cleanJob.schedule();
-		
-		return null;
-	}
 
-	public static IProject[] getSelectedCdtProjects(ISelection selection) {
-		ArrayList<IProject> projects = new ArrayList<IProject>();
-		if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-			Object[] selected = ((IStructuredSelection)selection).toArray();
-			if (selected.length > 0) {
-				for (Object sel : selected) {
-					IProject prj = null;
-					if (sel instanceof IProject)
-						prj = (IProject)sel;
-					else if (sel instanceof ICProject)
-						prj = ((ICProject)sel).getProject();
-	
-					if (prj != null && CoreModel.getDefault().isNewStyleProject(prj)) {
-						projects.add(prj);
-					}
-				}
-			}
-		}
-		return projects.toArray(new IProject[projects.size()]);
-	}
+        return null;
+    }
 
-	public boolean isEnabled() {
-		return true;
-	}
+    public static IProject[] getSelectedCdtProjects(ISelection selection) {
+        ArrayList<IProject> projects = new ArrayList<IProject>();
+        if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
+            Object[] selected = ((IStructuredSelection)selection).toArray();
+            if (selected.length > 0) {
+                for (Object sel : selected) {
+                    IProject prj = null;
+                    if (sel instanceof IProject)
+                        prj = (IProject)sel;
+                    else if (sel instanceof ICProject)
+                        prj = ((ICProject)sel).getProject();
 
-	public boolean isHandled() {
-		return true;
-	}
+                    if (prj != null && CoreModel.getDefault().isNewStyleProject(prj)) {
+                        projects.add(prj);
+                    }
+                }
+            }
+        }
+        return projects.toArray(new IProject[projects.size()]);
+    }
 
-	public void addHandlerListener(IHandlerListener handlerListener) {
-	}
+    public boolean isEnabled() {
+        return true;
+    }
 
-	public void removeHandlerListener(IHandlerListener handlerListener) {
-	}
+    public boolean isHandled() {
+        return true;
+    }
 
-	public void dispose() {
-	}
+    public void addHandlerListener(IHandlerListener handlerListener) {
+    }
+
+    public void removeHandlerListener(IHandlerListener handlerListener) {
+    }
+
+    public void dispose() {
+    }
 
 }

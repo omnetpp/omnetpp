@@ -35,16 +35,16 @@ public class DeleteCommand extends Command {
     private final List<ElementUndoItem> connectionUndoItems = new ArrayList<ElementUndoItem>();
 
     public DeleteCommand(INedElement toBeDeleted) {
-    	elementUndoItem.node = toBeDeleted;
+        elementUndoItem.node = toBeDeleted;
     }
 
     @Override
     public void execute() {
         elementUndoItem.parent = elementUndoItem.node.getParent();
         elementUndoItem.nextSibling = elementUndoItem.node.getNextSibling();
-    	String label = "Delete";
-    	if (elementUndoItem.node instanceof IHasName)
-    		label += " "+((IHasName)elementUndoItem.node).getName();
+        String label = "Delete";
+        if (elementUndoItem.node instanceof IHasName)
+            label += " "+((IHasName)elementUndoItem.node).getName();
         setLabel(label);
 
         redo();

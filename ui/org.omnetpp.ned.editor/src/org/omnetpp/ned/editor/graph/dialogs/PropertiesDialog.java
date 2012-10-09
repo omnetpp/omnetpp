@@ -505,17 +505,17 @@ public class PropertiesDialog extends TrayDialog {
         return UIUtils.getDialogSettings(NedEditorPlugin.getDefault(), getClass().getName()+":"+elements[0].getTagName());
     }
 
-	@Override
+    @Override
     protected void configureShell(Shell shell) {
-	    super.configureShell(shell);
+        super.configureShell(shell);
 
-	    String what;
-	    if (elements.length == 1)
-	        what = new NedModelLabelProvider().getText(elements[0]);
-	    else
-	        what = elements.length + " " + elements[0].getReadableTagName() + "s";
-	    shell.setText("Properties of " + what);
-	}
+        String what;
+        if (elements.length == 1)
+            what = new NedModelLabelProvider().getText(elements[0]);
+        else
+            what = elements.length + " " + elements[0].getReadableTagName() + "s";
+        shell.setText("Properties of " + what);
+    }
 
     @Override
     protected Control createDialogArea(Composite parent) {
@@ -2005,7 +2005,7 @@ public class PropertiesDialog extends TrayDialog {
     }
 
     @Override
-	protected void okPressed() {
+    protected void okPressed() {
         // creating the result command
         CompoundCommand compoundCommand = new CompoundCommand("Edit properties");
 
@@ -2273,7 +2273,7 @@ public class PropertiesDialog extends TrayDialog {
             else if (elements[0] instanceof ConnectionElementEx)
                 addErrorIfNotNull(errors, nameField, "Name", new ConnectionNameValidator((ConnectionElementEx)elements[0]).isValid(nameField.getText()));
         }
-        
+
         // submodule size, "like" type name expression
         if (vectorSizeField != null && vectorSizeField.isEnabled() && !vectorSizeField.isGrayed())
             validateExpressionField(errors, vectorSizeField, "Vector size", true, null);

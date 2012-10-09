@@ -16,12 +16,12 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
  * Validator used for checking new type names.
- * 
+ *
  * @author rhornig, andras (cleanup)
  */
 public class TypeNameValidator extends NedNameValidator {
     private INedTypeElement typeElement;
-    
+
     public TypeNameValidator(INedTypeElement type) {
         this.typeElement = type;
     }
@@ -34,10 +34,10 @@ public class TypeNameValidator extends NedNameValidator {
         Set<String> existingQTypeNames = resolver.getReservedQNames(project);  // top level types
         if (typeElement.getEnclosingLookupContext() instanceof CompoundModuleElementEx) // add inner types if needed
             existingQTypeNames.addAll(resolver.getLocalTypeNames(typeElement.getEnclosingLookupContext(), INedTypeResolver.ALL_FILTER));
-        
+
         if (existingQTypeNames.contains(namePrefix+simpleName) &&
                 !simpleName.equals(typeElement.getName()))
-            return "Name is already in use. There is already a type with the same name.";  
+            return "Name is already in use. There is already a type with the same name.";
 
         return super.isValid(simpleName);
     }

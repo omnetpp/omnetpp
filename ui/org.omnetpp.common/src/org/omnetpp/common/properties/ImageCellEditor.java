@@ -39,37 +39,37 @@ public class ImageCellEditor extends TextCellEditorEx {
     }
 
     public ImageCellEditor() {
-		super();
-	}
+        super();
+    }
 
-	public ImageCellEditor(Composite parent, int style) {
-		super(parent, style);
-	}
+    public ImageCellEditor(Composite parent, int style) {
+        super(parent, style);
+    }
 
-	protected ImageCellEditor(Composite parent) {
-		super(parent);
-	}
+    protected ImageCellEditor(Composite parent) {
+        super(parent);
+    }
 
-	@Override
-	protected Control createControl(Composite parent) {
-	    Control result = super.createControl(parent);
+    @Override
+    protected Control createControl(Composite parent) {
+        Control result = super.createControl(parent);
         IContentProposalProvider proposalProvider = new ImageContentProposalProvider();
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
 
         return result;
-	}
+    }
 
-	@Override
-	protected Object openDialogBox(Control cellEditorWindow) {
-		ImageSelectionDialog cellDialog =
-			new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue());
+    @Override
+    protected Object openDialogBox(Control cellEditorWindow) {
+        ImageSelectionDialog cellDialog =
+            new ImageSelectionDialog(cellEditorWindow.getShell(), (String)getValue());
 
-		if (cellDialog.open() == Dialog.OK)
-		    return cellDialog.getImageId();
+        if (cellDialog.open() == Dialog.OK)
+            return cellDialog.getImageId();
 
-		// dialog cancelled
-		return null;
-	}
+        // dialog cancelled
+        return null;
+    }
 
 }

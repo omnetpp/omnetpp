@@ -25,100 +25,100 @@ import freemarker.template.Template;
  */
 public class OutlineContentProvider implements ITreeContentProvider {
 
-	@SuppressWarnings("unchecked")
-	public static final Comparator COMPARATOR = new Comparator() {
-		public int compare(Object arg0, Object arg1) {
-			return (arg0.toString().compareTo(
-				arg1.toString()));
-		}
-	};
-	public static final String FREEMARKER_TEMPLATE = "__ftl_template";
+    @SuppressWarnings("unchecked")
+    public static final Comparator COMPARATOR = new Comparator() {
+        public int compare(Object arg0, Object arg1) {
+            return (arg0.toString().compareTo(
+                arg1.toString()));
+        }
+    };
+    public static final String FREEMARKER_TEMPLATE = "__ftl_template";
 
-	private FreemarkerEditor fEditor;
-	private IReconcilingStrategy fReconcilingStrategy;
-	private IPositionUpdater fPositionUpdater;
+    private FreemarkerEditor fEditor;
+    private IReconcilingStrategy fReconcilingStrategy;
+    private IPositionUpdater fPositionUpdater;
 
-	public OutlineContentProvider(FreemarkerEditor anEditor) {
-		fEditor = anEditor;
-		fPositionUpdater = new DefaultPositionUpdater(FREEMARKER_TEMPLATE);
-		fReconcilingStrategy = new ReconcilingStrategy(fEditor);
-	}
+    public OutlineContentProvider(FreemarkerEditor anEditor) {
+        fEditor = anEditor;
+        fPositionUpdater = new DefaultPositionUpdater(FREEMARKER_TEMPLATE);
+        fReconcilingStrategy = new ReconcilingStrategy(fEditor);
+    }
 
-	public void inputChanged(
-		Viewer aViewer,
-		Object anOldInput,
-		Object aNewInput) {
-		if (anOldInput != aNewInput) {
-			if (anOldInput != null) {
-				IDocument document =
-					fEditor.getDocumentProvider().getDocument(anOldInput);
-				if (document != null) {
-					try {
-						document.removePositionCategory(FREEMARKER_TEMPLATE);
-					} catch (BadPositionCategoryException e) {
-					}
-					document.removePositionUpdater(fPositionUpdater);
-				}
-			}
+    public void inputChanged(
+        Viewer aViewer,
+        Object anOldInput,
+        Object aNewInput) {
+        if (anOldInput != aNewInput) {
+            if (anOldInput != null) {
+                IDocument document =
+                    fEditor.getDocumentProvider().getDocument(anOldInput);
+                if (document != null) {
+                    try {
+                        document.removePositionCategory(FREEMARKER_TEMPLATE);
+                    } catch (BadPositionCategoryException e) {
+                    }
+                    document.removePositionUpdater(fPositionUpdater);
+                }
+            }
 
-			if (aNewInput != null) {
-				IDocument document =
-					fEditor.getDocumentProvider().getDocument(aNewInput);
-				if (document != null) {
-					document.addPositionCategory(FREEMARKER_TEMPLATE);
-					document.addPositionUpdater(fPositionUpdater);
-				}
-			}
-		}
-	}
+            if (aNewInput != null) {
+                IDocument document =
+                    fEditor.getDocumentProvider().getDocument(aNewInput);
+                if (document != null) {
+                    document.addPositionCategory(FREEMARKER_TEMPLATE);
+                    document.addPositionUpdater(fPositionUpdater);
+                }
+            }
+        }
+    }
 
-	public boolean isDeleted(Object anElement) {
-		return false;
-	}
+    public boolean isDeleted(Object anElement) {
+        return false;
+    }
 
-	public void dispose() {
-	}
+    public void dispose() {
+    }
 
-	@SuppressWarnings("unchecked")
-	public Object[] getElements(Object inputElement) {
-		Template t = fEditor.getReconcilingStrategy().getTemplate();
-		if (null == t) {
-			return new Object[0];
-		} else {
-			Vector temp = new Vector();
-						
-			Map macros = t.getMacros();
-			Iterator iter = macros.keySet().iterator();
-			Object key = null;
-			Macro m = null;
-			while (iter.hasNext()) {
-				key = iter.next();
-				m = (Macro) macros.get(key);
-				temp.add(new MacroNode(m));
-			}
-			Collections.sort(temp,OutlineContentProvider.COMPARATOR);
-			temp.add(0,new ImportCollectionNode(t));
-			
-			return temp.toArray();
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public Object[] getElements(Object inputElement) {
+        Template t = fEditor.getReconcilingStrategy().getTemplate();
+        if (null == t) {
+            return new Object[0];
+        } else {
+            Vector temp = new Vector();
 
-	public Object[] getChildren(Object anElement) {
-		return (anElement instanceof ImportCollectionNode)
-			? ((ImportCollectionNode) anElement).getChildren()
-			: new Object[0];
-	}
+            Map macros = t.getMacros();
+            Iterator iter = macros.keySet().iterator();
+            Object key = null;
+            Macro m = null;
+            while (iter.hasNext()) {
+                key = iter.next();
+                m = (Macro) macros.get(key);
+                temp.add(new MacroNode(m));
+            }
+            Collections.sort(temp,OutlineContentProvider.COMPARATOR);
+            temp.add(0,new ImportCollectionNode(t));
 
-	public Object getParent(Object anElement) {
-		return (anElement instanceof ImportNode)
-			? ((ImportNode) anElement).getParent()
-			: null;
-	}
+            return temp.toArray();
+        }
+    }
 
-	public boolean hasChildren(Object anElement) {
-		return (anElement instanceof ImportCollectionNode)
-			? ((ImportCollectionNode) anElement).hasChildren()
-			: false;
-	}
-	
+    public Object[] getChildren(Object anElement) {
+        return (anElement instanceof ImportCollectionNode)
+            ? ((ImportCollectionNode) anElement).getChildren()
+            : new Object[0];
+    }
+
+    public Object getParent(Object anElement) {
+        return (anElement instanceof ImportNode)
+            ? ((ImportNode) anElement).getParent()
+            : null;
+    }
+
+    public boolean hasChildren(Object anElement) {
+        return (anElement instanceof ImportCollectionNode)
+            ? ((ImportCollectionNode) anElement).hasChildren()
+            : false;
+    }
+
 }

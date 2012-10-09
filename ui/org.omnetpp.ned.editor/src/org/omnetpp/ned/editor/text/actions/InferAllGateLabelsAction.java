@@ -17,23 +17,23 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  * @author levy
  */
 public class InferAllGateLabelsAction extends NedTextEditorAction {
-	public static final String ID = "InferAllGateLabels";
+    public static final String ID = "InferAllGateLabels";
 
-	public InferAllGateLabelsAction(TextualNedEditor editor) {
-		super(ID, editor);
-	}
+    public InferAllGateLabelsAction(TextualNedEditor editor) {
+        super(ID, editor);
+    }
 
-	@Override
-	protected void doRun() {
-	    TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();
+    @Override
+    protected void doRun() {
+        TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();
         ISelection selection = textEditor.getSelectionProvider().getSelection();
 
         if (selection instanceof ITextSelection) {
-		    for (INedTypeElement typeElement : textEditor.getModel().getTopLevelTypeNodes())
-		        for (RefactoringTools.AddGateLabels runnable : RefactoringTools.inferAllGateLabels(typeElement, false))
-	                runnable.run();
+            for (INedTypeElement typeElement : textEditor.getModel().getTopLevelTypeNodes())
+                for (RefactoringTools.AddGateLabels runnable : RefactoringTools.inferAllGateLabels(typeElement, false))
+                    runnable.run();
 
-		    textEditor.pullChangesFromNedResources();
-		}
-	}
+            textEditor.pullChangesFromNedResources();
+        }
+    }
 }

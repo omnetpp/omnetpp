@@ -23,16 +23,16 @@ public class MsgDocColorizerScanner extends RuleBasedScanner {
 
 
     /**
-	 * Create a new neddoc scanner for the given color provider.
-	 *
-	 * @param provider the color provider
-	 */
-	 public MsgDocColorizerScanner() {
-		super();
+     * Create a new neddoc scanner for the given color provider.
+     *
+     * @param provider the color provider
+     */
+     public MsgDocColorizerScanner() {
+        super();
         // this is the default token for a comment
         setDefaultReturnToken(SyntaxHighlightHelper.docDefaultToken);
 
-		List<IRule> list= new ArrayList<IRule>();
+        List<IRule> list= new ArrayList<IRule>();
 
         // Add word rule for supported HTML tags
         // FIXME does not match if token is followed immediately with some characters
@@ -53,8 +53,8 @@ public class MsgDocColorizerScanner extends RuleBasedScanner {
             keywordRule.addWord("@" + SyntaxHighlightHelper.highlightDocKeywords[i], SyntaxHighlightHelper.docKeywordToken);
         list.add(keywordRule);
 
-		IRule[] result= new IRule[list.size()];
-		list.toArray(result);
-		setRules(result);
-	}
+        IRule[] result= new IRule[list.size()];
+        list.toArray(result);
+        setRules(result);
+    }
 }

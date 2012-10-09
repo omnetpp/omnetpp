@@ -209,7 +209,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
     public String getTemplateProperty(String key) {
         return properties.getProperty(key);
     }
-    
+
     /**
      * Sets whether to allow adding jars in the plugin directory into the CLASSPATH.
      * Must be invoked "early enough" to take effect.
@@ -221,7 +221,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
     public String getIdentifierString() {
         return templateFolder==null ? templateUrl.toString() : templateFolder.getFullPath().toString();
     }
-    
+
     /**
      * Overridden to provide lazy loading.
      */
@@ -435,12 +435,12 @@ public class FileBasedContentTemplate extends ContentTemplate {
     }
 
     public void performFinish(CreationContext context) throws CoreException {
-        // execute a template that can modify the variables in the context. We do this before 
+        // execute a template that can modify the variables in the context. We do this before
         // substituteNestedVariables(), so that the template has a chance to modify
         // variables before they are substituted into template.properties
         executePreRunTemplate(context);
-        
-        // substitute variables 
+
+        // substitute variables
         substituteNestedVariables(context);
 
         // copy over files and folders, with template substitution
@@ -454,13 +454,13 @@ public class FileBasedContentTemplate extends ContentTemplate {
             if (StringUtils.isNotEmpty(preRunTemplateName)) {
                 Environment env = processTemplateForSideEffects(getFreemarkerConfiguration(), preRunTemplateName, context);
                 try {
-                    // The Environment's main namespace contains the variables, macros, functions etc 
+                    // The Environment's main namespace contains the variables, macros, functions etc
                     // set by the template. We'd like the assignments in this template to take effect,
-                    // so we take over the contents of the main namespace into the context. 
-                    // Note that the context also includes macros like "iif", but this likely presents 
+                    // so we take over the contents of the main namespace into the context.
+                    // Note that the context also includes macros like "iif", but this likely presents
                     // no problem.
                     Namespace mainNamespace = env.getMainNamespace();
-                    Map map = mainNamespace.toMap();  
+                    Map map = mainNamespace.toMap();
                     context.getVariables().putAll(map);
                 }
                 catch (TemplateModelException e) {
@@ -481,7 +481,7 @@ public class FileBasedContentTemplate extends ContentTemplate {
                 if (!matchesAny(fileName, ignoreResourcePatterns))
                     createFolder(fileName, context);
             }
-            else if (context.getFolder()==null) { 
+            else if (context.getFolder()==null) {
                 // export wizard: only process ftl files but do not save them (they may create files directly, via FileUtils)
                 boolean isFtlFile = StringUtils.defaultString(new Path(fileName).getFileExtension()).equals("ftl");
                 if (isFtlFile && !matchesAny(fileName, ignoreResourcePatterns) && !matchesAny(fileName, verbatimFilePatterns))

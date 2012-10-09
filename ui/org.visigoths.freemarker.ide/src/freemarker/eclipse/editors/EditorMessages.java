@@ -9,21 +9,21 @@ import java.util.ResourceBundle;
  * @author <a href="mailto:andras@omnetpp.org">Andras Varga</a>
  */
 public class EditorMessages {
-	private static final String RESOURCE_BUNDLE= EditorMessages.class.getName();
-	private static ResourceBundle resourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
+    private static final String RESOURCE_BUNDLE= EditorMessages.class.getName();
+    private static ResourceBundle resourceBundle= ResourceBundle.getBundle(RESOURCE_BUNDLE);
 
-	private EditorMessages() {
-	}
+    private EditorMessages() {
+    }
 
-	public static String getString(String key) {
-		try {
-			return resourceBundle.getString(key);
-		} catch (MissingResourceException e) {
-			return "!" + key + "!"; 
-		}
-	}
+    public static String getString(String key) {
+        try {
+            return resourceBundle.getString(key);
+        } catch (MissingResourceException e) {
+            return "!" + key + "!";
+        }
+    }
 
-	public static ResourceBundle getResourceBundle() {
-		return resourceBundle;
-	}
+    public static ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
 }

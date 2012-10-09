@@ -51,37 +51,37 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
-	/**
+    /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected static final String NAME_EDEFAULT = null;
+    protected static final String NAME_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected String name = NAME_EDEFAULT;
+    protected String name = NAME_EDEFAULT;
 
-	/**
+    /**
      * The cached value of the '{@link #getCharts() <em>Charts</em>}' reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getCharts()
      * @generated
      * @ordered
      */
-	protected EList<Chart> charts;
+    protected EList<Chart> charts;
 
-	/**
+    /**
      * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -93,57 +93,57 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 
     /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected ChartSheetImpl() {
+    protected ChartSheetImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.CHART_SHEET;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setName(String newName) {
+    public void setName(String newName) {
         String oldName = name;
         name = newName;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART_SHEET__NAME, oldName, name));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<Chart> getCharts() {
+    public EList<Chart> getCharts() {
         if (charts == null) {
             charts = new EObjectResolvingEList<Chart>(Chart.class, this, ScaveModelPackage.CHART_SHEET__CHARTS);
         }
         return charts;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -171,11 +171,11 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
 
     /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEET__NAME:
                 return getName();
@@ -187,14 +187,14 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEET__NAME:
                 setName((String)newValue);
@@ -211,13 +211,13 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEET__NAME:
                 setName(NAME_EDEFAULT);
@@ -232,13 +232,13 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.CHART_SHEET__NAME:
                 return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
@@ -250,13 +250,13 @@ public class ChartSheetImpl extends EObjectImpl implements ChartSheet {
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

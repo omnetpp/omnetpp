@@ -23,42 +23,42 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class TableItemAccess extends ClickableWidgetAccess
 {
-	public TableItemAccess(TableItem widget) {
-		super(widget);
-	}
+    public TableItemAccess(TableItem widget) {
+        super(widget);
+    }
 
     @Override
-	public TableItem getWidget() {
-		return (TableItem)widget;
-	}
+    public TableItem getWidget() {
+        return (TableItem)widget;
+    }
 
-	@UIStep
-	public TableAccess getTable() {
-	    return (TableAccess) createAccess(getWidget().getParent());
-	}
+    @UIStep
+    public TableAccess getTable() {
+        return (TableAccess) createAccess(getWidget().getParent());
+    }
 
-	@UIStep
-	public TableItemAccess reveal() {
-		Table table = getWidget().getParent();
-		int myIndex = ArrayUtils.indexOf(table.getItems(), getWidget());
-		table.setTopIndex(myIndex); // scroll there
-		return this;
-	}
+    @UIStep
+    public TableItemAccess reveal() {
+        Table table = getWidget().getParent();
+        int myIndex = ArrayUtils.indexOf(table.getItems(), getWidget());
+        table.setTopIndex(myIndex); // scroll there
+        return this;
+    }
 
-	@Override
-	protected Point getAbsolutePointToClick() {
-	    Point point = toAbsolute(getCenter(getWidget().getBounds()));
+    @Override
+    protected Point getAbsolutePointToClick() {
+        Point point = toAbsolute(getCenter(getWidget().getBounds()));
         Assert.assertTrue("point to click is scrolled out", getTable().getAbsoluteBounds().contains(point));
         Assert.assertTrue("column has zero width", getWidget().getBounds().width > 0);
         return point;
-	}
+    }
 
-	@Override
-	protected Point toAbsolute(Point point) {
+    @Override
+    protected Point toAbsolute(Point point) {
         return getWidget().getParent().toDisplay(point);
-	}
+    }
 
-	/**
+    /**
      * Useful for selecting a table item without incidentally activating its cell editor.
      */
     @UIStep
@@ -71,10 +71,10 @@ public class TableItemAccess extends ClickableWidgetAccess
     }
 
 
-	@Override
-	protected Menu getContextMenu() {
-		return (Menu)getWidget().getParent().getMenu();
-	}
+    @Override
+    protected Menu getContextMenu() {
+        return (Menu)getWidget().getParent().getMenu();
+    }
 
     @UIStep
     public void ensureChecked(boolean state) {

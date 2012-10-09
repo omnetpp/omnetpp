@@ -26,8 +26,8 @@ import org.omnetpp.common.util.StringUtils;
 //TODO figures and Tkenv should use EnumSpec as well!
 public interface IDisplayString {
 
-	/**
-     *	Property types used in the display string
+    /**
+     *  Property types used in the display string
      */
     public enum PropType { READONLY, STRING, INTEGER, UNIT, COLOR, IMAGE }
 
@@ -106,89 +106,89 @@ public interface IDisplayString {
      * @author andras
      */
     public class EnumSpec {
-    	private static class Item {
-    		String name; // full name ("dashed")
-    		String shorthandRegex;  // for recognizing the value ("da.*")
-    		String shorthand; // for representing the value in the display string ("da")
-    	}
-    	private Map<String,Item> specs = new LinkedHashMap<String, Item>();
-    	private Item[] specsReversed;
+        private static class Item {
+            String name; // full name ("dashed")
+            String shorthandRegex;  // for recognizing the value ("da.*")
+            String shorthand; // for representing the value in the display string ("da")
+        }
+        private Map<String,Item> specs = new LinkedHashMap<String, Item>();
+        private Item[] specsReversed;
 
-    	/**
-    	 * Format of the specification string: "name=shorthandRegex,shorthand;...".
-    	 * Spaces are allowed. The order of items is significant, because shorthand regexes
-    	 * will be matched in REVERSE order (last-to-first).
-    	 *
-    	 * Example: "solid=s.*,s; dotted=d.*,d; dashed=da.*,da". Note that "d" will be
-    	 * recognized as "dotted", because of reverse-order matching.
-    	 */
-    	public EnumSpec(String specString) {
-        	for (String specText : specString.split(";")) {
-        		Assert.isTrue(specText.matches("^[^=,]+=[^=,]+,[^=,]*$"), "enum spec is in wrong format");
-        		Item spec = new Item();
-        		spec.name = StringUtils.substringBefore(specText, "=").trim();
-        		spec.shorthandRegex = StringUtils.substringBetween(specText, "=", ",").trim();
-        		spec.shorthand = StringUtils.substringAfter(specText, ",").trim();
-        		specs.put(spec.name, spec);
-        	}
-        	specsReversed = specs.values().toArray(new Item[]{});
-        	ArrayUtils.reverse(specsReversed);
+        /**
+         * Format of the specification string: "name=shorthandRegex,shorthand;...".
+         * Spaces are allowed. The order of items is significant, because shorthand regexes
+         * will be matched in REVERSE order (last-to-first).
+         *
+         * Example: "solid=s.*,s; dotted=d.*,d; dashed=da.*,da". Note that "d" will be
+         * recognized as "dotted", because of reverse-order matching.
+         */
+        public EnumSpec(String specString) {
+            for (String specText : specString.split(";")) {
+                Assert.isTrue(specText.matches("^[^=,]+=[^=,]+,[^=,]*$"), "enum spec is in wrong format");
+                Item spec = new Item();
+                spec.name = StringUtils.substringBefore(specText, "=").trim();
+                spec.shorthandRegex = StringUtils.substringBetween(specText, "=", ",").trim();
+                spec.shorthand = StringUtils.substringAfter(specText, ",").trim();
+                specs.put(spec.name, spec);
+            }
+            specsReversed = specs.values().toArray(new Item[]{});
+            ArrayUtils.reverse(specsReversed);
 
-        	// sanity checks
-        	for (Item spec : specs.values()) {
-        		Assert.isTrue(spec.name.equals(getNameFor(spec.name)), "enum name must map to itself");
-        		Assert.isTrue(spec.name.equals(getNameFor(spec.shorthand)), "enum shorthand must map to itself");
-        	}
-    	}
+            // sanity checks
+            for (Item spec : specs.values()) {
+                Assert.isTrue(spec.name.equals(getNameFor(spec.name)), "enum name must map to itself");
+                Assert.isTrue(spec.name.equals(getNameFor(spec.shorthand)), "enum shorthand must map to itself");
+            }
+        }
 
-    	/**
-    	 * Returns an array of all names ("dotted", "dashed", etc).
-    	 */
-    	public String[] getNames() {
-    		return specs.keySet().toArray(new String[]{});
-    	}
+        /**
+         * Returns an array of all names ("dotted", "dashed", etc).
+         */
+        public String[] getNames() {
+            return specs.keySet().toArray(new String[]{});
+        }
 
-    	/**
-		 * Returns the list of all shorthands (standard abbreviations)
-		 */
-    	public String[] getShorthands() {
-			ArrayList<String> result = new ArrayList<String>();
-			for (Item spec : specs.values())
-				result.add(spec.shorthand);
-			return result.toArray(new String[]{});
-		}
+        /**
+         * Returns the list of all shorthands (standard abbreviations)
+         */
+        public String[] getShorthands() {
+            ArrayList<String> result = new ArrayList<String>();
+            for (Item spec : specs.values())
+                result.add(spec.shorthand);
+            return result.toArray(new String[]{});
+        }
 
-    	/**
-    	 * Return the name whose shorthandRegex matches the given string,
-    	 * or null if none matches. Note: matching is done in reverse order.
-    	 */
-    	public String getNameFor(String text) {
-    		for (Item spec : specsReversed)
-    			if (text.matches(spec.shorthandRegex))
-    				return spec.name;
-    		return null;
-    	}
+        /**
+         * Return the name whose shorthandRegex matches the given string,
+         * or null if none matches. Note: matching is done in reverse order.
+         */
+        public String getNameFor(String text) {
+            for (Item spec : specsReversed)
+                if (text.matches(spec.shorthandRegex))
+                    return spec.name;
+            return null;
+        }
 
-    	/**
-    	 * Return the shorthand (standard abbreviation) whose shorthandRegex
-    	 * matches the given string, or null if none matches. Note: matching
-    	 * is done in reverse order.
-    	 */
-    	public String getShorthandFor(String text) {
-    		for (Item spec : specsReversed)
-    			if (text.matches(spec.shorthandRegex))
-    				return spec.shorthand;
-    		return null;
-    	}
+        /**
+         * Return the shorthand (standard abbreviation) whose shorthandRegex
+         * matches the given string, or null if none matches. Note: matching
+         * is done in reverse order.
+         */
+        public String getShorthandFor(String text) {
+            for (Item spec : specsReversed)
+                if (text.matches(spec.shorthandRegex))
+                    return spec.shorthand;
+            return null;
+        }
 
-    	/**
-    	 * Returns the shorthand (standard abbreviation) for the given name,
-    	 * e.g. returns "da" for "dashed". It is an error if the name does not exist.
-    	 */
-    	public String getShorthandForName(String name) {
-    		Assert.isTrue(specs.containsKey(name), "invalid enum value");
-    		return specs.get(name).shorthand;
-    	}
+        /**
+         * Returns the shorthand (standard abbreviation) for the given name,
+         * e.g. returns "da" for "dashed". It is an error if the name does not exist.
+         */
+        public String getShorthandForName(String name) {
+            Assert.isTrue(specs.containsKey(name), "invalid enum value");
+            return specs.get(name).shorthand;
+        }
 
     }
 
@@ -197,12 +197,12 @@ public interface IDisplayString {
      * including type, tag name, position inside the tag, and user readable name and description
      */
     public enum Prop {
-    	// Property that represents the whole display string 
-    	DISPLAY(null, 0, PropType.STRING, PropGroup.Base, "display", "Display properties of the object", null),
+        // Property that represents the whole display string
+        DISPLAY(null, 0, PropType.STRING, PropGroup.Base, "display", "Display properties of the object", null),
 
-    	// START submodule / simple module properties
+        // START submodule / simple module properties
         // NOTE: Do NOT change the first and last elements of property groups!
-    	// P tag
+        // P tag
         X(Tag.p, 0, PropType.UNIT , PropGroup.Position , "x", "X position of the center of the icon/shape; defaults to automatic graph layouting", null),
         Y(Tag.p, 1, PropType.UNIT, PropGroup.Position, "y", "Y position of the center of the icon/shape; defaults to automatic graph layouting", null),
         LAYOUT(Tag.p, 2, PropType.STRING, PropGroup.Position, "arrangement", "Arrangement of submodule vectors. Defaults to row or ring. (X,Y) coordinates correspond to the upper left corner of the bounding rectangle", "row=r.*,r; column=c.*,c; matrix=m.*,m; ring=ri.*,ri; exact=e.*|x.*,x"),
@@ -225,26 +225,26 @@ public interface IDisplayString {
 
         // IS tag
         IMAGE_SIZE(Tag.is, 0, PropType.STRING, PropGroup.Icon, "icon size", "The size of the image", "very small=v.*s.*,vs; small=s.*,s; normal=n.*,n; large=l.*,l; very large=v[^s]*l.*,vl"),
-        
+
         // I2 tag
         IMAGE2(Tag.i2, 0, PropType.IMAGE, PropGroup.Icon, "overlay icon", "An icon added to the upper right corner of the original image", null),
         IMAGE2_COLOR(Tag.i2, 1, PropType.COLOR, PropGroup.Icon, "overlay icon tint", "A color for tinting the overlay icon (color name, #RRGGBB or @HHSSBB)", null),
         IMAGE2_COLOR_PERCENTAGE(Tag.i2, 2, PropType.INTEGER, PropGroup.Icon, "overlay icon tint %", "Amount of tinting in percent", null),
-        
+
         // R tag
         RANGE(Tag.r, 0, PropType.UNIT, PropGroup.Range, "range", "Radius of the range indicator", null),
         RANGE_FILL_COLOR(Tag.r, 1, PropType.COLOR, PropGroup.Range, "range fill color", "Fill color of the range indicator (color name, #RRGGBB or @HHSSBB)", null),
         RANGE_BORDER_COLOR(Tag.r, 2, PropType.COLOR, PropGroup.Range, "range border color", "Border color of the range indicator (color name, #RRGGBB or @HHSSBB)", null),
         RANGE_BORDER_WIDTH(Tag.r, 3, PropType.INTEGER, PropGroup.Range, "range border width", "Border width of the range indicator", null),
-        
+
         // Q tag
         QUEUE_NAME(Tag.q, 0, PropType.STRING, PropGroup.Text, "queue object", "Displays the length of the named queue object", null),
-        
+
         // T tag
         TEXT(Tag.t, 0, PropType.STRING, PropGroup.Text, "text", "Additional text to display", null),
         TEXT_POS(Tag.t, 1, PropType.STRING, PropGroup.Text, "text position", "Position of the text", "left=l.*,l; right=r.*,r; top=t.*,t"),
         TEXT_COLOR(Tag.t, 2, PropType.COLOR, PropGroup.Text, "text color", "Color of the displayed text (color name, #RRGGBB or @HHSSBB)", null),
-        
+
         // TT tag
         TOOLTIP(Tag.tt, 0, PropType.STRING, PropGroup.Text, "tooltip", "Tooltip to be displayed over the object", null),
         // END of submodule / simple module properties
@@ -300,10 +300,10 @@ public interface IDisplayString {
         CONNECTION_STYLE(Tag.ls, 2, PropType.STRING, PropGroup.Line, "line style", "Connection line style", "solid=s.*,s; dotted=d.*,d; dashed=da.*,da");
         // CONNECTION_SEGMENTS(Tag.ls, 3, PropType.STRING, PropGroup.Line, "segments", "Connection segments", "todo: [l]ine, [s]pline"),
 
-    	// BP tag (bendpoints)
+        // BP tag (bendpoints)
         // BENDPOINTS(Tag.bp, 0, PropType.UNIT, PropGroup.Connection, "bendpoints", "bendpoint locations");
 
-    	// END of connection properties
+        // END of connection properties
 
         // define additional metadata for the tags
         private final Tag tag;
@@ -316,7 +316,7 @@ public interface IDisplayString {
 
         Prop(Tag tag, int tagPos, PropType argType, PropGroup tagGroup,
                 String name, String description, String enumSpecString) {
-        	Assert.isTrue(!description.trim().endsWith("."));  // dot will be added by this class where needed
+            Assert.isTrue(!description.trim().endsWith("."));  // dot will be added by this class where needed
             this.tag = tag;
             this.pos = tagPos;
             this.type = argType;
@@ -347,8 +347,8 @@ public interface IDisplayString {
         }
 
         public EnumSpec getEnumSpec() {
-			return enumSpec;
-		}
+            return enumSpec;
+        }
 
         public String getName() {
             return name;
@@ -362,44 +362,44 @@ public interface IDisplayString {
          * Returns the first sentence of the description
          */
         public String getShortDesc() {
-        	return description == null ? null : StringUtils.substringBefore(description, ".");
+            return description == null ? null : StringUtils.substringBefore(description, ".");
         }
 
-		/**
-		 * The description of the default value
-		 */
-		public String getDefaultDesc() {
-			return getTag()==null ? null : getTagArgDefault(getTagName(), getPos());
-		}
+        /**
+         * The description of the default value
+         */
+        public String getDefaultDesc() {
+            return getTag()==null ? null : getTagArgDefault(getTagName(), getPos());
+        }
 
-		/**
-		 * The possible values of the enums in this tag
-		 */
-		public String getEnumDesc() {
-			String enumDesc = "";
-        	if (getEnumSpec() != null)
-        		for (String name : getEnumSpec().getNames())
-        			enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandForName(name) + ")";
-			return enumDesc;
-		}
+        /**
+         * The possible values of the enums in this tag
+         */
+        public String getEnumDesc() {
+            String enumDesc = "";
+            if (getEnumSpec() != null)
+                for (String name : getEnumSpec().getNames())
+                    enumDesc += (enumDesc.equals("") ? "" : ", ") + name + " (" + getEnumSpec().getShorthandForName(name) + ")";
+            return enumDesc;
+        }
 
-		public static Prop findProp(Tag tag, int pos) {
-		    for (Prop prop : Prop.values())
-		        if (prop.tag != null && prop.tag.equals(tag) && prop.pos == pos)
-		            return prop;
-		    return null;
-		}
+        public static Prop findProp(Tag tag, int pos) {
+            for (Prop prop : Prop.values())
+                if (prop.tag != null && prop.tag.equals(tag) && prop.pos == pos)
+                    return prop;
+            return null;
+        }
 
         private String getTagArgDefault(String tagName, int tagIndex) {
-        	String displayString = IDisplayString.EMPTY_DEFAULTS_STR;
-        	Assert.isTrue(StringUtils.containsNone(displayString, " \t\\"),
-        			"display string defaults cannot contain backslash or whitespace"); // to simplify parsing
-        	for (String tag : displayString.split(";"))
-        		if (tag.startsWith(tagName+"=")) {
-        			String[] elems = StringUtils.removeStart(tag, tagName+"=").split(",");
-        			return tagIndex >= elems.length ? null : elems[tagIndex];
-        		}
-        	return null;
+            String displayString = IDisplayString.EMPTY_DEFAULTS_STR;
+            Assert.isTrue(StringUtils.containsNone(displayString, " \t\\"),
+                    "display string defaults cannot contain backslash or whitespace"); // to simplify parsing
+            for (String tag : displayString.split(";"))
+                if (tag.startsWith(tagName+"=")) {
+                    String[] elems = StringUtils.removeStart(tag, tagName+"=").split(",");
+                    return tagIndex >= elems.length ? null : elems[tagIndex];
+                }
+            return null;
         }
     }
 
@@ -420,43 +420,43 @@ public interface IDisplayString {
      * The value of the property. If the property is empty looks for default values and fallback
      * values in ancestor types. If nothing found, returns <code>null</code>.
      */
-	public String getAsString(Prop property);
+    public String getAsString(Prop property);
 
     /**
      * The value of the property. If the property is empty looks for default values and fallback
      * values in ancestor types. If nothing found, returns <code>defValue</code>.
      */
-	public int getAsInt(Prop propName, int defValue);
+    public int getAsInt(Prop propName, int defValue);
 
-	/**
-	 * The value of the property. If the property is empty looks for default values and fallback
-	 * values in ancestor types. If nothing found, returns <code>defValue</code>.
-	 */
-	public float getAsFloat(Prop propName, float defValue);
+    /**
+     * The value of the property. If the property is empty looks for default values and fallback
+     * values in ancestor types. If nothing found, returns <code>defValue</code>.
+     */
+    public float getAsFloat(Prop propName, float defValue);
 
-	/**
-	 * The scaling to be applied on the element. Uses fallback if not specified locally.
-	 * Returns 1.0 if not specified. NOTE: scaling factor is available ONLY in compound module
-	 * display strings.
-	 */
-	public float getScale();
+    /**
+     * The scaling to be applied on the element. Uses fallback if not specified locally.
+     * Returns 1.0 if not specified. NOTE: scaling factor is available ONLY in compound module
+     * display strings.
+     */
+    public float getScale();
 
-	/**
-	 * Returns the pixel based location for the module. Converts the unit based values of P tag to pixel.
-	 * Uses fallback if not specified locally. If either location property is missing it returns null
-	 * (meaning the module is unpinned)
+    /**
+     * Returns the pixel based location for the module. Converts the unit based values of P tag to pixel.
+     * Uses fallback if not specified locally. If either location property is missing it returns null
+     * (meaning the module is unpinned)
      * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
-	 */
-	public Point getLocation(Float scale);
+     */
+    public Point getLocation(Float scale);
 
-	/**
-	 * Returns The size of submodule (B tag) (in pixels). Uses fallback if not specified locally.
+    /**
+     * Returns The size of submodule (B tag) (in pixels). Uses fallback if not specified locally.
      * If width or height is missing returns -1 instead.
      * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
-	 */
-	public Dimension getSize(Float scale);
+     */
+    public Dimension getSize(Float scale);
 
     /**
      * The size of module (in pixels) if represented as a compound module (BGB tag).
@@ -465,7 +465,7 @@ public interface IDisplayString {
      * @param scale A scaling parameter to convert to and from unit. If it's null the local scaling
      *              factor stored in the display string will be used
      */
-	public Dimension getCompoundSize(Float scale);
+    public Dimension getCompoundSize(Float scale);
 
     /**
      * Returns the range converted to pixels. Uses fallback if the property is not specified locally.
@@ -476,20 +476,20 @@ public interface IDisplayString {
     public int getRange(Float scale);
 
     /**
-	 * Converts the provided value (in pixel) to unit
-	 * @param pixel
+     * Converts the provided value (in pixel) to unit
+     * @param pixel
      * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
-	 * @return Value in units
-	 */
-	public float pixelToUnit(int pixel, Float overrideScale);
+     * @return Value in units
+     */
+    public float pixelToUnit(int pixel, Float overrideScale);
 
-	/**
-	 * Converts the provided value (in unit) to pixel
-	 * @param unit
+    /**
+     * Converts the provided value (in unit) to pixel
+     * @param unit
      * @param overrideScale If not null, it will be used as scaling factor instead of the stored one
-	 * @return Value in pixels
-	 */
-	public int unitToPixel(float unit, Float overrideScale);
+     * @return Value in pixels
+     */
+    public int unitToPixel(float unit, Float overrideScale);
 
     /**
      * Sets the content of the display string.

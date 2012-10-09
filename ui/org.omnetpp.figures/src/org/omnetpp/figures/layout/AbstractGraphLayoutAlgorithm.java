@@ -16,11 +16,11 @@ import org.eclipse.core.runtime.Assert;
  */
 public abstract class AbstractGraphLayoutAlgorithm implements ILayoutAlgorithm
 {
-	protected static boolean debug = false;
+    protected static boolean debug = false;
 
-	protected static boolean firstTime = true;
+    protected static boolean firstTime = true;
 
-	protected double defaultEdgeLen;
+    protected double defaultEdgeLen;
 
     // params set by setConfineToArea()
     protected double width;
@@ -46,7 +46,7 @@ public abstract class AbstractGraphLayoutAlgorithm implements ILayoutAlgorithm
 
     private void rngSelfTest()
     {
-    	rndseed = 1;
+        rndseed = 1;
         for (int i=0; i<10000; i++)
             privRand01();
         Assert.isTrue(rndseed == 1043618065);
@@ -57,14 +57,14 @@ public abstract class AbstractGraphLayoutAlgorithm implements ILayoutAlgorithm
      * Constructor
      */
     public AbstractGraphLayoutAlgorithm() {
-    	// test the RNG once per session -- do not remove this code!
-    	if (firstTime) {
-    		firstTime = false;
-    		rngSelfTest();
-    	}
+        // test the RNG once per session -- do not remove this code!
+        if (firstTime) {
+            firstTime = false;
+            rngSelfTest();
+        }
 
         // go on with constructor
-    	rndseed = 1;
+        rndseed = 1;
         defaultEdgeLen = 40;
         width = height = border = 0;
         sizingMode = SIZINGMODE_FREE;
@@ -75,7 +75,7 @@ public abstract class AbstractGraphLayoutAlgorithm implements ILayoutAlgorithm
     }
 
     public int getSeed() {
-    	return rndseed;
+        return rndseed;
     }
 
     /**

@@ -82,7 +82,7 @@ public class CloneSubmoduleCommand extends Command {
         // so it wont generate unnecessary notifications
         newModule.setName(NedElementUtilEx.getUniqueNameFor(newModule, parent.getSubmodules()));
 
-        // check if the submodules element is missing and add it manual + store the element so undo can remove it 
+        // check if the submodules element is missing and add it manual + store the element so undo can remove it
         if (parent.getFirstSubmodulesChild() == null)
             newSubmodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_SUBMODULES, parent);
 
@@ -143,14 +143,14 @@ public class CloneSubmoduleCommand extends Command {
         ConnectionsElement connectionParent = null;
         if (parent instanceof CompoundModuleElementEx)
             connectionParent = parent.getFirstConnectionsChild();
-        if (connectionParent == null) // if we have to create a new element, we must store so we can undo this operation 
+        if (connectionParent == null) // if we have to create a new element, we must store so we can undo this operation
             newConnectionsElement = connectionParent = (ConnectionsElement)NedElementFactoryEx.getInstance().createElement(NedElementFactoryEx.NED_CONNECTIONS, parent);
 
         for(INedElement elem : newConnectionsChildren)
             connectionParent.appendChild(elem);
 
-        // filter out connections where one of the ends are not connected to a selected module 
-        // (must be called after all potential children are added to the tree, 
+        // filter out connections where one of the ends are not connected to a selected module
+        // (must be called after all potential children are added to the tree,
         // because filtering may remove some of them using removeFromParent)
         filterConnections(newConnectionsChildren);
 
@@ -162,16 +162,16 @@ public class CloneSubmoduleCommand extends Command {
     }
 
     /**
-     * Checks all the children of the element and throws away connections that are connected to 
-     * a module which is not in the selected module list. It looks also inside the connecionGroup elements 
-     * @return true if there is at least on element in the list that must be kept, false if 
+     * Checks all the children of the element and throws away connections that are connected to
+     * a module which is not in the selected module list. It looks also inside the connecionGroup elements
+     * @return true if there is at least on element in the list that must be kept, false if
      * all connections were filtered out.
      */
     private boolean filterConnections(List<INedElement> elementList) {
         int noOfConnections = 0;
         for(INedElement child : elementList) {
             if (child instanceof ConnectionGroupElement) {
-                // look into the connection groups and filter the connections there, too  
+                // look into the connection groups and filter the connections there, too
                 List<INedElement> connGroupList = new ArrayList<INedElement>();
                 for(int i=0; i<child.getNumChildren(); ++i)
                     connGroupList.add(child.getChild(i));
@@ -186,10 +186,10 @@ public class CloneSubmoduleCommand extends Command {
                 String oldSrcModule = conn.getSrcModule();
                 String oldDestModule = conn.getDestModule();
                 if (old2newMapping.containsKey(oldSrcModule) && old2newMapping.containsKey(oldDestModule)) {
-                    // remap the connections to point to attach them to the newly created submodules 
+                    // remap the connections to point to attach them to the newly created submodules
                     conn.setSrcModule(old2newMapping.get(oldSrcModule).getName());
                     conn.setDestModule(old2newMapping.get(oldDestModule).getName());
-                } 
+                }
                 else { // otherwise we do not need this connections so we should throw out.
                     child.removeFromParent();
                     noOfConnections--;

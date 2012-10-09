@@ -26,59 +26,59 @@ import org.eclipse.swt.widgets.MenuItem;
 
 public class ModuleTreeViewer extends CheckboxTreeViewer {
 
-	private ModuleTreeItem root;
+    private ModuleTreeItem root;
 
-	public ModuleTreeViewer(Composite parent, ModuleTreeItem root) {
-		this(parent, SWT.CHECK | SWT.BORDER, root);
-	}
+    public ModuleTreeViewer(Composite parent, ModuleTreeItem root) {
+        this(parent, SWT.CHECK | SWT.BORDER, root);
+    }
 
-	public ModuleTreeViewer(Composite parent, int style, ModuleTreeItem root) {
-		super(parent, style);
-		this.root = root;
-		initialize(parent);
-	}
+    public ModuleTreeViewer(Composite parent, int style, ModuleTreeItem root) {
+        super(parent, style);
+        this.root = root;
+        initialize(parent);
+    }
 
-	private void initialize(Composite parent) {
+    private void initialize(Composite parent) {
         setContentProvider(new ITreeContentProvider() {
-			public void dispose() { }
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
-			public Object[] getChildren(Object parentElement) {
-				ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules();
-				Arrays.sort(submods, 0, submods.length);
-				return submods;
-			}
-			public Object getParent(Object element) {
-				return ((ModuleTreeItem)element).getParentModule();
-			}
-			public boolean hasChildren(Object element) {
-				return ((ModuleTreeItem)element).getSubmodules().length>0;
-			}
-			public Object[] getElements(Object inputElement) {
-				return getChildren(inputElement);
-			}
+            public void dispose() { }
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) { }
+            public Object[] getChildren(Object parentElement) {
+                ModuleTreeItem[] submods = ((ModuleTreeItem)parentElement).getSubmodules();
+                Arrays.sort(submods, 0, submods.length);
+                return submods;
+            }
+            public Object getParent(Object element) {
+                return ((ModuleTreeItem)element).getParentModule();
+            }
+            public boolean hasChildren(Object element) {
+                return ((ModuleTreeItem)element).getSubmodules().length>0;
+            }
+            public Object[] getElements(Object inputElement) {
+                return getChildren(inputElement);
+            }
         });
 
         setLabelProvider(new ILabelProvider() {
-			public void addListener(ILabelProviderListener listener) { }
-			public void removeListener(ILabelProviderListener listener) { }
-			public void dispose() { }
-			public boolean isLabelProperty(Object element, String property) {
-				return false;
-			}
-			public Image getImage(Object element) {
-				return null;
-			}
-			public String getText(Object element) {
-				ModuleTreeItem mod = (ModuleTreeItem)element;
-				String text = mod.getModuleName();
-				text += " -";
-				if (mod.getNedTypeName() != null)
-					text += " (" + mod.getNedTypeName() + ")";
-				text += " " + mod.getModuleFullPath();
-				if (mod.getModuleId() != -1)
-					text += " (id = " + mod.getModuleId() + ")";
-				return text;
-			}
+            public void addListener(ILabelProviderListener listener) { }
+            public void removeListener(ILabelProviderListener listener) { }
+            public void dispose() { }
+            public boolean isLabelProperty(Object element, String property) {
+                return false;
+            }
+            public Image getImage(Object element) {
+                return null;
+            }
+            public String getText(Object element) {
+                ModuleTreeItem mod = (ModuleTreeItem)element;
+                String text = mod.getModuleName();
+                text += " -";
+                if (mod.getNedTypeName() != null)
+                    text += " (" + mod.getNedTypeName() + ")";
+                text += " " + mod.getModuleFullPath();
+                if (mod.getModuleId() != -1)
+                    text += " (id = " + mod.getModuleId() + ")";
+                return text;
+            }
 
         });
 
@@ -86,7 +86,7 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         expandAll();
 
         if (root != null && (root).getSubmodules().length > 0)
-        	reveal((root).getSubmodules()[0]); // scroll to top
+            reveal((root).getSubmodules()[0]); // scroll to top
 
         Control control = getControl();
         Menu menu = new Menu(control);
@@ -189,9 +189,9 @@ public class ModuleTreeViewer extends CheckboxTreeViewer {
         });
 
         control.setMenu(menu);
-	}
+    }
 
-	private void setLeafChecked(ModuleTreeItem element, boolean checked) {
+    private void setLeafChecked(ModuleTreeItem element, boolean checked) {
         ModuleTreeItem[] submodules = element.getSubmodules();
 
         if (submodules.length == 0)

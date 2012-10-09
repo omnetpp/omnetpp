@@ -78,7 +78,7 @@ public class ExternalSaveAsChooser extends Composite implements IWidgetAdapter {
 
     protected String browse() {
         FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
-        
+
         String fileName = getTextControl().getText().trim();
         dialog.setFileName(fileName);
 

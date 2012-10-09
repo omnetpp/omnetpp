@@ -18,26 +18,26 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * Copy chart contents to the clipboard.
  */
 public class CopyChartToClipboardAction extends AbstractScaveAction {
-	public CopyChartToClipboardAction() {
-		setText("Copy to Clipboard");
-		setToolTipText("Copy Chart to Clipboard");
-		setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/copy.png"));
-	}
+    public CopyChartToClipboardAction() {
+        setText("Copy to Clipboard");
+        setToolTipText("Copy Chart to Clipboard");
+        setImageDescriptor(ScavePlugin.getImageDescriptor("icons/full/etool16/copy.png"));
+    }
 
-	@Override
-	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		final ChartCanvas chart = editor.getActiveChartCanvas();
-		if (chart != null) {
-			BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
-				public void run() {
-					chart.copyToClipboard();
-				}
-			});
-		}
-	}
+    @Override
+    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+        final ChartCanvas chart = editor.getActiveChartCanvas();
+        if (chart != null) {
+            BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
+                public void run() {
+                    chart.copyToClipboard();
+                }
+            });
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return editor.getActiveChartCanvas() != null;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return editor.getActiveChartCanvas() != null;
+    }
 }

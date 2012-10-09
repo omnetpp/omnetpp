@@ -20,7 +20,7 @@ import org.omnetpp.ned.model.ex.ParamElementEx;
  */
 public interface IHasParameters extends INedElement {
 
-	/**
+    /**
      * Returns the name - parameter node association. The returned map must not be modified.
      *
      * "Best-Effort": This method never returns null, but the returned list

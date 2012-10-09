@@ -18,26 +18,26 @@ import org.omnetpp.scave.engine.ResultFileManager;
  * ...
  */
 public class CopyToClipboardAction extends AbstractScaveAction {
-	public CopyToClipboardAction() {
-		setText("Copy to Clipboard");
-		setToolTipText("Copy Data to Clipboard"); //TODO  in various formats!!!!
-	}
+    public CopyToClipboardAction() {
+        setText("Copy to Clipboard");
+        setToolTipText("Copy Data to Clipboard"); //TODO  in various formats!!!!
+    }
 
-	@Override
-	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
-		if (activePanel != null) {
-			ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
-				public Object call() throws Exception {
-					activePanel.getDataControl().copySelectionToClipboard();
-					return null;
-				}
-			});
-		}
-	}
+    @Override
+    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+        final FilteredDataPanel activePanel = editor.getBrowseDataPage().getActivePanel();
+        if (activePanel != null) {
+            ResultFileManager.callWithReadLock(activePanel.getResultFileManager(), new Callable<Object>() {
+                public Object call() throws Exception {
+                    activePanel.getDataControl().copySelectionToClipboard();
+                    return null;
+                }
+            });
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return editor.getBrowseDataPage().getActivePanel() != null;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return editor.getBrowseDataPage().getActivePanel() != null;
+    }
 }

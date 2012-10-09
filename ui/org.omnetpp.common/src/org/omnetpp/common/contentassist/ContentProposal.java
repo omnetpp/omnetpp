@@ -30,46 +30,46 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
     public static final int DEC_SP_BEFORE  = 0x08;
     public static final int DEC_SP_AFTER   = 0x10;
 
-	private String content;
+    private String content;
 
-	private String label;
+    private String label;
 
-	private String description;
+    private String description;
 
-	private int cursorPosition; // position of the cursor relative to content after the proposal accepted
+    private int cursorPosition; // position of the cursor relative to content after the proposal accepted
 
-	private int decorators; // additional characters added to the content
+    private int decorators; // additional characters added to the content
 
-	private int startIndex; // start of the replaced range
+    private int startIndex; // start of the replaced range
 
-	private int endIndex; // end of the replaced range
-	
-	private Image image;
+    private int endIndex; // end of the replaced range
 
-	public ContentProposal(String content) {
-		this(content, content, content, content.length(), null);
-	}
+    private Image image;
+
+    public ContentProposal(String content) {
+        this(content, content, content, content.length(), null);
+    }
 
     public ContentProposal(String content, String label) {
         this(content, label, null);
         this.cursorPosition = content.length();
     }
 
-	public ContentProposal(String content, String label, String description) {
-		this(content, label, description, content.length(), null);
-	}
+    public ContentProposal(String content, String label, String description) {
+        this(content, label, description, content.length(), null);
+    }
 
     public ContentProposal(String content, String label, String description, Image image) {
         this(content, label, description, content.length(), image);
     }
 
-	public ContentProposal(String content, String label, String description, int cursorPosition, Image image) {
-		this.content = content;
-		this.label = label;
-		this.description = description;
-		this.cursorPosition = cursorPosition;
-		this.image = image;
-	}
+    public ContentProposal(String content, String label, String description, int cursorPosition, Image image) {
+        this.content = content;
+        this.label = label;
+        this.description = description;
+        this.cursorPosition = cursorPosition;
+        this.image = image;
+    }
 
     public String getContent() {
         StringBuffer result = new StringBuffer(((decorators & DEC_QUOTE) != 0 ? quoteStringIfNeeded(content) : content));
@@ -98,17 +98,17 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
         return position;
     }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getLabel() {
-		return label;
-	}
-	
-	public Image getImage() {
-	    return image;
-	}
+    public String getLabel() {
+        return label;
+    }
+
+    public Image getImage() {
+        return image;
+    }
 
     public void setStartIndex(int index) {
         startIndex = index;
@@ -126,20 +126,20 @@ public class ContentProposal implements IContentProposal, Comparable<Object> {
         return content.startsWith(prefix);
     }
 
-	public int compareTo(Object o) {
-		return label.compareTo(((IContentProposal)o).getLabel());
-	}
+    public int compareTo(Object o) {
+        return label.compareTo(((IContentProposal)o).getLabel());
+    }
 
-	private static boolean needsQuotes(String pattern) {
+    private static boolean needsQuotes(String pattern) {
         return Common.needsQuotes(pattern) || StringUtils.indexOfAny(pattern, " \t\n()") >= 0;
     }
 
-	private static String quoteStringIfNeeded(String str) {
+    private static String quoteStringIfNeeded(String str) {
         return needsQuotes(str) ? Common.quoteString(str) : str;
     }
-	
-	@Override
-	public String toString() {
-	    return "\"" + content + "\"";
-	}
+
+    @Override
+    public String toString() {
+        return "\"" + content + "\"";
+    }
 }

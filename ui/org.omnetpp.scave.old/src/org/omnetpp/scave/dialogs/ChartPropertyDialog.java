@@ -24,46 +24,46 @@ import org.omnetpp.scave.charting.ChartSWTWrapper;
 
 public class ChartPropertyDialog extends PreferenceDialog {
 
-	public ChartPropertyDialog(Shell shell, ChartSWTWrapper chart) {
-		super(shell, createPreferenceManager(chart));
-		setPreferenceStore(new PreferenceStore());
-	}
+    public ChartPropertyDialog(Shell shell, ChartSWTWrapper chart) {
+        super(shell, createPreferenceManager(chart));
+        setPreferenceStore(new PreferenceStore());
+    }
 
-	protected static PreferenceManager createPreferenceManager(ChartSWTWrapper chart) {
-		PreferenceManager manager = new PreferenceManager();
-		manager.addToRoot(new PreferenceNode("Title", new TitlePreferencePage("Title", chart)));
-		manager.addToRoot(new PreferenceNode("Axes", new AxesPreferencePage("Axes")));
-		manager.addToRoot(new PreferenceNode("Bars", new BarsPreferencePage("Bars")));
-		manager.addToRoot(new PreferenceNode("Legend", new LegendPreferencePage("Legend")));
-		manager.addToRoot(new PreferenceNode("Plot", new PlotPreferencePage("Plot")));
-		return manager;
-	}
+    protected static PreferenceManager createPreferenceManager(ChartSWTWrapper chart) {
+        PreferenceManager manager = new PreferenceManager();
+        manager.addToRoot(new PreferenceNode("Title", new TitlePreferencePage("Title", chart)));
+        manager.addToRoot(new PreferenceNode("Axes", new AxesPreferencePage("Axes")));
+        manager.addToRoot(new PreferenceNode("Bars", new BarsPreferencePage("Bars")));
+        manager.addToRoot(new PreferenceNode("Legend", new LegendPreferencePage("Legend")));
+        manager.addToRoot(new PreferenceNode("Plot", new PlotPreferencePage("Plot")));
+        return manager;
+    }
 
-	static class EmptyPreferencePage extends PreferencePage
-	{
-		public EmptyPreferencePage(String title)
-		{
-			super(title);
-		}
+    static class EmptyPreferencePage extends PreferencePage
+    {
+        public EmptyPreferencePage(String title)
+        {
+            super(title);
+        }
 
-		@Override
-		protected Control createContents(Composite parent) {
-			return new Composite(parent, SWT.NULL);
-		}
-	}
+        @Override
+        protected Control createContents(Composite parent) {
+            return new Composite(parent, SWT.NULL);
+        }
+    }
 
-	static class PlotPreferencePage extends FieldEditorPreferencePage
-	{
+    static class PlotPreferencePage extends FieldEditorPreferencePage
+    {
 
-		protected PlotPreferencePage(String title) {
-			super(title, FieldEditorPreferencePage.GRID);
-		}
+        protected PlotPreferencePage(String title) {
+            super(title, FieldEditorPreferencePage.GRID);
+        }
 
-		@Override
-		protected void createFieldEditors() {
-			addField(new ColorFieldEditor("BackgroundColor", "Background color", getFieldEditorParent()));
-			addField(new ColorFieldEditor("OutlineColor", "Outline color", getFieldEditorParent()));
-			//addField(new DoubleFieldEditor("ForegroundAlpha", "Foreground alpha", getFieldEditorParent()));
-		}
-	}
+        @Override
+        protected void createFieldEditors() {
+            addField(new ColorFieldEditor("BackgroundColor", "Background color", getFieldEditorParent()));
+            addField(new ColorFieldEditor("OutlineColor", "Outline color", getFieldEditorParent()));
+            //addField(new DoubleFieldEditor("ForegroundAlpha", "Foreground alpha", getFieldEditorParent()));
+        }
+    }
 }

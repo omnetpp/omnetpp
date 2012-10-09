@@ -50,102 +50,102 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 // possible (if this file and the result file are in the same project)
 public class CreateChartTemplateAction extends AbstractScaveAction {
 
-	public CreateChartTemplateAction() {
-		setText("Convert to Dataset...");
-		setDescription("Create dataset from a temporary chart");
-		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
-	}
+    public CreateChartTemplateAction() {
+        setText("Convert to Dataset...");
+        setDescription("Create dataset from a temporary chart");
+        setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_TEMPLATE));
+    }
 
-	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		ScaveEditorPage page = scaveEditor.getActiveEditorPage();
-		if (page != null && page instanceof ChartPage) {
-			final Chart chart = ((ChartPage)page).getChart();
-			if (ScaveModelUtil.isTemporaryChart(chart, scaveEditor)) {
-				final Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+        ScaveEditorPage page = scaveEditor.getActiveEditorPage();
+        if (page != null && page instanceof ChartPage) {
+            final Chart chart = ((ChartPage)page).getChart();
+            if (ScaveModelUtil.isTemporaryChart(chart, scaveEditor)) {
+                final Dataset dataset = ScaveModelUtil.findEnclosingDataset(chart);
 
-				final CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
+                final CreateChartTemplateDialog dialog = new CreateChartTemplateDialog(scaveEditor.getSite().getShell());
                 dialog.setChartName(chart.getName());
-				dialog.setDatasetName(chart.getName());
+                dialog.setDatasetName(chart.getName());
 
-				if (dialog.open() == Window.OK) {
-					EditingDomain domain = scaveEditor.getEditingDomain();
-					ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
-					final ResultFileManager manager = scaveEditor.getResultFileManager();
-					Pair<Collection<Add>,Collection<Add>> adds =
-						ResultFileManager.callWithReadLock(manager, new Callable<Pair<Collection<Add>,Collection<Add>>>() {
-							public Pair<Collection<Add>, Collection<Add>> call() {
-								ResultType type = resultTypeForChart(chart);
-								IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null, type);
-								ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
-								Collection<Add> origAdds = getOriginalAdds(dataset);
-								Collection<Add> adds = ScaveModelUtil.createAddsWithFields(items, dialog.getFilterFields());
-								return pair(origAdds, adds);
-							}
-						});
+                if (dialog.open() == Window.OK) {
+                    EditingDomain domain = scaveEditor.getEditingDomain();
+                    ScaveModelPackage pkg = ScaveModelPackage.eINSTANCE;
+                    final ResultFileManager manager = scaveEditor.getResultFileManager();
+                    Pair<Collection<Add>,Collection<Add>> adds =
+                        ResultFileManager.callWithReadLock(manager, new Callable<Pair<Collection<Add>,Collection<Add>>>() {
+                            public Pair<Collection<Add>, Collection<Add>> call() {
+                                ResultType type = resultTypeForChart(chart);
+                                IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, null, type);
+                                ResultItem[] items = ScaveModelUtil.getResultItems(idlist, manager);
+                                Collection<Add> origAdds = getOriginalAdds(dataset);
+                                Collection<Add> adds = ScaveModelUtil.createAddsWithFields(items, dialog.getFilterFields());
+                                return pair(origAdds, adds);
+                            }
+                        });
 
-					CompoundCommand command = new CompoundCommand();
-					command.append(SetCommand.create( // set dataset name
-										domain,
-										dataset,
-										pkg.getDataset_Name(),
-										dialog.getDatasetName()));
-					command.append(SetCommand.create( // set chart name
-										domain,
-										chart,
-										pkg.getChart_Name(),
-										dialog.getChartName()));
-					command.append(RemoveCommand.create(domain, adds.first)); // change Add items
-					command.append(AddCommand.create(
-										domain,
-										dataset,
-										pkg.getDataset_Items(),
-										adds.second,
-										0));
-					command.append(RemoveCommand.create(domain, dataset)); // move Dataset
-					command.append(AddCommand.create(
-										domain,
-										scaveEditor.getAnalysis().getDatasets(),
-										ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
-										dataset));
-					scaveEditor.executeCommand(command);
+                    CompoundCommand command = new CompoundCommand();
+                    command.append(SetCommand.create( // set dataset name
+                                        domain,
+                                        dataset,
+                                        pkg.getDataset_Name(),
+                                        dialog.getDatasetName()));
+                    command.append(SetCommand.create( // set chart name
+                                        domain,
+                                        chart,
+                                        pkg.getChart_Name(),
+                                        dialog.getChartName()));
+                    command.append(RemoveCommand.create(domain, adds.first)); // change Add items
+                    command.append(AddCommand.create(
+                                        domain,
+                                        dataset,
+                                        pkg.getDataset_Items(),
+                                        adds.second,
+                                        0));
+                    command.append(RemoveCommand.create(domain, dataset)); // move Dataset
+                    command.append(AddCommand.create(
+                                        domain,
+                                        scaveEditor.getAnalysis().getDatasets(),
+                                        ScaveModelPackage.eINSTANCE.getDatasets_Datasets(),
+                                        dataset));
+                    scaveEditor.executeCommand(command);
 
-					scaveEditor.showDatasetsPage();
-				}
-			}
-		}
-	}
+                    scaveEditor.showDatasetsPage();
+                }
+            }
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		ScaveEditorPage page = editor.getActiveEditorPage();
-		return page != null && page instanceof ChartPage &&
-				ScaveModelUtil.isTemporaryChart(((ChartPage)page).getChart(), editor);
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        ScaveEditorPage page = editor.getActiveEditorPage();
+        return page != null && page instanceof ChartPage &&
+                ScaveModelUtil.isTemporaryChart(((ChartPage)page).getChart(), editor);
+    }
 
-	private Collection<Add> getOriginalAdds(Dataset dataset) {
-		Collection<Add> adds = new ArrayList<Add>();
-		for (Object obj : dataset.getItems()) {
-			if (obj instanceof Add) {
-				Add add = (Add)obj;
-				if (add.getFilterPattern() != null) {
-					adds.add(add); //XXX revise
-					continue;
-				}
-			}
-			break;
-		}
-		return adds;
-	}
+    private Collection<Add> getOriginalAdds(Dataset dataset) {
+        Collection<Add> adds = new ArrayList<Add>();
+        for (Object obj : dataset.getItems()) {
+            if (obj instanceof Add) {
+                Add add = (Add)obj;
+                if (add.getFilterPattern() != null) {
+                    adds.add(add); //XXX revise
+                    continue;
+                }
+            }
+            break;
+        }
+        return adds;
+    }
 
-	private ResultType resultTypeForChart(Chart chart) {
-		if (chart instanceof LineChart)
-			return ResultType.VECTOR_LITERAL;
-		else if (chart instanceof BarChart)
-			return ResultType.SCALAR_LITERAL;
-		else if (chart instanceof HistogramChart)
-			return ResultType.HISTOGRAM_LITERAL;
-		else
-			throw new IllegalArgumentException("Unknown chart type: " + chart.getClass().getName());
-	}
+    private ResultType resultTypeForChart(Chart chart) {
+        if (chart instanceof LineChart)
+            return ResultType.VECTOR_LITERAL;
+        else if (chart instanceof BarChart)
+            return ResultType.SCALAR_LITERAL;
+        else if (chart instanceof HistogramChart)
+            return ResultType.HISTOGRAM_LITERAL;
+        else
+            throw new IllegalArgumentException("Unknown chart type: " + chart.getClass().getName());
+    }
 }

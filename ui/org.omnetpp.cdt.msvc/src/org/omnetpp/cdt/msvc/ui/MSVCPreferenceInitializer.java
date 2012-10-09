@@ -94,11 +94,11 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
         if (vcDir != null)
             return vcDir;
 
-    	WindowsRegistry reg = WindowsRegistry.getRegistry();
-    	if (reg == null)
-    		return null;
+        WindowsRegistry reg = WindowsRegistry.getRegistry();
+        if (reg == null)
+            return null;
 
-    	// try to detect visual c
+        // try to detect visual c
         for (int i = 0; i < VC_VERSIONS.length; ++i) {
             vcDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VC7", VC_VERSIONS[i]);
             if (vcDir != null)
@@ -112,7 +112,7 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
                 return new Path(sdkVCDir).append("VC").toOSString();
         }
 
-    	return null;
+        return null;
     }
 
     /**
@@ -128,8 +128,8 @@ public class MSVCPreferenceInitializer extends AbstractPreferenceInitializer {
             return vsDir;
 
         WindowsRegistry reg = WindowsRegistry.getRegistry();
-    	if (reg == null)
-    		return null;
+        if (reg == null)
+            return null;
 
         for (int i = 0; i < VC_VERSIONS.length; ++i) {
             vsDir = reg.getLocalMachineValue("SOFTWARE\\Microsoft\\VisualStudio\\SxS\\VS7", VC_VERSIONS[i]);

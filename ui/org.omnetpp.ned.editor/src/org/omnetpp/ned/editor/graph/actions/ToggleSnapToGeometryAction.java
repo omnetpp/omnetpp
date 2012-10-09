@@ -46,7 +46,7 @@ public class ToggleSnapToGeometryAction extends Action {
         this.diagramViewer = diagramViewer;
         setToolTipText(TOOLTIP);
         setId(ID);
-		setImageDescriptor(IMAGE);
+        setImageDescriptor(IMAGE);
         setChecked(isSnapEnabled());
     }
 

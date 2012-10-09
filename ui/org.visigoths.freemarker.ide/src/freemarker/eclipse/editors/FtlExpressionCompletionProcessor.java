@@ -15,12 +15,12 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import freemarker.eclipse.FreemarkerPlugin;
 
 /**
- * Provides completion proposals inside FreeMarker expressions. 
+ * Provides completion proposals inside FreeMarker expressions.
  *
  * @author <a href="mailto:andras@omnetpp.org">Andras Varga</a>
  */
 public class FtlExpressionCompletionProcessor implements IContentAssistProcessor {
-    // copied out from freemarker.core.BuiltIn, because it has no public accessors  
+    // copied out from freemarker.core.BuiltIn, because it has no public accessors
     public static final String[] BUILTINS = {
             "ancestors", "byte", "c", "cap_first", "capitalize", "ceiling", "children",
             "chop_linebreak", "contains", "date", "datetime", "default", "double", "ends_with", "eval", "exists", "first",
@@ -51,11 +51,11 @@ public class FtlExpressionCompletionProcessor implements IContentAssistProcessor
         int questionmarkPos = linePrefix.lastIndexOf('?');
         if (questionmarkPos == -1)
             return null;
-        
+
         String prefix = linePrefix.substring(questionmarkPos+1);
-        
+
         List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
-        
+
         for (String builtin : BUILTINS)
             if (builtin.startsWith(prefix))
                 result.add(new CompletionProposal(builtin, documentOffset-prefix.length(), prefix.length(), builtin.length()));

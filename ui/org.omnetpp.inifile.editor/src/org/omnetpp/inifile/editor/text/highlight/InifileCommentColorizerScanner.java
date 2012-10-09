@@ -19,14 +19,14 @@ import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
  */
 public class InifileCommentColorizerScanner extends RuleBasedScanner {
     /**
-	 * Constructor.
-	 */
-	 public InifileCommentColorizerScanner() {
+     * Constructor.
+     */
+     public InifileCommentColorizerScanner() {
         // this is the default token for a comment
         setDefaultReturnToken(InifileTextEditorHelper.commentToken);
 
-		List<IRule> list = new ArrayList<IRule>();
-		// add rules if needed...
-		setRules(list.toArray(new IRule[]{}));
-	}
+        List<IRule> list = new ArrayList<IRule>();
+        // add rules if needed...
+        setRules(list.toArray(new IRule[]{}));
+    }
 }

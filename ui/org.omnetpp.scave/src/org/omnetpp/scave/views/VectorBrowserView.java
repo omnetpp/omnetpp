@@ -53,383 +53,383 @@ import org.omnetpp.scave.model2.ComputedResultFileUpdater.CompletionEvent;
  * @author tomi
  */
 public class VectorBrowserView extends ViewWithMessagePart {
-	public static final String ID = "org.omnetpp.scave.VectorBrowserView";
+    public static final String ID = "org.omnetpp.scave.VectorBrowserView";
 
-	protected TableColumn eventNumberColumn;
-	protected VirtualTable<OutputVectorEntry> viewer;
-	protected ISelectionListener selectionChangedListener;
-	protected IPartListener partListener;
-	protected IWorkbenchPart activePart;
-	protected VectorResultContentProvider contentProvider;
+    protected TableColumn eventNumberColumn;
+    protected VirtualTable<OutputVectorEntry> viewer;
+    protected ISelectionListener selectionChangedListener;
+    protected IPartListener partListener;
+    protected IWorkbenchPart activePart;
+    protected VectorResultContentProvider contentProvider;
 
-	protected GotoAction gotoLineAction;
-	protected GotoAction gotoEventAction;
-	protected GotoAction gotoTimeAction;
+    protected GotoAction gotoLineAction;
+    protected GotoAction gotoEventAction;
+    protected GotoAction gotoTimeAction;
 
-	@Override
-	public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
-		createPulldownMenu();
-		hookListeners();
-		setViewerInput(getSite().getPage().getSelection());
-	}
+    @Override
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+        createPulldownMenu();
+        hookListeners();
+        setViewerInput(getSite().getPage().getSelection());
+    }
 
-	@Override
-	protected Control createViewControl(Composite parent) {
-		contentProvider = new VectorResultContentProvider();
-		viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
-		viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		viewer.setContentProvider(contentProvider);
-		viewer.setRowRenderer(new VectorResultRowRenderer());
+    @Override
+    protected Control createViewControl(Composite parent) {
+        contentProvider = new VectorResultContentProvider();
+        viewer = new VirtualTable<OutputVectorEntry>(parent, SWT.NONE);
+        viewer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        viewer.setContentProvider(contentProvider);
+        viewer.setRowRenderer(new VectorResultRowRenderer());
 
-		TableColumn tableColumn = viewer.createColumn();
-		tableColumn.setWidth(60);
-		tableColumn.setText("Item#");
-		tableColumn = viewer.createColumn();
-		tableColumn.setWidth(140);
-		tableColumn.setText("Time");
-		tableColumn = viewer.createColumn();
-		tableColumn.setWidth(140);
-		tableColumn.setText("Value");
-		return viewer;
-	}
+        TableColumn tableColumn = viewer.createColumn();
+        tableColumn.setWidth(60);
+        tableColumn.setText("Item#");
+        tableColumn = viewer.createColumn();
+        tableColumn.setWidth(140);
+        tableColumn.setText("Time");
+        tableColumn = viewer.createColumn();
+        tableColumn.setWidth(140);
+        tableColumn.setText("Value");
+        return viewer;
+    }
 
-	private void createPulldownMenu() {
-		gotoLineAction = new GotoAction(this, GotoTarget.Line);
-		gotoEventAction = new GotoAction(this, GotoTarget.Event);
-		gotoTimeAction = new GotoAction(this, GotoTarget.Time);
+    private void createPulldownMenu() {
+        gotoLineAction = new GotoAction(this, GotoTarget.Line);
+        gotoEventAction = new GotoAction(this, GotoTarget.Event);
+        gotoTimeAction = new GotoAction(this, GotoTarget.Time);
 
-		IMenuManager manager = getViewSite().getActionBars().getMenuManager();
-		manager.add(gotoLineAction);
-		manager.add(gotoEventAction);
-		manager.add(gotoTimeAction);
-	}
+        IMenuManager manager = getViewSite().getActionBars().getMenuManager();
+        manager.add(gotoLineAction);
+        manager.add(gotoEventAction);
+        manager.add(gotoTimeAction);
+    }
 
-	public void gotoLine(int lineNumber) {
-		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
-		if (entry != null)
-			viewer.scrollToElement(entry);
-	}
+    public void gotoLine(int lineNumber) {
+        OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
+        if (entry != null)
+            viewer.scrollToElement(entry);
+    }
 
-	public void gotoEvent(long eventNumber) {
-		OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
-		if (entry != null)
-			viewer.scrollToElement(entry);
-	}
+    public void gotoEvent(long eventNumber) {
+        OutputVectorEntry entry = contentProvider.getElementByEventNumber(eventNumber, true);
+        if (entry != null)
+            viewer.scrollToElement(entry);
+    }
 
-	public void gotoTime(BigDecimal time) {
-		OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
-		if (entry != null)
-			viewer.scrollToElement(entry);
-	}
+    public void gotoTime(BigDecimal time) {
+        OutputVectorEntry entry = contentProvider.getElementBySimulationTime(time, true);
+        if (entry != null)
+            viewer.scrollToElement(entry);
+    }
 
-	public void selectLine(int lineNumber) {
-		OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
-		if (entry != null) {
-			viewer.scrollToElement(entry);
-			viewer.setSelectionElement(entry);
-		}
-	}
+    public void selectLine(int lineNumber) {
+        OutputVectorEntry entry = contentProvider.getElementBySerial(lineNumber);
+        if (entry != null) {
+            viewer.scrollToElement(entry);
+            viewer.setSelectionElement(entry);
+        }
+    }
 
-	@Override
-	public void dispose() {
-		unhookListeners();
-		super.dispose();
-	}
+    @Override
+    public void dispose() {
+        unhookListeners();
+        super.dispose();
+    }
 
-	private void hookListeners() {
-		selectionChangedListener = new INullSelectionListener() {
-			public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
-				ResultFileManager.callWithReadLock(getResultFileManager(selection), new Callable<Object>() {
-					public Object call() throws Exception {
-						if (part == activePart)
-							setViewerInput(selection);
-						return null;
-					}
-				});
-			}
-		};
-		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+    private void hookListeners() {
+        selectionChangedListener = new INullSelectionListener() {
+            public void selectionChanged(final IWorkbenchPart part, final ISelection selection) {
+                ResultFileManager.callWithReadLock(getResultFileManager(selection), new Callable<Object>() {
+                    public Object call() throws Exception {
+                        if (part == activePart)
+                            setViewerInput(selection);
+                        return null;
+                    }
+                });
+            }
+        };
+        getSite().getPage().addPostSelectionListener(selectionChangedListener);
 
-		partListener = new IPartListener() {
+        partListener = new IPartListener() {
 
-			public void partActivated(IWorkbenchPart part) {
-				if (part instanceof ScaveEditor || part instanceof DatasetView)
-					activePart = part;
-			}
+            public void partActivated(IWorkbenchPart part) {
+                if (part instanceof ScaveEditor || part instanceof DatasetView)
+                    activePart = part;
+            }
 
-			public void partClosed(IWorkbenchPart part) {
-				if (part == activePart) {
-					activePart = null;
-					setViewerInput((ISelection)null);
-				}
-			}
+            public void partClosed(IWorkbenchPart part) {
+                if (part == activePart) {
+                    activePart = null;
+                    setViewerInput((ISelection)null);
+                }
+            }
 
-			public void partOpened(IWorkbenchPart part) {}
-			public void partBroughtToTop(IWorkbenchPart part) {}
-			public void partDeactivated(IWorkbenchPart part) {}
-		};
-		getSite().getPage().addPartListener(partListener);
-	}
+            public void partOpened(IWorkbenchPart part) {}
+            public void partBroughtToTop(IWorkbenchPart part) {}
+            public void partDeactivated(IWorkbenchPart part) {}
+        };
+        getSite().getPage().addPartListener(partListener);
+    }
 
-	private void unhookListeners() {
-		if (selectionChangedListener != null) {
-			getSite().getPage().removePostSelectionListener(selectionChangedListener);
-			selectionChangedListener = null;
-		}
-		if (partListener != null) {
-			getSite().getPage().removePartListener(partListener);
-			partListener = null;
-		}
-	}
+    private void unhookListeners() {
+        if (selectionChangedListener != null) {
+            getSite().getPage().removePostSelectionListener(selectionChangedListener);
+            selectionChangedListener = null;
+        }
+        if (partListener != null) {
+            getSite().getPage().removePartListener(partListener);
+            partListener = null;
+        }
+    }
 
-	@Override
-	public void setFocus() {
-		viewer.setFocus();
-	}
+    @Override
+    public void setFocus() {
+        viewer.setFocus();
+    }
 
-	private ResultFileManager getResultFileManager(ISelection selection) {
-		if (selection instanceof IDListSelection) {
-			return ((IDListSelection)selection).getResultFileManager();
-		}
-		else if (selection instanceof IStructuredSelection) {
-			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-			if (selectedObject instanceof ChartLine) {
-				ChartLine line = (ChartLine)selectedObject;
-				if (line.getResultItemRef() != null)
-					return line.getResultItemRef().getResultFileManager();
-			}
-		}
-		return null;
-	}
+    private ResultFileManager getResultFileManager(ISelection selection) {
+        if (selection instanceof IDListSelection) {
+            return ((IDListSelection)selection).getResultFileManager();
+        }
+        else if (selection instanceof IStructuredSelection) {
+            Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
+            if (selectedObject instanceof ChartLine) {
+                ChartLine line = (ChartLine)selectedObject;
+                if (line.getResultItemRef() != null)
+                    return line.getResultItemRef().getResultFileManager();
+            }
+        }
+        return null;
+    }
 
-	public void setViewerInput(ISelection selection) {
-		ResultItemRef selectedVector = null;
-		int dataPointIndex = -1;
+    public void setViewerInput(ISelection selection) {
+        ResultItemRef selectedVector = null;
+        int dataPointIndex = -1;
 
-		if (selection instanceof IDListSelection) {
-			IDListSelection sel = (IDListSelection)selection;
-			if (!sel.isEmpty()) {
-				long id = (Long)sel.getFirstElement();
-				if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
-					selectedVector = new ResultItemRef(id, sel.getResultFileManager());
-			}
-		}
-		else if (selection instanceof IStructuredSelection) {
-			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-			if (selectedObject instanceof ChartLine) {
-				ChartLine selectedLine = (ChartLine)selectedObject;
-				ResultItemRef item = selectedLine.getResultItemRef();
-				if (item != null && ResultFileManager.getTypeOf(item.getID()) == ResultFileManager.VECTOR) {
-					selectedVector = item;
-					if (selectedObject instanceof ChartDataPoint)
-						dataPointIndex = ((ChartDataPoint)selectedObject).getIndex();
-				}
-			}
-		}
+        if (selection instanceof IDListSelection) {
+            IDListSelection sel = (IDListSelection)selection;
+            if (!sel.isEmpty()) {
+                long id = (Long)sel.getFirstElement();
+                if (ResultFileManager.getTypeOf(id) == ResultFileManager.VECTOR)
+                    selectedVector = new ResultItemRef(id, sel.getResultFileManager());
+            }
+        }
+        else if (selection instanceof IStructuredSelection) {
+            Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
+            if (selectedObject instanceof ChartLine) {
+                ChartLine selectedLine = (ChartLine)selectedObject;
+                ResultItemRef item = selectedLine.getResultItemRef();
+                if (item != null && ResultFileManager.getTypeOf(item.getID()) == ResultFileManager.VECTOR) {
+                    selectedVector = item;
+                    if (selectedObject instanceof ChartDataPoint)
+                        dataPointIndex = ((ChartDataPoint)selectedObject).getIndex();
+                }
+            }
+        }
 
-		if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
-			if (dataPointIndex >= 0)
-				selectLine(dataPointIndex);
-			return;
-		}
+        if (ObjectUtils.equals(selectedVector, viewer.getInput())) {
+            if (dataPointIndex >= 0)
+                selectLine(dataPointIndex);
+            return;
+        }
 
-		if (selectedVector == null) {
-			setViewerInput((ResultItemRef)null);
-			return;
-		}
+        if (selectedVector == null) {
+            setViewerInput((ResultItemRef)null);
+            return;
+        }
 
-		// recompute computed files if needed
-		final ResultFileManager manager = selectedVector.getResultFileManager();
-		final ResultItemRef finalSelectedVector = selectedVector;
-		final int finalDataPointIndex = dataPointIndex;
-		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-			public Object call() throws Exception {
-				final VectorResult vector = (VectorResult)finalSelectedVector.resolve();
-				if (vector == null || !vector.isComputed() || !(vector.getComputation() instanceof ProcessingOp)) {
-					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
-					return null;
-				}
+        // recompute computed files if needed
+        final ResultFileManager manager = selectedVector.getResultFileManager();
+        final ResultItemRef finalSelectedVector = selectedVector;
+        final int finalDataPointIndex = dataPointIndex;
+        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            public Object call() throws Exception {
+                final VectorResult vector = (VectorResult)finalSelectedVector.resolve();
+                if (vector == null || !vector.isComputed() || !(vector.getComputation() instanceof ProcessingOp)) {
+                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
+                    return null;
+                }
 
-				ProcessingOp operation =  (ProcessingOp)vector.getComputation();
-				ResultItemRef origInput = (ResultItemRef)viewer.getInput();
-				VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
-				ComputedResultFileUpdater updater = ComputedResultFileUpdater.instance();
-				if (origVector != null && operation == origVector.getComputation() &&
-						updater.isComputedFileUpToDate(operation, manager)) {
-					setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
-					return null;
-				}
+                ProcessingOp operation =  (ProcessingOp)vector.getComputation();
+                ResultItemRef origInput = (ResultItemRef)viewer.getInput();
+                VectorResult origVector = origInput != null ? (VectorResult)origInput.resolve() : null;
+                ComputedResultFileUpdater updater = ComputedResultFileUpdater.instance();
+                if (origVector != null && operation == origVector.getComputation() &&
+                        updater.isComputedFileUpToDate(operation, manager)) {
+                    setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, Status.OK_STATUS);
+                    return null;
+                }
 
-				setViewerInput((IDListSelection)null);
-				showMessage("Computing vectors...");
+                setViewerInput((IDListSelection)null);
+                showMessage("Computing vectors...");
 
-				updater.ensureComputedFile(operation, manager,
-					new ComputedResultFileUpdater.CompletionCallback() {
-						public void completed(final CompletionEvent event) {
-							runInUIThread(new Runnable() {
-								public void run() {
-									ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-										public Object call() {
-											setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, event.getStatus());
-											return null;
-										}
-									});
-								}
-							});
-						}
-					});
-				return null;
-			}
-		});
-	}
+                updater.ensureComputedFile(operation, manager,
+                    new ComputedResultFileUpdater.CompletionCallback() {
+                        public void completed(final CompletionEvent event) {
+                            runInUIThread(new Runnable() {
+                                public void run() {
+                                    ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+                                        public Object call() {
+                                            setViewerInputOrMessage(finalSelectedVector, finalDataPointIndex, event.getStatus());
+                                            return null;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                return null;
+            }
+        });
+    }
 
-	private static void runInUIThread(Runnable runnable) {
-		if (Display.getCurrent() == null)
-			Display.getDefault().asyncExec(runnable);
-		else
-			runnable.run();
-	}
+    private static void runInUIThread(Runnable runnable) {
+        if (Display.getCurrent() == null)
+            Display.getDefault().asyncExec(runnable);
+        else
+            runnable.run();
+    }
 
-	public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {
-		final int severity = status.getSeverity();
-		if (severity == IStatus.OK) {
-			setViewerInput(input);
-			if (serial >= 0)
-				selectLine(serial);
-		}
-		else if (severity == IStatus.CANCEL)
-			showMessage("Canceled");
-		else if (severity == IStatus.ERROR)
-			showMessage("Failed: " + status.getMessage());
-	}
+    public void setViewerInputOrMessage(ResultItemRef input, int serial, IStatus status) {
+        final int severity = status.getSeverity();
+        if (severity == IStatus.OK) {
+            setViewerInput(input);
+            if (serial >= 0)
+                selectLine(serial);
+        }
+        else if (severity == IStatus.CANCEL)
+            showMessage("Canceled");
+        else if (severity == IStatus.ERROR)
+            showMessage("Failed: " + status.getMessage());
+    }
 
-	protected void setViewerInput(ResultItemRef input) {
-		if (!ObjectUtils.equals(input, viewer.getInput())) {
-			viewer.setInput(input);
-			// show message instead of empty table, when no index file
-			checkInput(input);
-			if (input != null && input.resolve() instanceof VectorResult) {
-				VectorResult vector = (VectorResult)input.resolve();
-				boolean hasEventNumbers = vector.getColumns().indexOf('E') >= 0;
-				gotoEventAction.setEnabled(hasEventNumbers);
-				setEventNumberColumnVisible(hasEventNumbers);
-				setContentDescription(String.format("'%s.%s' in run %s from file %s",
-						vector.getModuleName(), vector.getName(),
-						vector.getFileRun().getRun().getRunName(),
-						vector.getFileRun().getFile().getFilePath()));
-			}
-			else
-				setContentDescription("");
-			viewer.redraw();
-		}
-	}
+    protected void setViewerInput(ResultItemRef input) {
+        if (!ObjectUtils.equals(input, viewer.getInput())) {
+            viewer.setInput(input);
+            // show message instead of empty table, when no index file
+            checkInput(input);
+            if (input != null && input.resolve() instanceof VectorResult) {
+                VectorResult vector = (VectorResult)input.resolve();
+                boolean hasEventNumbers = vector.getColumns().indexOf('E') >= 0;
+                gotoEventAction.setEnabled(hasEventNumbers);
+                setEventNumberColumnVisible(hasEventNumbers);
+                setContentDescription(String.format("'%s.%s' in run %s from file %s",
+                        vector.getModuleName(), vector.getName(),
+                        vector.getFileRun().getRun().getRunName(),
+                        vector.getFileRun().getFile().getFilePath()));
+            }
+            else
+                setContentDescription("");
+            viewer.redraw();
+        }
+    }
 
-	/**
-	 * Checks if the input is a vector whose file has an index.
-	 * If not then the content of the vector can not be displayed
-	 * and a message is shown.
-	 */
-	private void checkInput(ResultItemRef input) {
-		if (input != null && input.resolve() instanceof VectorResult) {
-			VectorResult vector = (VectorResult)input.resolve();
-			String file = vector.getFileRun().getFile().getFileSystemFilePath();
-			if (IndexFile.isIndexFileUpToDate(file)) {
-				hideMessage();
-				if (eventNumberColumn != null && vector.getColumns().indexOf('E') < 0) {
-					eventNumberColumn.dispose();
-					eventNumberColumn = null;
-				}
-				else if (eventNumberColumn == null && vector.getColumns().indexOf('E') >= 0) {
-					eventNumberColumn = viewer.createColumn();
-					eventNumberColumn.setWidth(60);
-					eventNumberColumn.setText("Event#");
-					viewer.setColumnOrder(new int[] {0,3,1,2});
-				}
-			}
-			else {
-				String fileInWorkspace = vector.getFileRun().getFile().getFilePath();
-				showMessage("Vector content cannot be browsed, because the index file (.vci) " +
-							   "for \""+fileInWorkspace+"\" is missing or out of date.");
-			}
-		}
-	}
+    /**
+     * Checks if the input is a vector whose file has an index.
+     * If not then the content of the vector can not be displayed
+     * and a message is shown.
+     */
+    private void checkInput(ResultItemRef input) {
+        if (input != null && input.resolve() instanceof VectorResult) {
+            VectorResult vector = (VectorResult)input.resolve();
+            String file = vector.getFileRun().getFile().getFileSystemFilePath();
+            if (IndexFile.isIndexFileUpToDate(file)) {
+                hideMessage();
+                if (eventNumberColumn != null && vector.getColumns().indexOf('E') < 0) {
+                    eventNumberColumn.dispose();
+                    eventNumberColumn = null;
+                }
+                else if (eventNumberColumn == null && vector.getColumns().indexOf('E') >= 0) {
+                    eventNumberColumn = viewer.createColumn();
+                    eventNumberColumn.setWidth(60);
+                    eventNumberColumn.setText("Event#");
+                    viewer.setColumnOrder(new int[] {0,3,1,2});
+                }
+            }
+            else {
+                String fileInWorkspace = vector.getFileRun().getFile().getFilePath();
+                showMessage("Vector content cannot be browsed, because the index file (.vci) " +
+                               "for \""+fileInWorkspace+"\" is missing or out of date.");
+            }
+        }
+    }
 
-	// Order: Item#, Event#, Time, Value
-	private static final int[] ColumnOrder = new int[] {0,3,1,2};
+    // Order: Item#, Event#, Time, Value
+    private static final int[] ColumnOrder = new int[] {0,3,1,2};
 
-	private void setEventNumberColumnVisible(boolean visible) {
-		if (eventNumberColumn != null && !visible) {
-			eventNumberColumn.dispose();
-			eventNumberColumn = null;
-		}
-		else if (eventNumberColumn == null && visible) {
-			eventNumberColumn = viewer.createColumn();
-			eventNumberColumn.setWidth(60);
-			eventNumberColumn.setText("Event#");
-			viewer.setColumnOrder(ColumnOrder);
-		}
-	}
+    private void setEventNumberColumnVisible(boolean visible) {
+        if (eventNumberColumn != null && !visible) {
+            eventNumberColumn.dispose();
+            eventNumberColumn = null;
+        }
+        else if (eventNumberColumn == null && visible) {
+            eventNumberColumn = viewer.createColumn();
+            eventNumberColumn.setWidth(60);
+            eventNumberColumn.setText("Event#");
+            viewer.setColumnOrder(ColumnOrder);
+        }
+    }
 
 
-	enum GotoTarget {
-		Line,
-		Event,
-		Time,
-	}
+    enum GotoTarget {
+        Line,
+        Event,
+        Time,
+    }
 
-	static class GotoAction extends Action
-	{
-		VectorBrowserView view;
-		GotoTarget target;
-		String prompt;
+    static class GotoAction extends Action
+    {
+        VectorBrowserView view;
+        GotoTarget target;
+        String prompt;
 
-		public GotoAction(VectorBrowserView view, GotoTarget target) {
-			this.view = view;
-			this.target = target;
-			switch (target) {
-			case Line: setText("Go to line..."); prompt = "Line number:"; break;
-			case Event: setText("Go to event..."); prompt = "Event number:"; break;
-			case Time: setText("Go to time..."); prompt = "Time:"; break;
-			}
-		}
+        public GotoAction(VectorBrowserView view, GotoTarget target) {
+            this.view = view;
+            this.target = target;
+            switch (target) {
+            case Line: setText("Go to line..."); prompt = "Line number:"; break;
+            case Event: setText("Go to event..."); prompt = "Event number:"; break;
+            case Time: setText("Go to time..."); prompt = "Time:"; break;
+            }
+        }
 
-		public void run() {
-			IInputValidator validator = new IInputValidator() {
-				public String isValid(String text) {
-					if (text == null || text.length() == 0)
-						return " ";
-					else if (parseTarget(text) == null)
-						return "Enter a" + (target == GotoTarget.Time ? "" : "n integer") + " number";
-					else
-						return null; // ok
-				}
-			};
-			InputDialog dialog = new InputDialog(view.getSite().getShell(), "Go to", prompt, "", validator);
-			if (dialog.open() == Window.OK) {
-				Object targetAddr = parseTarget(dialog.getValue());
-				if (targetAddr != null) {
-					switch (target) {
-					case Line: view.gotoLine((Integer)targetAddr); break;
-					case Event: view.gotoEvent((Long)targetAddr); break;
-					case Time: view.gotoTime((BigDecimal)targetAddr); break;
-					}
-				}
-			}
-		}
+        public void run() {
+            IInputValidator validator = new IInputValidator() {
+                public String isValid(String text) {
+                    if (text == null || text.length() == 0)
+                        return " ";
+                    else if (parseTarget(text) == null)
+                        return "Enter a" + (target == GotoTarget.Time ? "" : "n integer") + " number";
+                    else
+                        return null; // ok
+                }
+            };
+            InputDialog dialog = new InputDialog(view.getSite().getShell(), "Go to", prompt, "", validator);
+            if (dialog.open() == Window.OK) {
+                Object targetAddr = parseTarget(dialog.getValue());
+                if (targetAddr != null) {
+                    switch (target) {
+                    case Line: view.gotoLine((Integer)targetAddr); break;
+                    case Event: view.gotoEvent((Long)targetAddr); break;
+                    case Time: view.gotoTime((BigDecimal)targetAddr); break;
+                    }
+                }
+            }
+        }
 
-		public Object parseTarget(String str) {
-			try
-			{
-				switch (target) {
-				case Time: return BigDecimal.parse(str);
-				case Line: return Integer.parseInt(str);
-				case Event: return Long.parseLong(str);
-				default: return null;
-				}
-			} catch (Exception e) {
-				return null;
-			}
-		}
-	}
+        public Object parseTarget(String str) {
+            try
+            {
+                switch (target) {
+                case Time: return BigDecimal.parse(str);
+                case Line: return Integer.parseInt(str);
+                case Event: return Long.parseLong(str);
+                default: return null;
+                }
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
 }

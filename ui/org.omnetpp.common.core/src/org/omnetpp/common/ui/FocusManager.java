@@ -12,14 +12,14 @@ import org.omnetpp.common.Debug;
 /**
  * Keeps track of the last focused control inside a Composite (or among an arbitrary
  * set of controls), so that the old focus can be restored when this Composite loses
- * and then re-gains focus. 
- * 
- * The default behavior of Composite's setFocus() is to give the focus to the first 
+ * and then re-gains focus.
+ *
+ * The default behavior of Composite's setFocus() is to give the focus to the first
  * child control that accepts it, which is often not good enough from a usability perspective.
- * 
- * If you use a FocusManager for a Composite, it is recommended that you override 
+ *
+ * If you use a FocusManager for a Composite, it is recommended that you override
  * the setFocus() method of the Composite to call FocusManager's setFocus(), like this:
- * 
+ *
  * <pre>
  * public boolean setFocus() {
  *     if (focusManager.setFocus())
@@ -27,29 +27,29 @@ import org.omnetpp.common.Debug;
  *     return super.setFocus();
  * }
  * </pre>
- * 
+ *
  * @author Andras
  */
 public class FocusManager {
-    
+
     private Control lastFocusControl = null;
-    
+
     private Listener listener = new Listener() {
         public void handleEvent(Event e) {
             // note: no "instanceOf" checks because we only hook this listener on Controls
             if (e.type == SWT.FocusOut)
-                controlLostFocus((Control)e.widget); 
+                controlLostFocus((Control)e.widget);
             else if (e.type == SWT.Dispose)
                 controlDisposed((Control)e.widget);
         }
-    }; 
+    };
 
     /**
      * Creates an empty FocusManager
      */
     public FocusManager() {
     }
-    
+
     /**
      * Create a FocusManager that covers all Controls under this Composite.
      * See addAllControls().
@@ -61,7 +61,7 @@ public class FocusManager {
     /**
      * Adds all Controls under the given Composite. Can be called multiple times
      * to cover controls created since the last call.
-     * 
+     *
      * To help with nested FocusManagers, a Composite might implement IHasFocusManager,
      * and then this focus manager will not add listeners to the controls in it.
      * It is then expected that that composite has setFocus() overridden to use its
@@ -76,7 +76,7 @@ public class FocusManager {
     }
 
     public void add(Control control) {
-        // note: FocusIn listener has been tried and it is NOT good for our purposes! 
+        // note: FocusIn listener has been tried and it is NOT good for our purposes!
         // (because TabFolder widgets etc also contain setFocus(), fixFocus(), setFixedfocus()
         // and similar calls that interfere with us)
         addListenerIfNotAlreadyAdded(control, SWT.FocusOut, listener);
@@ -90,14 +90,14 @@ public class FocusManager {
                 forgetAllControls((Composite)control);
         }
     }
-    
+
     public void forget(Control control) {
         control.removeListener(SWT.FocusOut, listener);
         control.removeListener(SWT.Dispose, listener);
         if (lastFocusControl == control)
             lastFocusControl = null;
     }
-    
+
     /**
      * Restores the focus to the last focused control, using its setFocus()
      * method. Return value is that of setFocus(), i.e. true if successful.
@@ -120,7 +120,7 @@ public class FocusManager {
     public void setLastFocusControl(Control lastFocusControl) {
         this.lastFocusControl = lastFocusControl;
     }
-    
+
     /**
      * Note: this is usually not the currently focused widget but the one focused
      * before that, as value is updated when the currently focused widget *loses* focus.
@@ -128,12 +128,12 @@ public class FocusManager {
     public Control getLastFocusControl() {
         return lastFocusControl;
     }
-    
+
     protected void controlLostFocus(Control control) {
         Debug.println("FocusManager: storing last focused widget: " + control);
         lastFocusControl = control;
     }
-    
+
     protected void controlDisposed(Control control) {
         forget(control);
     }

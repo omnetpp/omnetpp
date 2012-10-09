@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * Utility class for generating unique file names.
- *  
+ *
  * @author tomi
  */
 public class FilenameGenerator {
@@ -23,7 +23,7 @@ public class FilenameGenerator {
     public enum Overwrite {
         Yes, No, Ask
     }
-   
+
     final File targetFolder;
     final String extension;
     Overwrite overWrite = Overwrite.Ask;
@@ -34,7 +34,7 @@ public class FilenameGenerator {
         this.extension = extension;
         this.overWrite = overwrite;
     }
-    
+
     public List<File> generateFilenames(List<String> baseNames, Shell parentShell) {
         List<File> files = new ArrayList<File>(baseNames.size());
         for (String name : baseNames) {
@@ -49,7 +49,7 @@ public class FilenameGenerator {
             else
                 entry.setValue(1); // start names with _1
         }
-        
+
         for (String baseName : baseNames) {
             String fileName = nextFileName(baseName);
             File file = checkIfExist(fileName, baseName, parentShell);
@@ -57,31 +57,31 @@ public class FilenameGenerator {
         }
         return files;
     }
-    
+
     private String nextFileName(String baseName) {
         Integer count = counts.get(baseName);
         String fileName = count != null ? baseName + "_" + count : baseName;
         counts.put(baseName, count == null ? 1 : count+1);
         return fileName;
     }
-    
+
     private File checkIfExist(String fileName, String baseName, Shell parentShell) {
         File file = new File(targetFolder, fileName + "." + extension);
         Overwrite overWrite = this.overWrite;
         if (overWrite == Overwrite.Ask && file.exists()) {
             overWrite = openConfirmDialog(file, parentShell);
         }
-            
+
         if (overWrite == Overwrite.No) {
             while (file.exists()) {
                 fileName = nextFileName(baseName);
                 file = new File(targetFolder, fileName + "." + extension);
             }
         }
-        
+
         return file;
     }
-    
+
     private Overwrite openConfirmDialog(File file, Shell parentShell) {
         MessageDialog dialog = new MessageDialog(parentShell, "Overwrite files?", null/*image*/,
                 String.format("The '%s' file already exists. Do you want to overwrite it?", file.getAbsolutePath()),

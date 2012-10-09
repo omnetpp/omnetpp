@@ -35,65 +35,65 @@ import org.omnetpp.scave.model.provider.ScaveEditPlugin;
  */
 public class SetOperationPropertySource extends PropertySource {
 
-	ResultFileManager manager;
+    ResultFileManager manager;
 
-	public SetOperationPropertySource(Object object,
-			IItemPropertySource itemPropertySource, ResultFileManager manager) {
-		super(object, itemPropertySource);
-		Assert.isLegal(object instanceof SetOperation);
-		Assert.isLegal(itemPropertySource != null);
-		Assert.isLegal(manager != null);
-		this.manager = manager;
-	}
+    public SetOperationPropertySource(Object object,
+            IItemPropertySource itemPropertySource, ResultFileManager manager) {
+        super(object, itemPropertySource);
+        Assert.isLegal(object instanceof SetOperation);
+        Assert.isLegal(itemPropertySource != null);
+        Assert.isLegal(manager != null);
+        this.manager = manager;
+    }
 
-	public IPropertyDescriptor[] getPropertyDescriptors() {
-		IPropertyDescriptor[] descriptors = super.getPropertyDescriptors();
+    public IPropertyDescriptor[] getPropertyDescriptors() {
+        IPropertyDescriptor[] descriptors = super.getPropertyDescriptors();
 
-		// find and replace "Filter Pattern" property descriptor
-		String filterPatternPropertyId = ScaveEditPlugin.INSTANCE.getString("_UI_SetOperation_filterPattern_feature");
-		for (int i = 0; i < descriptors.length; ++i) {
-			IPropertyDescriptor descriptor = descriptors[i];
-			if (descriptor.getId().equals(filterPatternPropertyId))
-				descriptors[i] = new FilterPatternPropertyDescriptor(descriptor);
-		}
+        // find and replace "Filter Pattern" property descriptor
+        String filterPatternPropertyId = ScaveEditPlugin.INSTANCE.getString("_UI_SetOperation_filterPattern_feature");
+        for (int i = 0; i < descriptors.length; ++i) {
+            IPropertyDescriptor descriptor = descriptors[i];
+            if (descriptor.getId().equals(filterPatternPropertyId))
+                descriptors[i] = new FilterPatternPropertyDescriptor(descriptor);
+        }
 
-		return descriptors;
-	}
+        return descriptors;
+    }
 
-	class FilterPatternPropertyDescriptor extends PropertyDescriptor
-	{
-		public FilterPatternPropertyDescriptor(IPropertyDescriptor descriptor) {
-			super(descriptor.getId(), descriptor.getDisplayName());
-			setDescription(descriptor.getDisplayName());
-			setCategory(descriptor.getCategory());
-			setFilterFlags(descriptor.getFilterFlags());
-		}
+    class FilterPatternPropertyDescriptor extends PropertyDescriptor
+    {
+        public FilterPatternPropertyDescriptor(IPropertyDescriptor descriptor) {
+            super(descriptor.getId(), descriptor.getDisplayName());
+            setDescription(descriptor.getDisplayName());
+            setCategory(descriptor.getCategory());
+            setFilterFlags(descriptor.getFilterFlags());
+        }
 
-		public CellEditor createPropertyEditor(Composite parent) {
-			return new FilterPatternCellEditor(parent);
-		}
-	}
+        public CellEditor createPropertyEditor(Composite parent) {
+            return new FilterPatternCellEditor(parent);
+        }
+    }
 
-	class FilterPatternCellEditor extends TextCellEditor
-	{
-		public FilterPatternCellEditor(Composite parent) {
-			super(parent);
-		}
+    class FilterPatternCellEditor extends TextCellEditor
+    {
+        public FilterPatternCellEditor(Composite parent) {
+            super(parent);
+        }
 
-		@Override
-		protected Control createControl(Composite parent) {
-			Control control =  super.createControl(parent);
-			FilterField field = new FilterField(text);
-			ResultType resultType = ((SetOperation)object).getType();
-			field.setFilterHints(new FilterHints(manager, resultType));
-			return control;
-		}
+        @Override
+        protected Control createControl(Composite parent) {
+            Control control =  super.createControl(parent);
+            FilterField field = new FilterField(text);
+            ResultType resultType = ((SetOperation)object).getType();
+            field.setFilterHints(new FilterHints(manager, resultType));
+            return control;
+        }
 
-		@Override
-		protected void doSetValue(Object value) {
-			if (value == null)
-				value = "";
-			super.doSetValue(value);
-		}
-	}
+        @Override
+        protected void doSetValue(Object value) {
+            if (value == null)
+                value = "";
+            super.doSetValue(value);
+        }
+    }
 }

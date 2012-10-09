@@ -2,7 +2,7 @@ package org.omnetpp.inifile.editor.model;
 
 /**
  * Long blocking computations request remaining time through this interface.
- * 
+ *
  * @author tomi
  */
 public interface ITimeout {

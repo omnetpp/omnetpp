@@ -12,11 +12,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 public class NedViewEditorTestSuite
-	extends TestSuite
+    extends TestSuite
 {
-	public NedViewEditorTestSuite() {
+    public NedViewEditorTestSuite() {
         addTestSuite(NedOutlineViewTest.class);
-	}
+    }
 
     public static Test suite() {
         return new NedViewEditorTestSuite();

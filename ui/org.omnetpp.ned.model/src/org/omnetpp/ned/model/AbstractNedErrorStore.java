@@ -18,23 +18,23 @@ import org.eclipse.core.resources.IMarker;
  */
 public abstract class AbstractNedErrorStore implements INedErrorStore {
 
-	public void addError(INedElement context, String message) {
-		add(IMarker.SEVERITY_ERROR, context, getLineOf(context), message);
-	}
+    public void addError(INedElement context, String message) {
+        add(IMarker.SEVERITY_ERROR, context, getLineOf(context), message);
+    }
 
-	public void addError(INedElement context, int line, String message) {
-		add(IMarker.SEVERITY_ERROR, context, line, message);
-	}
+    public void addError(INedElement context, int line, String message) {
+        add(IMarker.SEVERITY_ERROR, context, line, message);
+    }
 
-	public void addWarning(INedElement context, String message) {
-		add(IMarker.SEVERITY_WARNING, context, getLineOf(context), message);
-	}
+    public void addWarning(INedElement context, String message) {
+        add(IMarker.SEVERITY_WARNING, context, getLineOf(context), message);
+    }
 
-	public void addWarning(INedElement context, int line, String message) {
-		add(IMarker.SEVERITY_WARNING, context, line, message);
-	}
+    public void addWarning(INedElement context, int line, String message) {
+        add(IMarker.SEVERITY_WARNING, context, line, message);
+    }
 
-	private int getLineOf(INedElement context) {
-		return NedTreeUtil.getLineFrom(context.getSourceLocation());
-	}
+    private int getLineOf(INedElement context) {
+        return NedTreeUtil.getLineFrom(context.getSourceLocation());
+    }
 }

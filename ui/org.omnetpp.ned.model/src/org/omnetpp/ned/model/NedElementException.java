@@ -16,15 +16,15 @@ package org.omnetpp.ned.model;
  * @author rhornig
  */
 public class NedElementException extends RuntimeException {
-	private static final long serialVersionUID = 1L; // to suppress warning
-	private INedElement node;
+    private static final long serialVersionUID = 1L; // to suppress warning
+    private INedElement node;
 
-	public NedElementException(INedElement node, String message) {
-		super(message);
-		this.node = node;
-	}
+    public NedElementException(INedElement node, String message) {
+        super(message);
+        this.node = node;
+    }
 
-	INedElement getNode() {
-		return node;
-	}
+    INedElement getNode() {
+        return node;
+    }
 }

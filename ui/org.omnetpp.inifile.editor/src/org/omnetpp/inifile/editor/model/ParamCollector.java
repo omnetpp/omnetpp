@@ -22,17 +22,17 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 
 public class ParamCollector {
-    
+
     /**
      * Collect parameters, signals and statistics from the network configured in the given
      * section of the ini file document.
      */
     public static ParamResolutionStatus.Entry collectParametersAndProperties(IReadonlyInifileDocument doc,
             INedTypeResolver nedResolver, String activeSection, IProgressMonitor monitor) {
-        
+
         Assert.isNotNull(doc);
         Assert.isNotNull(activeSection);
-        
+
         ModuleTreeVisitor visitor = new ModuleTreeVisitor(doc, activeSection, true, new String[] {"signal", "statistic"}, null, monitor);
         String networkName = InifileUtils.lookupNetwork(doc, activeSection);
         INedTypeInfo network = networkName != null ? resolveNetwork(doc, nedResolver, networkName) : null;
@@ -56,10 +56,10 @@ public class ParamCollector {
      */
     public static Map<String,ISubmoduleOrConnection> collectModules(IReadonlyInifileDocument doc, String section,
             PatternMatcher namePattern, INedTypeResolver nedResolver, IProgressMonitor monitor) {
-        
+
         Assert.isNotNull(doc);
         Assert.isNotNull(section);
-        
+
         ModuleTreeVisitor visitor = new ModuleTreeVisitor(doc, section, true, null, namePattern, monitor);
         String networkName = InifileUtils.lookupNetwork(doc, section);
         INedTypeInfo network = networkName != null ? resolveNetwork(doc, nedResolver, networkName) : null;
@@ -82,7 +82,7 @@ public class ParamCollector {
         treeTraversal.traverse(moduleType);
         return visitor.getParamResolutions();
     }
-    
+
     /**
      * Collects parameters of a submodule subtree, *without* an inifile present.
      */
@@ -95,7 +95,7 @@ public class ParamCollector {
         treeTraversal.traverse(submodule);
         return visitor.getParamResolutions();
     }
-    
+
     /**
      * Resolve parameters of a module type or submodule.
      */
@@ -104,7 +104,7 @@ public class ParamCollector {
         for (ParamElementEx paramDeclaration : typeInfoPath.lastElement().getParamDeclarations().values())
             resolveParameter(resultList, fullPath, typeInfoPath, elementPath, sectionChain, doc, paramDeclaration);
     }
-    
+
     /**
      * Resolve properties of a module type or submodule.
      */
@@ -146,34 +146,34 @@ public class ParamCollector {
             hasNedTotalAssignment |= ParamUtil.isTotalParamAssignment(paramAssignment);
             hasNedDefaultAssignment |= paramAssignment.getIsDefault();
         }
-    
+
         // look up parameter assignments in INI
         String activeSection = null;
         List<SectionKey> sectionKeys = null;
         boolean hasIniTotalAssignment = false;
-    
+
         if (doc != null) {
             activeSection = sectionChain[0];
-    
+
             // TODO: avoid calling lookupParameter twice
             sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), false, sectionChain, doc);
-    
+
             for (SectionKey sectionKey : sectionKeys)
                 hasIniTotalAssignment |= ParamUtil.isTotalParamAssignment(sectionKey.key);
-    
+
             sectionKeys = InifileUtils.lookupParameter(fullPath + "." + paramDeclaration.getName(), hasNedDefaultAssignment, sectionChain, doc);
         }
-    
+
         // process non default parameter assignments from NED
         for (ParamElementEx paramAssignment : paramAssignments) {
             if (!paramAssignment.getIsDefault() && !StringUtils.isEmpty(paramAssignment.getValue())) {
                 resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, ParamResolutionType.NED, activeSection, null, null));
-    
+
                 if (ParamUtil.isTotalParamAssignment(paramAssignment))
                     return;
             }
         }
-    
+
         // process parameter assignments from INI
         if (doc != null) {
             for (SectionKey sectionKey : sectionKeys) {
@@ -181,7 +181,7 @@ public class ParamCollector {
                 String iniKey = sectionKey.key;
                 String iniValue = doc.getValue(iniSection, iniKey);
                 Assert.isTrue(iniValue != null); // must exist
-    
+
                 // so, find out how the parameter's going to be assigned...
                 ParamResolutionType type;
                 if (iniValue.equals(ConfigRegistry.DEFAULT)) {
@@ -198,12 +198,12 @@ public class ParamCollector {
                     type = ParamResolutionType.INI_NEDDEFAULT;
                 else
                     type = ParamResolutionType.INI_OVERRIDE;
-    
+
                 ParamElementEx paramAssignment = paramAssignments.size() > 0 ? paramAssignments.get(0) : null;
                 resultList.add(new ParamResolution(fullPath, elementPath, paramDeclaration, paramAssignment, type, activeSection, iniSection, iniKey));
             }
         }
-    
+
         // process default parameter assignments from NED (this is already in reverse order)
         for (ParamElementEx paramAssignment : paramAssignments) {
             if (StringUtils.isEmpty(paramAssignment.getValue())) {
@@ -228,7 +228,7 @@ public class ParamCollector {
         }
         if (network == null)
             network = ned.getToplevelNedType(value, contextProject);
-    
+
         return network;
     }
 }

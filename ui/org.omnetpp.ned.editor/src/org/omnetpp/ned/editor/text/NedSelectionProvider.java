@@ -21,7 +21,7 @@ import org.omnetpp.ned.model.INedElement;
 /**
  * A selection provider that attaches to a NED text editor's viewer and delegates
  * to it. In addition it provides Structured selection for selection events in the text editor
- * sending NEDElements as the selected object (the element under the cursor). Note that simply 
+ * sending NEDElements as the selected object (the element under the cursor). Note that simply
  * moving the cursor also generates selection events (0 length selection).
  *
  * @author rhornig

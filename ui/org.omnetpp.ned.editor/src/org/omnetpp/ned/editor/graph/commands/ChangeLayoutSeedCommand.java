@@ -18,11 +18,11 @@ import org.omnetpp.ned.model.interfaces.IConnectableElement;
  * @author rhornig
  */
 public class ChangeLayoutSeedCommand extends Command {
-	private int oldSeed = 1;
+    private int oldSeed = 1;
     private IConnectableElement module;
 
     public ChangeLayoutSeedCommand(CompoundModuleElementEx newModule) {
-    	super();
+        super();
         module = newModule;
     }
 
@@ -44,9 +44,9 @@ public class ChangeLayoutSeedCommand extends Command {
 
     @Override
     public void undo() {
-    	if (oldSeed == 1)
+        if (oldSeed == 1)
             module.getDisplayString().set(IDisplayString.Prop.MODULE_LAYOUT_SEED, null);
-    	else
+        else
             module.getDisplayString().set(IDisplayString.Prop.MODULE_LAYOUT_SEED, String.valueOf(oldSeed));
     }
 

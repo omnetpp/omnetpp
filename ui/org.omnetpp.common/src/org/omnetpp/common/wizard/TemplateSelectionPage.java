@@ -84,7 +84,7 @@ public class TemplateSelectionPage extends WizardPage {
 
     /**
      * Creates the template selection page. The wizardType parameter is used for filtering the
-     * offered templates; it can be null to show all templates. 
+     * offered templates; it can be null to show all templates.
      */
     public TemplateSelectionPage(String wizardType, boolean enableAddLink) {
         super("OmnetppTemplateSelectionPage");
@@ -188,7 +188,7 @@ public class TemplateSelectionPage extends WizardPage {
                     treeViewer.setExpandedState(elem, !treeViewer.getExpandedState(elem)); // open/close category
             }
         });
-        
+
         // add "add content template" link
         if (enableAddLink) {
             Link link = new Link(composite, SWT.NONE);
@@ -301,9 +301,9 @@ public class TemplateSelectionPage extends WizardPage {
         boolean ok = getWizardType()==null || template.getSupportedWizardTypes().isEmpty() || template.getSupportedWizardTypes().contains(getWizardType());
         ok = ok && isSuitableTemplate(template);
         if (!ok) {
-            MessageDialog.openError(getShell(), "Error", 
-                    "The provided content template does not support this wizard dialog; " + 
-                    "try in other dialogs. (The template supports the following wizard types: " + 
+            MessageDialog.openError(getShell(), "Error",
+                    "The provided content template does not support this wizard dialog; " +
+                    "try in other dialogs. (The template supports the following wizard types: " +
                     StringUtils.join(template.getSupportedWizardTypes(), ", ") + ")");
         }
         else {
@@ -426,8 +426,8 @@ public class TemplateSelectionPage extends WizardPage {
     }
 
     /**
-     * Override for further filtering of templates (beyond wizardType). The default 
-     * implementation just returns true. 
+     * Override for further filtering of templates (beyond wizardType). The default
+     * implementation just returns true.
      */
     protected boolean isSuitableTemplate(IContentTemplate template) {
         return true;

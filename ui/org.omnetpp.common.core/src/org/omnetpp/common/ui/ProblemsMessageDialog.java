@@ -17,26 +17,26 @@ import org.eclipse.swt.widgets.Shell;
 
 /**
  * MessageDialog containing a table that displays several strings with an error icon.
- * 
+ *
  * @author andras
  */
 public class ProblemsMessageDialog extends MessageDialog {
-	private List<String> problemTexts;
-	private Image problemImage;
+    private List<String> problemTexts;
+    private Image problemImage;
 
-	public ProblemsMessageDialog(Shell parentShell, String title, Image titleImage, String message, 
-	        List<String> problemTexts, Image problemImage, int dialogImageType, String[] dialogButtonLabels, int defaultIndex) {
-		super(parentShell, title, titleImage, message, dialogImageType, dialogButtonLabels, defaultIndex);
-		this.problemTexts = problemTexts;
-		this.problemImage = problemImage;
-	}
+    public ProblemsMessageDialog(Shell parentShell, String title, Image titleImage, String message,
+            List<String> problemTexts, Image problemImage, int dialogImageType, String[] dialogButtonLabels, int defaultIndex) {
+        super(parentShell, title, titleImage, message, dialogImageType, dialogButtonLabels, defaultIndex);
+        this.problemTexts = problemTexts;
+        this.problemImage = problemImage;
+    }
 
     /**
      * Convenience method to open a simple confirm (OK/Cancel) dialog.
      */
     public static boolean openConfirm(Shell parent, String title, String message, List<String> problemTexts, Image problemImage) {
         MessageDialog dialog = new ProblemsMessageDialog(parent, title, null,
-        	message, problemTexts, problemImage, QUESTION, new String[] { IDialogConstants.OK_LABEL,
+            message, problemTexts, problemImage, QUESTION, new String[] { IDialogConstants.OK_LABEL,
             IDialogConstants.CANCEL_LABEL }, 0);
         return dialog.open() == 0;
     }
@@ -46,7 +46,7 @@ public class ProblemsMessageDialog extends MessageDialog {
      */
     public static void openError(Shell parent, String title, String message, List<String> problemTexts, Image problemImage) {
         MessageDialog dialog = new ProblemsMessageDialog(parent, title, null,
-        	message, problemTexts, problemImage, ERROR, new String[] { IDialogConstants.OK_LABEL }, 0);
+            message, problemTexts, problemImage, ERROR, new String[] { IDialogConstants.OK_LABEL }, 0);
         dialog.open();
         return;
     }
@@ -56,7 +56,7 @@ public class ProblemsMessageDialog extends MessageDialog {
      */
     public static void openInformation(Shell parent, String title, String message, List<String> problemTexts, Image problemImage) {
         MessageDialog dialog = new ProblemsMessageDialog(parent, title, null,
-        		message, problemTexts, problemImage, INFORMATION,
+                message, problemTexts, problemImage, INFORMATION,
                 new String[] { IDialogConstants.OK_LABEL }, 0);
         dialog.open();
         return;
@@ -67,7 +67,7 @@ public class ProblemsMessageDialog extends MessageDialog {
      */
     public static boolean openQuestion(Shell parent, String title, String message, List<String> problemTexts, Image problemImage) {
         MessageDialog dialog = new ProblemsMessageDialog(parent, title, null,
-        		message, problemTexts, problemImage, QUESTION, new String[] { IDialogConstants.YES_LABEL,
+                message, problemTexts, problemImage, QUESTION, new String[] { IDialogConstants.YES_LABEL,
                         IDialogConstants.NO_LABEL }, 0);
         return dialog.open() == 0;
     }
@@ -77,7 +77,7 @@ public class ProblemsMessageDialog extends MessageDialog {
      */
     public static void openWarning(Shell parent, String title, String message, List<String> problemTexts, Image problemImage) {
         MessageDialog dialog = new ProblemsMessageDialog(parent, title, null,
-        		message, problemTexts, problemImage, WARNING, new String[] { IDialogConstants.OK_LABEL }, 0);
+                message, problemTexts, problemImage, WARNING, new String[] { IDialogConstants.OK_LABEL }, 0);
         dialog.open();
         return;
     }
@@ -103,5 +103,5 @@ public class ProblemsMessageDialog extends MessageDialog {
         tableViewer.setContentProvider(new ArrayContentProvider());
         tableViewer.setInput(problemTexts);
         return tableViewer.getTable();
-    }    
+    }
 }

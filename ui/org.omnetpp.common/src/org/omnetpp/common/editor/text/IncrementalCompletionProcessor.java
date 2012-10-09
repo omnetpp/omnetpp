@@ -53,7 +53,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
      * Helper comparator class to compare CompletionProposals using relevance and the the display name
      */
     @SuppressWarnings("unchecked")
-	protected static class CompletionProposalComparator implements Comparator {
+    protected static class CompletionProposalComparator implements Comparator {
         private static CompletionProposalComparator instance = null;
 
         public static CompletionProposalComparator getInstance() {
@@ -98,11 +98,11 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         String prefix;
         IRegion wordRegion;
         try {
-        	wordRegion = TextEditorUtil.detectWordRegion(viewer, documentOffset, wordDetector);
+            wordRegion = TextEditorUtil.detectWordRegion(viewer, documentOffset, wordDetector);
             prefix = viewer.getDocument().get(wordRegion.getOffset(), documentOffset - wordRegion.getOffset());
         } catch (BadLocationException e) {
-        	CommonPlugin.logError(e);
-        	return propList;
+            CommonPlugin.logError(e);
+            return propList;
         }
 
         // we have to sort the name and the description together so we merge them in a single string
@@ -123,7 +123,7 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             String prop = startStr + StringUtils.substringBefore(displayLines[i].first, SEPARATOR) + endStr;
             String descr = StringUtils.substringAfter(displayLines[i].first, SEPARATOR);
             if (prop.toLowerCase().startsWith(prefix.toLowerCase())) {
-            	String displayText = StringUtils.isEmpty(descr) ? StringUtils.strip(prop) : StringUtils.strip(prop)+" - "+descr;
+                String displayText = StringUtils.isEmpty(descr) ? StringUtils.strip(prop) : StringUtils.strip(prop)+" - "+descr;
                 propList.add(new CompletionProposal(prop, wordRegion.getOffset(), wordRegion.getLength(), prop.length(), images == null ? null : displayLines[i].second, displayText, null, null));
             }
         }
@@ -131,23 +131,23 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         return propList;
     }
 
-	/**
-	 * This method is necessary because TemplateCompletionProcessor.computeCompletionProposals()
-	 * doesn't let us specify what templates we want to add, but insists on calling
-	 * getTemplates() instead. This is a copy of that computeCompletionProposals(), with
-	 * Template[] added to the arg list.
-	 *
-	 * @author andras
-	 * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
-	 */
-	@SuppressWarnings("unchecked")
-	public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, IWordDetector wordDetector, Template[] templates) {
+    /**
+     * This method is necessary because TemplateCompletionProcessor.computeCompletionProposals()
+     * doesn't let us specify what templates we want to add, but insists on calling
+     * getTemplates() instead. This is a copy of that computeCompletionProposals(), with
+     * Template[] added to the arg list.
+     *
+     * @author andras
+     * @see org.eclipse.jface.text.contentassist.IContentAssistProcessor#computeCompletionProposals(org.eclipse.jface.text.ITextViewer, int)
+     */
+    @SuppressWarnings("unchecked")
+    public ICompletionProposal[] createTemplateProposals(ITextViewer viewer, int offset, IWordDetector wordDetector, Template[] templates) {
 
-		ITextSelection selection= (ITextSelection) viewer.getSelectionProvider().getSelection();
+        ITextSelection selection= (ITextSelection) viewer.getSelectionProvider().getSelection();
 
-		// adjust offset to end of normalized selection
-		if (selection.getOffset() == offset)
-			offset= selection.getOffset() + selection.getLength();
+        // adjust offset to end of normalized selection
+        if (selection.getOffset() == offset)
+            offset= selection.getOffset() + selection.getLength();
 
         IRegion wordRegion;
         String prefix;
@@ -155,11 +155,11 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
             wordRegion = TextEditorUtil.detectWordRegion(viewer, offset, wordDetector);
             prefix = viewer.getDocument().get(wordRegion.getOffset(), offset - wordRegion.getOffset());
         } catch (BadLocationException e) {
-        	CommonPlugin.logError(e);
-			return new ICompletionProposal[0];
+            CommonPlugin.logError(e);
+            return new ICompletionProposal[0];
         }
 
-		TemplateContext context= createContext(viewer, wordRegion);
+        TemplateContext context= createContext(viewer, wordRegion);
         // set the current indentation in a variable so we will be able to use ${indent} in templates
         // ${indent} is implicitly added after each \n char during the creation of template proposals
         String indentPrefix = "";
@@ -173,27 +173,27 @@ public abstract class IncrementalCompletionProcessor extends TemplateCompletionP
         } catch (BadLocationException e1) { }
         context.getContextType().addResolver(new IndentTemplateVariableResolver(indentPrefix));
 
-		if (context == null)
-			return new ICompletionProposal[0];
+        if (context == null)
+            return new ICompletionProposal[0];
 
-		context.setVariable("selection", selection.getText()); // name of the selection variables {line, word}_selection //$NON-NLS-1$
+        context.setVariable("selection", selection.getText()); // name of the selection variables {line, word}_selection //$NON-NLS-1$
 
-		List<ICompletionProposal> matches = new ArrayList<ICompletionProposal>();
-		for (int i= 0; i < templates.length; i++) {
-			Template template= templates[i];
-			try {
-				context.getContextType().validate(template.getPattern());
-			} catch (TemplateException e) {
-				continue;
-			}
-			if (template.matches(prefix, context.getContextType().getId()) && (template.getName().startsWith(prefix) || template.getPattern().startsWith(prefix)))
-				matches.add(createProposal(template, context, wordRegion, getRelevance(template, prefix)));
-		}
+        List<ICompletionProposal> matches = new ArrayList<ICompletionProposal>();
+        for (int i= 0; i < templates.length; i++) {
+            Template template= templates[i];
+            try {
+                context.getContextType().validate(template.getPattern());
+            } catch (TemplateException e) {
+                continue;
+            }
+            if (template.matches(prefix, context.getContextType().getId()) && (template.getName().startsWith(prefix) || template.getPattern().startsWith(prefix)))
+                matches.add(createProposal(template, context, wordRegion, getRelevance(template, prefix)));
+        }
 
-		Collections.sort(matches, CompletionProposalComparator.getInstance());
+        Collections.sort(matches, CompletionProposalComparator.getInstance());
 
-		return matches.toArray(new ICompletionProposal[matches.size()]);
-	}
+        return matches.toArray(new ICompletionProposal[matches.size()]);
+    }
 
     /**
      * Always return the default image.

@@ -12,9 +12,9 @@ package org.omnetpp.scave.actions;
  */
 public class NewVectorDatasetActionDelegate extends NewDocActionDelegate {
 
-	private static int counter = 0;
+    private static int counter = 0;
 
-	protected String getNewFileName() {
-		return "Untitled vector dataset "+(++counter)+".vdataset";
-	}
+    protected String getNewFileName() {
+        return "Untitled vector dataset "+(++counter)+".vdataset";
+    }
 }

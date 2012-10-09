@@ -598,7 +598,7 @@ public class ProjectFeaturesManager {
     }
 
     /**
-     * Update the list of excluded NED packages in the given configuration object 
+     * Update the list of excluded NED packages in the given configuration object
      * according to the feature's enablement state.
      */
     protected void adjustExcludedNedPackages(ProjectFeature feature, boolean enable, NedSourceFoldersConfiguration nedSourceFoldersConfig) {

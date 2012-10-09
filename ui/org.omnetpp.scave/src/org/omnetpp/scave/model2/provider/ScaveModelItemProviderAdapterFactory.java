@@ -15,76 +15,76 @@ import org.eclipse.emf.common.notify.Adapter;
  * @author tomi
  */
 public class ScaveModelItemProviderAdapterFactory extends
-		org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory {
+        org.omnetpp.scave.model.provider.ScaveModelItemProviderAdapterFactory {
 
-	@Override
-	public Adapter createAnalysisAdapter() {
-		if (analysisItemProvider == null) {
-			analysisItemProvider = new AnalysisItemProvider(this);
-		}
+    @Override
+    public Adapter createAnalysisAdapter() {
+        if (analysisItemProvider == null) {
+            analysisItemProvider = new AnalysisItemProvider(this);
+        }
 
-		return analysisItemProvider;
-	}
+        return analysisItemProvider;
+    }
 
-	@Override
-	public Adapter createBarChartAdapter() {
-		if (barChartItemProvider == null) {
-			barChartItemProvider = new BarChartItemProvider(this);
-		}
+    @Override
+    public Adapter createBarChartAdapter() {
+        if (barChartItemProvider == null) {
+            barChartItemProvider = new BarChartItemProvider(this);
+        }
 
-		return barChartItemProvider;
-	}
+        return barChartItemProvider;
+    }
 
-	@Override
-	public Adapter createChartSheetAdapter() {
-		if (chartSheetItemProvider == null) {
-			chartSheetItemProvider = new ChartSheetItemProvider(this);
-		}
+    @Override
+    public Adapter createChartSheetAdapter() {
+        if (chartSheetItemProvider == null) {
+            chartSheetItemProvider = new ChartSheetItemProvider(this);
+        }
 
-		return chartSheetItemProvider;
-	}
+        return chartSheetItemProvider;
+    }
 
-	@Override
-	public Adapter createDatasetAdapter() {
-		if (datasetItemProvider == null) {
-			datasetItemProvider = new DatasetItemProvider(this);
-		}
+    @Override
+    public Adapter createDatasetAdapter() {
+        if (datasetItemProvider == null) {
+            datasetItemProvider = new DatasetItemProvider(this);
+        }
 
-		return datasetItemProvider;
-	}
+        return datasetItemProvider;
+    }
 
-	@Override
-	public Adapter createDatasetsAdapter() {
-		if (datasetsItemProvider == null) {
-			datasetsItemProvider = new DatasetsItemProvider(this);
-		}
+    @Override
+    public Adapter createDatasetsAdapter() {
+        if (datasetsItemProvider == null) {
+            datasetsItemProvider = new DatasetsItemProvider(this);
+        }
 
-		return datasetsItemProvider;
-	}
+        return datasetsItemProvider;
+    }
 
-	@Override
-	public Adapter createGroupAdapter() {
-		if (groupItemProvider == null) {
-			groupItemProvider = new GroupItemProvider(this);
-		}
-		return groupItemProvider;
-	}
+    @Override
+    public Adapter createGroupAdapter() {
+        if (groupItemProvider == null) {
+            groupItemProvider = new GroupItemProvider(this);
+        }
+        return groupItemProvider;
+    }
 
-	@Override
-	public Adapter createHistogramChartAdapter() {
-		if (histogramChartItemProvider == null) {
-			histogramChartItemProvider = new HistogramChartItemProvider(this);
-		}
+    @Override
+    public Adapter createHistogramChartAdapter() {
+        if (histogramChartItemProvider == null) {
+            histogramChartItemProvider = new HistogramChartItemProvider(this);
+        }
 
-		return histogramChartItemProvider;
-	}
+        return histogramChartItemProvider;
+    }
 
-	@Override
-	public Adapter createLineChartAdapter() {
-		if (lineChartItemProvider == null) {
-			lineChartItemProvider = new LineChartItemProvider(this);
-		}
+    @Override
+    public Adapter createLineChartAdapter() {
+        if (lineChartItemProvider == null) {
+            lineChartItemProvider = new LineChartItemProvider(this);
+        }
 
-		return lineChartItemProvider;
-	}
+        return lineChartItemProvider;
+    }
 }

@@ -3,7 +3,7 @@ package org.omnetpp.figures.layout;
 import org.eclipse.draw2d.geometry.PrecisionPoint;
 
 public interface ILayoutAlgorithm {
-    /** 
+    /**
      * Sets the default preferred edge length
      */
     void setDefaultEdgeLength(int edgeLength);

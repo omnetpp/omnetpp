@@ -13,7 +13,7 @@ import org.omnetpp.scave.ScavePlugin;
 
 /**
  * Preference initializer
- * 
+ *
  * @author Andras
  */
 public class ScavePreferenceInitializer extends AbstractPreferenceInitializer {

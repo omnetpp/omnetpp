@@ -42,9 +42,9 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 //XXX fix up content assist!!!
 //XXX todo: content assist for the "object" column too
 public class TextTableFieldEditor extends TableFieldEditor {
-	public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-		super(parent, entry, inifile, formPage, labelText, hints);
-	}
+    public TextTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
+        super(parent, entry, inifile, formPage, labelText, hints);
+    }
 
     public void setSectionColumnTitle(String text) {
         tableViewer.getTable().getColumn(0).setText(text);
@@ -61,80 +61,80 @@ public class TextTableFieldEditor extends TableFieldEditor {
     }
 
     @Override
-	protected TableViewer createTableViewer(Composite parent) {
-		// add table
-		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		if (entry.isPerObject()) {
-		    addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
-		    addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 100);
-		    addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 160);
-		}
-		else {
+    protected TableViewer createTableViewer(Composite parent) {
+        // add table
+        Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+        table.setLinesVisible(true);
+        table.setHeaderVisible(true);
+        if (entry.isPerObject()) {
+            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
+            addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 100);
+            addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 160);
+        }
+        else {
             addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 100);
             addTableColumn(table, getStringHint(HINT_VALUE_COL_TITLE, "Value"), 260);
-		}
-		int numLines = entry.isPerObject() ? 6 : 3;
-		int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;
+        }
+        int numLines = entry.isPerObject() ? 6 : 3;
+        int height = table.getHeaderHeight()+numLines*table.getItemHeight()+2;
         table.setLayoutData(new GridData(365, height));
 
-		final int objectColumnIndex = entry.isPerObject() ? 1 : -1;
-		final int valueColumnIndex = entry.isPerObject() ? 2 : 1;
+        final int objectColumnIndex = entry.isPerObject() ? 1 : -1;
+        final int valueColumnIndex = entry.isPerObject() ? 2 : 1;
 
-		// set up tableViewer, label provider
-		final TableViewer tableViewer = new TableViewer(table);
-		tableViewer.setLabelProvider(new TableLabelProvider() {
-			@Override
-			public String getColumnText(Object element, int columnIndex) {
-				SectionKey sectionKey = (SectionKey) element;
-				if (columnIndex == 0)
-					return "["+sectionKey.section+"]";
-				if (columnIndex == objectColumnIndex)
-				    return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
+        // set up tableViewer, label provider
+        final TableViewer tableViewer = new TableViewer(table);
+        tableViewer.setLabelProvider(new TableLabelProvider() {
+            @Override
+            public String getColumnText(Object element, int columnIndex) {
+                SectionKey sectionKey = (SectionKey) element;
+                if (columnIndex == 0)
+                    return "["+sectionKey.section+"]";
+                if (columnIndex == objectColumnIndex)
+                    return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
                 if (columnIndex == valueColumnIndex)
                     return getValueFromFile(sectionKey.section, sectionKey.key);
-				throw new IllegalArgumentException();
-			}
+                throw new IllegalArgumentException();
+            }
 
-			@Override
-			public Image getColumnImage(Object element, int columnIndex) {
-				if (columnIndex == valueColumnIndex) {
-	                SectionKey sectionKey = (SectionKey) element;
-					IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionKey.section, sectionKey.key, inifile);
-					return getProblemImage(markers, true, true);
-				}
-				return null;
-			}
-		});
+            @Override
+            public Image getColumnImage(Object element, int columnIndex) {
+                if (columnIndex == valueColumnIndex) {
+                    SectionKey sectionKey = (SectionKey) element;
+                    IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionKey.section, sectionKey.key, inifile);
+                    return getProblemImage(markers, true, true);
+                }
+                return null;
+            }
+        });
 
-		// set up cell editor for value column
-		tableViewer.setColumnProperties(entry.isPerObject() ?
-		        new String[] {"section", "object", "value"} :
-		        new String[] {"section", "value"});
-		final TableTextCellEditor[] cellEditors = entry.isPerObject() ?
-		        new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1), new TableTextCellEditor(tableViewer,2)} :
-		        new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1)};
-		tableViewer.setCellEditors(cellEditors);
+        // set up cell editor for value column
+        tableViewer.setColumnProperties(entry.isPerObject() ?
+                new String[] {"section", "object", "value"} :
+                new String[] {"section", "value"});
+        final TableTextCellEditor[] cellEditors = entry.isPerObject() ?
+                new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1), new TableTextCellEditor(tableViewer,2)} :
+                new TableTextCellEditor[] {null, new TableTextCellEditor(tableViewer,1)};
+        tableViewer.setCellEditors(cellEditors);
 
-		tableViewer.setCellModifier(new ICellModifier() {
-			public boolean canModify(Object element, String property) {
-				return property.equals("value") || property.equals("object");
-			}
+        tableViewer.setCellModifier(new ICellModifier() {
+            public boolean canModify(Object element, String property) {
+                return property.equals("value") || property.equals("object");
+            }
 
-			public Object getValue(Object element, String property) {
-			    SectionKey sectionKey = (SectionKey) element;
-			    if (property.equals("value"))
-			        return getValueFromFile(sectionKey.section, sectionKey.key);
-			    else if (property.equals("object"))
-			        return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
-			    else
-			        throw new IllegalArgumentException();
-			}
+            public Object getValue(Object element, String property) {
+                SectionKey sectionKey = (SectionKey) element;
+                if (property.equals("value"))
+                    return getValueFromFile(sectionKey.section, sectionKey.key);
+                else if (property.equals("object"))
+                    return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
+                else
+                    throw new IllegalArgumentException();
+            }
 
-			public void modify(Object element, String property, Object value) {
-			    if (element instanceof Item)
-			    	element = ((Item) element).getData(); // workaround, see super's comment
+            public void modify(Object element, String property, Object value) {
+                if (element instanceof Item)
+                    element = ((Item) element).getData(); // workaround, see super's comment
                 SectionKey sectionKey = (SectionKey) element;
                 if (property.equals("value"))
                     setValueInFile(sectionKey.section, sectionKey.key, (String) value);
@@ -142,23 +142,23 @@ public class TextTableFieldEditor extends TableFieldEditor {
                     renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getName());
                 else
                     throw new IllegalArgumentException();
-				tableViewer.refresh();
-			}
-		});
+                tableViewer.refresh();
+            }
+        });
 
-		// content assist for the Value column
-		IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, inifile, null, false) {
-			@Override
-			public IContentProposal[] getProposals(String contents, int position) {
-				// we need to reconfigure the proposal provider on the fly to know about the current section
-				SectionKey sectionKey = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
-				setInifileEntry(sectionKey.section, sectionKey.key); // set context for proposal calculation
-				return super.getProposals(contents, position);
-			}
-		};
+        // content assist for the Value column
+        IContentProposalProvider valueProposalProvider = new InifileValueContentProposalProvider(null, null, inifile, null, false) {
+            @Override
+            public IContentProposal[] getProposals(String contents, int position) {
+                // we need to reconfigure the proposal provider on the fly to know about the current section
+                SectionKey sectionKey = (SectionKey)( (IStructuredSelection)tableViewer.getSelection()).getFirstElement();
+                setInifileEntry(sectionKey.section, sectionKey.key); // set context for proposal calculation
+                return super.getProposals(contents, position);
+            }
+        };
 
-		ContentAssistUtil.configureTableColumnContentAssist(tableViewer, valueColumnIndex, valueProposalProvider, null, true);
+        ContentAssistUtil.configureTableColumnContentAssist(tableViewer, valueColumnIndex, valueProposalProvider, null, true);
 
-		return tableViewer;
-	}
+        return tableViewer;
+    }
 }

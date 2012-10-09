@@ -13,15 +13,15 @@ import org.omnetpp.scave.charting.ILinePlot;
 
 /**
  * Interface for line chart line plotters
- * 
+ *
  * @author Andras
  */
 public interface IVectorPlotter {
     /**
      * Draw the given series of the plot on the graphics with the given coordinate mapping;
      * it must not take more than the given time limit.
-     * 
+     *
      * @return true if OK, false if the drawing is incomplete due to timeout
      */
-	public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis);
+    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis);
 }

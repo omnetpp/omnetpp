@@ -15,127 +15,127 @@ import org.omnetpp.common.Debug;
  * This class serves debugging purposes.
  */
 public class LongVirtualTableContentProvider implements IVirtualTableContentProvider<Long> {
-	protected static boolean debug = true;
+    protected static boolean debug = true;
 
-	protected double sleepScale = 0.1;
+    protected double sleepScale = 0.1;
 
-	protected long maxValue;
+    protected long maxValue;
 
-	protected long sleep(long value) {
-		try {
-			Thread.sleep((int)(value * sleepScale));
-		}
-		catch (Exception e) {
-		}
+    protected long sleep(long value) {
+        try {
+            Thread.sleep((int)(value * sleepScale));
+        }
+        catch (Exception e) {
+        }
 
-		return value;
-	}
+        return value;
+    }
 
-	public Long getFirstElement() {
-		if (debug)
-			Debug.println("Virtual table content provider getFirstElement");
+    public Long getFirstElement() {
+        if (debug)
+            Debug.println("Virtual table content provider getFirstElement");
 
-		return 0L;
-	}
+        return 0L;
+    }
 
-	public Long getLastElement() {
-		if (debug)
-			Debug.println("Virtual table content provider getLastElement");
+    public Long getLastElement() {
+        if (debug)
+            Debug.println("Virtual table content provider getLastElement");
 
-		return maxValue;
-	}
+        return maxValue;
+    }
 
-	public long getDistanceToElement(Long sourceElement, Long targetElement, long limit)
-	{
-		if (debug)
-			Debug.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
+    public long getDistanceToElement(Long sourceElement, Long targetElement, long limit)
+    {
+        if (debug)
+            Debug.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
 
-		long sourceValue = sourceElement;
-		long targetValue = targetElement;
-		long delta = targetValue - sourceValue;
+        long sourceValue = sourceElement;
+        long targetValue = targetElement;
+        long delta = targetValue - sourceValue;
 
-		if (Math.abs(delta) > Math.abs(limit) || Math.signum(delta) != Math.signum(limit))
-			return sleep(limit);
-		else
-			return sleep(delta);
-	}
+        if (Math.abs(delta) > Math.abs(limit) || Math.signum(delta) != Math.signum(limit))
+            return sleep(limit);
+        else
+            return sleep(delta);
+    }
 
-	public long getDistanceToFirstElement(Long element, long limit) {
-		if (debug)
-			Debug.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
+    public long getDistanceToFirstElement(Long element, long limit) {
+        if (debug)
+            Debug.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
 
-		long value = element;
+        long value = element;
 
-		if (value > limit)
-			return sleep(limit);
-		else
-			return sleep(value);
-	}
+        if (value > limit)
+            return sleep(limit);
+        else
+            return sleep(value);
+    }
 
-	public long getDistanceToLastElement(Long element, long limit) {
-		if (debug)
-			Debug.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
+    public long getDistanceToLastElement(Long element, long limit) {
+        if (debug)
+            Debug.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
 
-		long value = element;
+        long value = element;
 
-		if (maxValue - value > limit)
-			return sleep(limit);
-		else
-			return sleep(maxValue - value);
-	}
+        if (maxValue - value > limit)
+            return sleep(limit);
+        else
+            return sleep(maxValue - value);
+    }
 
-	public Long getNeighbourElement(Long element, long distance) {
-		if (debug)
-			Debug.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
+    public Long getNeighbourElement(Long element, long distance) {
+        if (debug)
+            Debug.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
 
-		long value = element;
+        long value = element;
 
-		if (value + distance < 0)
-			distance = -value;
+        if (value + distance < 0)
+            distance = -value;
 
-		if (value + distance > maxValue)
-			distance = maxValue - value;
+        if (value + distance > maxValue)
+            distance = maxValue - value;
 
-		sleep(distance);
+        sleep(distance);
 
-		long result = value + distance;
-		Assert.isTrue(result >=0 && result <= maxValue);
-		return result;
-	}
+        long result = value + distance;
+        Assert.isTrue(result >=0 && result <= maxValue);
+        return result;
+    }
 
-	public Long getClosestElement(Long element) {
-		if (debug)
-			Debug.println("Virtual table content provider getClosestElement element: " + element);
+    public Long getClosestElement(Long element) {
+        if (debug)
+            Debug.println("Virtual table content provider getClosestElement element: " + element);
 
-		return element;
-	}
+        return element;
+    }
 
-	public double getApproximatePercentageForElement(Long element) {
-		if (debug)
-			Debug.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
+    public double getApproximatePercentageForElement(Long element) {
+        if (debug)
+            Debug.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
 
-		return (double)element / maxValue;
-	}
+        return (double)element / maxValue;
+    }
 
-	public Long getApproximateElementAt(double percentage) {
-		if (debug)
-			Debug.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
+    public Long getApproximateElementAt(double percentage) {
+        if (debug)
+            Debug.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
 
-		return (long)(maxValue * percentage);
-	}
+        return (long)(maxValue * percentage);
+    }
 
-	public long getApproximateNumberOfElements() {
-		if (debug)
-			Debug.println("Virtual table content provider getApproximateNumberOfElements");
+    public long getApproximateNumberOfElements() {
+        if (debug)
+            Debug.println("Virtual table content provider getApproximateNumberOfElements");
 
-		return maxValue + 1;
-	}
+        return maxValue + 1;
+    }
 
-	public void dispose() {
-	}
+    public void dispose() {
+    }
 
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		if (newInput != null)
-			maxValue = (Long)newInput;
-	}
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        if (newInput != null)
+            maxValue = (Long)newInput;
+    }
 }

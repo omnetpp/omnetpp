@@ -38,15 +38,15 @@ import org.omnetpp.eventlog.engine.IEventLog;
  * It should support multiple selected elements. For some of those it should support ranges where it is applicable.
  */
 public class EventLogSelection implements IEventLogSelection, IVirtualTableSelection<Long>, IStructuredSelection, Cloneable {
-	/**
-	 * The input where this selection is.
-	 */
-	protected EventLogInput eventLogInput;
+    /**
+     * The input where this selection is.
+     */
+    protected EventLogInput eventLogInput;
 
-	/**
-	 * The selected elements.
-	 */
-	protected ArrayList<Object> elements;
+    /**
+     * The selected elements.
+     */
+    protected ArrayList<Object> elements;
 
     public EventLogSelection(EventLogInput eventLogInput, ArrayList<Object> elements) {
         this.eventLogInput = eventLogInput;
@@ -54,43 +54,43 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
     }
 
     public EventLogSelection(EventLogInput eventLogInput, ArrayList<Long> eventNumbers, ArrayList<BigDecimal> simulationTimes) {
-		Assert.isTrue(eventLogInput != null);
-		this.eventLogInput = eventLogInput;
-		this.elements = new ArrayList<Object>();
-		if (eventNumbers != null)
-		    elements.addAll(eventNumbers);
-		if (simulationTimes != null)
-		    elements.addAll(simulationTimes);
-	}
+        Assert.isTrue(eventLogInput != null);
+        this.eventLogInput = eventLogInput;
+        this.elements = new ArrayList<Object>();
+        if (eventNumbers != null)
+            elements.addAll(eventNumbers);
+        if (simulationTimes != null)
+            elements.addAll(simulationTimes);
+    }
 
     public ArrayList<Long> getElements() {
-		return getEventNumbers();
-	}
+        return getEventNumbers();
+    }
 
-	public Object getInput() {
-		return eventLogInput;
-	}
+    public Object getInput() {
+        return eventLogInput;
+    }
 
-	public IEventLog getEventLog() {
-		return eventLogInput.getEventLog();
-	}
+    public IEventLog getEventLog() {
+        return eventLogInput.getEventLog();
+    }
 
-	public EventLogInput getEventLogInput() {
-		return eventLogInput;
-	}
+    public EventLogInput getEventLogInput() {
+        return eventLogInput;
+    }
 
-	public ArrayList<Long> getEventNumbers() {
-	    ArrayList<Long> eventNumbers = new ArrayList<Long>();
-	    for (Object element : elements)
-	        if (element instanceof Long)
-	            eventNumbers.add((Long)element);
-		return eventNumbers;
-	}
+    public ArrayList<Long> getEventNumbers() {
+        ArrayList<Long> eventNumbers = new ArrayList<Long>();
+        for (Object element : elements)
+            if (element instanceof Long)
+                eventNumbers.add((Long)element);
+        return eventNumbers;
+    }
 
-	public Long getFirstEventNumber() {
+    public Long getFirstEventNumber() {
         ArrayList<Long> eventNumbers = getEventNumbers();
-		return eventNumbers.isEmpty() ? null : eventNumbers.get(0);
-	}
+        return eventNumbers.isEmpty() ? null : eventNumbers.get(0);
+    }
 
     public ArrayList<BigDecimal> getSimulationTimes() {
         ArrayList<BigDecimal> simulationTimes = new ArrayList<BigDecimal>();
@@ -106,49 +106,49 @@ public class EventLogSelection implements IEventLogSelection, IVirtualTableSelec
     }
 
     public boolean isEmpty() {
-		return elements.isEmpty();
-	}
+        return elements.isEmpty();
+    }
 
-	@Override
-	public EventLogSelection clone() {
-		return new EventLogSelection(this.eventLogInput, elements);
-	}
+    @Override
+    public EventLogSelection clone() {
+        return new EventLogSelection(this.eventLogInput, elements);
+    }
 
-	@Override
-	public boolean equals(Object o) {
-		if (o == null || !(o instanceof EventLogSelection))
-			return false;
-		EventLogSelection other = (EventLogSelection)o;
-		if (other.eventLogInput != eventLogInput)
-			return false;
-		if (other.elements.size() != elements.size())
-			return false;
-		for (int i = 0; i < elements.size(); i++)
-			if (other.elements.get(i) != elements.get(i))
-				return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof EventLogSelection))
+            return false;
+        EventLogSelection other = (EventLogSelection)o;
+        if (other.eventLogInput != eventLogInput)
+            return false;
+        if (other.elements.size() != elements.size())
+            return false;
+        for (int i = 0; i < elements.size(); i++)
+            if (other.elements.get(i) != elements.get(i))
+                return false;
+        return true;
+    }
 
-	public Object getFirstElement() {
-		if (elements.size() == 0)
-			return null;
-		else
-			return elements.get(0);
-	}
+    public Object getFirstElement() {
+        if (elements.size() == 0)
+            return null;
+        else
+            return elements.get(0);
+    }
 
-	public Iterator<Object> iterator() {
-		return elements.iterator();
-	}
+    public Iterator<Object> iterator() {
+        return elements.iterator();
+    }
 
-	public int size() {
-		return elements.size();
-	}
+    public int size() {
+        return elements.size();
+    }
 
-	public Object[] toArray() {
-		return elements.toArray();
-	}
+    public Object[] toArray() {
+        return elements.toArray();
+    }
 
-	public ArrayList<Object> toList() {
-		return elements;
-	}
+    public ArrayList<Object> toList() {
+        return elements;
+    }
 }

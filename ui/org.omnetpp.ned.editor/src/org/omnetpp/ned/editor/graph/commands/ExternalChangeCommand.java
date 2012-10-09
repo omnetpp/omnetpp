@@ -15,75 +15,75 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
 import org.omnetpp.ned.model.notification.NedStructuralChangeEvent;
 
 public class ExternalChangeCommand extends Command {
-	private ArrayList<NedModelEvent> events = new ArrayList<NedModelEvent>();
+    private ArrayList<NedModelEvent> events = new ArrayList<NedModelEvent>();
 
-	public ExternalChangeCommand() {
-		super("External change");
-	}
+    public ExternalChangeCommand() {
+        super("External change");
+    }
 
-	public void addEvent(NedModelEvent event) {
-		events.add(event);
-	}
+    public void addEvent(NedModelEvent event) {
+        events.add(event);
+    }
 
-	@Override
-	public void execute() {
-		// intentionally left blank, because the changes are already applied
-		// that's why it is an external command
-	}
+    @Override
+    public void execute() {
+        // intentionally left blank, because the changes are already applied
+        // that's why it is an external command
+    }
 
-	@Override
-	public void redo() {
-		for (NedModelEvent event : events)
-			redoEvent(event);
-	}
+    @Override
+    public void redo() {
+        for (NedModelEvent event : events)
+            redoEvent(event);
+    }
 
-	private void redoEvent(NedModelEvent event) {
-		if (event instanceof NedAttributeChangeEvent) {
-			NedAttributeChangeEvent attributeChangeEvent = (NedAttributeChangeEvent)event;
-			attributeChangeEvent.getSource().setAttribute(attributeChangeEvent.getAttribute(), (String)attributeChangeEvent.getNewValue());
-		}
-		else if (event instanceof NedStructuralChangeEvent) {
-			NedStructuralChangeEvent structuralChangeEvent = (NedStructuralChangeEvent)event;
-			switch (structuralChangeEvent.getType()) {
-				case INSERTION:
-					structuralChangeEvent.getSource().insertChildBefore(structuralChangeEvent.getNewLocation(), structuralChangeEvent.getChild());
-					break;
-				case REMOVAL:
-					structuralChangeEvent.getChild().removeFromParent();
-					break;
-				default:
-					throw new RuntimeException("Unknown structural event type");
-			}
-		}
-		else
-			throw new RuntimeException("Unknown event type");
-	}
+    private void redoEvent(NedModelEvent event) {
+        if (event instanceof NedAttributeChangeEvent) {
+            NedAttributeChangeEvent attributeChangeEvent = (NedAttributeChangeEvent)event;
+            attributeChangeEvent.getSource().setAttribute(attributeChangeEvent.getAttribute(), (String)attributeChangeEvent.getNewValue());
+        }
+        else if (event instanceof NedStructuralChangeEvent) {
+            NedStructuralChangeEvent structuralChangeEvent = (NedStructuralChangeEvent)event;
+            switch (structuralChangeEvent.getType()) {
+                case INSERTION:
+                    structuralChangeEvent.getSource().insertChildBefore(structuralChangeEvent.getNewLocation(), structuralChangeEvent.getChild());
+                    break;
+                case REMOVAL:
+                    structuralChangeEvent.getChild().removeFromParent();
+                    break;
+                default:
+                    throw new RuntimeException("Unknown structural event type");
+            }
+        }
+        else
+            throw new RuntimeException("Unknown event type");
+    }
 
-	@Override
-	public void undo() {
-		for (int i = events.size() - 1; i >= 0; i--)
-			undoEvent(events.get(i));
-	}
+    @Override
+    public void undo() {
+        for (int i = events.size() - 1; i >= 0; i--)
+            undoEvent(events.get(i));
+    }
 
-	private void undoEvent(NedModelEvent event) {
-		if (event instanceof NedAttributeChangeEvent) {
-			NedAttributeChangeEvent attributeChangeEvent = (NedAttributeChangeEvent)event;
-			attributeChangeEvent.getSource().setAttribute(attributeChangeEvent.getAttribute(), (String)attributeChangeEvent.getOldValue());
-		}
-		else if (event instanceof NedStructuralChangeEvent) {
-			NedStructuralChangeEvent structuralChangeEvent = (NedStructuralChangeEvent)event;
-			switch (structuralChangeEvent.getType()) {
-				case INSERTION:
-					structuralChangeEvent.getChild().removeFromParent();
-					break;
-				case REMOVAL:
-					structuralChangeEvent.getSource().insertChildBefore(structuralChangeEvent.getOldLocation(), structuralChangeEvent.getChild());
-					break;
-				default:
-					throw new RuntimeException("Unknown structural event type");
-			}
-		}
-		else
-			throw new RuntimeException("Unknown event type");
-	}
+    private void undoEvent(NedModelEvent event) {
+        if (event instanceof NedAttributeChangeEvent) {
+            NedAttributeChangeEvent attributeChangeEvent = (NedAttributeChangeEvent)event;
+            attributeChangeEvent.getSource().setAttribute(attributeChangeEvent.getAttribute(), (String)attributeChangeEvent.getOldValue());
+        }
+        else if (event instanceof NedStructuralChangeEvent) {
+            NedStructuralChangeEvent structuralChangeEvent = (NedStructuralChangeEvent)event;
+            switch (structuralChangeEvent.getType()) {
+                case INSERTION:
+                    structuralChangeEvent.getChild().removeFromParent();
+                    break;
+                case REMOVAL:
+                    structuralChangeEvent.getSource().insertChildBefore(structuralChangeEvent.getOldLocation(), structuralChangeEvent.getChild());
+                    break;
+                default:
+                    throw new RuntimeException("Unknown structural event type");
+            }
+        }
+        else
+            throw new RuntimeException("Unknown event type");
+    }
 }

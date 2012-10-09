@@ -7,7 +7,7 @@ import org.eclipse.ui.IActionDelegate;
 /**
  * Implements the "Project Features" menu item, which opens the Project Properties dialog
  * with the Project Features page.
- * 
+ *
  * @author Andras
  */
 public class ProjectFeaturesAction implements IActionDelegate {

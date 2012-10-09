@@ -13,12 +13,12 @@ import org.omnetpp.common.util.StringUtils;
 
 
 public class NedFileWizardTest
-	extends NedFileTestCase
+    extends NedFileTestCase
 {
-	public void testNewEmptyFile() throws Throwable {
+    public void testNewEmptyFile() throws Throwable {
         NedEditorUtils.createNewNedFileByWizard(projectName, fileName, null);
-	    WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\n");
-	}
+        WorkspaceUtils.assertFileExistsWithContentIgnoringWhiteSpace(filePath, "//\n// TODO Place comment here\n//\n\n");
+    }
 
     public void testNewSimpleModuleFile() throws Throwable {
         NedEditorUtils.createNewNedFileByWizard(projectName, fileName, ".*new Simple.*");

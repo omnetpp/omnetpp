@@ -40,7 +40,7 @@ public class GateElementEx extends GateElement implements IHasIndex, IHasName, I
 
     public Map<String, Map<String, PropertyElementEx>> getProperties() {
         HashMap<String, Map<String, PropertyElementEx>> map = new HashMap<String, Map<String, PropertyElementEx>>();
-		NedElementUtilEx.collectProperties(this, map);
-		return map;
+        NedElementUtilEx.collectProperties(this, map);
+        return map;
     }
 }

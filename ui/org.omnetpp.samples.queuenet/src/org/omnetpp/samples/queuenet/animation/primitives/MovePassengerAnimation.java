@@ -18,18 +18,18 @@ import org.omnetpp.common.simulation.MessageModel;
 public class MovePassengerAnimation extends AbstractInfiniteAnimation {
     private MessageModel message;
 
-	public MovePassengerAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, MessageModel message) {
-		super(animationController, eventNumber, simulationTime);
-		this.message = message;
-	}
+    public MovePassengerAnimation(AnimationController animationController, long eventNumber, BigDecimal simulationTime, MessageModel message) {
+        super(animationController, eventNumber, simulationTime);
+        this.message = message;
+    }
 
-	@Override
-	public void refreshAnimation(AnimationPosition animationPosition) {
-	    BigDecimal simulationTime = animationPosition.getSimulationTime();
-	    BigDecimal sendingTime = message.getSendingTime();
-	    BigDecimal arrivalTime = message.getArrivalTime();
-	    double alpha = simulationTime.subtract(sendingTime).doubleValue() / arrivalTime.subtract(sendingTime).doubleValue();
+    @Override
+    public void refreshAnimation(AnimationPosition animationPosition) {
+        BigDecimal simulationTime = animationPosition.getSimulationTime();
+        BigDecimal sendingTime = message.getSendingTime();
+        BigDecimal arrivalTime = message.getArrivalTime();
+        double alpha = simulationTime.subtract(sendingTime).doubleValue() / arrivalTime.subtract(sendingTime).doubleValue();
         IFigure figure = animationController.getFigure(message, ImageFigure.class);
 
-	}
+    }
 }

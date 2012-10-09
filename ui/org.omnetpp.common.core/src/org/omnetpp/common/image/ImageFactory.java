@@ -129,7 +129,7 @@ public class ImageFactory {
     // for 16x16 rescaled icons
     private static ImageRegistry iconImageRegistry = new ImageRegistry(Display.getDefault());
     private static String[] imageDirs;
-	private static List<String> imageNameList = null;
+    private static List<String> imageNameList = null;
     // image size constants
     public static final int SIZE_VS = -40;
     public static final int SIZE_S = -60;
@@ -142,22 +142,22 @@ public class ImageFactory {
      * The current image directories as a string array (file system path)
      */
     public static String[] getImageDirs() {
-		return imageDirs;
-	}
+        return imageDirs;
+    }
 
-	/**
-	 * Sets the image directories as file system paths. Must be called BEFORE accessing the image factory.
-	 */
-	public static void setImageDirs(String[] imageDirs) {
-		ImageFactory.imageDirs = imageDirs;
-	}
+    /**
+     * Sets the image directories as file system paths. Must be called BEFORE accessing the image factory.
+     */
+    public static void setImageDirs(String[] imageDirs) {
+        ImageFactory.imageDirs = imageDirs;
+    }
 
-	public static void initialize(String[] imageDirs) {
-		setImageDirs(imageDirs);
+    public static void initialize(String[] imageDirs) {
+        setImageDirs(imageDirs);
 
         // create and register a default / not found image
-		imageRegistry.put(DEFAULT_KEY, new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
-	}
+        imageRegistry.put(DEFAULT_KEY, new NedImageDescriptor(ImageFactory.class, DEFAULT_NAME));
+    }
 
     /**
      * Returns a (cached) 16x16 image for the given color, or null if the color name is not valid.
@@ -200,29 +200,29 @@ public class ImageFactory {
     }
 
     /**
-     * Returns an image for a given ID, modified with the given image size, 
+     * Returns an image for a given ID, modified with the given image size,
      * tint color and tint percentage. If imageId is empty or null, the function returns null.
      * If the image is not found, returns the "unknown" image (id=UNKNOWN).
      * You should NEVER modify the returned instance.
      */
     public static Image getImage(String imageId, String imageSize, RGB shade, int weight) {
-        if (imageId == null || "".equals(imageId)) 
+        if (imageId == null || "".equals(imageId))
             return null;
-        
+
         // look for the image on file system/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
-        
+
         // if image was found, get it from the registry
-        if (key != null) 
+        if (key != null)
             return imageRegistry.get(key);
-        
+
         // if image was not found, look it up among the legacy icons
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
-        
+
         // if image was found, get it from the registry
-        if (key != null) 
+        if (key != null)
             return imageRegistry.get(key);
-        
+
         // if image was not found, display the unknown icon (it must exist)
         key = getKeyFor(UNKNOWN, imageSize, shade, weight);
         Assert.isNotNull(key);
@@ -230,27 +230,27 @@ public class ImageFactory {
     }
 
     /**
-     * Returns an image descriptor for a given ID, modified with the given image size, 
+     * Returns an image descriptor for a given ID, modified with the given image size,
      * tint color and tint percentage. If imageId is empty or null, the function returns null.
      * If the image is not found, returns the "unknown" image (id=UNKNOWN).
      * You should NEVER modify the returned instance.
      */
     public static NedImageDescriptor getDescriptor(String imageId, String imageSize, RGB shade, int weight) {
-        if (imageId == null || "".equals(imageId)) 
+        if (imageId == null || "".equals(imageId))
             return null;
 
         // look for the image on file system/jar and return the full key to retrieve
         String key = getKeyFor(imageId, imageSize, shade, weight);
 
         // if image was found, get it from the registry
-        if (key != null) 
+        if (key != null)
             return (NedImageDescriptor)imageRegistry.getDescriptor(key);
 
         // if image was not found, look it up among the legacy icons
         key = getKeyFor(LEGACY_DIR+imageId, imageSize, shade, weight);
 
         // if image was found, get it from the registry
-        if (key != null) 
+        if (key != null)
             return (NedImageDescriptor)imageRegistry.getDescriptor(key);
 
         // if image was not found, display the unknown icon (it must exist)
@@ -428,21 +428,21 @@ public class ImageFactory {
         if (imageNameList != null)
             return imageNameList;
 
-    	Set<String> result = new HashSet<String>();
-    	for (String basedir : imageDirs) {
-			try {
-				IFileStore baseStore = EFS.getStore(URIUtil.toURI(StringUtils.substituteVariables(basedir)).normalize());
-	    		result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
-			} catch (CoreException e) {	}
-    	}
+        Set<String> result = new HashSet<String>();
+        for (String basedir : imageDirs) {
+            try {
+                IFileStore baseStore = EFS.getStore(URIUtil.toURI(StringUtils.substituteVariables(basedir)).normalize());
+                result.addAll(getNameList(baseStore, baseStore.toURI().toString().length()));
+            } catch (CoreException e) { }
+        }
 
-    	// TODO add also the current and dependent project's own bitmap folder
+        // TODO add also the current and dependent project's own bitmap folder
 
-    	List<String> orderedNames = new ArrayList<String>(result);
-    	Collections.sort(orderedNames);
-    	// store/cache for later use
-    	imageNameList = orderedNames;
-    	return orderedNames;
+        List<String> orderedNames = new ArrayList<String>(result);
+        Collections.sort(orderedNames);
+        // store/cache for later use
+        imageNameList = orderedNames;
+        return orderedNames;
     }
 
     /**
@@ -460,43 +460,43 @@ public class ImageFactory {
      * @return
      */
     private static Set<String> getNameList(IFileStore fileStore, int stripBeginning) {
-    	Set<String> result = new HashSet<String>(1);
-    	// check if this is a real file
-    	if (fileStore.fetchInfo().exists() && !fileStore.fetchInfo().isDirectory()) {
-    		String toAdd;
-			toAdd = fileStore.toURI().toString().substring(stripBeginning);
-			// convert backslash to slash on windows
-			toAdd = toAdd.replace('\\','/');
-			// strip the leading / -s if any
-			while (toAdd.charAt(0) == '/')
-					toAdd = toAdd.substring(1);
-			// check if this is an image file, otherwise return with empty result
-			if (!toAdd.endsWith(".gif") && !toAdd.endsWith(".png") && !toAdd.endsWith(".svg"))
-				return result;
+        Set<String> result = new HashSet<String>(1);
+        // check if this is a real file
+        if (fileStore.fetchInfo().exists() && !fileStore.fetchInfo().isDirectory()) {
+            String toAdd;
+            toAdd = fileStore.toURI().toString().substring(stripBeginning);
+            // convert backslash to slash on windows
+            toAdd = toAdd.replace('\\','/');
+            // strip the leading / -s if any
+            while (toAdd.charAt(0) == '/')
+                    toAdd = toAdd.substring(1);
+            // check if this is an image file, otherwise return with empty result
+            if (!toAdd.endsWith(".gif") && !toAdd.endsWith(".png") && !toAdd.endsWith(".svg"))
+                return result;
 
-			// strip the extension
-			toAdd = toAdd.substring(0, toAdd.length()-4);
+            // strip the extension
+            toAdd = toAdd.substring(0, toAdd.length()-4);
 
-			// look for size extensions and remove them
-			if (toAdd.endsWith("_s") || toAdd.endsWith("_l"))
-				toAdd = toAdd.substring(0, toAdd.length()-2);
-			if (toAdd.endsWith("_vs") || toAdd.endsWith("_vl"))
-				toAdd = toAdd.substring(0, toAdd.length()-3);
+            // look for size extensions and remove them
+            if (toAdd.endsWith("_s") || toAdd.endsWith("_l"))
+                toAdd = toAdd.substring(0, toAdd.length()-2);
+            if (toAdd.endsWith("_vs") || toAdd.endsWith("_vl"))
+                toAdd = toAdd.substring(0, toAdd.length()-3);
 
-    		result.add(toAdd);
-    	}
+            result.add(toAdd);
+        }
 
-    	// if this is a directory (but not the internal directory)iterate through all contained files
-    	if (fileStore.fetchInfo().isDirectory()
-    			&& !fileStore.fetchInfo().getName().startsWith("_internal"))
-			try {
-				for (IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
-					result.addAll(getNameList(childToAdd, stripBeginning));
-				}
-			} catch (CoreException e) { // do nothing if error occurred
-			}
+        // if this is a directory (but not the internal directory)iterate through all contained files
+        if (fileStore.fetchInfo().isDirectory()
+                && !fileStore.fetchInfo().getName().startsWith("_internal"))
+            try {
+                for (IFileStore childToAdd : fileStore.childStores(EFS.NONE, null)) {
+                    result.addAll(getNameList(childToAdd, stripBeginning));
+                }
+            } catch (CoreException e) { // do nothing if error occurred
+            }
 
-    	return result;
+        return result;
     }
 
     /**
@@ -525,13 +525,13 @@ public class ImageFactory {
      */
     // XXX clean up
     public static String createTemporaryImageFile(String imageName, Image image, int format)
-    	throws IOException {
+        throws IOException {
 
-    	String tempDir = System.getProperty("java.io.tmpdir");
-    	File tempFile = new File(tempDir, imageName);
-    	ImageLoader loader = new ImageLoader();
-    	loader.data = new ImageData[] { image.getImageData() };
-    	loader.save(tempFile.getCanonicalPath(), format);
-    	return tempFile.getCanonicalPath();
+        String tempDir = System.getProperty("java.io.tmpdir");
+        File tempFile = new File(tempDir, imageName);
+        ImageLoader loader = new ImageLoader();
+        loader.data = new ImageData[] { image.getImageData() };
+        loader.save(tempFile.getCanonicalPath(), format);
+        return tempFile.getCanonicalPath();
     }
 }

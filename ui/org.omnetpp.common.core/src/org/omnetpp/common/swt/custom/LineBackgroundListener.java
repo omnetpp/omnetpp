@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.SWTEventListener;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public interface LineBackgroundListener extends SWTEventListener {
-	
+
 /**
  * This method is called when a line is about to be drawn in order to get its
  * background color.

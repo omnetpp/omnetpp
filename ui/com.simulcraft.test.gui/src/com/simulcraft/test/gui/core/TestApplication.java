@@ -22,7 +22,7 @@ import com.simulcraft.test.gui.access.Access;
 
 public class TestApplication extends IDEApplication
 {
-	private static final boolean debug = true;
+    private static final boolean debug = true;
 
     private static final String PROP_EXIT_CODE = "eclipse.exitcode"; //$NON-NLS-1$
 
@@ -45,8 +45,8 @@ public class TestApplication extends IDEApplication
                 }
             } finally {
                 if (shell != null) {
-					shell.dispose();
-				}
+                    shell.dispose();
+                }
             }
 
             // create the workbench with this advisor and run it until it exits
@@ -54,35 +54,35 @@ public class TestApplication extends IDEApplication
             // the workbench globally so that all UI plug-ins can find it using
             // PlatformUI.getWorkbench() or AbstractUIPlugin.getWorkbench()
             int returnCode = PlatformUI.createAndRunWorkbench(display, new IDEWorkbenchAdvisor() {
-            	@Override
-            	public void eventLoopException(Throwable exception) {
-            		if (isTestException(exception))
-            		{
-            		    Access.log(debug, "Rethrowing exception from event loop");
-            		    throw (RuntimeException)exception;
-            		}
+                @Override
+                public void eventLoopException(Throwable exception) {
+                    if (isTestException(exception))
+                    {
+                        Access.log(debug, "Rethrowing exception from event loop");
+                        throw (RuntimeException)exception;
+                    }
 
-            		super.eventLoopException(exception);
-            	}
+                    super.eventLoopException(exception);
+                }
 
-            	private boolean isTestException(Throwable t) {
-            	    if (t instanceof TestException)
+                private boolean isTestException(Throwable t) {
+                    if (t instanceof TestException)
                         return true;
-            	    else if (t instanceof SWTException)
-            	        return isTestException(((SWTException)t).throwable);
-            	    else if (t instanceof RuntimeException)
-            	        return isTestException(((RuntimeException)t).getCause());
-            	    else
-            	        return false;
-            	}
+                    else if (t instanceof SWTException)
+                        return isTestException(((SWTException)t).throwable);
+                    else if (t instanceof RuntimeException)
+                        return isTestException(((RuntimeException)t).getCause());
+                    else
+                        return false;
+                }
             });
 
             // the workbench doesn't support relaunch yet (bug 61809) so
             // for now restart is used, and exit data properties are checked
             // here to substitute in the relaunch return code if needed
             if (returnCode != PlatformUI.RETURN_RESTART) {
-				return EXIT_OK;
-			}
+                return EXIT_OK;
+            }
 
             // if the exit code property has been set to the relaunch code, then
             // return that code now, otherwise this is a normal restart
@@ -90,8 +90,8 @@ public class TestApplication extends IDEApplication
         }
         finally {
             if (display != null) {
-				display.dispose();
-			}
+                display.dispose();
+            }
         }
     }
 }

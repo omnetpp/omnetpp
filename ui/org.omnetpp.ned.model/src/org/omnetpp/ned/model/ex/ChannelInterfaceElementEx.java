@@ -56,22 +56,22 @@ public class ChannelInterfaceElementEx extends ChannelInterfaceElement implement
     }
 
     public INedTypeInfo getNedTypeInfo() {
-    	return typeInfo;
+        return typeInfo;
     }
 
     @Override
     public void fireModelEvent(NedModelEvent event) {
-    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
-    		displayString = null;
-    	super.fireModelEvent(event);
+        // invalidate cached display string because NED tree may have changed outside the DisplayString class
+        if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
+            displayString = null;
+        super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
+        return displayString;
     }
 
     // "extends" support
@@ -88,12 +88,12 @@ public class ChannelInterfaceElementEx extends ChannelInterfaceElement implement
     }
 
     public List<ExtendsElement> getAllExtends() {
-    	return getAllExtendsFrom(this);
+        return getAllExtendsFrom(this);
     }
 
-	public INedTypeLookupContext getParentLookupContext() {
-		return getParentLookupContextFor(this);
-	}
+    public INedTypeLookupContext getParentLookupContext() {
+        return getParentLookupContextFor(this);
+    }
 
     // parameter support
     public Map<String, ParamElementEx> getParamAssignments() {

@@ -11,7 +11,7 @@ import java.util.EventListener;
 
 public interface IModelChangeListener extends EventListener {
 
-	void handleChange();
+    void handleChange();
 
 }
 

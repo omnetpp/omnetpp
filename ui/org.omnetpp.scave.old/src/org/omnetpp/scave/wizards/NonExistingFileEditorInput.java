@@ -17,15 +17,15 @@ import org.eclipse.ui.part.FileEditorInput;
  */
 // FIXME use NullEditorInput instead
 public class NonExistingFileEditorInput extends FileEditorInput {
-	public NonExistingFileEditorInput(IFile file) {
-    	super(file);
+    public NonExistingFileEditorInput(IFile file) {
+        super(file);
     }
 
     /**
      * We don't want to be persisted. (After restart, it'd pop up as normal
      * FileEditorInput, resulting in a "file does not exist" error.
      */
-	public IPersistableElement getPersistable() {
-		return null;
-	}
+    public IPersistableElement getPersistable() {
+        return null;
+    }
 }

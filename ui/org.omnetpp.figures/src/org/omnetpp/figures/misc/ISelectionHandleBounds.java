@@ -7,8 +7,8 @@ import org.eclipse.draw2d.geometry.Rectangle;
  * IHandleBounds from the GEF plugin.
  */
 public interface ISelectionHandleBounds {
-	/**
-	 * The selection rectangle that should be used around the figure.
-	 */
-	Rectangle getHandleBounds();
+    /**
+     * The selection rectangle that should be used around the figure.
+     */
+    Rectangle getHandleBounds();
 }

@@ -23,16 +23,16 @@ public interface INedErrorStore {
      */
     public void setFile(IFile file);
 
-	public void addError(INedElement context, String message);
+    public void addError(INedElement context, String message);
 
-	public void addError(INedElement context, int line, String message);
+    public void addError(INedElement context, int line, String message);
 
-	public void addWarning(INedElement context, String message);
+    public void addWarning(INedElement context, String message);
 
-	public void addWarning(INedElement context, int line, String message);
+    public void addWarning(INedElement context, int line, String message);
 
-	public void add(int severity, INedElement context, int line, String message);
+    public void add(int severity, INedElement context, int line, String message);
 
-	public int getNumProblems();
+    public int getNumProblems();
 
 }

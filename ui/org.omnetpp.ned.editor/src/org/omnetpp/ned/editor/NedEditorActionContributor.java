@@ -53,7 +53,7 @@ public class NedEditorActionContributor extends MultiPageEditorActionBarContribu
      * Respond to an editor change with reassigning the local and global actions
      */
     @Override
-	public void setActivePage(IEditorPart part) {
+    public void setActivePage(IEditorPart part) {
         if (activeEditorPart == part)
             return;
 

@@ -16,13 +16,13 @@ public class NedEditorAccess
     extends MultiPageEditorPartAccess
 {
 
-	public NedEditorAccess(NedEditor multiPageNedEditor) {
-		super(multiPageNedEditor);
-	}
+    public NedEditorAccess(NedEditor multiPageNedEditor) {
+        super(multiPageNedEditor);
+    }
 
     @Override
-	public NedEditor getWorkbenchPart() {
-	    return (NedEditor)workbenchPart;
+    public NedEditor getWorkbenchPart() {
+        return (NedEditor)workbenchPart;
     }
 
     public TextEditorAccess getTextualNedEditor() {

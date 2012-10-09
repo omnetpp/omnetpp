@@ -70,7 +70,7 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
      */
     @Override
     public void buildContextMenu(IMenuManager manager) {
-//    	GEFActionConstants.addStandardActionGroups(manager);
+//      GEFActionConstants.addStandardActionGroups(manager);
         manager.add(new Separator(GROUP_EDIT));
         manager.add(new Separator(GROUP_FIND));
         manager.add(new Separator(GROUP_VIEW));
@@ -93,7 +93,7 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         manager.appendToGroup(GROUP_EDIT, action);
 
         action = ar.getAction(DIRECT_EDIT);
-        if (action.isEnabled()) 
+        if (action.isEnabled())
             manager.appendToGroup(GROUP_EDIT, action);
 
         // add convert menu ONLY if its meaningful
@@ -121,7 +121,7 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         manager.appendToGroup(GROUP_FIND, showInSubMenu);
 
         action = ar.getAction(TogglePinAction.ID);
-        if (action.isEnabled()) 
+        if (action.isEnabled())
             manager.appendToGroup(GROUP_REST, action);
 
         // Alignment Actions
@@ -152,7 +152,7 @@ public class GNedContextMenuProvider extends ContextMenuProvider {
         manager.appendToGroup(GROUP_REST, action);
 
         action = ar.getAction(ExportImageAction.ID);
-        if (action != null && action.isEnabled()) 
+        if (action != null && action.isEnabled())
             manager.appendToGroup(GROUP_SAVE, action);
 
         IMenuService menuService = (IMenuService)serviceLocator.getService(IMenuService.class);

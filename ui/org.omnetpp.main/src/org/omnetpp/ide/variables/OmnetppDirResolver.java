@@ -22,22 +22,22 @@ public class OmnetppDirResolver implements IDynamicVariableResolver {
     public static final String OMNETPP_INCL_DIR = "opp_incl_dir";
     public static final String OMNETPP_LIB_DIR = "opp_lib_dir";
 
-	public String resolveValue(IDynamicVariable variable, String argument)
-			throws CoreException {
-		if (OMNETPP_ROOT.equalsIgnoreCase(variable.getName())) {
-			return OmnetppMainPlugin.getOmnetppRootDir();
-		}
-		if (OMNETPP_BIN_DIR.equalsIgnoreCase(variable.getName())) {
-			return OmnetppMainPlugin.getOmnetppBinDir();
-		}
-		if (OMNETPP_INCL_DIR.equalsIgnoreCase(variable.getName())) {
-			return OmnetppMainPlugin.getOmnetppInclDir();
-		}
-		if (OMNETPP_LIB_DIR.equalsIgnoreCase(variable.getName())) {
-			return OmnetppMainPlugin.getOmnetppLibDir();
-		}
+    public String resolveValue(IDynamicVariable variable, String argument)
+            throws CoreException {
+        if (OMNETPP_ROOT.equalsIgnoreCase(variable.getName())) {
+            return OmnetppMainPlugin.getOmnetppRootDir();
+        }
+        if (OMNETPP_BIN_DIR.equalsIgnoreCase(variable.getName())) {
+            return OmnetppMainPlugin.getOmnetppBinDir();
+        }
+        if (OMNETPP_INCL_DIR.equalsIgnoreCase(variable.getName())) {
+            return OmnetppMainPlugin.getOmnetppInclDir();
+        }
+        if (OMNETPP_LIB_DIR.equalsIgnoreCase(variable.getName())) {
+            return OmnetppMainPlugin.getOmnetppLibDir();
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }

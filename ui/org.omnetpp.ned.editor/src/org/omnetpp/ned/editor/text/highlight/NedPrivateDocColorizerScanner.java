@@ -25,16 +25,16 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 public class NedPrivateDocColorizerScanner extends RuleBasedScanner {
 
     /**
-	 * Create a new neddoc scanner for the given color provider.
-	 *
-	 * @param provider the color provider
-	 */
-	 public NedPrivateDocColorizerScanner() {
-		super();
+     * Create a new neddoc scanner for the given color provider.
+     *
+     * @param provider the color provider
+     */
+     public NedPrivateDocColorizerScanner() {
+        super();
         // this is the default token for a comment
         setDefaultReturnToken(SyntaxHighlightHelper.docPrivateDefaultToken);
 
-		List<IRule> list= new ArrayList<IRule>();
+        List<IRule> list= new ArrayList<IRule>();
 
         // Add word rule for private comment hints
         WordRule hintRule= new WordRule(new SyntaxHighlightHelper.NedWordDetector(), Token.UNDEFINED);
@@ -42,8 +42,8 @@ public class NedPrivateDocColorizerScanner extends RuleBasedScanner {
             hintRule.addWord(SyntaxHighlightHelper.highlightPrivateDocTodo[i], SyntaxHighlightHelper.docPrivateTodoToken);
         list.add(hintRule);
 
-		IRule[] result= new IRule[list.size()];
-		list.toArray(result);
-		setRules(result);
-	}
+        IRule[] result= new IRule[list.size()];
+        list.toArray(result);
+        setRules(result);
+    }
 }

@@ -38,49 +38,49 @@ import org.omnetpp.scave.model2.SetOperationPropertySource;
  */
 public class ScavePropertySourceProvider implements IPropertySourceProvider {
 
-	AdapterFactory adapterFactory;
-	IPropertySourceProvider delegate;
-	ResultFileManager manager;
+    AdapterFactory adapterFactory;
+    IPropertySourceProvider delegate;
+    ResultFileManager manager;
 
-	public ScavePropertySourceProvider(AdapterFactory adapterFactory, ResultFileManager manager) {
-		this.adapterFactory = adapterFactory;
-		this.delegate = new AdapterFactoryContentProvider(adapterFactory);
-		this.manager = manager;
-	}
+    public ScavePropertySourceProvider(AdapterFactory adapterFactory, ResultFileManager manager) {
+        this.adapterFactory = adapterFactory;
+        this.delegate = new AdapterFactoryContentProvider(adapterFactory);
+        this.manager = manager;
+    }
 
-	public IPropertySource getPropertySource(final Object object) {
-	    if (object instanceof GenericTreeNode)
-	        return getPropertySource(((GenericTreeNode)object).getPayload());
-	    else if (object instanceof Chart)
-			return ChartProperties.createPropertySource((Chart)object, manager);
-		else if (object instanceof ChartSheet)
+    public IPropertySource getPropertySource(final Object object) {
+        if (object instanceof GenericTreeNode)
+            return getPropertySource(((GenericTreeNode)object).getPayload());
+        else if (object instanceof Chart)
+            return ChartProperties.createPropertySource((Chart)object, manager);
+        else if (object instanceof ChartSheet)
             return ChartSheetProperties.createPropertySource((ChartSheet)object, delegate.getPropertySource(object));
-		else if (object instanceof SetOperation) {
-			IItemPropertySource itemPropertySource =
-				(IItemPropertySource) adapterFactory.adapt(object, IItemPropertySource.class);
-			return new SetOperationPropertySource(object, itemPropertySource, manager);
-		}
-		else if (object instanceof ProcessingOp)
-			return new ProcessingOpPropertySource((ProcessingOp)object);
-		else if (object instanceof PropertySource)
-			return (PropertySource)object;
-		else if (object instanceof ChartLine) {
-			ChartLine lineID = (ChartLine)object;
-			ChartProperties properties = ChartProperties.createPropertySource(lineID.getChart(), manager);
-			if (properties instanceof VectorChartProperties)
-				return ((VectorChartProperties)properties).getLineProperties(lineID.getKey());
-		}
-		else if (object instanceof ResultItemRef)
-		    return new ResultItemPropertySource((ResultItemRef)object);
-		else if (object instanceof ResultFilePayload)
+        else if (object instanceof SetOperation) {
+            IItemPropertySource itemPropertySource =
+                (IItemPropertySource) adapterFactory.adapt(object, IItemPropertySource.class);
+            return new SetOperationPropertySource(object, itemPropertySource, manager);
+        }
+        else if (object instanceof ProcessingOp)
+            return new ProcessingOpPropertySource((ProcessingOp)object);
+        else if (object instanceof PropertySource)
+            return (PropertySource)object;
+        else if (object instanceof ChartLine) {
+            ChartLine lineID = (ChartLine)object;
+            ChartProperties properties = ChartProperties.createPropertySource(lineID.getChart(), manager);
+            if (properties instanceof VectorChartProperties)
+                return ((VectorChartProperties)properties).getLineProperties(lineID.getKey());
+        }
+        else if (object instanceof ResultItemRef)
+            return new ResultItemPropertySource((ResultItemRef)object);
+        else if (object instanceof ResultFilePayload)
             return new ResultFilePropertySource(manager.getFile(((ResultFilePayload)object).getFilePath()));
-		else if (object instanceof RunPayload)
-		    return ResultFileManager.callWithReadLock(manager, new Callable<RunPropertySource>() {
+        else if (object instanceof RunPayload)
+            return ResultFileManager.callWithReadLock(manager, new Callable<RunPropertySource>() {
                 public RunPropertySource call() throws Exception {
                     return new RunPropertySource(manager.getRunByName(((RunPayload)object).getRunName()));
                 }
-		    });
+            });
 
-		return delegate.getPropertySource(object);
-	}
+        return delegate.getPropertySource(object);
+    }
 }

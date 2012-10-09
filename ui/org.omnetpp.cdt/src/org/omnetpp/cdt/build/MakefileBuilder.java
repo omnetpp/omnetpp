@@ -231,7 +231,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             });
             return;
         }
-        
+
         // check if the libraries required for the active configuration are present
         // advise the user to switch configs
         boolean libMissing =
@@ -239,16 +239,16 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
                 (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.gnu.config.release") && !OmnetppMainPlugin.isOppsimGccLibraryPresent(false)) ||
                 (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.debug") && !OmnetppMainPlugin.isOppsimVcLibraryPresent(true)) ||
                 (activeConfig.getBaseId().startsWith("org.omnetpp.cdt.msvc.config.release") && !OmnetppMainPlugin.isOppsimVcLibraryPresent(false));
-        
+
         if (libMissing) {
             runInUIThread(new Runnable() {
                 public void run() {
                     String message =
-                        "OMNeT++ library files for configuration \"" + activeConfig.getName() + "\" " + 
+                        "OMNeT++ library files for configuration \"" + activeConfig.getName() + "\" " +
                         "were not found under " + OmnetppMainPlugin.getOmnetppLibDir() + ".\n\n"+
                         "Switch to a different build configuration in the project context menu, " +
                         "or build the OMNeT++ libraries from " +
-                        "the command line. (See the Install Guide for help.)";        
+                        "the command line. (See the Install Guide for help.)";
                     MessageDialog.openWarning(getActiveShell(), "Project "+getProject().getName(), message);
                 }
             });
@@ -286,25 +286,25 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
      * Here we do both.
      */
     protected static boolean isToolChainSupported(IToolChain toolchain) {
-    	if (!isToolchainSupportedOnCurrentPlatform(toolchain))
-    		return false;
-    	while (toolchain != null) {
-    		if (!toolchain.isSupported())
-    			return false;
-    		toolchain = toolchain.getSuperClass();
-    	}
-    	return true;
+        if (!isToolchainSupportedOnCurrentPlatform(toolchain))
+            return false;
+        while (toolchain != null) {
+            if (!toolchain.isSupported())
+                return false;
+            toolchain = toolchain.getSuperClass();
+        }
+        return true;
     }
 
     protected static String[] getEffectiveOSList(IToolChain toolchain) {
-    	while(toolchain != null && toolchain.getOSList().length == 0)
-    		toolchain = toolchain.getSuperClass();
-    	return toolchain == null ? new String[0] : toolchain.getOSList();
+        while(toolchain != null && toolchain.getOSList().length == 0)
+            toolchain = toolchain.getSuperClass();
+        return toolchain == null ? new String[0] : toolchain.getOSList();
     }
 
     protected static boolean isToolchainSupportedOnCurrentPlatform(IToolChain toolchain) {
-    	List<String> osList = Arrays.asList(getEffectiveOSList(toolchain));
-    	return osList.isEmpty() || osList.contains("all") || osList.contains(Platform.getOS());
+        List<String> osList = Arrays.asList(getEffectiveOSList(toolchain));
+        return osList.isEmpty() || osList.contains("all") || osList.contains(Platform.getOS());
     }
 
     /**
@@ -355,7 +355,7 @@ public class MakefileBuilder extends IncrementalProjectBuilder {
             deleteMakeFiles = false;
         }
         catch (MakemakeException e) {
-        	deleteMakeFiles = e.getDeleteMakefile();
+            deleteMakeFiles = e.getDeleteMakefile();
             throw Activator.wrapIntoCoreException(e);
         }
         finally {

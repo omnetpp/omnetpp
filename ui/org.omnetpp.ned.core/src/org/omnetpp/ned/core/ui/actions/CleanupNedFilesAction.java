@@ -76,9 +76,9 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
 
     public void run(IAction action) {
         IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
+        Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
 
-		ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
+        ContainerSelectionDialog dialog = new ContainerSelectionDialog(shell, ResourcesPlugin.getWorkspace().getRoot(), false, "Clean up NED files in the following folder:");
         if (dialog.open() == ListDialog.OK) {
             IPath path = (IPath) dialog.getResult()[0];
             final IContainer container = (IContainer) ResourcesPlugin.getWorkspace().getRoot().findMember(path);
@@ -103,7 +103,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
     protected void cleanupNedFilesIn(IContainer container, final IProgressMonitor monitor) {
         try {
 
-        	NedResourcesPlugin.getNedResources().setRefactoringInProgress(true);
+            NedResourcesPlugin.getNedResources().setRefactoringInProgress(true);
             NedResourcesPlugin.getNedResources().fireBeginChangeEvent();
 
             // we need to fix package declarations and imports in two separate passes
@@ -115,7 +115,7 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         catch (CoreException e) {
             NedResourcesPlugin.logError(e);
             IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-    		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
+            Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
             ErrorDialog.openError(shell, "Error", "An error occurred during cleaning up NED files. Not all of the selected files have been processed.", e.getStatus());
         }
         finally {
@@ -150,15 +150,15 @@ public class CleanupNedFilesAction implements IWorkbenchWindowActionDelegate {
         if (!nedFileElement.hasSyntaxError()) {
             String originalSource = nedFileElement.getNedSource();
 
-        	// do the actual work
+            // do the actual work
             refactoring.process(nedFileElement);
 
-        	// save the file if changed
-        	String source = nedFileElement.getNedSource();
-        	if (!source.equals(originalSource)) {
-        	    byte[] bytes = ProjectUtils.getBytesForFile(source, file);
-        	    file.setContents(new ByteArrayInputStream(bytes), IFile.FORCE, null);
-        	}
+            // save the file if changed
+            String source = nedFileElement.getNedSource();
+            if (!source.equals(originalSource)) {
+                byte[] bytes = ProjectUtils.getBytesForFile(source, file);
+                file.setContents(new ByteArrayInputStream(bytes), IFile.FORCE, null);
+            }
         }
     }
 

@@ -11,21 +11,21 @@ import freemarker.eclipse.ImageManager;
  */
 public class ExpandAllAction extends Action {
 
-	private AbstractTreeViewer fViewer;
+    private AbstractTreeViewer fViewer;
 
-	public ExpandAllAction(AbstractTreeViewer aViewer) {
-		fViewer = aViewer;
-		setImageDescriptor(ImageManager.getImageDescriptor("icons/expandall.gif"));
+    public ExpandAllAction(AbstractTreeViewer aViewer) {
+        fViewer = aViewer;
+        setImageDescriptor(ImageManager.getImageDescriptor("icons/expandall.gif"));
         setToolTipText("Expand all nodes");
-								  
-        
-	}
 
-	/**
-	 * @see org.eclipse.jface.action.IAction#run()
-	 */
-	public void run() {
-		fViewer.expandAll();
-	}
+
+    }
+
+    /**
+     * @see org.eclipse.jface.action.IAction#run()
+     */
+    public void run() {
+        fViewer.expandAll();
+    }
 
 }

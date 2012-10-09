@@ -22,45 +22,45 @@ import org.osgi.framework.BundleContext;
  */
 public class LaunchPlugin extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static String PLUGIN_ID;
+    // The plug-in ID
+    public static String PLUGIN_ID;
 
-	// The shared instance
-	private static LaunchPlugin plugin;
+    // The shared instance
+    private static LaunchPlugin plugin;
 
-	/**
-	 * The constructor
-	 */
-	public LaunchPlugin() {
-	}
+    /**
+     * The constructor
+     */
+    public LaunchPlugin() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    @Override
     public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
+        super.start(context);
+        plugin = this;
         PLUGIN_ID = getBundle().getSymbolicName();
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
     public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
+        plugin = null;
+        super.stop(context);
+    }
 
-	/**
-	 * Returns the shared instance
-	 */
-	public static LaunchPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance
+     */
+    public static LaunchPlugin getDefault() {
+        return plugin;
+    }
 
     /**
      * Returns an image descriptor for the image file at the given

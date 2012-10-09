@@ -51,117 +51,117 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * @generated
  */
 public abstract class ChartImpl extends DatasetItemImpl implements Chart {
-	/**
+    /**
      * The default value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected static final String NAME_EDEFAULT = null;
+    protected static final String NAME_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getName() <em>Name</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getName()
      * @generated
      * @ordered
      */
-	protected String name = NAME_EDEFAULT;
+    protected String name = NAME_EDEFAULT;
 
-	/**
+    /**
      * The cached value of the '{@link #getFilters() <em>Filters</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getFilters()
      * @generated
      * @ordered
      */
-	protected EList<SelectDeselectOp> filters;
+    protected EList<SelectDeselectOp> filters;
 
-	/**
+    /**
      * The cached value of the '{@link #getProperties() <em>Properties</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getProperties()
      * @generated
      * @ordered
      */
-	protected EList<Property> properties;
+    protected EList<Property> properties;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected ChartImpl() {
+    protected ChartImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.CHART;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getName() {
+    public String getName() {
         return name;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setName(String newName) {
+    public void setName(String newName) {
         String oldName = name;
         name = newName;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.CHART__NAME, oldName, name));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<SelectDeselectOp> getFilters() {
+    public EList<SelectDeselectOp> getFilters() {
         if (filters == null) {
             filters = new EObjectContainmentEList<SelectDeselectOp>(SelectDeselectOp.class, this, ScaveModelPackage.CHART__FILTERS);
         }
         return filters;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<Property> getProperties() {
+    public EList<Property> getProperties() {
         if (properties == null) {
             properties = new EObjectContainmentEList<Property>(Property.class, this, ScaveModelPackage.CHART__PROPERTIES);
         }
         return properties;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.CHART__FILTERS:
                 return ((InternalEList<?>)getFilters()).basicRemove(otherEnd, msgs);
@@ -171,13 +171,13 @@ public abstract class ChartImpl extends DatasetItemImpl implements Chart {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.CHART__NAME:
                 return getName();
@@ -189,14 +189,14 @@ public abstract class ChartImpl extends DatasetItemImpl implements Chart {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.CHART__NAME:
                 setName((String)newValue);
@@ -213,13 +213,13 @@ public abstract class ChartImpl extends DatasetItemImpl implements Chart {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.CHART__NAME:
                 setName(NAME_EDEFAULT);
@@ -234,13 +234,13 @@ public abstract class ChartImpl extends DatasetItemImpl implements Chart {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.CHART__NAME:
                 return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
@@ -252,13 +252,13 @@ public abstract class ChartImpl extends DatasetItemImpl implements Chart {
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

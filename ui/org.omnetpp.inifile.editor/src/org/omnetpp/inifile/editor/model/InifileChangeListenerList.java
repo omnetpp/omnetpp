@@ -9,47 +9,47 @@ package org.omnetpp.inifile.editor.model;
 
 public class InifileChangeListenerList {
 
-	protected IInifileChangeListener[] array = new IInifileChangeListener[0];
+    protected IInifileChangeListener[] array = new IInifileChangeListener[0];
     protected boolean enabled = true;
 
-	/**
-	 * @param listener Adds a new model change listener
-	 */
-	public void add(IInifileChangeListener listener) {
-		array = copyArray(array.length+1);
-		array[array.length-1] = listener;
-	}
+    /**
+     * @param listener Adds a new model change listener
+     */
+    public void add(IInifileChangeListener listener) {
+        array = copyArray(array.length+1);
+        array[array.length-1] = listener;
+    }
 
-	/**
-	 * @param listener Removes a listener from the list
-	 */
-	public void remove(IInifileChangeListener listener) {
-		for (int i=0; i<array.length; i++) {
-			if (array[i]==listener) {
-				array[i] = array[array.length-1];
-				array = copyArray(array.length-1);
-				return;
-			}
-		}
-	}
+    /**
+     * @param listener Removes a listener from the list
+     */
+    public void remove(IInifileChangeListener listener) {
+        for (int i=0; i<array.length; i++) {
+            if (array[i]==listener) {
+                array[i] = array[array.length-1];
+                array = copyArray(array.length-1);
+                return;
+            }
+        }
+    }
 
-	private IInifileChangeListener[] copyArray(int size) {
-		IInifileChangeListener[] newArray = new IInifileChangeListener[size];
-		System.arraycopy(array, 0, newArray, 0, Math.min(array.length, size));
-		return newArray;
-	}
+    private IInifileChangeListener[] copyArray(int size) {
+        IInifileChangeListener[] newArray = new IInifileChangeListener[size];
+        System.arraycopy(array, 0, newArray, 0, Math.min(array.length, size));
+        return newArray;
+    }
 
-	/**
-	 * Returns a copy of the listener list, so adding/removing listeners during
+    /**
+     * Returns a copy of the listener list, so adding/removing listeners during
      * notification is allowed.
-	 */
-	public IInifileChangeListener[] getListeners() {
-		// make a copy, just in case there are adds/removes during iteration
+     */
+    public IInifileChangeListener[] getListeners() {
+        // make a copy, just in case there are adds/removes during iteration
         // Maybe a copy on/write implementation would be more efficient
-		IInifileChangeListener[] newArray = new IInifileChangeListener[array.length];
-		System.arraycopy(array, 0, newArray, 0, array.length);
-		return newArray;
-	}
+        IInifileChangeListener[] newArray = new IInifileChangeListener[array.length];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        return newArray;
+    }
 
     /**
      * Check whether change notification is enabled

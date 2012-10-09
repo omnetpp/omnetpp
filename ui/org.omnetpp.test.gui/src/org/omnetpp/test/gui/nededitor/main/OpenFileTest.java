@@ -13,26 +13,26 @@ import org.omnetpp.test.gui.nededitor.NedFileTestCase;
 
 
 public class OpenFileTest
-	extends NedFileTestCase
+    extends NedFileTestCase
 {
-	public void testOpenFile() throws Throwable {
-		createFileWithContent("simple Test {}");
-		openFileFromProjectExplorerView();
-		assertBothEditorsAreAccessible();
-		WorkbenchUtils.assertNoErrorMessageInProblemsView();
-	}
+    public void testOpenFile() throws Throwable {
+        createFileWithContent("simple Test {}");
+        openFileFromProjectExplorerView();
+        assertBothEditorsAreAccessible();
+        WorkbenchUtils.assertNoErrorMessageInProblemsView();
+    }
 
-	public void testOpenFileWithSyntaxError() throws Throwable  {
-		createFileWithContent("syntax error Test {}");
-		openFileFromProjectExplorerView();
-		assertBothEditorsAreAccessible();
-		WorkbenchUtils.assertErrorMessageInProblemsView(".*syntax error.*");
-	}
+    public void testOpenFileWithSyntaxError() throws Throwable  {
+        createFileWithContent("syntax error Test {}");
+        openFileFromProjectExplorerView();
+        assertBothEditorsAreAccessible();
+        WorkbenchUtils.assertErrorMessageInProblemsView(".*syntax error.*");
+    }
 
-	public void testOpenFileWithTypeError() throws Throwable  {
-		createFileWithContent("simple Sub extends Super {}");
-		openFileFromProjectExplorerView();
-		assertBothEditorsAreAccessible();
-		WorkbenchUtils.assertErrorMessageInProblemsView(".*no such component.*");
-	}
+    public void testOpenFileWithTypeError() throws Throwable  {
+        createFileWithContent("simple Sub extends Super {}");
+        openFileFromProjectExplorerView();
+        assertBothEditorsAreAccessible();
+        WorkbenchUtils.assertErrorMessageInProblemsView(".*no such component.*");
+    }
 }

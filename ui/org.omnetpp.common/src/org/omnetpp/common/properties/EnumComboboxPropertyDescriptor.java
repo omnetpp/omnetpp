@@ -25,66 +25,66 @@ import org.omnetpp.common.util.StringUtils;
  */
 public class EnumComboboxPropertyDescriptor extends PropertyDescriptor {
 
-	/** The list of possible values to display in the combo box. */
-	private IDisplayString.EnumSpec enumSpec;
+    /** The list of possible values to display in the combo box. */
+    private IDisplayString.EnumSpec enumSpec;
 
-	/** The control of this property descriptor. */
-	private EditableComboBoxCellEditor editor;
+    /** The control of this property descriptor. */
+    private EditableComboBoxCellEditor editor;
 
 
-	public EnumComboboxPropertyDescriptor(Object id, String displayName, IDisplayString.EnumSpec enumSpec) {
-		super(id, displayName);
-		this.enumSpec = enumSpec;
-		setLabelProvider(new LabelProvider() {
-			public String getText(Object element) {
-				String text = element.toString();
-				if (text.equals(""))
-					return text;
-				String name = EnumComboboxPropertyDescriptor.this.enumSpec.getNameFor(text);
-				if (name == null)
-					return text + " (invalid value)";
-				else if (name.equals(text))
-					return text;
-				else
-					return text + " (" + name + ")";
-			}
-		});
-	}
+    public EnumComboboxPropertyDescriptor(Object id, String displayName, IDisplayString.EnumSpec enumSpec) {
+        super(id, displayName);
+        this.enumSpec = enumSpec;
+        setLabelProvider(new LabelProvider() {
+            public String getText(Object element) {
+                String text = element.toString();
+                if (text.equals(""))
+                    return text;
+                String name = EnumComboboxPropertyDescriptor.this.enumSpec.getNameFor(text);
+                if (name == null)
+                    return text + " (invalid value)";
+                else if (name.equals(text))
+                    return text;
+                else
+                    return text + " (" + name + ")";
+            }
+        });
+    }
 
-	@Override
-	protected ICellEditorValidator getValidator() {
-		return new ICellEditorValidator() {
-			public String isValid(Object value) {
-				String text = value.toString();
-				if (!text.equals("") && enumSpec.getNameFor(text) == null)
-					return "Must be one of: " + StringUtils.join(enumSpec.getNames(), ", ") +
-					"; or an allowed abbreviation like " +
-					StringUtils.join(enumSpec.getShorthands(), ", ");
-				return null;
-			}
-		};
-	}
+    @Override
+    protected ICellEditorValidator getValidator() {
+        return new ICellEditorValidator() {
+            public String isValid(Object value) {
+                String text = value.toString();
+                if (!text.equals("") && enumSpec.getNameFor(text) == null)
+                    return "Must be one of: " + StringUtils.join(enumSpec.getNames(), ", ") +
+                    "; or an allowed abbreviation like " +
+                    StringUtils.join(enumSpec.getShorthands(), ", ");
+                return null;
+            }
+        };
+    }
 
-	@Override
-	public CellEditor createPropertyEditor(Composite parent) {
-		editor = new EditableComboBoxCellEditor(parent, enumSpec.getNames());
+    @Override
+    public CellEditor createPropertyEditor(Composite parent) {
+        editor = new EditableComboBoxCellEditor(parent, enumSpec.getNames());
 
-		// customize combobox behavior a bit: when the user chooses something
-		// from the dropdown list, replace it with the standard abbreviation
-		final CCombo combo = ((CCombo)editor.getControl());
-		combo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				String text = combo.getText();
-				String shorthand = enumSpec.getShorthandFor(text);
-				if (shorthand != null)
-					combo.setText(shorthand);
-			}
-		});
+        // customize combobox behavior a bit: when the user chooses something
+        // from the dropdown list, replace it with the standard abbreviation
+        final CCombo combo = ((CCombo)editor.getControl());
+        combo.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                String text = combo.getText();
+                String shorthand = enumSpec.getShorthandFor(text);
+                if (shorthand != null)
+                    combo.setText(shorthand);
+            }
+        });
 
-		if (getValidator() != null)
-			editor.setValidator(getValidator());
+        if (getValidator() != null)
+            editor.setValidator(getValidator());
 
-		return editor;
-	}
+        return editor;
+    }
 }

@@ -16,27 +16,27 @@ import freemarker.eclipse.FreemarkerPlugin;
  * Window>Preferences>Java>Code Generation.
  */
 public class OutlinePreferencePage
-	extends FieldEditorPreferencePage
-	implements IWorkbenchPreferencePage, IPreferenceConstants {
+    extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage, IPreferenceConstants {
 
-	public OutlinePreferencePage() {
-		super(GRID);
-		setPreferenceStore(FreemarkerPlugin.getDefault().getPreferenceStore());
-		setDescription("Outline View Settings");
-	}
+    public OutlinePreferencePage() {
+        super(GRID);
+        setPreferenceStore(FreemarkerPlugin.getDefault().getPreferenceStore());
+        setDescription("Outline View Settings");
+    }
 
-	/**
-	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
-	 */
-	protected void createFieldEditors() {
-		addField(new BooleanFieldEditor(SHOW_ICONS,
-				"Show icons", getFieldEditorParent()));
-	}
+    /**
+     * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
+     */
+    protected void createFieldEditors() {
+        addField(new BooleanFieldEditor(SHOW_ICONS,
+                "Show icons", getFieldEditorParent()));
+    }
 
-	/**
-	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(IWorkbench)
-	 */
-	public void init(IWorkbench workbench) {
-	}
+    /**
+     * @see org.eclipse.ui.IWorkbenchPreferencePage#init(IWorkbench)
+     */
+    public void init(IWorkbench workbench) {
+    }
 
 }

@@ -25,12 +25,12 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class WorkbenchUtils
 {
-	public static void choosePerspectiveFromDialog(String perspectiveLabel) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		workbenchWindow.chooseFromMainMenu("Window|Open Perspective|Other.*");
-		ShellAccess dialog = Access.findShellWithTitle("Open Perspective");
-		dialog.findTable().findTableItemByContent(perspectiveLabel).reveal().doubleClick();
-	}
+    public static void choosePerspectiveFromDialog(String perspectiveLabel) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        workbenchWindow.chooseFromMainMenu("Window|Open Perspective|Other.*");
+        ShellAccess dialog = Access.findShellWithTitle("Open Perspective");
+        dialog.findTable().findTableItemByContent(perspectiveLabel).reveal().doubleClick();
+    }
 
     public static void ensurePerspectiveActivated(String perspectiveLabel) {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
@@ -38,16 +38,16 @@ public class WorkbenchUtils
             choosePerspectiveFromDialog(perspectiveLabel);
     }
 
-	public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		workbenchWindow.chooseFromMainMenu("Window|Show View|Other.*");
-		TreeAccess tree = Access.findShellWithTitle("Show View").findTree();
-		tree.findTreeItemByContent(viewCategory).reveal().click();
-		tree.pressKey(SWT.ARROW_RIGHT); // open category node
-		tree.findTreeItemByContent(viewLabel).reveal().doubleClick();
-		//return workbenchWindow.findViewPartByTitle(viewLabel, true);
-		return (ViewPartAccess) workbenchWindow.getActivePart();
-	}
+    public static ViewPartAccess chooseViewFromDialog(String viewCategory, String viewLabel) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        workbenchWindow.chooseFromMainMenu("Window|Show View|Other.*");
+        TreeAccess tree = Access.findShellWithTitle("Show View").findTree();
+        tree.findTreeItemByContent(viewCategory).reveal().click();
+        tree.pressKey(SWT.ARROW_RIGHT); // open category node
+        tree.findTreeItemByContent(viewLabel).reveal().doubleClick();
+        //return workbenchWindow.findViewPartByTitle(viewLabel, true);
+        return (ViewPartAccess) workbenchWindow.getActivePart();
+    }
 
     public static ViewPartAccess ensureViewActivated(String viewCategory, String viewLabel) {
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
@@ -59,57 +59,57 @@ public class WorkbenchUtils
         }
     }
 
-	public static TreeItemAccess findInProjectExplorerView(String path) {
-		ViewPartAccess projectExplorerView = ensureViewActivated("General", "Project Explorer");
-		TreeAccess tree = projectExplorerView.findTree();
-		tree.assertHasFocus();
-		return tree.findTreeItemByPath(path);
-	}
+    public static TreeItemAccess findInProjectExplorerView(String path) {
+        ViewPartAccess projectExplorerView = ensureViewActivated("General", "Project Explorer");
+        TreeAccess tree = projectExplorerView.findTree();
+        tree.assertHasFocus();
+        return tree.findTreeItemByPath(path);
+    }
 
-	public static ShellAccess openProjectPropertiesFromProjectExplorerView(String projectName) {
+    public static ShellAccess openProjectPropertiesFromProjectExplorerView(String projectName) {
         findInProjectExplorerView(projectName).activateContextMenuWithMouseClick().findMenuItemByLabel(".*Properties.*").activateWithMouseClick();
         return WorkbenchWindowAccess.findShellWithTitle("Properties.*" + projectName + ".*");
-	}
+    }
 
-	public static void refreshProjectFromProjectExplorerView(String projectName) {
-		findInProjectExplorerView(projectName).reveal().chooseFromContextMenu("Refresh.*");;
-	}
+    public static void refreshProjectFromProjectExplorerView(String projectName) {
+        findInProjectExplorerView(projectName).reveal().chooseFromContextMenu("Refresh.*");;
+    }
 
-	public static void assertNoErrorMessageInProblemsView() {
+    public static void assertNoErrorMessageInProblemsView() {
         ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems");
-		// TODO: how do we know that validation has already taken place?
-		problemsView.findTree().assertEmpty();
-	}
+        // TODO: how do we know that validation has already taken place?
+        problemsView.findTree().assertEmpty();
+    }
 
-	// FIXME should work in a case when two or more message is matching
-	public static void assertErrorMessageInProblemsView(String errorText) {
-		ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems");
-		problemsView.findTree().findTreeItemByContent(errorText);
-	}
-
-	@InBackgroundThread
-	public static void waitUntilProgressViewContains(String text, double timeout) {
-	    double oldRetryTimeout = GUITestCase.getRetryTimeout();
-	    try {
-	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*");
-	        GUITestCase.setRetryTimeout(timeout);
-	        progressView.getComposite().findLabel(text);
-	    } finally {
-	        GUITestCase.setRetryTimeout(oldRetryTimeout);
-	    }
-	}
+    // FIXME should work in a case when two or more message is matching
+    public static void assertErrorMessageInProblemsView(String errorText) {
+        ViewPartAccess problemsView = WorkbenchUtils.ensureViewActivated("General", "Problems");
+        problemsView.findTree().findTreeItemByContent(errorText);
+    }
 
     @InBackgroundThread
-	public static void waitUntilProgressViewNotContains(String text, double timeout) {
-	    double oldRetryTimeout = GUITestCase.getRetryTimeout();
-	    try {
-	        ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*");
-	        GUITestCase.setRetryTimeout(timeout);
-	        ensureNoSuchLabel(progressView.getComposite(), text);
-	    } finally {
-	        GUITestCase.setRetryTimeout(oldRetryTimeout);
-	    }
-	}
+    public static void waitUntilProgressViewContains(String text, double timeout) {
+        double oldRetryTimeout = GUITestCase.getRetryTimeout();
+        try {
+            ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*");
+            GUITestCase.setRetryTimeout(timeout);
+            progressView.getComposite().findLabel(text);
+        } finally {
+            GUITestCase.setRetryTimeout(oldRetryTimeout);
+        }
+    }
+
+    @InBackgroundThread
+    public static void waitUntilProgressViewNotContains(String text, double timeout) {
+        double oldRetryTimeout = GUITestCase.getRetryTimeout();
+        try {
+            ViewPartAccess progressView = WorkbenchUtils.ensureViewActivated("General", "Progress.*");
+            GUITestCase.setRetryTimeout(timeout);
+            ensureNoSuchLabel(progressView.getComposite(), text);
+        } finally {
+            GUITestCase.setRetryTimeout(oldRetryTimeout);
+        }
+    }
 
     @UIStep
     private static void ensureNoSuchLabel(CompositeAccess composite, String label) {

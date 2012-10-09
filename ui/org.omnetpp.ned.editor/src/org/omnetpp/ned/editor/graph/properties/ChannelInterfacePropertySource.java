@@ -43,7 +43,7 @@ public class ChannelInterfacePropertySource extends MergedPropertySource {
     }
 
     public ChannelInterfacePropertySource(ChannelInterfaceElementEx nodeModel) {
-    	super(nodeModel);
+        super(nodeModel);
         mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
         mergePropertySource(new DelegatingPropertySource(
                 new ExtendsListPropertySource(nodeModel),

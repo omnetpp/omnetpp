@@ -208,8 +208,8 @@ public class GNedActionBarContributor extends EditorActionBarContributor {
         tbm.add(getAction(ActionFactory.REDO.getId()));
 
         tbm.add(new Separator());
-    	tbm.add(getAction(TogglePinAction.ID));
-    	tbm.add(getAction(RelayoutAction.ID));
+        tbm.add(getAction(TogglePinAction.ID));
+        tbm.add(getAction(RelayoutAction.ID));
 
     }
 

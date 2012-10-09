@@ -14,14 +14,14 @@ import org.eclipse.swt.widgets.Control;
 
 public class LegendPreferencePage extends PreferencePage {
 
-	public LegendPreferencePage(String title)
-	{
-		super(title);
-	}
+    public LegendPreferencePage(String title)
+    {
+        super(title);
+    }
 
-	@Override
-	protected Control createContents(Composite parent) {
-		return new LegendPreferencePanel(parent, SWT.NONE);
-	}
+    @Override
+    protected Control createContents(Composite parent) {
+        return new LegendPreferencePanel(parent, SWT.NONE);
+    }
 
 }

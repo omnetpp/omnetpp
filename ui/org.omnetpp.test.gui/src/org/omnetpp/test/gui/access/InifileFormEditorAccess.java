@@ -25,21 +25,21 @@ public class InifileFormEditorAccess
     extends CompositeAccess
 {
 
-	public InifileFormEditorAccess(InifileFormEditor formEditor) {
-		super(formEditor);
-	}
-
-    @Override
-	public InifileFormEditor getControl() {
-	    return (InifileFormEditor)widget;
+    public InifileFormEditorAccess(InifileFormEditor formEditor) {
+        super(formEditor);
     }
 
-	public TreeAccess getCategoryTree() {
-	    return (TreeAccess)createAccess(
-	            findDescendantControl(
-	                    getControl(),
-	                    Predicate.hasID(TestSupport.CATEGORY_TREE)));
-	}
+    @Override
+    public InifileFormEditor getControl() {
+        return (InifileFormEditor)widget;
+    }
+
+    public TreeAccess getCategoryTree() {
+        return (TreeAccess)createAccess(
+                findDescendantControl(
+                        getControl(),
+                        Predicate.hasID(TestSupport.CATEGORY_TREE)));
+    }
 
     @UIStep
     public CompositeAccess getActiveCategoryPage() {

@@ -18,22 +18,22 @@ import org.osgi.framework.BundleContext;
  */
 public class Activator extends Plugin {
 
-	// The plug-in ID
-	public static final String PLUGIN_ID = "com.simulcraft.gui.usagetracker";
+    // The plug-in ID
+    public static final String PLUGIN_ID = "com.simulcraft.gui.usagetracker";
 
-	// The shared instance
-	private static Activator plugin;
+    // The shared instance
+    private static Activator plugin;
 
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
+    /**
+     * The constructor
+     */
+    public Activator() {
+    }
 
-	@Override
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		plugin = this;
+    @Override
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        plugin = this;
 
         Display.getDefault().asyncExec(new Runnable() {
             public void run() {
@@ -44,26 +44,26 @@ public class Activator extends Plugin {
                 new GUITracker().hookListeners();
             }
         });
-	}
+    }
 
     @Override
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
+    public void stop(BundleContext context) throws Exception {
+        plugin = null;
+        super.stop(context);
+    }
 
-	/**
-	 * Returns the shared instance
-	 */
-	public static Activator getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance
+     */
+    public static Activator getDefault() {
+        return plugin;
+    }
 
-	/**
-	 * Record a message into the log. Timestamp will be automatically recorded.
-	 */
-	public static void logMessage(String message) {
-	    IStatus status = new Status(Status.OK, PLUGIN_ID, message);
-	    getDefault().getLog().log(status);
-	}
+    /**
+     * Record a message into the log. Timestamp will be automatically recorded.
+     */
+    public static void logMessage(String message) {
+        IStatus status = new Status(Status.OK, PLUGIN_ID, message);
+        getDefault().getLog().log(status);
+    }
 }

@@ -21,18 +21,18 @@ import org.omnetpp.scave.charting.ILinePlot;
  */
 public class PointsVectorPlotter extends VectorPlotter {
 
-	public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
-		//
-		// Note: profiling shows that substituting the gc.drawPoint() call
-		// into the plotSymbols() would make no measurable difference in
-		// performance, so we just invoke the stock plotSymbols() here.
-		//
-		ChartSymbol pixelSymbol = new ChartSymbol() {
-			public void drawSymbol(Graphics graphics, long x, long y) {
-			    LargeGraphics.drawPoint(graphics, x, y);
-			}
-		};
+    public boolean plot(ILinePlot plot, int series, Graphics graphics, ICoordsMapping mapping, IChartSymbol symbol, int timeLimitMillis) {
+        //
+        // Note: profiling shows that substituting the gc.drawPoint() call
+        // into the plotSymbols() would make no measurable difference in
+        // performance, so we just invoke the stock plotSymbols() here.
+        //
+        ChartSymbol pixelSymbol = new ChartSymbol() {
+            public void drawSymbol(Graphics graphics, long x, long y) {
+                LargeGraphics.drawPoint(graphics, x, y);
+            }
+        };
 
-		return plotSymbols(plot, series, graphics, mapping, pixelSymbol, timeLimitMillis);
-	}
+        return plotSymbols(plot, series, graphics, mapping, pixelSymbol, timeLimitMillis);
+    }
 }

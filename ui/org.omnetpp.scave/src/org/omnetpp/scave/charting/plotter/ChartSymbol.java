@@ -22,22 +22,22 @@ package org.omnetpp.scave.charting.plotter;
  * @author andras
  */
 public abstract class ChartSymbol implements IChartSymbol {
-	protected int sizeHint = 5;
+    protected int sizeHint = 5;
 
-	public ChartSymbol() {
-		setSizeHint(sizeHint);
-	}
+    public ChartSymbol() {
+        setSizeHint(sizeHint);
+    }
 
-	public ChartSymbol(int sizeHint) {
-		setSizeHint(sizeHint);
-	}
+    public ChartSymbol(int sizeHint) {
+        setSizeHint(sizeHint);
+    }
 
-	public int getSizeHint() {
-		return sizeHint;
-	}
+    public int getSizeHint() {
+        return sizeHint;
+    }
 
-	public void setSizeHint(int sizeHint) {
-		this.sizeHint = sizeHint;
-	}
+    public void setSizeHint(int sizeHint) {
+        this.sizeHint = sizeHint;
+    }
 
 }

@@ -32,106 +32,106 @@ import org.omnetpp.scave.model.ProcessingOp;
  */
 public class ComputedResultFileLocator {
 
-	private static final ComputedResultFileLocator instance = new ComputedResultFileLocator();
+    private static final ComputedResultFileLocator instance = new ComputedResultFileLocator();
 
-	protected ComputedResultFileLocator() {	}
+    protected ComputedResultFileLocator() { }
 
-	public static ComputedResultFileLocator instance() {
-		return instance;
-	}
+    public static ComputedResultFileLocator instance() {
+        return instance;
+    }
 
-	public String getComputedFile(ProcessingOp operation) {
-		if (operation.getComputedFile() != null)
-			return operation.getComputedFile();
+    public String getComputedFile(ProcessingOp operation) {
+        if (operation.getComputedFile() != null)
+            return operation.getComputedFile();
 
-		URI uri = getResourceURI(operation);
-		if (uri != null) {
-			IPath dirPath = getComputedFileDirectory(uri);
-			if (dirPath != null) {
-				try {
-					File file = File.createTempFile("computed", ".vec", dirPath.toFile());
-					operation.setComputedFile(file.getAbsolutePath());
-					operation.setComputationHash(0);
-					file.deleteOnExit();
-					File indexFile = IndexFile.getIndexFileFor(file);
-					indexFile.deleteOnExit();
-					return file.getAbsolutePath();
-				} catch (IOException e) {
-					throw new RuntimeException("Could not create computed file: " + e.getMessage(), e);
-				}
-			}
-		}
-		return null;
-	}
+        URI uri = getResourceURI(operation);
+        if (uri != null) {
+            IPath dirPath = getComputedFileDirectory(uri);
+            if (dirPath != null) {
+                try {
+                    File file = File.createTempFile("computed", ".vec", dirPath.toFile());
+                    operation.setComputedFile(file.getAbsolutePath());
+                    operation.setComputationHash(0);
+                    file.deleteOnExit();
+                    File indexFile = IndexFile.getIndexFileFor(file);
+                    indexFile.deleteOnExit();
+                    return file.getAbsolutePath();
+                } catch (IOException e) {
+                    throw new RuntimeException("Could not create computed file: " + e.getMessage(), e);
+                }
+            }
+        }
+        return null;
+    }
 
-	private URI getResourceURI(ProcessingOp operation) {
-		URI uri = operation.eResource().getURI();
-		if (uri != null) {
-			ResourceSet resourceSet = operation.eResource().getResourceSet();
-			if (resourceSet != null)
-				uri = resourceSet.getURIConverter().normalize(uri);
-		}
-		return uri;
-	}
+    private URI getResourceURI(ProcessingOp operation) {
+        URI uri = operation.eResource().getURI();
+        if (uri != null) {
+            ResourceSet resourceSet = operation.eResource().getResourceSet();
+            if (resourceSet != null)
+                uri = resourceSet.getURIConverter().normalize(uri);
+        }
+        return uri;
+    }
 
-	private IPath getComputedFileDirectory(URI uri) {
-		if (uri.isFile()) {
-			try {
-				IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-				IFile[] files = root.findFilesForLocationURI(new java.net.URI(uri.toString()));
-				if (files.length > 0)
-					return getComputedFileDirectory(files[0]);
-			}
-			catch (URISyntaxException e) {
-			}
+    private IPath getComputedFileDirectory(URI uri) {
+        if (uri.isFile()) {
+            try {
+                IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+                IFile[] files = root.findFilesForLocationURI(new java.net.URI(uri.toString()));
+                if (files.length > 0)
+                    return getComputedFileDirectory(files[0]);
+            }
+            catch (URISyntaxException e) {
+            }
 
-			// Hmm, file not found in the workspace
-			// save the computed file in the same directory as the analysis file.
-			IPath filePath = new Path(uri.toFileString());
-			return filePath.removeLastSegments(1);
-		}
-		else if (uri.isPlatform()) {
-			IPath workspacePath = new Path(uri.toPlatformString(true));
-			IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-			IFile file = root.getFile(workspacePath);
-			return getComputedFileDirectory(file);
-		}
-		else
-			return null;
-	}
+            // Hmm, file not found in the workspace
+            // save the computed file in the same directory as the analysis file.
+            IPath filePath = new Path(uri.toFileString());
+            return filePath.removeLastSegments(1);
+        }
+        else if (uri.isPlatform()) {
+            IPath workspacePath = new Path(uri.toPlatformString(true));
+            IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+            IFile file = root.getFile(workspacePath);
+            return getComputedFileDirectory(file);
+        }
+        else
+            return null;
+    }
 
-	private IPath getComputedFileDirectory(IFile file) {
-		IFolder folder = file.getProject().getFolder(".computed");
-		if (!folder.exists()) {
-			try {
-				folder.create(IResource.DERIVED, true, null);
-				ResourceAttributes attributes = new ResourceAttributes();
-				attributes.setHidden(true);
-				attributes.setExecutable(true);
-				folder.setResourceAttributes(attributes);
-			}
-			catch (CoreException e) {
-				throw new RuntimeException("Could not create directory for computed files: "+e.getMessage(), e);
-			}
-		}
+    private IPath getComputedFileDirectory(IFile file) {
+        IFolder folder = file.getProject().getFolder(".computed");
+        if (!folder.exists()) {
+            try {
+                folder.create(IResource.DERIVED, true, null);
+                ResourceAttributes attributes = new ResourceAttributes();
+                attributes.setHidden(true);
+                attributes.setExecutable(true);
+                folder.setResourceAttributes(attributes);
+            }
+            catch (CoreException e) {
+                throw new RuntimeException("Could not create directory for computed files: "+e.getMessage(), e);
+            }
+        }
 
-		IPath dirPath = null;
-		if (checkFolder(folder))
-			dirPath = folder.getLocation();
-		else {
-			IPath path = file.getLocation().removeLastSegments(1);
-			if (checkFolder(path))
-				dirPath = path;
-		}
-		return dirPath;
-	}
+        IPath dirPath = null;
+        if (checkFolder(folder))
+            dirPath = folder.getLocation();
+        else {
+            IPath path = file.getLocation().removeLastSegments(1);
+            if (checkFolder(path))
+                dirPath = path;
+        }
+        return dirPath;
+    }
 
-	private boolean checkFolder(IFolder folder) {
-		return folder.exists() && checkFolder(folder.getLocation());
-	}
+    private boolean checkFolder(IFolder folder) {
+        return folder.exists() && checkFolder(folder.getLocation());
+    }
 
-	private boolean checkFolder(IPath folder) {
-		File file = folder.toFile();
-		return file.exists() && file.canWrite();
-	}
+    private boolean checkFolder(IPath folder) {
+        File file = folder.toFile();
+        return file.exists() && file.canWrite();
+    }
 }

@@ -16,39 +16,39 @@ import org.omnetpp.common.canvas.LargeGraphics;
  * @author andras
  */
 public class OvalSymbol extends ChartSymbol {
-	private int size;
+    private int size;
 
-	public OvalSymbol() {
-	}
+    public OvalSymbol() {
+    }
 
-	public OvalSymbol(int size) {
-		super(size);
-	}
+    public OvalSymbol(int size) {
+        super(size);
+    }
 
-	@Override
-	public void setSizeHint(int sizeHint) {
-		super.setSizeHint(sizeHint);
-		size = (sizeHint*113+50)/100;  // make same area as square; 1.13=2/sqrt(pi)
-		size |= 1;  // make an odd number
-	}
+    @Override
+    public void setSizeHint(int sizeHint) {
+        super.setSizeHint(sizeHint);
+        size = (sizeHint*113+50)/100;  // make same area as square; 1.13=2/sqrt(pi)
+        size |= 1;  // make an odd number
+    }
 
 
-	public void drawSymbol(Graphics graphics, long x, long y) {
-		if (size<=0) {
-			// nothing
-		}
-		else if (size==1) {
-			LargeGraphics.drawPoint(graphics, x, y);
-		}
-		else if (size==2 || size==3) {
-			LargeGraphics.drawPoint(graphics, x-1, y);
-			LargeGraphics.drawPoint(graphics, x+1, y);
-			LargeGraphics.drawPoint(graphics, x, y-1);
-			LargeGraphics.drawPoint(graphics, x, y+1);
-		}
-		else {
-			graphics.setBackgroundColor(graphics.getForegroundColor());
-			LargeGraphics.fillOval(graphics, x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
-		}
-	}
+    public void drawSymbol(Graphics graphics, long x, long y) {
+        if (size<=0) {
+            // nothing
+        }
+        else if (size==1) {
+            LargeGraphics.drawPoint(graphics, x, y);
+        }
+        else if (size==2 || size==3) {
+            LargeGraphics.drawPoint(graphics, x-1, y);
+            LargeGraphics.drawPoint(graphics, x+1, y);
+            LargeGraphics.drawPoint(graphics, x, y-1);
+            LargeGraphics.drawPoint(graphics, x, y+1);
+        }
+        else {
+            graphics.setBackgroundColor(graphics.getForegroundColor());
+            LargeGraphics.fillOval(graphics, x-size/2, y-size/2, size, size); //XXX make filled/unfilled version
+        }
+    }
 }

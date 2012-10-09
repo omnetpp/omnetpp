@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.Shell;
  *   <li>cancel the current operation
  *   <li>cancel the current operation and disable the ini file analysis
  * <ul>
- * 
+ *
  * @author tomi
  */
 public class AnalysisTimeoutDialog extends MessageDialog {
@@ -25,9 +25,9 @@ public class AnalysisTimeoutDialog extends MessageDialog {
     public static final int CANCEL = 0;
     public static final int WAIT = 1;
     public static final int DISABLE_AND_CANCEL = 2;
-    
+
     Button analysisEnabledButton;
-    
+
     public AnalysisTimeoutDialog(Shell shell) {
         super(shell, "Ini File Analysis Timed Out", null,
                 "Analyzing the ini file is taking too long. Do you want to wait until it completes?",

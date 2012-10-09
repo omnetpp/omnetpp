@@ -20,24 +20,24 @@ import org.omnetpp.inifile.editor.text.highlight.InifileSyntaxHighlightPartition
 //FIXME: trying to use ctrl-H "Search" with NED files open result in "SWTException: Invalid thread access"!
 public class InifileDocumentSetupParticipant implements IDocumentSetupParticipant {
 
-	/**
-	 */
-	public InifileDocumentSetupParticipant() {
-	}
+    /**
+     */
+    public InifileDocumentSetupParticipant() {
+    }
 
-	/*
-	 * @see org.eclipse.core.filebuffers.IDocumentSetupParticipant#setup(org.eclipse.jface.text.IDocument)
-	 */
-	public void setup(IDocument document) {
-		if (document instanceof IDocumentExtension3) {
-			IDocumentExtension3 extension3= (IDocumentExtension3) document;
+    /*
+     * @see org.eclipse.core.filebuffers.IDocumentSetupParticipant#setup(org.eclipse.jface.text.IDocument)
+     */
+    public void setup(IDocument document) {
+        if (document instanceof IDocumentExtension3) {
+            IDocumentExtension3 extension3= (IDocumentExtension3) document;
 
 //XXX unused code
 //            // content assist partitioner setup
 //            IDocumentPartitioner contentPartitioner =
 //                new FastPartitioner(new NedContentAssistPartitionScanner(), NedContentAssistPartitionScanner.SUPPORTED_PARTITION_TYPES);
-//			extension3.setDocumentPartitioner(NedContentAssistPartitionScanner.PARTITIONING_ID, contentPartitioner);
-//			contentPartitioner.connect(document);
+//          extension3.setDocumentPartitioner(NedContentAssistPartitionScanner.PARTITIONING_ID, contentPartitioner);
+//          contentPartitioner.connect(document);
 
             // syntax highlighter partitioner setup
             IDocumentPartitioner highlightPartitioner =
@@ -51,6 +51,6 @@ public class InifileDocumentSetupParticipant implements IDocumentSetupParticipan
             //    new FastPartitioner(new NedOutlinePartitionScanner(), NedOutlinePartitionScanner.SUPPORTED_PARTITION_TYPES);
             //extension3.setDocumentPartitioner(NedOutlinePartitionScanner.PARTITIONING_ID, outlinePartitioner);
             //outlinePartitioner.connect(document);
-		}
-	}
+        }
+    }
 }

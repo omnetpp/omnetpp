@@ -27,7 +27,7 @@ import org.omnetpp.ned.editor.NedEditorPlugin;
 /**
  * A figure representing a compound module type (or network). Displays a caption with the name and the default
  * image (if any) and an area where inner types can be added plus the area used to display submodules
- * (inner types compartment is inserted on demand from the TypesEditPart) 
+ * (inner types compartment is inserted on demand from the TypesEditPart)
  *
  * @author rhornig
  */
@@ -39,7 +39,7 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
 
     protected boolean isNetwork;
     protected CompoundModuleFigure submoduleArea = new CompoundModuleFigure();
-    
+
     /**
      * A figure that contains the inner types inside a compound module type
      *
@@ -61,7 +61,7 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
                 g.drawLine(x, r.y, x, r.bottom());
             }
         }
-        
+
         public InnerTypesFigure() {
             setBorder(new InnerTypesBorder(0, 20, 0, 0 ));
             ToolbarLayout typesLayout = new ToolbarLayout();
@@ -76,11 +76,11 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
         super();
         add(submoduleArea);
     }
-    
+
     public CompoundModuleFigure getSubmoduleArea() {
         return submoduleArea;
     }
-    
+
     public boolean isNetwork() {
         return isNetwork;
     }
@@ -91,19 +91,19 @@ public class CompoundModuleTypeFigure extends ModuleTypeFigure implements Handle
 
     @Override
     protected Image getDefaultImage() {
-        Image image = isNetwork() ? 
-                (isInnerType() ? IMG_DEFAULT_NETWORK_S : IMG_DEFAULT_NETWORK) : 
+        Image image = isNetwork() ?
+                (isInnerType() ? IMG_DEFAULT_NETWORK_S : IMG_DEFAULT_NETWORK) :
                     (isInnerType() ? IMG_DEFAULT_COMPOUND_S : IMG_DEFAULT_COMPOUND);
         return image;
     }
-    
-	@Override
-	public void setDisplayString(IDisplayString displayString) {
-	    // set the properties for the submodules compartment
-	    getSubmoduleArea().setDisplayString(displayString);
-	    // set the properties for the icon in the title
-	    super.setDisplayString(displayString);
-	}
+
+    @Override
+    public void setDisplayString(IDisplayString displayString) {
+        // set the properties for the submodules compartment
+        getSubmoduleArea().setDisplayString(displayString);
+        // set the properties for the icon in the title
+        super.setDisplayString(displayString);
+    }
 
     /**
      * Returns whether the point is on the border area, where dragging and selection

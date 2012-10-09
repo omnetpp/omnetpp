@@ -11,7 +11,7 @@ import org.omnetpp.scave.engine.Statistics;
 
 public interface IAveragedScalarDataset extends IScalarDataset {
 
-	/**
+    /**
      * Returns the collected statistics for the value associated with the cell.
      *
      * @param row  the row index

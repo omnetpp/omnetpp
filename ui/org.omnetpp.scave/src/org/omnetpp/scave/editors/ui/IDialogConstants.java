@@ -14,17 +14,17 @@ package org.omnetpp.scave.editors.ui;
  * @author tomi
  */
 public interface IDialogConstants extends
-		org.eclipse.jface.dialogs.IDialogConstants {
+        org.eclipse.jface.dialogs.IDialogConstants {
 
-	int START = org.eclipse.jface.dialogs.IDialogConstants.CLIENT_ID;
+    int START = org.eclipse.jface.dialogs.IDialogConstants.CLIENT_ID;
 
-	/**
-	 * Button id for an "Apply" button.
-	 */
-	public int APPLY_ID = START + 1;
+    /**
+     * Button id for an "Apply" button.
+     */
+    public int APPLY_ID = START + 1;
 
-	/**
-	 * The label for apply buttons.
-	 */
-	public String APPLY_LABEL = "Apply";
+    /**
+     * The label for apply buttons.
+     */
+    public String APPLY_LABEL = "Apply";
 }

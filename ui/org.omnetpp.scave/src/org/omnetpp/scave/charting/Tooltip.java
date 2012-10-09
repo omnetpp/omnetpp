@@ -17,18 +17,18 @@ import org.omnetpp.common.ui.IHTMLHoverProvider;
  * @author Andras
  */
 class Tooltip {
-	/**
-	 *
-	 */
+    /**
+     *
+     */
 
-	public Tooltip(final ChartCanvas canvas) {
-		HoverSupport hoverSupport = new HoverSupport();
-		hoverSupport.setHoverSizeConstaints(600, 400);
-		hoverSupport.adapt(canvas, new IHTMLHoverProvider() {
-			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-				String html = canvas.getHoverHtmlText(x, y);
-				return html != null ? new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(html)) : null;
-			}
-		});
-	}
+    public Tooltip(final ChartCanvas canvas) {
+        HoverSupport hoverSupport = new HoverSupport();
+        hoverSupport.setHoverSizeConstaints(600, 400);
+        hoverSupport.adapt(canvas, new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                String html = canvas.getHoverHtmlText(x, y);
+                return html != null ? new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(html)) : null;
+            }
+        });
+    }
 }

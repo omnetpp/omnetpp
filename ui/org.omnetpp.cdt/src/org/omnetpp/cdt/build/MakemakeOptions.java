@@ -399,33 +399,33 @@ public class MakemakeOptions implements Cloneable {
      * @throws CoreException for unresolved variables
      */
     private static List<String> makeVariableSubstitution(List<String> args, IProject project) throws CoreException {
-		if (args == null)
-			return null;
+        if (args == null)
+            return null;
 
-    	List<String> substedArgs = new ArrayList<String>();
-    	for(String arg : args)
-			substedArgs.add(makeVariableSubstitution(arg, project));
+        List<String> substedArgs = new ArrayList<String>();
+        for(String arg : args)
+            substedArgs.add(makeVariableSubstitution(arg, project));
 
-    	return substedArgs;
+        return substedArgs;
     }
 
     /**
      * Carry out Eclipse variable substitution on the argument.
      * @throws CoreException for unresolved variables
      */
-	private static String makeVariableSubstitution(String arg, IProject project) throws CoreException {
-		if (arg == null)
-			return null;
+    private static String makeVariableSubstitution(String arg, IProject project) throws CoreException {
+        if (arg == null)
+            return null;
 
-		// resolve macros for this configuration
-		IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
-		arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
+        // resolve macros for this configuration
+        IBuildMacroProvider provider = ManagedBuildManager.getBuildMacroProvider();
+        arg = provider.resolveValue(arg, "", " ", IBuildMacroProvider.CONTEXT_CONFIGURATION, ManagedBuildManager.getBuildInfo(project).getDefaultConfiguration());
 
-		// resolve global eclipse variables
-		arg = StringUtils.substituteVariables(arg);
+        // resolve global eclipse variables
+        arg = StringUtils.substituteVariables(arg);
 
-		return arg;
-	}
+        return arg;
+    }
 
     /**
      * Substitutes all ${} eclipse variables in all String options.

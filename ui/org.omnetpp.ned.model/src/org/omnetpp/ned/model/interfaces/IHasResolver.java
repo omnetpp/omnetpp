@@ -15,7 +15,7 @@ import org.omnetpp.ned.model.INedElement;
  * @author andras
  */
 public interface IHasResolver extends INedElement {
-    
+
     /**
      * The NED type resolver this element belongs to. Never null.
      */

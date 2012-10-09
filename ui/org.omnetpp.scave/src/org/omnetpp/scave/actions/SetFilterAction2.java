@@ -26,55 +26,55 @@ import org.omnetpp.scave.model2.FilterUtil;
  */
 public class SetFilterAction2 extends Action
 {
-	FilteredDataPanel panel;
-	String fieldName;
-	String fieldValue;
+    FilteredDataPanel panel;
+    String fieldName;
+    String fieldValue;
 
-	public SetFilterAction2() {
-		setDescription("Sets the filter according to the clicked cell.");
-		update(null);
-	}
+    public SetFilterAction2() {
+        setDescription("Sets the filter according to the clicked cell.");
+        update(null);
+    }
 
-	/**
-	 * This method is called when the active panel or
-	 * the selected cell is changed.
-	 * It updates the parameters of the action.
-	 */
-	public void update(final FilteredDataPanel panel) {
-		this.panel = panel;
-		if (panel != null) {
-			ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
-				public Object call() {
-					IDataControl control = panel.getDataControl();
-					ResultItem item = control.getSelectedItem();
-					if (item != null && control.getSelectedField() != null) {
-						ResultItemField field = new ResultItemField(control.getSelectedField());
-						fieldName = field.getName();
-						fieldValue = field.getFieldValue(item);
+    /**
+     * This method is called when the active panel or
+     * the selected cell is changed.
+     * It updates the parameters of the action.
+     */
+    public void update(final FilteredDataPanel panel) {
+        this.panel = panel;
+        if (panel != null) {
+            ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+                public Object call() {
+                    IDataControl control = panel.getDataControl();
+                    ResultItem item = control.getSelectedItem();
+                    if (item != null && control.getSelectedField() != null) {
+                        ResultItemField field = new ResultItemField(control.getSelectedField());
+                        fieldName = field.getName();
+                        fieldValue = field.getFieldValue(item);
 
-						if (fieldValue != null) {
-							setText(String.format("Set filter: %s=%s", field.getName(), fieldValue));
-							setEnabled(true);
-							return null;
-						}
-					}
-					setText("Set filter");
-					setEnabled(false);
-					return null;
-				}
-			});
+                        if (fieldValue != null) {
+                            setText(String.format("Set filter: %s=%s", field.getName(), fieldValue));
+                            setEnabled(true);
+                            return null;
+                        }
+                    }
+                    setText("Set filter");
+                    setEnabled(false);
+                    return null;
+                }
+            });
 
-		}
-		setText("Set filter");
-		setEnabled(false);
-	}
+        }
+        setText("Set filter");
+        setEnabled(false);
+    }
 
-	@Override
-	public void run() {
-		if (panel != null && fieldName != null && fieldValue != null) {
-			FilterUtil filter = new FilterUtil();
-			filter.setField(fieldName, fieldValue);
-			panel.setFilterParams(new Filter(filter.getFilterPattern()));
-		}
-	}
+    @Override
+    public void run() {
+        if (panel != null && fieldName != null && fieldValue != null) {
+            FilterUtil filter = new FilterUtil();
+            filter.setField(fieldName, fieldValue);
+            panel.setFilterParams(new Filter(filter.getFilterPattern()));
+        }
+    }
 }

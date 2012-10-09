@@ -21,22 +21,22 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  * @author andras
  */
 public class OppVariableResolver2 implements IDynamicVariableResolver {
-	public static final String OPP_ADDITIONAL_PATH = "opp_additional_path";
+    public static final String OPP_ADDITIONAL_PATH = "opp_additional_path";
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
-	    String varName = variable.getName();
+        String varName = variable.getName();
 
-	    if (!varName.equals(OPP_ADDITIONAL_PATH))
-	        abort("Variable ${"+ varName +"} unsupported by resolver class", null);
-	    if (argument != null)
-			abort("${" + varName +"} requires no argument", null);
+        if (!varName.equals(OPP_ADDITIONAL_PATH))
+            abort("Variable ${"+ varName +"} unsupported by resolver class", null);
+        if (argument != null)
+            abort("${" + varName +"} requires no argument", null);
 
-	    String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
+        String msysBinDir = OmnetppMainPlugin.getMsysBinDir();
         String mingwBinDir = OmnetppMainPlugin.getMingwBinDir();
 
         String result = msysBinDir + ";" + mingwBinDir;
-		return result.equals(";") ? "" : result;
-	}
+        return result.equals(";") ? "" : result;
+    }
 
     protected void abort(String message, Throwable exception) throws CoreException {
         throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 1, message, exception));

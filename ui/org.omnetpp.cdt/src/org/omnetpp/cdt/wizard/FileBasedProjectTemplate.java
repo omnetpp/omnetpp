@@ -135,7 +135,7 @@ public class FileBasedProjectTemplate extends FileBasedContentTemplate {
             folders.add(getFolder(folder, path));
         return folders.toArray(new IContainer[]{});
     }
-    
+
     /**
      * Sets the project's source locations list to the given list of folders, in all configurations.
      * (Previous source entries get overwritten.)

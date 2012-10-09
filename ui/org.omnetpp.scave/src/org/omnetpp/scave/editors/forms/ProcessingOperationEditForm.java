@@ -57,270 +57,270 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class ProcessingOperationEditForm extends BaseScaveObjectEditForm {
 
-	protected static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getProcessingOp_Operation(),
-		ScaveModelPackage.eINSTANCE.getProcessingOp_GroupBy(),
-		ScaveModelPackage.eINSTANCE.getProcessingOp_Params()
-	};
+    protected static final EStructuralFeature[] features = new EStructuralFeature[] {
+        ScaveModelPackage.eINSTANCE.getProcessingOp_Operation(),
+        ScaveModelPackage.eINSTANCE.getProcessingOp_GroupBy(),
+        ScaveModelPackage.eINSTANCE.getProcessingOp_Params()
+    };
 
-	// the edited value
-	private ProcessingOp processingOp;
+    // the edited value
+    private ProcessingOp processingOp;
 
-	// operation types
-	private NodeType[] operationTypes;
-	// operation names (to fill the combo)
-	private String[] operationNames;
-	// result item fields selectable for groupBy
-	private ResultItemField[] fields;
+    // operation types
+    private NodeType[] operationTypes;
+    // operation names (to fill the combo)
+    private String[] operationNames;
+    // result item fields selectable for groupBy
+    private ResultItemField[] fields;
 
-	// controls
-	private Combo operationCombo;
-	private Label description;
-	private ResultItemFieldsSelectorPanel groupByFieldsPanel;
-	private Table paramsTable;
-	private TableEditor tableEditor;
+    // controls
+    private Combo operationCombo;
+    private Label description;
+    private ResultItemFieldsSelectorPanel groupByFieldsPanel;
+    private Table paramsTable;
+    private TableEditor tableEditor;
 
-	/**
-	 * Number of visible items in combos.
-	 */
-	private static final int VISIBLE_ITEM_COUNT = 15;
+    /**
+     * Number of visible items in combos.
+     */
+    private static final int VISIBLE_ITEM_COUNT = 15;
 
 
-	// columns in the params table
-	private static final int
-		COLUMN_NAME = 0,
-		COLUMN_VALUE = 1,
-		COLUMN_DESC = 2;
+    // columns in the params table
+    private static final int
+        COLUMN_NAME = 0,
+        COLUMN_VALUE = 1,
+        COLUMN_DESC = 2;
 
-	public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent, ResultFileManager manager) {
-	    super(processingOp, parent);
-		this.processingOp = processingOp;
-		NodeTypeVector types = NodeTypeRegistry.getInstance().getNodeTypes();
-		List<NodeType> filterTypes = new ArrayList<NodeType>();
-		List<String> filterNames = new ArrayList<String>();
-		for (int i = 0; i < types.size(); ++i) {
-			NodeType nodeType = types.get(i);
-			String category = nodeType.getCategory();
-			if ("filter".equals(category) || "merger".equals(category)) {
-				filterTypes.add(nodeType);
-				filterNames.add(nodeType.getName());
-			}
-		}
-		this.operationTypes = filterTypes.toArray(new NodeType[filterTypes.size()]);
-		this.operationNames = filterNames.toArray(new String[filterNames.size()]);
-		// TODO add run attributes too
-		this.fields = DatasetManager.getSelectableGroupByFields(processingOp, manager);
-	}
+    public ProcessingOperationEditForm(ProcessingOp processingOp, EObject parent, ResultFileManager manager) {
+        super(processingOp, parent);
+        this.processingOp = processingOp;
+        NodeTypeVector types = NodeTypeRegistry.getInstance().getNodeTypes();
+        List<NodeType> filterTypes = new ArrayList<NodeType>();
+        List<String> filterNames = new ArrayList<String>();
+        for (int i = 0; i < types.size(); ++i) {
+            NodeType nodeType = types.get(i);
+            String category = nodeType.getCategory();
+            if ("filter".equals(category) || "merger".equals(category)) {
+                filterTypes.add(nodeType);
+                filterNames.add(nodeType.getName());
+            }
+        }
+        this.operationTypes = filterTypes.toArray(new NodeType[filterTypes.size()]);
+        this.operationNames = filterNames.toArray(new String[filterNames.size()]);
+        // TODO add run attributes too
+        this.fields = DatasetManager.getSelectableGroupByFields(processingOp, manager);
+    }
 
-	public EStructuralFeature[] getFeatures() {
-		return features;
-	}
+    public EStructuralFeature[] getFeatures() {
+        return features;
+    }
 
-	public void populatePanel(Composite panel) {
-		panel.setLayout(new GridLayout());
+    public void populatePanel(Composite panel) {
+        panel.setLayout(new GridLayout());
 
-		Group group;
+        Group group;
 
-		group = new Group(panel, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		group.setLayout(new GridLayout());
-		group.setText("Operation");
+        group = new Group(panel, SWT.NONE);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        group.setLayout(new GridLayout());
+        group.setText("Operation");
 
-		operationCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
-		operationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
-		operationCombo.setItems(operationNames);
-		operationCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		operationCombo.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				handleOperationTypeChanged();
-			}
-		});
+        operationCombo = new Combo(group, SWT.BORDER | SWT.READ_ONLY);
+        operationCombo.setVisibleItemCount(VISIBLE_ITEM_COUNT);
+        operationCombo.setItems(operationNames);
+        operationCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        operationCombo.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                handleOperationTypeChanged();
+            }
+        });
 
-		description = new Label(group, SWT.WRAP);
-		description.setText("");
-		description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        description = new Label(group, SWT.WRAP);
+        description.setText("");
+        description.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		group = new Group(panel, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		group.setLayout(new GridLayout());
-		group.setText("Input grouping");
+        group = new Group(panel, SWT.NONE);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        group.setLayout(new GridLayout());
+        group.setText("Input grouping");
 
-		groupByFieldsPanel = new ResultItemFieldsSelectorPanel(group, SWT.NONE);
-		groupByFieldsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		groupByFieldsPanel.setSelectableResultItemFields(Arrays.asList(fields));
+        groupByFieldsPanel = new ResultItemFieldsSelectorPanel(group, SWT.NONE);
+        groupByFieldsPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        groupByFieldsPanel.setSelectableResultItemFields(Arrays.asList(fields));
 
-		group = new Group(panel, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		group.setLayout(new GridLayout());
-		group.setText("Parameters");
+        group = new Group(panel, SWT.NONE);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        group.setLayout(new GridLayout());
+        group.setText("Parameters");
 
-		paramsTable = new Table(group, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
-		paramsTable.setHeaderVisible(true);
-		paramsTable.setLinesVisible(true);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-		gridData.minimumHeight = paramsTable.getHeaderHeight() + paramsTable.getItemHeight() * 5;
-		paramsTable.setLayoutData(gridData);
-		TableColumn column = new TableColumn(paramsTable, SWT.NONE);
-		column.setText("Name");
-		column.setWidth(100);
-		column = new TableColumn(paramsTable, SWT.NONE);
-		column.setText("Value");
-		column.setWidth(100);
-		column = new TableColumn(paramsTable, SWT.NONE);
-		column.setText("Description");
-		column.setWidth(200);
+        paramsTable = new Table(group, SWT.BORDER | SWT.SINGLE | SWT.FULL_SELECTION);
+        paramsTable.setHeaderVisible(true);
+        paramsTable.setLinesVisible(true);
+        GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+        gridData.minimumHeight = paramsTable.getHeaderHeight() + paramsTable.getItemHeight() * 5;
+        paramsTable.setLayoutData(gridData);
+        TableColumn column = new TableColumn(paramsTable, SWT.NONE);
+        column.setText("Name");
+        column.setWidth(100);
+        column = new TableColumn(paramsTable, SWT.NONE);
+        column.setText("Value");
+        column.setWidth(100);
+        column = new TableColumn(paramsTable, SWT.NONE);
+        column.setText("Description");
+        column.setWidth(200);
 
-		tableEditor = new TableEditor(paramsTable);
-		tableEditor.horizontalAlignment = SWT.LEFT;
-		tableEditor.grabHorizontal = true;
-		tableEditor.minimumWidth = 50;
-		paramsTable.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				handleParamsTableSelectionChange(e);
-			}
-		});
-	}
+        tableEditor = new TableEditor(paramsTable);
+        tableEditor.horizontalAlignment = SWT.LEFT;
+        tableEditor.grabHorizontal = true;
+        tableEditor.minimumWidth = 50;
+        paramsTable.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                handleParamsTableSelectionChange(e);
+            }
+        });
+    }
 
-	private void handleOperationTypeChanged() {
-		updateDescription();
-		updateGroupingPanel();
-		updateTable();
-	}
+    private void handleOperationTypeChanged() {
+        updateDescription();
+        updateGroupingPanel();
+        updateTable();
+    }
 
-	private void handleParamsTableSelectionChange(SelectionEvent e) {
-		// Clean up any previous editor control
-		Control oldEditor = tableEditor.getEditor();
-		if (oldEditor != null) oldEditor.dispose();
+    private void handleParamsTableSelectionChange(SelectionEvent e) {
+        // Clean up any previous editor control
+        Control oldEditor = tableEditor.getEditor();
+        if (oldEditor != null) oldEditor.dispose();
 
-		// Identify the selected row
-		TableItem item = (TableItem)e.item;
-		if (item == null) return;
+        // Identify the selected row
+        TableItem item = (TableItem)e.item;
+        if (item == null) return;
 
-		// The control that will be the editor must be a child of the Table
-		Text newEditor = new Text(paramsTable, SWT.NONE);
-		newEditor.setText(item.getText(COLUMN_VALUE));
-		newEditor.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				Text text = (Text)tableEditor.getEditor();
-				tableEditor.getItem().setText(COLUMN_VALUE, text.getText());
-			}
-		});
-		newEditor.selectAll();
-		newEditor.setFocus();
-		tableEditor.setEditor(newEditor, item, COLUMN_VALUE);
-	}
+        // The control that will be the editor must be a child of the Table
+        Text newEditor = new Text(paramsTable, SWT.NONE);
+        newEditor.setText(item.getText(COLUMN_VALUE));
+        newEditor.addModifyListener(new ModifyListener() {
+            public void modifyText(ModifyEvent e) {
+                Text text = (Text)tableEditor.getEditor();
+                tableEditor.getItem().setText(COLUMN_VALUE, text.getText());
+            }
+        });
+        newEditor.selectAll();
+        newEditor.setFocus();
+        tableEditor.setEditor(newEditor, item, COLUMN_VALUE);
+    }
 
-	private void updateDescription() {
-		int index = operationCombo.getSelectionIndex();
-		NodeType type = index >= 0 ? operationTypes[index] : null;
-		description.setText(type != null ? type.getDescription() : "");
-		description.getParent().getParent().layout();
-	}
+    private void updateDescription() {
+        int index = operationCombo.getSelectionIndex();
+        NodeType type = index >= 0 ? operationTypes[index] : null;
+        description.setText(type != null ? type.getDescription() : "");
+        description.getParent().getParent().layout();
+    }
 
-	private void updateGroupingPanel() {
-		int index = operationCombo.getSelectionIndex();
-		if (index >= 0) {
-			NodeType nodeType = operationTypes[index];
-			if (ScaveModelUtil.isMergerOperation(nodeType)) {
-				showGridCell(groupByFieldsPanel.getParent(), true);
-				return;
-			}
-		}
-		showGridCell(groupByFieldsPanel.getParent(), false);
-	}
+    private void updateGroupingPanel() {
+        int index = operationCombo.getSelectionIndex();
+        if (index >= 0) {
+            NodeType nodeType = operationTypes[index];
+            if (ScaveModelUtil.isMergerOperation(nodeType)) {
+                showGridCell(groupByFieldsPanel.getParent(), true);
+                return;
+            }
+        }
+        showGridCell(groupByFieldsPanel.getParent(), false);
+    }
 
-	private void showGridCell(Control control, boolean show) {
-		GridData data = (GridData)control.getLayoutData();
-		if (data != null) {
-			if (show) {
-				Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-				data.widthHint = size.x;
-				data.heightHint = size.y;
-			}
-			else {
-				data.widthHint = 0;
-				data.heightHint = 0;
-			}
-			control.getParent().layout(true, true);
-		}
-	}
+    private void showGridCell(Control control, boolean show) {
+        GridData data = (GridData)control.getLayoutData();
+        if (data != null) {
+            if (show) {
+                Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+                data.widthHint = size.x;
+                data.heightHint = size.y;
+            }
+            else {
+                data.widthHint = 0;
+                data.heightHint = 0;
+            }
+            control.getParent().layout(true, true);
+        }
+    }
 
-	private void updateTable() {
-		if (tableEditor.getEditor() != null) {
-			tableEditor.getEditor().dispose();
-			tableEditor.setEditor(null);
-		}
+    private void updateTable() {
+        if (tableEditor.getEditor() != null) {
+            tableEditor.getEditor().dispose();
+            tableEditor.setEditor(null);
+        }
 
-		int index = operationCombo.getSelectionIndex();
-		NodeType type = index >= 0 ? operationTypes[index] : null;
-		paramsTable.removeAll();
-		if (type != null) {
-			StringMap params = new StringMap();
-			StringMap defaults = new StringMap();
-			type.getAttributes(params);
-			type.getAttrDefaults(defaults);
+        int index = operationCombo.getSelectionIndex();
+        NodeType type = index >= 0 ? operationTypes[index] : null;
+        paramsTable.removeAll();
+        if (type != null) {
+            StringMap params = new StringMap();
+            StringMap defaults = new StringMap();
+            type.getAttributes(params);
+            type.getAttrDefaults(defaults);
 
-			StringVector names = params.keys();
-			for (int i = 0; i < names.size(); ++i) {
-				String name = names.get(i);
-				String defaultValue = defaults.has_key(name) ? defaults.get(name) : "";
-				TableItem item = new TableItem(paramsTable, SWT.NONE);
-				item.setText(COLUMN_NAME, name);
-				item.setText(COLUMN_VALUE, defaultValue);
-				item.setText(COLUMN_DESC, params.get(name));
-			}
-		}
-		paramsTable.getParent().getParent().layout(true, true);
-	}
+            StringVector names = params.keys();
+            for (int i = 0; i < names.size(); ++i) {
+                String name = names.get(i);
+                String defaultValue = defaults.has_key(name) ? defaults.get(name) : "";
+                TableItem item = new TableItem(paramsTable, SWT.NONE);
+                item.setText(COLUMN_NAME, name);
+                item.setText(COLUMN_VALUE, defaultValue);
+                item.setText(COLUMN_DESC, params.get(name));
+            }
+        }
+        paramsTable.getParent().getParent().layout(true, true);
+    }
 
-	public Object getValue(EStructuralFeature feature) {
-		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PROCESSING_OP__OPERATION:
-			int index = operationCombo.getSelectionIndex();
-			return index >= 0 ? operationNames[index] : null;
-		case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
-			return groupByFieldsPanel.getSelectedResultItemFieldNames();
-		case ScaveModelPackage.PROCESSING_OP__PARAMS:
-			EList<Param> params = new BasicEList<Param>();
-			for (int i = 0; i < paramsTable.getItemCount(); ++i) {
-				TableItem item = paramsTable.getItem(i);
-				Param param = ScaveModelFactory.eINSTANCE.createParam();
-				param.setName(item.getText(COLUMN_NAME));
-				param.setValue(item.getText(COLUMN_VALUE));
-				params.add(param);
-			}
-			return params;
-		}
-		return null;
-	}
+    public Object getValue(EStructuralFeature feature) {
+        switch (feature.getFeatureID()) {
+        case ScaveModelPackage.PROCESSING_OP__OPERATION:
+            int index = operationCombo.getSelectionIndex();
+            return index >= 0 ? operationNames[index] : null;
+        case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+            return groupByFieldsPanel.getSelectedResultItemFieldNames();
+        case ScaveModelPackage.PROCESSING_OP__PARAMS:
+            EList<Param> params = new BasicEList<Param>();
+            for (int i = 0; i < paramsTable.getItemCount(); ++i) {
+                TableItem item = paramsTable.getItem(i);
+                Param param = ScaveModelFactory.eINSTANCE.createParam();
+                param.setName(item.getText(COLUMN_NAME));
+                param.setValue(item.getText(COLUMN_VALUE));
+                params.add(param);
+            }
+            return params;
+        }
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	public void setValue(EStructuralFeature feature, Object value) {
-		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PROCESSING_OP__OPERATION:
-			operationCombo.select(Arrays.asList(operationNames).indexOf(value));
-			handleOperationTypeChanged();
-			break;
-		case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
-			List<String> fields = (List<String>)value;
-			groupByFieldsPanel.setSelectedResultItemFieldsByName(fields);
-			break;
-		case ScaveModelPackage.PROCESSING_OP__PARAMS:
-			EList<Param> params = (EList<Param>)value;
-			for (Param param : params) {
-				setParamValue(param.getName(), param.getValue());
-			}
-			break;
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void setValue(EStructuralFeature feature, Object value) {
+        switch (feature.getFeatureID()) {
+        case ScaveModelPackage.PROCESSING_OP__OPERATION:
+            operationCombo.select(Arrays.asList(operationNames).indexOf(value));
+            handleOperationTypeChanged();
+            break;
+        case ScaveModelPackage.PROCESSING_OP__GROUP_BY:
+            List<String> fields = (List<String>)value;
+            groupByFieldsPanel.setSelectedResultItemFieldsByName(fields);
+            break;
+        case ScaveModelPackage.PROCESSING_OP__PARAMS:
+            EList<Param> params = (EList<Param>)value;
+            for (Param param : params) {
+                setParamValue(param.getName(), param.getValue());
+            }
+            break;
+        }
+    }
 
-	private void setParamValue(String name, String value) {
-		for (int i = 0; i < paramsTable.getItemCount(); ++i) {
-			TableItem item = paramsTable.getItem(i);
-			if (item.getText(COLUMN_NAME).equals(name)) {
-				item.setText(COLUMN_VALUE, value);
-				break;
-			}
-		}
-	}
+    private void setParamValue(String name, String value) {
+        for (int i = 0; i < paramsTable.getItemCount(); ++i) {
+            TableItem item = paramsTable.getItem(i);
+            if (item.getText(COLUMN_NAME).equals(name)) {
+                item.setText(COLUMN_VALUE, value);
+                break;
+            }
+        }
+    }
 }

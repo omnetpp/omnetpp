@@ -27,29 +27,29 @@ import org.omnetpp.ned.model.pojo.InterfaceNameElement;
  */
 public class SetInheritanceCommand extends CompoundCommand {
     private final INedTypeElement typeElement;
-    private int tagcode; 
+    private int tagcode;
     private final List<String> qnames;
 
     /**
      * Creates the command.
-     * @param typeElement   the NED type to be modified 
+     * @param typeElement   the NED type to be modified
      * @param tagcode  must be INedElement.NED_EXTENDS or INedElement.NED_INTERFACE_NAME
      * @param qnames   the list of fully qualified NED type names
      */
     public SetInheritanceCommand(INedTypeElement typeElement, int tagcode, List<String> qnames) {
         if (tagcode != INedElement.NED_EXTENDS && tagcode != INedElement.NED_INTERFACE_NAME)
             throw new IllegalArgumentException();
-    	this.typeElement = typeElement;
-    	this.tagcode = tagcode;
-    	this.qnames = qnames;
-    	setLabel("Modify Inheritance");
+        this.typeElement = typeElement;
+        this.tagcode = tagcode;
+        this.qnames = qnames;
+        setLabel("Modify Inheritance");
     }
 
     @Override
     public boolean canExecute() {
         return true;
     }
-    
+
     @Override
     public void execute() {
         createCommands();
@@ -60,7 +60,7 @@ public class SetInheritanceCommand extends CompoundCommand {
         // remove existing ExtendsElements / InterfaceNameElements
         for (INedElement e : typeElement.getChildrenWithTag(tagcode))
             add(new RemoveCommand(e));
-        
+
         // add new elements
         NedFileElementEx nedFileElement = typeElement.getContainingNedFileElement();
         // TODO: this will always insert to the beginning of the imports, we could pass in the importElement
@@ -74,19 +74,19 @@ public class SetInheritanceCommand extends CompoundCommand {
             // insert the ExtendsElement or InterfaceNameElement
             INedElement e = NedElementFactoryEx.getInstance().createElement(tagcode);
             if (tagcode == INedElement.NED_EXTENDS)
-                ((ExtendsElement)e).setName(modifiedName.toString()); 
+                ((ExtendsElement)e).setName(modifiedName.toString());
             else
                 ((InterfaceNameElement)e).setName(modifiedName.toString());
             add(new InsertCommand(typeElement, e));
-            
+
             // insert the new import
             if (importElement != null) {
                 add(new InsertCommand(nedFileElement, importElement, importsInsertionPoint));
                 lastNewImportElement = importElement;
             }
         }
-        
-        // ensure there are blank lines after the last import                
+
+        // ensure there are blank lines after the last import
         if (lastNewImportElement != null && !(importsInsertionPoint instanceof ImportElement))
             lastNewImportElement.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
     }

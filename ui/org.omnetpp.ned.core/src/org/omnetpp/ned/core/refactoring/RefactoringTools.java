@@ -110,17 +110,17 @@ public class RefactoringTools {
         }
     }
 
-	/**
-	 * Find the fully qualified type for the given simple name, and add it to the imports list.
-	 */
-	protected static void resolveImport(INedTypeLookupContext lookupContext, IProject contextProject, final String unqualifiedTypeName, String packagePrefix, List<String> oldImports, HashSet<String> imports) {
-	    INedTypeResolver resolver = lookupContext.getResolver();
-		// name is in the same package as this file, no need to add an import
-		if (resolver.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
-			return;
+    /**
+     * Find the fully qualified type for the given simple name, and add it to the imports list.
+     */
+    protected static void resolveImport(INedTypeLookupContext lookupContext, IProject contextProject, final String unqualifiedTypeName, String packagePrefix, List<String> oldImports, HashSet<String> imports) {
+        INedTypeResolver resolver = lookupContext.getResolver();
+        // name is in the same package as this file, no need to add an import
+        if (resolver.getToplevelNedType(packagePrefix + unqualifiedTypeName, contextProject) != null)
+            return;
 
         List<String> potentialMatches = new ArrayList<String>();
-		// find local types
+        // find local types
         potentialMatches.addAll(resolver.getLocalTypeNames(lookupContext, new INedTypeResolver.IPredicate() {
             public boolean matches(INedTypeInfo typeInfo) {
                 return typeInfo.getFullyQualifiedName().endsWith("." + unqualifiedTypeName);
@@ -132,56 +132,56 @@ public class RefactoringTools {
         else
             potentialMatches.clear();
 
-		// find all potential types
-		for (String qualifiedName : resolver.getToplevelNedTypeQNames(contextProject))
-			if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
-				potentialMatches.add(qualifiedName);
+        // find all potential types
+        for (String qualifiedName : resolver.getToplevelNedTypeQNames(contextProject))
+            if (qualifiedName.endsWith("." + unqualifiedTypeName) || qualifiedName.equals(unqualifiedTypeName))
+                potentialMatches.add(qualifiedName);
 
-		// if there's zero or one match, we're done
-		if (potentialMatches.size() == 0)
-			return; // not found, sorry
-		if (potentialMatches.size() == 1) {
-			imports.add(potentialMatches.get(0));
-			return;
-		}
+        // if there's zero or one match, we're done
+        if (potentialMatches.size() == 0)
+            return; // not found, sorry
+        if (potentialMatches.size() == 1) {
+            imports.add(potentialMatches.get(0));
+            return;
+        }
 
-		// if there's an import for one of them already, use that
-		for (String potentialMatch : potentialMatches) {
-			if (oldImports.contains(potentialMatch)) {
-				imports.add(potentialMatch);
-				return;
-			}
-			// oldImports may contain wildcards, so try with regex as well
-			for (String oldImport : oldImports)
-				if (oldImport.contains("*"))
-					if (potentialMatch.matches(NedElementUtilEx.importToRegex(oldImport))) {
-						imports.add(potentialMatch);
-						return;
-					}
-		}
+        // if there's an import for one of them already, use that
+        for (String potentialMatch : potentialMatches) {
+            if (oldImports.contains(potentialMatch)) {
+                imports.add(potentialMatch);
+                return;
+            }
+            // oldImports may contain wildcards, so try with regex as well
+            for (String oldImport : oldImports)
+                if (oldImport.contains("*"))
+                    if (potentialMatch.matches(NedElementUtilEx.importToRegex(oldImport))) {
+                        imports.add(potentialMatch);
+                        return;
+                    }
+        }
 
-		// ambiguous import: let the user choose
-		String selectedType = chooseImport(potentialMatches);
-		if (selectedType != null)
-		    imports.add(selectedType);
-	}
+        // ambiguous import: let the user choose
+        String selectedType = chooseImport(potentialMatches);
+        if (selectedType != null)
+            imports.add(selectedType);
+    }
 
     /**
      * Dialog to prompt a user to choose one from the listed imports.
      */
-	//XXX move it out of this class
-	protected static String chooseImport(List<String> importsList) {
+    //XXX move it out of this class
+    protected static String chooseImport(List<String> importsList) {
         IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-		Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
-		ListDialog dialog = new ListDialog(shell);
-		dialog.setInput(importsList);
-		dialog.setContentProvider(new ArrayContentProvider());
-		dialog.setLabelProvider(new LabelProvider());
-		dialog.setTitle("Select Import");
-		dialog.setMessage("Choose type to import:");
-		if (dialog.open() == Window.OK)
-			return (String) dialog.getResult()[0];
-		return null;
+        Shell shell = activeWorkbenchWindow == null ? null :activeWorkbenchWindow.getShell();
+        ListDialog dialog = new ListDialog(shell);
+        dialog.setInput(importsList);
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setLabelProvider(new LabelProvider());
+        dialog.setTitle("Select Import");
+        dialog.setMessage("Choose type to import:");
+        if (dialog.open() == Window.OK)
+            return (String) dialog.getResult()[0];
+        return null;
     }
 
     /**

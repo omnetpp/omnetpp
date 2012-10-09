@@ -57,16 +57,16 @@ public class ReconnectCommand extends Command {
         copyConn(oldConn, modelConn);
     }
 
-	/**
-	 * Utility method to copy base connection properties from one
-	 * connectionNode to the other (except the module name)
-	 * @param from
-	 * @param to
-	 */
+    /**
+     * Utility method to copy base connection properties from one
+     * connectionNode to the other (except the module name)
+     * @param from
+     * @param to
+     */
     // TODO move it somewhere else
-	public static void copyConn(ConnectionElementEx from, ConnectionElementEx to) {
-	    to.setSrcModule(from.getSrcModule());
-		to.setSrcModuleIndex(from.getSrcModuleIndex());
+    public static void copyConn(ConnectionElementEx from, ConnectionElementEx to) {
+        to.setSrcModule(from.getSrcModule());
+        to.setSrcModuleIndex(from.getSrcModuleIndex());
         to.setSrcGate(from.getSrcGate());
         to.setSrcGateIndex(from.getSrcGateIndex());
         to.setSrcGatePlusplus(from.getSrcGatePlusplus());
@@ -81,7 +81,7 @@ public class ReconnectCommand extends Command {
 
         to.setIsBidirectional(from.getIsBidirectional());
         to.setIsForwardArrow(from.getIsForwardArrow());
-	}
+    }
 
     /**
      * Returns the connection node used as a template, for the command. If the command is executed

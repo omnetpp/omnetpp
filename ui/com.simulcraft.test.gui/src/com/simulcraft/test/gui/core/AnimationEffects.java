@@ -47,18 +47,18 @@ public class AnimationEffects  {
         "</body></html>\n";
 
     public static void displayTextBox(String text, int delayMillis) {
-    	displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
+        displayTextBox(text, ColorFactory.BLACK, 16, delayMillis);
     }
 
     public static void displayError(Throwable error, int delayMillis) {
-    	displayTextBox(error.toString(), ColorFactory.RED, 12, delayMillis);
+        displayTextBox(error.toString(), ColorFactory.RED, 12, delayMillis);
     }
 
     public static void displayTextBox(String text, Color textColor, int fontSize, int delayMillis) {
-    	if (PlatformUtils.isWindows)
-    		displayTextBox1(text, textColor, fontSize, delayMillis); // draw directly on the display
-    	else
-    		displayTextBox2(text, textColor, fontSize, delayMillis);  // draw on a temporary shell
+        if (PlatformUtils.isWindows)
+            displayTextBox1(text, textColor, fontSize, delayMillis); // draw directly on the display
+        else
+            displayTextBox2(text, textColor, fontSize, delayMillis);  // draw on a temporary shell
     }
 
     public static void displayTextBox1(String text, Color textColor, int fontSize, int delayMillis) {
@@ -101,7 +101,7 @@ public class AnimationEffects  {
     }
 
     public static void displayTextBox2(String text, Color textColor, int fontSize, int delayMillis) {
-    	System.out.println("SHOWING: " + text); Display.getCurrent().beep();
+        System.out.println("SHOWING: " + text); Display.getCurrent().beep();
 
         Shell shell = new Shell(SWT.NO_TRIM | SWT.ON_TOP);
         Display display = Display.getCurrent();

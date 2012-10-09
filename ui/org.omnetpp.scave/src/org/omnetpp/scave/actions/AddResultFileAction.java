@@ -32,52 +32,52 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * The user is asked to select the file.
  */
 public class AddResultFileAction extends AbstractScaveAction {
-	public AddResultFileAction() {
+    public AddResultFileAction() {
         setText("Add File...");
         setToolTipText("Add a scalar or vector file to the inputs");
-	}
+    }
 
-	@Override
-	protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
-		ResultFileSelectionDialog dialog = new ResultFileSelectionDialog(editor.getSite().getShell(), ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
-		dialog.setTitle("Select Result File");
-		if (dialog.open() == Window.OK) {
-			Object[] result = dialog.getResult();
-			if (result != null && result.length == 1 && result[0] instanceof IFile) {
-				IFile file = (IFile)result[0];
-				InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
-				inputFile.setName(file.getFullPath().toString());
+    @Override
+    protected void doRun(ScaveEditor editor, IStructuredSelection selection) {
+        ResultFileSelectionDialog dialog = new ResultFileSelectionDialog(editor.getSite().getShell(), ResourcesPlugin.getWorkspace().getRoot(), IResource.FILE);
+        dialog.setTitle("Select Result File");
+        if (dialog.open() == Window.OK) {
+            Object[] result = dialog.getResult();
+            if (result != null && result.length == 1 && result[0] instanceof IFile) {
+                IFile file = (IFile)result[0];
+                InputFile inputFile = ScaveModelFactory.eINSTANCE.createInputFile();
+                inputFile.setName(file.getFullPath().toString());
 
-				editor.executeCommand(
-					AddCommand.create(
-						editor.getEditingDomain(),
-						editor.getAnalysis().getInputs(),
-						ScaveModelPackage.eINSTANCE.getInputs_Inputs(),
-						inputFile));
-			}
-		}
-	}
+                editor.executeCommand(
+                    AddCommand.create(
+                        editor.getEditingDomain(),
+                        editor.getAnalysis().getInputs(),
+                        ScaveModelPackage.eINSTANCE.getInputs_Inputs(),
+                        inputFile));
+            }
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return true;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return true;
+    }
 
-	private static class ResultFileSelectionDialog extends ResourceListSelectionDialog
-	{
-		public ResultFileSelectionDialog(Shell shell, IContainer container, int typeMask) {
-			super(shell, container, typeMask);
-		}
+    private static class ResultFileSelectionDialog extends ResourceListSelectionDialog
+    {
+        public ResultFileSelectionDialog(Shell shell, IContainer container, int typeMask) {
+            super(shell, container, typeMask);
+        }
 
-		@Override
-		protected IDialogSettings getDialogBoundsSettings() {
-		    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
-		}
+        @Override
+        protected IDialogSettings getDialogBoundsSettings() {
+            return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
+        }
 
-		@Override
-		protected boolean select(IResource resource) {
-			return resource instanceof IFile && isResultFile((IFile)resource)
-						&& !isDerived(resource);
-		}
-	}
+        @Override
+        protected boolean select(IResource resource) {
+            return resource instanceof IFile && isResultFile((IFile)resource)
+                        && !isDerived(resource);
+        }
+    }
 }

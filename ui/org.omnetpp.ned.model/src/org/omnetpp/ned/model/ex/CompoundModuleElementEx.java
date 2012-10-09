@@ -43,13 +43,13 @@ import org.omnetpp.ned.model.pojo.TypesElement;
 public class CompoundModuleElementEx extends CompoundModuleElement implements IModuleTypeElement, IConnectableElement, INedTypeLookupContext {
 
     private INedTypeResolver resolver;
-	private INedTypeInfo typeInfo;
-	protected DisplayString displayString = null;
-    
+    private INedTypeInfo typeInfo;
+    protected DisplayString displayString = null;
+
     private long cacheUpdateSerial = -1; // resolver.getLastChangeSerial() when connection cache was filled in
     private Map<String,List<ConnectionElementEx>> localSrcConnCache = null;  // list of non-inherited, valid connections by source module name
     private Map<String,List<ConnectionElementEx>> localDestConnCache = null; // list of non-inherited, valid connections by destination module name
-    
+
     @SuppressWarnings("unchecked")
     private static final List<ConnectionElementEx> EMPTY_CONN_LIST = ListUtils.unmodifiableList(new ArrayList<ConnectionElementEx>());
 
@@ -65,8 +65,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     private void init(INedTypeResolver resolver) {
         Assert.isNotNull(resolver, "This NED element type needs a resolver");
         this.resolver = resolver;
-		this.typeInfo = getResolver().createTypeInfoFor(this);
-		setName("Unnamed");
+        this.typeInfo = getResolver().createTypeInfoFor(this);
+        setName("Unnamed");
     }
 
     public INedTypeResolver getResolver() {
@@ -82,31 +82,31 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     public INedTypeInfo getNedTypeInfo() {
-    	return typeInfo;
+        return typeInfo;
     }
 
-	public String getQNameAsPrefix() {
-		return getNedTypeInfo().getFullyQualifiedName() + ".";
-	}
+    public String getQNameAsPrefix() {
+        return getNedTypeInfo().getFullyQualifiedName() + ".";
+    }
 
-	public INedTypeLookupContext getParentLookupContext() {
-		return getParentLookupContextFor(this);
-	}
+    public INedTypeLookupContext getParentLookupContext() {
+        return getParentLookupContextFor(this);
+    }
 
     @Override
     public void fireModelEvent(NedModelEvent event) {
-    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
-    		displayString = null;
-    	super.fireModelEvent(event);
+        // invalidate cached display string because NED tree may have changed outside the DisplayString class
+        if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
+            displayString = null;
+        super.fireModelEvent(event);
     }
 
     public boolean isNetwork() {
-    	// this isNetwork property should not be inherited so we look only among the local properties
-    	PropertyElementEx networkPropertyElementEx = getNedTypeInfo().getLocalProperty(IS_NETWORK_PROPERTY, null);
-    	if (networkPropertyElementEx == null)
-    		return false;
-    	String propValue = NedElementUtilEx.getPropertyValue(networkPropertyElementEx);
+        // this isNetwork property should not be inherited so we look only among the local properties
+        PropertyElementEx networkPropertyElementEx = getNedTypeInfo().getLocalProperty(IS_NETWORK_PROPERTY, null);
+        if (networkPropertyElementEx == null)
+            return false;
+        String propValue = NedElementUtilEx.getPropertyValue(networkPropertyElementEx);
         return !StringUtils.equalsIgnoreCase("false", propValue);
     }
 
@@ -115,10 +115,10 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     public DisplayString getDisplayString() {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
+        return displayString;
     }
 
     /**
@@ -126,7 +126,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      */
     public List<INedTypeElement> getOwnInnerTypes() {
         // TODO cache!
-        // Note: cannot use INedTypeInfo's methods, because it loses types with duplicate names 
+        // Note: cannot use INedTypeInfo's methods, because it loses types with duplicate names
         List<INedTypeElement> result = new ArrayList<INedTypeElement>();
 
         TypesElement typesElement = getFirstTypesChild();
@@ -144,19 +144,19 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      * Returns all submodules contained in THIS module.
      */
     //XXX currently unused (why?)
-	protected List<SubmoduleElementEx> getOwnSubmodules() {
-	    // TODO cache!
-        // Note: cannot use INedTypeInfo's methods, because it loses submodules with duplicate names 
-		List<SubmoduleElementEx> result = new ArrayList<SubmoduleElementEx>();
+    protected List<SubmoduleElementEx> getOwnSubmodules() {
+        // TODO cache!
+        // Note: cannot use INedTypeInfo's methods, because it loses submodules with duplicate names
+        List<SubmoduleElementEx> result = new ArrayList<SubmoduleElementEx>();
 
-		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
-		if (submodulesElement != null)
-			for (INedElement currChild : submodulesElement)
-				if (currChild instanceof SubmoduleElementEx)
-					result.add((SubmoduleElementEx)currChild);
+        SubmodulesElement submodulesElement = getFirstSubmodulesChild();
+        if (submodulesElement != null)
+            for (INedElement currChild : submodulesElement)
+                if (currChild instanceof SubmoduleElementEx)
+                    result.add((SubmoduleElementEx)currChild);
 
-		return result;
-	}
+        return result;
+    }
 
     /**
      * Returns the list of all direct and inherited submodules
@@ -165,98 +165,98 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
      * may be incomplete if some NED type is incorrect, missing, or duplicate.
      */
     public List<SubmoduleElementEx> getSubmodules() {
-    	return Arrays.asList(getNedTypeInfo().getSubmodules().values().toArray(new SubmoduleElementEx[]{}));
+        return Arrays.asList(getNedTypeInfo().getSubmodules().values().toArray(new SubmoduleElementEx[]{}));
     }
 
-	/**
-	 * Returns the submodule with the provided name, excluding inherited submodules.
-	 * Returns null if not found.
-	 */
-	protected SubmoduleElementEx getOwnSubmoduleByName(String submoduleName) {
-		return getNedTypeInfo().getLocalSubmodules().get(submoduleName);
-	}
+    /**
+     * Returns the submodule with the provided name, excluding inherited submodules.
+     * Returns null if not found.
+     */
+    protected SubmoduleElementEx getOwnSubmoduleByName(String submoduleName) {
+        return getNedTypeInfo().getLocalSubmodules().get(submoduleName);
+    }
 
     /**
      * Returns the submodule (including inherited ones) with the provided name,
      * or null if not found.
      */
     public SubmoduleElementEx getSubmoduleByName(String submoduleName) {
-		return getNedTypeInfo().getSubmodules().get(submoduleName);
+        return getNedTypeInfo().getSubmodules().get(submoduleName);
     }
 
-	/**
+    /**
      * Add the given submodule to this module
-	 */
-	public void addSubmodule(SubmoduleElementEx child) {
+     */
+    public void addSubmodule(SubmoduleElementEx child) {
         SubmodulesElement snode = getFirstSubmodulesChild();
         if (snode == null)
             snode = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
 
         snode.appendChild(child);
-	}
+    }
 
     /**
      * Remove a specific submodule child from this module.
      * Submodules node will be removed if it was the last child
      */
-	public void removeSubmodule(SubmoduleElementEx child) {
+    public void removeSubmodule(SubmoduleElementEx child) {
         child.removeFromParent();
         SubmodulesElement snode = getFirstSubmodulesChild();
-		if (snode != null && !snode.hasChildren())
-			snode.removeFromParent();
-	}
+        if (snode != null && !snode.hasChildren())
+            snode.removeFromParent();
+    }
 
     /**
      * Insert the submodule child at the given position. (Internally, a
      * "submodules:" node will be created if not yet present).
      */
-	public void insertSubmodule(int index, SubmoduleElementEx child) {
-		// check whether Submodules node exists and create one if doesn't
-		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
-		if (submodulesElement == null)
-			submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
+    public void insertSubmodule(int index, SubmoduleElementEx child) {
+        // check whether Submodules node exists and create one if doesn't
+        SubmodulesElement submodulesElement = getFirstSubmodulesChild();
+        if (submodulesElement == null)
+            submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
 
-		INedElement insertBefore = submodulesElement.getFirstChild();
-		for (int i=0; i<index && insertBefore!=null; ++i)
-			insertBefore = insertBefore.getNextSibling();
+        INedElement insertBefore = submodulesElement.getFirstChild();
+        for (int i=0; i<index && insertBefore!=null; ++i)
+            insertBefore = insertBefore.getNextSibling();
 
-		submodulesElement.insertChildBefore(insertBefore, child);
-	}
+        submodulesElement.insertChildBefore(insertBefore, child);
+    }
 
     /**
      * Insert the submodule child at the given position. (Internally, a
      * "submodules:" node will be created if not yet present).
      */
-	public void insertSubmodule(SubmoduleElementEx insertBefore, SubmoduleElementEx child) {
-		// check whether Submodules node exists and create one if doesn't
-		SubmodulesElement submodulesElement = getFirstSubmodulesChild();
-		if (submodulesElement == null)
-			submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
+    public void insertSubmodule(SubmoduleElementEx insertBefore, SubmoduleElementEx child) {
+        // check whether Submodules node exists and create one if doesn't
+        SubmodulesElement submodulesElement = getFirstSubmodulesChild();
+        if (submodulesElement == null)
+            submodulesElement = (SubmodulesElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_SUBMODULES, this);
 
-		submodulesElement.insertChildBefore(insertBefore, child);
-	}
+        submodulesElement.insertChildBefore(insertBefore, child);
+    }
 
     // connection related methods
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     private void ensureConnectionCache() {
-	    if (localSrcConnCache == null || cacheUpdateSerial != getResolver().getLastChangeSerial()) {
-	        localSrcConnCache = new HashMap<String, List<ConnectionElementEx>>();
-	        localDestConnCache = new HashMap<String, List<ConnectionElementEx>>();
-	        INedElement connectionsNode = getFirstConnectionsChild();
-	        if (connectionsNode != null) {
-	            // fill in the maps
-	            gatherConnectionsForCache(connectionsNode);
-	            
-	            // make the lists unmodifiable, because getters return them to clients
-	            for (Entry<String, List<ConnectionElementEx>> entry : localSrcConnCache.entrySet())
-	                entry.setValue(ListUtils.unmodifiableList(entry.getValue()));
+        if (localSrcConnCache == null || cacheUpdateSerial != getResolver().getLastChangeSerial()) {
+            localSrcConnCache = new HashMap<String, List<ConnectionElementEx>>();
+            localDestConnCache = new HashMap<String, List<ConnectionElementEx>>();
+            INedElement connectionsNode = getFirstConnectionsChild();
+            if (connectionsNode != null) {
+                // fill in the maps
+                gatherConnectionsForCache(connectionsNode);
+
+                // make the lists unmodifiable, because getters return them to clients
+                for (Entry<String, List<ConnectionElementEx>> entry : localSrcConnCache.entrySet())
+                    entry.setValue(ListUtils.unmodifiableList(entry.getValue()));
                 for (Entry<String, List<ConnectionElementEx>> entry : localDestConnCache.entrySet())
                     entry.setValue(ListUtils.unmodifiableList(entry.getValue()));
-	        }
-	        cacheUpdateSerial = getResolver().getLastChangeSerial();
-	    }
-	}
+            }
+            cacheUpdateSerial = getResolver().getLastChangeSerial();
+        }
+    }
 
     private void gatherConnectionsForCache(INedElement parent) {
         for (INedElement child : parent) {
@@ -281,17 +281,17 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
             }
         }
     }
-	
+
     /**
-     * Returns a filtered list of local plus inherited valid (see ConnectionElementEx.isValid()) 
+     * Returns a filtered list of local plus inherited valid (see ConnectionElementEx.isValid())
      * connections. The four arguments correspond to connection attributes; any can be null
      * to mean "no filtering".
-     * 
+     *
      * Note: this method uses linear search, so it should not be used in performance-critical code.
-     * 
+     *
      * @param srcName source module name to filter for; "" for compound module or null for no filtering
      * @param srcGate source gate name to filter for, or null for no filtering
-     * @param destName destination module name to filter for; "" for compound module or null for no filtering 
+     * @param destName destination module name to filter for; "" for compound module or null for no filtering
      * @param destGate destination gate name to filter for, or null for no filtering
      * @return list of matching connections
      */
@@ -303,7 +303,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         return result;
     }
 
-	private List<ConnectionElementEx> getOwnConnections(String srcName, String srcGate, String destName, String destGate) {
+    private List<ConnectionElementEx> getOwnConnections(String srcName, String srcGate, String destName, String destGate) {
         List<ConnectionElementEx> result = new ArrayList<ConnectionElementEx>();
         INedElement connectionsNode = getFirstConnectionsChild();
         if (connectionsNode != null)
@@ -341,7 +341,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     /**
-     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections,
      * where this compound module is the source module of the connection.
      */
     public List<ConnectionElementEx> getSrcConnections() {
@@ -349,7 +349,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     /**
-     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections,
      * where this compound module is the destination module of the connection.
      */
     public List<ConnectionElementEx> getDestConnections() {
@@ -357,8 +357,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     /**
-     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
-     * where the given submodule is the destination module of the connection. Returns an empty list 
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections,
+     * where the given submodule is the destination module of the connection. Returns an empty list
      * if such submodule does not exist.
      */
     public List<ConnectionElementEx> getSrcConnectionsFor(String submoduleName) {
@@ -366,7 +366,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         List<ConnectionElementEx> result = localSrcConnCache.get(submoduleName); // immutable list
         if (result == null)
             result = EMPTY_CONN_LIST;
-        
+
         // add inherited connections too, if we have any (uncommon)
         INedTypeElement superType = getNedTypeInfo().getSuperType();
         if (superType instanceof CompoundModuleElementEx) {
@@ -380,8 +380,8 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     /**
-     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections, 
-     * where the given submodule is the destination module of the connection. Returns an empty list 
+     * Returns the list of local plus inherited valid (see ConnectionElementEx.isValid()) connections,
+     * where the given submodule is the destination module of the connection. Returns an empty list
      * if such submodule does not exist.
      */
     public List<ConnectionElementEx> getDestConnectionsFor(String submoduleName) {
@@ -389,7 +389,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
         List<ConnectionElementEx> result = localDestConnCache.get(submoduleName); // immutable list
         if (result == null)
             result = EMPTY_CONN_LIST;
-        
+
         // add inherited connections too, if we have any (uncommon)
         INedTypeElement superType = getNedTypeInfo().getSuperType();
         if (superType instanceof CompoundModuleElementEx) {
@@ -417,32 +417,32 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     public ConnectionElementEx getConnectionByName(String connectionName) {
         return getNedTypeInfo().getNamedConnections().get(connectionName);
     }
-    
+
     /**
      * Add this connection to the model (to the "connections" section; it will
      * be created if not yet exists)
      */
-	public void addConnection(ConnectionElementEx conn) {
-		insertConnection(null, conn);
-	}
+    public void addConnection(ConnectionElementEx conn) {
+        insertConnection(null, conn);
+    }
 
     /**
      * Add this connection to the model (connections section)
      * @param insertBefore The sibling connection we want to insert our connection
      *                     before, or null for append
      */
-	public void insertConnection(ConnectionElementEx insertBefore, ConnectionElementEx conn) {
-		// do nothing if it's already in the model
-		if (conn.getParent() != null)
-			return;
-		// check whether Submodules node exists and create one if doesn't
-		ConnectionsElement snode = getFirstConnectionsChild();
-		if (snode == null)
-			snode = (ConnectionsElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_CONNECTIONS, this);
+    public void insertConnection(ConnectionElementEx insertBefore, ConnectionElementEx conn) {
+        // do nothing if it's already in the model
+        if (conn.getParent() != null)
+            return;
+        // check whether Submodules node exists and create one if doesn't
+        ConnectionsElement snode = getFirstConnectionsChild();
+        if (snode == null)
+            snode = (ConnectionsElement)NedElementFactoryEx.getInstance().createElement(getResolver(), NedElementFactoryEx.NED_CONNECTIONS, this);
 
-		// add it to the connections node
-		snode.insertChildBefore(insertBefore, conn);
-	}
+        // add it to the connections node
+        snode.insertChildBefore(insertBefore, conn);
+    }
 
     // "extends" support
     public String getFirstExtends() {
@@ -458,7 +458,7 @@ public class CompoundModuleElementEx extends CompoundModuleElement implements IM
     }
 
     public List<ExtendsElement> getAllExtends() {
-    	return getAllExtendsFrom(this);
+        return getAllExtendsFrom(this);
     }
 
     // parameter query support

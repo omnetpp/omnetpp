@@ -28,22 +28,22 @@ import org.omnetpp.scave.model.SelectDeselectOp;
  * @generated
  */
 public abstract class SelectDeselectOpImpl extends SetOperationImpl implements SelectDeselectOp {
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected SelectDeselectOpImpl() {
+    protected SelectDeselectOpImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.SELECT_DESELECT_OP;
     }
 

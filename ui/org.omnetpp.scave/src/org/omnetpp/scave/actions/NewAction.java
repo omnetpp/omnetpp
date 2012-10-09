@@ -27,66 +27,66 @@ import org.omnetpp.scave.wizard.NewScaveObjectWizard;
  * attributes can be entered.
  */
 public class NewAction extends AbstractScaveAction {
-	private EObject defaultParent;
-	private boolean createChild;
+    private EObject defaultParent;
+    private boolean createChild;
 
-	public NewAction() {
-		this(null, true);
-	}
+    public NewAction() {
+        this(null, true);
+    }
 
-	public NewAction(EObject defaultParent, boolean createChild) {
-		this.defaultParent = defaultParent;
-		this.createChild = createChild;
-		if (createChild) {
-			setText("New Child...");
-			setToolTipText("Create new child");
-		}
-		else {
-			setText("New Sibling...");
-			setToolTipText("Create new sibling");
-		}
-	}
+    public NewAction(EObject defaultParent, boolean createChild) {
+        this.defaultParent = defaultParent;
+        this.createChild = createChild;
+        if (createChild) {
+            setText("New Child...");
+            setToolTipText("Create new child");
+        }
+        else {
+            setText("New Sibling...");
+            setToolTipText("Create new sibling");
+        }
+    }
 
-	@Override
-	protected void doRun(final ScaveEditor editor, final IStructuredSelection selection) {
-		final EObject parent = getParent(selection);
-		final NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent);
-		if (isApplicable(editor, selection)) {
-			int returnCode = ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Integer>() {
-				public Integer call() throws Exception {
-					WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
-					return dialog.open();
-				}
-			});
+    @Override
+    protected void doRun(final ScaveEditor editor, final IStructuredSelection selection) {
+        final EObject parent = getParent(selection);
+        final NewScaveObjectWizard wizard = new NewScaveObjectWizard(editor, parent);
+        if (isApplicable(editor, selection)) {
+            int returnCode = ResultFileManager.callWithReadLock(editor.getResultFileManager(), new Callable<Integer>() {
+                public Integer call() throws Exception {
+                    WizardDialog dialog = new WizardDialog(editor.getSite().getShell(), wizard);
+                    return dialog.open();
+                }
+            });
 
-			if (returnCode == Window.OK) {
-				Command command = CreateChildCommand.create(
-						editor.getEditingDomain(),
-						parent,
-						wizard.getNewChildDescriptor(),
-						selection.toList());
-				editor.executeCommand(command);
-			}
-		}
-	}
+            if (returnCode == Window.OK) {
+                Command command = CreateChildCommand.create(
+                        editor.getEditingDomain(),
+                        parent,
+                        wizard.getNewChildDescriptor(),
+                        selection.toList());
+                editor.executeCommand(command);
+            }
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		EObject parent = getParent(selection);
-		if (parent != null) {
-			EditingDomain domain = editor.getEditingDomain();
-			Collection<?> childDescriptors = domain.getNewChildDescriptors(parent, null);
-			return childDescriptors.size() > 0;
-		}
-		return false;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        EObject parent = getParent(selection);
+        if (parent != null) {
+            EditingDomain domain = editor.getEditingDomain();
+            Collection<?> childDescriptors = domain.getNewChildDescriptors(parent, null);
+            return childDescriptors.size() > 0;
+        }
+        return false;
+    }
 
-	private EObject getParent(IStructuredSelection selection) {
-		if (selection!=null && selection.size()==1 && selection.getFirstElement() instanceof EObject) {
-			EObject object = (EObject)selection.getFirstElement();
-			return createChild ? object : object.eContainer();
-		}
-		else
-			return defaultParent;
-	}
+    private EObject getParent(IStructuredSelection selection) {
+        if (selection!=null && selection.size()==1 && selection.getFirstElement() instanceof EObject) {
+            EObject object = (EObject)selection.getFirstElement();
+            return createChild ? object : object.eContainer();
+        }
+        else
+            return defaultParent;
+    }
 }

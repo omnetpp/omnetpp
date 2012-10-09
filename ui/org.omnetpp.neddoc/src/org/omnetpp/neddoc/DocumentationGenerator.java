@@ -160,16 +160,16 @@ public class DocumentationGenerator {
     // make them a little too easy to get rid of.  --Andras
     private static final Image CC16_IMAGE = createImage(
             "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA" +
-    		"AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" +
-    		"OpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUA" +
-    		"UGFpbnQuTkVUIHYzLjM2qefiJQAAAVRJREFUOE+1ks8rRFEUx8ePaMSKEBmlsbKy" +
-    		"YGHB3oKY/4CaPRuUlY0ov1JsbITmD6CwmIxomlLTbBQlMsjGjo2ifL46T7fpvXkr" +
-    		"tz6de8/5vvPOvedEIv+wKsk5AjtwZmg/CoqVXZ1Ec/ABBzALM7AP73AF8aAM7QQe" +
-    		"4QRafETN+A7hFbr8kujDDNSUqbGa2DFcQIWr6+fwBd3mbLJSPZGqi1msA/sJg26C" +
-    		"BQ5pc4xj36AAezBtZd9i501zil10E+jBNsxxjp2DKmiEFxiDeqgzzTo25SbY5bBl" +
-    		"Dt1x1cTD2DtIQhsMmGbTqvvLoVbl7dSHvYFnmAL1vwj3kDDNJda7zq9LvdUjDrll" +
-    		"Bex78X9DT2l8G8eDlRqUR925Li3fE0fZaHRVrkbZ7bP2eg9dIwsNQX+oJbAC6vMT" +
-    		"HIGmT0nlWwP9KHS1opiEZViCCfAb79BEoYIfHho+6oefKLwAAAAASUVORK5CYII=");
+            "AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" +
+            "OpgAABdwnLpRPAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAABh0RVh0U29mdHdhcmUA" +
+            "UGFpbnQuTkVUIHYzLjM2qefiJQAAAVRJREFUOE+1ks8rRFEUx8ePaMSKEBmlsbKy" +
+            "YGHB3oKY/4CaPRuUlY0ov1JsbITmD6CwmIxomlLTbBQlMsjGjo2ifL46T7fpvXkr" +
+            "tz6de8/5vvPOvedEIv+wKsk5AjtwZmg/CoqVXZ1Ec/ABBzALM7AP73AF8aAM7QQe" +
+            "4QRafETN+A7hFbr8kujDDNSUqbGa2DFcQIWr6+fwBd3mbLJSPZGqi1msA/sJg26C" +
+            "BQ5pc4xj36AAezBtZd9i501zil10E+jBNsxxjp2DKmiEFxiDeqgzzTo25SbY5bBl" +
+            "Dt1x1cTD2DtIQhsMmGbTqvvLoVbl7dSHvYFnmAL1vwj3kDDNJda7zq9LvdUjDrll" +
+            "Bex78X9DT2l8G8eDlRqUR925Li3fE0fZaHRVrkbZ7bP2eg9dIwsNQX+oJbAC6vMT" +
+            "HIGmT0nlWwP9KHS1opiEZViCCfAb79BEoYIfHho+6oefKLwAAAAASUVORK5CYII=");
     private static final Image CC20_IMAGE = createImage(
             "iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAA" +
             "AARnQU1BAACxjwv8YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAA" +
@@ -203,8 +203,8 @@ public class DocumentationGenerator {
 
     // configuration flags
     protected boolean generateNedTypeFigures = true;
-	protected boolean generatePerTypeUsageDiagrams = true;
-	protected boolean generatePerTypeInheritanceDiagrams = true;
+    protected boolean generatePerTypeUsageDiagrams = true;
+    protected boolean generatePerTypeInheritanceDiagrams = true;
     protected boolean generateFullUsageDiagrams = false;
     protected boolean generateFullInheritanceDiagrams = false;
     protected boolean generateNedSourceListings = true;
@@ -213,7 +213,7 @@ public class DocumentationGenerator {
     protected boolean generateCppSourceListings = false;
 
     // path vars
-	protected String dotExecutablePath;
+    protected String dotExecutablePath;
     protected String doxyExecutablePath;
     protected IPath documentationRootPath;
     protected IPath rootRelativeDoxyPath;
@@ -259,40 +259,40 @@ public class DocumentationGenerator {
     }
 
     public void setGenerateNedTypeFigures(boolean generateNedTypeFigures) {
-		this.generateNedTypeFigures = generateNedTypeFigures;
-	}
-
-    public void setGeneratePerTypeInheritanceDiagrams(boolean generatePerTypeInheritanceDiagrams) {
-    	this.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams;
+        this.generateNedTypeFigures = generateNedTypeFigures;
     }
 
-	public void setGeneratePerTypeUsageDiagrams(boolean generatePerTypeUsageDiagrams) {
-		this.generatePerTypeUsageDiagrams = generatePerTypeUsageDiagrams;
-	}
+    public void setGeneratePerTypeInheritanceDiagrams(boolean generatePerTypeInheritanceDiagrams) {
+        this.generatePerTypeInheritanceDiagrams = generatePerTypeInheritanceDiagrams;
+    }
 
-	public void setGenerateFullUsageDiagrams(boolean generateFullUsageDiagrams) {
-		this.generateFullUsageDiagrams = generateFullUsageDiagrams;
-	}
+    public void setGeneratePerTypeUsageDiagrams(boolean generatePerTypeUsageDiagrams) {
+        this.generatePerTypeUsageDiagrams = generatePerTypeUsageDiagrams;
+    }
 
-	public void setGenerateFullInheritanceDiagrams(boolean generateFullInheritanceDiagrams) {
-		this.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams;
-	}
+    public void setGenerateFullUsageDiagrams(boolean generateFullUsageDiagrams) {
+        this.generateFullUsageDiagrams = generateFullUsageDiagrams;
+    }
 
-	public void setGenerateNedSourceListings(boolean generateNedSourceListings) {
-		this.generateNedSourceListings = generateNedSourceListings;
-	}
+    public void setGenerateFullInheritanceDiagrams(boolean generateFullInheritanceDiagrams) {
+        this.generateFullInheritanceDiagrams = generateFullInheritanceDiagrams;
+    }
 
-	public void setGenerateExplicitLinksOnly(boolean generateExplicitLinksOnly) {
-	    this.generateExplicitLinksOnly = generateExplicitLinksOnly;
-	}
+    public void setGenerateNedSourceListings(boolean generateNedSourceListings) {
+        this.generateNedSourceListings = generateNedSourceListings;
+    }
 
-	public void setGenerateDoxy(boolean generateDoxy) {
-		this.generateDoxy = generateDoxy;
-	}
+    public void setGenerateExplicitLinksOnly(boolean generateExplicitLinksOnly) {
+        this.generateExplicitLinksOnly = generateExplicitLinksOnly;
+    }
 
-	public void setGenerateCppSourceListings(boolean generateCppSourceListings) {
-		this.generateCppSourceListings = generateCppSourceListings;
-	}
+    public void setGenerateDoxy(boolean generateDoxy) {
+        this.generateDoxy = generateDoxy;
+    }
+
+    public void setGenerateCppSourceListings(boolean generateCppSourceListings) {
+        this.generateCppSourceListings = generateCppSourceListings;
+    }
 
     public void setDocumentationRootPath(IPath documentationRootPath) {
         this.documentationRootPath = documentationRootPath;
@@ -509,13 +509,13 @@ public class DocumentationGenerator {
 
         String typeNamesPattern = buffer.toString().replace(".", "\\.");
         if (generateExplicitLinksOnly) {
-            // tilde syntax; we match any name prefixed with a tilde (or more tildes); 
+            // tilde syntax; we match any name prefixed with a tilde (or more tildes);
             // a double tilde means one literal tilde, so we'll have to count them when we do the replacement
             possibleTypeReferencesPattern = Pattern.compile("(~+)(" + Keywords.NED_IDENT_REGEX + "(\\." + Keywords.NED_IDENT_REGEX + ")*)\\b");
         } else {
             // autolinking: match recognized names, optionally prefixed with a backslash (or more backslashes);
             // a double backslash means one literal backslash, so we'll have to count them when we do the replacement
-            possibleTypeReferencesPattern = Pattern.compile("(\\\\*)\\b(" + typeNamesPattern + ")\\b"); 
+            possibleTypeReferencesPattern = Pattern.compile("(\\\\*)\\b(" + typeNamesPattern + ")\\b");
         }
         monitor.worked(1);
     }
@@ -691,11 +691,11 @@ public class DocumentationGenerator {
                     }
                     else {
                         // several types with the same simple name
-                        String replacement = prefix + typeElements.get(0).getName() + "("; 
+                        String replacement = prefix + typeElements.get(0).getName() + "(";
                         int i = 1;
                         for (ITypeElement typeElement : typeElements)
                             replacement += "<a href=\"" + getOutputFileName(typeElement) + "\">" + (i++) + "</a>" + ",";
-                        replacement = replacement.substring(0, replacement.length()-1) + ")"; 
+                        replacement = replacement.substring(0, replacement.length()-1) + ")";
                         return replacement;
                     }
                 }
@@ -1299,34 +1299,34 @@ public class DocumentationGenerator {
         Map<String, FieldElement> localFields = msgTypeElement.getMsgTypeInfo().getLocalFields();
         if (fields.size() != 0) {
             out("<h3 class=\"subtitle\">Fields:</h3>\r\n" +
-        		"<table class=\"fieldstable\">\r\n" +
-        		"   <tr>\r\n" +
-        		"      <th class=\"name\">Name</th>\r\n" +
-        		"      <th class=\"type\">Type</th>\r\n" +
-        		"      <th class=\"description\">Description</th>\r\n" +
-        		"   </tr>\r\n");
+                "<table class=\"fieldstable\">\r\n" +
+                "   <tr>\r\n" +
+                "      <th class=\"name\">Name</th>\r\n" +
+                "      <th class=\"type\">Type</th>\r\n" +
+                "      <th class=\"description\">Description</th>\r\n" +
+                "   </tr>\r\n");
             for (String name : fields.keySet())
             {
                 FieldElement field = fields.get(name);
                 String trClass = localFields.containsKey(name) ? "local" : "inherited";
                 out("<tr class=\"" + trClass + "\">\r\n" +
-            		"   <td>" + name + "</td>\r\n" +
-            		"   <td>\r\n" +
-            		"      <i>\r\n");
+                    "   <td>" + name + "</td>\r\n" +
+                    "   <td>\r\n" +
+                    "      <i>\r\n");
                 String dataType = field.getDataType();
                 IMsgTypeElement fieldTypeElement = msgResources.lookupMsgType(dataType);
                 if (fieldTypeElement != null)
                     generateTypeReference(fieldTypeElement);
                 else
                     out(dataType);
-        		if (field.getIsVector())
+                if (field.getIsVector())
                     out("[" + field.getVectorSize() + "]"); // note: no whitespace between type name and "["
-        		out("</i>\r\n" +
-            		"   </td>\r\n" +
-            		"   <td>");
-        		generateTableComment(getExpandedComment(field));
-        		out("</td>\r\n" +
-            		"</tr>\r\n");
+                out("</i>\r\n" +
+                    "   </td>\r\n" +
+                    "   <td>");
+                generateTableComment(getExpandedComment(field));
+                out("</td>\r\n" +
+                    "</tr>\r\n");
             }
             out("</table>\r\n");
         }
@@ -1337,27 +1337,27 @@ public class DocumentationGenerator {
 
         if (properties.size() != 0) {
             out("<h3 class=\"subtitle\">Properties:</h3>\r\n" +
-        		"<table class=\"propertiestable\">\r\n" +
-        		"   <tr>\r\n" +
-        		"      <th class=\"name\">Name</th>\r\n" +
-        		"      <th class=\"value\">Value</th>\r\n" +
-        		"      <th class=\"description\">Description</th>\r\n" +
-        		"   </tr>\r\n");
+                "<table class=\"propertiestable\">\r\n" +
+                "   <tr>\r\n" +
+                "      <th class=\"name\">Name</th>\r\n" +
+                "      <th class=\"value\">Value</th>\r\n" +
+                "      <th class=\"description\">Description</th>\r\n" +
+                "   </tr>\r\n");
 
             for (String name : properties.keySet())
             {
                 PropertyElementEx property = properties.get(name).get(PropertyElementEx.DEFAULT_PROPERTY_INDEX);
 
                 if (property != null) {
-                	out("<tr>\r\n" +
-                		"   <td>" + name + "</td>\r\n" +
-                		"   <td><i>");
-                	generatePropertyLiteralValues(property);
-                	out("</i></td>\r\n" +
-                		"   <td>");
-                	generateTableComment(getExpandedComment(property));
-            		out("</td>\r\n" +
-                		"</tr>\r\n");
+                    out("<tr>\r\n" +
+                        "   <td>" + name + "</td>\r\n" +
+                        "   <td><i>");
+                    generatePropertyLiteralValues(property);
+                    out("</i></td>\r\n" +
+                        "   <td>");
+                    generateTableComment(getExpandedComment(property));
+                    out("</td>\r\n" +
+                        "</tr>\r\n");
                 }
             }
 
@@ -1399,7 +1399,7 @@ public class DocumentationGenerator {
                 for (INedTypeElement userElement : compoundModules)
                     generateTypeReferenceLine(userElement);
 
-        		out("</table>\r\n");
+                out("</table>\r\n");
             }
 
             if (networks.size() != 0) {
@@ -1411,7 +1411,7 @@ public class DocumentationGenerator {
                 for (INedTypeElement userElement : networks)
                     generateTypeReferenceLine(userElement);
 
-        		out("</table>\r\n");
+                out("</table>\r\n");
             }
         }
     }
@@ -1423,13 +1423,13 @@ public class DocumentationGenerator {
 
         if (!paramsDeclarations.isEmpty()) {
             out("<h3 class=\"subtitle\">Parameters:</h3>\r\n" +
-        		"<table class=\"paramstable\">\r\n" +
-        		"   <tr>\r\n" +
-        		"      <th class=\"name\">Name</th>\r\n" +
-        		"      <th class=\"type\">Type</th>\r\n" +
+                "<table class=\"paramstable\">\r\n" +
+                "   <tr>\r\n" +
+                "      <th class=\"name\">Name</th>\r\n" +
+                "      <th class=\"type\">Type</th>\r\n" +
                 "      <th class=\"defaultvalue\">Default value</th>\r\n" +
-        		"      <th class=\"description\">Description</th>\r\n" +
-        		"   </tr>\r\n");
+                "      <th class=\"description\">Description</th>\r\n" +
+                "   </tr>\r\n");
 
             for (String name : paramsDeclarations.keySet()) {
                 ParamElementEx paramDeclaration = paramsDeclarations.get(name);
@@ -1437,15 +1437,15 @@ public class DocumentationGenerator {
                 String trClass = localParamsDeclarations.containsKey(name) ? "local" : "inherited";
 
                 out("<tr class=\"" + trClass + "\">\r\n" +
-            		"   <td>" + name + "</td>\r\n" +
-            		"   <td>\r\n" +
-            		"      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
-            		"   </td>\r\n" +
-            		"   <td>" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
+                    "   <td>" + name + "</td>\r\n" +
+                    "   <td>\r\n" +
+                    "      <i>" + getParamTypeAsString(paramDeclaration) + "</i>\r\n" +
+                    "   </td>\r\n" +
+                    "   <td>" + (paramAssignment == null ? "" : paramAssignment.getValue()) + "</td>\r\n" +
                     "   <td>");
                 generateTableComment(getExpandedComment(paramDeclaration));
-        		out("   </td>\r\n" +
-            		"</tr>\r\n");
+                out("   </td>\r\n" +
+                    "</tr>\r\n");
             }
 
             out("</table>\r\n");
@@ -1649,13 +1649,13 @@ public class DocumentationGenerator {
 
     protected void generateUnresolvedTypeReferenceLine(String name) throws IOException {
         out("<tr>\r\n" +
-    		"   <td>\r\n");
+            "   <td>\r\n");
         generateUnresolvedTypeReference(name);
         out("   </td>\r\n" +
-    		"   <td>\r\n" +
-    		"      <i>(unknown -- not in documented files)</i>\r\n" +
-    		"   </td>\r\n" +
-    		"</tr>\r\n");
+            "   <td>\r\n" +
+            "      <i>(unknown -- not in documented files)</i>\r\n" +
+            "   </td>\r\n" +
+            "</tr>\r\n");
     }
 
     protected void generateUnresolvedTypeReference(String name) throws IOException {
@@ -1875,8 +1875,8 @@ public class DocumentationGenerator {
                 withGeneratingHTMLFile("full-ned-usage-diagram.html", new Runnable() {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full NED Usage Diagram</h2>\r\n" +
-                    		"<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
-                    		"Unresolved types are missing from the diagram.</p>\r\n");
+                            "<p>The following diagram shows usage relationships between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
+                            "Unresolved types are missing from the diagram.</p>\r\n");
                         generateUsageDiagram(nedTypeElements, "full-ned-usage-diagram.png", "full-ned-usage-diagram.map");
                     }
                 });
@@ -1888,7 +1888,7 @@ public class DocumentationGenerator {
                     public void run() throws Exception {
                         out("<h2 class=\"comptitle\">Full NED Inheritance Diagram</h2>\r\n" +
                             "<p>The following diagram shows the inheritance hierarchy between simple and compound modules, module interfaces, networks, channels and channel interfaces.\r\n" +
-                    		"Unresolved types are missing from the diagram.</p>\r\n");
+                            "Unresolved types are missing from the diagram.</p>\r\n");
                         generateInheritanceDiagram(nedTypeElements, "full-ned-inheritance-diagram.png", "full-ned-inheritance-diagram.map");
                     }
                 });
@@ -1935,7 +1935,7 @@ public class DocumentationGenerator {
                 "<p>The following diagram shows usage relationships between types.\r\n" +
                 "Unresolved types are missing from the diagram.");
             if (generateFullUsageDiagrams)
-            	out(" Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.");
+                out(" Click <a href=\"full-" + diagramType + "-usage-diagram.html\">here</a> to see the full picture.");
             out("</p>\r\n");
 
             generateUsageDiagram(typeElements, getOutputFileName(typeElement, "usage", ".png"), getOutputFileName(typeElement, "usage", ".map"));
@@ -1990,7 +1990,7 @@ public class DocumentationGenerator {
                 "<p>The following diagram shows inheritance relationships for this type.\r\n" +
                 "Unresolved types are missing from the diagram.");
             if (generateFullInheritanceDiagrams)
-            	out(" Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.");
+                out(" Click <a href=\"full-" + diagramType + "-inheritance-diagram.html\">here</a> to see the full picture.");
             out("</p>\r\n");
 
             generateInheritanceDiagram(typeElements, getOutputFileName(typeElement, "inheritance", ".png"), getOutputFileName(typeElement, "inheritance", ".map"));
@@ -2002,8 +2002,8 @@ public class DocumentationGenerator {
             DotGraph dot = new DotGraph();
 
             dot.append("digraph opp {\r\n" +
-            		   "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\r\n" +
-            		   "   edge [arrowhead=none,arrowtail=empty];\r\n");
+                       "   node [fontsize=10,fontname=Helvetica,shape=box,height=.25,style=filled];\r\n" +
+                       "   edge [arrowhead=none,arrowtail=empty];\r\n");
 
             for (ITypeElement typeElement : typeElements) {
                 dot.appendNode(typeElement, typeElements.size() == 1);

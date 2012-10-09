@@ -15,7 +15,7 @@ import org.eclipse.cdt.launch.ui.CDebuggerTab;
  */
 public class OmnetppCDebuggerTab extends CDebuggerTab {
 
-	public OmnetppCDebuggerTab() {
-		super(false);
-	}
+    public OmnetppCDebuggerTab() {
+        super(false);
+    }
 }

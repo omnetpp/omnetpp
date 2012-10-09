@@ -59,7 +59,7 @@ public class CloneCommand extends Command {
 
     @Override
     public boolean canExecute() {
-    	return parent != null && nodes.size() > 0;
+        return parent != null && nodes.size() > 0;
     }
 
     // clone just a single node and insert it into the correct position
@@ -68,11 +68,11 @@ public class CloneCommand extends Command {
         INedTypeElement newNode = (INedTypeElement)oldNode.deepDup();
 
         // make the name unique. If parent is TypesElement the context is CompoundModule otherwise NedFile
-        INedTypeLookupContext context = (parent instanceof TypesElement) ? 
+        INedTypeLookupContext context = (parent instanceof TypesElement) ?
                 (CompoundModuleElementEx)(parent.getParent()) : (NedFileElementEx)parent ;
         newNode.setName(NedElementUtilEx.getUniqueNameForType(newNode.getName(), context));
 
-    	// insert into the parent at the correct position
+        // insert into the parent at the correct position
         parent.insertChildBefore(insertBefore, newNode);
 
         // keep track of the new modules so we can delete them in undo
@@ -90,7 +90,7 @@ public class CloneCommand extends Command {
     public void redo() {
         newNodes = new LinkedList<INedTypeElement>();
         for (INedTypeElement toBeCloned : nodes)
-        	cloneElement(toBeCloned);
+            cloneElement(toBeCloned);
     }
 
     @Override

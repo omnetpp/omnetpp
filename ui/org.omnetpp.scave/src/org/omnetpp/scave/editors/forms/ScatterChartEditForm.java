@@ -45,198 +45,198 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
 public class ScatterChartEditForm extends BaseLineChartEditForm {
 
 
-	private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
-		pkg.getChart_Name(),
-		pkg.getScatterChart_XDataPattern(),
-		pkg.getScatterChart_IsoDataPattern(),
-		pkg.getScatterChart_AverageReplications(),
-		pkg.getChart_Properties(),
-	};
+    private static final EStructuralFeature[] scatterChartFeatures = new EStructuralFeature[] {
+        pkg.getChart_Name(),
+        pkg.getScatterChart_XDataPattern(),
+        pkg.getScatterChart_IsoDataPattern(),
+        pkg.getScatterChart_AverageReplications(),
+        pkg.getChart_Properties(),
+    };
 
-	public static final String TAB_CONTENT = "Content";
+    public static final String TAB_CONTENT = "Content";
 
-	private Button xAxisLogCheckbox;
+    private Button xAxisLogCheckbox;
 
-	private Combo xModuleAndDataCombo;
-	private Tree isoLineSelectionTree;
-	private List<TreeItem> isoLineSelectionTreeItems;
-	private Button avgReplicationsCheckbox;
+    private Combo xModuleAndDataCombo;
+    private Tree isoLineSelectionTree;
+    private List<TreeItem> isoLineSelectionTreeItems;
+    private Button avgReplicationsCheckbox;
 
-	private IsoLineData[] xData = new IsoLineData[0];
-	private IsoLineData[] isoData = new IsoLineData[0];
+    private IsoLineData[] xData = new IsoLineData[0];
+    private IsoLineData[] isoData = new IsoLineData[0];
 
-	public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
-		super(chart, parent, formParameters, manager);
-		updateDataset(null);
-		Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-		if (dataset != null) {
-			IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
-			idlist.merge(DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL));
-			xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
-			isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
-		}
-	}
+    public ScatterChartEditForm(ScatterChart chart, EObject parent, Map<String,Object> formParameters, ResultFileManager manager) {
+        super(chart, parent, formParameters, manager);
+        updateDataset(null);
+        Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
+        if (dataset != null) {
+            IDList idlist = DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.SCALAR_LITERAL);
+            idlist.merge(DatasetManager.getIDListFromDataset(manager, dataset, chart, ResultType.VECTOR_LITERAL));
+            xData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, false);
+            isoData = ScaveModelUtil.getModuleAndDataPairs(idlist, manager, true);
+        }
+    }
 
-	protected void updateDataset(String formatString) {
-		Line[] lines = NO_LINES;
-		try {
-			Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
-			xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
-		}
-		catch (Exception e) {
-			ScavePlugin.logError(e);
-			xydataset = null;
-		}
+    protected void updateDataset(String formatString) {
+        Line[] lines = NO_LINES;
+        try {
+            Dataset dataset = ScaveModelUtil.findEnclosingOrSelf(parent, Dataset.class);
+            xydataset = DatasetManager.createScatterPlotDataset((ScatterChart)chart, dataset, manager, null);
+        }
+        catch (Exception e) {
+            ScavePlugin.logError(e);
+            xydataset = null;
+        }
 
-		if (xydataset != null) {
-			lines = new Line[xydataset.getSeriesCount()];
-			for (int i = 0; i < xydataset.getSeriesCount(); ++i)
-				lines[i] = new Line(xydataset.getSeriesKey(i), InterpolationMode.Unspecified, i);
-			Arrays.sort(lines);
-		}
+        if (xydataset != null) {
+            lines = new Line[xydataset.getSeriesCount()];
+            for (int i = 0; i < xydataset.getSeriesCount(); ++i)
+                lines[i] = new Line(xydataset.getSeriesKey(i), InterpolationMode.Unspecified, i);
+            Arrays.sort(lines);
+        }
 
-		setLines(lines);
-	}
-
-
-	/**
-	 * Returns the features edited on this form.
-	 */
-	public EStructuralFeature[] getFeatures() {
-		return scatterChartFeatures;
-	}
+        setLines(lines);
+    }
 
 
+    /**
+     * Returns the features edited on this form.
+     */
+    public EStructuralFeature[] getFeatures() {
+        return scatterChartFeatures;
+    }
 
-	@Override
-	protected void populateTabFolder(TabFolder tabfolder) {
-		super.populateTabFolder(tabfolder);
-		createTab(TAB_CONTENT, tabfolder, 2);
-	}
 
-	@Override
-	protected void populateTabItem(TabItem item) {
-		super.populateTabItem(item);
-		String name = item.getText();
-		Composite panel = (Composite)item.getControl();
-		if (TAB_AXES.equals(name)) {
-		    Group group = getAxisOptionsGroup();
-		    xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", group, getYAxisLogCheckbox());
-		}
-		else if (TAB_CONTENT.equals(name)) {
-			// x data
-			Group group = createGroup("X data", panel, 2, 2);
-			createLabel("Select the scalar whose values displayed on the X axis.",
-					group, 2);
-			String[] items = new String [xData.length];
-			for (int i = 0; i < items.length; ++i)
-				items[i] = xData[i].asListItem();
-			xModuleAndDataCombo = createComboField("", group, items);
-			if (items.length > 0)
-				xModuleAndDataCombo.setText(items[0]);
 
-			// iso data
-			group = createGroup("Iso lines", panel, 2, 1);
-			createLabel("Select scalars and run attributes whose values must be equal on data points connected by lines.",
-					group, 1);
-			isoLineSelectionTree = new Tree(group,
-					SWT.BORDER | SWT.CHECK | SWT.HIDE_SELECTION | SWT.V_SCROLL);
-			GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
-			int itemsVisible = Math.max(Math.min(isoData.length, 15), 3);
-			gridData.heightHint = itemsVisible * isoLineSelectionTree.getItemHeight();
-			isoLineSelectionTree.setLayoutData(gridData);
-			TreeItem scalars = new TreeItem(isoLineSelectionTree, SWT.NONE);
-			scalars.setText("scalars");
-			TreeItem attributes = new TreeItem(isoLineSelectionTree, SWT.NONE);
-			attributes.setText("run attributes");
+    @Override
+    protected void populateTabFolder(TabFolder tabfolder) {
+        super.populateTabFolder(tabfolder);
+        createTab(TAB_CONTENT, tabfolder, 2);
+    }
 
-			isoLineSelectionTreeItems = new ArrayList<TreeItem>();
-			for (int i = 0; i < isoData.length; ++i) {
-				TreeItem parent = isoData[i].getModuleName() != null && isoData[i].getDataName() != null ?
-									scalars : attributes;
-				TreeItem treeItem = new TreeItem(parent, SWT.NONE);
-				treeItem.setChecked(false);
-				treeItem.setText(isoData[i].asListItem());
-				treeItem.setData(isoData[i].asFilterPattern());
-				isoLineSelectionTreeItems.add(treeItem);
-			}
-			scalars.setExpanded(true);
-			attributes.setExpanded(false);
+    @Override
+    protected void populateTabItem(TabItem item) {
+        super.populateTabItem(item);
+        String name = item.getText();
+        Composite panel = (Composite)item.getControl();
+        if (TAB_AXES.equals(name)) {
+            Group group = getAxisOptionsGroup();
+            xAxisLogCheckbox = createCheckboxField("Logarithmic X axis", group, getYAxisLogCheckbox());
+        }
+        else if (TAB_CONTENT.equals(name)) {
+            // x data
+            Group group = createGroup("X data", panel, 2, 2);
+            createLabel("Select the scalar whose values displayed on the X axis.",
+                    group, 2);
+            String[] items = new String [xData.length];
+            for (int i = 0; i < items.length; ++i)
+                items[i] = xData[i].asListItem();
+            xModuleAndDataCombo = createComboField("", group, items);
+            if (items.length > 0)
+                xModuleAndDataCombo.setText(items[0]);
 
-			group = createGroup("Average replications", panel, 2, 1);
-			createLabel("Check if the values that are the replications of the same measurement must be averaged.", group, 1);
-			avgReplicationsCheckbox = createCheckboxField("average replications", group);
-			avgReplicationsCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-			avgReplicationsCheckbox.setSelection(true);
-		}
-	}
+            // iso data
+            group = createGroup("Iso lines", panel, 2, 1);
+            createLabel("Select scalars and run attributes whose values must be equal on data points connected by lines.",
+                    group, 1);
+            isoLineSelectionTree = new Tree(group,
+                    SWT.BORDER | SWT.CHECK | SWT.HIDE_SELECTION | SWT.V_SCROLL);
+            GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
+            int itemsVisible = Math.max(Math.min(isoData.length, 15), 3);
+            gridData.heightHint = itemsVisible * isoLineSelectionTree.getItemHeight();
+            isoLineSelectionTree.setLayoutData(gridData);
+            TreeItem scalars = new TreeItem(isoLineSelectionTree, SWT.NONE);
+            scalars.setText("scalars");
+            TreeItem attributes = new TreeItem(isoLineSelectionTree, SWT.NONE);
+            attributes.setText("run attributes");
 
-	private Label createLabel(String text, Composite parent, int columns) {
-		Composite panel = new Composite(parent, SWT.NONE);
-		panel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, columns, 1));
-		panel.setLayout(new RowLayout(SWT.VERTICAL));
+            isoLineSelectionTreeItems = new ArrayList<TreeItem>();
+            for (int i = 0; i < isoData.length; ++i) {
+                TreeItem parent = isoData[i].getModuleName() != null && isoData[i].getDataName() != null ?
+                                    scalars : attributes;
+                TreeItem treeItem = new TreeItem(parent, SWT.NONE);
+                treeItem.setChecked(false);
+                treeItem.setText(isoData[i].asListItem());
+                treeItem.setData(isoData[i].asFilterPattern());
+                isoLineSelectionTreeItems.add(treeItem);
+            }
+            scalars.setExpanded(true);
+            attributes.setExpanded(false);
 
-		Label label = new Label(panel, SWT.WRAP); // XXX WRAP does not work
-		label.setText(text);
-		return label;
-	}
+            group = createGroup("Average replications", panel, 2, 1);
+            createLabel("Check if the values that are the replications of the same measurement must be averaged.", group, 1);
+            avgReplicationsCheckbox = createCheckboxField("average replications", group);
+            avgReplicationsCheckbox.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+            avgReplicationsCheckbox.setSelection(true);
+        }
+    }
 
-	@Override
-	public Object getValue(EStructuralFeature feature) {
-		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
-			int index = xModuleAndDataCombo.getSelectionIndex();
-			return index >= 0 ? xData[index].asFilterPattern() : null;
-		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
-			List<String> patterns = new ArrayList<String>();
-			for (TreeItem item : isoLineSelectionTreeItems) {
-				if (item.getChecked())
-					patterns.add((String)item.getData());
-			}
-			return patterns;
-		case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
-			return avgReplicationsCheckbox.getSelection();
-		}
-		return super.getValue(feature);
-	}
+    private Label createLabel(String text, Composite parent, int columns) {
+        Composite panel = new Composite(parent, SWT.NONE);
+        panel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, columns, 1));
+        panel.setLayout(new RowLayout(SWT.VERTICAL));
 
-	@Override
-	public void setValue(EStructuralFeature feature, Object value) {
-		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
-			if (xModuleAndDataCombo != null) {
-				IsoLineData xModuleAndData = null;
-				if (value instanceof String) {
-					int index = ArrayUtils.indexOf(xData, IsoLineData.fromFilterPattern((String)value));
-					if (index >= 0)
-						xModuleAndData = xData[index];
-				}
+        Label label = new Label(panel, SWT.WRAP); // XXX WRAP does not work
+        label.setText(text);
+        return label;
+    }
 
-				if (xModuleAndData != null)
-					xModuleAndDataCombo.setText(xModuleAndData.asListItem());
-				else
-					xModuleAndDataCombo.deselectAll();
-			}
-			break;
-		case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
-			if (isoLineSelectionTree != null) {
-				if (value instanceof List) {
-					@SuppressWarnings("unchecked") List<String> patterns = (List<String>)value;
-					for (TreeItem item : isoLineSelectionTreeItems) {
-						item.setChecked(patterns.contains(item.getData()));
-					}
-				}
-			}
-			break;
-		case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
-			if (avgReplicationsCheckbox != null) {
-				avgReplicationsCheckbox.setSelection(value != null ? ((Boolean)value) : true);
-			}
-		default:
-			super.setValue(feature, value);
-			break;
-		}
-	}
+    @Override
+    public Object getValue(EStructuralFeature feature) {
+        switch (feature.getFeatureID()) {
+        case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+            int index = xModuleAndDataCombo.getSelectionIndex();
+            return index >= 0 ? xData[index].asFilterPattern() : null;
+        case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+            List<String> patterns = new ArrayList<String>();
+            for (TreeItem item : isoLineSelectionTreeItems) {
+                if (item.getChecked())
+                    patterns.add((String)item.getData());
+            }
+            return patterns;
+        case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+            return avgReplicationsCheckbox.getSelection();
+        }
+        return super.getValue(feature);
+    }
+
+    @Override
+    public void setValue(EStructuralFeature feature, Object value) {
+        switch (feature.getFeatureID()) {
+        case ScaveModelPackage.SCATTER_CHART__XDATA_PATTERN:
+            if (xModuleAndDataCombo != null) {
+                IsoLineData xModuleAndData = null;
+                if (value instanceof String) {
+                    int index = ArrayUtils.indexOf(xData, IsoLineData.fromFilterPattern((String)value));
+                    if (index >= 0)
+                        xModuleAndData = xData[index];
+                }
+
+                if (xModuleAndData != null)
+                    xModuleAndDataCombo.setText(xModuleAndData.asListItem());
+                else
+                    xModuleAndDataCombo.deselectAll();
+            }
+            break;
+        case ScaveModelPackage.SCATTER_CHART__ISO_DATA_PATTERN:
+            if (isoLineSelectionTree != null) {
+                if (value instanceof List) {
+                    @SuppressWarnings("unchecked") List<String> patterns = (List<String>)value;
+                    for (TreeItem item : isoLineSelectionTreeItems) {
+                        item.setChecked(patterns.contains(item.getData()));
+                    }
+                }
+            }
+            break;
+        case ScaveModelPackage.SCATTER_CHART__AVERAGE_REPLICATIONS:
+            if (avgReplicationsCheckbox != null) {
+                avgReplicationsCheckbox.setSelection(value != null ? ((Boolean)value) : true);
+            }
+        default:
+            super.setValue(feature, value);
+            break;
+        }
+    }
 
    @Override
     protected void collectProperties(ChartProperties newProps) {

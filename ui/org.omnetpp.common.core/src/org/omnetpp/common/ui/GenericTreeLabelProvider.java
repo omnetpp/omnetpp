@@ -19,33 +19,33 @@ import org.eclipse.swt.graphics.Image;
  * @author Andras
  */
 public class GenericTreeLabelProvider implements ILabelProvider {
-	private ILabelProvider labelProvider;
+    private ILabelProvider labelProvider;
 
-	public GenericTreeLabelProvider(ILabelProvider labelProvider) {
-		this.labelProvider = labelProvider;
-	}
+    public GenericTreeLabelProvider(ILabelProvider labelProvider) {
+        this.labelProvider = labelProvider;
+    }
 
-	public Image getImage(Object element) {
-		return labelProvider.getImage(((GenericTreeNode)element).getPayload());
-	}
+    public Image getImage(Object element) {
+        return labelProvider.getImage(((GenericTreeNode)element).getPayload());
+    }
 
-	public String getText(Object element) {
-		return labelProvider.getText(((GenericTreeNode)element).getPayload());
-	}
+    public String getText(Object element) {
+        return labelProvider.getText(((GenericTreeNode)element).getPayload());
+    }
 
-	public void addListener(ILabelProviderListener listener) {
-		labelProvider.addListener(listener);
-	}
+    public void addListener(ILabelProviderListener listener) {
+        labelProvider.addListener(listener);
+    }
 
-	public void dispose() {
-		labelProvider.dispose();
-	}
+    public void dispose() {
+        labelProvider.dispose();
+    }
 
-	public boolean isLabelProperty(Object element, String property) {
-		return labelProvider.isLabelProperty(((GenericTreeNode)element).getPayload(), property);
-	}
+    public boolean isLabelProperty(Object element, String property) {
+        return labelProvider.isLabelProperty(((GenericTreeNode)element).getPayload(), property);
+    }
 
-	public void removeListener(ILabelProviderListener listener) {
-		labelProvider.removeListener(listener);
-	}
+    public void removeListener(ILabelProviderListener listener) {
+        labelProvider.removeListener(listener);
+    }
 }

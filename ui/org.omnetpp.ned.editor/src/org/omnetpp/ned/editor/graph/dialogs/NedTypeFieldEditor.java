@@ -35,21 +35,21 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 
 /**
  * Represents a NED type selection compound widget in the Properties dialog
- * 
+ *
  * @author Andras
  */
 public class NedTypeFieldEditor implements IFieldEditor {
     private Composite composite;
     private Text text;
     private Button button;
-    private boolean grayed = false; 
+    private boolean grayed = false;
     private INedTypeResolver.IPredicate typeFilter; // which types to offer / allow
     private IProject contextProject;
     private INedTypeInfo enclosingNedType; // if non-null, offer its inner types too
     private boolean multiple;
     private ControlDecoration problemDecoration;
 
-    
+
     protected class NedTypeContentProposalProvider extends ContentProposalProvider {
         public NedTypeContentProposalProvider(boolean useWholePrefix) {
             super(useWholePrefix);
@@ -59,8 +59,8 @@ public class NedTypeFieldEditor implements IFieldEditor {
         protected List<IContentProposal> getProposalCandidates(String prefix) {
             INedResources nedResources = NedResourcesPlugin.getNedResources();
             Assert.isNotNull(typeFilter, "setTypeFilter() must have been called with non-null arg");
-            
-            // add suggestions both in "package.name.SimpleName" and "SimpleName (package.name)" syntax 
+
+            // add suggestions both in "package.name.SimpleName" and "SimpleName (package.name)" syntax
             Set<String> qnames = nedResources.getToplevelNedTypeQNames(typeFilter, contextProject);
             if (enclosingNedType != null)
                 for (INedTypeElement innerType : enclosingNedType.getInnerTypes().values())
@@ -76,7 +76,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
             for (String qname : qnames)
                 if (qname.indexOf('.') != -1)
                     qnamesMinusSimpleNames.add(qname);
-            List<IContentProposal> part2 = sort(toProposals(qnamesMinusSimpleNames.toArray(new String[]{})));  
+            List<IContentProposal> part2 = sort(toProposals(qnamesMinusSimpleNames.toArray(new String[]{})));
 
             List<IContentProposal> result = new ArrayList<IContentProposal>();
             result.addAll(part1);
@@ -84,8 +84,8 @@ public class NedTypeFieldEditor implements IFieldEditor {
             return result;
         }
     }
-    
-    
+
+
     public NedTypeFieldEditor(Composite parent, boolean multiple, IProject contextProject, INedTypeInfo enclosingNedType, INedTypeResolver.IPredicate typeFilter) {
         this.contextProject = contextProject;
         this.enclosingNedType = enclosingNedType;
@@ -95,14 +95,14 @@ public class NedTypeFieldEditor implements IFieldEditor {
         composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         composite.setLayout(layout);
-        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0; 
+        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0;
 
         text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-        new ContentAssistCommandAdapter(text, new TextContentAdapter(), 
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(),
                 new NedTypeContentProposalProvider(!multiple),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null /*".".toCharArray()*/, true); // using "." triggers a bug: in empty field, type Ctrl+Space, then 1st char of any proposal --> proposal windows disappears, but it shouldn't
-        
+
         button = new Button(composite, SWT.PUSH);
         button.setText("...");
         GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -154,7 +154,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
         if (grayed) {
             text.setText("");
             text.setBackground(GREY);
-        } 
+        }
         else {
             text.setBackground(null); // default system color
         }
@@ -200,7 +200,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
         dialog.setEnclosingNedType(enclosingNedType);
         dialog.setTypeFilter(NedTypeFieldEditor.this.typeFilter);
         dialog.setMultipleSelection(NedTypeFieldEditor.this.multiple);
-        
+
         // select the types that are currently in the text field
         List<String> qnames = parseNedTypeList(text.getText());
         List<INedTypeInfo> types = new ArrayList<INedTypeInfo>();
@@ -210,7 +210,7 @@ public class NedTypeFieldEditor implements IFieldEditor {
                 types.add(type);
         }
         dialog.setInitialElementSelections(types);
-        
+
         // open dialog
         if (dialog.open() == Dialog.OK) {
             String result = "";

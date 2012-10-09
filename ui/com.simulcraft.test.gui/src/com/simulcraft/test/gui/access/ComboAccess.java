@@ -18,34 +18,34 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class ComboAccess extends ControlAccess
 {
-	public ComboAccess(Combo combo) {
-		super(combo);
-	}
+    public ComboAccess(Combo combo) {
+        super(combo);
+    }
 
     @Override
-	public Combo getControl() {
-		return (Combo)widget;
-	}
-
-    @UIStep
-    public boolean isEditable() {
-    	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
+    public Combo getControl() {
+        return (Combo)widget;
     }
 
     @UIStep
-	public String[] getComboItems() {
-	    return getControl().getItems();
-	}
-
-	@UIStep
-	public String getTextContent() {
-		return getControl().getText();
-	}
+    public boolean isEditable() {
+        return (getControl().getStyle() & SWT.READ_ONLY) == 0;
+    }
 
     @UIStep
-	public void assertEditable() {
-		Assert.assertTrue("combo is readonly", isEditable());
-	}
+    public String[] getComboItems() {
+        return getControl().getItems();
+    }
+
+    @UIStep
+    public String getTextContent() {
+        return getControl().getText();
+    }
+
+    @UIStep
+    public void assertEditable() {
+        Assert.assertTrue("combo is readonly", isEditable());
+    }
 
     @UIStep
     public void assertTextContent(String regex) {
@@ -84,11 +84,11 @@ public class ComboAccess extends ControlAccess
         clickOnArrow();
 
         if (isEditable()) {
-        	typeOver("");
-        	pressKey(SWT.ARROW_DOWN);
+            typeOver("");
+            pressKey(SWT.ARROW_DOWN);
         }
         else
-        	pressKey(SWT.HOME);
+            pressKey(SWT.HOME);
 
         int index = findString(getComboItems(), content);
         for (int i=0; i<index; i++)

@@ -18,83 +18,83 @@ import org.eclipse.swt.events.*;
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
  */
 public class LineStyleEvent extends TypedEvent {
-	
-	/**
-	 * line start offset (input)
-	 */
-	public int lineOffset;
-	
-	/**
-	 * line text (input)
-	 */
-	public String lineText;
-	
-	/**
-	 * line ranges (output)
-	 * 
-	 * @since 3.2
-	 */
-	public int[] ranges;
-	
-	/**
-	 * line styles (output)
-	 * 
-	 * Note: Because a StyleRange includes the start and length, the
-	 * same instance cannot occur multiple times in the array of styles.
-	 * If the same style attributes, such as font and color, occur in
-	 * multiple StyleRanges, <code>ranges</code> can be used to share
-	 * styles and reduce memory usage.
-	 */
-	public StyleRange[] styles;
 
-	/** 
-	 * line alignment (input, output)
-	 * 
-	 * @since 3.2
-	 */
-	public int alignment;
+    /**
+     * line start offset (input)
+     */
+    public int lineOffset;
 
-	/**
-	 * line indent (input, output)
-	 * 
-	 * @since 3.2
-	 */
-	public int indent;
+    /**
+     * line text (input)
+     */
+    public String lineText;
 
-	/**
-	 * line wrap indent (input, output)
-	 * 
-	 * @since 3.6
-	 */
-	public int wrapIndent;
+    /**
+     * line ranges (output)
+     *
+     * @since 3.2
+     */
+    public int[] ranges;
 
-	/** 
-	 * line justification (input, output)
-	 * 
-	 * @since 3.2
-	 */
-	public boolean justify;
+    /**
+     * line styles (output)
+     *
+     * Note: Because a StyleRange includes the start and length, the
+     * same instance cannot occur multiple times in the array of styles.
+     * If the same style attributes, such as font and color, occur in
+     * multiple StyleRanges, <code>ranges</code> can be used to share
+     * styles and reduce memory usage.
+     */
+    public StyleRange[] styles;
 
-	/**
-	 * line bullet (output)
-	 * @since 3.2
-	 */
-	public Bullet bullet;
+    /**
+     * line alignment (input, output)
+     *
+     * @since 3.2
+     */
+    public int alignment;
 
-	/**
-	 * line bullet index (output)
-	 * @since 3.2
-	 */
-	public int bulletIndex;
+    /**
+     * line indent (input, output)
+     *
+     * @since 3.2
+     */
+    public int indent;
 
-	/**
-	 * line tab stops (output)
-	 * @since 3.6
-	 */
-	public int[] tabStops;
+    /**
+     * line wrap indent (input, output)
+     *
+     * @since 3.6
+     */
+    public int wrapIndent;
 
-	
-	static final long serialVersionUID = 3906081274027192884L;
+    /**
+     * line justification (input, output)
+     *
+     * @since 3.2
+     */
+    public boolean justify;
+
+    /**
+     * line bullet (output)
+     * @since 3.2
+     */
+    public Bullet bullet;
+
+    /**
+     * line bullet index (output)
+     * @since 3.2
+     */
+    public int bulletIndex;
+
+    /**
+     * line tab stops (output)
+     * @since 3.6
+     */
+    public int[] tabStops;
+
+
+    static final long serialVersionUID = 3906081274027192884L;
 
 /**
  * Constructs a new instance of this class based on the
@@ -103,17 +103,17 @@ public class LineStyleEvent extends TypedEvent {
  * @param e the event containing the information
  */
 public LineStyleEvent(StyledTextEvent e) {
-	super(e);
-	styles = e.styles;
-	ranges = e.ranges;
-	lineOffset = e.detail;
-	lineText = e.text;
-	alignment = e.alignment;
-	justify = e.justify;
-	indent = e.indent;
-	wrapIndent = e.wrapIndent;
-	bullet = e.bullet;
-	bulletIndex = e.bulletIndex;
-	tabStops = e.tabStops;
+    super(e);
+    styles = e.styles;
+    ranges = e.ranges;
+    lineOffset = e.detail;
+    lineText = e.text;
+    alignment = e.alignment;
+    justify = e.justify;
+    indent = e.indent;
+    wrapIndent = e.wrapIndent;
+    bullet = e.bullet;
+    bulletIndex = e.bulletIndex;
+    tabStops = e.tabStops;
 }
 }

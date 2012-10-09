@@ -17,13 +17,13 @@ public class InifileEditorAccess
     extends MultiPageEditorPartAccess
 {
 
-	public InifileEditorAccess(InifileEditor multiPageNedEditor) {
-		super(multiPageNedEditor);
-	}
+    public InifileEditorAccess(InifileEditor multiPageNedEditor) {
+        super(multiPageNedEditor);
+    }
 
     @Override
-	public InifileEditor getWorkbenchPart() {
-	    return (InifileEditor)workbenchPart;
+    public InifileEditor getWorkbenchPart() {
+        return (InifileEditor)workbenchPart;
     }
 
     public TextEditorAccess getTextEditor() {

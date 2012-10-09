@@ -46,11 +46,11 @@ public class NedConnectionEndpointEditPolicy extends ConnectionEndpointEditPolic
      */
     @SuppressWarnings("unchecked")
     @Override
-	protected List createSelectionHandles() {
-    	List list = new ArrayList();
-    	list.add(new NedConnectionEndHandle((ConnectionEditPart)getHost()));
-    	list.add(new NedConnectionStartHandle((ConnectionEditPart)getHost()));
-     	return list;
+    protected List createSelectionHandles() {
+        List list = new ArrayList();
+        list.add(new NedConnectionEndHandle((ConnectionEditPart)getHost()));
+        list.add(new NedConnectionStartHandle((ConnectionEditPart)getHost()));
+        return list;
     }
 
     /* (non-Javadoc)

@@ -16,30 +16,30 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class ScaveEditorAccess extends MultiPageEditorPartAccess {
 
-	public ScaveEditorAccess(MultiPageEditorPart scaveEditor) {
-		super(scaveEditor);
-	}
+    public ScaveEditorAccess(MultiPageEditorPart scaveEditor) {
+        super(scaveEditor);
+    }
 
-	public InputsPageAccess ensureInputsPageActive() {
-		return (InputsPageAccess)ensureActivePage("Inputs");
-	}
+    public InputsPageAccess ensureInputsPageActive() {
+        return (InputsPageAccess)ensureActivePage("Inputs");
+    }
 
-	public BrowseDataPageAccess ensureBrowseDataPageActive() {
-		return (BrowseDataPageAccess)ensureActivePage("Browse Data");
-	}
+    public BrowseDataPageAccess ensureBrowseDataPageActive() {
+        return (BrowseDataPageAccess)ensureActivePage("Browse Data");
+    }
 
-	public DatasetsAndChartsPageAccess ensureDatasetsPageActive() {
-		return (DatasetsAndChartsPageAccess)ensureActivePage("Datasets");
-	}
+    public DatasetsAndChartsPageAccess ensureDatasetsPageActive() {
+        return (DatasetsAndChartsPageAccess)ensureActivePage("Datasets");
+    }
 
-	@UIStep
-	public void closePage(String label) {
-		CTabItemAccess item = getCTabItem(label);
-		item.clickOnCloseIcon();
-	}
+    @UIStep
+    public void closePage(String label) {
+        CTabItemAccess item = getCTabItem(label);
+        item.clickOnCloseIcon();
+    }
 
-	public void executeUndo() {
-		assertActivated();
+    public void executeUndo() {
+        assertActivated();
         pressKey('z', SWT.CTRL);
-	}
+    }
 }

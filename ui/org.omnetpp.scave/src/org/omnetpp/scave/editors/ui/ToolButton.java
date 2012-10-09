@@ -41,219 +41,219 @@ import org.omnetpp.common.color.ColorFactory;
  * @author Andras
  */
 public class ToolButton extends Canvas {
-	private static final int R = 5;
-	private static final int BORDER = 4;
+    private static final int R = 5;
+    private static final int BORDER = 4;
 
-	private Color normalInnerBorderColor = null;
-	private Color normalOuterBorderColor = ColorFactory.GREY90;
+    private Color normalInnerBorderColor = null;
+    private Color normalOuterBorderColor = ColorFactory.GREY90;
 
-	private Color activeBackgroundColor = ColorFactory.GREY96;
-	private Color activeInnerBorderColor = ColorFactory.ORANGE;
-	private Color activeOuterBorderColor = ColorFactory.GREY40;
+    private Color activeBackgroundColor = ColorFactory.GREY96;
+    private Color activeInnerBorderColor = ColorFactory.ORANGE;
+    private Color activeOuterBorderColor = ColorFactory.GREY40;
 
-	private Color pushedBackgroundColor = ColorFactory.GREY90;
-	private Color pushedOuterBorderColor = ColorFactory.GREY40;
-	private Color pushedInnerBorderColor = ColorFactory.GREY95;
+    private Color pushedBackgroundColor = ColorFactory.GREY90;
+    private Color pushedOuterBorderColor = ColorFactory.GREY40;
+    private Color pushedInnerBorderColor = ColorFactory.GREY95;
 
-	private Color disabledBackgroundColor = null;
-	private Color disabledOuterBorderColor = ColorFactory.GREY90;
-	private Color disabledInnerBorderColor = null;
+    private Color disabledBackgroundColor = null;
+    private Color disabledOuterBorderColor = ColorFactory.GREY90;
+    private Color disabledInnerBorderColor = null;
 
-	private List<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
+    private List<SelectionListener> selectionListeners = new ArrayList<SelectionListener>();
 
-	private Image image;
-	private String text;
-	private int textWidth = -1;
-	private int textHeight= -1;
+    private Image image;
+    private String text;
+    private int textWidth = -1;
+    private int textHeight= -1;
 
-	private static int NORMAL_STATE = 0;
-	private static int ACTIVE_STATE = 1;
-	private static int PUSHED_STATE = 2;
-	private int state = 0;
+    private static int NORMAL_STATE = 0;
+    private static int ACTIVE_STATE = 1;
+    private static int PUSHED_STATE = 2;
+    private int state = 0;
 
-	public ToolButton(Composite parent, int style) {
-		super(parent, style);
-		setBackground(ColorFactory.WHITE);
+    public ToolButton(Composite parent, int style) {
+        super(parent, style);
+        setBackground(ColorFactory.WHITE);
 
-		addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				_repaint(e.gc);
-			}
-		});
+        addPaintListener(new PaintListener() {
+            public void paintControl(PaintEvent e) {
+                _repaint(e.gc);
+            }
+        });
 
-		addMouseTrackListener(new MouseTrackListener() {
-			public void mouseEnter(MouseEvent e) {
-				if (isEnabled()) {
-					state = ACTIVE_STATE;
-					redraw();
-				}
-			}
-			public void mouseExit(MouseEvent e) {
-				if (isEnabled()) {
-					state = NORMAL_STATE;
-					redraw();
-				}
-			}
-			public void mouseHover(MouseEvent e) {
-			}
-		});
+        addMouseTrackListener(new MouseTrackListener() {
+            public void mouseEnter(MouseEvent e) {
+                if (isEnabled()) {
+                    state = ACTIVE_STATE;
+                    redraw();
+                }
+            }
+            public void mouseExit(MouseEvent e) {
+                if (isEnabled()) {
+                    state = NORMAL_STATE;
+                    redraw();
+                }
+            }
+            public void mouseHover(MouseEvent e) {
+            }
+        });
 
-		addMouseListener(new MouseListener() {
-			public void mouseDoubleClick(MouseEvent e) {
-			}
+        addMouseListener(new MouseListener() {
+            public void mouseDoubleClick(MouseEvent e) {
+            }
 
-			public void mouseDown(MouseEvent e) {
-				if (isEnabled() && e.button==1) {
-					// Note: when DragSource is installed on the button, the mouseDown event
-					// apparently gets intercepted and delayed ~1s by DragSource
-					state = PUSHED_STATE;
-					redraw();
-				}
-			}
+            public void mouseDown(MouseEvent e) {
+                if (isEnabled() && e.button==1) {
+                    // Note: when DragSource is installed on the button, the mouseDown event
+                    // apparently gets intercepted and delayed ~1s by DragSource
+                    state = PUSHED_STATE;
+                    redraw();
+                }
+            }
 
-			public void mouseUp(MouseEvent e) {
-				Point size = ToolButton.this.getSize();
-				Rectangle bounds = new Rectangle(0, 0, size.x, size.y);
-				if (isEnabled() && e.button==1 &&
-						e.widget == ToolButton.this && bounds.contains(e.x, e.y)) {
-					state = ACTIVE_STATE;
-					redraw();
+            public void mouseUp(MouseEvent e) {
+                Point size = ToolButton.this.getSize();
+                Rectangle bounds = new Rectangle(0, 0, size.x, size.y);
+                if (isEnabled() && e.button==1 &&
+                        e.widget == ToolButton.this && bounds.contains(e.x, e.y)) {
+                    state = ACTIVE_STATE;
+                    redraw();
 
-					// fire "button selected" event
-					Event tmp = new Event();
-					tmp.display = e.display;
-					tmp.widget = e.widget;
-					tmp.x = e.x;
-					tmp.y = e.y;
-					tmp.stateMask = e.stateMask;
-					SelectionEvent selectionEvent = new SelectionEvent(tmp);
-					for (SelectionListener listener : selectionListeners)
-						listener.widgetSelected(selectionEvent);
-				}
-			}
-		});
-	}
+                    // fire "button selected" event
+                    Event tmp = new Event();
+                    tmp.display = e.display;
+                    tmp.widget = e.widget;
+                    tmp.x = e.x;
+                    tmp.y = e.y;
+                    tmp.stateMask = e.stateMask;
+                    SelectionEvent selectionEvent = new SelectionEvent(tmp);
+                    for (SelectionListener listener : selectionListeners)
+                        listener.widgetSelected(selectionEvent);
+                }
+            }
+        });
+    }
 
-	protected void _repaint(GC gc) {
-		Rectangle r = getBounds();
-		if (!isEnabled())
-			fillBackground(gc, r, disabledBackgroundColor);
-		else if (state==ACTIVE_STATE)
-			fillBackground(gc, r, activeBackgroundColor);
-		else if (state==PUSHED_STATE)
-			fillBackground(gc, r, pushedBackgroundColor);
+    protected void _repaint(GC gc) {
+        Rectangle r = getBounds();
+        if (!isEnabled())
+            fillBackground(gc, r, disabledBackgroundColor);
+        else if (state==ACTIVE_STATE)
+            fillBackground(gc, r, activeBackgroundColor);
+        else if (state==PUSHED_STATE)
+            fillBackground(gc, r, pushedBackgroundColor);
 
-		if (image != null)
-			gc.drawImage(image, BORDER, (r.height-image.getBounds().height+1)/2); //TODO paint disabled image
-		if (text != null) {
-			if (getFont() != null)
-				gc.setFont(getFont());
-			if (textHeight == -1)
-				updateTextExtent(gc);
-			gc.setForeground(isEnabled() ? ColorFactory.BLACK : ColorFactory.GREY50);
-			gc.drawText(text, BORDER + (image==null ? 0 : image.getBounds().width+BORDER), (r.height-textHeight+1) / 2);
-		}
-		if (!isEnabled())
-			drawBorder(gc, r, disabledOuterBorderColor, disabledInnerBorderColor);
-		else if (state==NORMAL_STATE)
-			drawBorder(gc, r, normalOuterBorderColor, normalInnerBorderColor);
-		else if (state==ACTIVE_STATE)
-			drawBorder(gc, r, activeOuterBorderColor, activeInnerBorderColor);
-		else if (state==PUSHED_STATE)
-			drawBorder(gc, r, pushedOuterBorderColor, pushedInnerBorderColor);
-	}
+        if (image != null)
+            gc.drawImage(image, BORDER, (r.height-image.getBounds().height+1)/2); //TODO paint disabled image
+        if (text != null) {
+            if (getFont() != null)
+                gc.setFont(getFont());
+            if (textHeight == -1)
+                updateTextExtent(gc);
+            gc.setForeground(isEnabled() ? ColorFactory.BLACK : ColorFactory.GREY50);
+            gc.drawText(text, BORDER + (image==null ? 0 : image.getBounds().width+BORDER), (r.height-textHeight+1) / 2);
+        }
+        if (!isEnabled())
+            drawBorder(gc, r, disabledOuterBorderColor, disabledInnerBorderColor);
+        else if (state==NORMAL_STATE)
+            drawBorder(gc, r, normalOuterBorderColor, normalInnerBorderColor);
+        else if (state==ACTIVE_STATE)
+            drawBorder(gc, r, activeOuterBorderColor, activeInnerBorderColor);
+        else if (state==PUSHED_STATE)
+            drawBorder(gc, r, pushedOuterBorderColor, pushedInnerBorderColor);
+    }
 
-	protected void fillBackground(GC gc, Rectangle r, Color color) {
-		if (color != null) {
-			gc.setBackground(color);
-			gc.fillRoundRectangle(0, 0, r.width-1, r.height-1, R, R);
-		}
-	}
+    protected void fillBackground(GC gc, Rectangle r, Color color) {
+        if (color != null) {
+            gc.setBackground(color);
+            gc.fillRoundRectangle(0, 0, r.width-1, r.height-1, R, R);
+        }
+    }
 
-	protected void drawBorder(GC gc, Rectangle r, Color outerColor, Color innerColor) {
-		gc.setAntialias(SWT.ON);
-		if (outerColor != null) {
-			gc.setForeground(outerColor);
-			gc.drawRoundRectangle(0, 0, r.width-1, r.height-1, R, R);
-		}
-		if (innerColor != null) {
-			gc.setForeground(innerColor);
-			gc.drawRoundRectangle(1, 1, r.width-3, r.height-3, R-2, R-2);
-		}
-	}
+    protected void drawBorder(GC gc, Rectangle r, Color outerColor, Color innerColor) {
+        gc.setAntialias(SWT.ON);
+        if (outerColor != null) {
+            gc.setForeground(outerColor);
+            gc.drawRoundRectangle(0, 0, r.width-1, r.height-1, R, R);
+        }
+        if (innerColor != null) {
+            gc.setForeground(innerColor);
+            gc.drawRoundRectangle(1, 1, r.width-3, r.height-3, R-2, R-2);
+        }
+    }
 
-	protected void updateTextExtent(GC gc) {
-		if (getFont() != null)
-			gc.setFont(getFont());
-		if (text == null)
-			textWidth = textHeight = 0;
-		else {
-			Point size = gc.textExtent(text);
-			textWidth = size.x;
-			textHeight = size.y;
-		}
-	}
+    protected void updateTextExtent(GC gc) {
+        if (getFont() != null)
+            gc.setFont(getFont());
+        if (text == null)
+            textWidth = textHeight = 0;
+        else {
+            Point size = gc.textExtent(text);
+            textWidth = size.x;
+            textHeight = size.y;
+        }
+    }
 
-	public Point computeSize(int wHint, int hHint, boolean changed) {
-		checkWidget();
-		if (textWidth == -1) {
-			GC gc = new GC(this);
-			updateTextExtent(gc);
-			gc.dispose();
-		}
+    public Point computeSize(int wHint, int hHint, boolean changed) {
+        checkWidget();
+        if (textWidth == -1) {
+            GC gc = new GC(this);
+            updateTextExtent(gc);
+            gc.dispose();
+        }
 
-		int border = getBorderWidth();
-		int width = wHint, height = hHint;
-		if (width == SWT.DEFAULT)
-			width = border * 2 + BORDER * 3 + (image==null ? 0 : image.getBounds().width) + textWidth;
-		if (height == SWT.DEFAULT)
-			height = border * 2 + BORDER * 2 + Math.max(image==null ? 0 : image.getBounds().height, textHeight);
-		return new Point(width, height);
-	}
+        int border = getBorderWidth();
+        int width = wHint, height = hHint;
+        if (width == SWT.DEFAULT)
+            width = border * 2 + BORDER * 3 + (image==null ? 0 : image.getBounds().width) + textWidth;
+        if (height == SWT.DEFAULT)
+            height = border * 2 + BORDER * 2 + Math.max(image==null ? 0 : image.getBounds().height, textHeight);
+        return new Point(width, height);
+    }
 
-	public Image getImage() {
-		checkWidget();
-		return image;
-	}
+    public Image getImage() {
+        checkWidget();
+        return image;
+    }
 
-	public String getText() {
-		checkWidget();
-		return text;
-	}
+    public String getText() {
+        checkWidget();
+        return text;
+    }
 
-	public void setImage(Image image) {
-		checkWidget();
-		if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		this.image = image;
-	}
+    public void setImage(Image image) {
+        checkWidget();
+        if (image != null && image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+        this.image = image;
+    }
 
-	public void setText(String string) {
-		checkWidget();
-		text = string;
-		textWidth = textHeight = -1;
-	}
+    public void setText(String string) {
+        checkWidget();
+        text = string;
+        textWidth = textHeight = -1;
+    }
 
-	@Override
-	public void setFont(Font font) {
-		super.setFont(font);
-		textWidth = textHeight = -1;
-	}
+    @Override
+    public void setFont(Font font) {
+        super.setFont(font);
+        textWidth = textHeight = -1;
+    }
 
-	public void addSelectionListener(SelectionListener listener) {
-		checkWidget();
-		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (!selectionListeners.contains(listener))
-			selectionListeners.add(listener);
-	}
+    public void addSelectionListener(SelectionListener listener) {
+        checkWidget();
+        if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        if (!selectionListeners.contains(listener))
+            selectionListeners.add(listener);
+    }
 
-	public void removeSelectionListener(SelectionListener listener) {
-		checkWidget();
-		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		selectionListeners.remove(listener);
-	}
+    public void removeSelectionListener(SelectionListener listener) {
+        checkWidget();
+        if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+        selectionListeners.remove(listener);
+    }
 
-	@Override
-	public String toString() {
-	    return getClass().getSimpleName() + " {" + getText() + "}";
-	}
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " {" + getText() + "}";
+    }
 }

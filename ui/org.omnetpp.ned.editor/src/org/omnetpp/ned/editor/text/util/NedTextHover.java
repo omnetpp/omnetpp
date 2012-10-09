@@ -32,59 +32,59 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  * @author rhornig, andras
  */
 public class NedTextHover implements ITextHover, ITextHoverExtension, IInformationProviderExtension2 {
-	private IEditorPart editor = null;
+    private IEditorPart editor = null;
 
-	public NedTextHover(IEditorPart editor) {
-		this.editor = editor;
-	}
+    public NedTextHover(IEditorPart editor) {
+        this.editor = editor;
+    }
 
-	public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
-	    Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, hoverRegion);
-	    if (info == null)
-	        return null;
+    public String getHoverInfo(ITextViewer textViewer, IRegion hoverRegion) {
+        Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, hoverRegion);
+        if (info == null)
+            return null;
 
-		if (info.referredElement instanceof INedTypeElement)
-		    return getHoverTextFor(((INedTypeElement)info.referredElement).getNedTypeInfo());
+        if (info.referredElement instanceof INedTypeElement)
+            return getHoverTextFor(((INedTypeElement)info.referredElement).getNedTypeInfo());
 
-		return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNedSource() + "</pre>"); //FIXME refine!!! ie docu, etc
-	}
+        return HoverSupport.addHTMLStyleSheet("<pre>" + info.referredElement.getNedSource() + "</pre>"); //FIXME refine!!! ie docu, etc
+    }
 
-	protected static String getHoverTextFor(INedTypeInfo typeInfo) {
-		String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
+    protected static String getHoverTextFor(INedTypeInfo typeInfo) {
+        String text = "<b>" + typeInfo.getFullyQualifiedName() +  "</b><br/>\n";
 
-		String comment = typeInfo.getNedElement().getComment();
-		if (StringUtils.isNotEmpty(comment)) {
-	        boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
-			text += "<br/>" + NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
-		}
+        String comment = typeInfo.getNedElement().getComment();
+        if (StringUtils.isNotEmpty(comment)) {
+            boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
+            text += "<br/>" + NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
+        }
 
-		return HoverSupport.addHTMLStyleSheet(text);
-	}
+        return HoverSupport.addHTMLStyleSheet(text);
+    }
 
-	public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
-		Point selection= textViewer.getSelectedRange();
-		if (selection.x <= offset && offset < selection.x + selection.y)
-			return new Region(selection.x, selection.y);
-		Region region = new Region(offset, 0);
+    public IRegion getHoverRegion(ITextViewer textViewer, int offset) {
+        Point selection= textViewer.getSelectedRange();
+        if (selection.x <= offset && offset < selection.x + selection.y)
+            return new Region(selection.x, selection.y);
+        Region region = new Region(offset, 0);
         Info info = NedTextUtils.getNedReferenceFromSource((ITextEditor)editor, textViewer, region);
 
         if (info != null)
             return info.regionToHighlight;
         else
             return region;
-	}
+    }
 
-	/*
-	 * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
-	 */
-	public IInformationControlCreator getHoverControlCreator() {
-		return HoverSupport.getHoverControlCreator();
-	}
+    /*
+     * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
+     */
+    public IInformationControlCreator getHoverControlCreator() {
+        return HoverSupport.getHoverControlCreator();
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
-	 */
-	public IInformationControlCreator getInformationPresenterControlCreator() {
-		return HoverSupport.getInformationPresenterControlCreator();
-	}
+    /* (non-Javadoc)
+     * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
+     */
+    public IInformationControlCreator getInformationPresenterControlCreator() {
+        return HoverSupport.getInformationPresenterControlCreator();
+    }
 }

@@ -38,90 +38,90 @@ import org.omnetpp.inifile.editor.text.actions.ToggleCommentAction;
  */
 public class InifileEditorContributor extends MultiPageEditorActionBarContributor {
     TextEditorActionContributor textEdContributor = new TextEditorActionContributor();
-	private IAction addInifileKeysAction;
-	private RetargetAction undoAction;
-	private RetargetAction redoAction;
+    private IAction addInifileKeysAction;
+    private RetargetAction undoAction;
+    private RetargetAction redoAction;
     private RetargetTextEditorAction fContentAssistProposal;
     private RetargetTextEditorAction fToggleCommentAction;
-	//private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID);
-	//private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID);
+    //private IAction showModuleParametersView = new ShowViewAction(IConstants.MODULEPARAMETERS_VIEW_ID);
+    //private IAction showModuleHierarchyView = new ShowViewAction(IConstants.MODULEHIERARCHY_VIEW_ID);
 
-	/**
-	 * Creates a multi-page contributor.
-	 */
-	public InifileEditorContributor() {
-		super();
+    /**
+     * Creates a multi-page contributor.
+     */
+    public InifileEditorContributor() {
+        super();
         fContentAssistProposal= new RetargetTextEditorAction(InifileEditorMessages.getResourceBundle(), "ContentAssistProposal."); //$NON-NLS-1$
         fContentAssistProposal.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         fToggleCommentAction = createRetargetAction(ToggleCommentAction.ID);
         addInifileKeysAction =  new AddInifileKeysAction();
-	}
+    }
 
-	@Override
-	public void init(IActionBars bars, IWorkbenchPage page) {
-	    super.init(bars, page);
-	    textEdContributor.init(bars, page);
-	    // start with disabled actions
-	    textEdContributor.setActiveEditor(null);
-	}
+    @Override
+    public void init(IActionBars bars, IWorkbenchPage page) {
+        super.init(bars, page);
+        textEdContributor.init(bars, page);
+        // start with disabled actions
+        textEdContributor.setActiveEditor(null);
+    }
 
     /* (non-JavaDoc)
-	 * Method declared in AbstractMultiPageEditorActionBarContributor.
-	 */
-	@Override
-	public void setActivePage(IEditorPart part) {
+     * Method declared in AbstractMultiPageEditorActionBarContributor.
+     */
+    @Override
+    public void setActivePage(IEditorPart part) {
 
-		// the rest of actions are enabled only if the active editor is a text editor
-		ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
-		textEdContributor.setActiveEditor(part);
+        // the rest of actions are enabled only if the active editor is a text editor
+        ITextEditor textEditor = (part instanceof ITextEditor) ? (ITextEditor) part : null;
+        textEdContributor.setActiveEditor(part);
 
-		// the UNDO/REDO is always redirected to the text editor
-		IEditorPart multipageEditor = getPage().getActiveEditor();
-		if (multipageEditor != null && multipageEditor instanceof InifileEditor) {
-		    setTextEditorGlobalActionHandler(ActionFactory.UNDO.getId(), ((InifileEditor)multipageEditor).getTextEditor());
-		    setTextEditorGlobalActionHandler(ActionFactory.REDO.getId(), ((InifileEditor)multipageEditor).getTextEditor());
-		}
+        // the UNDO/REDO is always redirected to the text editor
+        IEditorPart multipageEditor = getPage().getActiveEditor();
+        if (multipageEditor != null && multipageEditor instanceof InifileEditor) {
+            setTextEditorGlobalActionHandler(ActionFactory.UNDO.getId(), ((InifileEditor)multipageEditor).getTextEditor());
+            setTextEditorGlobalActionHandler(ActionFactory.REDO.getId(), ((InifileEditor)multipageEditor).getTextEditor());
+        }
 
         fContentAssistProposal.setAction(getAction(textEditor, ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS));
         fToggleCommentAction.setAction(getAction(textEditor, ToggleCommentAction.ID));
-		getActionBars().updateActionBars();
-	}
+        getActionBars().updateActionBars();
+    }
 
 
-	@Override
-	public void contributeToMenu(IMenuManager menuManager) {
-	    super.contributeToMenu(menuManager);
-	    MenuManager sourceMenu = new MenuManager("Source");
-	    sourceMenu.add(fToggleCommentAction);
-	    sourceMenu.add(new Separator());
-	    sourceMenu.add(fContentAssistProposal);
-	    sourceMenu.add(new Separator());
-	    sourceMenu.add(addInifileKeysAction);
-	    menuManager.insertAfter(IWorkbenchActionConstants.M_EDIT, sourceMenu);
-	}
+    @Override
+    public void contributeToMenu(IMenuManager menuManager) {
+        super.contributeToMenu(menuManager);
+        MenuManager sourceMenu = new MenuManager("Source");
+        sourceMenu.add(fToggleCommentAction);
+        sourceMenu.add(new Separator());
+        sourceMenu.add(fContentAssistProposal);
+        sourceMenu.add(new Separator());
+        sourceMenu.add(addInifileKeysAction);
+        menuManager.insertAfter(IWorkbenchActionConstants.M_EDIT, sourceMenu);
+    }
 
-	@Override
-	public void contributeToToolBar(IToolBarManager manager) {
-		manager.add(new Separator());
+    @Override
+    public void contributeToToolBar(IToolBarManager manager) {
+        manager.add(new Separator());
 
-		// FIXME maybe we could use the default Undo/redo
-		undoAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
-		redoAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
+        // FIXME maybe we could use the default Undo/redo
+        undoAction = new RetargetAction(ActionFactory.UNDO.getId(), "Undo");
+        redoAction = new RetargetAction(ActionFactory.REDO.getId(), "Redo");
 
-		ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-    	undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
-    	undoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
-    	redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
-    	redoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO_DISABLED));
+        ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
+        undoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO));
+        undoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_DISABLED));
+        redoAction.setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+        redoAction.setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_REDO_DISABLED));
 
-    	manager.add(undoAction);
-    	manager.add(redoAction);
+        manager.add(undoAction);
+        manager.add(redoAction);
 
-    	getPage().addPartListener(undoAction);
-    	getPage().addPartListener(redoAction);
+        getPage().addPartListener(undoAction);
+        getPage().addPartListener(redoAction);
 
-		manager.add(addInifileKeysAction);
-	}
+        manager.add(addInifileKeysAction);
+    }
 
     @Override
     public void dispose() {

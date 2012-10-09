@@ -27,9 +27,9 @@ import org.omnetpp.ned.model.pojo.NedElementTags;
 public class ModelFactory implements CreationFactory {
     protected int tagCode;
     protected String name;
-	protected String type;
-	protected boolean useLike = false;
-	protected String bannerComment;
+    protected String type;
+    protected boolean useLike = false;
+    protected String bannerComment;
 
     /**
      * @param objectType The class identifier of the INedElement passed NedElementFactoryEx.getInstance().createElement
@@ -55,42 +55,42 @@ public class ModelFactory implements CreationFactory {
     }
 
     /**
-	 * @param objectType The class identifier of the INedElement
-	 * @param name The optional name of the new element
-	 * @param type The optional type of the new element (for submodules and connections)
-	 * @param useLike The provided type will be used as an interface type t
-	 */
-	public ModelFactory(int tagCode, String name, String type, boolean useLike) {
+     * @param objectType The class identifier of the INedElement
+     * @param name The optional name of the new element
+     * @param type The optional type of the new element (for submodules and connections)
+     * @param useLike The provided type will be used as an interface type t
+     */
+    public ModelFactory(int tagCode, String name, String type, boolean useLike) {
         this.tagCode = tagCode;
         this.name = name;
-		this.type = type;
-		this.useLike = useLike;
-	}
+        this.type = type;
+        this.useLike = useLike;
+    }
 
-	/**
-	 * Set the banner commend added to the element. Set it to "" or null to avoid comment creation.
-	 */
-	void setBannerComment(String comment) {
-		bannerComment = comment;
-	}
-	
-	public Object getNewObject() {
-	    INedTypeResolver resolver = NedResourcesPlugin.getNedResources();
-		INedElement element = NedElementFactoryEx.getInstance().createElement(resolver, tagCode);
+    /**
+     * Set the banner commend added to the element. Set it to "" or null to avoid comment creation.
+     */
+    void setBannerComment(String comment) {
+        bannerComment = comment;
+    }
 
-		if (!StringUtils.isEmpty(bannerComment)) {
-			// add trailing empty lines
-			CommentElement ceTrail = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT);
-			ceTrail.setLocid("trailing");
-			ceTrail.setContent("\n\n");
-			element.insertChildBefore(element.getFirstChild(), ceTrail);
-			CommentElement ce = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT);
-			ce.setLocid("banner");
-			ce.setContent(bannerComment);
-			element.insertChildBefore(ceTrail, ce);
-		}
-		
-		if (element instanceof IHasName)
+    public Object getNewObject() {
+        INedTypeResolver resolver = NedResourcesPlugin.getNedResources();
+        INedElement element = NedElementFactoryEx.getInstance().createElement(resolver, tagCode);
+
+        if (!StringUtils.isEmpty(bannerComment)) {
+            // add trailing empty lines
+            CommentElement ceTrail = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT);
+            ceTrail.setLocid("trailing");
+            ceTrail.setContent("\n\n");
+            element.insertChildBefore(element.getFirstChild(), ceTrail);
+            CommentElement ce = (CommentElement)NedElementFactoryEx.getInstance().createElement(NedElementTags.NED_COMMENT);
+            ce.setLocid("banner");
+            ce.setContent(bannerComment);
+            element.insertChildBefore(ceTrail, ce);
+        }
+
+        if (element instanceof IHasName)
             ((IHasName)element).setName(name);
 
         if (element instanceof ISubmoduleOrConnection) {
@@ -104,11 +104,11 @@ public class ModelFactory implements CreationFactory {
         }
 
         return element;
-	}
-	
-	public Object getObjectType() {
-		return tagCode;
-	}
+    }
+
+    public Object getObjectType() {
+        return tagCode;
+    }
 
 }
 

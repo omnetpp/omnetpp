@@ -20,90 +20,90 @@ import org.osgi.framework.BundleContext;
  */
 public class SequenceChartPlugin extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static String PLUGIN_ID;
+    // The plug-in ID
+    public static String PLUGIN_ID;
 
-	// The shared instance
-	private static SequenceChartPlugin plugin;
+    // The shared instance
+    private static SequenceChartPlugin plugin;
 
-	/**
-	 * The constructor
-	 */
-	public SequenceChartPlugin() {
-		plugin = this;
-	}
+    /**
+     * The constructor
+     */
+    public SequenceChartPlugin() {
+        plugin = this;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	@Override
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    @Override
     public void start(BundleContext context) throws Exception {
-		super.start(context);
+        super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-	}
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	@Override
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    @Override
     public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
-	}
+        plugin = null;
+        super.stop(context);
+    }
 
-	/**
-	 * Logs an exception into the platform log file.
-	 */
-	public void logException(Throwable ex) {
-		getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));
-	}
+    /**
+     * Logs an exception into the platform log file.
+     */
+    public void logException(Throwable ex) {
+        getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, IStatus.OK, "An exception occurred", ex));
+    }
 
-	/**
-	 * Returns the shared instance
-	 *
-	 * @return the shared instance
-	 */
-	public static SequenceChartPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance
+     *
+     * @return the shared instance
+     */
+    public static SequenceChartPlugin getDefault() {
+        return plugin;
+    }
 
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
+    /**
+     * Returns an image descriptor for the image file at the given
+     * plug-in relative path.
+     */
+    public static ImageDescriptor getImageDescriptor(String path) {
+        return imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
 
-	/**
-	 * Creates an image. IMPORTANT: The image is NOT cached! Callers
-	 * are responsible for disposal of the image.
-	 */
-	public static Image getImage(String path) {
-		ImageDescriptor id = getImageDescriptor(path);
-		if (id == null) {
-			IllegalArgumentException e = new IllegalArgumentException("Cannot load image from: "+path);
-			logError(e);
-			throw e;
-		}
-		return id.createImage();
-	}
+    /**
+     * Creates an image. IMPORTANT: The image is NOT cached! Callers
+     * are responsible for disposal of the image.
+     */
+    public static Image getImage(String path) {
+        ImageDescriptor id = getImageDescriptor(path);
+        if (id == null) {
+            IllegalArgumentException e = new IllegalArgumentException("Cannot load image from: "+path);
+            logError(e);
+            throw e;
+        }
+        return id.createImage();
+    }
 
-	/**
-	 * Like getImage(), but the image gets cached in an internal image registry,
-	 * so clients do not need to (moreover, must not) dispose of the image.
-	 */
-	public static Image getCachedImage(String path) {
-		ImageRegistry imageRegistry = getDefault().getImageRegistry();
-		Image image = imageRegistry.get(path);
-		if (image==null) {
-			image = getImage(path);
-			imageRegistry.put(path, image);
-		}
-		return image;
-	}
+    /**
+     * Like getImage(), but the image gets cached in an internal image registry,
+     * so clients do not need to (moreover, must not) dispose of the image.
+     */
+    public static Image getCachedImage(String path) {
+        ImageRegistry imageRegistry = getDefault().getImageRegistry();
+        Image image = imageRegistry.get(path);
+        if (image==null) {
+            image = getImage(path);
+            imageRegistry.put(path, image);
+        }
+        return image;
+    }
 
     public static void logError(Throwable exception) {
         logError(exception.toString(), exception);

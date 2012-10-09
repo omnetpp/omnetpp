@@ -18,39 +18,39 @@ import org.omnetpp.scave.model.Chart;
  * @author tomi
  */
 public class ChartLine {
-	// the chart containing the line
-	private Chart chart;
-	// the series of the line within the chart's dataset
-	private int series;
-	// the key of the line within the chart
-	private String key;
-	// the reference to the result item that the line represents
-	private ResultItemRef itemRef;
+    // the chart containing the line
+    private Chart chart;
+    // the series of the line within the chart's dataset
+    private int series;
+    // the key of the line within the chart
+    private String key;
+    // the reference to the result item that the line represents
+    private ResultItemRef itemRef;
 
-	public ChartLine(Chart chart, int series, String key, long id, ResultFileManager manager) {
-		this.chart = chart;
-		this.series = series;
-		this.key = key;
-		this.itemRef = id != -1L && manager != null ? new ResultItemRef(id, manager) : null;
-	}
+    public ChartLine(Chart chart, int series, String key, long id, ResultFileManager manager) {
+        this.chart = chart;
+        this.series = series;
+        this.key = key;
+        this.itemRef = id != -1L && manager != null ? new ResultItemRef(id, manager) : null;
+    }
 
-	public Chart getChart() {
-		return chart;
-	}
+    public Chart getChart() {
+        return chart;
+    }
 
-	public int getSeries() {
-		return series;
-	}
+    public int getSeries() {
+        return series;
+    }
 
-	public String getKey() {
-		return key;
-	}
+    public String getKey() {
+        return key;
+    }
 
-	public ResultItemRef getResultItemRef() {
-		return itemRef;
-	}
+    public ResultItemRef getResultItemRef() {
+        return itemRef;
+    }
 
-	public String toString() {
-		return "Line \""+key+"\"";
-	}
+    public String toString() {
+        return "Line \""+key+"\"";
+    }
 }

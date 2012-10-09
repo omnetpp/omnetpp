@@ -22,37 +22,37 @@ import org.omnetpp.scave.model.Dataset;
  * Opens the selected datasets/charts/chart sheets in the editor.
  */
 public class OpenAction extends AbstractScaveAction {
-	public OpenAction() {
-		setText("Open");
-		setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_OPEN));
-		setToolTipText("Open item in a separate page");
-	}
+    public OpenAction() {
+        setText("Open");
+        setImageDescriptor(ImageFactory.getDescriptor(TOOLBAR_IMAGE_OPEN));
+        setToolTipText("Open item in a separate page");
+    }
 
-	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		for (Object element : selection.toArray()) {
-			Object object = AdapterFactoryEditingDomain.unwrap(element);
-			if (object instanceof Dataset) {
-				Dataset dataset = (Dataset)object;
-				scaveEditor.openDataset(dataset);
-			}
-			else if (object instanceof ChartSheet) {
-				ChartSheet chartsheet = (ChartSheet)object;
-				scaveEditor.openChartSheet(chartsheet);
-			}
-			else if (object instanceof Chart) {
-				Chart chart = (Chart)object;
-				scaveEditor.openChart(chart);
-			}
-		}
-	}
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+        for (Object element : selection.toArray()) {
+            Object object = AdapterFactoryEditingDomain.unwrap(element);
+            if (object instanceof Dataset) {
+                Dataset dataset = (Dataset)object;
+                scaveEditor.openDataset(dataset);
+            }
+            else if (object instanceof ChartSheet) {
+                ChartSheet chartsheet = (ChartSheet)object;
+                scaveEditor.openChartSheet(chartsheet);
+            }
+            else if (object instanceof Chart) {
+                Chart chart = (Chart)object;
+                scaveEditor.openChart(chart);
+            }
+        }
+    }
 
-	@Override
-	public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		for (Object element : selection.toArray())
-			if (element instanceof Dataset || element instanceof ChartSheet ||
-				element instanceof Chart || element instanceof IWrapperItemProvider)
-				return true;
-		return false;
-	}
+    @Override
+    public boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        for (Object element : selection.toArray())
+            if (element instanceof Dataset || element instanceof ChartSheet ||
+                element instanceof Chart || element instanceof IWrapperItemProvider)
+                return true;
+        return false;
+    }
 }

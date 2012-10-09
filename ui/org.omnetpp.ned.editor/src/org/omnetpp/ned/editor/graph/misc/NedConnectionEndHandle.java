@@ -30,8 +30,8 @@ public final class NedConnectionEndHandle extends ConnectionHandle
      * @param owner the ConnectionEditPart owner
      */
     public NedConnectionEndHandle(ConnectionEditPart owner) {
-    	setOwner(owner);
-    	setLocator(new ConnectionLocator(getConnection(), ConnectionLocator.TARGET));
+        setOwner(owner);
+        setLocator(new ConnectionLocator(getConnection(), ConnectionLocator.TARGET));
     }
 
     /**
@@ -41,9 +41,9 @@ public final class NedConnectionEndHandle extends ConnectionHandle
      * @param fixed if true, handle cannot be dragged
      */
     public NedConnectionEndHandle(ConnectionEditPart owner, boolean fixed) {
-    	super(fixed);
-    	setOwner(owner);
-    	setLocator(new ConnectionLocator(getConnection(), ConnectionLocator.TARGET));
+        super(fixed);
+        setOwner(owner);
+        setLocator(new ConnectionLocator(getConnection(), ConnectionLocator.TARGET));
     }
 
     /**
@@ -55,14 +55,14 @@ public final class NedConnectionEndHandle extends ConnectionHandle
      * Creates and returns a new {@link ConnectionEndpointTracker}.
      */
     @Override
-	protected DragTracker createDragTracker() {
-    	if (isFixed())
-    		return null;
-    	ConnectionEndpointTracker tracker;
-    	tracker = new NedConnectionEndpointTracker((ConnectionEditPart)getOwner());
-    	tracker.setCommandName(RequestConstants.REQ_RECONNECT_TARGET);
-    	tracker.setDefaultCursor(getCursor());
-    	return tracker;
+    protected DragTracker createDragTracker() {
+        if (isFixed())
+            return null;
+        ConnectionEndpointTracker tracker;
+        tracker = new NedConnectionEndpointTracker((ConnectionEditPart)getOwner());
+        tracker.setCommandName(RequestConstants.REQ_RECONNECT_TARGET);
+        tracker.setDefaultCursor(getCursor());
+        return tracker;
     }
 
 }

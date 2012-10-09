@@ -29,65 +29,65 @@ import org.omnetpp.scave.plugin.ScavePlugin;
  */
 public class UntitledTextFileWizard extends Wizard implements INewWizard {
 
-	private IWorkbenchWindow fWindow;
+    private IWorkbenchWindow fWindow;
 
-	public UntitledTextFileWizard() {
-	}
+    public UntitledTextFileWizard() {
+    }
 
-	/*
-	 * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
-	 */
-	public void dispose() {
-		fWindow= null;
-	}
+    /*
+     * @see org.eclipse.ui.IWorkbenchWindowActionDelegate#dispose()
+     */
+    public void dispose() {
+        fWindow= null;
+    }
 
-	private File queryFile() {
-		IPath stateLocation= ScavePlugin.getDefault().getStateLocation();
-		IPath path= stateLocation.append("/_" + new Object().hashCode()+".sdataset"); //$NON-NLS-1$ //$NON-NLS-2$
-		return new File(path.toOSString());
-	}
+    private File queryFile() {
+        IPath stateLocation= ScavePlugin.getDefault().getStateLocation();
+        IPath path= stateLocation.append("/_" + new Object().hashCode()+".sdataset"); //$NON-NLS-1$ //$NON-NLS-2$
+        return new File(path.toOSString());
+    }
 
-	private String getEditorId(File file) {
-		IWorkbench workbench= fWindow.getWorkbench();
-		IEditorRegistry editorRegistry= workbench.getEditorRegistry();
-		IEditorDescriptor descriptor= editorRegistry.getDefaultEditor(file.getName());
-		if (descriptor != null)
-			return descriptor.getId();
-		return EditorsUI.DEFAULT_TEXT_EDITOR_ID;
-	}
+    private String getEditorId(File file) {
+        IWorkbench workbench= fWindow.getWorkbench();
+        IEditorRegistry editorRegistry= workbench.getEditorRegistry();
+        IEditorDescriptor descriptor= editorRegistry.getDefaultEditor(file.getName());
+        if (descriptor != null)
+            return descriptor.getId();
+        return EditorsUI.DEFAULT_TEXT_EDITOR_ID;
+    }
 
-//	private IEditorInput createEditorInput(File file) {
-//		return new NonExistingFileEditorInput(file, "UnTiTlEd");
-//	}
+//  private IEditorInput createEditorInput(File file) {
+//      return new NonExistingFileEditorInput(file, "UnTiTlEd");
+//  }
 
-	/*
-	 * @see org.eclipse.jface.wizard.Wizard#performFinish()
-	 */
-	public boolean performFinish() {
-//		File file= queryFile();
-//		System.out.println("File: "+file.getAbsolutePath());
-//		IEditorInput input = createEditorInput(file);
-//		System.out.println("Input: "+input.getName()+ ", "+input.getToolTipText());
-//		String editorId = getEditorId(file);
-//		IWorkbenchPage page = fWindow.getActivePage();
-//		try {
-//			page.openEditor(input, editorId);
-//		} catch (PartInitException e) {
-//			e.printStackTrace();  // TODO like this: EditorsPlugin.log(e);
-//			return false;
-//		}
-		return true;
-	}
+    /*
+     * @see org.eclipse.jface.wizard.Wizard#performFinish()
+     */
+    public boolean performFinish() {
+//      File file= queryFile();
+//      System.out.println("File: "+file.getAbsolutePath());
+//      IEditorInput input = createEditorInput(file);
+//      System.out.println("Input: "+input.getName()+ ", "+input.getToolTipText());
+//      String editorId = getEditorId(file);
+//      IWorkbenchPage page = fWindow.getActivePage();
+//      try {
+//          page.openEditor(input, editorId);
+//      } catch (PartInitException e) {
+//          e.printStackTrace();  // TODO like this: EditorsPlugin.log(e);
+//          return false;
+//      }
+        return true;
+    }
 
-	/*
-	 * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
-	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// FIXME ***HERE*** is the selection!!!!
-		System.out.println("SELECTION IS: ("+
-				selection.getFirstElement().getClass().getCanonicalName()+") "
-				+selection.getFirstElement().toString());
-		// --> IFile (should be!)
-		fWindow= workbench.getActiveWorkbenchWindow();
-	}
+    /*
+     * @see org.eclipse.ui.IWorkbenchWizard#init(org.eclipse.ui.IWorkbench, org.eclipse.jface.viewers.IStructuredSelection)
+     */
+    public void init(IWorkbench workbench, IStructuredSelection selection) {
+        // FIXME ***HERE*** is the selection!!!!
+        System.out.println("SELECTION IS: ("+
+                selection.getFirstElement().getClass().getCanonicalName()+") "
+                +selection.getFirstElement().toString());
+        // --> IFile (should be!)
+        fWindow= workbench.getActiveWorkbenchWindow();
+    }
 }

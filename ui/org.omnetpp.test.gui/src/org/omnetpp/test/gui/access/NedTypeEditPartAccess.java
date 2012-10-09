@@ -14,11 +14,11 @@ import com.simulcraft.test.gui.access.EditPartAccess;
 
 public class NedTypeEditPartAccess extends EditPartAccess
 {
-	public NedTypeEditPartAccess(NedTypeEditPart nedTypeEditPart) {
-		super(nedTypeEditPart);
-	}
+    public NedTypeEditPartAccess(NedTypeEditPart nedTypeEditPart) {
+        super(nedTypeEditPart);
+    }
 
-	public NedTypeEditPart getNedTypeEditPart() {
-		return (NedTypeEditPart)editPart;
-	}
+    public NedTypeEditPart getNedTypeEditPart() {
+        return (NedTypeEditPart)editPart;
+    }
 }

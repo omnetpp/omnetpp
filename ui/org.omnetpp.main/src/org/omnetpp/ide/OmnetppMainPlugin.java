@@ -27,28 +27,28 @@ import org.osgi.framework.BundleContext;
  */
 public class OmnetppMainPlugin extends AbstractUIPlugin {
 
-	// The plug-in ID
-	public static String PLUGIN_ID;
+    // The plug-in ID
+    public static String PLUGIN_ID;
 
-	// The shared instance
-	private static OmnetppMainPlugin plugin;
+    // The shared instance
+    private static OmnetppMainPlugin plugin;
 
-	protected OmnetppDynamicPluginLoader omnetppDynamicPluginLoader;
-	protected OmnetppProjectOpenListener omnetppProjectOpenListener;
+    protected OmnetppDynamicPluginLoader omnetppDynamicPluginLoader;
+    protected OmnetppProjectOpenListener omnetppProjectOpenListener;
 
-	/**
-	 * The constructor
-	 */
-	public OmnetppMainPlugin() {
-		plugin = this;
-	}
+    /**
+     * The constructor
+     */
+    public OmnetppMainPlugin() {
+        plugin = this;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+     */
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
         getLog().log(new Status(IStatus.INFO, PLUGIN_ID, IStatus.OK, "OMNeT++ IDE "+getVersion()+" started.", null));
 
@@ -60,39 +60,39 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         Assert.isTrue(omnetppProjectOpenListener == null);
         omnetppProjectOpenListener = new OmnetppProjectOpenListener();
         ResourcesPlugin.getWorkspace().addResourceChangeListener(omnetppProjectOpenListener);
-	}
+    }
 
     public static String getVersion() {
         return (String)getDefault().getBundle().getHeaders().get("Bundle-Version");
     }
 
     /*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
-	 */
-	public void stop(BundleContext context) throws Exception {
-		plugin = null;
-		super.stop(context);
+     * (non-Javadoc)
+     * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+     */
+    public void stop(BundleContext context) throws Exception {
+        plugin = null;
+        super.stop(context);
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(omnetppDynamicPluginLoader);
-	}
+    }
 
     /**
-	 * Returns the shared instance
-	 */
-	public static OmnetppMainPlugin getDefault() {
-		return plugin;
-	}
+     * Returns the shared instance
+     */
+    public static OmnetppMainPlugin getDefault() {
+        return plugin;
+    }
 
-	public static void logError(Throwable exception) {
+    public static void logError(Throwable exception) {
         if (plugin != null) {
-        	plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, exception.toString(), exception));
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, exception.toString(), exception));
         }
         else {
             exception.printStackTrace();
         }
-	}
+    }
 
-	public static void logError(String message, Throwable exception) {
+    public static void logError(String message, Throwable exception) {
         if (plugin != null) {
             plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
         }
@@ -102,45 +102,45 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
         }
     }
 
-	/**
-	 * The main directory (where Makefile.inc or configuser.vc resides). Returns empty string if
-	 * omnetpp location cannot be determined.
-	 */
-	public static String getOmnetppRootDir() {
-		return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_ROOT);
-	}
-
-	/**
-	 * Returns the omnetpp bin directory, or empty string "" if the omnetpp root dir is not defined.
-	 */
-	public static String getOmnetppBinDir() {
-		// FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-		String oppRoot = getOmnetppRootDir();
-		if (StringUtils.isBlank(oppRoot))
-			return "";
-    	return new Path(oppRoot).append("bin").toOSString();
+    /**
+     * The main directory (where Makefile.inc or configuser.vc resides). Returns empty string if
+     * omnetpp location cannot be determined.
+     */
+    public static String getOmnetppRootDir() {
+        return CommonPlugin.getConfigurationPreferenceStore().getString(IConstants.PREF_OMNETPP_ROOT);
     }
 
-	/**
-	 * Returns the omnetpp include directory, or empty string "" if the omnetpp root dir is not defined.
-	 */
-	public static String getOmnetppInclDir() {
+    /**
+     * Returns the omnetpp bin directory, or empty string "" if the omnetpp root dir is not defined.
+     */
+    public static String getOmnetppBinDir() {
         // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-		String oppRoot = getOmnetppRootDir();
-		if (StringUtils.isBlank(oppRoot))
-			return "";
-    	return new Path(oppRoot).append("include").toOSString();
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("bin").toOSString();
     }
 
-	/**
-	 * @return The omnetpp lib directory, or empty string "" if omnetpp root dir is not defined.
-	 */
-	public static String getOmnetppLibDir() {
+    /**
+     * Returns the omnetpp include directory, or empty string "" if the omnetpp root dir is not defined.
+     */
+    public static String getOmnetppInclDir() {
         // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
-		String oppRoot = getOmnetppRootDir();
-		if (StringUtils.isBlank(oppRoot))
-			return "";
-    	return new Path(oppRoot).append("lib").toOSString();
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("include").toOSString();
+    }
+
+    /**
+     * @return The omnetpp lib directory, or empty string "" if omnetpp root dir is not defined.
+     */
+    public static String getOmnetppLibDir() {
+        // FIXME in fact we have to look into the Makefile.inc or configuser.vc files in the root and get the directory from there
+        String oppRoot = getOmnetppRootDir();
+        if (StringUtils.isBlank(oppRoot))
+            return "";
+        return new Path(oppRoot).append("lib").toOSString();
     }
 
     /**
@@ -167,22 +167,22 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
             return "";
         return new Path(oppRoot).append("mingw").append("bin").toOSString();
     }
-    
+
     /**
      * Detects whether oppsim library (built by GCC) is present in the
-     * lib directory.  
+     * lib directory.
      */
     public static boolean isOppsimGccLibraryPresent(boolean debug) {
         String libFileName = getOmnetppLibDir() + "/gcc/liboppsim" + (debug ? "d" : "");
         String extension1, extension2;
         if (Platform.getOS().equals(Platform.OS_WIN32)) {
-            // on windows we do not test for dynamic libs (as they are in the bin directory) 
+            // on windows we do not test for dynamic libs (as they are in the bin directory)
             extension1 = ".a";
             extension2 = ".lib";
-        } else if (Platform.getOS().equals(Platform.OS_MACOSX)) {                                                         
-            extension1 = ".dylib";                                                                                        
+        } else if (Platform.getOS().equals(Platform.OS_MACOSX)) {
+            extension1 = ".dylib";
             extension2 = ".a";
-        } else {                                                                                                          
+        } else {
             extension1 = ".so";
             extension2 = ".a";
         }
@@ -194,7 +194,7 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
 
     /**
      * Detects whether oppsim library (dll/lib) (built by Visual C++) is present in the
-     * lib directory.  
+     * lib directory.
      */
     // FIXME should be reviewed once we put all library files under /lib (instead
     // of the current /lib/<toolchain> name.
@@ -203,12 +203,12 @@ public class OmnetppMainPlugin extends AbstractUIPlugin {
                isOppsimVcXXXLibraryPresent("vc100", debug) ||
                isOppsimVcXXXLibraryPresent("vc110", debug);
     }
-    
+
     /**
      * checks if there exist a compiled lib under the lib/<libSubDir>
      */
     private static boolean isOppsimVcXXXLibraryPresent(String libSubDir, boolean debug) {
-        String fileBaseName = getOmnetppLibDir() +"/" + libSubDir + "/oppsim" + (debug ? "d" : ""); 
+        String fileBaseName = getOmnetppLibDir() +"/" + libSubDir + "/oppsim" + (debug ? "d" : "");
         File libFile = new File(fileBaseName+".lib");
         return libFile.exists();
     }

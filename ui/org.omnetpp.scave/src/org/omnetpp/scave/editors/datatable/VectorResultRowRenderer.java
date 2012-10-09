@@ -32,59 +32,59 @@ import org.omnetpp.scave.model2.ResultItemValueFormatter;
  */
 public class VectorResultRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<OutputVectorEntry> {
 
-	private static final int HORIZONTAL_SPACING = 4;
+    private static final int HORIZONTAL_SPACING = 4;
 
-	private static final Color DATA_COLOR = ColorFactory.BLACK;
+    private static final Color DATA_COLOR = ColorFactory.BLACK;
 
-	protected Font font = JFaceResources.getDefaultFont();
+    protected Font font = JFaceResources.getDefaultFont();
 
-	protected Type type;
-	protected EnumType enumType;
-	protected ResultItemValueFormatter valueLabelProvider = new ResultItemValueFormatter();
-	protected int fontHeight;
+    protected Type type;
+    protected EnumType enumType;
+    protected ResultItemValueFormatter valueLabelProvider = new ResultItemValueFormatter();
+    protected int fontHeight;
 
-	public void setInput(Object input) {
-		if (input instanceof ResultItemRef) {
-			valueLabelProvider.setResultItem((ResultItemRef)input);
-		}
-		else {
-			valueLabelProvider.setResultItem((ResultItem)null);
-		}
-	}
+    public void setInput(Object input) {
+        if (input instanceof ResultItemRef) {
+            valueLabelProvider.setResultItem((ResultItemRef)input);
+        }
+        else {
+            valueLabelProvider.setResultItem((ResultItem)null);
+        }
+    }
 
-	public int getRowHeight(GC gc) {
-		if (fontHeight == 0) {
-			Font oldFont = gc.getFont();
-			gc.setFont(font);
-			fontHeight = gc.getFontMetrics().getHeight();
-			gc.setFont(oldFont);
-		}
+    public int getRowHeight(GC gc) {
+        if (fontHeight == 0) {
+            Font oldFont = gc.getFont();
+            gc.setFont(font);
+            fontHeight = gc.getFontMetrics().getHeight();
+            gc.setFont(oldFont);
+        }
 
-		return fontHeight + 3;
-	}
+        return fontHeight + 3;
+    }
 
-	public void drawCell(GC gc, OutputVectorEntry entry, int index) {
-		if (!gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
-			gc.setForeground(DATA_COLOR);
+    public void drawCell(GC gc, OutputVectorEntry entry, int index) {
+        if (!gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
+            gc.setForeground(DATA_COLOR);
 
-		switch (index) {
-			case 0:
-				gc.drawText(String.valueOf(entry.getSerial()), HORIZONTAL_SPACING, 0);
-				break;
-			case 1:
-				BigDecimal time = entry.getSimtime();
-				gc.drawText((time != null ? time.toString() : ""), HORIZONTAL_SPACING, 0);
-				break;
-			case 2:
-				gc.drawText(valueLabelProvider.format(entry.getValue()), HORIZONTAL_SPACING, 0);
-				break;
-			case 3:
-				gc.drawText(String.valueOf(entry.getEventNumber()), HORIZONTAL_SPACING, 0);
-				break;
-		}
-	}
+        switch (index) {
+            case 0:
+                gc.drawText(String.valueOf(entry.getSerial()), HORIZONTAL_SPACING, 0);
+                break;
+            case 1:
+                BigDecimal time = entry.getSimtime();
+                gc.drawText((time != null ? time.toString() : ""), HORIZONTAL_SPACING, 0);
+                break;
+            case 2:
+                gc.drawText(valueLabelProvider.format(entry.getValue()), HORIZONTAL_SPACING, 0);
+                break;
+            case 3:
+                gc.drawText(String.valueOf(entry.getEventNumber()), HORIZONTAL_SPACING, 0);
+                break;
+        }
+    }
 
-	public String getTooltipText(OutputVectorEntry element) {
-		return null;
-	}
+    public String getTooltipText(OutputVectorEntry element) {
+        return null;
+    }
 }

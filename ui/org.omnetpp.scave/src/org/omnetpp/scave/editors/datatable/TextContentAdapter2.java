@@ -16,10 +16,10 @@ import org.eclipse.swt.widgets.Text;
  */
 public class TextContentAdapter2 extends TextContentAdapter implements IControlContentAdapter2 {
 
-	public void replaceControlContents(Control control, int start, int end, String text, int cursorPosition) {
-		Text textControl = (Text)control;
-		textControl.setSelection(start, end);
-		textControl.insert(text);
-		textControl.setSelection(start + cursorPosition, start + cursorPosition);
-	}
+    public void replaceControlContents(Control control, int start, int end, String text, int cursorPosition) {
+        Text textControl = (Text)control;
+        textControl.setSelection(start, end);
+        textControl.insert(text);
+        textControl.setSelection(start + cursorPosition, start + cursorPosition);
+    }
 }

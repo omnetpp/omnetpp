@@ -18,22 +18,22 @@ import com.simulcraft.test.gui.util.WorkbenchUtils;
 
 public class ScaveEditorUtils {
 
-	public static ScaveEditorAccess openAnalysisFile(String project, String analysisFile) {
+    public static ScaveEditorAccess openAnalysisFile(String project, String analysisFile) {
         WorkbenchUtils.findInProjectExplorerView(project+"/"+analysisFile).reveal()
-        	.activateContextMenuWithMouseClick()
-        		.activateMenuItemWithMouse(".*Open With.*")
-        			.activateMenuItemWithMouse(".*Analysis.*");
-		return findScaveEditor(analysisFile);
-	}
+            .activateContextMenuWithMouseClick()
+                .activateMenuItemWithMouse(".*Open With.*")
+                    .activateMenuItemWithMouse(".*Analysis.*");
+        return findScaveEditor(analysisFile);
+    }
 
-	public static ScaveEditorAccess findScaveEditor(String analysisFile) {
-		WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
-		MultiPageEditorPartAccess editor = workbenchWindow.findMultiPageEditorPartByTitle(analysisFile);
-		return editor instanceof ScaveEditorAccess ? (ScaveEditorAccess)editor : null;
-	}
+    public static ScaveEditorAccess findScaveEditor(String analysisFile) {
+        WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
+        MultiPageEditorPartAccess editor = workbenchWindow.findMultiPageEditorPartByTitle(analysisFile);
+        return editor instanceof ScaveEditorAccess ? (ScaveEditorAccess)editor : null;
+    }
 
-	public static DatasetViewAccess ensureDatasetView() {
-		ViewPartAccess viewPart = Access.getWorkbenchWindow().findViewPartByTitle("Dataset.*", true);
-		return new DatasetViewAccess(viewPart.getWorkbenchPart());
-	}
+    public static DatasetViewAccess ensureDatasetView() {
+        ViewPartAccess viewPart = Access.getWorkbenchWindow().findViewPartByTitle("Dataset.*", true);
+        return new DatasetViewAccess(viewPart.getWorkbenchPart());
+    }
 }

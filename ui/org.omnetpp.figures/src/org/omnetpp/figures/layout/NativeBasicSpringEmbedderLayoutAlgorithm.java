@@ -6,7 +6,7 @@ import org.omnetpp.layout.engine.BasicSpringEmbedderLayout;
 import org.omnetpp.layout.engine.GraphLayouterEnvironment;
 
 public class NativeBasicSpringEmbedderLayoutAlgorithm extends BasicSpringEmbedderLayout implements ILayoutAlgorithm {
-    
+
     public NativeBasicSpringEmbedderLayoutAlgorithm(GraphLayouterEnvironment environment) {
         Assert.isNotNull(environment);
         setEnvironment(environment);

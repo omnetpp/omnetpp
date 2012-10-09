@@ -62,7 +62,7 @@ public class ExtendsPropertySource extends NedBasePropertySource {
             if (Prop.Extends.equals(propName))
                 getNedTypeModel().setFirstExtends(NedElementUtilEx.friendlyTypeNameToQName((String)value));
 
-            NedElementUtilEx.addImportForExtends(getNedTypeModel()); // note: overwrites the first extends 
+            NedElementUtilEx.addImportForExtends(getNedTypeModel()); // note: overwrites the first extends
             // note that this will add an import statement if needed, but WILL not remove when undo is invoked
             // there is no way to distinguish here between do and undo operations
         }

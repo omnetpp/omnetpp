@@ -17,20 +17,20 @@ import org.eclipse.swt.events.*;
  * This event is sent when the caret offset changes.
  *
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * 
+ *
  * @since 3.5
  */
 public class CaretEvent extends TypedEvent {
-	
-	/** 
-	 * caret offset 
-	 */
-	public int caretOffset;
-	
-	static final long serialVersionUID = 3257846571587545489L;
+
+    /**
+     * caret offset
+     */
+    public int caretOffset;
+
+    static final long serialVersionUID = 3257846571587545489L;
 
 CaretEvent(StyledTextEvent e) {
-	super(e);
-	caretOffset = e.end;
+    super(e);
+    caretOffset = e.end;
 }
 }

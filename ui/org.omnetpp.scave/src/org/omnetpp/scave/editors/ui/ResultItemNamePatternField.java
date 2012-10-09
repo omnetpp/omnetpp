@@ -25,25 +25,25 @@ import org.omnetpp.scave.engine.ResultItemFields;
  */
 public class ResultItemNamePatternField {
 
-	public ResultItemNamePatternField(Text text) {
-		this(text, ResultItemFields.getFieldNames().toArray());
-	}
+    public ResultItemNamePatternField(Text text) {
+        this(text, ResultItemFields.getFieldNames().toArray());
+    }
 
-	public ResultItemNamePatternField(Text text, String[] fieldNames) {
-		FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
-		ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT, text.getParent());
-		decorator.setImage(contentAssistDecoration.getImage());
-		decorator.setDescriptionText(contentAssistDecoration.getDescription());
+    public ResultItemNamePatternField(Text text, String[] fieldNames) {
+        FieldDecoration contentAssistDecoration = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL);
+        ControlDecoration decorator = new ControlDecoration(text, SWT.TOP | SWT.LEFT, text.getParent());
+        decorator.setImage(contentAssistDecoration.getImage());
+        decorator.setDescriptionText(contentAssistDecoration.getDescription());
 
-		String[] proposals = new String[fieldNames.length];
-		for (int i = 0; i < proposals.length; ++i)
-			proposals[i] = "${" + fieldNames[i] + "}";
-		SimpleContentProposalProvider proposalProvider = new SimpleContentProposalProvider(proposals);
+        String[] proposals = new String[fieldNames.length];
+        for (int i = 0; i < proposals.length; ++i)
+            proposals[i] = "${" + fieldNames[i] + "}";
+        SimpleContentProposalProvider proposalProvider = new SimpleContentProposalProvider(proposals);
 
-		new ContentAssistCommandAdapter(text,
-				new TextContentAdapter(),
-				proposalProvider,
-				ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,
-				" ".toCharArray() /*auto-activation*/);
-	}
+        new ContentAssistCommandAdapter(text,
+                new TextContentAdapter(),
+                proposalProvider,
+                ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS,
+                " ".toCharArray() /*auto-activation*/);
+    }
 }

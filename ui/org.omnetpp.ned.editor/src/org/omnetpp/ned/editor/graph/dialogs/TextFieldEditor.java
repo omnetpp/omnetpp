@@ -19,14 +19,14 @@ import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents a text control in the Properties dialog
- * 
+ *
  * @author Andras
  */
 public class TextFieldEditor implements IFieldEditor {
     private Text text;
-    private boolean grayed = false; 
+    private boolean grayed = false;
     private ControlDecoration problemDecoration;
-    
+
     public TextFieldEditor(Composite parent, int style) {
         text = new Text(parent, style);
         problemDecoration = new ControlDecoration(text, SWT.RIGHT | SWT.TOP);
@@ -39,7 +39,7 @@ public class TextFieldEditor implements IFieldEditor {
             }
         });
     }
-    
+
     public Text getControl() {
         return text;
     }
@@ -66,7 +66,7 @@ public class TextFieldEditor implements IFieldEditor {
         new ContentAssistCommandAdapter(text, new TextContentAdapter(), proposalProvider,
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, autoActivationCharacters, true);
     }
-    
+
     public boolean isGrayed() {
         return grayed;
     }
@@ -75,7 +75,7 @@ public class TextFieldEditor implements IFieldEditor {
         if (grayed) {
             text.setText("");
             text.setBackground(GREY);
-        } 
+        }
         else {
             text.setBackground(null); // default system color
         }
@@ -88,7 +88,7 @@ public class TextFieldEditor implements IFieldEditor {
 
     public void setText(String content) {
         text.setText(content);
-        if ((text.getStyle() & SWT.MULTI) == 0)  // preselect text if this is a single-line field 
+        if ((text.getStyle() & SWT.MULTI) == 0)  // preselect text if this is a single-line field
             text.selectAll();
     }
 
@@ -104,7 +104,7 @@ public class TextFieldEditor implements IFieldEditor {
     public void setMessage(int severity, String text) {
         UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
-    
+
     public void addModifyListener(ModifyListener listener) {
         text.addModifyListener(listener);
     }

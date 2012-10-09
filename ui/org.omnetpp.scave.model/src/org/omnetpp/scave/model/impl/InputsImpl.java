@@ -45,54 +45,54 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class InputsImpl extends EObjectImpl implements Inputs {
-	/**
+    /**
      * The cached value of the '{@link #getInputs() <em>Inputs</em>}' containment reference list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getInputs()
      * @generated
      * @ordered
      */
-	protected EList<InputFile> inputs;
+    protected EList<InputFile> inputs;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected InputsImpl() {
+    protected InputsImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.INPUTS;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<InputFile> getInputs() {
+    public EList<InputFile> getInputs() {
         if (inputs == null) {
             inputs = new EObjectContainmentEList<InputFile>(InputFile.class, this, ScaveModelPackage.INPUTS__INPUTS);
         }
         return inputs;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
+    @Override
+    public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs) {
         switch (featureID) {
             case ScaveModelPackage.INPUTS__INPUTS:
                 return ((InternalEList<?>)getInputs()).basicRemove(otherEnd, msgs);
@@ -100,13 +100,13 @@ public class InputsImpl extends EObjectImpl implements Inputs {
         return super.eInverseRemove(otherEnd, featureID, msgs);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.INPUTS__INPUTS:
                 return getInputs();
@@ -114,14 +114,14 @@ public class InputsImpl extends EObjectImpl implements Inputs {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.INPUTS__INPUTS:
                 getInputs().clear();
@@ -131,13 +131,13 @@ public class InputsImpl extends EObjectImpl implements Inputs {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.INPUTS__INPUTS:
                 getInputs().clear();
@@ -146,13 +146,13 @@ public class InputsImpl extends EObjectImpl implements Inputs {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.INPUTS__INPUTS:
                 return inputs != null && !inputs.isEmpty();

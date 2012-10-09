@@ -13,26 +13,26 @@ import org.eclipse.swt.widgets.Composite;
 
 public class EnumCellEditor extends ComboBoxCellEditor {
 
-	Object[] values;
+    Object[] values;
 
-	public EnumCellEditor(Composite parent, String[] names, Object[] values) {
-		super(parent, names, SWT.READ_ONLY);
-		this.values = values;
-	}
+    public EnumCellEditor(Composite parent, String[] names, Object[] values) {
+        super(parent, names, SWT.READ_ONLY);
+        this.values = values;
+    }
 
-	@Override
-	protected Object doGetValue() {
-		int index = (Integer)super.doGetValue();
-		return 0 <= index && index < values.length ? values[index] : null;
-	}
+    @Override
+    protected Object doGetValue() {
+        int index = (Integer)super.doGetValue();
+        return 0 <= index && index < values.length ? values[index] : null;
+    }
 
-	@Override
-	protected void doSetValue(Object value) {
-		for (int i = 0; i < values.length; ++i)
-			if (value == null && values[i] == null ||
-				value != null && value.equals(values[i])) {
-				super.doSetValue(i);
-				return;
-			}
-	}
+    @Override
+    protected void doSetValue(Object value) {
+        for (int i = 0; i < values.length; ++i)
+            if (value == null && values[i] == null ||
+                value != null && value.equals(values[i])) {
+                super.doSetValue(i);
+                return;
+            }
+    }
 }

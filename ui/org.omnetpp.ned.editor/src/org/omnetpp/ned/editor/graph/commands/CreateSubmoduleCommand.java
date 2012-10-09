@@ -17,13 +17,13 @@ import org.omnetpp.ned.model.ex.SubmoduleElementEx;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
 /**
- * Adds a newly created Submodule element to a compound module. Additionally adds an 
+ * Adds a newly created Submodule element to a compound module. Additionally adds an
  * import statement for the type if need.
  *
  * @author rhornig, andras
  */
 public class CreateSubmoduleCommand extends Command {
-	private String fullyQualifiedTypeName;
+    private String fullyQualifiedTypeName;
     private SubmoduleElementEx child;
     private Rectangle rect;
     private CompoundModuleElementEx parent;
@@ -33,15 +33,15 @@ public class CreateSubmoduleCommand extends Command {
     public CreateSubmoduleCommand(CompoundModuleElementEx parent, SubmoduleElementEx child) {
         Assert.isNotNull(parent);
         Assert.isNotNull(child);
-    	this.child = child;
-    	this.parent = parent;
-    	this.fullyQualifiedTypeName = NedElementUtilEx.getTypeOrLikeType(child);  // redo() destructively modifies child's type
+        this.child = child;
+        this.parent = parent;
+        this.fullyQualifiedTypeName = NedElementUtilEx.getTypeOrLikeType(child);  // redo() destructively modifies child's type
     }
 
     @Override
     public boolean canExecute() {
         // check that the type exists
-    	return NedElement.getDefaultNedTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
+        return NedElement.getDefaultNedTypeResolver().lookupNedType(fullyQualifiedTypeName, parent) != null;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class CreateSubmoduleCommand extends Command {
         parent.removeSubmodule(child);
         NedElementUtilEx.setTypeOrLikeType(child, fullyQualifiedTypeName); // restore original value (redo() will need it)
         if (importElement != null)
-        	importElement.removeFromParent();
+            importElement.removeFromParent();
     }
 
     public void setConstraint(Rectangle r) {

@@ -21,34 +21,34 @@ import org.omnetpp.inifile.editor.text.InifileTextEditorHelper;
  * An inifile code scanner.
  */
 public class InifileCodeColorizerScanner extends RuleBasedScanner {
-	public InifileCodeColorizerScanner() {
+    public InifileCodeColorizerScanner() {
 
         setDefaultReturnToken(InifileTextEditorHelper.codeDefaultToken);
 
-		List<IRule> rules = new ArrayList<IRule>();
+        List<IRule> rules = new ArrayList<IRule>();
 
         // Add rule for strings
-		rules.add(new SingleLineRule("\"", "\"", InifileTextEditorHelper.codeStringToken, '\\'));
+        rules.add(new SingleLineRule("\"", "\"", InifileTextEditorHelper.codeStringToken, '\\'));
 
         // Add rule for detecting numeric constants
         rules.add(new NumberRule(InifileTextEditorHelper.codeNumberToken));
 
-		// Add word rule for keywords, types, and constants. If not recognized as either of these
+        // Add word rule for keywords, types, and constants. If not recognized as either of these
         // then this is a regular identifier, so return an identifierToken by default
-		WordRule wordRule = new WordRule(InifileTextEditorHelper.inifileWordDetector, InifileTextEditorHelper.codeIdentifierToken);
+        WordRule wordRule = new WordRule(InifileTextEditorHelper.inifileWordDetector, InifileTextEditorHelper.codeIdentifierToken);
         for (String text : SyntaxHighlightHelper.highlightNedFunctions)
-			wordRule.addWord(text, InifileTextEditorHelper.codeFunctionToken);
-		for (String text : SyntaxHighlightHelper.highlightNedKeywords)
-			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
-		for (String text : SyntaxHighlightHelper.highlightConstants)
-			wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
-		for (ConfigOption entry : ConfigRegistry.getOptions())
-			wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
+            wordRule.addWord(text, InifileTextEditorHelper.codeFunctionToken);
+        for (String text : SyntaxHighlightHelper.highlightNedKeywords)
+            wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
+        for (String text : SyntaxHighlightHelper.highlightConstants)
+            wordRule.addWord(text, InifileTextEditorHelper.codeKeywordToken);
+        for (ConfigOption entry : ConfigRegistry.getOptions())
+            wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
         for (ConfigOption entry : ConfigRegistry.getPerObjectOptions())
             wordRule.addWord(entry.getName(), InifileTextEditorHelper.codeConfigKeyToken);
 
-		rules.add(wordRule);
+        rules.add(wordRule);
 
-		setRules(rules.toArray(new IRule[]{}));
-	}
+        setRules(rules.toArray(new IRule[]{}));
+    }
 }

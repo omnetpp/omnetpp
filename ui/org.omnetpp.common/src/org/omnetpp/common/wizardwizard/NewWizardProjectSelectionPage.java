@@ -97,7 +97,7 @@ public class NewWizardProjectSelectionPage extends WizardPage {
             CommonPlugin.logError(e);
             ErrorDialog.openError(getShell(), "Error", "Could not get list of OMNeT++ projects.", e.getStatus());
         }
-        
+
         // initial selection
         IResource resource = null;
         Object element = selection.getFirstElement();

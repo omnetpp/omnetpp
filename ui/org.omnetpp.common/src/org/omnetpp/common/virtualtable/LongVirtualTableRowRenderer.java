@@ -17,31 +17,31 @@ import org.omnetpp.common.color.ColorFactory;
  * This class serves debugging purposes.
  */
 public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtualTableRowRenderer<Long> {
-	protected Font font = JFaceResources.getDefaultFont();
+    protected Font font = JFaceResources.getDefaultFont();
 
-	protected int fontHeight;
+    protected int fontHeight;
 
-	public void setInput(Object input) {
-		// void
-	}
+    public void setInput(Object input) {
+        // void
+    }
 
-	public void drawCell(GC gc, Long element, int index) {
-	    gc.setForeground(ColorFactory.BLACK);
-		gc.drawText("the number " + element.toString(), 5, 0); //XXX if we start at x=0, 1-2 pixel columns are off-screen
-	}
+    public void drawCell(GC gc, Long element, int index) {
+        gc.setForeground(ColorFactory.BLACK);
+        gc.drawText("the number " + element.toString(), 5, 0); //XXX if we start at x=0, 1-2 pixel columns are off-screen
+    }
 
-	public int getRowHeight(GC gc) {
-		if (fontHeight == 0) {
-			Font oldFont = gc.getFont();
-			gc.setFont(font);
-			fontHeight = gc.getFontMetrics().getHeight();
-			gc.setFont(oldFont);
-		}
+    public int getRowHeight(GC gc) {
+        if (fontHeight == 0) {
+            Font oldFont = gc.getFont();
+            gc.setFont(font);
+            fontHeight = gc.getFontMetrics().getHeight();
+            gc.setFont(oldFont);
+        }
 
-		return fontHeight + 2;
-	}
+        return fontHeight + 2;
+    }
 
-	public String getTooltipText(Long element) {
-		return null;
-	}
+    public String getTooltipText(Long element) {
+        return null;
+    }
 }

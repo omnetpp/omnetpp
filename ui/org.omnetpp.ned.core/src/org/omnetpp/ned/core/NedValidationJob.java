@@ -20,7 +20,7 @@ import org.omnetpp.ned.model.interfaces.INedTypeResolver;
 public class NedValidationJob extends Job {
     private boolean validateOpenNedFilesOnly = false; //TODO such preference might be useful for netbooks
     private int retryCount = 0;
-    
+
     public NedValidationJob() {
         super("Checking NED files...");
     }
@@ -49,7 +49,7 @@ public class NedValidationJob extends Job {
      * Validates an immutable copy of NedResources; stop immediately if the copy becomes obsolete
      */
     protected boolean tryValidate(IProgressMonitor monitor) {
-        // Note: no try-catch here -- we let exceptions terminate the job and be logged by the platform 
+        // Note: no try-catch here -- we let exceptions terminate the job and be logged by the platform
         long startTime = System.currentTimeMillis();
         Debug.println("NED validation job started working");
 
@@ -57,7 +57,7 @@ public class NedValidationJob extends Job {
 
         int numWorkUnits = 3 + nedResources.getNedFiles().size();
         monitor.beginTask(getName(), numWorkUnits);
-        
+
         // we'll analyze an immutable copy, so that NedResources doesn't need to be locked
         INedTypeResolver immutableResolver = nedResources.getImmutableCopy();
         monitor.worked(1);
@@ -67,7 +67,7 @@ public class NedValidationJob extends Job {
 
         // clear old consistency error markers from NED trees
         clearConsistencyProblemSeverities(immutableResolver);
-        
+
         // issue error message for duplicates
         immutableResolver.addErrorsForDuplicates(errorStore);
         monitor.worked(1);
@@ -116,7 +116,7 @@ public class NedValidationJob extends Job {
                 monitor.worked(1);
 
                 return true;
-            } 
+            }
             finally {
                 nedResources.fireEndChangeEvent();
             }

@@ -30,63 +30,63 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 
 
 public class WorkbenchWindowAccess extends Access {
-	private IWorkbenchWindow workbenchWindow;
+    private IWorkbenchWindow workbenchWindow;
 
-	public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
-		this.workbenchWindow = workbenchWindow;
-	}
+    public WorkbenchWindowAccess(IWorkbenchWindow workbenchWindow) {
+        this.workbenchWindow = workbenchWindow;
+    }
 
     @UIStep
-	public ShellAccess getShell() {
-		return new ShellAccess(workbenchWindow.getShell());
-	}
+    public ShellAccess getShell() {
+        return new ShellAccess(workbenchWindow.getShell());
+    }
 
-	@UIStep
-	public MenuAccess getMenuBar() {
-		return getShell().getMenuBar();
-	}
+    @UIStep
+    public MenuAccess getMenuBar() {
+        return getShell().getMenuBar();
+    }
 
     @UIStep
     public IPerspectiveDescriptor getPerspective() {
         return workbenchWindow.getWorkbench().getActiveWorkbenchWindow().getActivePage().getPerspective();
     }
 
-	@InBackgroundThread
-	public void chooseFromMainMenu(String labelPath) {
-	    getShell().chooseFromMainMenu(labelPath);
-	}
+    @InBackgroundThread
+    public void chooseFromMainMenu(String labelPath) {
+        getShell().chooseFromMainMenu(labelPath);
+    }
 
-	@UIStep
-	public EditorPartAccess getActiveEditorPart() {
-		return new EditorPartAccess(workbenchWindow.getPages()[0].getActiveEditor());
-	}
+    @UIStep
+    public EditorPartAccess getActiveEditorPart() {
+        return new EditorPartAccess(workbenchWindow.getPages()[0].getActiveEditor());
+    }
 
-	@UIStep
-	public WorkbenchPartAccess getActivePart() {
-		IWorkbenchPart activePart = workbenchWindow.getPages()[0].getActivePart();
-		if (activePart instanceof IEditorPart)
-			return new EditorPartAccess((IEditorPart)activePart);
-		else
-			return (WorkbenchPartAccess)createAccess((IViewPart)activePart);
-	}
+    @UIStep
+    public WorkbenchPartAccess getActivePart() {
+        IWorkbenchPart activePart = workbenchWindow.getPages()[0].getActivePart();
+        if (activePart instanceof IEditorPart)
+            return new EditorPartAccess((IEditorPart)activePart);
+        else
+            return (WorkbenchPartAccess)createAccess((IViewPart)activePart);
+    }
 
-	@UIStep
-	public ViewPartAccess showViewPart(String viewId) throws PartInitException {
-		return new ViewPartAccess(workbenchWindow.getPages()[0].showView(viewId));
-	}
+    @UIStep
+    public ViewPartAccess showViewPart(String viewId) throws PartInitException {
+        return new ViewPartAccess(workbenchWindow.getPages()[0].showView(viewId));
+    }
 
-	@UIStep
-	public ViewPartAccess findViewPartByTitle(String title) {
-		return findViewPartByTitle(title, true);
-	}
+    @UIStep
+    public ViewPartAccess findViewPartByTitle(String title) {
+        return findViewPartByTitle(title, true);
+    }
 
-	@UIStep
-	public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
-	    IPredicate predicate = getViewPartsByTitlePredicate(title);
-		return (ViewPartAccess)theOnlyObject(collectViewParts(predicate, restore), predicate);
-	}
+    @UIStep
+    public ViewPartAccess findViewPartByTitle(String title, boolean restore) {
+        IPredicate predicate = getViewPartsByTitlePredicate(title);
+        return (ViewPartAccess)theOnlyObject(collectViewParts(predicate, restore), predicate);
+    }
 
-	@UIStep
+    @UIStep
     public List<ViewPartAccess> collectViewPartsByTitle(String title, boolean restore) {
         return collectViewParts(getViewPartsByTitlePredicate(title), restore);
     }
@@ -114,26 +114,26 @@ public class WorkbenchWindowAccess extends Access {
         return result;
     }
 
-	@UIStep
-	public EditorPartAccess findEditorPartByTitle(String title) {
-		return findEditorPartByTitle(title, true);
-	}
+    @UIStep
+    public EditorPartAccess findEditorPartByTitle(String title) {
+        return findEditorPartByTitle(title, true);
+    }
 
-	@UIStep
-	public MultiPageEditorPartAccess findMultiPageEditorPartByTitle(String title) {
-		return (MultiPageEditorPartAccess)findEditorPartByTitle(title, true);
-	}
+    @UIStep
+    public MultiPageEditorPartAccess findMultiPageEditorPartByTitle(String title) {
+        return (MultiPageEditorPartAccess)findEditorPartByTitle(title, true);
+    }
 
-	@UIStep
-	public EditorPartAccess findEditorPartByTitle(final String title, boolean restore) {
-	    IPredicate predicate = getEditorPartsByTitlePredicate(title);
-		return (EditorPartAccess)theOnlyObject(collectEditorParts(predicate, restore), predicate);
-	}
+    @UIStep
+    public EditorPartAccess findEditorPartByTitle(final String title, boolean restore) {
+        IPredicate predicate = getEditorPartsByTitlePredicate(title);
+        return (EditorPartAccess)theOnlyObject(collectEditorParts(predicate, restore), predicate);
+    }
 
-	@UIStep
+    @UIStep
     public boolean hasEditorPartWithTitle(String title) {
-	    return hasEditorPartWithTitle(title, false);
-	}
+        return hasEditorPartWithTitle(title, false);
+    }
 
     @UIStep
     public boolean hasEditorPartWithTitle(String title, boolean restore) {
@@ -168,10 +168,10 @@ public class WorkbenchWindowAccess extends Access {
         return result;
     }
 
-	@UIStep
-	public void closeAllEditorPartsWithHotKey() {
-		pressKey('w', SWT.CONTROL + SWT.SHIFT);
-	}
+    @UIStep
+    public void closeAllEditorPartsWithHotKey() {
+        pressKey('w', SWT.CONTROL + SWT.SHIFT);
+    }
 
     @SuppressWarnings("unused")
     public void ensureAllEditorPartsAreClosed() {

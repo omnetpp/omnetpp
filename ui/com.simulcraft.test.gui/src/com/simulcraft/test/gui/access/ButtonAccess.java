@@ -16,33 +16,33 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class ButtonAccess extends ControlAccess
 {
-	public ButtonAccess(Button control) {
-		super(control);
-	}
+    public ButtonAccess(Button control) {
+        super(control);
+    }
 
-	@Override
-	public Button getControl() {
-		return (Button)widget;
-	}
-
-	@UIStep
-	public void selectWithMouseClick() {
-		assertEnabled();
-		click();
-	}
-
-	@UIStep
-	public void assertIsCheckbox() {
-		Assert.assertTrue("Checkbox expected", (getControl().getStyle() & SWT.CHECK) != 0);
-	}
+    @Override
+    public Button getControl() {
+        return (Button)widget;
+    }
 
     @UIStep
-	public void ensureSelection(boolean selected) {
-		assertIsCheckbox();
-		Button button = getControl();
-		if (button.getSelection() != selected) {
-			assertEnabled();
-			click();
-		}
-	}
+    public void selectWithMouseClick() {
+        assertEnabled();
+        click();
+    }
+
+    @UIStep
+    public void assertIsCheckbox() {
+        Assert.assertTrue("Checkbox expected", (getControl().getStyle() & SWT.CHECK) != 0);
+    }
+
+    @UIStep
+    public void ensureSelection(boolean selected) {
+        assertIsCheckbox();
+        Button button = getControl();
+        if (button.getSelection() != selected) {
+            assertEnabled();
+            click();
+        }
+    }
 }

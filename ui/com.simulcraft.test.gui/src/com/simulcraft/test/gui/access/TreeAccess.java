@@ -26,19 +26,19 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class TreeAccess extends ControlAccess
 {
-	public TreeAccess(Tree tree) {
-		super(tree);
-	}
+    public TreeAccess(Tree tree) {
+        super(tree);
+    }
 
-	@Override
-	public Tree getControl() {
-		return (Tree)widget;
-	}
+    @Override
+    public Tree getControl() {
+        return (Tree)widget;
+    }
 
-	@UIStep
-	public void assertEmpty() {
-		Assert.assertTrue("tree is not empty", getControl().getItemCount() == 0);
-	}
+    @UIStep
+    public void assertEmpty() {
+        Assert.assertTrue("tree is not empty", getControl().getItemCount() == 0);
+    }
 
     @UIStep
     public void assertNotEmpty() {
@@ -63,8 +63,8 @@ public class TreeAccess extends ControlAccess
      */
     @InBackgroundThread
     public void assertContent(GenericTreeNode... content) {
-    	expandAll(); // expand all items because the Tree can be virtual
-    	doAssertContent(content);
+        expandAll(); // expand all items because the Tree can be virtual
+        doAssertContent(content);
     }
 
     @UIStep
@@ -74,24 +74,24 @@ public class TreeAccess extends ControlAccess
 
     @UIStep
     public TreeItemAccess[] getItems() {
-    	TreeItem[] items = getControl().getItems();
-    	TreeItemAccess[] treeItems = new TreeItemAccess[items.length];
-    	for (int i = 0; i < items.length; ++i)
-    		treeItems[i] = (TreeItemAccess)createAccess(items[i]);
-    	return treeItems;
+        TreeItem[] items = getControl().getItems();
+        TreeItemAccess[] treeItems = new TreeItemAccess[items.length];
+        for (int i = 0; i < items.length; ++i)
+            treeItems[i] = (TreeItemAccess)createAccess(items[i]);
+        return treeItems;
     }
 
     @InBackgroundThread
     public void expandAll() {
-    	for (TreeItemAccess item : getItems()) {
-    		item.reveal();
-    		item.click();
-        	pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE); // fully expands the subtree (right arrow or Plus only expands this node)
-    	}
+        for (TreeItemAccess item : getItems()) {
+            item.reveal();
+            item.click();
+            pressKey(SWT.KEYPAD_MULTIPLY, SWT.NONE); // fully expands the subtree (right arrow or Plus only expands this node)
+        }
     }
 
     @UIStep
-	public TreeItemAccess findTreeItemByPath(String path) {
+    public TreeItemAccess findTreeItemByPath(String path) {
         TreeItemAccess parentTreeItem = null;
         String[] pathSegments = new Path(path).segments();
 
@@ -105,7 +105,7 @@ public class TreeAccess extends ControlAccess
         }
 
         return parentTreeItem;
-	}
+    }
 
     @UIStep
     public TreeItemAccess findChildTreeItemByContent(final TreeItem parentTreeItem, final String content) {
@@ -125,66 +125,66 @@ public class TreeAccess extends ControlAccess
         return new TreeItemAccess(treeItem);
     }
 
-	@UIStep
-	public TreeItemAccess findTreeItemByContent(final String content) {
-		TreeItem treeItem = findTreeItem(getControl().getItems(), new IPredicate() {
-			public boolean matches(Object object) {
-				TreeItem treeItem = (TreeItem)object;
-				log(debug, "  checking: " + treeItem);
-				String treeItemContent = treeItem.getText();
-				return treeItemContent.matches(content);
-			}
+    @UIStep
+    public TreeItemAccess findTreeItemByContent(final String content) {
+        TreeItem treeItem = findTreeItem(getControl().getItems(), new IPredicate() {
+            public boolean matches(Object object) {
+                TreeItem treeItem = (TreeItem)object;
+                log(debug, "  checking: " + treeItem);
+                String treeItemContent = treeItem.getText();
+                return treeItemContent.matches(content);
+            }
 
-			public String toString() {
-			    return "a TreeItem with content: " + content;
-			}
-		});
-		log(debug, treeItem + ":" + treeItem.getBounds());
-		return new TreeItemAccess(treeItem);
-	}
+            public String toString() {
+                return "a TreeItem with content: " + content;
+            }
+        });
+        log(debug, treeItem + ":" + treeItem.getBounds());
+        return new TreeItemAccess(treeItem);
+    }
 
     @UIStep
     public TreeItem findTreeItem(TreeItem[] treeItems, IPredicate predicate) {
         return (TreeItem)theOnlyWidget(collectTreeItems(getControl().getItems(), predicate), predicate);
     }
 
-	@UIStep
-	public List<TreeItem> collectTreeItems(TreeItem[] treeItems, IPredicate predicate) {
-		ArrayList<TreeItem> resultTreeItems = new ArrayList<TreeItem>();
-		collectTreeItems(treeItems, predicate, resultTreeItems);
-		return resultTreeItems;
-	}
+    @UIStep
+    public List<TreeItem> collectTreeItems(TreeItem[] treeItems, IPredicate predicate) {
+        ArrayList<TreeItem> resultTreeItems = new ArrayList<TreeItem>();
+        collectTreeItems(treeItems, predicate, resultTreeItems);
+        return resultTreeItems;
+    }
 
-	protected void collectTreeItems(TreeItem[] treeItems, IPredicate predicate, List<TreeItem> resultTreeItems) {
-		for (TreeItem treeItem : treeItems) {
-			collectTreeItems(treeItem.getItems(), predicate, resultTreeItems);
+    protected void collectTreeItems(TreeItem[] treeItems, IPredicate predicate, List<TreeItem> resultTreeItems) {
+        for (TreeItem treeItem : treeItems) {
+            collectTreeItems(treeItem.getItems(), predicate, resultTreeItems);
 
-			if (predicate.matches(treeItem))
-				resultTreeItems.add(treeItem);
-		}
-	}
+            if (predicate.matches(treeItem))
+                resultTreeItems.add(treeItem);
+        }
+    }
 
-	@UIStep
-	protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
-		if (treeItems.length != expectedItems.length) {
+    @UIStep
+    protected boolean compareContent(TreeItem[] treeItems, GenericTreeNode[] expectedItems) {
+        if (treeItems.length != expectedItems.length) {
             System.out.format("Tree content mismatch. Expected %d children, found %d", expectedItems.length, treeItems.length);
-			return false;
-		}
+            return false;
+        }
 
-		for (int i = 0; i < treeItems.length; ++i) {
-			TreeItem item = treeItems[i];
-			GenericTreeNode expected = expectedItems[i];
+        for (int i = 0; i < treeItems.length; ++i) {
+            TreeItem item = treeItems[i];
+            GenericTreeNode expected = expectedItems[i];
 
-			if (!item.getText().matches((String)expected.getPayload())) {
-				System.out.format("Tree content mismatch. Expected regex: %s, found: %s%n", expected.getPayload(), item.getText());
-				return false;
-			}
-			if (!compareContent(item.getItems(), expected.getChildren()))
-				return false;
-		}
+            if (!item.getText().matches((String)expected.getPayload())) {
+                System.out.format("Tree content mismatch. Expected regex: %s, found: %s%n", expected.getPayload(), item.getText());
+                return false;
+            }
+            if (!compareContent(item.getItems(), expected.getChildren()))
+                return false;
+        }
 
-		return true;
-	}
+        return true;
+    }
 
     @UIStep
     public TreeColumnAccess[] getTreeColumns() {
@@ -197,15 +197,15 @@ public class TreeAccess extends ControlAccess
     /**
      * Return the given column; columns are in creation order.
      */
-	@UIStep
-	public TreeColumnAccess getTreeColumn(int index) {
-	    return new TreeColumnAccess(getControl().getColumns()[index]);
-	}
+    @UIStep
+    public TreeColumnAccess getTreeColumn(int index) {
+        return new TreeColumnAccess(getControl().getColumns()[index]);
+    }
 
-	@UIStep
-	public int[] getTreeColumnOrder() {
-	    return getControl().getColumnOrder();
-	}
+    @UIStep
+    public int[] getTreeColumnOrder() {
+        return getControl().getColumnOrder();
+    }
 
     @UIStep
     public TreeItemAccess[] getSelection() {

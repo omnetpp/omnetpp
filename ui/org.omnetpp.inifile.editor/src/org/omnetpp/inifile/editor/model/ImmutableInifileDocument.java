@@ -18,11 +18,11 @@ import org.omnetpp.inifile.editor.model.InifileDocument.SectionHeadingLine;
 /**
  * Immutable implementation of IReadonlyInifileDocument.
  * Used for creating snapshots of InifileDocuments.
- * 
+ *
  * @author tomi
  */
 final class ImmutableInifileDocument implements IReadonlyInifileDocument {
-    
+
     private IFile documentFile; // the file of the document
 
     // primary data structure: sections, keys
@@ -60,11 +60,11 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
             Assert.isTrue(false);
         }
     }
-    
+
     public boolean containsKey(String section, String key) {
         return lookupEntry(section, key) != null;
     }
-    
+
     private KeyValueLine lookupEntry(String sectionName, String key) {
         Section section = sections.get(sectionName);
         return section == null ? null : section.entries.get(key);
@@ -93,7 +93,7 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
     public String getRawComment(String section, String key) {
         return getEntry(section, key).rawComment;
     }
-    
+
     private KeyValueLine getEntry(String sectionName, String key) {
         KeyValueLine line = lookupEntry(sectionName, key);
         if (line == null)
@@ -142,7 +142,7 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
             throw new IllegalArgumentException("Section does not exist: ["+sectionName+"]");
         return line.rawComment;
     }
-    
+
     /**
      * Returns the first editable section heading, or if none are editable, the first one.
      * Returns null if there's no such section.
@@ -156,7 +156,7 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
                 return line;
         return section.headingLines.get(0);
     }
-    
+
     private boolean isEditable(Line line) {
         return line.file == documentFile;
     }
@@ -179,7 +179,7 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
     public IFile[] getIncludedFiles() {
         return includedFiles.toArray(new IFile[]{});
     }
-    
+
     public String getSectionForLine(int lineNumber) {
         SectionHeadingLine line = findSectionHeadingLine(lineNumber);
         return line == null ? null : line.sectionName;
@@ -203,7 +203,7 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
                 return line.key;
         return null;
     }
-    
+
     public boolean containsSectionCycles() {
         return !sectionsCausingCycles.isEmpty();
     }
@@ -214,18 +214,18 @@ final class ImmutableInifileDocument implements IReadonlyInifileDocument {
                 return true;
         return false;
     }
-    
+
     public Collection<Set<String>> getSectionChainCycles() {
         return sectionsCausingCycles;
     }
-    
+
     public String[] getSectionChain(String sectionName) {
         Section section = sections.get(sectionName);
         if (section == null)
             throw new IllegalArgumentException("No such section: ["+sectionName+"]");
         return section.sectionChain;
     }
-    
+
     public String[] getConflictingSections(String sectionName) {
         Section section = sections.get(sectionName);
         if (section == null)

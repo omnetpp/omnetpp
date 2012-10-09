@@ -80,49 +80,49 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
     public static final String[] KEY_BINDING_SCOPES = { "org.omnetpp.context.nedTextEditor" };
     public final static String ID = NedEditor.ID+".text";
 
-	private static boolean pushingChanges;
+    private static boolean pushingChanges;
 
-	private static TemplateStore fStore;
+    private static TemplateStore fStore;
 
     /** The context type registry. */
     private static ContributionContextTypeRegistry fRegistry;
 
     /** The outline page */
-//	private NedContentOutlinePage fOutlinePage;
+//  private NedContentOutlinePage fOutlinePage;
 
-	/** The projection support */
-	private ProjectionSupport fProjectionSupport;
+    /** The projection support */
+    private ProjectionSupport fProjectionSupport;
 
-	private DelayedJob pullChangesJob;
-	private NedSelectionProvider nedSelectionProvider;
+    private DelayedJob pullChangesJob;
+    private NedSelectionProvider nedSelectionProvider;
 
-	/**
-	 * Default constructor.
-	 */
-	public TextualNedEditor() {
-		super();
+    /**
+     * Default constructor.
+     */
+    public TextualNedEditor() {
+        super();
 
-		// delay update to avoid concurrent access to document
-		pullChangesJob = new DelayedJob(500) {
-    		public void run() {
-				pullChangesFromNedResourcesWhenPending();
-    		}
+        // delay update to avoid concurrent access to document
+        pullChangesJob = new DelayedJob(500) {
+            public void run() {
+                pullChangesFromNedResourcesWhenPending();
+            }
         };
 
-	}
+    }
 
-	@Override
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-	    super.init(site, input);
+    @Override
+    public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+        super.init(site, input);
         // listen on NED model changes
         NedResourcesPlugin.getNedResources().addNedModelChangeListener(this);
         getSite().getPage().addSelectionListener(this);
-	}
+    }
 
-	@Override
-	protected void initializeKeyBindingScopes() {
+    @Override
+    protected void initializeKeyBindingScopes() {
         setKeyBindingScopes(KEY_BINDING_SCOPES);
-	}
+    }
 
     /** The <code>TextualNedEditor</code> implementation of this
      * <code>AbstractTextEditor</code> method performs any extra
@@ -178,14 +178,14 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         fProjectionSupport.install();
         viewer.doOperation(ProjectionViewer.TOGGLE);
         nedSelectionProvider = new NedSelectionProvider(this);
-		getSite().setSelectionProvider(nedSelectionProvider);
+        getSite().setSelectionProvider(nedSelectionProvider);
     }
 
     @Override
     protected boolean isEditorInputIncludedInContextMenu() {
-    	// do not include the contributions for the editor input
-    	// (otherwise we will get a ton of unnecessary menus like Debug As, Run As, Team menus etc.)
-    	return false;
+        // do not include the contributions for the editor input
+        // (otherwise we will get a ton of unnecessary menus like Debug As, Run As, Team menus etc.)
+        return false;
     }
 
     /**
@@ -194,7 +194,7 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
     public static TemplateStore getTemplateStore() {
         if (fStore == null) {
             fStore = new ContributionTemplateStore(getContextTypeRegistry(),
-            		NedEditorPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
+                    NedEditorPlugin.getDefault().getPreferenceStore(), CUSTOM_TEMPLATES_KEY);
             try {
                 fStore.load();
             } catch (IOException e) {
@@ -223,18 +223,18 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         return super.getSourceViewer();
     }
 
-	/** The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method extend the
-	 * actions to add those specific to the receiver
-	 */
-	@Override
+    /** The <code>TextualNedEditor</code> implementation of this
+     * <code>AbstractTextEditor</code> method extend the
+     * actions to add those specific to the receiver
+     */
+    @Override
     protected void createActions() {
-		super.createActions();
+        super.createActions();
 
-		ResourceBundle bundle = NedEditorMessages.getResourceBundle();
-		IAction a= new TextOperationAction(bundle, "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
-		a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
-		setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
+        ResourceBundle bundle = NedEditorMessages.getResourceBundle();
+        IAction a= new TextOperationAction(bundle, "ContentAssistProposal.", this, ISourceViewer.CONTENTASSIST_PROPOSALS);
+        a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
+        setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
 
         a = new ConvertToNewFormatAction(this);
         setAction(a.getId(), a);
@@ -269,7 +269,7 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
 
         a = new DistributeAllGateLabelsAction(this);
         setAction(a.getId(), a);
-	}
+    }
 
     /*
      * @see org.eclipse.ui.texteditor.ExtendedTextEditor#editorContextMenuAboutToShow(org.eclipse.jface.action.IMenuManager)
@@ -290,19 +290,19 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         addAction(menu, ITextEditorActionConstants.GROUP_FIND, FindTextInNedFilesActionDelegate.ID);
     }
 
-	/**
-	 * Sets the content of the text editor to the given string.
-	 */
-	public void setText(String content) {
-		getDocument().set(content);
-	}
+    /**
+     * Sets the content of the text editor to the given string.
+     */
+    public void setText(String content) {
+        getDocument().set(content);
+    }
 
-	/**
-	 * Returns the content of the text editor
-	 */
-	public String getText() {
-		return getDocument() != null ?  getDocument().get() : null;
-	}
+    /**
+     * Returns the content of the text editor
+     */
+    public String getText() {
+        return getDocument() != null ?  getDocument().get() : null;
+    }
 
     /**
      * Returns the current document under editing
@@ -311,52 +311,52 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
         return getDocumentProvider().getDocument(getEditorInput());
     }
 
-	protected IFile getFile() {
-		return ((IFileEditorInput)getEditorInput()).getFile();
-	}
+    protected IFile getFile() {
+        return ((IFileEditorInput)getEditorInput()).getFile();
+    }
 
-	public NedFileElementEx getModel() {
-		return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
-	}
+    public NedFileElementEx getModel() {
+        return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
+    }
 
-	@Override
-	public void setAction(String actionID, IAction action) {
-	    if (!actionID.equals(ITextEditorActionConstants.SAVE))
-	        super.setAction(actionID, action);
-	}
+    @Override
+    public void setAction(String actionID, IAction action) {
+        if (!actionID.equals(ITextEditorActionConstants.SAVE))
+            super.setAction(actionID, action);
+    }
 
-	/**
-	 * The <code>TextualNedEditor</code> implementation of this
-	 * <code>AbstractTextEditor</code> method gets
-	 * the ned content outline page if request is for an
-	 * outline page.
-	 *
-	 * @param required the required type
-	 * @return an adapter for the required type or <code>null</code>
-	 */
-	@SuppressWarnings("unchecked") @Override
+    /**
+     * The <code>TextualNedEditor</code> implementation of this
+     * <code>AbstractTextEditor</code> method gets
+     * the ned content outline page if request is for an
+     * outline page.
+     *
+     * @param required the required type
+     * @return an adapter for the required type or <code>null</code>
+     */
+    @SuppressWarnings("unchecked") @Override
     public Object getAdapter(Class required) {
-		if (fProjectionSupport != null) {
-			Object adapter= fProjectionSupport.getAdapter(getSourceViewer(), required);
-			if (adapter != null)
-				return adapter;
-		}
+        if (fProjectionSupport != null) {
+            Object adapter= fProjectionSupport.getAdapter(getSourceViewer(), required);
+            if (adapter != null)
+                return adapter;
+        }
 
-		return super.getAdapter(required);
-	}
+        return super.getAdapter(required);
+    }
 
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
-	 */
-	@Override
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.texteditor.AbstractTextEditor#adjustHighlightRange(int, int)
+     */
+    @Override
     protected void adjustHighlightRange(int offset, int length) {
-		ISourceViewer viewer= getSourceViewer();
-		if (viewer instanceof ITextViewerExtension5) {
-			ITextViewerExtension5 extension= (ITextViewerExtension5) viewer;
-			extension.exposeModelRange(new Region(offset, length));
-		}
-	}
+        ISourceViewer viewer= getSourceViewer();
+        if (viewer instanceof ITextViewerExtension5) {
+            ITextViewerExtension5 extension= (ITextViewerExtension5) viewer;
+            extension.exposeModelRange(new Region(offset, length));
+        }
+    }
 
     @Override
     public void setHighlightRange(int offset, int length, boolean moveCursor) {
@@ -370,87 +370,87 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
             getSourceViewer().setSelectedRange(offset, 0);
     }
 
-	/**
-	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
-	 * active part.
-	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
-	 */
-	public boolean isActive() {
-		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
-		IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
-		return activeEditorPart == this ||
-			(activeEditorPart instanceof NedEditor && ((NedEditor)activeEditorPart).isActiveEditor(this));
-	}
-
-	/**
-	 * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
-	 * active part.
-	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
-	 */
-	public boolean isActivePart() {
-		IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
-		 IWorkbenchPart activePart = activePage==null ? null : activePage.getActivePart();
-		return activePart == this ||
-			(activePart instanceof NedEditor && ((NedEditor)activePart).isActiveEditor(this));
-	}
-
-	/**
-	 * NOTE: this method is called from NON-UI threads. do not access SWT widgets
-	 */
-    public void modelChanged(NedModelEvent event) {
-    	if (event.getSource() != null && !(event instanceof NedMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
-			INedElement nedFileElement = event.getSource().getContainingNedFileElement();
-
-			if (nedFileElement == getModel())
-				pullChangesJob.restartTimer();
-    	}
+    /**
+     * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
+     * active part.
+     * NOTE: this method is called from NON-UI threads. do not access SWT widgets
+     */
+    public boolean isActive() {
+        IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
+        IEditorPart activeEditorPart = activePage==null ? null : activePage.getActiveEditor();
+        return activeEditorPart == this ||
+            (activeEditorPart instanceof NedEditor && ((NedEditor)activeEditorPart).isActiveEditor(this));
     }
 
-	public synchronized void pushChangesIntoNedResources() {
-		pushChangesIntoNedResources(true);
-	}
+    /**
+     * Whether it is the currently active editor (not necessarily the active part however if a view is currently the
+     * active part.
+     * NOTE: this method is called from NON-UI threads. do not access SWT widgets
+     */
+    public boolean isActivePart() {
+        IWorkbenchPage activePage = getSite().getWorkbenchWindow().getActivePage(); // may be null during startup
+         IWorkbenchPart activePart = activePage==null ? null : activePage.getActivePart();
+        return activePart == this ||
+            (activePart instanceof NedEditor && ((NedEditor)activePart).isActiveEditor(this));
+    }
 
-	/**
-	 * Pushes down text changes from document into NEDResources.
-	 */
-	public synchronized void pushChangesIntoNedResources(final boolean evenIfEditorIsInactive) {
-		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-			public synchronized void run() {
-				Assert.isTrue(!pushingChanges);
-				if (evenIfEditorIsInactive || isActive()) {
-					try {
-						// this must be static, because we may have several text editors open
-						// (via Window|New Editor) which are internally synchronized to each other
-						// by the platform -- so we need to block *all* reconcilers from running.
-						// Being static causes no problems with multiple reconcilers, because
-						// the access is serialized through asyncExec.
-						pushingChanges = true;
-						// perform parsing (of full text, we ignore the changed region)
-						NedResourcesPlugin.getNedResources().setNedFileText(getFile(), getText());
-					}
-					finally {
-						pushingChanges = false;
-					}
-				}
-			}
-		});
-	}
+    /**
+     * NOTE: this method is called from NON-UI threads. do not access SWT widgets
+     */
+    public void modelChanged(NedModelEvent event) {
+        if (event.getSource() != null && !(event instanceof NedMarkerChangeEvent) && !isActive() && !pushingChanges) { //XXX looks like sometimes this condition is not enough!
+            INedElement nedFileElement = event.getSource().getContainingNedFileElement();
 
-	/**
-	 * When a "pull changes from NEDResources" operation has been scheduled, do it now.
-	 */
-	public synchronized void pullChangesFromNedResourcesWhenPending() {
-	    // if the job is not scheduled then there are no changes at all and we don't pull
-	    // because that would only pretty print the source
-	    if (pullChangesJob.isScheduled()) {
-    		pullChangesJob.cancel();
-    		DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-    			public synchronized void run() {
-    				pullChangesFromNedResources();
-    			}
-    		});
-	    }
-	}
+            if (nedFileElement == getModel())
+                pullChangesJob.restartTimer();
+        }
+    }
+
+    public synchronized void pushChangesIntoNedResources() {
+        pushChangesIntoNedResources(true);
+    }
+
+    /**
+     * Pushes down text changes from document into NEDResources.
+     */
+    public synchronized void pushChangesIntoNedResources(final boolean evenIfEditorIsInactive) {
+        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            public synchronized void run() {
+                Assert.isTrue(!pushingChanges);
+                if (evenIfEditorIsInactive || isActive()) {
+                    try {
+                        // this must be static, because we may have several text editors open
+                        // (via Window|New Editor) which are internally synchronized to each other
+                        // by the platform -- so we need to block *all* reconcilers from running.
+                        // Being static causes no problems with multiple reconcilers, because
+                        // the access is serialized through asyncExec.
+                        pushingChanges = true;
+                        // perform parsing (of full text, we ignore the changed region)
+                        NedResourcesPlugin.getNedResources().setNedFileText(getFile(), getText());
+                    }
+                    finally {
+                        pushingChanges = false;
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * When a "pull changes from NEDResources" operation has been scheduled, do it now.
+     */
+    public synchronized void pullChangesFromNedResourcesWhenPending() {
+        // if the job is not scheduled then there are no changes at all and we don't pull
+        // because that would only pretty print the source
+        if (pullChangesJob.isScheduled()) {
+            pullChangesJob.cancel();
+            DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+                public synchronized void run() {
+                    pullChangesFromNedResources();
+                }
+            });
+        }
+    }
 
     /**
      * Unconditionally pulls changes from NEDResources and applies them to the
@@ -471,34 +471,34 @@ public class TextualNedEditor extends TextEditor implements INedChangeListener, 
     }
 
 
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		// do not react to notification changes if we are the active editor or we are currently
-		// setting our selection
-		if (isActivePart() || nedSelectionProvider.isNotificationInProgress())
-			return;
+    public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+        // do not react to notification changes if we are the active editor or we are currently
+        // setting our selection
+        if (isActivePart() || nedSelectionProvider.isNotificationInProgress())
+            return;
 
-		// Debug.println("*** TextEditor selection changed from: "+part+" selection: "+selection);
-		if (selection instanceof IStructuredSelection) {
-			Object firstElement = ((IStructuredSelection) selection).getFirstElement();
-			if (selection.isEmpty())
-				resetHighlightRange();
-			else if (firstElement instanceof INedModelProvider){
-				INedElement node = ((INedModelProvider)firstElement).getModel();
-				//Debug.println("selected: "+node);
-				NedSourceRegion region = node.getSourceRegion();
-				if (region!=null) {
-					IDocument docu = getDocument();
-					try {
-						int startOffset = docu.getLineOffset(region.getStartLine()-1)+region.getStartColumn();
-						int endOffset = docu.getLineOffset(region.getEndLine()-1)+region.getEndColumn();
-						setHighlightRange(startOffset, endOffset-startOffset, true);
-					} catch (BadLocationException e) {
-					}
-					catch (IllegalArgumentException x) {
-						resetHighlightRange();
-					}
-				}
-			}
-		}
-	}
+        // Debug.println("*** TextEditor selection changed from: "+part+" selection: "+selection);
+        if (selection instanceof IStructuredSelection) {
+            Object firstElement = ((IStructuredSelection) selection).getFirstElement();
+            if (selection.isEmpty())
+                resetHighlightRange();
+            else if (firstElement instanceof INedModelProvider){
+                INedElement node = ((INedModelProvider)firstElement).getModel();
+                //Debug.println("selected: "+node);
+                NedSourceRegion region = node.getSourceRegion();
+                if (region!=null) {
+                    IDocument docu = getDocument();
+                    try {
+                        int startOffset = docu.getLineOffset(region.getStartLine()-1)+region.getStartColumn();
+                        int endOffset = docu.getLineOffset(region.getEndLine()-1)+region.getEndColumn();
+                        setHighlightRange(startOffset, endOffset-startOffset, true);
+                    } catch (BadLocationException e) {
+                    }
+                    catch (IllegalArgumentException x) {
+                        resetHighlightRange();
+                    }
+                }
+            }
+        }
+    }
 }

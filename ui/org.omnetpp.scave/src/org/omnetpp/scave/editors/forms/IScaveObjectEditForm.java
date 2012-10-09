@@ -22,65 +22,65 @@ import org.eclipse.swt.widgets.Composite;
  */
 public interface IScaveObjectEditForm {
 
-	/**
-	 * Key for accessing the selected object as a form parameter.
-	 */
-	final String PARAM_SELECTED_OBJECT = "SelectedObject";
+    /**
+     * Key for accessing the selected object as a form parameter.
+     */
+    final String PARAM_SELECTED_OBJECT = "SelectedObject";
 
-	/**
-	 * Returns the string displayed in the title are of the dialog.
-	 */
-	String getTitle();
+    /**
+     * Returns the string displayed in the title are of the dialog.
+     */
+    String getTitle();
 
-	/**
-	 * Returns the string displayed below the title.
-	 */
-	String getDescription();
+    /**
+     * Returns the string displayed below the title.
+     */
+    String getDescription();
 
-	/**
-	 * Adds the controls of the form to the panel.
-	 */
-	void populatePanel(Composite panel);
+    /**
+     * Adds the controls of the form to the panel.
+     */
+    void populatePanel(Composite panel);
 
-	/**
-	 * Returns the features edited on this form.
-	 * Do not modify the returned array.
-	 */
-	EStructuralFeature[] getFeatures();
+    /**
+     * Returns the features edited on this form.
+     * Do not modify the returned array.
+     */
+    EStructuralFeature[] getFeatures();
 
-	/**
-	 * Returns the value of the control associated with the specified feature.
-	 */
-	Object getValue(EStructuralFeature feature);
+    /**
+     * Returns the value of the control associated with the specified feature.
+     */
+    Object getValue(EStructuralFeature feature);
 
-	/**
-	 * Sets the value of the control associated with the specified feature.
-	 */
-	void setValue(EStructuralFeature feature, Object value);
+    /**
+     * Sets the value of the control associated with the specified feature.
+     */
+    void setValue(EStructuralFeature feature, Object value);
 
-	/**
-	 * Validates the content of the form.
-	 * Returns a status object, that can be a simple {@link IStatus},
-	 * or a {@link org.eclipse.core.runtime.MultiStatus MultiStatus}
-	 * containing multiple errors and warnings.
-	 */
-	IStatus validate();
+    /**
+     * Validates the content of the form.
+     * Returns a status object, that can be a simple {@link IStatus},
+     * or a {@link org.eclipse.core.runtime.MultiStatus MultiStatus}
+     * containing multiple errors and warnings.
+     */
+    IStatus validate();
 
-	/**
-	 * Add a listener to the listener list.
-	 * Listeners receive notifications when some field in the form changes.
-	 */
-	void addChangeListener(Listener listener);
+    /**
+     * Add a listener to the listener list.
+     * Listeners receive notifications when some field in the form changes.
+     */
+    void addChangeListener(Listener listener);
 
-	/**
-	 * Removes a listener from the listener list.
-	 */
-	void removeChangeListener(Listener listener);
+    /**
+     * Removes a listener from the listener list.
+     */
+    void removeChangeListener(Listener listener);
 
-	/**
-	 * Interface to receive change notifications.
-	 */
-	interface Listener {
-	    void editFormChanged(IScaveObjectEditForm form);
-	}
+    /**
+     * Interface to receive change notifications.
+     */
+    interface Listener {
+        void editFormChanged(IScaveObjectEditForm form);
+    }
 }

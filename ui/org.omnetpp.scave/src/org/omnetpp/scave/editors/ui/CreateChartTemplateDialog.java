@@ -39,116 +39,116 @@ import org.omnetpp.scave.ScavePlugin;
  */
 public class CreateChartTemplateDialog extends TitleAreaDialog {
 
-	private static String RUNID_FIELD_KEY = "org.omnetpp.scave.editors.ui.CreateChartTemplateDialog.runidfield";
+    private static String RUNID_FIELD_KEY = "org.omnetpp.scave.editors.ui.CreateChartTemplateDialog.runidfield";
 
-	String datasetName;
-	String chartName;
-	String[] filterFields;
+    String datasetName;
+    String chartName;
+    String[] filterFields;
 
-	Text datasetnameText;
-	Text chartnameText;
-	Table filterFieldsTable;
+    Text datasetnameText;
+    Text chartnameText;
+    Table filterFieldsTable;
 
-	public CreateChartTemplateDialog(Shell parentShell) {
-		super(parentShell);
+    public CreateChartTemplateDialog(Shell parentShell) {
+        super(parentShell);
         setShellStyle(getShellStyle() | SWT.RESIZE);
-	}
+    }
 
-	@Override
-	protected IDialogSettings getDialogBoundsSettings() {
-	    return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
-	}
+    @Override
+    protected IDialogSettings getDialogBoundsSettings() {
+        return UIUtils.getDialogSettings(ScavePlugin.getDefault(), getClass().getName());
+    }
 
-	public String getChartName() {
-		return chartName;
-	}
+    public String getChartName() {
+        return chartName;
+    }
 
-	public void setChartName(String chartName) {
+    public void setChartName(String chartName) {
         this.chartName = chartName;
     }
 
-	public String getDatasetName() {
-		return datasetName;
-	}
+    public String getDatasetName() {
+        return datasetName;
+    }
 
-	public void setDatasetName(String datasetName) {
+    public void setDatasetName(String datasetName) {
         this.datasetName = datasetName;
     }
 
-	public String[] getFilterFields() {
-		return filterFields;
-	}
+    public String[] getFilterFields() {
+        return filterFields;
+    }
 
-	@Override
-	protected void configureShell(Shell newShell) {
-		newShell.setText("Create Chart Template");
-		super.configureShell(newShell);
-	}
+    @Override
+    protected void configureShell(Shell newShell) {
+        newShell.setText("Create Chart Template");
+        super.configureShell(newShell);
+    }
 
-	@Override
-	protected Control createDialogArea(Composite parent) {
-		this.setTitle("New Chart Template");
-		this.setMessage("Add a new dataset containing the chart to the analysis file.");
-		Composite panel = new Composite(parent, SWT.NONE);
+    @Override
+    protected Control createDialogArea(Composite parent) {
+        this.setTitle("New Chart Template");
+        this.setMessage("Add a new dataset containing the chart to the analysis file.");
+        Composite panel = new Composite(parent, SWT.NONE);
         panel.setLayoutData(new GridData(GridData.FILL_BOTH));
         panel.setLayout(new GridLayout(2, false));
 
         Label label = new Label(panel, SWT.NONE);
         label.setText("Dataset name:");
-		datasetnameText = new Text(panel, SWT.BORDER);
-		datasetnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		if (datasetName != null)
-		    datasetnameText.setText(datasetName);
-		label = new Label(panel, SWT.NONE);
-		label.setText("Chart name:");
-		chartnameText = new Text(panel, SWT.BORDER);
-		chartnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-		if (chartName != null)
-		    chartnameText.setText(chartName);
+        datasetnameText = new Text(panel, SWT.BORDER);
+        datasetnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        if (datasetName != null)
+            datasetnameText.setText(datasetName);
+        label = new Label(panel, SWT.NONE);
+        label.setText("Chart name:");
+        chartnameText = new Text(panel, SWT.BORDER);
+        chartnameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        if (chartName != null)
+            chartnameText.setText(chartName);
 
-		Group group = new Group(panel, SWT.NONE);
-		group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
-		group.setLayout(new GridLayout(1, false));
-		group.setText("Filter fields");
+        Group group = new Group(panel, SWT.NONE);
+        group.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+        group.setLayout(new GridLayout(1, false));
+        group.setText("Filter fields");
 
-		Label label2 = new Label(group, SWT.WRAP);
-		label2.setText("Choose fields that identify the data; these fields will be used as data filter criteria when the chart is next opened." );
-		label2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        Label label2 = new Label(group, SWT.WRAP);
+        label2.setText("Choose fields that identify the data; these fields will be used as data filter criteria when the chart is next opened." );
+        label2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		filterFieldsTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.HIDE_SELECTION);
-		filterFieldsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		createFilterFieldItem(group, "By Run Id", RUN);
-		createFilterFieldItem(group, "By File Name", FILE);
-		createFilterFieldItem(group, "Config name", CONFIGNAME);
-		createFilterFieldItem(group, "Run number", RUNNUMBER);
-		TableItem moduleNameItem = createFilterFieldItem(group, "Module name", MODULE);
-		TableItem dataNameItem = createFilterFieldItem(group, "Data name", NAME);
-		moduleNameItem.setChecked(true);
-		dataNameItem.setChecked(true);
+        filterFieldsTable = new Table(group, SWT.CHECK | SWT.BORDER | SWT.HIDE_SELECTION);
+        filterFieldsTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        createFilterFieldItem(group, "By Run Id", RUN);
+        createFilterFieldItem(group, "By File Name", FILE);
+        createFilterFieldItem(group, "Config name", CONFIGNAME);
+        createFilterFieldItem(group, "Run number", RUNNUMBER);
+        TableItem moduleNameItem = createFilterFieldItem(group, "Module name", MODULE);
+        TableItem dataNameItem = createFilterFieldItem(group, "Data name", NAME);
+        moduleNameItem.setChecked(true);
+        dataNameItem.setChecked(true);
 
-		return panel;
-	}
+        return panel;
+    }
 
-	private TableItem createFilterFieldItem(Composite parent, String label, String field) {
-		TableItem item = new TableItem(filterFieldsTable, SWT.NONE);
-		item.setText(label);
-		item.setData(RUNID_FIELD_KEY, field);
-		return item;
-	}
+    private TableItem createFilterFieldItem(Composite parent, String label, String field) {
+        TableItem item = new TableItem(filterFieldsTable, SWT.NONE);
+        item.setText(label);
+        item.setData(RUNID_FIELD_KEY, field);
+        return item;
+    }
 
-	@Override
-	protected void okPressed() {
-		datasetName = datasetnameText.getText();
-		chartName = chartnameText.getText();
-		int count = 0;
-		for (TableItem item : filterFieldsTable.getItems())
-			if (item.getChecked())
-				count++;
-		int i = 0;
-		filterFields = new String[count];
-		for (TableItem item : filterFieldsTable.getItems())
-			if (item.getChecked())
-				filterFields[i++] = (String)item.getData(RUNID_FIELD_KEY);
-		super.okPressed();
-	}
+    @Override
+    protected void okPressed() {
+        datasetName = datasetnameText.getText();
+        chartName = chartnameText.getText();
+        int count = 0;
+        for (TableItem item : filterFieldsTable.getItems())
+            if (item.getChecked())
+                count++;
+        int i = 0;
+        filterFields = new String[count];
+        for (TableItem item : filterFieldsTable.getItems())
+            if (item.getChecked())
+                filterFields[i++] = (String)item.getData(RUNID_FIELD_KEY);
+        super.okPressed();
+    }
 }

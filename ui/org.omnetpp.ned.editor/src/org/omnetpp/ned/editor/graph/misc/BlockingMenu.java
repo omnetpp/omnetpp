@@ -20,61 +20,61 @@ import org.eclipse.swt.widgets.MenuItem;
  * @author rhornig
  */
 public class BlockingMenu extends Menu {
-	MenuItem selectedMenuItem = null;
+    MenuItem selectedMenuItem = null;
 
-	public BlockingMenu(Control parent) {
-		super(parent);
-	}
+    public BlockingMenu(Control parent) {
+        super(parent);
+    }
 
-	public BlockingMenu(Decorations parent, int style) {
-		super(parent, style);
-	}
+    public BlockingMenu(Decorations parent, int style) {
+        super(parent, style);
+    }
 
-	public BlockingMenu(Menu parentMenu) {
-		super(parentMenu);
-	}
+    public BlockingMenu(Menu parentMenu) {
+        super(parentMenu);
+    }
 
-	public BlockingMenu(MenuItem parentItem) {
-		super(parentItem);
-	}
+    public BlockingMenu(MenuItem parentItem) {
+        super(parentItem);
+    }
 
-	/**
-	 * Opens a Menu and blocks the execution so it waits until selection is done.
-	 * Returns the selected MenuItem, or null if the menu was cancelled.
-	 */
-	public MenuItem open() {
-		setVisible(true);
-		// block until a selection is done or the menu is cancelled
-		while (!isDisposed () && isVisible ()) {
-			if (!getDisplay().readAndDispatch()) getDisplay().sleep();
-		}
+    /**
+     * Opens a Menu and blocks the execution so it waits until selection is done.
+     * Returns the selected MenuItem, or null if the menu was cancelled.
+     */
+    public MenuItem open() {
+        setVisible(true);
+        // block until a selection is done or the menu is cancelled
+        while (!isDisposed () && isVisible ()) {
+            if (!getDisplay().readAndDispatch()) getDisplay().sleep();
+        }
 
 //        Debug.println("returning menuitem: "+selectedMenuItem);
-		return selectedMenuItem;
-	}
+        return selectedMenuItem;
+    }
 
-	/**
-	 * Creates a new MenuItem with the given SWT style, and adds it to the menu.
-	 */
-	public MenuItem addMenuItem(int style) {
-		MenuItem mi = new MenuItem(this, style);
-		mi.addSelectionListener(new SelectionListener() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				selectedMenuItem = (MenuItem)e.widget;
-//				Debug.println("menuitem selected1: "+selectedMenuItem);
-			}
+    /**
+     * Creates a new MenuItem with the given SWT style, and adds it to the menu.
+     */
+    public MenuItem addMenuItem(int style) {
+        MenuItem mi = new MenuItem(this, style);
+        mi.addSelectionListener(new SelectionListener() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                selectedMenuItem = (MenuItem)e.widget;
+//              Debug.println("menuitem selected1: "+selectedMenuItem);
+            }
 
-			public void widgetSelected(SelectionEvent e) {
-				selectedMenuItem = (MenuItem)e.widget;
+            public void widgetSelected(SelectionEvent e) {
+                selectedMenuItem = (MenuItem)e.widget;
 //                Debug.println("menuitem selected2: "+selectedMenuItem);
-			}
+            }
 
-		});
-		return mi;
-	}
+        });
+        return mi;
+    }
 
-	// override with empty implementation to allow subclassing of SWT controls
-	@Override
-	protected void checkSubclass () {
-	}
+    // override with empty implementation to allow subclassing of SWT controls
+    @Override
+    protected void checkSubclass () {
+    }
 }

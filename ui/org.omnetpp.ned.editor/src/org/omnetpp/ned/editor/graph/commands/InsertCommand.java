@@ -27,9 +27,9 @@ public class InsertCommand extends Command {
     }
 
     public InsertCommand(INedElement parent, INedElement child, INedElement where) {
-    	this.child = child;
-    	this.parent = parent;
-    	this.insertBefore = where;
+        this.child = child;
+        this.parent = parent;
+        this.insertBefore = where;
 
         String label = "Add";
         if (child instanceof IHasName)
@@ -54,7 +54,7 @@ public class InsertCommand extends Command {
 
     @Override
     public void undo() {
-    	child.removeFromParent();
+        child.removeFromParent();
     }
 
 }

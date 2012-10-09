@@ -54,33 +54,33 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 
 public class ChartSheetPage extends ScaveEditorPage {
 
-	private ChartSheet chartSheet; // the underlying model
+    private ChartSheet chartSheet; // the underlying model
 
-	private LiveTable chartsArea;
-	private List<ChartUpdater> updaters = new ArrayList<ChartUpdater>();
+    private LiveTable chartsArea;
+    private List<ChartUpdater> updaters = new ArrayList<ChartUpdater>();
 
-	public ChartSheetPage(Composite parent, ScaveEditor editor, ChartSheet chartsheet) {
-		super(parent, SWT.V_SCROLL | SWT.H_SCROLL, editor);
-		this.chartSheet = chartsheet;
-		initialize();
-	}
+    public ChartSheetPage(Composite parent, ScaveEditor editor, ChartSheet chartsheet) {
+        super(parent, SWT.V_SCROLL | SWT.H_SCROLL, editor);
+        this.chartSheet = chartsheet;
+        initialize();
+    }
 
     @Override
     @SuppressWarnings("unchecked")
     public void updatePage(Notification notification) {
-		Object notifier = notification.getNotifier();
+        Object notifier = notification.getNotifier();
 
-		if (notifier == chartSheet) {
-			switch (notification.getFeatureID(ChartSheet.class)) {
-    			case ScaveModelPackage.CHART_SHEET__NAME:
-    				setPageTitle("Charts: " + getChartSheetName(chartSheet));
-    				setFormTitle("Charts: " + getChartSheetName(chartSheet));
-    				break;
-    			case ScaveModelPackage.CHART_SHEET__CHARTS:
-    				synchronize();
-    	            chartsArea.layout(true);
-    	            reflow(true);
-    				break;
+        if (notifier == chartSheet) {
+            switch (notification.getFeatureID(ChartSheet.class)) {
+                case ScaveModelPackage.CHART_SHEET__NAME:
+                    setPageTitle("Charts: " + getChartSheetName(chartSheet));
+                    setFormTitle("Charts: " + getChartSheetName(chartSheet));
+                    break;
+                case ScaveModelPackage.CHART_SHEET__CHARTS:
+                    synchronize();
+                    chartsArea.layout(true);
+                    reflow(true);
+                    break;
                 case ScaveModelPackage.CHART_SHEET__PROPERTIES:
                     Property property;
                     switch (notification.getEventType()) {
@@ -102,49 +102,49 @@ public class ChartSheetPage extends ScaveEditorPage {
                             break;
                     }
                     break;
-			}
-		}
-		else if (notifier instanceof Property) {
+            }
+        }
+        else if (notifier instanceof Property) {
             Property property = (Property)notifier;
             switch (notification.getEventType()) {
                 case Notification.SET:
                     setChartSheetProperty(property.getName(), (String)notification.getNewValue());
                     break;
             }
-		}
-		else
-			updateCharts();
-	}
+        }
+        else
+            updateCharts();
+    }
 
-	public void updateCharts() {
-		for (ChartUpdater updater : updaters)
-			updater.updateDataset();
-	}
+    public void updateCharts() {
+        for (ChartUpdater updater : updaters)
+            updater.updateDataset();
+    }
 
-	public Composite getChartSheetComposite() {
-		return chartsArea;
-	}
+    public Composite getChartSheetComposite() {
+        return chartsArea;
+    }
 
-	private void addChartUpdater(Chart chart, IChartView view) {
-		updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
-	}
+    private void addChartUpdater(Chart chart, IChartView view) {
+        updaters.add(new ChartUpdater(chart, view, scaveEditor.getResultFileManager()));
+    }
 
-	private void removeChartUpdater(Chart chart) {
-		for (Iterator<ChartUpdater> iterator = updaters.iterator(); iterator.hasNext(); ) {
-			ChartUpdater updater = iterator.next();
-			if (updater.getChart().equals(chart)) {
-				iterator.remove();
-				break;
-			}
-		}
-	}
+    private void removeChartUpdater(Chart chart) {
+        for (Iterator<ChartUpdater> iterator = updaters.iterator(); iterator.hasNext(); ) {
+            ChartUpdater updater = iterator.next();
+            if (updater.getChart().equals(chart)) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
 
-	private Chart findChart(Control view) {
-		for (ChartUpdater updater : updaters)
-			if (updater.getChartView().getCanvas().equals(view))
-				return updater.getChart();
-		return null;
-	}
+    private Chart findChart(Control view) {
+        for (ChartUpdater updater : updaters)
+            if (updater.getChartView().getCanvas().equals(view))
+                return updater.getChart();
+        return null;
+    }
 
     private IChartView findChartView(Control canvas) {
         for (ChartUpdater updater : updaters)
@@ -153,16 +153,16 @@ public class ChartSheetPage extends ScaveEditorPage {
         return null;
     }
 
-	private IChartView findChartView(Chart chart) {
-		for (ChartUpdater updater : updaters)
-			if (updater.getChart().equals(chart))
-				return updater.getChartView();
-		return null;
-	}
+    private IChartView findChartView(Chart chart) {
+        for (ChartUpdater updater : updaters)
+            if (updater.getChart().equals(chart))
+                return updater.getChartView();
+        return null;
+    }
 
-	private IChartView addChartView(final Chart chart) {
-		IChartView view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
-		Assert.isNotNull(view);
+    private IChartView addChartView(final Chart chart) {
+        IChartView view = ChartFactory.createChart(chartsArea, chart, scaveEditor.getResultFileManager());
+        Assert.isNotNull(view);
 
         Control viewControl = view.getCanvas();
         GridData gridData = new GridData(SWT.FILL, SWT.FILL, true, true);
@@ -170,178 +170,178 @@ public class ChartSheetPage extends ScaveEditorPage {
         gridData.minimumHeight = ChartSheetProperties.DEFAULT_MIN_CHART_HEIGHT;
         viewControl.setLayoutData(gridData);
         chartsArea.configureChild(viewControl);
-		addChartUpdater(chart, view);
-		MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
+        addChartUpdater(chart, view);
+        MenuManager menuManager = new ChartMenuManager(chart, scaveEditor);
         viewControl.setMenu(menuManager.createContextMenu(viewControl));
-		// hide legend
-		view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
+        // hide legend
+        view.setProperty(ChartProperties.PROP_DISPLAY_LEGEND, "false");
 
         ScaveEditorContributor contributor = ScaveEditorContributor.getDefault();
         if (contributor != null)
             contributor.registerChart(view);
 
         viewControl.addMouseListener(new MouseAdapter() {
-			// double click in the view opens the chart in a separate page
-			@Override
-			public void mouseDoubleClick(MouseEvent e) {
-				scaveEditor.openChart(chart);
-			}
+            // double click in the view opens the chart in a separate page
+            @Override
+            public void mouseDoubleClick(MouseEvent e) {
+                scaveEditor.openChart(chart);
+            }
 
-			// mouse click on the view selects the chart object in the model
-			// We must use the mouse down event to set a new selection otherwise Actions in
-			// the context menu will not see the new selection because they are
-			// displayed right after mause down (and befoe mouse up)
-			@Override
-			public void mouseDown(MouseEvent e) {
-				scaveEditor.setSelection(new StructuredSelection(chart));
-			}
-		});
+            // mouse click on the view selects the chart object in the model
+            // We must use the mouse down event to set a new selection otherwise Actions in
+            // the context menu will not see the new selection because they are
+            // displayed right after mause down (and befoe mouse up)
+            @Override
+            public void mouseDown(MouseEvent e) {
+                scaveEditor.setSelection(new StructuredSelection(chart));
+            }
+        });
 
         if (viewControl instanceof ChartCanvas)
-		setDisplayChartDetails((ChartCanvas)viewControl, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
-		return view;
-	}
+        setDisplayChartDetails((ChartCanvas)viewControl, ChartSheetProperties.DEFAULT_DISPLAY_CHART_DETAILS);
+        return view;
+    }
 
-	private void removeChartView(Chart chart) {
-		IChartView view = findChartView(chart);
-		removeChartUpdater(chart);
-		if (view != null) {
-	        Canvas canvas = view.getCanvas();
-    		if (!canvas.isDisposed()) {
-    			canvas.dispose();
-    		}
-		}
-	}
+    private void removeChartView(Chart chart) {
+        IChartView view = findChartView(chart);
+        removeChartUpdater(chart);
+        if (view != null) {
+            Canvas canvas = view.getCanvas();
+            if (!canvas.isDisposed()) {
+                canvas.dispose();
+            }
+        }
+    }
 
-	private void synchronize() {
-		List<Control> currentChildren = new ArrayList<Control>();
-		for (Control child : chartsArea.getChildren())
-			if (child instanceof ZoomableCachingCanvas)
-				currentChildren.add(child);
+    private void synchronize() {
+        List<Control> currentChildren = new ArrayList<Control>();
+        for (Control child : chartsArea.getChildren())
+            if (child instanceof ZoomableCachingCanvas)
+                currentChildren.add(child);
 
-		List<Chart> charts = new ArrayList<Chart>(chartSheet.getCharts());
-		List<Control> children = new ArrayList<Control>(charts.size());
+        List<Chart> charts = new ArrayList<Chart>(chartSheet.getCharts());
+        List<Control> children = new ArrayList<Control>(charts.size());
 
-		for (Chart chart : charts) {
-			IChartView view = findChartView(chart);
-			if (view == null)
-				view = addChartView(chart);
-			children.add(view.getCanvas());
-		}
+        for (Chart chart : charts) {
+            IChartView view = findChartView(chart);
+            if (view == null)
+                view = addChartView(chart);
+            children.add(view.getCanvas());
+        }
 
-		for (Control child : currentChildren) {
-			if (!children.contains(child)) {
-				Chart chart = findChart(child);
-				removeChartView(chart);
-			}
-		}
+        for (Control child : currentChildren) {
+            if (!children.contains(child)) {
+                Chart chart = findChart(child);
+                removeChartView(chart);
+            }
+        }
 
-		chartsArea.setChildOrder(children);
-		chartsArea.layout();
-		chartsArea.redraw();
-	}
+        chartsArea.setChildOrder(children);
+        chartsArea.layout();
+        chartsArea.redraw();
+    }
 
-	private void initialize() {
-		// set up UI
-		setPageTitle("Charts: " + getChartSheetName(chartSheet));
-		setFormTitle("Charts: " + getChartSheetName(chartSheet));
-		setExpandHorizontal(true);
-		setExpandVertical(true);
-		getForm().getHead().addMouseListener(new MouseAdapter() {
-		    // mouse click on the title selects the chart sheet in the model
+    private void initialize() {
+        // set up UI
+        setPageTitle("Charts: " + getChartSheetName(chartSheet));
+        setFormTitle("Charts: " + getChartSheetName(chartSheet));
+        setExpandHorizontal(true);
+        setExpandVertical(true);
+        getForm().getHead().addMouseListener(new MouseAdapter() {
+            // mouse click on the title selects the chart sheet in the model
             public void mouseUp(MouseEvent e) {
                 chartsArea.setSelection(new Control[0]);
                 scaveEditor.setSelection(new StructuredSelection(chartSheet));
             }
-		});
+        });
 
         Composite body = getBody();
         body.setLayout(new FillLayout());
         chartsArea = new LiveTable(body, SWT.DOUBLE_BUFFERED);
         chartsArea.setBackground(getBackground());
-		chartsArea.setLayout(new GridLayout(ChartSheetProperties.DEFAULT_COLUMN_COUNT, true));
+        chartsArea.setLayout(new GridLayout(ChartSheetProperties.DEFAULT_COLUMN_COUNT, true));
 
-		chartsArea.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				scaveEditor.setSelection(event.getSelection());
-			}
-		});
+        chartsArea.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                scaveEditor.setSelection(event.getSelection());
+            }
+        });
 
-		chartsArea.addChildOrderChangedListener(new LiveTable.IChildOrderChangedListener() {
-			public void childOrderChanged(LiveTable table) {
-				if (table == chartsArea && !chartsArea.isDisposed())
-					handleChildOrderChanged();
-			}
-		});
+        chartsArea.addChildOrderChangedListener(new LiveTable.IChildOrderChangedListener() {
+            public void childOrderChanged(LiveTable table) {
+                if (table == chartsArea && !chartsArea.isDisposed())
+                    handleChildOrderChanged();
+            }
+        });
 
-		// set up contents
-		for (Chart chart : chartSheet.getCharts())
-			addChartView(chart);
+        // set up contents
+        for (Chart chart : chartSheet.getCharts())
+            addChartView(chart);
 
-		for (Property property : chartSheet.getProperties())
-		    setChartSheetProperty(property.getName(), property.getValue());
-		
+        for (Property property : chartSheet.getProperties())
+            setChartSheetProperty(property.getName(), property.getValue());
+
         // ensure that focus gets restored correctly after user goes somewhere else and then comes back
         setFocusManager(new FocusManager(this));
-		
-	}
 
-	@Override
-	public boolean setFocus() {
-		if (chartsArea != null)
-			return chartsArea.setFocus();
-		else
-			return super.setFocus();
-	}
+    }
 
-	private static String getChartSheetName(ChartSheet chartSheet) {
-		return StringUtils.defaultString(chartSheet.getName(), "<unnamed>");
-	}
+    @Override
+    public boolean setFocus() {
+        if (chartsArea != null)
+            return chartsArea.setFocus();
+        else
+            return super.setFocus();
+    }
 
-	@Override
-	public boolean gotoObject(Object object) {
-		if (object == chartSheet) {
-			return true;
-		}
-		if (object instanceof EObject) {
-			EObject eobject = (EObject)object;
-			for (Chart chart : chartSheet.getCharts())
-				if (chart == eobject) {
-					// TODO scroll to chart
-					return true;
-				}
-		}
-		return false;
-	}
+    private static String getChartSheetName(ChartSheet chartSheet) {
+        return StringUtils.defaultString(chartSheet.getName(), "<unnamed>");
+    }
 
-	@Override
-	public ChartCanvas getActiveChartCanvas() {
-		ISelection selection = chartsArea.getSelection();
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection structuredSelection = (IStructuredSelection)selection;
-			if (structuredSelection.size() == 1 &&
-					structuredSelection.getFirstElement() instanceof ChartCanvas)
-				return (ChartCanvas)structuredSelection.getFirstElement();
-		}
-		return null;
-	}
+    @Override
+    public boolean gotoObject(Object object) {
+        if (object == chartSheet) {
+            return true;
+        }
+        if (object instanceof EObject) {
+            EObject eobject = (EObject)object;
+            for (Chart chart : chartSheet.getCharts())
+                if (chart == eobject) {
+                    // TODO scroll to chart
+                    return true;
+                }
+        }
+        return false;
+    }
 
-	protected void handleChildOrderChanged() {
-		List<Chart> charts = new ArrayList<Chart>();
-		for (Control child : chartsArea.getChildren()) {
-			if (child instanceof ChartCanvas) {
-				Chart chart = findChart(child);
-				if (chart != null)
-					charts.add(chart);
-			}
-		}
+    @Override
+    public ChartCanvas getActiveChartCanvas() {
+        ISelection selection = chartsArea.getSelection();
+        if (selection instanceof IStructuredSelection) {
+            IStructuredSelection structuredSelection = (IStructuredSelection)selection;
+            if (structuredSelection.size() == 1 &&
+                    structuredSelection.getFirstElement() instanceof ChartCanvas)
+                return (ChartCanvas)structuredSelection.getFirstElement();
+        }
+        return null;
+    }
 
-		EditingDomain domain = scaveEditor.getEditingDomain();
-		CompoundCommand command = new CompoundCommand("Move");
-		EStructuralFeature feature = ScaveModelPackage.eINSTANCE.getChartSheet_Charts();
-		command.append(SetCommand.create(domain, chartSheet, feature, charts));
-		scaveEditor.executeCommand(command);
-	}
+    protected void handleChildOrderChanged() {
+        List<Chart> charts = new ArrayList<Chart>();
+        for (Control child : chartsArea.getChildren()) {
+            if (child instanceof ChartCanvas) {
+                Chart chart = findChart(child);
+                if (chart != null)
+                    charts.add(chart);
+            }
+        }
+
+        EditingDomain domain = scaveEditor.getEditingDomain();
+        CompoundCommand command = new CompoundCommand("Move");
+        EStructuralFeature feature = ScaveModelPackage.eINSTANCE.getChartSheet_Charts();
+        command.append(SetCommand.create(domain, chartSheet, feature, charts));
+        scaveEditor.executeCommand(command);
+    }
 
     private void setChartSheetProperty(String name, String value) {
         if (ChartSheetProperties.PROP_COLUMN_COUNT.equals(name)) {

@@ -17,7 +17,7 @@ import org.omnetpp.scave.engine.Statistics;
  */
 public interface IAveragedXYDataset extends IXYDataset {
 
-	/**
+    /**
      * Returns the statistics of collected X data.
      */
     public Statistics getXStatistics(int series, int item);

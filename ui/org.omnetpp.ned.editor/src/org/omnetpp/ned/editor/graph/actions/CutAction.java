@@ -41,8 +41,8 @@ public class CutAction extends SelectionAction {
         setId(ID);
         setToolTipText(TOOLTIP);
         ISharedImages sharedImages = PlatformUI.getWorkbench().getSharedImages();
-    	setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
-    	setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
+        setImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+        setDisabledImageDescriptor(sharedImages.getImageDescriptor(ISharedImages.IMG_TOOL_CUT_DISABLED));
     }
 
     @Override
@@ -50,30 +50,30 @@ public class CutAction extends SelectionAction {
         return getSelectedObjects().size() > 0 && EditPartUtil.isEditable(getSelectedObjects().get(0));
     }
 
-	@Override @SuppressWarnings("unchecked")
+    @Override @SuppressWarnings("unchecked")
     public void run() {
-		// holder for the Delete commands
-		CompoundCommand compoundCommand = new CompoundCommand();
+        // holder for the Delete commands
+        CompoundCommand compoundCommand = new CompoundCommand();
 
-		// collect selected editparts
-		List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
-		selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));
+        // collect selected editparts
+        List<EditPart> selectedEditParts = new ArrayList<EditPart>(getSelectedObjects());
+        selectedEditParts.addAll(EditPartUtil.getAttachedConnections(selectedEditParts));
 
-		// translate from editparts to model elements
-		List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
-		for (EditPart editPart : selectedEditParts) {
-        	if (editPart instanceof INedModelProvider) {
-				INedElement model = ((INedModelProvider)editPart).getModel();
-				selectedModelObjects.add(model.deepDup());
-				compoundCommand.add(new DeleteCommand(model));
-			}
+        // translate from editparts to model elements
+        List<INedElement> selectedModelObjects = new ArrayList<INedElement>();
+        for (EditPart editPart : selectedEditParts) {
+            if (editPart instanceof INedModelProvider) {
+                INedElement model = ((INedModelProvider)editPart).getModel();
+                selectedModelObjects.add(model.deepDup());
+                compoundCommand.add(new DeleteCommand(model));
+            }
         }
 
         // copy to clipboard, and fire the deletion command
         if (selectedModelObjects.size() > 0) {
-        	Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INedElement[]{}));
-        	compoundCommand.setLabel("Cut " + StringUtils.formatCounted(selectedModelObjects.size(), "object"));
-        	execute(compoundCommand);
+            Clipboard.getDefault().setContents(selectedModelObjects.toArray(new INedElement[]{}));
+            compoundCommand.setLabel("Cut " + StringUtils.formatCounted(selectedModelObjects.size(), "object"));
+            execute(compoundCommand);
         }
     }
 }

@@ -15,31 +15,31 @@ import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
 import org.omnetpp.ned.model.pojo.ImportElement;
 
 /**
- * Sets the "type" or "like-type" field of a submodule or connection. 
+ * Sets the "type" or "like-type" field of a submodule or connection.
  * Also takes care of adding/removing the necessary imports.
  *
  * @author andras
  */
 public class SetTypeOrLikeTypeCommand extends CompoundCommand {
     private final ISubmoduleOrConnection submoduleOrConnection;
-    private final String attribute; // "type" or "like-type" (SubmoduleElement.ATT_TYPE / SubmoduleElement.ATT_LIKE_TYPE)  
+    private final String attribute; // "type" or "like-type" (SubmoduleElement.ATT_TYPE / SubmoduleElement.ATT_LIKE_TYPE)
     private final String qname;
 
     /**
      * Creates the command.
      */
     public SetTypeOrLikeTypeCommand(ISubmoduleOrConnection submoduleOrConnection, String attribute, String qname) {
-    	this.submoduleOrConnection = submoduleOrConnection;
-    	this.attribute = attribute;
-    	this.qname = qname;
-    	setLabel("Set Type");
+        this.submoduleOrConnection = submoduleOrConnection;
+        this.attribute = attribute;
+        this.qname = qname;
+        setLabel("Set Type");
     }
 
     @Override
     public boolean canExecute() {
         return true;
     }
-    
+
     @Override
     public void execute() {
         createCommands();
@@ -51,8 +51,8 @@ public class SetTypeOrLikeTypeCommand extends CompoundCommand {
             add(new SetAttributeCommand(submoduleOrConnection, attribute, qname));
             return;
         }
-        
-        // figure out if the type needs to be imported, and if so, what (simple) name can be used in the type field  
+
+        // figure out if the type needs to be imported, and if so, what (simple) name can be used in the type field
         StringBuffer modifiedName = new StringBuffer();
         ImportElement importElement = NedElementUtilEx.createImportFor(submoduleOrConnection.getEnclosingLookupContext(), qname, modifiedName);
 
@@ -68,11 +68,11 @@ public class SetTypeOrLikeTypeCommand extends CompoundCommand {
 
             add(new InsertCommand(nedFileElement, importElement, importsInsertionPoint));
 
-            // ensure there are blank lines after the last import                
+            // ensure there are blank lines after the last import
             if (!(importsInsertionPoint instanceof ImportElement))
                 importElement.appendChild(NedElementUtilEx.createCommentElement("right", "\n\n\n"));
         }
-        
+
     }
 
 }

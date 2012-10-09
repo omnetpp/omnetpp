@@ -35,8 +35,8 @@ import freemarker.template.TemplateException;
 
 /**
  * A generic wizard which supports content templates (IContentTemplate).
- * The wizard may come up with a template selection page, or with a pre-selected 
- * template. The former mode is the default; the latter mode can be selected by 
+ * The wizard may come up with a template selection page, or with a pre-selected
+ * template. The former mode is the default; the latter mode can be selected by
  * calling setTemplate() right after wizard creation.
  *
  * @author Andras
@@ -45,7 +45,7 @@ public abstract class TemplateBasedWizard extends Wizard implements ITemplateBas
     private String wizardType;
     private IContentTemplate preselectedTemplate; // if this is given, templateSelectionPage will remain null
     private TemplateSelectionPage templateSelectionPage;
-    
+
     // selection state:
     private ICustomWizardPage[] templateCustomPages = new ICustomWizardPage[0]; // never null
     private IContentTemplate creatorOfCustomPages;
@@ -88,15 +88,15 @@ public abstract class TemplateBasedWizard extends Wizard implements ITemplateBas
             throw new IllegalArgumentException("too late: template selection page already created and added");
         this.preselectedTemplate = preselectedTemplate;
     }
-    
+
     public void setImporting(boolean importing) {
         this.importing = importing;
     }
-    
+
     public boolean isImporting() {
         return importing;
     }
-    
+
     public String getWizardType() {
         return wizardType;
     }
@@ -119,7 +119,7 @@ public abstract class TemplateBasedWizard extends Wizard implements ITemplateBas
         // note: template custom pages will be added in getNextPage() of the template selection page.
         if (preselectedTemplate == null)
             addPage(templateSelectionPage = createTemplateSelectionPage());
-        
+
         // a dummy page is needed, otherwise the Next button will be disabled on the template selection page
         addPage(dummyPage = new DummyPage());
     }
@@ -336,9 +336,9 @@ public abstract class TemplateBasedWizard extends Wizard implements ITemplateBas
     }
 
     private static boolean equal(Object o1, Object o2) {
-        return o1==null ? o2==null : o1.equals(o2);    
+        return o1==null ? o2==null : o1.equals(o2);
     }
-    
+
     private String messageOf(Throwable e) {
         String message = e.getMessage();
         if (StringUtils.isEmpty(message))

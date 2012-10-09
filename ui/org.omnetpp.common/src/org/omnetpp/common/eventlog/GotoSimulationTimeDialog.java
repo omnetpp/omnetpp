@@ -41,15 +41,15 @@ public class GotoSimulationTimeDialog extends InputDialog {
         if (expr.startsWith("+")) {
             relative = true;
             expr = expr.substring(1);
-        } 
+        }
         else if (expr.startsWith("-")) {
             relative = true;
         }
-        
+
         // parse
         Expression expression = new Expression();
         expression.parse(expr);
-        double result = expr.matches(".*[a-zA-Z].*") ? expression.doubleValue("s") : expression.doubleValue();  
+        double result = expr.matches(".*[a-zA-Z].*") ? expression.doubleValue("s") : expression.doubleValue();
         BigDecimal simulationTime = new BigDecimal(result);
         // relative vs. absolute
         if (relative)

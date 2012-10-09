@@ -200,14 +200,14 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
 
     @Override
     protected TemplateSelectionPage createTemplateSelectionPage() {
-        // we have a special template type and special template filtering, so 
+        // we have a special template type and special template filtering, so
         // need to override a few methods in TemplateSelectionPage
         return new TemplateSelectionPage(getWizardType(), true) {
             @Override
             protected IContentTemplate loadTemplateFromWorkspace(IFolder folder) throws CoreException {
                 return new FileBasedProjectTemplate(folder);
             }
-            
+
             @Override
             protected IContentTemplate loadTemplateFromURL(URL templateUrl, Bundle bundleOfTemplate) throws CoreException {
                 return new FileBasedProjectTemplate(templateUrl, bundleOfTemplate);
@@ -218,7 +218,7 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
                 if (!withCplusplusSupport()) {
                     // for projects without C++, don't show templates that require C++
                     String reqCppSetting = template.getTemplateProperty(FileBasedProjectTemplate.PROP_REQUIRESCPLUSPLUS);
-                    boolean requiresCPluspPlus = 
+                    boolean requiresCPluspPlus =
                         (!StringUtils.isEmpty(reqCppSetting) && XSWTDataBinding.toBoolean(reqCppSetting)) ||
                         !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_SOURCEFOLDERS)) ||
                         !StringUtils.isEmpty(template.getTemplateProperty(FileBasedProjectTemplate.PROP_MAKEMAKEOPTIONS));
@@ -229,13 +229,13 @@ public class OmnetppCCProjectWizard extends NewOmnetppProjectWizard {
             }
         };
     }
-    
+
     @Override
     protected WizardNewProjectCreationPage createProjectCreationPage() {
         WizardNewProjectCreationPage page = new NewOmnetppCppProjectCreationPage(); // custom one, with the "[] support C++ development" checkbox
         page.setTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
         setWindowTitle(isImporting() ? "Import into OMNeT++ Project" : "New OMNeT++ Project");
-        return page;  
+        return page;
     }
 
     @Override

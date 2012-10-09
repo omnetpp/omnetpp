@@ -14,18 +14,18 @@ import org.eclipse.swt.widgets.Listener;
 public class EventTracer {
 
 
-	public static void start() {
-		System.out.println("startDumpingEvents: hooking event filters");
+    public static void start() {
+        System.out.println("startDumpingEvents: hooking event filters");
 
-		Listener eventFilter = new Listener() {
-			public void handleEvent(Event event) {
-			    System.out.println(" - " + EventUtils.EventType.lookup(event.type) + ": " + event.toString());
-			}
-		};
+        Listener eventFilter = new Listener() {
+            public void handleEvent(Event event) {
+                System.out.println(" - " + EventUtils.EventType.lookup(event.type) + ": " + event.toString());
+            }
+        };
 
-		for (EventUtils.EventType eventType : EventUtils.EventType.getMouseEventTypes())
-			Display.getDefault().addFilter(eventType.getTypeCode(), eventFilter);
-		for (EventUtils.EventType eventType : EventUtils.EventType.getKeyboardEventTypes())
-			Display.getDefault().addFilter(eventType.getTypeCode(), eventFilter);
-	}
+        for (EventUtils.EventType eventType : EventUtils.EventType.getMouseEventTypes())
+            Display.getDefault().addFilter(eventType.getTypeCode(), eventFilter);
+        for (EventUtils.EventType eventType : EventUtils.EventType.getKeyboardEventTypes())
+            Display.getDefault().addFilter(eventType.getTypeCode(), eventFilter);
+    }
 }

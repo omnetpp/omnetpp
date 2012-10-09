@@ -102,7 +102,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
     protected static final String OVR_CUSTOMMAKE_IMG = "icons/full/ovr16/ovr_custommake.png";
     protected static final String OVR_WARNING_IMG = "icons/full/ovr16/warning.gif";
     protected static final String OVR_BUILDROOT_IMG = "icons/full/ovr16/buildroot.png";
-    
+
     // state
     protected BuildSpecification buildSpec;
 
@@ -180,7 +180,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         excludeButton = createButton(sourceGroup, SWT.RADIO, "&Excluded", "Selected folder is excluded from sources");
         includeButton = createButton(sourceGroup, SWT.RADIO, "&Included", "Selected folder is included in sources");
         createLabel(buttons, "", 1);
-        
+
         exportButton = createButton(buttons, SWT.PUSH, "E&xport", "Export settings to \"makemakefiles\" file");
 
 //        pathsAndSymbolsLink.addSelectionListener(new SelectionListener(){
@@ -191,7 +191,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
 //                gotoPathsAndSymbolsPage();
 //            }
 //        });
-        
+
         errorMessageLabel.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
@@ -259,12 +259,12 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
         // "Mark as source folder" won't work on the page until we visit a CDT property page)
         CDTPropertyManager.getProjectDescription(this, getProject());
 
-        // the "Paths and Symbols" CDT page tends to display out-of-date info at the first 
-        // invocation; the following, seemingly no-op code apparently cures that... 
+        // the "Paths and Symbols" CDT page tends to display out-of-date info at the first
+        // invocation; the following, seemingly no-op code apparently cures that...
         if (CDTPropertyManager.getProjectDescription(getProject()) != null)
             for (ICConfigurationDescription cfgDes : CDTPropertyManager.getProjectDescription(getProject()).getConfigurations())
                 ManagedBuildManager.getConfigurationForDescription(cfgDes);  // the magic!
-        
+
         // configure the tree
         treeViewer.setContentProvider(new WorkbenchContentProvider() {
             @Override
@@ -626,7 +626,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             makemakeButton.setSelection(false);
             customMakeButton.setSelection(false);
             noMakeButton.setSelection(false);
-            
+
             optionsButton.setEnabled(false);
             sourceLocationButton.setEnabled(false);
             excludeButton.setEnabled(false);
@@ -882,7 +882,7 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             case BuildSpecification.NONE: overlayImagePath = null; break;
         }
         info.image = Activator.getCachedDecoratedImage(imagePath,
-                new String[] {isBuildRoot ? OVR_BUILDROOT_IMG : null, // TOP_LEFT 
+                new String[] {isBuildRoot ? OVR_BUILDROOT_IMG : null, // TOP_LEFT
                               null,                                   // TOP_RIGHT
                               hasWarning ? OVR_WARNING_IMG : null,    // BOTTOM_LEFT
                               overlayImagePath});                     // BOTTOM_RIGHT

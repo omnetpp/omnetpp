@@ -27,54 +27,54 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class WorkspaceUtils
 {
-	@UIStep
-	public static IProject assertProjectExists(String name) {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
-		Assert.assertTrue("project does not exist", project.exists());
-		return project;
-	}
+    @UIStep
+    public static IProject assertProjectExists(String name) {
+        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
+        Assert.assertTrue("project does not exist", project.exists());
+        return project;
+    }
 
-	@UIStep
-	public static IProject assertProjectNotExists(String name) {
-		IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
-		Assert.assertTrue("project still exists", !project.exists());
-		return project;
-	}
+    @UIStep
+    public static IProject assertProjectNotExists(String name) {
+        IProject project = ResourcesPlugin.getWorkspace().getRoot().getProject(name);
+        Assert.assertTrue("project still exists", !project.exists());
+        return project;
+    }
 
-	@UIStep
-	public static IFolder assertFolderExists(String path) {
-		IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
-		Assert.assertTrue("folder does not exist", folder.exists());
-		return folder;
-	}
+    @UIStep
+    public static IFolder assertFolderExists(String path) {
+        IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
+        Assert.assertTrue("folder does not exist", folder.exists());
+        return folder;
+    }
 
-	@UIStep
-	public static IFolder assertFolderNotExists(String path) {
-		IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
-		Assert.assertTrue("folder still exists", !folder.exists());
-		return folder;
-	}
+    @UIStep
+    public static IFolder assertFolderNotExists(String path) {
+        IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));
+        Assert.assertTrue("folder still exists", !folder.exists());
+        return folder;
+    }
 
-	@UIStep
-	public static IFile assertFileExists(String path) {
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
-		Assert.assertTrue("file does not exist", file.exists());
-		return file;
-	}
+    @UIStep
+    public static IFile assertFileExists(String path) {
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+        Assert.assertTrue("file does not exist", file.exists());
+        return file;
+    }
 
-	@UIStep
-	public static IFile assertFileNotExists(String path) {
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
-		Assert.assertTrue("file still exists", !file.exists());
-		return file;
-	}
+    @UIStep
+    public static IFile assertFileNotExists(String path) {
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+        Assert.assertTrue("file still exists", !file.exists());
+        return file;
+    }
 
-	@UIStep
-	public static void assertFileExistsWithContent(String path, String expectedContent) throws Exception {
-		IFile file = assertFileExists(path);
-		String actualContent = FileUtils.readTextFile(file.getContents());
-		Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, actualContent.equals(expectedContent));
-	}
+    @UIStep
+    public static void assertFileExistsWithContent(String path, String expectedContent) throws Exception {
+        IFile file = assertFileExists(path);
+        String actualContent = FileUtils.readTextFile(file.getContents());
+        Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedContent, actualContent.equals(expectedContent));
+    }
 
     @UIStep
     public static void assertFileExistsWithContentIgnoringWhiteSpace(String path, String expectedContent) throws Exception {
@@ -90,20 +90,20 @@ public class WorkspaceUtils
         Assert.assertTrue("file content: " + actualContent + " differs from expected: " + expectedRegexpContent, matchesRegexp(actualContent, expectedRegexpContent));
     }
 
-	@InBackgroundThread
-	public static void createFileWithContent(String path, String content) throws Exception {
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
-		if (file.exists())
-		    file.delete(true, null);
-		file.create(new ByteArrayInputStream(content.getBytes()), true, null);
-		WorkspaceUtils.assertFileExistsWithContent(path, content); // wait until background job finishes
-	}
-
-	public static void ensureFileNotExists(String path) throws CoreException {
+    @InBackgroundThread
+    public static void createFileWithContent(String path, String content) throws Exception {
         IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
-	    if (file.exists())
-	        file.delete(true, null);
-	}
+        if (file.exists())
+            file.delete(true, null);
+        file.create(new ByteArrayInputStream(content.getBytes()), true, null);
+        WorkspaceUtils.assertFileExistsWithContent(path, content); // wait until background job finishes
+    }
+
+    public static void ensureFileNotExists(String path) throws CoreException {
+        IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(path));
+        if (file.exists())
+            file.delete(true, null);
+    }
 
     public static void ensureFolderExists(String path) throws CoreException {
         IFolder folder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(path));

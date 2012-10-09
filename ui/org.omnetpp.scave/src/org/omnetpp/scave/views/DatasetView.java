@@ -94,91 +94,91 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  *
  * @author tomi
  */
-public class DatasetView extends ViewWithMessagePart implements ISelectionProvider	{
+public class DatasetView extends ViewWithMessagePart implements ISelectionProvider  {
 
-	public static final String ID = "org.omnetpp.scave.DatasetView";
+    public static final String ID = "org.omnetpp.scave.DatasetView";
 
-	private FilteredDataTabFolder tabFolder;
+    private FilteredDataTabFolder tabFolder;
 
-	private boolean viewControlCreated;
+    private boolean viewControlCreated;
 
-	private ScaveEditor activeScaveEditor;
-	private Dataset selectedDataset;
-	private DatasetItem selectedItem;
+    private ScaveEditor activeScaveEditor;
+    private Dataset selectedDataset;
+    private DatasetItem selectedItem;
 
-	private IAction selectAllAction;
-	private IAction toggleFilterAction;
-	private SetFilterAction2 setFilterAction;
+    private IAction selectAllAction;
+    private IAction toggleFilterAction;
+    private SetFilterAction2 setFilterAction;
 
-	private ISelectionListener selectionChangedListener;
-	private IPartListener partListener;
-	private IResultFilesChangeListener resultFilesChangeListener;
-	private INotifyChangedListener modelChangeListener;
+    private ISelectionListener selectionChangedListener;
+    private IPartListener partListener;
+    private IResultFilesChangeListener resultFilesChangeListener;
+    private INotifyChangedListener modelChangeListener;
 
-	private ILabelProvider labelProvider;
+    private ILabelProvider labelProvider;
 
-	private ISelection selection;
-	private ListenerList selectionChangeListeners = new ListenerList();
+    private ISelection selection;
+    private ListenerList selectionChangeListeners = new ListenerList();
 
-	private Runnable scheduledUpdate;
+    private Runnable scheduledUpdate;
 
-	@Override
-	public void init(IViewSite site) throws PartInitException {
-		super.init(site);
-		site.setSelectionProvider(this);
-	}
+    @Override
+    public void init(IViewSite site) throws PartInitException {
+        super.init(site);
+        site.setSelectionProvider(this);
+    }
 
-	@Override
-	public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
-		initActions();
-		hookPageListeners();
-		createToolbarButtons();
+    @Override
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+        initActions();
+        hookPageListeners();
+        createToolbarButtons();
         configurePanel(tabFolder.getAllPanel());
-		configurePanel(tabFolder.getVectorsPanel());
+        configurePanel(tabFolder.getVectorsPanel());
         configurePanel(tabFolder.getScalarsPanel());
-		configurePanel(tabFolder.getHistogramsPanel());
+        configurePanel(tabFolder.getHistogramsPanel());
         createContextMenu(tabFolder.getAllPanel());
-		createContextMenu(tabFolder.getVectorsPanel());
-		createContextMenu(tabFolder.getScalarsPanel());
-		createContextMenu(tabFolder.getHistogramsPanel());
+        createContextMenu(tabFolder.getVectorsPanel());
+        createContextMenu(tabFolder.getScalarsPanel());
+        createContextMenu(tabFolder.getHistogramsPanel());
         workbechSelectionChanged(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection());
-	}
+    }
 
-	@Override
-	protected Control createViewControl(Composite parent) {
-		tabFolder = new FilteredDataTabFolder(parent, SWT.BOTTOM);
+    @Override
+    protected Control createViewControl(Composite parent) {
+        tabFolder = new FilteredDataTabFolder(parent, SWT.BOTTOM);
         tabFolder.setLayoutData(new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.FILL_BOTH));
-		setVisibleDataPanel(tabFolder.getVectorsPanel());
-		showFilter(false);
+        setVisibleDataPanel(tabFolder.getVectorsPanel());
+        showFilter(false);
 
-		viewControlCreated = true;
+        viewControlCreated = true;
 
-		if (enableGuiTest) {
+        if (enableGuiTest) {
             tabFolder.getAllPanel().setData(WIDGET_ID, DATASET_VIEW_ALL_PANEL_ID);
-			tabFolder.getScalarsPanel().setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
-			tabFolder.getVectorsPanel().setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
-			tabFolder.getHistogramsPanel().setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
-		}
+            tabFolder.getScalarsPanel().setData(WIDGET_ID, DATASET_VIEW_SCALARS_PANEL_ID);
+            tabFolder.getVectorsPanel().setData(WIDGET_ID, DATASET_VIEW_VECTORS_PANEL_ID);
+            tabFolder.getHistogramsPanel().setData(WIDGET_ID, DATASET_VIEW_HISTOGRAMS_PANEL_ID);
+        }
 
-		return tabFolder;
-	}
+        return tabFolder;
+    }
 
-	private FilteredDataPanel configurePanel(FilteredDataPanel panel) {
-		IDataControl control = panel.getDataControl();
+    private FilteredDataPanel configurePanel(FilteredDataPanel panel) {
+        IDataControl control = panel.getDataControl();
         control.addSelectionListener(new SelectionAdapter() {
-			@Override
+            @Override
             public void widgetSelected(SelectionEvent e) {
-				IDataControl control = (IDataControl)e.widget;
-				if (control.getSelectionCount() == 0)
-					setSelection(StructuredSelection.EMPTY);
-				else {
-					IDListSelection selection = new IDListSelection(control.getSelectedIDs(), control.getResultFileManager());
-					setSelection(selection);
-				}
-			}
-		});
-		control.addMouseListener(new MouseListener() {
+                IDataControl control = (IDataControl)e.widget;
+                if (control.getSelectionCount() == 0)
+                    setSelection(StructuredSelection.EMPTY);
+                else {
+                    IDListSelection selection = new IDListSelection(control.getSelectedIDs(), control.getResultFileManager());
+                    setSelection(selection);
+                }
+            }
+        });
+        control.addMouseListener(new MouseListener() {
             public void mouseDoubleClick(MouseEvent e) {
                 if (e.getSource() instanceof IDataControl)
                     new CreateTempChartAction().run();
@@ -189,93 +189,93 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
 
             public void mouseUp(MouseEvent e) {
             }
-		});
-		return panel;
-	}
+        });
+        return panel;
+    }
 
-	private void initActions() {
-		toggleFilterAction = new ToggleFilterAction();
-		toggleFilterAction.setChecked(isFilterVisible());
-		setFilterAction = new SetFilterAction2();
-		selectAllAction = new SelectAllAction();
-		IActionBars actionBars = getViewSite().getActionBars();
-		actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
-	}
+    private void initActions() {
+        toggleFilterAction = new ToggleFilterAction();
+        toggleFilterAction.setChecked(isFilterVisible());
+        setFilterAction = new SetFilterAction2();
+        selectAllAction = new SelectAllAction();
+        IActionBars actionBars = getViewSite().getActionBars();
+        actionBars.setGlobalActionHandler(ActionFactory.SELECT_ALL.getId(), selectAllAction);
+    }
 
-	private void createToolbarButtons() {
-		IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
-		manager.add(toggleFilterAction);
-		manager.add(new Separator());
-	}
+    private void createToolbarButtons() {
+        IToolBarManager manager = getViewSite().getActionBars().getToolBarManager();
+        manager.add(toggleFilterAction);
+        manager.add(new Separator());
+    }
 
-	private void createContextMenu(final FilteredDataPanel panel) {
-		IDataControl control = panel.getDataControl();
-		IMenuManager menuManager = control.getContextMenuManager();
+    private void createContextMenu(final FilteredDataPanel panel) {
+        IDataControl control = panel.getDataControl();
+        IMenuManager menuManager = control.getContextMenuManager();
         menuManager.add(setFilterAction);
-		if (control instanceof DataTable)
-		    menuManager.add(new ChooseTableColumnsAction((DataTable)control));
-		if (control instanceof DataTree)
-		    ((DataTree)control).contributeToContextMenu(menuManager);
+        if (control instanceof DataTable)
+            menuManager.add(new ChooseTableColumnsAction((DataTable)control));
+        if (control instanceof DataTree)
+            ((DataTree)control).contributeToContextMenu(menuManager);
         ScaveEditorContributor editorContributor = ScaveEditorContributor.getDefault();
         if (editorContributor != null && ResultType.VECTOR_LITERAL.equals(panel.getType())) {
             menuManager.add(new Separator());
             menuManager.add(editorContributor.getShowOutputVectorViewAction());
         }
-		control.addSelectionListener(new SelectionAdapter() {
-			@Override
+        control.addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
-				ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
-					public Object call() throws Exception {
-						setFilterAction.update(panel);
-						return null;
-					}
-				});
-			}
-		});
-		// XXX call getSite().registerContexMenu() ?
-	}
+                ResultFileManager.callWithReadLock(panel.getResultFileManager(), new Callable<Object>() {
+                    public Object call() throws Exception {
+                        setFilterAction.update(panel);
+                        return null;
+                    }
+                });
+            }
+        });
+        // XXX call getSite().registerContexMenu() ?
+    }
 
-	@Override
-	public void dispose() {
-		unhookPageListeners();
-		super.dispose();
-	}
+    @Override
+    public void dispose() {
+        unhookPageListeners();
+        super.dispose();
+    }
 
-	private void hookPageListeners() {
-		selectionChangedListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				workbechSelectionChanged(selection);
-			}
-		};
-		getSite().getPage().addPostSelectionListener(selectionChangedListener);
+    private void hookPageListeners() {
+        selectionChangedListener = new ISelectionListener() {
+            public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+                workbechSelectionChanged(selection);
+            }
+        };
+        getSite().getPage().addPostSelectionListener(selectionChangedListener);
 
-		partListener = new IPartListener() {
-			public void partActivated(IWorkbenchPart part) {
-				if (part instanceof ScaveEditor)
-					activeEditorChanged((ScaveEditor)part);
-				else if (part instanceof IEditorPart)
-					activeEditorChanged(null);
-			}
+        partListener = new IPartListener() {
+            public void partActivated(IWorkbenchPart part) {
+                if (part instanceof ScaveEditor)
+                    activeEditorChanged((ScaveEditor)part);
+                else if (part instanceof IEditorPart)
+                    activeEditorChanged(null);
+            }
 
-			public void partClosed(IWorkbenchPart part) {
-				if (part == activeScaveEditor)
-					activeEditorChanged(null);
-			}
+            public void partClosed(IWorkbenchPart part) {
+                if (part == activeScaveEditor)
+                    activeEditorChanged(null);
+            }
 
-			public void partBroughtToTop(IWorkbenchPart part) {}
-			public void partDeactivated(IWorkbenchPart part) {}
-			public void partOpened(IWorkbenchPart part) {}
-		};
-		getSite().getPage().addPartListener(partListener);
+            public void partBroughtToTop(IWorkbenchPart part) {}
+            public void partDeactivated(IWorkbenchPart part) {}
+            public void partOpened(IWorkbenchPart part) {}
+        };
+        getSite().getPage().addPartListener(partListener);
 
-		activeEditorChanged(getActiveEditor());
-	}
+        activeEditorChanged(getActiveEditor());
+    }
 
-	private void hookEditorListeners(IEditorPart editor) {
-		if (editor instanceof ScaveEditor) {
-			ScaveEditor scaveEditor = (ScaveEditor)editor;
-			scaveEditor.getResultFileManager().addChangeListener(resultFilesChangeListener =
-				new IResultFilesChangeListener() {
+    private void hookEditorListeners(IEditorPart editor) {
+        if (editor instanceof ScaveEditor) {
+            ScaveEditor scaveEditor = (ScaveEditor)editor;
+            scaveEditor.getResultFileManager().addChangeListener(resultFilesChangeListener =
+                new IResultFilesChangeListener() {
                     public void resultFileManagerChanged(ResultFileManagerChangeEvent event) {
                         switch (event.getChangeType()) {
                         case LOAD:
@@ -292,127 +292,127 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
                             }
                         }
                     }
-			});
+            });
 
-			IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
-			notifier.addListener(modelChangeListener = new INotifyChangedListener() {
-				public void notifyChanged(Notification notification) {
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							updateDataControl();
-						}
-					});
-				}
-			});
-		}
-	}
+            IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
+            notifier.addListener(modelChangeListener = new INotifyChangedListener() {
+                public void notifyChanged(Notification notification) {
+                    Display.getDefault().asyncExec(new Runnable() {
+                        public void run() {
+                            updateDataControl();
+                        }
+                    });
+                }
+            });
+        }
+    }
 
-	private void unhookPageListeners() {
-		IWorkbenchPage page = getSite().getPage();
-		if (selectionChangedListener != null) {
-			page.removePostSelectionListener(selectionChangedListener);
-			selectionChangedListener = null;
-		}
-		if (partListener != null) {
-			page.removePartListener(partListener);
-			partListener = null;
-		}
-	}
+    private void unhookPageListeners() {
+        IWorkbenchPage page = getSite().getPage();
+        if (selectionChangedListener != null) {
+            page.removePostSelectionListener(selectionChangedListener);
+            selectionChangedListener = null;
+        }
+        if (partListener != null) {
+            page.removePartListener(partListener);
+            partListener = null;
+        }
+    }
 
-	private void unhookEditorListeners(IEditorPart editor) {
-		if (editor instanceof ScaveEditor) {
-			ScaveEditor scaveEditor = (ScaveEditor)editor;
-			if (resultFilesChangeListener != null)
-				scaveEditor.getResultFileManager().removeChangeListener(resultFilesChangeListener);
+    private void unhookEditorListeners(IEditorPart editor) {
+        if (editor instanceof ScaveEditor) {
+            ScaveEditor scaveEditor = (ScaveEditor)editor;
+            if (resultFilesChangeListener != null)
+                scaveEditor.getResultFileManager().removeChangeListener(resultFilesChangeListener);
 
-			if (modelChangeListener != null) {
-				IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
-				notifier.removeListener(modelChangeListener);
-			}
-		}
-	}
+            if (modelChangeListener != null) {
+                IChangeNotifier notifier = (IChangeNotifier)scaveEditor.getAdapterFactory();
+                notifier.removeListener(modelChangeListener);
+            }
+        }
+    }
 
-	private void setVisibleDataPanel(FilteredDataPanel panel) {
-		if (setFilterAction != null)
-			setFilterAction.update(panel);
-		updateContentDescription();
-	}
+    private void setVisibleDataPanel(FilteredDataPanel panel) {
+        if (setFilterAction != null)
+            setFilterAction.update(panel);
+        updateContentDescription();
+    }
 
-	private void workbechSelectionChanged(ISelection selection) {
-		Dataset dataset = null;
-		DatasetItem item = null;
-		ResultItemRef resultItem = null;
+    private void workbechSelectionChanged(ISelection selection) {
+        Dataset dataset = null;
+        DatasetItem item = null;
+        ResultItemRef resultItem = null;
 
-		if (selection == this.selection)
-			return;
+        if (selection == this.selection)
+            return;
 
-		if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
-			EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
-			dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
-			item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
-			setInput(dataset, item);
-		}
-		else if (selection instanceof IStructuredSelection) {
-			Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
-			if (selectedObject instanceof ChartLine) {
-				ChartLine selectedLine = (ChartLine)selectedObject;
-				item = selectedLine.getChart();
-				dataset = ScaveModelUtil.findEnclosingDataset(item);
-				resultItem = selectedLine.getResultItemRef();
-			}
-		}
+        if (selection instanceof IStructuredSelection && ((IStructuredSelection)selection).getFirstElement() instanceof EObject) {
+            EObject selected = (EObject)((IStructuredSelection)selection).getFirstElement();
+            dataset = ScaveModelUtil.findEnclosingOrSelf(selected, Dataset.class);
+            item = ScaveModelUtil.findEnclosingOrSelf(selected, DatasetItem.class);
+            setInput(dataset, item);
+        }
+        else if (selection instanceof IStructuredSelection) {
+            Object selectedObject = ((IStructuredSelection)selection).getFirstElement();
+            if (selectedObject instanceof ChartLine) {
+                ChartLine selectedLine = (ChartLine)selectedObject;
+                item = selectedLine.getChart();
+                dataset = ScaveModelUtil.findEnclosingDataset(item);
+                resultItem = selectedLine.getResultItemRef();
+            }
+        }
 
-		if (dataset != null) {
-			setInput(dataset, item);
-			if (resultItem != null && resultItem.getID() != -1L) {
-				selectResultItem(resultItem);
-			}
-		}
-		else {
-			setInput(null, null);
-			showMessage("No dataset item selected.");
-		}
-	}
+        if (dataset != null) {
+            setInput(dataset, item);
+            if (resultItem != null && resultItem.getID() != -1L) {
+                selectResultItem(resultItem);
+            }
+        }
+        else {
+            setInput(null, null);
+            showMessage("No dataset item selected.");
+        }
+    }
 
-	private void selectResultItem(ResultItemRef item) {
-		FilteredDataPanel panel = tabFolder.getFilteredDataPanel(item.getID());
-		if (panel != null && !panel.isDisposed()) {
-			IDataControl control = panel.getDataControl();
-			if (!control.isDisposed()) {
-				control.setSelectedID(item.getID());
-			}
-		}
-	}
+    private void selectResultItem(ResultItemRef item) {
+        FilteredDataPanel panel = tabFolder.getFilteredDataPanel(item.getID());
+        if (panel != null && !panel.isDisposed()) {
+            IDataControl control = panel.getDataControl();
+            if (!control.isDisposed()) {
+                control.setSelectedID(item.getID());
+            }
+        }
+    }
 
-	private void activeEditorChanged(IEditorPart editor) {
-		if (editor != activeScaveEditor) {
-			unhookEditorListeners(activeScaveEditor);
-			activeScaveEditor = editor instanceof ScaveEditor ? (ScaveEditor)editor : null;
-			hookEditorListeners(activeScaveEditor);
+    private void activeEditorChanged(IEditorPart editor) {
+        if (editor != activeScaveEditor) {
+            unhookEditorListeners(activeScaveEditor);
+            activeScaveEditor = editor instanceof ScaveEditor ? (ScaveEditor)editor : null;
+            hookEditorListeners(activeScaveEditor);
 
-			if (activeScaveEditor != null) {
-				ResultFileManagerEx manager = activeScaveEditor.getResultFileManager();
-				tabFolder.setResultFileManager(manager);
-				labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(activeScaveEditor.getAdapterFactory()));
-				hideMessage();
-			}
-			else {
+            if (activeScaveEditor != null) {
+                ResultFileManagerEx manager = activeScaveEditor.getResultFileManager();
+                tabFolder.setResultFileManager(manager);
+                labelProvider = new ScaveModelLabelProvider(new AdapterFactoryLabelProvider(activeScaveEditor.getAdapterFactory()));
+                hideMessage();
+            }
+            else {
                 tabFolder.setResultFileManager(null);
-				labelProvider = null;
-				showMessage("No active Analysis Editor.");
-			}
-		}
-	}
+                labelProvider = null;
+                showMessage("No active Analysis Editor.");
+            }
+        }
+    }
 
-	private void setInput(Dataset dataset, DatasetItem item) {
-		if (selectedDataset != dataset || selectedItem != item) {
-			selectedDataset = dataset;
-			selectedItem = item;
-			updateDataControl();
-			setActivePanel(item);
-			updateContentDescription();
-		}
-	}
+    private void setInput(Dataset dataset, DatasetItem item) {
+        if (selectedDataset != dataset || selectedItem != item) {
+            selectedDataset = dataset;
+            selectedItem = item;
+            updateDataControl();
+            setActivePanel(item);
+            updateContentDescription();
+        }
+    }
 
     private void setActivePanel(DatasetItem item) {
         // determine type of selected item, if we can
@@ -437,174 +437,174 @@ public class DatasetView extends ViewWithMessagePart implements ISelectionProvid
             tabFolder.setActivePanel(type);
     }
 
-	private void updateContentDescription() {
-		if (labelProvider != null && selectedDataset != null) {
+    private void updateContentDescription() {
+        if (labelProvider != null && selectedDataset != null) {
             String datasetName = labelProvider.getText(selectedDataset);
 
             String desc;
-			if (selectedItem instanceof DatasetItem)
-				desc = "Data at '" + labelProvider.getText(selectedItem) + "' from " + datasetName;
-			else 
-				desc = "Content of " + datasetName;
-			
-			hideMessage();
-			setContentDescription(desc);
-		}
-		else
-			showMessage("No dataset item selected.");
-	}
+            if (selectedItem instanceof DatasetItem)
+                desc = "Data at '" + labelProvider.getText(selectedItem) + "' from " + datasetName;
+            else
+                desc = "Content of " + datasetName;
 
-	/**
-	 * Prevent calling showMessage until the view fully created.
-	 */
-	@Override
-	protected void showMessage(String text) {
-		if (viewControlCreated)
-			super.showMessage(text);
-	}
+            hideMessage();
+            setContentDescription(desc);
+        }
+        else
+            showMessage("No dataset item selected.");
+    }
 
-	private void updateDataControl() {
-		if (activeScaveEditor == null) {
+    /**
+     * Prevent calling showMessage until the view fully created.
+     */
+    @Override
+    protected void showMessage(String text) {
+        if (viewControlCreated)
+            super.showMessage(text);
+    }
+
+    private void updateDataControl() {
+        if (activeScaveEditor == null) {
             Assert.isTrue(tabFolder.getAllPanel().getResultFileManager() == null);
-			Assert.isTrue(tabFolder.getScalarsPanel().getResultFileManager() == null);
-			Assert.isTrue(tabFolder.getVectorsPanel().getResultFileManager() == null);
-			Assert.isTrue(tabFolder.getHistogramsPanel().getResultFileManager() == null);
+            Assert.isTrue(tabFolder.getScalarsPanel().getResultFileManager() == null);
+            Assert.isTrue(tabFolder.getVectorsPanel().getResultFileManager() == null);
+            Assert.isTrue(tabFolder.getHistogramsPanel().getResultFileManager() == null);
             tabFolder.getAllPanel().setIDList(IDList.EMPTY);
-			tabFolder.getScalarsPanel().setIDList(IDList.EMPTY);
-			tabFolder.getVectorsPanel().setIDList(IDList.EMPTY);
-			tabFolder.getHistogramsPanel().setIDList(IDList.EMPTY);
-			tabFolder.refreshPanelTitles();
-			return;
-		}
+            tabFolder.getScalarsPanel().setIDList(IDList.EMPTY);
+            tabFolder.getVectorsPanel().setIDList(IDList.EMPTY);
+            tabFolder.getHistogramsPanel().setIDList(IDList.EMPTY);
+            tabFolder.refreshPanelTitles();
+            return;
+        }
 
-		final ResultFileManager manager = activeScaveEditor.getResultFileManager();
-		ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
-			public Object call() {
+        final ResultFileManager manager = activeScaveEditor.getResultFileManager();
+        ResultFileManager.callWithReadLock(manager, new Callable<Object>() {
+            public Object call() {
                 IDList all = IDList.EMPTY;
-				IDList scalars = IDList.EMPTY;
-				IDList vectors = IDList.EMPTY;
-				IDList histograms = IDList.EMPTY;
-				if (selectedDataset != null) {
+                IDList scalars = IDList.EMPTY;
+                IDList vectors = IDList.EMPTY;
+                IDList histograms = IDList.EMPTY;
+                if (selectedDataset != null) {
                     all = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, null);
-					scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
-					vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
-					histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
-				}
+                    scalars = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.SCALAR_LITERAL);
+                    vectors = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.VECTOR_LITERAL);
+                    histograms = DatasetManager.getIDListFromDataset(manager, selectedDataset, selectedItem, ResultType.HISTOGRAM_LITERAL);
+                }
                 tabFolder.getAllPanel().setIDList(all);
-				tabFolder.getScalarsPanel().setIDList(scalars);
-				tabFolder.getVectorsPanel().setIDList(vectors);
-				tabFolder.getHistogramsPanel().setIDList(histograms);
-	            tabFolder.refreshPanelTitles();
-				return null;
-			}
-		});
-	}
+                tabFolder.getScalarsPanel().setIDList(scalars);
+                tabFolder.getVectorsPanel().setIDList(vectors);
+                tabFolder.getHistogramsPanel().setIDList(histograms);
+                tabFolder.refreshPanelTitles();
+                return null;
+            }
+        });
+    }
 
-	private void showFilter(boolean show) {
+    private void showFilter(boolean show) {
         tabFolder.getAllPanel().showFilterPanel(show);
-		tabFolder.getVectorsPanel().showFilterPanel(show);
-		tabFolder.getScalarsPanel().showFilterPanel(show);
-		tabFolder.getHistogramsPanel().showFilterPanel(show);
-	}
+        tabFolder.getVectorsPanel().showFilterPanel(show);
+        tabFolder.getScalarsPanel().showFilterPanel(show);
+        tabFolder.getHistogramsPanel().showFilterPanel(show);
+    }
 
-	private boolean isFilterVisible() {
-		return tabFolder.getVectorsPanel().isFilterPanelVisible();
-	}
+    private boolean isFilterVisible() {
+        return tabFolder.getVectorsPanel().isFilterPanelVisible();
+    }
 
-	/*
-	 * Actions
-	 */
+    /*
+     * Actions
+     */
 
-	class ShowDataControlAction extends Action
-	{
-		FilteredDataPanel panel;
+    class ShowDataControlAction extends Action
+    {
+        FilteredDataPanel panel;
 
-		public ShowDataControlAction(ResultType type) {
-			super(null, IAction.AS_RADIO_BUTTON);
+        public ShowDataControlAction(ResultType type) {
+            super(null, IAction.AS_RADIO_BUTTON);
 
-			switch (type.getValue()) {
-			case ResultType.SCALAR:
-				setText("Show scalars");
-				setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS));
-				panel = tabFolder.getScalarsPanel();
-				break;
-			case ResultType.VECTOR:
-				setText("Show vectors");
-				setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS));
-				panel = tabFolder.getVectorsPanel();
-				break;
-			case ResultType.HISTOGRAM:
-				setText("Show histograms");
-				setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS));
-				panel = tabFolder.getHistogramsPanel();
-				break;
-			default:
-				Assert.isLegal(false, "Unknown result type: " + type);
-				break;
-			}
-		}
+            switch (type.getValue()) {
+            case ResultType.SCALAR:
+                setText("Show scalars");
+                setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWSCALARS));
+                panel = tabFolder.getScalarsPanel();
+                break;
+            case ResultType.VECTOR:
+                setText("Show vectors");
+                setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWVECTORS));
+                panel = tabFolder.getVectorsPanel();
+                break;
+            case ResultType.HISTOGRAM:
+                setText("Show histograms");
+                setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_SHOWHISTOGRAMS));
+                panel = tabFolder.getHistogramsPanel();
+                break;
+            default:
+                Assert.isLegal(false, "Unknown result type: " + type);
+                break;
+            }
+        }
 
-		@Override
+        @Override
         public void run() {
-			setVisibleDataPanel(panel);
-		}
-	}
+            setVisibleDataPanel(panel);
+        }
+    }
 
-	class ToggleFilterAction extends Action
-	{
-		public ToggleFilterAction() {
-			super(isFilterVisible() ? "Hide filter" : "Show filter", IAction.AS_CHECK_BOX);
-			setDescription("Toggles the filtering panel on/off.");
-			setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
-		}
+    class ToggleFilterAction extends Action
+    {
+        public ToggleFilterAction() {
+            super(isFilterVisible() ? "Hide filter" : "Show filter", IAction.AS_CHECK_BOX);
+            setDescription("Toggles the filtering panel on/off.");
+            setImageDescriptor(ImageFactory.getDescriptor(ImageFactory.TOOLBAR_IMAGE_FILTER));
+        }
 
-		@Override
-		public void run() {
-			boolean visible = isFilterVisible();
-			showFilter(
-			        !visible);
-			setText(visible ? "Show filter" : "Hide filter");
-		}
-	}
+        @Override
+        public void run() {
+            boolean visible = isFilterVisible();
+            showFilter(
+                    !visible);
+            setText(visible ? "Show filter" : "Hide filter");
+        }
+    }
 
-	class SelectAllAction extends Action
-	{
-		@Override
-		public void run() {
-			FilteredDataPanel panel = tabFolder.getActivePanel();
-			if (panel != null && panel.getDataControl() != null) {
-				panel.getDataControl().setFocus();
-				panel.getDataControl().selectAll();
-			}
-		}
-	}
+    class SelectAllAction extends Action
+    {
+        @Override
+        public void run() {
+            FilteredDataPanel panel = tabFolder.getActivePanel();
+            if (panel != null && panel.getDataControl() != null) {
+                panel.getDataControl().setFocus();
+                panel.getDataControl().selectAll();
+            }
+        }
+    }
 
-	/*
-	 * ISelectionProvider
-	 */
+    /*
+     * ISelectionProvider
+     */
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
-		selectionChangeListeners.add(listener);
-	}
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangeListeners.add(listener);
+    }
 
-	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
-		selectionChangeListeners.remove(listener);
-	}
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        selectionChangeListeners.remove(listener);
+    }
 
-	protected void fireSelectionChangeEvent(ISelection selection) {
-		SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
-		for (Object listener : selectionChangeListeners.getListeners())
-			((ISelectionChangedListener)listener).selectionChanged(event);
-	}
+    protected void fireSelectionChangeEvent(ISelection selection) {
+        SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
+        for (Object listener : selectionChangeListeners.getListeners())
+            ((ISelectionChangedListener)listener).selectionChanged(event);
+    }
 
-	public ISelection getSelection() {
-		return selection;
-	}
+    public ISelection getSelection() {
+        return selection;
+    }
 
-	public void setSelection(ISelection selection) {
-		if (selection != this.selection) {
-			this.selection = selection;
-			fireSelectionChangeEvent(selection);
-		}
-	}
+    public void setSelection(ISelection selection) {
+        if (selection != this.selection) {
+            this.selection = selection;
+            fireSelectionChangeEvent(selection);
+        }
+    }
 }

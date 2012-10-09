@@ -23,11 +23,11 @@ public class JSONWriter {
     private StringBuffer buf = new StringBuffer();
     private Stack<Object> calls = new Stack<Object>();
     boolean emitClassName = true;
-    
+
     public JSONWriter(boolean emitClassName) {
         this.emitClassName = emitClassName;
     }
-    
+
     public JSONWriter() {
         this(true);
     }
@@ -49,13 +49,13 @@ public class JSONWriter {
     public String write(char c) {
         return "\"" + c + "\"";
     }
-    
+
     public String write(boolean b) {
         return String.valueOf(b);
     }
 
     @SuppressWarnings("unchecked")
-	private void value(Object object) {
+    private void value(Object object) {
         if (object == null || cyclic(object)) {
             add("null");
         } else {
@@ -75,7 +75,7 @@ public class JSONWriter {
     }
 
     @SuppressWarnings("unchecked")
-	private boolean cyclic(Object object) {
+    private boolean cyclic(Object object) {
         Iterator it = calls.iterator();
         while (it.hasNext()) {
             Object called = it.next();
@@ -83,7 +83,7 @@ public class JSONWriter {
         }
         return false;
     }
-    
+
     private void bean(Object object) {
         add("{");
         BeanInfo info;
@@ -117,7 +117,7 @@ public class JSONWriter {
             ite.printStackTrace();
         } catch (IntrospectionException ie) {
             ie.printStackTrace();
-        } 
+        }
         add("}");
     }
 
@@ -129,7 +129,7 @@ public class JSONWriter {
     }
 
     @SuppressWarnings("unchecked")
-	private void map(Map map) {
+    private void map(Map map) {
         add("{");
         Iterator it = map.entrySet().iterator();
         while (it.hasNext()) {
@@ -141,9 +141,9 @@ public class JSONWriter {
         }
         add("}");
     }
-    
+
     @SuppressWarnings("unchecked")
-	private void array(Iterator it) {
+    private void array(Iterator it) {
         add("[");
         while (it.hasNext()) {
             value(it.next());

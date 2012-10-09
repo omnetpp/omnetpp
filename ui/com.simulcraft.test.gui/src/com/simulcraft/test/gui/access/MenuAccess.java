@@ -27,53 +27,53 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class MenuAccess extends WidgetAccess {
 
-	public MenuAccess(Menu menu) {
-		super(menu);
-	}
+    public MenuAccess(Menu menu) {
+        super(menu);
+    }
 
     @Override
-	public Menu getWidget() {
-		return (Menu)widget;
-	}
+    public Menu getWidget() {
+        return (Menu)widget;
+    }
 
-	/**
-	 * Activates the menu item with the given label. If it opens a submenu,
-	 * return it, otherwise returns null.
-	 */
-	@UIStep
-	public MenuAccess activateMenuItemWithMouse(String label) {
-		log(debug, "Activating menu item: " + label);
-		return findMenuItemByLabel(label).activateWithMouseClick();
-	}
+    /**
+     * Activates the menu item with the given label. If it opens a submenu,
+     * return it, otherwise returns null.
+     */
+    @UIStep
+    public MenuAccess activateMenuItemWithMouse(String label) {
+        log(debug, "Activating menu item: " + label);
+        return findMenuItemByLabel(label).activateWithMouseClick();
+    }
 
-	@UIStep
-	public MenuItemAccess findMenuItemByLabel(final String label) {
-		return new MenuItemAccess((MenuItem)findMenuItem(getWidget(), new IPredicate() {
-			public boolean matches(Object object) {
-				String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
-				return menuItemLabel.matches(label);
-			}
+    @UIStep
+    public MenuItemAccess findMenuItemByLabel(final String label) {
+        return new MenuItemAccess((MenuItem)findMenuItem(getWidget(), new IPredicate() {
+            public boolean matches(Object object) {
+                String menuItemLabel = ((MenuItem)object).getText().replace("&", "");
+                return menuItemLabel.matches(label);
+            }
 
-			@Override
-			public String toString() {
-			    return "menu item with label: "+label;
-			}
-		}));
-	}
+            @Override
+            public String toString() {
+                return "menu item with label: "+label;
+            }
+        }));
+    }
 
-	@UIStep
+    @UIStep
     public MenuItem findMenuItem(Menu menu, IPredicate predicate) {
         return (MenuItem)theOnlyWidget(collectMenuItems(getWidget(), predicate), predicate);
-	}
+    }
 
-	@UIStep
-	public List<MenuItem> collectMenuItems(Menu menu, IPredicate predicate) {
-		ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
-		for (MenuItem menuItem : menu.getItems())
-			if (predicate.matches(menuItem))
-				resultMenuItems.add(menuItem);
-		return resultMenuItems;
-	}
+    @UIStep
+    public List<MenuItem> collectMenuItems(Menu menu, IPredicate predicate) {
+        ArrayList<MenuItem> resultMenuItems = new ArrayList<MenuItem>();
+        for (MenuItem menuItem : menu.getItems())
+            if (predicate.matches(menuItem))
+                resultMenuItems.add(menuItem);
+        return resultMenuItems;
+    }
 
     @UIStep
     public void assertMenuItemsEnabled(String[] labels) {

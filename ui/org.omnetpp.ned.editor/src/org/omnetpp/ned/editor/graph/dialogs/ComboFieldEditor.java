@@ -19,15 +19,15 @@ import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents a combo widget in the Properties dialog.
- * 
+ *
  * Note: we always create an editable combo, because non-editable
  * ones cannot display the grayed state (at least on Windows 7)
- * 
+ *
  * @author Andras
  */
 public class ComboFieldEditor implements IFieldEditor {
     private Combo combo;
-    private boolean grayed = false; 
+    private boolean grayed = false;
     private ControlDecoration problemDecoration;
     private String[] contentAssistLabels;
 
@@ -41,8 +41,8 @@ public class ComboFieldEditor implements IFieldEditor {
                     setGrayed(false);
             }
         });
-        
-        new ContentAssistCommandAdapter(combo, new ComboContentAdapter(), 
+
+        new ContentAssistCommandAdapter(combo, new ComboContentAdapter(),
                 new ContentProposalProvider(true) {
                     protected List<IContentProposal> getProposalCandidates(String prefix) {
                         if (contentAssistLabels == null)
@@ -53,7 +53,7 @@ public class ComboFieldEditor implements IFieldEditor {
                 },
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
     }
-    
+
     public Combo getControl() {
         return combo;
     }
@@ -66,7 +66,7 @@ public class ComboFieldEditor implements IFieldEditor {
         if (grayed) {
             combo.setBackground(GREY);
             combo.setText("");
-        } 
+        }
         else {
             combo.setBackground(null); // default system color
         }
@@ -94,7 +94,7 @@ public class ComboFieldEditor implements IFieldEditor {
     public void setMessage(int severity, String text) {
         UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
-    
+
     public String[] getItems() {
         return combo.getItems();
     }
@@ -109,8 +109,8 @@ public class ComboFieldEditor implements IFieldEditor {
             String save = combo.getText();
 
             combo.setItems(items);
-            
-            // restore everything that setItems() may have messed up 
+
+            // restore everything that setItems() may have messed up
             if (!save.equals(combo.getText()))
                 combo.setText(save);
             if (wasGrayed != isGrayed())
@@ -118,7 +118,7 @@ public class ComboFieldEditor implements IFieldEditor {
         }
         this.contentAssistLabels = contentAssistLabels;
     }
-    
+
     public void addModifyListener(ModifyListener listener) {
         combo.addModifyListener(listener);
     }

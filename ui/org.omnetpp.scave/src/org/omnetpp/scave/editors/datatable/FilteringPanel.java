@@ -36,154 +36,154 @@ public class FilteringPanel extends Composite {
     private Image IMG_ADVANCEDFILTER = ScavePlugin.getImage("icons/full/obj16/advancedfilter.png");
     private Image IMG_RUNFILTER = ScavePlugin.getImage("icons/full/obj16/runfilter.png");
 
-	// Switch between "Simple" and "Advanced"
-	private Button toggleFilterTypeButton;
-	private boolean showingAdvancedFilter;
-	private StackLayout stackLayout;  // to set topControl to either advancedFilterPanel or simpleFilterPanel
+    // Switch between "Simple" and "Advanced"
+    private Button toggleFilterTypeButton;
+    private boolean showingAdvancedFilter;
+    private StackLayout stackLayout;  // to set topControl to either advancedFilterPanel or simpleFilterPanel
 
-	// Edit field for the "Advanced" mode
-	private Composite advancedFilterPanel;
-	private FilterField advancedFilter;
+    // Edit field for the "Advanced" mode
+    private Composite advancedFilterPanel;
+    private FilterField advancedFilter;
 
-	// Combo boxes for the "Simple" mode
-	private Composite simpleFilterPanel;
-	private Combo runCombo;
-	private Combo moduleCombo;
-	private Combo dataCombo;
+    // Combo boxes for the "Simple" mode
+    private Composite simpleFilterPanel;
+    private Combo runCombo;
+    private Combo moduleCombo;
+    private Combo dataCombo;
 
-	// The "Go" button
-	private Button filterButton;
+    // The "Go" button
+    private Button filterButton;
 
-	public FilteringPanel(Composite parent, int style) {
-		super(parent, style);
-		initialize();
-	}
+    public FilteringPanel(Composite parent, int style) {
+        super(parent, style);
+        initialize();
+    }
 
-	public Text getAdvancedFilterText() {
-		return advancedFilter.getText();
-	}
+    public Text getAdvancedFilterText() {
+        return advancedFilter.getText();
+    }
 
-	public Combo getModuleNameCombo() {
-		return moduleCombo;
-	}
+    public Combo getModuleNameCombo() {
+        return moduleCombo;
+    }
 
-	public Combo getNameCombo() {
-		return dataCombo;
-	}
+    public Combo getNameCombo() {
+        return dataCombo;
+    }
 
-	public Combo getRunNameCombo() {
-		return runCombo;
-	}
+    public Combo getRunNameCombo() {
+        return runCombo;
+    }
 
-	public Button getFilterButton() {
-		return filterButton;
-	}
+    public Button getFilterButton() {
+        return filterButton;
+    }
 
-	public Button getToggleFilterTypeButton() {
-		return toggleFilterTypeButton;
-	}
+    public Button getToggleFilterTypeButton() {
+        return toggleFilterTypeButton;
+    }
 
-	public void setFilterHints(FilterHints hints) {
-		setFilterHints(runCombo, hints.getHints(RUN));
-		setFilterHints(moduleCombo, hints.getHints(MODULE));
-		setFilterHints(dataCombo, hints.getHints(NAME));
-		advancedFilter.setFilterHints(hints);
-	}
+    public void setFilterHints(FilterHints hints) {
+        setFilterHints(runCombo, hints.getHints(RUN));
+        setFilterHints(moduleCombo, hints.getHints(MODULE));
+        setFilterHints(dataCombo, hints.getHints(NAME));
+        advancedFilter.setFilterHints(hints);
+    }
 
-	private void setFilterHints(Combo filterCombo, String[] hints) {
-		String[] items = hints;
-		// prevent gtk halting when the item count ~10000
-		int maxCount = 1000;
-		if (hints.length > maxCount) {
-			items = new String[maxCount];
-			System.arraycopy(hints, 0, items, 0, maxCount - 1);
-			items[maxCount - 1] = String.format("<%d skipped>", hints.length - (maxCount - 1));
-		}
-		filterCombo.setItems(items);
-	}
+    private void setFilterHints(Combo filterCombo, String[] hints) {
+        String[] items = hints;
+        // prevent gtk halting when the item count ~10000
+        int maxCount = 1000;
+        if (hints.length > maxCount) {
+            items = new String[maxCount];
+            System.arraycopy(hints, 0, items, 0, maxCount - 1);
+            items[maxCount - 1] = String.format("<%d skipped>", hints.length - (maxCount - 1));
+        }
+        filterCombo.setItems(items);
+    }
 
-	public void showSimpleFilter() {
-	    stackLayout.topControl = simpleFilterPanel;
-		showingAdvancedFilter = false;
-		toggleFilterTypeButton.setImage(IMG_ADVANCEDFILTER);
+    public void showSimpleFilter() {
+        stackLayout.topControl = simpleFilterPanel;
+        showingAdvancedFilter = false;
+        toggleFilterTypeButton.setImage(IMG_ADVANCEDFILTER);
         toggleFilterTypeButton.setToolTipText("Switch to Advanced Filter");
-		getParent().layout(true, true);
-	}
+        getParent().layout(true, true);
+    }
 
-	public void showAdvancedFilter() {
+    public void showAdvancedFilter() {
         stackLayout.topControl = advancedFilterPanel;
-		showingAdvancedFilter = true;
+        showingAdvancedFilter = true;
         toggleFilterTypeButton.setImage(IMG_BASICFILTER);
         toggleFilterTypeButton.setToolTipText("Switch to Basic Filter");
-		getParent().layout(true, true);
-	}
+        getParent().layout(true, true);
+    }
 
-	public boolean isShowingAdvancedFilter() {
-		return showingAdvancedFilter;
-	}
+    public boolean isShowingAdvancedFilter() {
+        return showingAdvancedFilter;
+    }
 
-	private void initialize() {
-		GridLayout gridLayout;
+    private void initialize() {
+        GridLayout gridLayout;
 
-		gridLayout = new GridLayout();
-		gridLayout.marginHeight = 0;
-		this.setLayout(gridLayout);
+        gridLayout = new GridLayout();
+        gridLayout.marginHeight = 0;
+        this.setLayout(gridLayout);
 
-		Composite filterContainer = new Composite(this, SWT.NONE);
-		filterContainer.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
-		gridLayout = new GridLayout(3, false); // filter panel, [ExecuteFilter], [Basic/Advanced]
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		filterContainer.setLayout(gridLayout);
-		
-		Composite filterFieldsContainer = new Composite(filterContainer, SWT.NONE);
-		filterFieldsContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		filterFieldsContainer.setLayout(stackLayout = new StackLayout());
+        Composite filterContainer = new Composite(this, SWT.NONE);
+        filterContainer.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        gridLayout = new GridLayout(3, false); // filter panel, [ExecuteFilter], [Basic/Advanced]
+        gridLayout.marginHeight = 0;
+        gridLayout.marginWidth = 0;
+        filterContainer.setLayout(gridLayout);
 
-		// the "Advanced" view with the content-assisted input field
-		advancedFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
-		advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		advancedFilterPanel.setLayout(new GridLayout(1, false));
-		((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 1;
-		((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 0;
-		
-		advancedFilter = new FilterField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
-		advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
-		advancedFilter.getText().setMessage("type filter expression");
-		advancedFilter.getText().setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
+        Composite filterFieldsContainer = new Composite(filterContainer, SWT.NONE);
+        filterFieldsContainer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        filterFieldsContainer.setLayout(stackLayout = new StackLayout());
 
-		// the "Basic" view with a series of combo boxes
-	    simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
-	    simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-	    simpleFilterPanel.setLayout(new GridLayout(1, false));
+        // the "Advanced" view with the content-assisted input field
+        advancedFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
+        advancedFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        advancedFilterPanel.setLayout(new GridLayout(1, false));
+        ((GridLayout)advancedFilterPanel.getLayout()).marginHeight = 1;
+        ((GridLayout)advancedFilterPanel.getLayout()).marginWidth = 0;
+
+        advancedFilter = new FilterField(advancedFilterPanel, SWT.SINGLE | SWT.BORDER | SWT.SEARCH);
+        advancedFilter.getLayoutControl().setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
+        advancedFilter.getText().setMessage("type filter expression");
+        advancedFilter.getText().setToolTipText("Filter Expression (Ctrl+Space for Content Assist)");
+
+        // the "Basic" view with a series of combo boxes
+        simpleFilterPanel = new Composite(filterFieldsContainer, SWT.NONE);
+        simpleFilterPanel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        simpleFilterPanel.setLayout(new GridLayout(1, false));
         ((GridLayout)simpleFilterPanel.getLayout()).marginHeight = 0;
         ((GridLayout)simpleFilterPanel.getLayout()).marginWidth = 0;
 
-		Composite sashForm = new SashForm(simpleFilterPanel, SWT.SMOOTH);
-		sashForm.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
-		runCombo = createFilterCombo(sashForm, "runID filter", "RunID Filter");
-		moduleCombo = createFilterCombo(sashForm, "module filter", "Module Filter");
-		dataCombo = createFilterCombo(sashForm, "statistic name filter", "Statistic Name Filter");
+        Composite sashForm = new SashForm(simpleFilterPanel, SWT.SMOOTH);
+        sashForm.setLayoutData(new GridData(SWT.FILL, SWT.END, true, true));
+        runCombo = createFilterCombo(sashForm, "runID filter", "RunID Filter");
+        moduleCombo = createFilterCombo(sashForm, "module filter", "Module Filter");
+        dataCombo = createFilterCombo(sashForm, "statistic name filter", "Statistic Name Filter");
 
-		// Filter button
-		filterButton = new Button(filterContainer, SWT.NONE);
-		filterButton.setImage(IMG_RUNFILTER);
-		filterButton.setToolTipText("Execute Filter");
-		filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        // Filter button
+        filterButton = new Button(filterContainer, SWT.NONE);
+        filterButton.setImage(IMG_RUNFILTER);
+        filterButton.setToolTipText("Execute Filter");
+        filterButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		// Toggle button
-		toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
-		toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
+        // Toggle button
+        toggleFilterTypeButton = new Button(filterContainer, SWT.PUSH);
+        toggleFilterTypeButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false));
 
-		showSimpleFilter();
-	}
+        showSimpleFilter();
+    }
 
-	private Combo createFilterCombo(Composite parent, String filterMessage, String tooltipText) {
-	    FilterCombo combo = new FilterCombo(parent, SWT.BORDER);
-	    combo.setMessage(filterMessage);
-	    combo.setToolTipText(tooltipText);
-	    combo.setVisibleItemCount(20);
+    private Combo createFilterCombo(Composite parent, String filterMessage, String tooltipText) {
+        FilterCombo combo = new FilterCombo(parent, SWT.BORDER);
+        combo.setMessage(filterMessage);
+        combo.setToolTipText(tooltipText);
+        combo.setVisibleItemCount(20);
 
-		return combo;
-	}
+        return combo;
+    }
 }

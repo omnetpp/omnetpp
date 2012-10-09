@@ -15,10 +15,10 @@ import freemarker.eclipse.test.util.MockCharacterScanner;
  * Superclass for all rule tests. A subclass can add tests by invoking
  * {@link #addMatchingTest addMatchingTest} or
  * {@link #addNonMatchingTest addNonMatchingTest}.
- * 
+ *
  * Matching tests evaluate to a token (which is checked) and a position
  * after the analysis (which is checked as well).
- * 
+ *
  * Non-matching tests should evaluate to Token.UNDEFINED and the
  * position after the analysis should be 0.
  *
@@ -27,68 +27,68 @@ import freemarker.eclipse.test.util.MockCharacterScanner;
  */
 public abstract class AbstractRuleTestCase extends TestCase {
 
-	protected List<RuleTestInfo> tests = new ArrayList<RuleTestInfo>();
-	protected IRule rule = null;
+    protected List<RuleTestInfo> tests = new ArrayList<RuleTestInfo>();
+    protected IRule rule = null;
 
-	public static final IToken NO_MATCH = new Token(null) {
-		public boolean isUndefined() {
-			return (true);
-		}
-		public String toString() {
-			return "no match";
-		}
-	};
+    public static final IToken NO_MATCH = new Token(null) {
+        public boolean isUndefined() {
+            return (true);
+        }
+        public String toString() {
+            return "no match";
+        }
+    };
 
-	public static final IToken MATCH = new Token(null) {
-		public String toString() {
-			return "match";
-		}
-	};
+    public static final IToken MATCH = new Token(null) {
+        public String toString() {
+            return "match";
+        }
+    };
 
-	public AbstractRuleTestCase(String name) {
-		super(name);
-	}
-	
-	public void runTest() {
-		if (null == rule) {
-			throw new RuntimeException("rule == null");
-		}
-		for (int i = 0; i < tests.size(); i++) {
-			RuleTestInfo info = tests.get(i);
-			MockCharacterScanner scanner =
-				new MockCharacterScanner(info.text);
-			IToken result = rule.evaluate(scanner);
+    public AbstractRuleTestCase(String name) {
+        super(name);
+    }
 
-			// we use our own 'UNDEFINED' token which looks nicer
-			if (result.equals(Token.UNDEFINED))
-				result = NO_MATCH;
+    public void runTest() {
+        if (null == rule) {
+            throw new RuntimeException("rule == null");
+        }
+        for (int i = 0; i < tests.size(); i++) {
+            RuleTestInfo info = tests.get(i);
+            MockCharacterScanner scanner =
+                new MockCharacterScanner(info.text);
+            IToken result = rule.evaluate(scanner);
 
-			assertEquals(info.message, info.expected, result);
-			assertEquals(info.message, info.pos, scanner.getPos());
-		}
-	}
+            // we use our own 'UNDEFINED' token which looks nicer
+            if (result.equals(Token.UNDEFINED))
+                result = NO_MATCH;
 
-	public void addMatchingTest(String text, int pos, String message) {
-		tests.add(new RuleTestInfo(text, MATCH, pos, message));
-	}
+            assertEquals(info.message, info.expected, result);
+            assertEquals(info.message, info.pos, scanner.getPos());
+        }
+    }
 
-	public void addNonMatchingTest(String text, String message) {
-		tests.add(new RuleTestInfo(text, NO_MATCH, 0, message));
-	}
+    public void addMatchingTest(String text, int pos, String message) {
+        tests.add(new RuleTestInfo(text, MATCH, pos, message));
+    }
 
-	private class RuleTestInfo {
+    public void addNonMatchingTest(String text, String message) {
+        tests.add(new RuleTestInfo(text, NO_MATCH, 0, message));
+    }
 
-		public int pos;
-		public IToken expected;
-		public String text;
-		public String message;
+    private class RuleTestInfo {
 
-		public RuleTestInfo(String text, IToken exp, int pos, String msg) {
-			this.pos = pos;
-			this.expected = exp;
-			this.message = msg;
-			this.text = text;
-		}
-	}
+        public int pos;
+        public IToken expected;
+        public String text;
+        public String message;
+
+        public RuleTestInfo(String text, IToken exp, int pos, String msg) {
+            this.pos = pos;
+            this.expected = exp;
+            this.message = msg;
+            this.text = text;
+        }
+    }
 
 }

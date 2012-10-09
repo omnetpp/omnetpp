@@ -22,30 +22,30 @@ import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents an image selection widget in the Properties dialog
- * 
+ *
  * @author Andras
  */
 public class ImageFieldEditor implements IFieldEditor {
     private Composite composite;
     private Text text;
     private Button button;
-    private boolean grayed = false; 
+    private boolean grayed = false;
     private String defaultFilter = ""; // dialog filter to use if text is empty
     private ControlDecoration problemDecoration;
-    
+
     public ImageFieldEditor(Composite parent, int style) {
         composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         composite.setLayout(layout);
-        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0; 
+        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0;
 
         text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         ((GridData)text.getLayoutData()).widthHint = 20 * PropertiesDialog.computeDialogFontAverageCharWidth(composite);
-        new ContentAssistCommandAdapter(text, new TextContentAdapter(), 
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(),
                 new ImageCellEditor.ImageContentProposalProvider(),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, "/".toCharArray(), true);
-        
+
         button = new Button(composite, SWT.PUSH);
         button.setText("...");
         GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false);
@@ -66,16 +66,16 @@ public class ImageFieldEditor implements IFieldEditor {
             public void widgetSelected(SelectionEvent e) {
                 String initialValue = StringUtils.defaultIfEmpty(text.getText(), defaultFilter);
                 ImageSelectionDialog dialog = new ImageSelectionDialog(composite.getShell(), initialValue);
-                if (dialog.open() == Dialog.OK) 
+                if (dialog.open() == Dialog.OK)
                     text.setText(dialog.getImageId());
             }
         });
     }
-    
+
     public void setDefaultFilter(String defaultFilter) {
         this.defaultFilter = defaultFilter;
     }
-    
+
     public Composite getControl() {
         return composite;
     }
@@ -88,7 +88,7 @@ public class ImageFieldEditor implements IFieldEditor {
         if (grayed) {
             text.setText("");
             text.setBackground(GREY);
-        } 
+        }
         else {
             text.setBackground(null); // default system color
         }
@@ -118,7 +118,7 @@ public class ImageFieldEditor implements IFieldEditor {
     public void setMessage(int severity, String text) {
         UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
-    
+
     public void addModifyListener(ModifyListener listener) {
         text.addModifyListener(listener);
     }

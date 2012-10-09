@@ -22,87 +22,87 @@ import org.omnetpp.eventlog.engine.LongVector;
 import org.omnetpp.eventlog.engine.StringVector;
 
 public class EventLogFilterParameters implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private transient EventLogInput eventLogInput;
+    private transient EventLogInput eventLogInput;
 
     public boolean enableCollectionLimits;
 
     public boolean enableRangeFilter;
 
-	public boolean enableEventNumberFilter;
+    public boolean enableEventNumberFilter;
 
-	public boolean enableSimulationTimeFilter;
+    public boolean enableSimulationTimeFilter;
 
-	public boolean enableModuleFilter;
+    public boolean enableModuleFilter;
 
-	public boolean enableModuleExpressionFilter;
+    public boolean enableModuleExpressionFilter;
 
-	public boolean enableModuleNEDTypeNameFilter;
+    public boolean enableModuleNEDTypeNameFilter;
 
-	public boolean enableModuleNameFilter;
+    public boolean enableModuleNameFilter;
 
-	public boolean enableModuleIdFilter;
+    public boolean enableModuleIdFilter;
 
     public boolean enableMessageFilter;
 
-	public boolean enableMessageExpressionFilter;
+    public boolean enableMessageExpressionFilter;
 
-	public boolean enableMessageClassNameFilter;
+    public boolean enableMessageClassNameFilter;
 
-	public boolean enableMessageNameFilter;
+    public boolean enableMessageNameFilter;
 
-	public boolean enableMessageIdFilter;
+    public boolean enableMessageIdFilter;
 
-	public boolean enableMessageTreeIdFilter;
+    public boolean enableMessageTreeIdFilter;
 
-	public boolean enableMessageEncapsulationIdFilter;
+    public boolean enableMessageEncapsulationIdFilter;
 
-	public boolean enableMessageEncapsulationTreeIdFilter;
+    public boolean enableMessageEncapsulationTreeIdFilter;
 
-	public boolean enableTraceFilter;
+    public boolean enableTraceFilter;
 
-	public long lowerEventNumberLimit = -1;
+    public long lowerEventNumberLimit = -1;
 
-	public long upperEventNumberLimit = -1;
+    public long upperEventNumberLimit = -1;
 
-	public BigDecimal lowerSimulationTimeLimit;
+    public BigDecimal lowerSimulationTimeLimit;
 
-	public BigDecimal upperSimulationTimeLimit;
+    public BigDecimal upperSimulationTimeLimit;
 
-	public long tracedEventNumber = -1;
+    public long tracedEventNumber = -1;
 
-	public boolean traceCauses = true;
+    public boolean traceCauses = true;
 
-	public boolean traceConsequences = true;
+    public boolean traceConsequences = true;
 
-	public boolean traceMessageReuses = true;
+    public boolean traceMessageReuses = true;
 
-	public boolean traceSelfMessages = true;
+    public boolean traceSelfMessages = true;
 
-	public int causeEventNumberDelta = 1000;
+    public int causeEventNumberDelta = 1000;
 
-	public int consequenceEventNumberDelta = 1000;
+    public int consequenceEventNumberDelta = 1000;
 
-	public BigDecimal causeSimulationTimeDelta;
+    public BigDecimal causeSimulationTimeDelta;
 
-	public BigDecimal consequenceSimulationTimeDelta;
+    public BigDecimal consequenceSimulationTimeDelta;
 
-	public String moduleFilterExpression;
+    public String moduleFilterExpression;
 
-	public String[] moduleNEDTypeNames;
+    public String[] moduleNEDTypeNames;
 
-	public int[] moduleIds;
+    public int[] moduleIds;
 
-	public int[] moduleNameIds;
+    public int[] moduleNameIds;
 
-	public String[] messageClassNames;
+    public String[] messageClassNames;
 
-	public String[] messageNames;
+    public String[] messageNames;
 
-	public String messageFilterExpression;
+    public String messageFilterExpression;
 
-	public EnabledInt[] messageIds;
+    public EnabledInt[] messageIds;
 
     public EnabledInt[] messageTreeIds;
 
@@ -114,7 +114,7 @@ public class EventLogFilterParameters implements Serializable {
 
     public int maximumNumberOfMessageDependencies = 5;
 
-	public int maximumDepthOfMessageDependencies = 15;
+    public int maximumDepthOfMessageDependencies = 15;
 
     public int maximumMessageDependencyCollectionTime = 100;
 
@@ -128,16 +128,16 @@ public class EventLogFilterParameters implements Serializable {
 
         public boolean enabled;
 
-	    public int value;
-	}
+        public int value;
+    }
 
-	public EventLogFilterParameters(EventLogInput eventLogInput) {
-		this.eventLogInput = eventLogInput;
-	}
+    public EventLogFilterParameters(EventLogInput eventLogInput) {
+        this.eventLogInput = eventLogInput;
+    }
 
-	public void setEventLogInput(EventLogInput eventLogInput) {
-		this.eventLogInput = eventLogInput;
-	}
+    public void setEventLogInput(EventLogInput eventLogInput) {
+        this.eventLogInput = eventLogInput;
+    }
 
     public boolean isAnyEventFilterEnabled() {
         return enableEventNumberFilter || enableSimulationTimeFilter;
@@ -162,265 +162,265 @@ public class EventLogFilterParameters implements Serializable {
              enableModuleIdFilter);
     }
 
-	public long getFirstEventNumber() {
-		IEventLog eventLog = eventLogInput.getEventLog();
+    public long getFirstEventNumber() {
+        IEventLog eventLog = eventLogInput.getEventLog();
 
-		long lowerTraceEventNumberLimit1 = -1;
-		if (enableTraceFilter && tracedEventNumber != -1 && causeEventNumberDelta != -1)
-			lowerTraceEventNumberLimit1 = tracedEventNumber - causeEventNumberDelta;
+        long lowerTraceEventNumberLimit1 = -1;
+        if (enableTraceFilter && tracedEventNumber != -1 && causeEventNumberDelta != -1)
+            lowerTraceEventNumberLimit1 = tracedEventNumber - causeEventNumberDelta;
 
-		long lowerTraceEventNumberLimit2 = -1;
-		if (enableTraceFilter && tracedEventNumber != -1 && causeSimulationTimeDelta != null) {
-			IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
-			event = eventLog.getLastEventNotAfterSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() - causeSimulationTimeDelta.doubleValue()));
+        long lowerTraceEventNumberLimit2 = -1;
+        if (enableTraceFilter && tracedEventNumber != -1 && causeSimulationTimeDelta != null) {
+            IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
+            event = eventLog.getLastEventNotAfterSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() - causeSimulationTimeDelta.doubleValue()));
 
-			if (event != null)
-				lowerTraceEventNumberLimit2 = event.getEventNumber();
-		}
+            if (event != null)
+                lowerTraceEventNumberLimit2 = event.getEventNumber();
+        }
 
-		long lowerEventNumberForSimulationTimeLimit = -1;
-		if (enableSimulationTimeFilter && lowerSimulationTimeLimit != null) {
-			IEvent event = eventLog.getLastEventNotAfterSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(lowerSimulationTimeLimit.toPlainString()));
+        long lowerEventNumberForSimulationTimeLimit = -1;
+        if (enableSimulationTimeFilter && lowerSimulationTimeLimit != null) {
+            IEvent event = eventLog.getLastEventNotAfterSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(lowerSimulationTimeLimit.toPlainString()));
 
-			if (event != null)
-				lowerEventNumberForSimulationTimeLimit = event.getEventNumber();
-		}
+            if (event != null)
+                lowerEventNumberForSimulationTimeLimit = event.getEventNumber();
+        }
 
-		long lowerEventNumberLimit = -1;
-		if (enableEventNumberFilter && this.lowerEventNumberLimit != -1)
-			lowerEventNumberLimit = this.lowerEventNumberLimit;
+        long lowerEventNumberLimit = -1;
+        if (enableEventNumberFilter && this.lowerEventNumberLimit != -1)
+            lowerEventNumberLimit = this.lowerEventNumberLimit;
 
-		return Math.max(Math.max(lowerEventNumberLimit, lowerEventNumberForSimulationTimeLimit),
-						Math.max(lowerTraceEventNumberLimit1, lowerTraceEventNumberLimit2));
-	}
+        return Math.max(Math.max(lowerEventNumberLimit, lowerEventNumberForSimulationTimeLimit),
+                        Math.max(lowerTraceEventNumberLimit1, lowerTraceEventNumberLimit2));
+    }
 
-	public long getLastEventNumber() {
-		IEventLog eventLog = eventLogInput.getEventLog();
+    public long getLastEventNumber() {
+        IEventLog eventLog = eventLogInput.getEventLog();
 
-		long upperTraceEventNumberLimit1 = Long.MAX_VALUE;
-		if (enableTraceFilter && tracedEventNumber != -1 && consequenceEventNumberDelta != -1)
-			upperTraceEventNumberLimit1 = tracedEventNumber + consequenceEventNumberDelta;
+        long upperTraceEventNumberLimit1 = Long.MAX_VALUE;
+        if (enableTraceFilter && tracedEventNumber != -1 && consequenceEventNumberDelta != -1)
+            upperTraceEventNumberLimit1 = tracedEventNumber + consequenceEventNumberDelta;
 
-		long upperTraceEventNumberLimit2 = Long.MAX_VALUE;
-		if (enableTraceFilter && tracedEventNumber != -1 && consequenceSimulationTimeDelta != null) {
-			IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
-			event = eventLog.getFirstEventNotBeforeSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() + consequenceSimulationTimeDelta.doubleValue()));
+        long upperTraceEventNumberLimit2 = Long.MAX_VALUE;
+        if (enableTraceFilter && tracedEventNumber != -1 && consequenceSimulationTimeDelta != null) {
+            IEvent event = eventLog.getEventForEventNumber(tracedEventNumber);
+            event = eventLog.getFirstEventNotBeforeSimulationTime(new org.omnetpp.common.engine.BigDecimal(event.getSimulationTime().doubleValue() + consequenceSimulationTimeDelta.doubleValue()));
 
-			if (event != null)
-				upperTraceEventNumberLimit2 = event.getEventNumber();
-		}
+            if (event != null)
+                upperTraceEventNumberLimit2 = event.getEventNumber();
+        }
 
-		long upperEventNumberForSimulationTimeLimit = Long.MAX_VALUE;
-		if (enableSimulationTimeFilter && upperSimulationTimeLimit != null) {
-			IEvent event = eventLog.getFirstEventNotBeforeSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(upperSimulationTimeLimit.toPlainString()));
+        long upperEventNumberForSimulationTimeLimit = Long.MAX_VALUE;
+        if (enableSimulationTimeFilter && upperSimulationTimeLimit != null) {
+            IEvent event = eventLog.getFirstEventNotBeforeSimulationTime(org.omnetpp.common.engine.BigDecimal.parse(upperSimulationTimeLimit.toPlainString()));
 
-			if (event != null)
-				upperEventNumberForSimulationTimeLimit = event.getEventNumber();
-		}
+            if (event != null)
+                upperEventNumberForSimulationTimeLimit = event.getEventNumber();
+        }
 
-		long upperEventNumberLimit = Long.MAX_VALUE;
-		if (enableEventNumberFilter && this.upperEventNumberLimit != -1)
-			upperEventNumberLimit = this.upperEventNumberLimit;
+        long upperEventNumberLimit = Long.MAX_VALUE;
+        if (enableEventNumberFilter && this.upperEventNumberLimit != -1)
+            upperEventNumberLimit = this.upperEventNumberLimit;
 
-		long limit = Math.min(Math.min(upperEventNumberLimit, upperEventNumberForSimulationTimeLimit),
-				             Math.min(upperTraceEventNumberLimit1, upperTraceEventNumberLimit2));
+        long limit = Math.min(Math.min(upperEventNumberLimit, upperEventNumberForSimulationTimeLimit),
+                             Math.min(upperTraceEventNumberLimit1, upperTraceEventNumberLimit2));
 
-		if (limit == Long.MAX_VALUE)
-			return -1;
-		else
-			return limit;
-	}
+        if (limit == Long.MAX_VALUE)
+            return -1;
+        else
+            return limit;
+    }
 
-	public IntVector getModuleIds() {
-		IntVector vector = new IntVector();
+    public IntVector getModuleIds() {
+        IntVector vector = new IntVector();
 
-		if (enableModuleNameFilter)
-    		for (int id : moduleNameIds)
-    			vector.add(id);
+        if (enableModuleNameFilter)
+            for (int id : moduleNameIds)
+                vector.add(id);
 
-		if (enableModuleIdFilter)
-    		for (int id : moduleIds)
-    			vector.add(id);
+        if (enableModuleIdFilter)
+            for (int id : moduleIds)
+                vector.add(id);
 
-		return vector;
-	}
+        return vector;
+    }
 
-	public StringVector getModuleNEDTypeNames() {
-		return createStringVector(moduleNEDTypeNames);
-	}
+    public StringVector getModuleNEDTypeNames() {
+        return createStringVector(moduleNEDTypeNames);
+    }
 
-	public StringVector getMessageClassNames() {
-		return createStringVector(messageClassNames);
-	}
+    public StringVector getMessageClassNames() {
+        return createStringVector(messageClassNames);
+    }
 
-	public StringVector getMessageNames() {
-		return createStringVector(messageNames);
-	}
+    public StringVector getMessageNames() {
+        return createStringVector(messageNames);
+    }
 
-	public LongVector getSelectedMessageIds() {
-		if (enableMessageIdFilter)
-			return createLongVector(messageIds);
-		else
-			return new LongVector();
-	}
+    public LongVector getSelectedMessageIds() {
+        if (enableMessageIdFilter)
+            return createLongVector(messageIds);
+        else
+            return new LongVector();
+    }
 
-	public LongVector getSelectedMessageTreeIds() {
-		if (enableMessageTreeIdFilter)
-			return createLongVector(messageTreeIds);
-		else
-			return new LongVector();
-	}
+    public LongVector getSelectedMessageTreeIds() {
+        if (enableMessageTreeIdFilter)
+            return createLongVector(messageTreeIds);
+        else
+            return new LongVector();
+    }
 
-	public LongVector getSelectedMessageEncapsulationIds() {
-		if (enableMessageEncapsulationIdFilter)
-			return createLongVector(messageEncapsulationIds);
-		else
-			return new LongVector();
-	}
+    public LongVector getSelectedMessageEncapsulationIds() {
+        if (enableMessageEncapsulationIdFilter)
+            return createLongVector(messageEncapsulationIds);
+        else
+            return new LongVector();
+    }
 
-	public LongVector getSelectedMessageEcapsulationTreeIds() {
-		if (enableMessageEncapsulationTreeIdFilter)
-			return createLongVector(messageEncapsulationTreeIds);
-		else
-			return new LongVector();
-	}
+    public LongVector getSelectedMessageEcapsulationTreeIds() {
+        if (enableMessageEncapsulationTreeIdFilter)
+            return createLongVector(messageEncapsulationTreeIds);
+        else
+            return new LongVector();
+    }
 
-	public IntVector createIntVector(int[] ids) {
-		IntVector vector = new IntVector();
+    public IntVector createIntVector(int[] ids) {
+        IntVector vector = new IntVector();
 
-		for (int id : ids)
-			vector.add(id);
+        for (int id : ids)
+            vector.add(id);
 
-		return vector;
-	}
+        return vector;
+    }
 
-	public LongVector createLongVector(EnabledInt[] ids) {
-		LongVector vector = new LongVector();
+    public LongVector createLongVector(EnabledInt[] ids) {
+        LongVector vector = new LongVector();
 
-		for (EnabledInt id : ids)
-		    if (id.enabled)
-		        vector.add(id.value);
+        for (EnabledInt id : ids)
+            if (id.enabled)
+                vector.add(id.value);
 
-		return vector;
-	}
+        return vector;
+    }
 
-	public StringVector createStringVector(String[] names) {
-		StringVector vector = new StringVector();
+    public StringVector createStringVector(String[] names) {
+        StringVector vector = new StringVector();
 
-		for (String name : names)
-			vector.add(name);
+        for (String name : names)
+            vector.add(name);
 
-		return vector;
-	}
+        return vector;
+    }
 
-	@Override
-	public String toString() {
-	    ArrayList<String> filters = new ArrayList<String>();
+    @Override
+    public String toString() {
+        ArrayList<String> filters = new ArrayList<String>();
 
-	    if (enableRangeFilter) {
-	        ArrayList<String> rangeFilters = new ArrayList<String>();
+        if (enableRangeFilter) {
+            ArrayList<String> rangeFilters = new ArrayList<String>();
 
-	        if (enableEventNumberFilter) {
-    	        if (lowerEventNumberLimit != -1 && upperEventNumberLimit != -1)
-    	            rangeFilters.add(lowerEventNumberLimit + " <= event number <= " + upperEventNumberLimit);
+            if (enableEventNumberFilter) {
+                if (lowerEventNumberLimit != -1 && upperEventNumberLimit != -1)
+                    rangeFilters.add(lowerEventNumberLimit + " <= event number <= " + upperEventNumberLimit);
                 else if (lowerEventNumberLimit != -1)
                     rangeFilters.add("event number >= " + lowerEventNumberLimit);
-    	        else if (upperEventNumberLimit != -1)
-    	            rangeFilters.add("event number <= " + upperEventNumberLimit);
-	        }
+                else if (upperEventNumberLimit != -1)
+                    rangeFilters.add("event number <= " + upperEventNumberLimit);
+            }
 
             if (enableSimulationTimeFilter) {
                 if (lowerSimulationTimeLimit != null && upperSimulationTimeLimit != null)
                     rangeFilters.add(lowerSimulationTimeLimit + " <= simulation time of event <= " + upperSimulationTimeLimit);
-    	        else if (lowerSimulationTimeLimit != null)
-    	            rangeFilters.add("simulation time of event >= " + lowerSimulationTimeLimit);
+                else if (lowerSimulationTimeLimit != null)
+                    rangeFilters.add("simulation time of event >= " + lowerSimulationTimeLimit);
                 else if (upperSimulationTimeLimit != null)
                     rangeFilters.add("simulation time of event <= " + upperSimulationTimeLimit);
             }
 
             filters.add(combineDesriptions("OR", rangeFilters));
-	    }
+        }
 
-	    if (enableModuleFilter) {
+        if (enableModuleFilter) {
             ArrayList<String> moduleFilters = new ArrayList<String>();
 
             if (enableModuleExpressionFilter)
                 moduleFilters.add("module matches the expression " + moduleFilterExpression);
 
-	        if (enableModuleNEDTypeNameFilter)
-	            addMemberDescription(moduleFilters, "module NED type", moduleNEDTypeNames);
+            if (enableModuleNEDTypeNameFilter)
+                addMemberDescription(moduleFilters, "module NED type", moduleNEDTypeNames);
 
-	        if (enableModuleNameFilter) {
-	            ModuleTreeItem root = eventLogInput.getModuleTreeRoot();
-	            String[] moduleNames = new String[moduleNameIds.length];
+            if (enableModuleNameFilter) {
+                ModuleTreeItem root = eventLogInput.getModuleTreeRoot();
+                String[] moduleNames = new String[moduleNameIds.length];
 
-	            for (int i = 0; i< moduleNames.length; i++) {
-	                ModuleTreeItem item = root.findDescendantModule(moduleNameIds[i]);
+                for (int i = 0; i< moduleNames.length; i++) {
+                    ModuleTreeItem item = root.findDescendantModule(moduleNameIds[i]);
 
-	                if (item != null)
-	                    moduleNames[i] = item.getModuleFullPath();
-	            }
-	            // TODO: use names instead of IDs
+                    if (item != null)
+                        moduleNames[i] = item.getModuleFullPath();
+                }
+                // TODO: use names instead of IDs
                 addMemberDescription(moduleFilters, "module name", moduleNames);
-	        }
+            }
 
-	        if (enableModuleIdFilter)
+            if (enableModuleIdFilter)
                 addMemberDescription(moduleFilters, "module ID", moduleIds);
 
-	        filters.add(combineDesriptions("OR", moduleFilters));
-	    }
+            filters.add(combineDesriptions("OR", moduleFilters));
+        }
 
-	    if (enableMessageFilter) {
+        if (enableMessageFilter) {
             ArrayList<String> messageFilters = new ArrayList<String>();
 
             if (enableMessageExpressionFilter)
                 messageFilters.add("message matches the expression " + messageFilterExpression);
 
-    	    if (enableMessageClassNameFilter)
+            if (enableMessageClassNameFilter)
                 addMemberDescription(messageFilters, "message C++ class name", messageClassNames);
 
-    	    if (enableMessageNameFilter)
+            if (enableMessageNameFilter)
                 addMemberDescription(messageFilters, "message name", messageNames);
 
-    	    if (enableMessageIdFilter)
+            if (enableMessageIdFilter)
                 addMemberDescription(messageFilters, "message ID", messageIds);
 
-    	    if (enableMessageTreeIdFilter)
+            if (enableMessageTreeIdFilter)
                 addMemberDescription(messageFilters, "message tree ID", messageTreeIds);
 
-    	    if (enableMessageEncapsulationIdFilter)
-    	        addMemberDescription(messageFilters, "message encapsulation ID", messageEncapsulationIds);
+            if (enableMessageEncapsulationIdFilter)
+                addMemberDescription(messageFilters, "message encapsulation ID", messageEncapsulationIds);
 
-    	    if (enableMessageEncapsulationTreeIdFilter)
+            if (enableMessageEncapsulationTreeIdFilter)
                 addMemberDescription(messageFilters, "message encapsulation tree ID", messageEncapsulationTreeIds);
 
-    	    filters.add(combineDesriptions("OR", messageFilters));
-	    }
+            filters.add(combineDesriptions("OR", messageFilters));
+        }
 
-	    if (enableTraceFilter) {
+        if (enableTraceFilter) {
             ArrayList<String> traceFilters = new ArrayList<String>();
 
-	        if (traceCauses)
+            if (traceCauses)
                 traceFilters.add("cause");
 
-	        if (traceConsequences)
-	            traceFilters.add("consequence");
+            if (traceConsequences)
+                traceFilters.add("consequence");
 
             filters.add("it is the " + StringUtils.join(traceFilters, " or ") + " of the event with event number " + tracedEventNumber);
 
             // TODO: should these included in the filter description?
-	        // if (traceMessageReuses) {
-	        // }
-	        // if (traceSelfMessages) {
-	        // }
-	        // causeEventNumberDelta;
-	        // consequenceEventNumberDelta;
-	        // causeSimulationTimeDelta;
-	        // consequenceSimulationTimeDelta;
+            // if (traceMessageReuses) {
+            // }
+            // if (traceSelfMessages) {
+            // }
+            // causeEventNumberDelta;
+            // consequenceEventNumberDelta;
+            // causeSimulationTimeDelta;
+            // consequenceSimulationTimeDelta;
         }
 
-	    return combineDesriptions("AND", filters, "Filter for all events", "Filter for events where ");
-	}
+        return combineDesriptions("AND", filters, "Filter for all events", "Filter for events where ");
+    }
 
     private String combineDesriptions(String operator, ArrayList<String> descriptions) {
         return combineDesriptions(operator, descriptions, "", "");

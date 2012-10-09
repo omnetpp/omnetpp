@@ -14,5 +14,5 @@ package org.omnetpp.scave.charting.dataset;
  * @author tomi
  */
 public interface IStringValueScalarDataset extends IScalarDataset {
-	String getValueAsString(int row, int column);
+    String getValueAsString(int row, int column);
 }

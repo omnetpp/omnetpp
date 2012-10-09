@@ -24,7 +24,7 @@ public class ExportChartsJob extends Job {
     ResultFileManager manager;
     IGraphicalExportFileFormat format;
     List<File> files;
-    
+
     public ExportChartsJob(List<Chart> charts, IChartExport exporter, ResultFileManager manager, IGraphicalExportFileFormat format, List<File> outputFiles) {
         super("Chart Export");
         Assert.isNotNull(charts);
@@ -44,7 +44,7 @@ public class ExportChartsJob extends Job {
     protected IStatus run(final IProgressMonitor monitor) {
         try {
             monitor.beginTask("Exporting charts.", charts.size());
-            
+
             ResultFileManager.callWithReadLock(manager,
                 new Callable<Object>() {
                     public Object call() throws CoreException {
@@ -60,7 +60,7 @@ public class ExportChartsJob extends Job {
                         return null;
                     }
             });
-            
+
             return Status.OK_STATUS;
         } catch (RuntimeException e) {
             return ScavePlugin.getErrorStatus(0, "Failed to export charts.", e);

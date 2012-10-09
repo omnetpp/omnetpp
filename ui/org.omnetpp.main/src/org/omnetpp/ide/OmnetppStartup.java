@@ -72,10 +72,10 @@ import org.w3c.dom.NodeList;
  */
 @SuppressWarnings("restriction")
 public class OmnetppStartup implements IStartup {
-	protected long VERSIONCHECK_INTERVAL_MILLIS = 3*24*3600*1000L;  // 3 days
+    protected long VERSIONCHECK_INTERVAL_MILLIS = 3*24*3600*1000L;  // 3 days
     public static final String SAMPLES_DIR = "samples";
     public static final String BASE_URL = "http://omnetpp.org/ide/" + (IConstants.IS_COMMERCIAL ? "omnest" : "omnetpp");
-	public static final String VERSIONCHECK_URL = BASE_URL + "/versioncheck/"; // used in OmnetppStartup
+    public static final String VERSIONCHECK_URL = BASE_URL + "/versioncheck/"; // used in OmnetppStartup
 
     /*
      * Method declared on IStartup.
@@ -98,25 +98,25 @@ public class OmnetppStartup implements IStartup {
         });
     }
 
-	/**
-	 * For use in the version check URL.
-	 */
-	protected String getInstallDate() {
-	    String installDate = CommonPlugin.getConfigurationPreferenceStore().getString("installDate");
-	    if (StringUtils.isEmpty(installDate)) {
-	        installDate = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
-	        CommonPlugin.getConfigurationPreferenceStore().setValue("installDate", installDate);
-	        try {
-	        	CommonPlugin.getConfigurationPreferenceStore().save();
-			} catch (IOException e) {
-				OmnetppMainPlugin.logError("Cannot store installDate preference", e);
-			}
+    /**
+     * For use in the version check URL.
+     */
+    protected String getInstallDate() {
+        String installDate = CommonPlugin.getConfigurationPreferenceStore().getString("installDate");
+        if (StringUtils.isEmpty(installDate)) {
+            installDate = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
+            CommonPlugin.getConfigurationPreferenceStore().setValue("installDate", installDate);
+            try {
+                CommonPlugin.getConfigurationPreferenceStore().save();
+            } catch (IOException e) {
+                OmnetppMainPlugin.logError("Cannot store installDate preference", e);
+            }
 
-	    }
-	    return installDate;
-	}
+        }
+        return installDate;
+    }
 
-	private void checkForNewVersion() {
+    private void checkForNewVersion() {
         if (System.getProperty("com.simulcraft.test.running") != null)
             return;
 
@@ -141,27 +141,27 @@ public class OmnetppStartup implements IStartup {
         // to the installed version.
         //
         Job job = new Job("Version check") {
-        	public IStatus run(IProgressMonitor pm) {
-        		String versionCheckURL = OmnetppStartup.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
-        		final String content = getWebPage(versionCheckURL);
-        		if (StringUtils.isNotBlank(content)) {
-        			Display.getDefault().asyncExec(new Runnable() {
-        				public void run() {
-        					try {
-        						IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        						IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
-        						if (workbenchPage != null) {
-        							NewVersionView view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID);
-        							view.setText(content);
-        						}
-        					}
-        					catch (PartInitException e) {
-        						CommonPlugin.logError(e);
-        					}
-        				}});
-        		}
-        		return Status.OK_STATUS;
-        	}
+            public IStatus run(IProgressMonitor pm) {
+                String versionCheckURL = OmnetppStartup.VERSIONCHECK_URL + "?v=" + OmnetppMainPlugin.getVersion() + "&d=" + getInstallDate()+"&o="+Platform.getOS()+"."+Platform.getOSArch();
+                final String content = getWebPage(versionCheckURL);
+                if (StringUtils.isNotBlank(content)) {
+                    Display.getDefault().asyncExec(new Runnable() {
+                        public void run() {
+                            try {
+                                IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+                                IWorkbenchPage workbenchPage = activeWorkbenchWindow == null ? null : activeWorkbenchWindow.getActivePage();
+                                if (workbenchPage != null) {
+                                    NewVersionView view = (NewVersionView)workbenchPage.showView(IConstants.NEW_VERSION_VIEW_ID);
+                                    view.setText(content);
+                                }
+                            }
+                            catch (PartInitException e) {
+                                CommonPlugin.logError(e);
+                            }
+                        }});
+                }
+                return Status.OK_STATUS;
+            }
         };
         job.setSystem(true);
         job.schedule();
@@ -185,59 +185,59 @@ public class OmnetppStartup implements IStartup {
 //  * Checks whether the given web page is available and contains something (i.e. is not empty).
 //  */
 //    public boolean isWebPageNotBlank_browser(final String url) {
-//    	final boolean result[] = new boolean[1];
-//    	Display.getDefault().syncExec(new Runnable() {
-//			@Override
-//			public void run() {
-//				final Shell activeShell = Display.getDefault().getActiveShell();
-//				final Browser browser = new Browser(activeShell,SWT.NONE);  // FIXME getActiveShell can be null
-//				browser.setUrl("http://omnetppblsdsldlsl.org/noonsadn");
-//				Debug.println("setural");
-//				browser.addProgressListener(new ProgressAdapter() {
-//					@Override
-//					public void completed(ProgressEvent event) {
-//						Debug.println("**** completed");
-//						Debug.println("text="+browser.getText());
-//						Debug.println("display:" +Display.getCurrent());
-//						Debug.println("activeShel:"+activeShell);
-//						Debug.println("new active shell:"+Display.getDefault().getActiveShell());
-//					}
+//      final boolean result[] = new boolean[1];
+//      Display.getDefault().syncExec(new Runnable() {
+//          @Override
+//          public void run() {
+//              final Shell activeShell = Display.getDefault().getActiveShell();
+//              final Browser browser = new Browser(activeShell,SWT.NONE);  // FIXME getActiveShell can be null
+//              browser.setUrl("http://omnetppblsdsldlsl.org/noonsadn");
+//              Debug.println("setural");
+//              browser.addProgressListener(new ProgressAdapter() {
+//                  @Override
+//                  public void completed(ProgressEvent event) {
+//                      Debug.println("**** completed");
+//                      Debug.println("text="+browser.getText());
+//                      Debug.println("display:" +Display.getCurrent());
+//                      Debug.println("activeShel:"+activeShell);
+//                      Debug.println("new active shell:"+Display.getDefault().getActiveShell());
+//                  }
 //
-//				});
-//			}
+//              });
+//          }
 //
-//    	});
-//    	return true;
+//      });
+//      return true;
 //    }
 
 //    /**
 //     * Checks whether the given web page is available and contains something (i.e. is not empty).
 //     */
 //    public boolean isWebPageNotBlank(String url) {
-//    	HttpClient client = new HttpClient();
-//    	client.getParams().setSoTimeout(10000);
+//      HttpClient client = new HttpClient();
+//      client.getParams().setSoTimeout(10000);
 //
-//    	IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE );
-//    	if (proxyData != null) {
-//    		client.getState().setProxyCredentials(
-//    				new AuthScope(proxyData.getHost(), proxyData.getPort()),
-//					new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
-//    		HostConfiguration hc = new HostConfiguration();
-//    		hc.setProxy(proxyData.getHost(), proxyData.getPort());
-//    	}
+//      IProxyData proxyData = ProxyManager.getProxyManager().getProxyDataForHost("omnetpp.org", IProxyData.HTTP_PROXY_TYPE );
+//      if (proxyData != null) {
+//          client.getState().setProxyCredentials(
+//                  new AuthScope(proxyData.getHost(), proxyData.getPort()),
+//                  new UsernamePasswordCredentials(proxyData.getUserId(), proxyData.getPassword()));
+//          HostConfiguration hc = new HostConfiguration();
+//          hc.setProxy(proxyData.getHost(), proxyData.getPort());
+//      }
 //
-//    	GetMethod method = new GetMethod(url);
-//    	method.setDoAuthentication(true);
+//      GetMethod method = new GetMethod(url);
+//      method.setDoAuthentication(true);
 //
 //        try {
 //            int status = client.executeMethod(method);
 //            String responseBody = method.getResponseBodyAsString();
-//			return responseBody.trim().length() > 0 && status == HttpStatus.SC_OK;
+//          return responseBody.trim().length() > 0 && status == HttpStatus.SC_OK;
 //        } catch (HttpException e) {
-//        	return false;
-//		} catch (IOException e) {
-//        	return false;
-//		} finally {
+//          return false;
+//      } catch (IOException e) {
+//          return false;
+//      } finally {
 //            method.releaseConnection();
 //        }
 //    }

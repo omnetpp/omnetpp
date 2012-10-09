@@ -26,104 +26,104 @@ import org.omnetpp.sequencechart.widgets.SequenceChart;
  * View for displaying causes and consequences of events.
  */
 public class SequenceChartView extends EventLogView implements ISequenceChartProvider {
-	private SequenceChart sequenceChart;
+    private SequenceChart sequenceChart;
 
     private SequenceChartContributor sequenceChartContributor;
 
-	private ISelectionListener selectionListener;
+    private ISelectionListener selectionListener;
 
-	private IPartListener partListener;
+    private IPartListener partListener;
 
     public SequenceChart getSequenceChart() {
         return sequenceChart;
     }
 
-	@Override
-	public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
-		IViewSite viewSite = (IViewSite)getSite();
-		viewSite.setSelectionProvider(sequenceChart);
+    @Override
+    public void createPartControl(Composite parent) {
+        super.createPartControl(parent);
+        IViewSite viewSite = (IViewSite)getSite();
+        viewSite.setSelectionProvider(sequenceChart);
         IContextService contextService = (IContextService)viewSite.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.SequenceChart");
-		// contribute to toolbar
-		sequenceChartContributor = new SequenceChartContributor(sequenceChart);
-		sequenceChart.setSequenceChartContributor(sequenceChartContributor);
-		sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager(), true);
-		// follow selection
-		selectionListener = new ISelectionListener() {
-			public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-				if (followSelection && part != SequenceChartView.this && selection instanceof IEventLogSelection)
-					setSelection(selection);
-			}
-		};
-		viewSite.getPage().addSelectionListener(selectionListener);
-		// follow active editor changes
-		partListener = new IPartListener() {
-			public void partActivated(IWorkbenchPart part) {
-			}
+        // contribute to toolbar
+        sequenceChartContributor = new SequenceChartContributor(sequenceChart);
+        sequenceChart.setSequenceChartContributor(sequenceChartContributor);
+        sequenceChartContributor.contributeToToolBar(viewSite.getActionBars().getToolBarManager(), true);
+        // follow selection
+        selectionListener = new ISelectionListener() {
+            public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+                if (followSelection && part != SequenceChartView.this && selection instanceof IEventLogSelection)
+                    setSelection(selection);
+            }
+        };
+        viewSite.getPage().addSelectionListener(selectionListener);
+        // follow active editor changes
+        partListener = new IPartListener() {
+            public void partActivated(IWorkbenchPart part) {
+            }
 
-			public void partBroughtToTop(IWorkbenchPart part) {
-			    if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
-			        setSelectionFromActiveEditor();
-			}
-
-			public void partClosed(IWorkbenchPart part) {
+            public void partBroughtToTop(IWorkbenchPart part) {
                 if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
                     setSelectionFromActiveEditor();
-			}
+            }
 
-			public void partDeactivated(IWorkbenchPart part) {
-			}
-
-			public void partOpened(IWorkbenchPart part) {
+            public void partClosed(IWorkbenchPart part) {
                 if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
                     setSelectionFromActiveEditor();
-			}
-		};
-		viewSite.getPage().addPartListener(partListener);
-		// bootstrap with current selection
-		selectionListener.selectionChanged(null, getActiveEditorSelection());
-	}
+            }
 
-	@Override
-	public IEventLog getEventLog() {
-	    return sequenceChart.getEventLog();
-	}
+            public void partDeactivated(IWorkbenchPart part) {
+            }
 
-	@Override
-	public void dispose() {
-		IViewSite viewSite = (IViewSite)getSite();
+            public void partOpened(IWorkbenchPart part) {
+                if (followSelection && part instanceof IEditorPart && !sequenceChart.isDisposed())
+                    setSelectionFromActiveEditor();
+            }
+        };
+        viewSite.getPage().addPartListener(partListener);
+        // bootstrap with current selection
+        selectionListener.selectionChanged(null, getActiveEditorSelection());
+    }
 
-		if (selectionListener != null)
-			viewSite.getPage().removeSelectionListener(selectionListener);
+    @Override
+    public IEventLog getEventLog() {
+        return sequenceChart.getEventLog();
+    }
 
-		if (partListener != null)
-			viewSite.getPage().removePartListener(partListener);
+    @Override
+    public void dispose() {
+        IViewSite viewSite = (IViewSite)getSite();
 
-		super.dispose();
-	}
+        if (selectionListener != null)
+            viewSite.getPage().removeSelectionListener(selectionListener);
 
-	@Override
-	public void setFocus() {
-		sequenceChart.setFocus();
-	}
+        if (partListener != null)
+            viewSite.getPage().removePartListener(partListener);
 
-	@Override
-	protected Control createViewControl(Composite parent) {
-		sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
-		sequenceChart.setWorkbenchPart(this);
-		return sequenceChart;
-	}
+        super.dispose();
+    }
 
-	@Override
+    @Override
+    public void setFocus() {
+        sequenceChart.setFocus();
+    }
+
+    @Override
+    protected Control createViewControl(Composite parent) {
+        sequenceChart = new SequenceChart(parent, SWT.DOUBLE_BUFFERED);
+        sequenceChart.setWorkbenchPart(this);
+        return sequenceChart;
+    }
+
+    @Override
     public void setSelection(ISelection selection) {
-		if (selection instanceof IEventLogSelection) {
-			hideMessage();
-			sequenceChart.setSelection(selection);
-		}
-		else {
-			sequenceChart.setInput(null);
-			showMessage("No event log available");
-		}
-	}
+        if (selection instanceof IEventLogSelection) {
+            hideMessage();
+            sequenceChart.setSelection(selection);
+        }
+        else {
+            sequenceChart.setInput(null);
+            showMessage("No event log available");
+        }
+    }
 }

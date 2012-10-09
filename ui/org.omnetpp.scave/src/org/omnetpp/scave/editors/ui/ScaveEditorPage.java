@@ -53,270 +53,270 @@ import org.omnetpp.scave.editors.ScaveEditor;
  * @author andras
  */
 public class ScaveEditorPage extends ScrolledForm {
-	//private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252);
-	//private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253);
-	private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
-	private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
+    //private static final Color PALETTE_BG_COLOR = new Color(null, 234, 240, 252);
+    //private static final Color BUTTONS_BG_COLOR = new Color(null, 239, 244, 253);
+    private static final Color PALETTE_BG_COLOR = new Color(null, 241, 245, 253);
+    private static final Color BUTTONS_BG_COLOR = new Color(null, 249, 251, 254);
 
-	protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
-	private String pageTitle = "untitled";
-	
-	protected FocusManager focusManager = null;
+    protected ScaveEditor scaveEditor = null;  // backreference to the containing editor
+    private String pageTitle = "untitled";
 
-	public ScaveEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
-		super(parent, style);
-		this.scaveEditor = scaveEditor;
-	}
+    protected FocusManager focusManager = null;
 
-	public void setFormTitle(String title) {
-		setFont(new Font(null, "Arial", 12, SWT.BOLD));
-		setForeground(new Color(null, 0, 128, 255));
-		setText(title);
-	}
+    public ScaveEditorPage(Composite parent, int style, ScaveEditor scaveEditor) {
+        super(parent, style);
+        this.scaveEditor = scaveEditor;
+    }
 
-	/**
-	 * Return the text that should appear on the page's tab.
-	 */
-	public String getPageTitle() {
-		return pageTitle;
-	}
+    public void setFormTitle(String title) {
+        setFont(new Font(null, "Arial", 12, SWT.BOLD));
+        setForeground(new Color(null, 0, 128, 255));
+        setText(title);
+    }
 
-	/**
-	 * Sets the text that should appear on the page's tab.
-	 */
-	public void setPageTitle(String title) {
-		pageTitle = title;
-		scaveEditor.setPageTitle(this, title);
-	}
-	
-	public FocusManager getFocusManager() {
+    /**
+     * Return the text that should appear on the page's tab.
+     */
+    public String getPageTitle() {
+        return pageTitle;
+    }
+
+    /**
+     * Sets the text that should appear on the page's tab.
+     */
+    public void setPageTitle(String title) {
+        pageTitle = title;
+        scaveEditor.setPageTitle(this, title);
+    }
+
+    public FocusManager getFocusManager() {
         return focusManager;
     }
-	
-	public void setFocusManager(FocusManager focusManager) {
+
+    public void setFocusManager(FocusManager focusManager) {
         this.focusManager = focusManager;
     }
-	
-	@Override
-	public boolean setFocus() {
+
+    @Override
+    public boolean setFocus() {
         // try to restore focus where it was last time
-	    if (getFocusManager() != null && getFocusManager().setFocus())
-	        return true;
-	    return super.setFocus();
-	}
+        if (getFocusManager() != null && getFocusManager().setFocus())
+            return true;
+        return super.setFocus();
+    }
 
-	/**
-	 * Updates the page title, etc.
-	 * Called when the model changed.
-	 */
-	public void updatePage(Notification notification) {
-	}
+    /**
+     * Updates the page title, etc.
+     * Called when the model changed.
+     */
+    public void updatePage(Notification notification) {
+    }
 
-	/**
-	 * Creates palette for model object creation
-	 */
-	protected Composite createPalette(Composite parent, boolean wantDatasetAndChartsheet) {
-		ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
-		scrolledComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, false, true));
-		scrolledComposite.setBackground(PALETTE_BG_COLOR);
-		Composite toolbar = new Composite(scrolledComposite, SWT.NONE);
-		scrolledComposite.setContent(toolbar);
-		toolbar.setLayout(new RowLayout(SWT.VERTICAL));
-		((RowLayout)toolbar.getLayout()).fill = true;
-		toolbar.setBackground(PALETTE_BG_COLOR);
-		new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor, wantDatasetAndChartsheet);
-		toolbar.setSize(toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		return scrolledComposite;
-	}
+    /**
+     * Creates palette for model object creation
+     */
+    protected Composite createPalette(Composite parent, boolean wantDatasetAndChartsheet) {
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.BORDER | SWT.V_SCROLL);
+        scrolledComposite.setLayoutData(new GridData(SWT.END, SWT.TOP, false, true));
+        scrolledComposite.setBackground(PALETTE_BG_COLOR);
+        Composite toolbar = new Composite(scrolledComposite, SWT.NONE);
+        scrolledComposite.setContent(toolbar);
+        toolbar.setLayout(new RowLayout(SWT.VERTICAL));
+        ((RowLayout)toolbar.getLayout()).fill = true;
+        toolbar.setBackground(PALETTE_BG_COLOR);
+        new ModelObjectPalette(toolbar, BUTTONS_BG_COLOR, true, scaveEditor, wantDatasetAndChartsheet);
+        toolbar.setSize(toolbar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        return scrolledComposite;
+    }
 
 
-	/**
-	 * Sets up the given control so that when a file is drag-dropped into it,
-	 * it will be added to Inputs unless it's already in there.
-	 */
-	public void setupResultFileDropTarget(Control dropTargetControl) {
-		// set up DropTarget, and add FileTransfer to it;
-		// issue: the EMF editor already adds a drop target to the TreeViewer
-		DropTarget dropTarget = null;
-		Object o = dropTargetControl.getData("DropTarget");
-		if (o instanceof DropTarget) {
-			dropTarget = (DropTarget) o; // this is a dirty hack, but there seems to be no public API for getting an existing drop target
-			// add FileTransfer to the transfer array if not already in there
-			Transfer[] transfer = dropTarget.getTransfer();
-			Transfer[] transfer2 = new Transfer[transfer.length+1];
-			System.arraycopy(transfer, 0, transfer2, 0, transfer.length);
-			transfer2[transfer2.length-1] = FileTransfer.getInstance();
-			dropTarget.setTransfer(transfer2);
-		}
-		else {
-			dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
-			dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
-		}
+    /**
+     * Sets up the given control so that when a file is drag-dropped into it,
+     * it will be added to Inputs unless it's already in there.
+     */
+    public void setupResultFileDropTarget(Control dropTargetControl) {
+        // set up DropTarget, and add FileTransfer to it;
+        // issue: the EMF editor already adds a drop target to the TreeViewer
+        DropTarget dropTarget = null;
+        Object o = dropTargetControl.getData("DropTarget");
+        if (o instanceof DropTarget) {
+            dropTarget = (DropTarget) o; // this is a dirty hack, but there seems to be no public API for getting an existing drop target
+            // add FileTransfer to the transfer array if not already in there
+            Transfer[] transfer = dropTarget.getTransfer();
+            Transfer[] transfer2 = new Transfer[transfer.length+1];
+            System.arraycopy(transfer, 0, transfer2, 0, transfer.length);
+            transfer2[transfer2.length-1] = FileTransfer.getInstance();
+            dropTarget.setTransfer(transfer2);
+        }
+        else {
+            dropTarget = new DropTarget(dropTargetControl, DND.DROP_DEFAULT | DND.DROP_COPY);
+            dropTarget.setTransfer(new Transfer[] {FileTransfer.getInstance()});
+        }
 
-		// add our listener to handle file transfer to the DropTarget
-		dropTarget.addDropListener(new DropTargetAdapter() {
-			public void dragEnter(DropTargetEvent event) {
-				if (event.detail == DND.DROP_DEFAULT)
-					event.detail = DND.DROP_COPY;
-			}
-			public void dragOperationChanged(DropTargetEvent event) {
-				if (event.detail == DND.DROP_DEFAULT)
-					event.detail = DND.DROP_COPY;
-			}
-			public void drop(DropTargetEvent event) {
-				if (event.data instanceof String[]) {
-					String [] fileNames = (String[])event.data;
-					for (int i=0; i<fileNames.length; i++)
-						addDroppedFileToInputs(fileNames[i]);
-				}
-			}
-		});
-	}
+        // add our listener to handle file transfer to the DropTarget
+        dropTarget.addDropListener(new DropTargetAdapter() {
+            public void dragEnter(DropTargetEvent event) {
+                if (event.detail == DND.DROP_DEFAULT)
+                    event.detail = DND.DROP_COPY;
+            }
+            public void dragOperationChanged(DropTargetEvent event) {
+                if (event.detail == DND.DROP_DEFAULT)
+                    event.detail = DND.DROP_COPY;
+            }
+            public void drop(DropTargetEvent event) {
+                if (event.data instanceof String[]) {
+                    String [] fileNames = (String[])event.data;
+                    for (int i=0; i<fileNames.length; i++)
+                        addDroppedFileToInputs(fileNames[i]);
+                }
+            }
+        });
+    }
 
-	/**
-	 * Adds the given file to Inputs unless it's already in there.
-	 * The file name should be an OS path (D:\... or /home/you/...),
-	 * not a workspace path!
-	 *
-	 * XXX Limitation: currently the file must be available via the
-	 * workspace as well. This may get improved in the future.
-	 */
-	private void addDroppedFileToInputs(String fileName) {
-		// convert OS path to workspace path
-		IFile iFile = ScaveEditor.findFileInWorkspace(fileName);
-		if (iFile==null) {
-			IStatus error =
-				ScavePlugin.getErrorStatus(0, "Path not found in the workspace" + fileName, null);
-			ErrorDialog.openError(getShell(), null, null, error);
-			return;
-		}
-		scaveEditor.addWorkspaceFileToInputs(iFile);
-	}
+    /**
+     * Adds the given file to Inputs unless it's already in there.
+     * The file name should be an OS path (D:\... or /home/you/...),
+     * not a workspace path!
+     *
+     * XXX Limitation: currently the file must be available via the
+     * workspace as well. This may get improved in the future.
+     */
+    private void addDroppedFileToInputs(String fileName) {
+        // convert OS path to workspace path
+        IFile iFile = ScaveEditor.findFileInWorkspace(fileName);
+        if (iFile==null) {
+            IStatus error =
+                ScavePlugin.getErrorStatus(0, "Path not found in the workspace" + fileName, null);
+            ErrorDialog.openError(getShell(), null, null, error);
+            return;
+        }
+        scaveEditor.addWorkspaceFileToInputs(iFile);
+    }
 
-	/**
-	 * Connects the button with an action, so that the action is executed
-	 * when the button is pressed, and the button is enabled/disabled when
-	 * the action becomes enabled/disabled.
-	 *
-	 * Note: ActionContributionItem is not good here because:
-	 *  (1) it wants to create the button itself, and thus not compatible with FormToolkit
-	 *  (2) the button it creates has wrong background color, and there's no way to access
-	 *      the button to fix it (this is solved by ActionContributionItem2, it adds a getter)
-	 */
-	private static void doConfigureButton(final Button button, final IScaveAction action) {
-		button.setText(action.getText());
-		button.setToolTipText(action.getToolTipText());
-		if (action.getImageDescriptor() != null)
-			button.setImage(action.getImageDescriptor().createImage());
+    /**
+     * Connects the button with an action, so that the action is executed
+     * when the button is pressed, and the button is enabled/disabled when
+     * the action becomes enabled/disabled.
+     *
+     * Note: ActionContributionItem is not good here because:
+     *  (1) it wants to create the button itself, and thus not compatible with FormToolkit
+     *  (2) the button it creates has wrong background color, and there's no way to access
+     *      the button to fix it (this is solved by ActionContributionItem2, it adds a getter)
+     */
+    private static void doConfigureButton(final Button button, final IScaveAction action) {
+        button.setText(action.getText());
+        button.setToolTipText(action.getToolTipText());
+        if (action.getImageDescriptor() != null)
+            button.setImage(action.getImageDescriptor().createImage());
 
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				action.run();
-			}
-		});
-		final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				if (event.getProperty().equals(IAction.ENABLED)) {
-					if (!button.isDisposed())
-						button.setEnabled(action.isEnabled());
-				}
-			}
-		};
-		action.addPropertyChangeListener(propertyChangeListener);
-		button.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				action.removePropertyChangeListener(propertyChangeListener);
-			}
-		});
-	}
+        button.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e) {
+                action.run();
+            }
+        });
+        final IPropertyChangeListener propertyChangeListener = new IPropertyChangeListener() {
+            public void propertyChange(PropertyChangeEvent event) {
+                if (event.getProperty().equals(IAction.ENABLED)) {
+                    if (!button.isDisposed())
+                        button.setEnabled(action.isEnabled());
+                }
+            }
+        };
+        action.addPropertyChangeListener(propertyChangeListener);
+        button.addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                action.removePropertyChangeListener(propertyChangeListener);
+            }
+        });
+    }
 
-	/*
-	 * Connects the button with an action, so that the action is executed
-	 * when the button is pressed, and the button is enabled/disabled when
-	 * the action becomes enabled/disabled.
-	 *
-	 * The action will be enabled/disabled based on a viewer's selection.
-	 *
-	 * See also: ActionContributionItem, ActionContributionItem2
-	 */
-	public static void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {
-		doConfigureButton(button, action);
-		action.setViewer(viewer);
-		viewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				action.selectionChanged(event.getSelection());
-			}
-		});
-	}
+    /*
+     * Connects the button with an action, so that the action is executed
+     * when the button is pressed, and the button is enabled/disabled when
+     * the action becomes enabled/disabled.
+     *
+     * The action will be enabled/disabled based on a viewer's selection.
+     *
+     * See also: ActionContributionItem, ActionContributionItem2
+     */
+    public static void configureViewerButton(final Button button, final Viewer viewer, final IScaveAction action) {
+        doConfigureButton(button, action);
+        action.setViewer(viewer);
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                action.selectionChanged(event.getSelection());
+            }
+        });
+    }
 
-	/**
-	 * Like <code>configureViewerButton</code>, but action will also run
-	 * on double-clicking in the viewer.
-	 */
-	public static void configureViewerDefaultButton(final Button button, final TreeViewer viewer, final IScaveAction action) {
-		configureViewerButton(button, viewer, action);
-		configureViewerDefaultAction(viewer, action);
-	}
+    /**
+     * Like <code>configureViewerButton</code>, but action will also run
+     * on double-clicking in the viewer.
+     */
+    public static void configureViewerDefaultButton(final Button button, final TreeViewer viewer, final IScaveAction action) {
+        configureViewerButton(button, viewer, action);
+        configureViewerDefaultAction(viewer, action);
+    }
 
-	/**
-	 * Connects the double-click in the viewer with the action.
-	 */
-	public static void configureViewerDefaultAction(final TreeViewer viewer, final IScaveAction action) {
-		action.setViewer(viewer);
-		viewer.getTree().addSelectionListener(new SelectionAdapter() {
-			public void widgetDefaultSelected(SelectionEvent e) {
-				action.run();
-			}
-		});
-	}
+    /**
+     * Connects the double-click in the viewer with the action.
+     */
+    public static void configureViewerDefaultAction(final TreeViewer viewer, final IScaveAction action) {
+        action.setViewer(viewer);
+        viewer.getTree().addSelectionListener(new SelectionAdapter() {
+            public void widgetDefaultSelected(SelectionEvent e) {
+                action.run();
+            }
+        });
+    }
 
-	public void showStatusMessage(String message) {
-		IWorkbenchWindow window = scaveEditor.getSite().getWorkbenchWindow();
-		if (window instanceof ApplicationWindow)
-			((ApplicationWindow)window).setStatus(message);
-	}
+    public void showStatusMessage(String message) {
+        IWorkbenchWindow window = scaveEditor.getSite().getWorkbenchWindow();
+        if (window instanceof ApplicationWindow)
+            ((ApplicationWindow)window).setStatus(message);
+    }
 
-	/**
-	 * Notification about the activation of the page of the
-	 * multipage editor.
-	 */
-	public void pageActivated() {
-	}
+    /**
+     * Notification about the activation of the page of the
+     * multipage editor.
+     */
+    public void pageActivated() {
+    }
 
-	/**
-	 * Notification about the change of the workbench selection.
-	 * Pages are synchronizing their selection of their viewers
-	 * by calling {@link #setViewerSelectionNoNotify(Viewer, ISelection)}.
-	 */
-	public void selectionChanged(ISelection selection) {
-	}
+    /**
+     * Notification about the change of the workbench selection.
+     * Pages are synchronizing their selection of their viewers
+     * by calling {@link #setViewerSelectionNoNotify(Viewer, ISelection)}.
+     */
+    public void selectionChanged(ISelection selection) {
+    }
 
-	protected void setViewerSelectionNoNotify(Viewer viewer, ISelection selection) {
-		scaveEditor.setViewerSelectionNoNotify(viewer, selection);
-	}
+    protected void setViewerSelectionNoNotify(Viewer viewer, ISelection selection) {
+        scaveEditor.setViewerSelectionNoNotify(viewer, selection);
+    }
 
-	/**
-	 * Returns the active chart on this page.
-	 */
-	public ChartCanvas getActiveChartCanvas() {
-		return null;
-	}
+    /**
+     * Returns the active chart on this page.
+     */
+    public ChartCanvas getActiveChartCanvas() {
+        return null;
+    }
 
-	public boolean gotoObject(Object object) {
-		return false;
-	}
+    public boolean gotoObject(Object object) {
+        return false;
+    }
 
-	/**
-	 * Saves the state of the page before the editor closed.
-	 * Override this method when the page has some persistable state.
-	 */
-	public void saveState(IMemento memento) {
-	}
+    /**
+     * Saves the state of the page before the editor closed.
+     * Override this method when the page has some persistable state.
+     */
+    public void saveState(IMemento memento) {
+    }
 
-	/**
-	 * Restores the state of the page from the saved state.
-	 * Override this method when the page has some persistable state.
-	 */
-	public void restoreState(IMemento memento) {
-	}
+    /**
+     * Restores the state of the page from the saved state.
+     * Override this method when the page has some persistable state.
+     */
+    public void restoreState(IMemento memento) {
+    }
 }

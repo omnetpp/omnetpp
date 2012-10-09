@@ -70,12 +70,12 @@ public class InifileDocument implements IInifileDocument {
         int numLines;  // ==1 unless line continues on other lines (trailing backslash)
         String rawComment; // includes leading "#" and preceding whitespace; NEVER NULL
         Object data;
-        
+
     };
     static class SectionHeadingLine extends Line implements Cloneable {
         String sectionName;
         int lastLine; // last line of section contents
-        
+
         public SectionHeadingLine clone() throws CloneNotSupportedException {
             return (SectionHeadingLine)super.clone();
         }
@@ -83,7 +83,7 @@ public class InifileDocument implements IInifileDocument {
     static class KeyValueLine extends Line implements Cloneable {
         String key;
         String value;
-        
+
         protected KeyValueLine clone() throws CloneNotSupportedException {
             return (KeyValueLine)super.clone();
         }
@@ -97,7 +97,7 @@ public class InifileDocument implements IInifileDocument {
         String[] sectionChain;
         Set<String> sectionChainConflict; // conflicting sections in the section chain or null
         Object data;
-        
+
         @Override
         protected Section clone() throws CloneNotSupportedException {
             Section section = (Section)super.clone();
@@ -142,7 +142,7 @@ public class InifileDocument implements IInifileDocument {
         // listen on changes so we know when we need to re-parse
         hookListeners();
     }
-    
+
     public IReadonlyInifileDocument getImmutableCopy() {
         synchronized (lock) {
             if (docCopy == null)
@@ -150,7 +150,7 @@ public class InifileDocument implements IInifileDocument {
             return docCopy;
         }
     }
-    
+
     public boolean isImmutableCopyUpToDate(IReadonlyInifileDocument copy) {
         synchronized (lock) {
             return this.docCopy == copy;
@@ -365,7 +365,7 @@ public class InifileDocument implements IInifileDocument {
                 markers.addError(documentFile, e.getLineNumber(), e.getMessage());
             }
             Debug.println("Inifile parsing: "+(System.currentTimeMillis()-startTime)+"ms");
-            
+
             // mark data structure as up to date (even if there was an error, because
             // we don't want to keep re-parsing again and again)
             changed = false;
@@ -397,7 +397,7 @@ public class InifileDocument implements IInifileDocument {
             // changed=true.
         }
     }
-    
+
     public void dump() {
         for (String sectionName : sections.keySet()) {
             Debug.println("Section "+sectionName);
@@ -446,7 +446,7 @@ public class InifileDocument implements IInifileDocument {
             return "Key contains illegal character(s)";
         return null;
     }
-    
+
     Map<String,Section> getSections() {
         return sections;
     }
@@ -946,7 +946,7 @@ public class InifileDocument implements IInifileDocument {
     public IFile[] getIncludedFiles() {
         return includedFiles.toArray(new IFile[]{});
     }
-    
+
     public boolean containsSectionCycles() {
         parseIfChanged();
         return !sectionsCausingCycles.isEmpty();
@@ -959,12 +959,12 @@ public class InifileDocument implements IInifileDocument {
                 return true;
         return false;
     }
-    
+
     public Collection<Set<String>> getSectionChainCycles() {
         parseIfChanged();
         return sectionsCausingCycles;
     }
-    
+
     public String[] getSectionChain(String sectionName) {
         parseIfChanged();
         Section section = sections.get(sectionName);
@@ -972,7 +972,7 @@ public class InifileDocument implements IInifileDocument {
             throw new IllegalArgumentException("No such section: ["+sectionName+"]");
         return section.sectionChain;
     }
-    
+
     public String[] getConflictingSections(String sectionName) {
         parseIfChanged();
         Section section = sections.get(sectionName);

@@ -49,7 +49,7 @@ public class NedEditorLauncher implements IEditorLauncher {
                         "that you delete this project from the workspace, and recreate it with the " +
                         "New OMNeT++ Project wizard.");
                 if (addNature) {
-                	ProjectUtils.addOmnetppNature(file.getProject(), null);
+                    ProjectUtils.addOmnetppNature(file.getProject(), null);
                     if (!ProjectUtils.isOpenOmnetppProject(file.getProject())) {
                         MessageDialog.openInformation(workbenchWindow.getShell(),
                                 "Not an OMNeT++ Project",
@@ -57,12 +57,12 @@ public class NedEditorLauncher implements IEditorLauncher {
                         IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                     }
                     else {
-                    	IDE.openEditor(page, file, NedEditor.ID);
+                        IDE.openEditor(page, file, NedEditor.ID);
                     }
                 }
                 else {
-                	// open in text editor
-                	IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
+                    // open in text editor
+                    IDE.openEditor(page, file, EditorsUI.DEFAULT_TEXT_EDITOR_ID);
                 }
                 return;
             }

@@ -61,16 +61,16 @@ public class ManualAxisOrder {
         lastAxisModuleOrder = updatedLastAxisModuleOrder;
     }
 
-	public int[] calculateOrdering(ModuleTreeItem[] selectedAxisModules) {
+    public int[] calculateOrdering(ModuleTreeItem[] selectedAxisModules) {
         int numberOfAxes = selectedAxisModules.length;
         int[] axisPositions = new int[numberOfAxes];
-	    ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
+        ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
 
         for (int i = 0; i < selectedAxisModules.length; i++)
             axisPositions[i] = currentAxisModuleOrder.indexOf(selectedAxisModules[i]);
 
         return axisPositions;
-	}
+    }
 
     public int showManualOrderDialog(final ModuleTreeItem[] selectedAxisModules) {
         ArrayList<ModuleTreeItem> currentAxisModuleOrder = getCurrentAxisModuleOrder(selectedAxisModules);
@@ -78,24 +78,24 @@ public class ManualAxisOrder {
 
         ListReorderDialog dialog = new ListReorderDialog(Display.getCurrent().getActiveShell());
 
-		dialog.setContentProvider(new ArrayContentProvider());
-		dialog.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				ModuleTreeItem moduleTreeItem = (ModuleTreeItem)element;
-				return moduleTreeItem.getModuleFullPath() + " (id = " + moduleTreeItem.getModuleId() + ")";
-			}
-		});
+        dialog.setContentProvider(new ArrayContentProvider());
+        dialog.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+                ModuleTreeItem moduleTreeItem = (ModuleTreeItem)element;
+                return moduleTreeItem.getModuleFullPath() + " (id = " + moduleTreeItem.getModuleId() + ")";
+            }
+        });
 
-		dialog.setTitle("Manual Axis Ordering");
-		dialog.setMessage("Reorder chart axes:");
+        dialog.setTitle("Manual Axis Ordering");
+        dialog.setMessage("Reorder chart axes:");
         dialog.setInput(updatedCurrentAxisModuleOrder);
         dialog.setOriginalOrder(selectedAxisModules);
-		dialog.open();
+        dialog.open();
 
-		if (dialog.getReturnCode() == Window.OK)
+        if (dialog.getReturnCode() == Window.OK)
             updateLastAxisModuleOrder(currentAxisModuleOrder, updatedCurrentAxisModuleOrder);
 
-		return dialog.getReturnCode();
+        return dialog.getReturnCode();
     }
 }

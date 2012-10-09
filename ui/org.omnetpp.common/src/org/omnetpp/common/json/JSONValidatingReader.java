@@ -6,15 +6,15 @@ package org.omnetpp.common.json;
 public class JSONValidatingReader extends JSONReader {
     public static final Object INVALID = new Object();
     private JSONValidator validator;
-    
+
     public JSONValidatingReader(JSONValidator validator) {
         this.validator = validator;
     }
-    
+
     public JSONValidatingReader(JSONErrorListener listener) {
         this(new JSONValidator(listener));
     }
-    
+
     public JSONValidatingReader() {
         this(new StdoutStreamErrorListener());
     }

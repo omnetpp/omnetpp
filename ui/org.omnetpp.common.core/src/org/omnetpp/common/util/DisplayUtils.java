@@ -11,26 +11,26 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 
 public class DisplayUtils {
-	public static void runNowOrAsyncInUIThread(Runnable runnable) {
-		if (Display.getCurrent() == null)
-			Display.getDefault().asyncExec(runnable);
-		else
-			runnable.run();
-	}
+    public static void runNowOrAsyncInUIThread(Runnable runnable) {
+        if (Display.getCurrent() == null)
+            Display.getDefault().asyncExec(runnable);
+        else
+            runnable.run();
+    }
 
-	public static void runNowOrSyncInUIThread(Runnable runnable) {
-		if (Display.getCurrent() == null)
-			Display.getDefault().syncExec(runnable);
-		else
-			runnable.run();
-	}
+    public static void runNowOrSyncInUIThread(Runnable runnable) {
+        if (Display.getCurrent() == null)
+            Display.getDefault().syncExec(runnable);
+        else
+            runnable.run();
+    }
 
-	/**
-	 * Adds an event filter in front of existing filters. This is needed if you want
-	 * to receive all keypresses including hotkeys, because then you want to be in
-	 * front of the key binding service (which is also an event filter on Display,
-	 * and it translates keypress events that correspond to hotkeys to something else).
-	 */
+    /**
+     * Adds an event filter in front of existing filters. This is needed if you want
+     * to receive all keypresses including hotkeys, because then you want to be in
+     * front of the key binding service (which is also an event filter on Display,
+     * and it translates keypress events that correspond to hotkeys to something else).
+     */
     public static void addAsFirstFilter(int eventType, Listener listener) {
         // first, make room in the table (this adds the listener at the end of the table)
         Display display = Display.getDefault();

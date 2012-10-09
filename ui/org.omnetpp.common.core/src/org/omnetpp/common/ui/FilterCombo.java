@@ -12,13 +12,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 /**
- * Combo that shows the message text in grey (see setMessage()/getMessage() methods) 
+ * Combo that shows the message text in grey (see setMessage()/getMessage() methods)
  * when it has no focus and no other content.
- * 
+ *
  * Note: We don't need an equivalent FilterText class, because the plain SWT Text class
- * already supports this behavior, with the SWT.SEARCH style bit; see setMessage()/ 
+ * already supports this behavior, with the SWT.SEARCH style bit; see setMessage()/
  * getMessage methods as well.
- * 
+ *
  * @author Andras
  */
 public class FilterCombo extends Combo {
@@ -35,18 +35,18 @@ public class FilterCombo extends Combo {
             public void focusLost(FocusEvent e) {
                 FilterCombo.this.focusLost(e);
             }
-            
+
             public void focusGained(FocusEvent e) {
                 FilterCombo.this.focusGained(e);
             }
         });
-        
+
         addModifyListener(new ModifyListener() {
             public void modifyText(ModifyEvent e) {
                 FilterCombo.this.textChanged(e);
             }
         });
-        
+
         if (!isFocusControl()) {
             setText(message);
             internalSetForeground(messageColor);
@@ -66,7 +66,7 @@ public class FilterCombo extends Combo {
             showingMessage = true;
         }
     }
-    
+
     protected void focusGained(FocusEvent e) {
         if (showingMessage) {
             setText("");
@@ -96,7 +96,7 @@ public class FilterCombo extends Combo {
         else
             return super.getText();
     }
-    
+
     public String getMessage() {
         return message;
     }
@@ -114,12 +114,12 @@ public class FilterCombo extends Combo {
     public Color getMessageColor() {
         return messageColor;
     }
-    
+
     protected void internalSetForeground(Color color) {
-        // Problem on Ubuntu 10.04: in the default theme, combo editfield is black-on-white 
-        // and dropdown list is white-on-black, so calling setForeground() will inevitably 
-        // make at least one of them unreadable. 
-        // Workaround: do NOT call getForeground() on any Linux/GTK setup. 
+        // Problem on Ubuntu 10.04: in the default theme, combo editfield is black-on-white
+        // and dropdown list is white-on-black, so calling setForeground() will inevitably
+        // make at least one of them unreadable.
+        // Workaround: do NOT call getForeground() on any Linux/GTK setup.
         boolean isPlatformOK = !Platform.getWS().equals(Platform.WS_GTK);
         if (isPlatformOK)
             super.setForeground(color);
@@ -131,7 +131,7 @@ public class FilterCombo extends Combo {
         if (!showingMessage)
             internalSetForeground(color);
     }
-    
+
     @Override
     public Color getForeground() {
         return textColor;
@@ -141,5 +141,5 @@ public class FilterCombo extends Combo {
     public String toString() {
         return getClass().getSimpleName() + " {" + getMessage() + "}";
     }
-    
+
 }

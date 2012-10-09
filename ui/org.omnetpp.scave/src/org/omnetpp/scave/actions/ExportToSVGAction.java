@@ -23,13 +23,13 @@ import org.omnetpp.scave.charting.ChartCanvas;
 import org.omnetpp.scave.editors.ScaveEditor;
 
 public class ExportToSVGAction extends AbstractScaveAction {
-	public ExportToSVGAction() {
-		setText("Export to SVG...");
-		setToolTipText("Export char to SVG format");
-	}
+    public ExportToSVGAction() {
+        setText("Export to SVG...");
+        setToolTipText("Export char to SVG format");
+    }
 
-	@Override
-	protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
+    @Override
+    protected void doRun(final ScaveEditor editor, IStructuredSelection selection) {
         final ChartCanvas chart = editor.getActiveChartCanvas();
         if (chart != null) {
             BusyIndicator.showWhile(Display.getDefault(), new Runnable() {
@@ -40,16 +40,16 @@ public class ExportToSVGAction extends AbstractScaveAction {
                 }
             });
         }
-	}
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
         return editor.getActiveChartCanvas() != null;
-	}
+    }
 
     private String askFileName(ScaveEditor editor) {
         Shell activeShell = Display.getCurrent().getActiveShell();
-		FileDialog fileDialog = new FileDialog(activeShell, SWT.SAVE);
+        FileDialog fileDialog = new FileDialog(activeShell, SWT.SAVE);
         IEditorInput editorInput = editor.getEditorInput();
         if (editorInput instanceof FileEditorInput) {
             IPath location = ((FileEditorInput)editorInput).getFile().getLocation().makeAbsolute();

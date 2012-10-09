@@ -17,30 +17,30 @@ import org.eclipse.jface.viewers.Viewer;
  */
 public class GenericTreeContentProvider implements ITreeContentProvider {
 
-	public Object[] getChildren(Object parentElement) {
-		Assert.isTrue(parentElement instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
-		GenericTreeNode parent = (GenericTreeNode)parentElement;
-		return parent.getChildren();
-	}
+    public Object[] getChildren(Object parentElement) {
+        Assert.isTrue(parentElement instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
+        GenericTreeNode parent = (GenericTreeNode)parentElement;
+        return parent.getChildren();
+    }
 
-	public Object getParent(Object element) {
-		Assert.isTrue(element instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
-		return ((GenericTreeNode)element).getParent();
-	}
-
-	public boolean hasChildren(Object element) {
+    public Object getParent(Object element) {
         Assert.isTrue(element instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
-		return ((GenericTreeNode)element).hasChildren();
-	}
+        return ((GenericTreeNode)element).getParent();
+    }
 
-	public Object[] getElements(Object inputElement) {
-		return getChildren(inputElement);
-	}
+    public boolean hasChildren(Object element) {
+        Assert.isTrue(element instanceof GenericTreeNode); // by contract, element MUST be a GenericTreeNode
+        return ((GenericTreeNode)element).hasChildren();
+    }
 
-	public void dispose() {
-	}
+    public Object[] getElements(Object inputElement) {
+        return getChildren(inputElement);
+    }
 
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-	}
+    public void dispose() {
+    }
+
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+    }
 
 }

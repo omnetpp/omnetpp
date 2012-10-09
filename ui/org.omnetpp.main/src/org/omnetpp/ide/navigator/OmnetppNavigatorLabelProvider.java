@@ -19,22 +19,22 @@ import org.eclipse.ui.navigator.ICommonLabelProvider;
  */
 public class OmnetppNavigatorLabelProvider extends WorkbenchLabelProvider implements ICommonLabelProvider {
 
-	public void init(ICommonContentExtensionSite aConfig) {
-	}
+    public void init(ICommonContentExtensionSite aConfig) {
+    }
 
-	public String getDescription(Object anElement) {
-		// TODO add a little more description for the omnetpp specific files
-		if (anElement instanceof IResource) {
-			return ((IResource) anElement).getFullPath().makeRelative().toString();
-		}
-		return null;
-	}
+    public String getDescription(Object anElement) {
+        // TODO add a little more description for the omnetpp specific files
+        if (anElement instanceof IResource) {
+            return ((IResource) anElement).getFullPath().makeRelative().toString();
+        }
+        return null;
+    }
 
-	public void restoreState(IMemento aMemento) {
+    public void restoreState(IMemento aMemento) {
 
-	}
+    }
 
-	public void saveState(IMemento aMemento) {
-	}
+    public void saveState(IMemento aMemento) {
+    }
 
 }

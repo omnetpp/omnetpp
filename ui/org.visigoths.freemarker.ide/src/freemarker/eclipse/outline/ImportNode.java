@@ -4,19 +4,19 @@ import freemarker.core.LibraryLoad;
 
 public class ImportNode {
 
-	Object parent = null;
-	String text = null;
-	
-	public ImportNode(LibraryLoad lib, Object parent) {
-		this.parent = parent;
-		text = lib.getTemplateName();
-	}
+    Object parent = null;
+    String text = null;
 
-	public Object getParent() {
-		return parent;
-	}
+    public ImportNode(LibraryLoad lib, Object parent) {
+        this.parent = parent;
+        text = lib.getTemplateName();
+    }
 
-	public String toString() {
-		return text;
-	}
+    public Object getParent() {
+        return parent;
+    }
+
+    public String toString() {
+        return text;
+    }
 }

@@ -31,20 +31,20 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class FlyoutPaletteCompositeAccess extends CompositeAccess
 {
-	public FlyoutPaletteCompositeAccess(FlyoutPaletteComposite flyoutPaletteComposite) {
-		super(flyoutPaletteComposite);
-	}
+    public FlyoutPaletteCompositeAccess(FlyoutPaletteComposite flyoutPaletteComposite) {
+        super(flyoutPaletteComposite);
+    }
 
-	public FlyoutPaletteComposite getFlyoutPaletteComposite() {
-		return (FlyoutPaletteComposite)widget;
-	}
+    public FlyoutPaletteComposite getFlyoutPaletteComposite() {
+        return (FlyoutPaletteComposite)widget;
+    }
 
-	@UIStep
-	public void clickButtonFigureWithLabel(final String label) {
+    @UIStep
+    public void clickButtonFigureWithLabel(final String label) {
         FigureAccess fig = findButtonFigureWithLabel(label);
         reveal(fig.getFigure());
         fig.click(LEFT_MOUSE_BUTTON);
-	}
+    }
 
     @UIStep
     private void reveal(IFigure figure) {
@@ -92,19 +92,19 @@ public class FlyoutPaletteCompositeAccess extends CompositeAccess
         return hasDescendantFigure(rootFigure, predicate) && findDescendantFigure(rootFigure, predicate).isVisible();
     }
 
-	@UIStep
-	public void ensurePinnedOpen() {
-		Object stateExpanded = ReflectionUtils.getFieldValue(FlyoutPaletteComposite.class, "STATE_PINNED_OPEN");
-		if (!(Boolean)ReflectionUtils.invokeMethod(getFlyoutPaletteComposite(), "isInState", stateExpanded))
-			clickFlyoutControlButton();
-	}
+    @UIStep
+    public void ensurePinnedOpen() {
+        Object stateExpanded = ReflectionUtils.getFieldValue(FlyoutPaletteComposite.class, "STATE_PINNED_OPEN");
+        if (!(Boolean)ReflectionUtils.invokeMethod(getFlyoutPaletteComposite(), "isInState", stateExpanded))
+            clickFlyoutControlButton();
+    }
 
-	@UIStep
-	public void clickFlyoutControlButton() {
-		Control sash = (Control)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "sash");
-		Canvas button = (Canvas)ReflectionUtils.getFieldValue(sash, "button");
-		clickAbsolute(LEFT_MOUSE_BUTTON, sash.toDisplay(getCenter(button.getBounds())));
-	}
+    @UIStep
+    public void clickFlyoutControlButton() {
+        Control sash = (Control)ReflectionUtils.getFieldValue(getFlyoutPaletteComposite(), "sash");
+        Canvas button = (Canvas)ReflectionUtils.getFieldValue(sash, "button");
+        clickAbsolute(LEFT_MOUSE_BUTTON, sash.toDisplay(getCenter(button.getBounds())));
+    }
 
     private IFigure getRootFigure(PaletteViewer paletteViewer) {
         return (IFigure)ReflectionUtils.getFieldValue(paletteViewer, "rootFigure");

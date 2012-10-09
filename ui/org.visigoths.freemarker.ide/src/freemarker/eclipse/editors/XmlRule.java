@@ -47,13 +47,13 @@ public class XmlRule extends MultiLineRule implements IPreferenceConstants {
     }
 
     /**
-     * Returns whether the end sequence was detected. This method 
-     * reads all characters until the end of the sequence or EOF is 
-     * detected. It attempts to avoid ending the XML tag inside a 
+     * Returns whether the end sequence was detected. This method
+     * reads all characters until the end of the sequence or EOF is
+     * detected. It attempts to avoid ending the XML tag inside a
      * FreeMarker construct.
      *
      * @param scanner        the character scanner
-     * 
+     *
      * @return true if the end sequence has been detected
      */
     protected boolean endSequenceDetected(ICharacterScanner scanner) {

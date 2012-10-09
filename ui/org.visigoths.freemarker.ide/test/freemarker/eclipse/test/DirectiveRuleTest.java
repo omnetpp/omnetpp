@@ -10,14 +10,14 @@ import freemarker.eclipse.editors.DirectiveRule;
  */
 public class DirectiveRuleTest extends AbstractRuleTestCase {
 
-	public DirectiveRuleTest(String name) {
-		super(name);
-	}
-	
-	public void setUp() {
-		super.addNonMatchingTest("foobar","Testing no-matching token");
-		super.addMatchingTest("<#assign a=b />foobar",15,"Testing simple directive");
-		rule = new DirectiveRule(MATCH);
-	}
+    public DirectiveRuleTest(String name) {
+        super(name);
+    }
+
+    public void setUp() {
+        super.addNonMatchingTest("foobar","Testing no-matching token");
+        super.addMatchingTest("<#assign a=b />foobar",15,"Testing simple directive");
+        rule = new DirectiveRule(MATCH);
+    }
 
 }

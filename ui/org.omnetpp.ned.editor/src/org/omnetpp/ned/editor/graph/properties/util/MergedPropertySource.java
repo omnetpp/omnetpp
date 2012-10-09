@@ -24,58 +24,58 @@ import org.omnetpp.ned.model.INedElement;
 public class MergedPropertySource extends NedBasePropertySource {
     public static final String BASE_CATEGORY = "Base";
 
-	List<IPropertySource> mergedList = new ArrayList<IPropertySource>();
+    List<IPropertySource> mergedList = new ArrayList<IPropertySource>();
 
     private boolean readOnly = false;
 
-	public MergedPropertySource(INedElement model) {
-	    super(model);
+    public MergedPropertySource(INedElement model) {
+        super(model);
     }
 
     /**
-	 * Adds a property source to be merged into this
-	 * @param ps
-	 */
-	public void mergePropertySource(IPropertySource ps) {
-		mergedList.add(ps);
-	}
+     * Adds a property source to be merged into this
+     * @param ps
+     */
+    public void mergePropertySource(IPropertySource ps) {
+        mergedList.add(ps);
+    }
 
-	public boolean isPropertyResettable(Object id) {
-		// ask all registered PS if it knows about this
-		for (IPropertySource psrc : mergedList)
-			if (psrc instanceof IPropertySource2)
-				if (((IPropertySource2)psrc).isPropertyResettable(id))
-					return true;
+    public boolean isPropertyResettable(Object id) {
+        // ask all registered PS if it knows about this
+        for (IPropertySource psrc : mergedList)
+            if (psrc instanceof IPropertySource2)
+                if (((IPropertySource2)psrc).isPropertyResettable(id))
+                    return true;
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean isPropertySet(Object id) {
-		// ask all registered PS if it knows about this
-		for (IPropertySource psrc : mergedList)
-			if (psrc instanceof IPropertySource2)
-				if (((IPropertySource2)psrc).isPropertySet(id))
-					return true;
+    public boolean isPropertySet(Object id) {
+        // ask all registered PS if it knows about this
+        for (IPropertySource psrc : mergedList)
+            if (psrc instanceof IPropertySource2)
+                if (((IPropertySource2)psrc).isPropertySet(id))
+                    return true;
 
-		return false;
-	}
+        return false;
+    }
 
-	public Object getEditableValue() {
-		// by default return ourselves
-		// TODO or maybe a copy of ourselves ??? Test with editing multiple objects
-		return this;
-	}
+    public Object getEditableValue() {
+        // by default return ourselves
+        // TODO or maybe a copy of ourselves ??? Test with editing multiple objects
+        return this;
+    }
 
-	public IPropertyDescriptor[] getPropertyDescriptors() {
-	    List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
-	    // first we check whether the model element is inside the model (if not we should not
-	    // provide descriptors) ie. property editor is available ONLY for elements IN the model
-	    if (getModel().getParent() == null)
-	        return new IPropertyDescriptor[0];
+    public IPropertyDescriptor[] getPropertyDescriptors() {
+        List<IPropertyDescriptor> mergedPDList = new ArrayList<IPropertyDescriptor>();
+        // first we check whether the model element is inside the model (if not we should not
+        // provide descriptors) ie. property editor is available ONLY for elements IN the model
+        if (getModel().getParent() == null)
+            return new IPropertyDescriptor[0];
 
-		// walk through all property source and merge its descriptors into a single list
-		for (IPropertySource psrc : mergedList)
-			for (IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
+        // walk through all property source and merge its descriptors into a single list
+        for (IPropertySource psrc : mergedList)
+            for (IPropertyDescriptor pdesc : psrc.getPropertyDescriptors()) {
                 if (readOnly && (pdesc.getClass()!=PropertyDescriptor.class)) {
                     // if we are read only, replace the property descriptor with a readonly one
                     PropertyDescriptor readOnlyPDesc =
@@ -87,30 +87,30 @@ public class MergedPropertySource extends NedBasePropertySource {
                     mergedPDList.add(pdesc);
             }
 
-		return mergedPDList.toArray(new IPropertyDescriptor[mergedPDList.size()]);
-	}
+        return mergedPDList.toArray(new IPropertyDescriptor[mergedPDList.size()]);
+    }
 
-	public Object getPropertyValue(Object id) {
-		// ask all registered property sources for the given value
-		for (IPropertySource psrc : mergedList) {
-			Object result = psrc.getPropertyValue(id);
-			if (result != null) return result;
-		}
+    public Object getPropertyValue(Object id) {
+        // ask all registered property sources for the given value
+        for (IPropertySource psrc : mergedList) {
+            Object result = psrc.getPropertyValue(id);
+            if (result != null) return result;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public void resetPropertyValue(Object id) {
-		// try to reset the value on all registered property source
-		for (IPropertySource psrc : mergedList)
-			psrc.resetPropertyValue(id);
-	}
+    public void resetPropertyValue(Object id) {
+        // try to reset the value on all registered property source
+        for (IPropertySource psrc : mergedList)
+            psrc.resetPropertyValue(id);
+    }
 
-	public void setPropertyValue(Object id, Object value) {
-		// try to set the value on all registered property source
-		for (IPropertySource psrc : mergedList)
-			psrc.setPropertyValue(id, value);
-	}
+    public void setPropertyValue(Object id, Object value) {
+        // try to set the value on all registered property source
+        for (IPropertySource psrc : mergedList)
+            psrc.setPropertyValue(id, value);
+    }
 
     /**
      * Sets the property source's read only state

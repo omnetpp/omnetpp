@@ -13,49 +13,49 @@ import org.omnetpp.eventlog.engine.IEvent;
 import org.omnetpp.eventlog.engine.IEventLog;
 
 public class EventLogEntryReference {
-	private long eventNumber;
+    private long eventNumber;
 
-	private int eventEntryIndex;
+    private int eventEntryIndex;
 
-	public EventLogEntryReference(EventLogEntry eventLogEntry) {
-		IEvent event = eventLogEntry.getEvent();
-		eventNumber = event.getEventNumber();
-		eventEntryIndex = eventLogEntry.getEntryIndex();
-		Assert.isTrue(eventNumber != -1 && eventEntryIndex != -1);
-	}
+    public EventLogEntryReference(EventLogEntry eventLogEntry) {
+        IEvent event = eventLogEntry.getEvent();
+        eventNumber = event.getEventNumber();
+        eventEntryIndex = eventLogEntry.getEntryIndex();
+        Assert.isTrue(eventNumber != -1 && eventEntryIndex != -1);
+    }
 
-	public long getEventNumber() {
-		return eventNumber;
-	}
+    public long getEventNumber() {
+        return eventNumber;
+    }
 
-	public int getEventEntryIndex() {
-		return eventEntryIndex;
-	}
+    public int getEventEntryIndex() {
+        return eventEntryIndex;
+    }
 
     public IEvent getEvent(EventLogInput eventLogInput) {
         return getEvent(eventLogInput.getEventLog());
     }
 
-	public IEvent getEvent(IEventLog eventLog) {
-	    return eventLog.getEventForEventNumber(eventNumber);
+    public IEvent getEvent(IEventLog eventLog) {
+        return eventLog.getEventForEventNumber(eventNumber);
     }
 
     public EventLogEntry getEventLogEntry(EventLogInput eventLogInput) {
-		return getEventLogEntry(eventLogInput.getEventLog());
-	}
+        return getEventLogEntry(eventLogInput.getEventLog());
+    }
 
-	public EventLogEntry getEventLogEntry(IEventLog eventLog) {
-		return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(eventEntryIndex);
-	}
+    public EventLogEntry getEventLogEntry(IEventLog eventLog) {
+        return eventLog.getEventForEventNumber(eventNumber).getEventLogEntry(eventEntryIndex);
+    }
 
-	public boolean isPresent(IEventLog eventLog) {
-	    return eventLog.getEventForEventNumber(eventNumber) != null;
-	}
+    public boolean isPresent(IEventLog eventLog) {
+        return eventLog.getEventForEventNumber(eventNumber) != null;
+    }
 
-	@Override
-	public String toString() {
-		return "#" + eventNumber + ":" + eventEntryIndex;
-	}
+    @Override
+    public String toString() {
+        return "#" + eventNumber + ":" + eventEntryIndex;
+    }
 
     @Override
     public int hashCode() {

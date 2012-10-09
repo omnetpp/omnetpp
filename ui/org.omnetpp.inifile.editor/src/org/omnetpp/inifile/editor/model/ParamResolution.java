@@ -17,109 +17,109 @@ import org.omnetpp.ned.model.interfaces.ISubmoduleOrConnection;
  */
 public class ParamResolution {
 
-	public enum ParamResolutionType {
-		UNASSIGNED, // unassigned parameter
-		NED, // parameter assigned in NED
-		INI, // parameter assigned in inifile, with no default in NED file
-		INI_DEFAULT, // parameter set to the default value (**.param=default)
-		INI_ASK,  // parameter will be asked interactively (**.param=ask)
-		INI_OVERRIDE, // inifile setting overrides NED default
-		INI_NEDDEFAULT, // inifile sets param to a value that's identical to the NED default value
-		IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
-	}
+    public enum ParamResolutionType {
+        UNASSIGNED, // unassigned parameter
+        NED, // parameter assigned in NED
+        INI, // parameter assigned in inifile, with no default in NED file
+        INI_DEFAULT, // parameter set to the default value (**.param=default)
+        INI_ASK,  // parameter will be asked interactively (**.param=ask)
+        INI_OVERRIDE, // inifile setting overrides NED default
+        INI_NEDDEFAULT, // inifile sets param to a value that's identical to the NED default value
+        IMPLICITDEFAULT, // NED default applied because there's no match in the ini file
+    }
 
-	// fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter.
-	// For vector elementPath, fullPath contains "[*]".
-	// elementPath[] relates fullPath to NEDElements. The network is elementPath[1]'s
-	// parent CompoundModuleElement, or paramDeclaration's parent Compound/SimpleModuleElement if
-	// elementPath[[] is empty. After that, the type of elementPath[[i] is the parent
-	// Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclaration).
-	// elementPath[[0] may be null.
-	public String fullPath;
-	public ISubmoduleOrConnection[] elementPath;
-	public ParamElementEx paramDeclaration;  // node where param was declared; not null
-	public ParamElementEx paramAssignment;  // node where param gets assigned (may be a module or submodule param, or may be null)
+    // fullPath and param name (from paramDeclaration or paramAssignment) identify the NED parameter.
+    // For vector elementPath, fullPath contains "[*]".
+    // elementPath[] relates fullPath to NEDElements. The network is elementPath[1]'s
+    // parent CompoundModuleElement, or paramDeclaration's parent Compound/SimpleModuleElement if
+    // elementPath[[] is empty. After that, the type of elementPath[[i] is the parent
+    // Compound/SimpleModuleElement of the next pathModule (or finally, the paramDeclaration).
+    // elementPath[[0] may be null.
+    public String fullPath;
+    public ISubmoduleOrConnection[] elementPath;
+    public ParamElementEx paramDeclaration;  // node where param was declared; not null
+    public ParamElementEx paramAssignment;  // node where param gets assigned (may be a module or submodule param, or may be null)
 
-	// how the parameter value gets resolved: from NED, from inifile, unassigned, etc
-	public ParamResolutionType type;
+    // how the parameter value gets resolved: from NED, from inifile, unassigned, etc
+    public ParamResolutionType type;
 
-	// during analysis of which section
-	public String activeSection;
+    // during analysis of which section
+    public String activeSection;
 
-	// section+key identify the value assignment in the inifile;
-	// they are null if parameter is assigned from NED
-	//XXX add IFile ?
-	public String section;
-	public String key;
+    // section+key identify the value assignment in the inifile;
+    // they are null if parameter is assigned from NED
+    //XXX add IFile ?
+    public String section;
+    public String key;
 
-	// for convenience
-	public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath,
-			               ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type,
-			               String activeSection, String section, String key) {
-		this.fullPath = fullPath;
-		this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);
-		this.paramDeclaration = paramDeclaration;
-		this.paramAssignment = paramAssignment;
-		this.type = type;
-		this.activeSection = activeSection;
-		this.section = section;
-		this.key = key;
-	}
+    // for convenience
+    public ParamResolution(String fullPath, Vector<ISubmoduleOrConnection> elementPath,
+                           ParamElementEx paramDeclaration, ParamElementEx paramAssignment, ParamResolutionType type,
+                           String activeSection, String section, String key) {
+        this.fullPath = fullPath;
+        this.elementPath = elementPath.toArray(new ISubmoduleOrConnection[0]);
+        this.paramDeclaration = paramDeclaration;
+        this.paramAssignment = paramAssignment;
+        this.type = type;
+        this.activeSection = activeSection;
+        this.section = section;
+        this.key = key;
+    }
 
-	/* (non-Javadoc)
-	 * generated by Eclipse; needed for GenericTreeUtil.treeEquals()
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final ParamResolution other = (ParamResolution) obj;
-		if (activeSection == null) {
-			if (other.activeSection != null)
-				return false;
-		}
-		else if (!activeSection.equals(other.activeSection))
-			return false;
-		if (key == null) {
-			if (other.key != null)
-				return false;
-		}
-		else if (!key.equals(other.key))
-			return false;
-		if (fullPath == null) {
-			if (other.fullPath != null)
-				return false;
-		}
-		else if (!fullPath.equals(other.fullPath))
-			return false;
-		if (paramDeclaration == null) {
-			if (other.paramDeclaration != null)
-				return false;
-		}
-		else if (!paramDeclaration.equals(other.paramDeclaration))
-			return false;
-		if (paramAssignment == null) {
-			if (other.paramAssignment != null)
-				return false;
-		}
-		else if (!paramAssignment.equals(other.paramAssignment))
-			return false;
-		if (section == null) {
-			if (other.section != null)
-				return false;
-		}
-		else if (!section.equals(other.section))
-			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		}
-		else if (!type.equals(other.type))
-			return false;
-		return true;
-	}
+    /* (non-Javadoc)
+     * generated by Eclipse; needed for GenericTreeUtil.treeEquals()
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ParamResolution other = (ParamResolution) obj;
+        if (activeSection == null) {
+            if (other.activeSection != null)
+                return false;
+        }
+        else if (!activeSection.equals(other.activeSection))
+            return false;
+        if (key == null) {
+            if (other.key != null)
+                return false;
+        }
+        else if (!key.equals(other.key))
+            return false;
+        if (fullPath == null) {
+            if (other.fullPath != null)
+                return false;
+        }
+        else if (!fullPath.equals(other.fullPath))
+            return false;
+        if (paramDeclaration == null) {
+            if (other.paramDeclaration != null)
+                return false;
+        }
+        else if (!paramDeclaration.equals(other.paramDeclaration))
+            return false;
+        if (paramAssignment == null) {
+            if (other.paramAssignment != null)
+                return false;
+        }
+        else if (!paramAssignment.equals(other.paramAssignment))
+            return false;
+        if (section == null) {
+            if (other.section != null)
+                return false;
+        }
+        else if (!section.equals(other.section))
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        }
+        else if (!type.equals(other.type))
+            return false;
+        return true;
+    }
 }

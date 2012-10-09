@@ -37,7 +37,7 @@ public class TypesEditPart extends AbstractGraphicalEditPart implements INedMode
         Assert.isTrue(getParent() instanceof CompoundModuleEditPart, "Types editpart must be the child of a CompoundModuleEditPart");
         super.addNotify();
     }
-    
+
     @Override
     protected void createEditPolicies() {
         // install a layout edit policy, this one provides also the creation commands

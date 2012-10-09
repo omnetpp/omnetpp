@@ -39,26 +39,26 @@ import com.simulcraft.test.gui.core.UIStep;
 
 
 public class GraphicalNedEditorAccess
-	extends EditorPartAccess
+    extends EditorPartAccess
 {
     private final static String NBSP = "\u00A0";
-	public GraphicalNedEditorAccess(GraphicalNedEditor editorPart) {
-		super(editorPart);
-	}
+    public GraphicalNedEditorAccess(GraphicalNedEditor editorPart) {
+        super(editorPart);
+    }
 
     @Override
-	public GraphicalNedEditor getWorkbenchPart() {
-		return (GraphicalNedEditor)workbenchPart;
-	}
+    public GraphicalNedEditor getWorkbenchPart() {
+        return (GraphicalNedEditor)workbenchPart;
+    }
 
-	public FlyoutPaletteCompositeAccess getFlyoutPaletteComposite() {
-		return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)ReflectionUtils.getFieldValue(getWorkbenchPart(), "splitter"));
-	}
+    public FlyoutPaletteCompositeAccess getFlyoutPaletteComposite() {
+        return new FlyoutPaletteCompositeAccess((FlyoutPaletteComposite)ReflectionUtils.getFieldValue(getWorkbenchPart(), "splitter"));
+    }
 
-	@InBackgroundThread
-	public void createSimpleModuleWithPalette(String name) {
-		createElementWithPalette("Simple"+NBSP+"Module", name);
-	}
+    @InBackgroundThread
+    public void createSimpleModuleWithPalette(String name) {
+        createElementWithPalette("Simple"+NBSP+"Module", name);
+    }
 
     @InBackgroundThread
     public void createModuleInterfaceWithPalette(String name) {
@@ -76,31 +76,31 @@ public class GraphicalNedEditorAccess
     }
 
     @InBackgroundThread
-	public void renameElement(String oldName, String newName) {
-		clickLabelFigure(oldName);
-		typeInNewName(newName);
-	}
+    public void renameElement(String oldName, String newName) {
+        clickLabelFigure(oldName);
+        typeInNewName(newName);
+    }
 
-	@UIStep
-	private void typeInNewName(String name) {
-		FigureCanvas figureCanvas = getWorkbenchPart().getFigureCanvas();
-		Text text = (Text)Access.findDescendantControl(figureCanvas, Text.class);
-		TextAccess textAccess = new TextAccess(text);
-		textAccess.pressKey(SWT.F6);
-		textAccess.typeIn(name);
-		textAccess.pressEnter();
-	}
+    @UIStep
+    private void typeInNewName(String name) {
+        FigureCanvas figureCanvas = getWorkbenchPart().getFigureCanvas();
+        Text text = (Text)Access.findDescendantControl(figureCanvas, Text.class);
+        TextAccess textAccess = new TextAccess(text);
+        textAccess.pressKey(SWT.F6);
+        textAccess.typeIn(name);
+        textAccess.pressEnter();
+    }
 
-	@UIStep
-	public void clickLabelFigure(final String name) {
-		IFigure labelFigure = findDescendantFigure(getRootFigure(), new IPredicate() {
-			public boolean matches(Object object) {
-				return object instanceof Label && ((Label)object).getText().matches(name);
-			}
-		});
+    @UIStep
+    public void clickLabelFigure(final String name) {
+        IFigure labelFigure = findDescendantFigure(getRootFigure(), new IPredicate() {
+            public boolean matches(Object object) {
+                return object instanceof Label && ((Label)object).getText().matches(name);
+            }
+        });
 
-		new FigureAccess(labelFigure).click(LEFT_MOUSE_BUTTON);
-	}
+        new FigureAccess(labelFigure).click(LEFT_MOUSE_BUTTON);
+    }
 
     @SuppressWarnings("unchecked")
     @UIStep
@@ -135,24 +135,24 @@ public class GraphicalNedEditorAccess
         new FigureAccess(connectionFigure).click(LEFT_MOUSE_BUTTON);
     }
 
-	@UIStep
-	public void clickBackground() {
-		getComposite().clickAbsolute(LEFT_MOUSE_BUTTON, getCompositeInternal().toDisplay(1, 1));
-	}
+    @UIStep
+    public void clickBackground() {
+        getComposite().clickAbsolute(LEFT_MOUSE_BUTTON, getCompositeInternal().toDisplay(1, 1));
+    }
 
-	@UIStep
-	public void clickPaletteItem(String label) {
-		getFlyoutPaletteComposite().clickButtonFigureWithLabel(label);
-	}
+    @UIStep
+    public void clickPaletteItem(String label) {
+        getFlyoutPaletteComposite().clickButtonFigureWithLabel(label);
+    }
 
     @InBackgroundThread
-	public CompoundModuleEditPartAccess createCompoundModuleWithPalette(String name) {
-		clickPaletteItem("Compound"+NBSP+"Module");
-		clickBackground();
-		renameElement("Unnamed.*", name);
+    public CompoundModuleEditPartAccess createCompoundModuleWithPalette(String name) {
+        clickPaletteItem("Compound"+NBSP+"Module");
+        clickBackground();
+        renameElement("Unnamed.*", name);
 
-		return findCompoundModule(name);
-	}
+        return findCompoundModule(name);
+    }
 
 
 

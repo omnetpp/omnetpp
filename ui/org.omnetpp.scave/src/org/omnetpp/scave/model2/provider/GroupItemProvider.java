@@ -22,36 +22,36 @@ import org.omnetpp.scave.model.ScaveModelPackage;
 import org.omnetpp.scave.model2.ScaveModelUtil;
 
 public class GroupItemProvider extends
-		org.omnetpp.scave.model.provider.GroupItemProvider {
+        org.omnetpp.scave.model.provider.GroupItemProvider {
 
 
-	public GroupItemProvider(AdapterFactory adapterFactory) {
-		super(adapterFactory);
-	}
+    public GroupItemProvider(AdapterFactory adapterFactory) {
+        super(adapterFactory);
+    }
 
-	/**
-	 * When a chart added to the group, which does not have chart sheet,
-	 * add the chart to the default chart sheet.
-	 * The default chart sheet is created if it did not exist.
-	 */
-	@Override
-	protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection, int index) {
-		Command addCommand = super.createAddCommand(domain, owner, feature, collection, index);
+    /**
+     * When a chart added to the group, which does not have chart sheet,
+     * add the chart to the default chart sheet.
+     * The default chart sheet is created if it did not exist.
+     */
+    @Override
+    protected Command createAddCommand(EditingDomain domain, EObject owner, EStructuralFeature feature, Collection<?> collection, int index) {
+        Command addCommand = super.createAddCommand(domain, owner, feature, collection, index);
 
-		Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);
-		if (charts.size() > 0 && owner.eResource() != null) {
-			CompoundCommand command = new CompoundCommand(addCommand.getLabel(), addCommand.getDescription());
-			command.append(addCommand);
-			ChartSheet chartsheet = ScaveModelUtil.getOrCreateDefaultChartSheet(domain, command, owner.eResource());
-			command.append(
-				AddCommand.create(
-					domain,
-					chartsheet,
-					ScaveModelPackage.eINSTANCE.getChartSheet_Charts(),
-					charts));
-			return command;
-		}
-		else
-			return addCommand;
-	}
+        Collection<Chart> charts = ScaveModelUtil.collectUnreferencedCharts(collection);
+        if (charts.size() > 0 && owner.eResource() != null) {
+            CompoundCommand command = new CompoundCommand(addCommand.getLabel(), addCommand.getDescription());
+            command.append(addCommand);
+            ChartSheet chartsheet = ScaveModelUtil.getOrCreateDefaultChartSheet(domain, command, owner.eResource());
+            command.append(
+                AddCommand.create(
+                    domain,
+                    chartsheet,
+                    ScaveModelPackage.eINSTANCE.getChartSheet_Charts(),
+                    charts));
+            return command;
+        }
+        else
+            return addCommand;
+    }
 }

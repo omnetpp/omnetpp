@@ -15,7 +15,7 @@ package org.omnetpp.scave.charting.dataset;
  */
 public interface IStringValueXYDataset extends IXYDataset {
 
-	public String getXAsString(int series, int item);
+    public String getXAsString(int series, int item);
 
-	public String getYAsString(int series, int item);
+    public String getYAsString(int series, int item);
 }

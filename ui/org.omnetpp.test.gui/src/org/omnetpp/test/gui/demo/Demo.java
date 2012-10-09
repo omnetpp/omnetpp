@@ -71,14 +71,14 @@ public class Demo extends GUITestCase {
         WorkspaceUtils.ensureProjectNotExists(name);
 //        sleep(12);
         sleep(1);
-//        setTimeScale(0.3); 
+//        setTimeScale(0.3);
 //        setMouseMoveDuration(1000);
 //        setTimeScale(0.0);
 //        setDelayAfterMouseMove(0);
 //        setDelayBeforeMouseMove(0);
 //        setMouseClickAnimation(false);
         readingMillisecPerWord = 10; // fast
-        
+
     }
 
     public void testPlay() throws Throwable {
@@ -179,7 +179,7 @@ public class Demo extends GUITestCase {
     private void createNedFile() throws Throwable {
         showMessage(
                 "The next step is to create a new NED file with an empty network, " +
-        		"using the <b>NED File wizard</b>.", 2);
+                "using the <b>NED File wizard</b>.", 2);
         WorkspaceUtils.ensureFileNotExists("/demo/demo.ned");
         TreeAccess tree = Access.getWorkbenchWindow().findViewPartByTitle("Project Explorer").getComposite().findTree();
         tree.findTreeItemByContent(name).reveal().chooseFromContextMenu("New|Network Description File \\(NED\\)");
@@ -199,7 +199,7 @@ public class Demo extends GUITestCase {
     private void createDemoNetwork() {
         showMessage(
                 "Let's build a <b>closed queuing network</b> with a single " +
-        		"source node, and three queues connected in a ring.", 2);
+                "source node, and three queues connected in a ring.", 2);
         NedEditorAccess editor = (NedEditorAccess)Access.getWorkbenchWindow().findEditorPartByTitle("demo\\.ned");
         GraphicalNedEditorAccess graphEd = editor.ensureActiveGraphicalEditor();
 
@@ -254,8 +254,8 @@ public class Demo extends GUITestCase {
     private void createIniFile() throws Throwable {
         showMessage(
                 "The network needs to be configured before it can be run. " +
-        		"Now we'll create an Ini file and set the model parameters there. " +
-        		"We'll use the <b>Ini File Wizard</b> to create the file.", 3);
+                "Now we'll create an Ini file and set the model parameters there. " +
+                "We'll use the <b>Ini File Wizard</b> to create the file.", 3);
         // create with wizard
         WorkspaceUtils.ensureFileNotExists("/demo/omnetpp.ini");
         WorkbenchWindowAccess workbenchWindow = Access.getWorkbenchWindow();
@@ -301,7 +301,7 @@ public class Demo extends GUITestCase {
         TreeAccess tree2 = form.findTreeAfterLabel("HINT: Drag the icons to change the order of entries\\.");
         showMessage(
                 "InterArrivalTime will be set to 0, meaning that all jobs will " +
-        		"be immediately injected into the queuing network.", 2);
+                "be immediately injected into the queuing network.", 2);
         tree2.findTreeItemByContent("\\*\\*\\.source\\.interArrivalTime").clickAndTypeOver(1, "0\n");
         sleep(1);
         showMessage(
@@ -350,7 +350,7 @@ public class Demo extends GUITestCase {
 
         // set event logging file
         showMessage("Turning on the log file generation will allow us to analyze " +
-        		"the interaction between the modules later.", 2);
+                "the interaction between the modules later.", 2);
         ((TreeAccess)form.findControlWithID("CategoryTree")).findTreeItemByContent("Output Files").click();
         sleep(2);
         TextAccess text = form.findTextAfterLabel("Eventlog file:");
@@ -448,9 +448,9 @@ public class Demo extends GUITestCase {
 
         showMessage(
                 "<b>Simulations completed!</b> Note the files that have been " +
-        		"created in the project directory. Vec and sca files hold " +
-        		"statistics recorded by the simulation. Log files contain a record " +
-        		"of each message sending, textual debug messages and more, " +
+                "created in the project directory. Vec and sca files hold " +
+                "statistics recorded by the simulation. Log files contain a record " +
+                "of each message sending, textual debug messages and more, " +
                 "and can be visualized on sequence charts.", 5);
     }
 
@@ -470,29 +470,29 @@ public class Demo extends GUITestCase {
         ScaveEditorAccess scaveEditor = ScaveEditorUtils.findScaveEditor("demo\\.anf");
         InputsPageAccess ip = scaveEditor.ensureInputsPageActive();
         showMessage("First, add all generated result files to the analysis. " +
-        		"We could specify exact filenames or drag files from the Project Explorer, " +
-        		"but it is now much simpler to use wildcards.", 3);
+                "We could specify exact filenames or drag files from the Project Explorer, " +
+                "but it is now much simpler to use wildcards.", 3);
         ip.findButtonWithLabel("Wildcard.*").selectWithMouseClick();
         Access.findShellWithTitle("Add files with wildcard").findButtonWithLabel("OK").selectWithMouseClick();
 
         ip.ensureFileRunViewVisible();
         showMessage("The editor lists the matching files below, one vector " +
-        		"and one scalar for each run. The files have actually not been " +
-        		"loaded into memory, only their contents were scanned.", 3);
+                "and one scalar for each run. The files have actually not been " +
+                "loaded into memory, only their contents were scanned.", 3);
         Access.sleep(2);
 
         TreeAccess runFileTree = ip.ensureRunFileViewVisible();
         runFileTree.findTreeItemByContent(".*General-0.*").ensureExpanded();
         showMessage("Each time a simulation is run, it receives a unique Run ID which " +
-        		"contains the configuration, run number, date/time, etc. The second " +
-        		"tab displays which files each run generated.", 4, -50);
+                "contains the configuration, run number, date/time, etc. The second " +
+                "tab displays which files each run generated.", 4, -50);
         Access.sleep(2);
 
         TreeAccess logicalTree = ip.ensureLogicalViewVisible();
         showMessage("The third tab presents a logical grouping of the runs. " +
-        		"All runs we just did belong to one <b>experiment</b>, " +
-        		"named \"General\" -- the name of the Ini file configuration. " +
-        		"This default experiment name can be overridden in the Ini file.", 5, -80);
+                "All runs we just did belong to one <b>experiment</b>, " +
+                "named \"General\" -- the name of the Ini file configuration. " +
+                "This default experiment name can be overridden in the Ini file.", 5, -80);
         logicalTree.findTreeItemByContent(".*General.*").ensureExpanded();
         Access.sleep(2);
         showMessage("Every experiment consists of several <b>measurements</b>, " +
@@ -501,8 +501,8 @@ public class Demo extends GUITestCase {
         logicalTree.findTreeItemByContent(".*jobs.*30.*serviceMean.*2.*").ensureExpanded();
         Access.sleep(2);
         showMessage("Every measurement can be repeated with different seeds to gain " +
-        		"statistically trustworthy results, resulting in several " +
-        		"<b>replications</b>.", 3);
+                "statistically trustworthy results, resulting in several " +
+                "<b>replications</b>.", 3);
         logicalTree.findTreeItemByContent(".*replication.*").ensureExpanded();
         Access.sleep(2);
         showMessage("Each instance of running a replication receives a unique Run ID.", 2);
@@ -514,8 +514,8 @@ public class Demo extends GUITestCase {
         bdp.ensureVectorsSelected();
         Access.sleep(2);
         showMessage("The table displays vectors recorded in all simulation runs. " +
-        		"We are interested in how the queue lengths change over time, " +
-        		"so choose \"length\" from the filter combo.", 3, 50);
+                "We are interested in how the queue lengths change over time, " +
+                "so choose \"length\" from the filter combo.", 3, 50);
         bdp.getDataNameFilter().selectItem("length");
         Access.sleep(2);
         showMessage("The table still includes data from all runs, so let us focus on Run 4.", 2, 50);
@@ -575,7 +575,7 @@ public class Demo extends GUITestCase {
 
         sleep(3);
         showMessage("The dataset page displays \"recipes\" used to create charts and diagrams. " +
-        		"It contains processing steps applied in top to bottom order. ", 3 ,100);
+                "It contains processing steps applied in top to bottom order. ", 3 ,100);
         sleep(2);
         showMessage("Let us save the analysis. The analysis file will only store " +
                 "the \"recipe\": which files to load, and what datasets and charts " +
@@ -617,9 +617,9 @@ public class Demo extends GUITestCase {
             toolItem.click();
 
         showMessage("In non-linear timeline mode, messages in the same gray area have " +
-        		"the same simulation time. Now we switch to linear timeline mode and see the " +
-        		"initial messages being sent at zero simulation time (note that gray areas " +
-        		"will collapse to a single vertical line).", 5, 200);
+                "the same simulation time. Now we switch to linear timeline mode and see the " +
+                "initial messages being sent at zero simulation time (note that gray areas " +
+                "will collapse to a single vertical line).", 5, 200);
 
         toolItem = workbenchShell.findToolItemWithTooltip("Timeline Mode");
         toolItem.activateDropDownMenu().activateMenuItemWithMouse("Linear");
@@ -657,9 +657,9 @@ public class Demo extends GUITestCase {
     private void goodBye() {
         showMessage(
                 "This concludes our demo. We suggest you continue exploring the OMNeT++ IDE " +
-        		"in your own installed copy, and gain first-hand experience.\n" +
-        		"\n" +
-        		"Have fun!", 5);
+                "in your own installed copy, and gain first-hand experience.\n" +
+                "\n" +
+                "Have fun!", 5);
         sleep(3);
     }
 

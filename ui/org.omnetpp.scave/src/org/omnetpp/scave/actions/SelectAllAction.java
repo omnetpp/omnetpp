@@ -34,79 +34,79 @@ import org.omnetpp.scave.editors.ui.BrowseDataPage;
  */
 public class SelectAllAction extends AbstractScaveAction {
     protected int limit = 10000;
-    
-	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		Composite activePage = scaveEditor.getActiveEditorPage();
-		if (activePage == null)
-			return;
 
-		Control focusControl = Display.getDefault().getFocusControl();
-		if ((focusControl instanceof IDataControl || 
-		     focusControl instanceof Table || focusControl instanceof Tree ||
-			 focusControl instanceof Text || focusControl instanceof Combo)
-				&& hasAncestor(focusControl, activePage)) {
-		    if (focusControl instanceof IDataControl) {
-		        IDataControl control = (IDataControl)focusControl;
-		        // note: getItemCount() is not good for a tree: it tells the number of root items.
-		        if (control.getIDList().size() <= limit || confirm(focusControl.getShell(), "table")) {
-		            control.setFocus();
-		            control.selectAll();
-		            control.notifyListeners(SWT.Selection, null);
-		        }
-		    }
-		    else if (focusControl instanceof Table) {
-				Table table = (Table)focusControl;
-				if (table.getItemCount() <= limit || confirm(table.getShell(), "table"))
-				    table.selectAll();
-			}
-			else if (focusControl instanceof Tree) {
-				Tree tree = (Tree)focusControl;
-                if (tree.getItemCount() <= limit || confirm(tree.getShell(), "tree")) // note: 
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+        Composite activePage = scaveEditor.getActiveEditorPage();
+        if (activePage == null)
+            return;
+
+        Control focusControl = Display.getDefault().getFocusControl();
+        if ((focusControl instanceof IDataControl ||
+             focusControl instanceof Table || focusControl instanceof Tree ||
+             focusControl instanceof Text || focusControl instanceof Combo)
+                && hasAncestor(focusControl, activePage)) {
+            if (focusControl instanceof IDataControl) {
+                IDataControl control = (IDataControl)focusControl;
+                // note: getItemCount() is not good for a tree: it tells the number of root items.
+                if (control.getIDList().size() <= limit || confirm(focusControl.getShell(), "table")) {
+                    control.setFocus();
+                    control.selectAll();
+                    control.notifyListeners(SWT.Selection, null);
+                }
+            }
+            else if (focusControl instanceof Table) {
+                Table table = (Table)focusControl;
+                if (table.getItemCount() <= limit || confirm(table.getShell(), "table"))
+                    table.selectAll();
+            }
+            else if (focusControl instanceof Tree) {
+                Tree tree = (Tree)focusControl;
+                if (tree.getItemCount() <= limit || confirm(tree.getShell(), "tree")) // note:
                     tree.selectAll();
-			}
-			else if (focusControl instanceof Text)
-				((Text)focusControl).selectAll();
-			else if (focusControl instanceof Combo) {
-				Combo combo = (Combo)focusControl;
-				combo.setSelection(new Point(0, combo.getText().length()));
-			}
-			focusControl.notifyListeners(SWT.Selection, null);
-		}
-		else if (activePage == scaveEditor.getBrowseDataPage()) {
-			FilteredDataPanel panel = ((BrowseDataPage)activePage).getActivePanel();
-			if (panel != null) {
-				IDataControl control = panel.getDataControl();
-				if (control != null) {
-				    // note: getItemCount() is not good for a tree: it tells the number of root items.
-				    if (control.getIDList().size() <= limit || confirm(panel.getShell(), "table")) {
-				        control.setFocus();
-				        control.selectAll();
-				        control.notifyListeners(SWT.Selection, null);
-	                }
-				}
-			}
-		}
-	}
+            }
+            else if (focusControl instanceof Text)
+                ((Text)focusControl).selectAll();
+            else if (focusControl instanceof Combo) {
+                Combo combo = (Combo)focusControl;
+                combo.setSelection(new Point(0, combo.getText().length()));
+            }
+            focusControl.notifyListeners(SWT.Selection, null);
+        }
+        else if (activePage == scaveEditor.getBrowseDataPage()) {
+            FilteredDataPanel panel = ((BrowseDataPage)activePage).getActivePanel();
+            if (panel != null) {
+                IDataControl control = panel.getDataControl();
+                if (control != null) {
+                    // note: getItemCount() is not good for a tree: it tells the number of root items.
+                    if (control.getIDList().size() <= limit || confirm(panel.getShell(), "table")) {
+                        control.setFocus();
+                        control.selectAll();
+                        control.notifyListeners(SWT.Selection, null);
+                    }
+                }
+            }
+        }
+    }
 
-	protected boolean confirm(Shell shell, String controlName) {
-	    String message = StringUtils.capitalize(controlName) + " contains more than " + limit + " items, and selection may take a long time. Do you want to continue?";
+    protected boolean confirm(Shell shell, String controlName) {
+        String message = StringUtils.capitalize(controlName) + " contains more than " + limit + " items, and selection may take a long time. Do you want to continue?";
         return MessageDialog.openConfirm(shell, "Confirm", message);
-	}
-	
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		Control focusControl = Display.getDefault().getFocusControl();
-		Composite activePage = editor.getActiveEditorPage();
-		return activePage != null &&
-			((focusControl != null && hasAncestor(focusControl, activePage)) ||
-					activePage == editor.getBrowseDataPage());
-	}
+    }
 
-	private boolean hasAncestor(Control control, Composite composite) {
-		Composite ancestor = control.getParent();
-		while (ancestor != null && ancestor != composite && !(ancestor instanceof Shell))
-			ancestor = ancestor.getParent();
-		return ancestor == composite;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        Control focusControl = Display.getDefault().getFocusControl();
+        Composite activePage = editor.getActiveEditorPage();
+        return activePage != null &&
+            ((focusControl != null && hasAncestor(focusControl, activePage)) ||
+                    activePage == editor.getBrowseDataPage());
+    }
+
+    private boolean hasAncestor(Control control, Composite composite) {
+        Composite ancestor = control.getParent();
+        while (ancestor != null && ancestor != composite && !(ancestor instanceof Shell))
+            ancestor = ancestor.getParent();
+        return ancestor == composite;
+    }
 }

@@ -21,7 +21,7 @@
  *    Alternately, this acknowledgement may appear in the software itself,
  *    if and wherever such third-party acknowledgements normally appear.
  *
- * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names of the 
+ * 4. Neither the name "FreeMarker", "Visigoth", nor any of the names of the
  *    project contributors may be used to endorse or promote products derived
  *    from this software without prior written permission. For written
  *    permission, please contact visigoths@visigoths.org.

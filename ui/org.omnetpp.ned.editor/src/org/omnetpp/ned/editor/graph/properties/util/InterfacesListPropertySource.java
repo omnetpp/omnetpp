@@ -46,7 +46,7 @@ public class InterfacesListPropertySource extends NedBasePropertySource {
 
     @Override
     public Object getEditableValue() {
-    	return StringUtils.join(getNedTypeModel().getNedTypeInfo().getInterfaces(), ",");
+        return StringUtils.join(getNedTypeModel().getNedTypeInfo().getInterfaces(), ",");
     }
 
     public INedTypeElement getNedTypeModel() {

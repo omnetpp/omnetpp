@@ -17,60 +17,60 @@ import org.omnetpp.common.util.StringUtils;
 
 public class NumberPropertyDescriptor extends TextPropertyDescriptor {
 
-	public NumberPropertyDescriptor(Object id, String displayName) {
-		super(id, displayName);
-	}
+    public NumberPropertyDescriptor(Object id, String displayName) {
+        super(id, displayName);
+    }
 
-	@Override
-	public CellEditor createPropertyEditor(Composite parent) {
-		return new NumberCellEditor(parent);
-	}
+    @Override
+    public CellEditor createPropertyEditor(Composite parent) {
+        return new NumberCellEditor(parent);
+    }
 }
 
 class NumberCellEditor extends TextCellEditor
 {
-	public NumberCellEditor(Composite parent) {
-		super(parent);
-		setValidator(NumberCellEditorValidator.instance());
-	}
+    public NumberCellEditor(Composite parent) {
+        super(parent);
+        setValidator(NumberCellEditorValidator.instance());
+    }
 
-	@Override
-	protected Object doGetValue() {
-		return Converter.stringToDouble((String)super.doGetValue());
-	}
+    @Override
+    protected Object doGetValue() {
+        return Converter.stringToDouble((String)super.doGetValue());
+    }
 
-	@Override
-	protected void doSetValue(Object value) {
-		super.doSetValue(StringUtils.defaultString(Converter.doubleToString((Double)value)));
-	}
+    @Override
+    protected void doSetValue(Object value) {
+        super.doSetValue(StringUtils.defaultString(Converter.doubleToString((Double)value)));
+    }
 }
 
 class NumberCellEditorValidator implements ICellEditorValidator
 {
-	private static NumberCellEditorValidator instance;
+    private static NumberCellEditorValidator instance;
 
-	public static NumberCellEditorValidator instance() {
-		if (instance == null)
-			instance = new NumberCellEditorValidator();
-		return instance;
-	}
+    public static NumberCellEditorValidator instance() {
+        if (instance == null)
+            instance = new NumberCellEditorValidator();
+        return instance;
+    }
 
-	public String isValid(Object value) {
-		if (value instanceof Double)
-			return null;
+    public String isValid(Object value) {
+        if (value instanceof Double)
+            return null;
 
-		if (value != null && !(value instanceof String))
-			return "Unexpected type: " + value.getClass().getName();
+        if (value != null && !(value instanceof String))
+            return "Unexpected type: " + value.getClass().getName();
 
-		String strValue = (String)value;
-		if (StringUtils.isEmpty(strValue))
-			return null;
+        String strValue = (String)value;
+        if (StringUtils.isEmpty(strValue))
+            return null;
 
-		try {
-			Double.parseDouble(strValue);
-			return null;
-		} catch (NumberFormatException e) {
-			return "Not a number";
-		}
-	}
+        try {
+            Double.parseDouble(strValue);
+            return null;
+        } catch (NumberFormatException e) {
+            return "Not a number";
+        }
+    }
 }

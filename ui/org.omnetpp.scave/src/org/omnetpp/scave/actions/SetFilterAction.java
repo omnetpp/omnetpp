@@ -29,70 +29,70 @@ import org.omnetpp.scave.model2.RunPayload;
  */
 public class SetFilterAction extends AbstractScaveAction {
 
-	public SetFilterAction() {
-		setText("Set Filter");
-		setToolTipText("Set the filter on the \"Browse Data\" page from the current selection.");
-	}
+    public SetFilterAction() {
+        setText("Set Filter");
+        setToolTipText("Set the filter on the \"Browse Data\" page from the current selection.");
+    }
 
-	@Override
-	protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
-		Object selected = selection.getFirstElement();
-		FilterUtil filterUtil = getFilterParams(selected);
-		if (filterUtil != null) {
-			Filter filter = new Filter(filterUtil.getFilterPattern());
-			BrowseDataPage page = scaveEditor.getBrowseDataPage();
-			page.getAllPanel().setFilterParams(filter);
-			page.getScalarsPanel().setFilterParams(filter);
-			page.getVectorsPanel().setFilterParams(filter);
-			page.getHistogramsPanel().setFilterParams(filter);
-			scaveEditor.showPage(page);
-		}
-	}
+    @Override
+    protected void doRun(ScaveEditor scaveEditor, IStructuredSelection selection) {
+        Object selected = selection.getFirstElement();
+        FilterUtil filterUtil = getFilterParams(selected);
+        if (filterUtil != null) {
+            Filter filter = new Filter(filterUtil.getFilterPattern());
+            BrowseDataPage page = scaveEditor.getBrowseDataPage();
+            page.getAllPanel().setFilterParams(filter);
+            page.getScalarsPanel().setFilterParams(filter);
+            page.getVectorsPanel().setFilterParams(filter);
+            page.getHistogramsPanel().setFilterParams(filter);
+            scaveEditor.showPage(page);
+        }
+    }
 
-	@Override
-	protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
-		return true;
-	}
+    @Override
+    protected boolean isApplicable(ScaveEditor editor, IStructuredSelection selection) {
+        return true;
+    }
 
-	/**
-	 * Returns a filter object with the attributes of the selected object and their ancestors.
-	 * Returns non-null if the filter is to be applied on the "Browse Data" page.
-	 */
-	protected FilterUtil getFilterParams(Object object) {
+    /**
+     * Returns a filter object with the attributes of the selected object and their ancestors.
+     * Returns non-null if the filter is to be applied on the "Browse Data" page.
+     */
+    protected FilterUtil getFilterParams(Object object) {
 
-		if (object instanceof InputFile) {
-			FilterUtil filterUtil = new FilterUtil();
-			InputFile inputFile = (InputFile)object;
-			filterUtil.setField(FILE, inputFile.getName());
-			return filterUtil;
-		}
-		else if (object instanceof GenericTreeNode) {
-			// GenericTreeNode trees are used on the Inputs page.
-			GenericTreeNode node = (GenericTreeNode)object;
-			Object payload = node.getPayload();
+        if (object instanceof InputFile) {
+            FilterUtil filterUtil = new FilterUtil();
+            InputFile inputFile = (InputFile)object;
+            filterUtil.setField(FILE, inputFile.getName());
+            return filterUtil;
+        }
+        else if (object instanceof GenericTreeNode) {
+            // GenericTreeNode trees are used on the Inputs page.
+            GenericTreeNode node = (GenericTreeNode)object;
+            Object payload = node.getPayload();
 
-			// get params up to the root
-			FilterUtil filterUtil = getFilterParams(node.getParent());
-			if (filterUtil==null)
-				filterUtil = new FilterUtil();
+            // get params up to the root
+            FilterUtil filterUtil = getFilterParams(node.getParent());
+            if (filterUtil==null)
+                filterUtil = new FilterUtil();
 
-			if (payload instanceof ResultFilePayload) {
-				ResultFilePayload resultFile = (ResultFilePayload)payload;
-				filterUtil.setField(FILE, resultFile.getFilePath());
-			}
-			else if (payload instanceof RunPayload) {
-				RunPayload run = (RunPayload)payload;
-				filterUtil.setField(RUN, run.getRunName());
-			}
-			else if (payload instanceof RunAttributePayload) {
-				RunAttributePayload attr = (RunAttributePayload)payload;
-				String name = attr.getName();
-				String value = attr.getValue();
-				filterUtil.setField(name, value);
-			}
-			return filterUtil;
-		}
+            if (payload instanceof ResultFilePayload) {
+                ResultFilePayload resultFile = (ResultFilePayload)payload;
+                filterUtil.setField(FILE, resultFile.getFilePath());
+            }
+            else if (payload instanceof RunPayload) {
+                RunPayload run = (RunPayload)payload;
+                filterUtil.setField(RUN, run.getRunName());
+            }
+            else if (payload instanceof RunAttributePayload) {
+                RunAttributePayload attr = (RunAttributePayload)payload;
+                String name = attr.getName();
+                String value = attr.getValue();
+                filterUtil.setField(name, value);
+            }
+            return filterUtil;
+        }
 
-		return null;
-	}
+        return null;
+    }
 }

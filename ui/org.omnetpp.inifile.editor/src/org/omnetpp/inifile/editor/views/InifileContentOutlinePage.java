@@ -42,144 +42,144 @@ import org.omnetpp.inifile.editor.model.InifileUtils;
 //XXX also: treeView to follow editor's selection
 //XXX show error markers like in SectionsPage
 public class InifileContentOutlinePage extends ContentOutlinePage implements IInifileChangeListener {
-	protected IInifileDocument inifileDocument;
-	protected InifileEditor inifileEditor;
+    protected IInifileDocument inifileDocument;
+    protected InifileEditor inifileEditor;
 
-	/**
-	 * Creates a content outline page using the given provider and the given editor.
-	 * @param editor the editor
-	 */
-	public InifileContentOutlinePage(InifileEditor editor) {
-		super();
-		inifileEditor = editor;
-	}
+    /**
+     * Creates a content outline page using the given provider and the given editor.
+     * @param editor the editor
+     */
+    public InifileContentOutlinePage(InifileEditor editor) {
+        super();
+        inifileEditor = editor;
+    }
 
-	/* (non-Javadoc)
-	 * Method declared on ContentOutlinePage
-	 */
-	@Override
-	public void createControl(Composite parent) {
-		super.createControl(parent);
+    /* (non-Javadoc)
+     * Method declared on ContentOutlinePage
+     */
+    @Override
+    public void createControl(Composite parent) {
+        super.createControl(parent);
 
-		getTreeViewer().setLabelProvider(new LabelProvider() {
-			@Override
-			public Image getImage(Object element) {
-				String sectionName = (String)element;
-				InifileAnalyzer inifileAnalyzer = inifileEditor.getEditorData().getInifileAnalyzer();
-				return InifileUtils.getSectionImage(sectionName, inifileAnalyzer);
-			}
+        getTreeViewer().setLabelProvider(new LabelProvider() {
+            @Override
+            public Image getImage(Object element) {
+                String sectionName = (String)element;
+                InifileAnalyzer inifileAnalyzer = inifileEditor.getEditorData().getInifileAnalyzer();
+                return InifileUtils.getSectionImage(sectionName, inifileAnalyzer);
+            }
 
-			@Override
-			public String getText(Object element) {
-				return (String)element;
-			}
-		});
-		getTreeViewer().setContentProvider(new ITreeContentProvider() {
-			public void dispose() {
-			}
-			public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			}
-			public Object[] getChildren(Object parentElement) {
-				if (parentElement instanceof IInifileDocument) {
-					IInifileDocument doc = (IInifileDocument) parentElement;
-					return doc.getSectionNames();
-				}
-				return null;
-			}
-			public Object getParent(Object element) {
-				return null; //XXX
-			}
-			public boolean hasChildren(Object element) {
-				return (element instanceof IReadonlyInifileDocument);
-			}
-			public Object[] getElements(Object inputElement) {
-				return getChildren(inputElement);
-			}
-		});
+            @Override
+            public String getText(Object element) {
+                return (String)element;
+            }
+        });
+        getTreeViewer().setContentProvider(new ITreeContentProvider() {
+            public void dispose() {
+            }
+            public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+            }
+            public Object[] getChildren(Object parentElement) {
+                if (parentElement instanceof IInifileDocument) {
+                    IInifileDocument doc = (IInifileDocument) parentElement;
+                    return doc.getSectionNames();
+                }
+                return null;
+            }
+            public Object getParent(Object element) {
+                return null; //XXX
+            }
+            public boolean hasChildren(Object element) {
+                return (element instanceof IReadonlyInifileDocument);
+            }
+            public Object[] getElements(Object inputElement) {
+                return getChildren(inputElement);
+            }
+        });
 
-		Assert.isTrue(inifileDocument!=null);
-		getTreeViewer().setInput(inifileDocument);
+        Assert.isTrue(inifileDocument!=null);
+        getTreeViewer().setInput(inifileDocument);
 
- 		// add tooltip support
- 		new HoverSupport().adapt(getTreeViewer().getTree(), new IHTMLHoverProvider() {
-			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-				Item item = getTreeViewer().getTree().getItem(new Point(x,y));
-				String section = (String) (item==null ? null : item.getData());
-				return section==null ? null : new HTMLHoverInfo(InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true));
-			}
- 		});
+        // add tooltip support
+        new HoverSupport().adapt(getTreeViewer().getTree(), new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                Item item = getTreeViewer().getTree().getItem(new Point(x,y));
+                String section = (String) (item==null ? null : item.getData());
+                return section==null ? null : new HTMLHoverInfo(InifileHoverUtils.getSectionHoverText(section, inifileDocument, null, true));
+            }
+        });
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * Method declared on ContentOutlinePage; called back from treeviewer.
-	 */
-	@Override
-	public void selectionChanged(SelectionChangedEvent event) {
-		super.selectionChanged(event);
-		//Debug.println(this+".selectionChanged( " + event + ") called");
+    /* (non-Javadoc)
+     * Method declared on ContentOutlinePage; called back from treeviewer.
+     */
+    @Override
+    public void selectionChanged(SelectionChangedEvent event) {
+        super.selectionChanged(event);
+        //Debug.println(this+".selectionChanged( " + event + ") called");
 
-		// make text editor to follow outline's selection
-		ISelection selection = event.getSelection();
-		if (selection.isEmpty()) {
-			inifileEditor.gotoSection(null, IGotoInifile.Mode.AUTO);
-		}
-		else {
-			// if a line is selected in the outline, highlight it in the text editor
-			TreeViewer viewer = getTreeViewer();
-			viewer.refresh();
-			Object sel = ((IStructuredSelection) selection).getFirstElement();
-			if (sel instanceof String) {
-				String sectionName = (String) sel;
-				inifileEditor.gotoSection(sectionName, IGotoInifile.Mode.AUTO);
-			}
-		}
-	}
+        // make text editor to follow outline's selection
+        ISelection selection = event.getSelection();
+        if (selection.isEmpty()) {
+            inifileEditor.gotoSection(null, IGotoInifile.Mode.AUTO);
+        }
+        else {
+            // if a line is selected in the outline, highlight it in the text editor
+            TreeViewer viewer = getTreeViewer();
+            viewer.refresh();
+            Object sel = ((IStructuredSelection) selection).getFirstElement();
+            if (sel instanceof String) {
+                String sectionName = (String) sel;
+                inifileEditor.gotoSection(sectionName, IGotoInifile.Mode.AUTO);
+            }
+        }
+    }
 
-	@Override
-	public void dispose() {
-		if (inifileDocument != null)
-			inifileDocument.removeInifileChangeListener(this);
-		super.dispose();
-	}
+    @Override
+    public void dispose() {
+        if (inifileDocument != null)
+            inifileDocument.removeInifileChangeListener(this);
+        super.dispose();
+    }
 
-	/**
-	 * Sets the input of the outline page
-	 *
-	 * @param input the input of this outline page
-	 */
-	public void setInput(Object input) {
-		// unhook from old input object
-		if (inifileDocument != null)
-			inifileDocument.removeInifileChangeListener(this);
-		Assert.isTrue(input instanceof IInifileDocument || input == null);
-		inifileDocument = (IInifileDocument) input;
-		// Note: when first invoked, treeViewer==null yet
-		if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed())
-			getTreeViewer().setInput(inifileDocument);
-		if (inifileDocument != null)
-			inifileDocument.addInifileChangeListener(this);
-	}
+    /**
+     * Sets the input of the outline page
+     *
+     * @param input the input of this outline page
+     */
+    public void setInput(Object input) {
+        // unhook from old input object
+        if (inifileDocument != null)
+            inifileDocument.removeInifileChangeListener(this);
+        Assert.isTrue(input instanceof IInifileDocument || input == null);
+        inifileDocument = (IInifileDocument) input;
+        // Note: when first invoked, treeViewer==null yet
+        if (getTreeViewer() != null && !getTreeViewer().getTree().isDisposed())
+            getTreeViewer().setInput(inifileDocument);
+        if (inifileDocument != null)
+            inifileDocument.addInifileChangeListener(this);
+    }
 
-	/**
-	 * Updates the outline page.
-	 */
-	public void update() {
-		final TreeViewer viewer = getTreeViewer();
-		if (viewer != null) {
-			Display.getDefault().asyncExec(new Runnable() {  //XXX why asyncExec?
-				public void run() {
-				    if (!viewer.getTree().isDisposed()) // because of asyncExec
-				        viewer.refresh();
-				}
-			});
-		}
-	}
+    /**
+     * Updates the outline page.
+     */
+    public void update() {
+        final TreeViewer viewer = getTreeViewer();
+        if (viewer != null) {
+            Display.getDefault().asyncExec(new Runnable() {  //XXX why asyncExec?
+                public void run() {
+                    if (!viewer.getTree().isDisposed()) // because of asyncExec
+                        viewer.refresh();
+                }
+            });
+        }
+    }
 
-	/* (non-Javadoc)
-	 * @see org.omnetpp.inifile.editor.model.IInifileChangeListener#modelChanged()
-	 */
-	public void modelChanged() {
-		update();
-	}
+    /* (non-Javadoc)
+     * @see org.omnetpp.inifile.editor.model.IInifileChangeListener#modelChanged()
+     */
+    public void modelChanged() {
+        update();
+    }
 }

@@ -32,7 +32,7 @@ public class GeneratorConfiguration {
     public boolean generateFullInheritanceDiagrams = false;
     public boolean nedSourceListings = true;
     public boolean generateExplicitLinksOnly = false;
-    
+
     public boolean generateDoxy = true;
     public boolean cppSourceListings = false;
 
@@ -61,11 +61,11 @@ public class GeneratorConfiguration {
         if (settings.get(GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS) != null)
             generatePerTypeInheritanceDiagrams = settings.getBoolean(GENERATE_PER_TYPE_INHERITANCE_DIAGRAMS);
         if (settings.get(GENERATE_FULL_USAGE_DIAGRAMS) != null)
-        	generateFullUsageDiagrams = settings.getBoolean(GENERATE_FULL_USAGE_DIAGRAMS);
+            generateFullUsageDiagrams = settings.getBoolean(GENERATE_FULL_USAGE_DIAGRAMS);
         if (settings.get(GENERATE_FULL_INHERITANCE_DIAGRAMS) != null)
-        	generateFullInheritanceDiagrams = settings.getBoolean(GENERATE_FULL_INHERITANCE_DIAGRAMS);
+            generateFullInheritanceDiagrams = settings.getBoolean(GENERATE_FULL_INHERITANCE_DIAGRAMS);
         if (settings.get(GENERATE_NED_SOURCE_LISTINGS) != null)
-        	nedSourceListings = settings.getBoolean(GENERATE_NED_SOURCE_LISTINGS);
+            nedSourceListings = settings.getBoolean(GENERATE_NED_SOURCE_LISTINGS);
         if (settings.get(GENERATE_EXPLICIT_LINKS_ONLY) != null)
             generateExplicitLinksOnly = settings.getBoolean(GENERATE_EXPLICIT_LINKS_ONLY);
 

@@ -15,12 +15,12 @@ import org.omnetpp.scave.model.VectorDatasetStrategy;
  */
 public class VectorDatasetEditor extends DatasetEditor {
 
-	private static IDatasetStrategy strategy = new VectorDatasetStrategy();
+    private static IDatasetStrategy strategy = new VectorDatasetStrategy();
 
-	public VectorDatasetEditor() {
-		super(strategy,
-			new IDatasetEditorPage[] {
-				new FilterPanelPage(strategy)
-			});
-	}
+    public VectorDatasetEditor() {
+        super(strategy,
+            new IDatasetEditorPage[] {
+                new FilterPanelPage(strategy)
+            });
+    }
 }

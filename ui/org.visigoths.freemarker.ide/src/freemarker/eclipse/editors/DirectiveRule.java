@@ -8,9 +8,9 @@ import org.eclipse.jface.text.rules.Token;
 /**
  * A FreeMarker directive rule. This rule handles all the starting
  * sequences, as well as various constructs inside the directives.
- * In particular '>' characters inside parenthesized expressions, 
+ * In particular '>' characters inside parenthesized expressions,
  * quoted strings and FreeMarker comments are handled.
- *  
+ *
  * @author  <a href="mailto:stephan@chaquotay.net">Stephan Mueller</a>
  * @author  <a href="mailto:per&#64;percederberg.net">Per Cederberg</a>
  * @version $Id: $

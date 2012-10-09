@@ -16,17 +16,17 @@ import org.omnetpp.scave.editors.DatasetEditor;
 
 public class DeleteAction extends Action {
 
-	private final IWorkbenchWindow window;
+    private final IWorkbenchWindow window;
 
-	public DeleteAction(IWorkbenchWindow window) {
-		this.window = window;
-	}
+    public DeleteAction(IWorkbenchWindow window) {
+        this.window = window;
+    }
 
-	public void run() {
-		IEditorPart editor = window.getActivePage().getActiveEditor();
-		if (editor instanceof DatasetEditor) {
-			DatasetEditor dsEditor = (DatasetEditor)editor;
-			dsEditor.getFilterPanel().deleteSelected();
-		}
-	}
+    public void run() {
+        IEditorPart editor = window.getActivePage().getActiveEditor();
+        if (editor instanceof DatasetEditor) {
+            DatasetEditor dsEditor = (DatasetEditor)editor;
+            dsEditor.getFilterPanel().deleteSelected();
+        }
+    }
 }

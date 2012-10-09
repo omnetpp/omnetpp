@@ -293,7 +293,7 @@ public class LargeGraphics {
                     }
                 }
                 // make sure that first and last element are the same, we want a closed polygon
-                // KLUDGE !clippedPolygon.isEmpty() added to preven NoSuchElementException (is this right?) 
+                // KLUDGE !clippedPolygon.isEmpty() added to preven NoSuchElementException (is this right?)
                 if (closed && !clippedPolygon.isEmpty() && clippedPolygon.firstElement() != clippedPolygon.lastElement())
                     clippedPolygon.add(clippedPolygon.firstElement());
                 // we have to keep on working with our new clipped polygon

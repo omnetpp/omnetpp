@@ -44,7 +44,7 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelProvider {
     protected DirectEditManager manager;
 
-    private static final int PER_GROUP_LIMIT = 1000;  // tree widget cannot handle more than a few thousand items 
+    private static final int PER_GROUP_LIMIT = 1000;  // tree widget cannot handle more than a few thousand items
 
     /**
      * Constructor initializes this with the given model.
@@ -62,16 +62,16 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
         if (getParent() instanceof RootEditPart)
             installEditPolicy(EditPolicy.COMPONENT_ROLE, new RootComponentEditPolicy());
 
-    	installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new NedTreeEditPolicy());
-    	installEditPolicy(EditPolicy.TREE_CONTAINER_ROLE, new NedTreeContainerEditPolicy());
+        installEditPolicy(EditPolicy.PRIMARY_DRAG_ROLE, new NedTreeEditPolicy());
+        installEditPolicy(EditPolicy.TREE_CONTAINER_ROLE, new NedTreeContainerEditPolicy());
 
         // we do not allow the reordering of the content (children) of the following node types
-    	if (getModel() instanceof SubmoduleElementEx ||
-        	getModel() instanceof CompoundModuleElementEx ||
+        if (getModel() instanceof SubmoduleElementEx ||
+            getModel() instanceof CompoundModuleElementEx ||
             getModel() instanceof ChannelElementEx ||
             getModel() instanceof ChannelInterfaceElementEx ||
             getModel() instanceof ModuleInterfaceElementEx) {
-        	removeEditPolicy(EditPolicy.TREE_CONTAINER_ROLE);
+            removeEditPolicy(EditPolicy.TREE_CONTAINER_ROLE);
         }
 
         // delete support
@@ -84,13 +84,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
     }
 
     public boolean isEditable() {
-    	NedFileElementEx nedFileElement = getModel().getContainingNedFileElement();
-       	return nedFileElement == null || (!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError());
+        NedFileElementEx nedFileElement = getModel().getContainingNedFileElement();
+        return nedFileElement == null || (!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError());
     }
 
-	@Override
+    @Override
     public Command getCommand(Request request) {
-    	return isEditable() ? super.getCommand(request) : UnexecutableCommand.INSTANCE;
+        return isEditable() ? super.getCommand(request) : UnexecutableCommand.INSTANCE;
     }
 
     /**
@@ -103,13 +103,13 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
     }
 
     /**
-	 * Refreshes the visual properties of the TreeItem for this part.
+     * Refreshes the visual properties of the TreeItem for this part.
      */
     @Override
     protected void refreshVisuals() {
         if (getWidget() instanceof Tree) return;
-    	setWidgetImage(NedModelLabelProvider.getInstance().getImage(getModel()));
-    	setWidgetText(NedModelLabelProvider.getInstance().getText(getModel()));
+        setWidgetImage(NedModelLabelProvider.getInstance().getImage(getModel()));
+        setWidgetText(NedModelLabelProvider.getInstance().getText(getModel()));
     }
 
     /**
@@ -124,7 +124,7 @@ public class NedTreeEditPart extends AbstractTreeEditPart implements INedModelPr
         if (!(getModel() instanceof NedFileElementEx) && getModel().getParent() == null)
             return;
 
-    	super.refresh();
+        super.refresh();
         for (Object child : getChildren())
             ((EditPart)child).refresh();
     }

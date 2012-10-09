@@ -16,7 +16,7 @@ import org.omnetpp.ned.model.INedElement;
  */
 public class NedMarkerChangeEvent extends NedModelEvent
 {
-	public NedMarkerChangeEvent(INedElement source) {
-		super(source);
-	}
+    public NedMarkerChangeEvent(INedElement source) {
+        super(source);
+    }
 }

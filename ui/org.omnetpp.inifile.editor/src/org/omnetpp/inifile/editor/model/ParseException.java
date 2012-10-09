@@ -13,10 +13,10 @@ package org.omnetpp.inifile.editor.model;
  * @author Andras
  */
 public class ParseException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int line;
-	private int column;
+    private int line;
+    private int column;
 
     /**
      * Constructor.

@@ -25,11 +25,11 @@ import org.omnetpp.common.editor.text.SyntaxHighlightHelper;
 public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
 
     @Override
-	public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
+    public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int documentOffset) {
         List<ICompletionProposal> result = new ArrayList<ICompletionProposal>();
 
         result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedAtWordDetector(),
-        		"@", NedCompletionHelper.proposedDocKeywords, " ", ""));
+                "@", NedCompletionHelper.proposedDocKeywords, " ", ""));
         result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedDocTagDetector(),
                 "<", NedCompletionHelper.proposedDocTags, "> ", ""));
         result.addAll(createProposals(viewer, documentOffset, new SyntaxHighlightHelper.NedDocTagDetector(),
@@ -40,7 +40,7 @@ public class NedDocCompletionProcessor extends NedTemplateCompletionProcessor {
     }
 
     @Override
-	public char[] getCompletionProposalAutoActivationCharacters() {
+    public char[] getCompletionProposalAutoActivationCharacters() {
         return new char[] { '@', '<' };
     }
 

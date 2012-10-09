@@ -26,120 +26,120 @@ import org.omnetpp.common.util.StringUtils;
  * @author levy
  */
 public class TextDifferenceUtils {
-	public interface ITextDifferenceApplier {
-		void replace(int start, int end, String replacement);
-	}
+    public interface ITextDifferenceApplier {
+        void replace(int start, int end, String replacement);
+    }
 
-	public static void modifyTextEditorContentByApplyingDifferences(final IDocument document, String newText) {
-	    DocumentRewriteSession session = null;
-	    try {
-	        // use rewrite session: it joins replacements into a single undo/redo unit, and also brings huge performance improvement in the case of large documents
-	        if (document instanceof IDocumentExtension4)
-	            session = ((IDocumentExtension4)document).startRewriteSession(DocumentRewriteSessionType.SEQUENTIAL);
+    public static void modifyTextEditorContentByApplyingDifferences(final IDocument document, String newText) {
+        DocumentRewriteSession session = null;
+        try {
+            // use rewrite session: it joins replacements into a single undo/redo unit, and also brings huge performance improvement in the case of large documents
+            if (document instanceof IDocumentExtension4)
+                session = ((IDocumentExtension4)document).startRewriteSession(DocumentRewriteSessionType.SEQUENTIAL);
 
-	        applyTextDifferences(document.get(), newText, new ITextDifferenceApplier() {
-	            public void replace(int start, int end, String replacement) {
-	                try {
-	                    int numberOfLines = document.getNumberOfLines();
-	                    int startOffset = document.getLineOffset(start);
-	                    int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
+            applyTextDifferences(document.get(), newText, new ITextDifferenceApplier() {
+                public void replace(int start, int end, String replacement) {
+                    try {
+                        int numberOfLines = document.getNumberOfLines();
+                        int startOffset = document.getLineOffset(start);
+                        int endOffset = end == numberOfLines ? document.getLength() : document.getLineOffset(end);
 
-	                    document.replace(startOffset, endOffset - startOffset, replacement);
-	                }
-	                catch (BadLocationException e) {
-	                    throw new RuntimeException(e);
-	                }
-	            }
-	        });
+                        document.replace(startOffset, endOffset - startOffset, replacement);
+                    }
+                    catch (BadLocationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
 
-	    }
-	    finally {
-	        if (document instanceof IDocumentExtension4)
-	            ((IDocumentExtension4)document).stopRewriteSession(session);
-	    }
-		
-		Assert.isTrue(document.get().equals(newText));
-	}
+        }
+        finally {
+            if (document instanceof IDocumentExtension4)
+                ((IDocumentExtension4)document).stopRewriteSession(session);
+        }
 
-	public static void applyTextDifferences(String original, String target, ITextDifferenceApplier applier) {
-		LineRangeComparator comparatorOriginal = new LineRangeComparator(original);
-		LineRangeComparator comparatorTarget = new LineRangeComparator(target);
-		RangeDifference[] differences = RangeDifferencer.findDifferences(comparatorOriginal, comparatorTarget);
+        Assert.isTrue(document.get().equals(newText));
+    }
 
-		Arrays.sort(differences, 0, differences.length, new Comparator<RangeDifference>() {
-			public int compare(RangeDifference o1, RangeDifference o2) {
-				return o1.leftStart() - o2.leftStart();
-			}}
-		);
+    public static void applyTextDifferences(String original, String target, ITextDifferenceApplier applier) {
+        LineRangeComparator comparatorOriginal = new LineRangeComparator(original);
+        LineRangeComparator comparatorTarget = new LineRangeComparator(target);
+        RangeDifference[] differences = RangeDifferencer.findDifferences(comparatorOriginal, comparatorTarget);
 
-		int offset = 0;
-		for (int i = 0 ; i < differences.length; i++) {
-			RangeDifference difference = differences[i];
-			//Debug.println(difference);
+        Arrays.sort(differences, 0, differences.length, new Comparator<RangeDifference>() {
+            public int compare(RangeDifference o1, RangeDifference o2) {
+                return o1.leftStart() - o2.leftStart();
+            }}
+        );
 
-			int leftStart = difference.leftStart();
-			int leftEnd = difference.leftEnd();
-			int rightStart = difference.rightStart();
-			int rightEnd = difference.rightEnd();
+        int offset = 0;
+        for (int i = 0 ; i < differences.length; i++) {
+            RangeDifference difference = differences[i];
+            //Debug.println(difference);
 
-			String replacement = comparatorTarget.getLineRange(rightStart, rightEnd);
-			applier.replace(offset + leftStart, offset + leftEnd, replacement);
-			offset += difference.rightLength() - difference.leftLength();
-		}
-	}
+            int leftStart = difference.leftStart();
+            int leftEnd = difference.leftEnd();
+            int rightStart = difference.rightStart();
+            int rightEnd = difference.rightEnd();
+
+            String replacement = comparatorTarget.getLineRange(rightStart, rightEnd);
+            applier.replace(offset + leftStart, offset + leftEnd, replacement);
+            offset += difference.rightLength() - difference.leftLength();
+        }
+    }
 }
 
 class LineRangeComparator implements IRangeComparator {
-	private String text;
+    private String text;
 
-	private String[] lines;
+    private String[] lines;
 
-	public LineRangeComparator(String text) {
-		this.text = text;
-		lines = StringUtils.splitToLines(text);
-	}
+    public LineRangeComparator(String text) {
+        this.text = text;
+        lines = StringUtils.splitToLines(text);
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public int getRangeCount() {
-		return lines.length;
-	}
+    public int getRangeCount() {
+        return lines.length;
+    }
 
-	public boolean rangesEqual(int thisIndex, IRangeComparator other, int otherIndex) {
-		return getLineAt(thisIndex).equals(((LineRangeComparator)other).getLineAt(otherIndex));
-	}
+    public boolean rangesEqual(int thisIndex, IRangeComparator other, int otherIndex) {
+        return getLineAt(thisIndex).equals(((LineRangeComparator)other).getLineAt(otherIndex));
+    }
 
-	public String getLineAt(int index) {
-		return lines[index];
-	}
+    public String getLineAt(int index) {
+        return lines[index];
+    }
 
-	public String getLineRange(int start, int end) {
-		return StringUtils.join(ArrayUtils.subarray(lines, start, end));
-	}
+    public String getLineRange(int start, int end) {
+        return StringUtils.join(ArrayUtils.subarray(lines, start, end));
+    }
 
-	public boolean skipRangeComparison(int length, int maxLength, IRangeComparator other) {
-		return false;
-	}
+    public boolean skipRangeComparison(int length, int maxLength, IRangeComparator other) {
+        return false;
+    }
 }
 
 class StringDifferenceApplier implements TextDifferenceUtils.ITextDifferenceApplier {
-	private String text;
+    private String text;
 
-	public StringDifferenceApplier(String text) {
-		this.text = text;
-	}
+    public StringDifferenceApplier(String text) {
+        this.text = text;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public void replace(int start, int end, String replacement) {
-		String[] lines = StringUtils.splitToLines(text);
-		text =
-			StringUtils.join(ArrayUtils.subarray(lines, 0, start)) +
-			replacement +
-			StringUtils.join(ArrayUtils.subarray(lines, end, lines.length));
-	}
+    public void replace(int start, int end, String replacement) {
+        String[] lines = StringUtils.splitToLines(text);
+        text =
+            StringUtils.join(ArrayUtils.subarray(lines, 0, start)) +
+            replacement +
+            StringUtils.join(ArrayUtils.subarray(lines, end, lines.length));
+    }
 }

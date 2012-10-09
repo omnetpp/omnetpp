@@ -22,21 +22,21 @@ import org.omnetpp.ned.editor.text.highlight.NedSyntaxHighlightPartitionScanner;
  */
 public class NedDocumentSetupParticipant implements IDocumentSetupParticipant {
 
-	public void setup(IDocument document) {
-		if (document instanceof IDocumentExtension3) {
-			IDocumentExtension3 extension3= (IDocumentExtension3) document;
+    public void setup(IDocument document) {
+        if (document instanceof IDocumentExtension3) {
+            IDocumentExtension3 extension3= (IDocumentExtension3) document;
 
             // content assist partitioner setup
             IDocumentPartitioner contentPartitioner =
                 new FastPartitioner(new NedContentAssistPartitionScanner(), NedContentAssistPartitionScanner.SUPPORTED_PARTITION_TYPES);
-			extension3.setDocumentPartitioner(NedContentAssistPartitionScanner.PARTITIONING_ID, contentPartitioner);
-			contentPartitioner.connect(document);
+            extension3.setDocumentPartitioner(NedContentAssistPartitionScanner.PARTITIONING_ID, contentPartitioner);
+            contentPartitioner.connect(document);
 
             // syntax highlighter partitioner setup
             IDocumentPartitioner highlightPartitioner =
                 new FastPartitioner(new NedSyntaxHighlightPartitionScanner(), NedSyntaxHighlightPartitionScanner.SUPPORTED_PARTITION_TYPES);
             extension3.setDocumentPartitioner(NedSyntaxHighlightPartitionScanner.PARTITIONING_ID, highlightPartitioner);
             highlightPartitioner.connect(document);
-		}
-	}
+        }
+    }
 }

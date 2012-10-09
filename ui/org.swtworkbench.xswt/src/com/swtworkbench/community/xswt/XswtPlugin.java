@@ -69,8 +69,8 @@ public class XswtPlugin extends AbstractUIPlugin {
     }
 
     /**
-     * Creates an image. IMPORTANT: The image is NOT cached! Callers 
-     * are responsible for disposal of the image. 
+     * Creates an image. IMPORTANT: The image is NOT cached! Callers
+     * are responsible for disposal of the image.
      */
     public static Image getImage(String path) {
         return getImageDescriptor(path).createImage();

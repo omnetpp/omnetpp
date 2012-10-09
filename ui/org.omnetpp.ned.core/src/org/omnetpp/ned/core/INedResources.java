@@ -87,7 +87,7 @@ public interface INedResources extends INedTypeResolver {
      * Returns true if some NED files are being loaded, or are scheduled to be loaded.
      */
     public boolean isLoadingInProgress();
-    
+
     /**
      * Operations that change the NED tree without having it open in an editor
      * (see connect()/disconnect()) must call this method with argument==true
@@ -100,34 +100,34 @@ public interface INedResources extends INedTypeResolver {
      * setRefactoringInProgress() calls.
      */
     public boolean isRefactoringInProgress();
-    
+
     /**
      * Creates an immutable copy of the NED parse trees and all other data structures.
      * The immutable copy can be used for lengthy computations (e.g. validation or other
      * analysis) in a background thread without locking the INedResources object.
-     * 
-     * Elements in the immutable copy can be related back to the original trees 
+     *
+     * Elements in the immutable copy can be related back to the original trees
      * with INedElement's getOriginal() method.
-     * 
-     * Any model change event (NedModelChangeEvent) will cause subsequent calls to this method 
-     * to return a different, up-to-date instance. (Marker changes do not count.) 
-     * 
-     * Use isImmutableCopyUpToDate() to check whether an immutable copy you obtained 
-     * earlier is still current. 
+     *
+     * Any model change event (NedModelChangeEvent) will cause subsequent calls to this method
+     * to return a different, up-to-date instance. (Marker changes do not count.)
+     *
+     * Use isImmutableCopyUpToDate() to check whether an immutable copy you obtained
+     * earlier is still current.
      */
     public INedTypeResolver getImmutableCopy();
 
     /**
-     * Checks whether an immutable copy returned from an earlier getImmutableCopy() call 
+     * Checks whether an immutable copy returned from an earlier getImmutableCopy() call
      * is still up to date.
      */
     public boolean isImmutableCopyUpToDate(INedTypeResolver copy);
 
-    /** 
+    /**
      * Parses the given NED expression, and returns the parse tree. Returns null if the expression
      * contains a syntax error. The default implementation (NedResources) caches the result,
      * so it is typically very fast.
      */
     public INedElement getParsedNedExpression(String expression);
-    
+
 }

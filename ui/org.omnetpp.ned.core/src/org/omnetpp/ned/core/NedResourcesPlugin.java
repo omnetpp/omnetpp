@@ -31,52 +31,52 @@ public class NedResourcesPlugin extends AbstractUIPlugin {
 
     public static String PLUGIN_ID;
 
-	// The shared instance.
-	private static NedResourcesPlugin plugin;
+    // The shared instance.
+    private static NedResourcesPlugin plugin;
 
-	private NedSourceFoldersEditingManager nedSourceFoldersEditingManager = new NedSourceFoldersEditingManager();
-	
-	/**
-	 * The constructor.
-	 */
-	public NedResourcesPlugin() {
-		plugin = this;
-	}
+    private NedSourceFoldersEditingManager nedSourceFoldersEditingManager = new NedSourceFoldersEditingManager();
 
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	@Override
+    /**
+     * The constructor.
+     */
+    public NedResourcesPlugin() {
+        plugin = this;
+    }
+
+    /**
+     * This method is called upon plug-in activation
+     */
+    @Override
     public void start(BundleContext context) throws Exception {
-		super.start(context);
+        super.start(context);
         PLUGIN_ID = getBundle().getSymbolicName();
-	}
+    }
 
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	@Override
+    /**
+     * This method is called when the plug-in is stopped
+     */
+    @Override
     public void stop(BundleContext context) throws Exception {
         NedResources.getInstance().dispose();
         MsgResources.getInstance().dispose();
 
-		plugin = null;
+        plugin = null;
         super.stop(context);
-	}
+    }
 
-	/**
-	 * Returns the shared instance.
-	 */
-	public static NedResourcesPlugin getDefault() {
-		return plugin;
-	}
+    /**
+     * Returns the shared instance.
+     */
+    public static NedResourcesPlugin getDefault() {
+        return plugin;
+    }
 
-	/**
-	 * Returns the NED file cache of the shared instance of the plugin
-	 */
-	public static INedResources getNedResources() {
-		return NedResources.getInstance();
-	}
+    /**
+     * Returns the NED file cache of the shared instance of the plugin
+     */
+    public static INedResources getNedResources() {
+        return NedResources.getInstance();
+    }
 
     /**
      * Returns the MSG file cache of the shared instance of the plugin
@@ -84,46 +84,46 @@ public class NedResourcesPlugin extends AbstractUIPlugin {
     public static MsgResources getMsgResources() {
         return MsgResources.getInstance();
     }
-    
+
     /**
      * When more than one property pages edit the ".nedfolders" file, they can
      * communicate via NedSourceFoldersEditingManager, i.e. can edit the same
-     * working copy. 
+     * working copy.
      */
     public static NedSourceFoldersEditingManager getNedSourceFoldersEditingManager() {
         return getDefault().nedSourceFoldersEditingManager;
     }
 
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
-	}
+    /**
+     * Returns an image descriptor for the image file at the given
+     * plug-in relative path.
+     */
+    public static ImageDescriptor getImageDescriptor(String path) {
+        return AbstractUIPlugin.imageDescriptorFromPlugin(PLUGIN_ID, path);
+    }
 
-	public static void logError(Throwable exception) {
-		logError(exception.toString(), exception);
-	}
+    public static void logError(Throwable exception) {
+        logError(exception.toString(), exception);
+    }
 
-	public static void logError(String message, Throwable exception) {
-		if (plugin != null) {
-			plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
-		}
-		else {
-			System.err.println(message);
-			exception.printStackTrace();
-		}
-	}
+    public static void logError(String message, Throwable exception) {
+        if (plugin != null) {
+            plugin.getLog().log(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
+        }
+        else {
+            System.err.println(message);
+            exception.printStackTrace();
+        }
+    }
 
-	/**
-	 * Opens the given INedElement in a NED editor, and positions the cursor on it.
-	 * @param element must not be null, and must be part of the model (i.e. in INedResources)
-	 */
-	public static void openNedElementInEditor(INedElement element) {
-	    Assert.isNotNull(element);
+    /**
+     * Opens the given INedElement in a NED editor, and positions the cursor on it.
+     * @param element must not be null, and must be part of the model (i.e. in INedResources)
+     */
+    public static void openNedElementInEditor(INedElement element) {
+        Assert.isNotNull(element);
         openNedElementInEditor(element, IGotoNedElement.Mode.AUTOMATIC);
-	}
+    }
 
     /**
      * Opens the given INedElement in a NED editor, and positions the cursor on it.

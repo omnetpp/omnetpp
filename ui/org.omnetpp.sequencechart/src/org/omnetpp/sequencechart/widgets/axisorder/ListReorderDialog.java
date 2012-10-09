@@ -38,7 +38,7 @@ import org.eclipse.ui.dialogs.SelectionDialog;
 
 /**
  * List dialog for in-place ordering of a list.
- * 
+ *
  * @author Andras
  */
 @SuppressWarnings("unchecked")
@@ -84,17 +84,17 @@ public class ListReorderDialog extends SelectionDialog {
     public void setOriginalOrder(Object[] originalOrder) {
         this.originalOrder = originalOrder;
     }
-    
+
     @Override
     public boolean isHelpAvailable() {
         return false;
     }
-    
+
     @Override
     protected int getShellStyle() {
         return super.getShellStyle() | SWT.RESIZE;
     }
-    
+
     protected int getTableStyle() {
         return SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER;
     }
@@ -106,14 +106,14 @@ public class ListReorderDialog extends SelectionDialog {
     protected Control createDialogArea(Composite container) {
         Composite parent = (Composite) super.createDialogArea(container);
         createMessageArea(parent);
-        
+
         Composite tableArea = new Composite(parent, SWT.NONE);
         tableArea.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         GridLayout layout = new GridLayout(2, false);
         layout.marginWidth = layout.marginHeight = 0;
         tableArea.setLayout(layout);
-        
-        
+
+
         // table
         tableViewer = new TableViewer(tableArea, getTableStyle());
         tableViewer.setContentProvider(contentProvider);
@@ -202,21 +202,21 @@ public class ListReorderDialog extends SelectionDialog {
                 Object lastSelectionElement = selectionAsList.get(selectionAsList.size() - 1);
 
                 switch (buttonId) {
-    				case BUTTON_TOP:
-    				    move(selectionAsList, -listToReorder.indexOf(firstSelectionElement));
-    					break;
+                    case BUTTON_TOP:
+                        move(selectionAsList, -listToReorder.indexOf(firstSelectionElement));
+                        break;
                     case BUTTON_UP:
                         if (listToReorder.indexOf(firstSelectionElement) > 0)
                             move(selectionAsList, -1);
                         break;
-    				case BUTTON_DOWN:
-    				    if (listToReorder.indexOf(lastSelectionElement) < listToReorder.size() - 1)
-    				        move(selectionAsList, 1);
-    					break;
+                    case BUTTON_DOWN:
+                        if (listToReorder.indexOf(lastSelectionElement) < listToReorder.size() - 1)
+                            move(selectionAsList, 1);
+                        break;
                     case BUTTON_BOTTOM:
                         move(selectionAsList, listToReorder.size() - listToReorder.indexOf(lastSelectionElement) - 1);
                         break;
-    			}
+                }
             }
 
             getTableViewer().getTable().setFocus();

@@ -164,8 +164,8 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
  */
 @SuppressWarnings("restriction")
 public class GraphicalNedEditor
-	extends GraphicalEditorWithFlyoutPalette
-	implements INedChangeListener
+    extends GraphicalEditorWithFlyoutPalette
+    implements INedChangeListener
 {
     private static final String PROP_PALETTE_FILTER = "paletteFilter";
     public final static Color HIGHLIGHT_COLOR = new Color(null, 255, 0, 0);
@@ -220,7 +220,7 @@ public class GraphicalNedEditor
         // we listen on changes too
         NedResourcesPlugin.getNedResources().addNedModelChangeListener(this);
 
-		IContextService contextService = (IContextService)site.getService(IContextService.class);
+        IContextService contextService = (IContextService)site.getService(IContextService.class);
         contextService.activateContext("org.omnetpp.context.nedGraphEditor");
         // restore palette filter from a persistent property
         PersistentResourcePropertyManager propertyManager = new PersistentResourcePropertyManager(NedEditorPlugin.PLUGIN_ID);
@@ -316,8 +316,8 @@ public class GraphicalNedEditor
 
     @Override
     public void commandStackChanged(EventObject event) {
-    	firePropertyChange(IEditorPart.PROP_DIRTY);
-    	super.commandStackChanged(event);
+        firePropertyChange(IEditorPart.PROP_DIRTY);
+        super.commandStackChanged(event);
     }
 
     @Override
@@ -326,7 +326,7 @@ public class GraphicalNedEditor
         getGraphicalViewer().setContents(getModel());
     }
 
-	@Override @SuppressWarnings({ "unchecked", "deprecation" })
+    @Override @SuppressWarnings({ "unchecked", "deprecation" })
     protected void configureGraphicalViewer() {
         super.configureGraphicalViewer();
         ScrollingGraphicalViewer viewer = (ScrollingGraphicalViewer) getGraphicalViewer();
@@ -382,13 +382,13 @@ public class GraphicalNedEditor
         getEditorSite().registerContextMenu(ID, provider, viewer, false);
         viewer.setKeyHandler(new GraphicalViewerKeyHandler(viewer).setParent(getCommonKeyHandler()));
 
-		// generic system tooltip support for error markers
-		FigureUtils.addTooltipSupport(getFigureCanvas(), root.getFigure());
+        // generic system tooltip support for error markers
+        FigureUtils.addTooltipSupport(getFigureCanvas(), root.getFigure());
 
         // add hover tooltip support for help and documentation tooltips
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 200);
-		hoverSupport.adapt(getFigureCanvas(), new IHTMLHoverProvider() {
+        hoverSupport.adapt(getFigureCanvas(), new IHTMLHoverProvider() {
             public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
                 GraphicalEditPart epUnderMouse = (GraphicalEditPart)getGraphicalViewer().findObjectAt(new Point(x,y));
                 // check if the figure has its own tooltip in this case we do not provide our own information provider
@@ -495,15 +495,15 @@ public class GraphicalNedEditor
      * Register the used actions
      */
     @SuppressWarnings("unchecked")
-	@Override
+    @Override
     protected void createActions() {
         super.createActions();
         ActionRegistry registry = getActionRegistry();
         IAction action;
-        
+
         // KLUDGE: Do not call getPrinterList() from PrintAction.calculateEnbabled()
         // because it causes exception. PrintAction is already registered in super class.
-        // See: 
+        // See:
         // http://dev.omnetpp.org/bugs/view.php?id=337
         // https://bugs.eclipse.org/bugs/show_bug.cgi?id=330165
         IAction origPrintAction = registry.getAction(ActionFactory.PRINT.getId());
@@ -524,9 +524,9 @@ public class GraphicalNedEditor
         getSelectionActions().add(action.getId());
 
         if (IConstants.IS_COMMERCIAL) {
-        	action = new ExportImageAction(this);
-        	registry.registerAction(action);
-        	getSelectionActions().add(action.getId());
+            action = new ExportImageAction(this);
+            registry.registerAction(action);
+            getSelectionActions().add(action.getId());
         }
 
         action = new OpenTypeAction(this);
@@ -605,14 +605,14 @@ public class GraphicalNedEditor
         return (FigureCanvas) getGraphicalViewer().getControl();
     }
 
-	protected IFile getFile() {
-		Assert.isTrue(getEditorInput() != null);
-		return ((FileEditorInput)getEditorInput()).getFile();
-	}
+    protected IFile getFile() {
+        Assert.isTrue(getEditorInput() != null);
+        return ((FileEditorInput)getEditorInput()).getFile();
+    }
 
-	public NedFileElementEx getModel() {
-		return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
-	}
+    public NedFileElementEx getModel() {
+        return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
+    }
 
     protected void loadProperties() {
         // Scroll-wheel Zoom support
@@ -669,60 +669,60 @@ public class GraphicalNedEditor
 
         // ignore event when closing the editor and the file has already been removed from the NEDResources
         if (!NedResourcesPlugin.getNedResources().containsNedFileElement(getFile()))
-        	return;
+            return;
 
-    	// we do a full refresh in response of a change
+        // we do a full refresh in response of a change
         // if we are in a background thread, refresh later when UI thread is active
-    	DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-			public void run() {
-				// count begin/end nesting
-				if (event instanceof NedBeginModelChangeEvent)
-					nedBeginChangeCount++;
-				else if (event instanceof NedEndModelChangeEvent)
-					nedBeginChangeCount--;
-				// Debug.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
-				Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
+        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            public void run() {
+                // count begin/end nesting
+                if (event instanceof NedBeginModelChangeEvent)
+                    nedBeginChangeCount++;
+                else if (event instanceof NedEndModelChangeEvent)
+                    nedBeginChangeCount--;
+                // Debug.println(event.toString() + ",  beginCount=" + nedBeginChangeCount);
+                Assert.isTrue(nedBeginChangeCount >= 0, "begin/end mismatch");
 
-				// record notification event as an external change iff it refers to our model and we are not the originator
-				if (event instanceof NedModelChangeEvent && event.getSource() != null &&
-					event.getSource().getContainingNedFileElement() == getModel() &&
-					!((LocalCommandStack)getCommandStack()).isInsideBeginEnd())
-				{
-					if (pendingExternalChangeCommand == null)
-						pendingExternalChangeCommand = new ExternalChangeCommand();
-//					Debug.println("adding " + event + " to current external change command");
-					pendingExternalChangeCommand.addEvent(event);
-		    	}
+                // record notification event as an external change iff it refers to our model and we are not the originator
+                if (event instanceof NedModelChangeEvent && event.getSource() != null &&
+                    event.getSource().getContainingNedFileElement() == getModel() &&
+                    !((LocalCommandStack)getCommandStack()).isInsideBeginEnd())
+                {
+                    if (pendingExternalChangeCommand == null)
+                        pendingExternalChangeCommand = new ExternalChangeCommand();
+//                  Debug.println("adding " + event + " to current external change command");
+                    pendingExternalChangeCommand.addEvent(event);
+                }
 
-				// "execute" (==nop) external change command after "end" (or if came without begin/end)
-				if (nedBeginChangeCount == 0 && pendingExternalChangeCommand != null) {
-					ExternalChangeCommand tmp = pendingExternalChangeCommand;
-					pendingExternalChangeCommand = null;
-					//Debug.println("executing external change command");
-					getCommandStack().execute(tmp);
-					//Debug.println("done executing external change command");
-				}
+                // "execute" (==nop) external change command after "end" (or if came without begin/end)
+                if (nedBeginChangeCount == 0 && pendingExternalChangeCommand != null) {
+                    ExternalChangeCommand tmp = pendingExternalChangeCommand;
+                    pendingExternalChangeCommand = null;
+                    //Debug.println("executing external change command");
+                    getCommandStack().execute(tmp);
+                    //Debug.println("done executing external change command");
+                }
 
-            	// adjust connections after submodule name change, etc
-		    	// If a submodule name has changed, we must change all the connections in the same compound module
-		    	// that is attached to this module, so the model will remain consistent.
-		    	//
-		    	// NOTE: corresponding code used to be in SubmoduleElementEx.setName(), but that's
-		    	// not the right place. This is more of a refactoring, e.g. ideally we'd have to
-		    	// update all derived compound modules too, possibly after asking the user for
-		    	// confirmation -- which is more easily done here.
-		    	//
-		    	if (event instanceof NedAttributeChangeEvent && event.getSource() instanceof SubmoduleElementEx) {
-		    		NedAttributeChangeEvent e = (NedAttributeChangeEvent) event;
-		    		if (e.getAttribute().equals(SubmoduleElement.ATT_NAME)) {
-		    			CompoundModuleElementEx compoundModule = ((SubmoduleElementEx)e.getSource()).getCompoundModule();
-		    			NedElementUtilEx.renameSubmoduleInConnections(compoundModule, (String)e.getOldValue(), (String)e.getNewValue());
-		    		}
-		    	}
+                // adjust connections after submodule name change, etc
+                // If a submodule name has changed, we must change all the connections in the same compound module
+                // that is attached to this module, so the model will remain consistent.
+                //
+                // NOTE: corresponding code used to be in SubmoduleElementEx.setName(), but that's
+                // not the right place. This is more of a refactoring, e.g. ideally we'd have to
+                // update all derived compound modules too, possibly after asking the user for
+                // confirmation -- which is more easily done here.
+                //
+                if (event instanceof NedAttributeChangeEvent && event.getSource() instanceof SubmoduleElementEx) {
+                    NedAttributeChangeEvent e = (NedAttributeChangeEvent) event;
+                    if (e.getAttribute().equals(SubmoduleElement.ATT_NAME)) {
+                        CompoundModuleElementEx compoundModule = ((SubmoduleElementEx)e.getSource()).getCompoundModule();
+                        NedElementUtilEx.renameSubmoduleInConnections(compoundModule, (String)e.getOldValue(), (String)e.getNewValue());
+                    }
+                }
 
-				// optimize refresh(): skip those between begin/end notifications
-            	if (nedBeginChangeCount == 0 && getGraphicalControl() != null && getGraphicalControl().isVisible())
-            		refresh();
+                // optimize refresh(): skip those between begin/end notifications
+                if (nedBeginChangeCount == 0 && getGraphicalControl() != null && getGraphicalControl().isVisible())
+                    refresh();
             }
         });
     }
@@ -760,16 +760,16 @@ public class GraphicalNedEditor
     public static EditPart getNearestEditPartForModel(EditPartViewer viewer, INedElement model) {
             INedElement originalModel = model;
             while (model != null) {
-            	// get the part directly from the main registry
+                // get the part directly from the main registry
                 EditPart ep = (EditPart)viewer.getEditPartRegistry().get(model);
                 // if we reached the compound module level, try to look in the registered connections too
                 // maybe the originalModel was one of our connections. This is needed because
                 // ConnectionEditParts are not registered in the main registry rather in the compoundmodule
                 // editparts local registry
                 if (ep instanceof CompoundModuleEditPart) {
-                	ConnectionEditPart connEP = ((CompoundModuleEditPart)ep).getModelToConnectionPartsRegistry().get(originalModel);
-                	if (connEP != null)
-                		return connEP;
+                    ConnectionEditPart connEP = ((CompoundModuleEditPart)ep).getModelToConnectionPartsRegistry().get(originalModel);
+                    if (connEP != null)
+                        return connEP;
                 }
                 // if it was not a connection return that editpart
                 if (ep != null)
@@ -795,76 +795,76 @@ public class GraphicalNedEditor
         return !(lastUndoCommand == getCommandStack().getUndoCommand());
     }
 
-	public void markSaved() {
-		getCommandStack().markSaveLocation();
-	}
+    public void markSaved() {
+        getCommandStack().markSaveLocation();
+    }
 
-	protected String getHTMLHoverTextFor(EditPart ep) {
-		if (!(ep instanceof INedModelProvider))
-			return null;
+    protected String getHTMLHoverTextFor(EditPart ep) {
+        if (!(ep instanceof INedModelProvider))
+            return null;
 
-		INedElement element = ((INedModelProvider)ep).getModel();
-		if (element instanceof NedFileElementEx)
-			return null;
+        INedElement element = ((INedModelProvider)ep).getModel();
+        if (element instanceof NedFileElementEx)
+            return null;
 
-		String hoverText = "";
+        String hoverText = "";
 
-		// brief
-		hoverText += "<b>" + StringUtils.quoteForHtml(NedModelLabelProvider.getInstance().getText(element)) + "</b>\n";
+        // brief
+        hoverText += "<b>" + StringUtils.quoteForHtml(NedModelLabelProvider.getInstance().getText(element)) + "</b>\n";
 
-		//debug code:
-		//hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
-		//DisplayString ds = ((IHasDisplayString)element).getDisplayString();
-		//String displayStringOwnerSource = "<pre>" + ds.getOwner().getSource() + "</pre>";
-		//String xml = "<pre>" + StringUtils.quoteForHtml(NedTreeUtil.generateXmlFromPojoElementTree(element, "", false)) + "</pre>";
-		//hoverText += displayStringOwnerSource;
-		//hoverText += xml;
+        //debug code:
+        //hoverText += element.getSourceLocation() + "<br/>" + element.getSourceRegion();
+        //DisplayString ds = ((IHasDisplayString)element).getDisplayString();
+        //String displayStringOwnerSource = "<pre>" + ds.getOwner().getSource() + "</pre>";
+        //String xml = "<pre>" + StringUtils.quoteForHtml(NedTreeUtil.generateXmlFromPojoElementTree(element, "", false)) + "</pre>";
+        //hoverText += displayStringOwnerSource;
+        //hoverText += xml;
 
-		// comment
-		String comment = StringUtils.trimToEmpty(element.getComment());
+        // comment
+        String comment = StringUtils.trimToEmpty(element.getComment());
 
-		// comment from the submodule's or connection channel's type
-		String typeComment = "";
-		if (element instanceof ISubmoduleOrConnection) {
-		    INedTypeElement typeElement = ((ISubmoduleOrConnection)element).getEffectiveTypeRef();
-			if (typeElement != null)
-				typeComment = StringUtils.trimToEmpty(typeElement.getComment());
-		}
+        // comment from the submodule's or connection channel's type
+        String typeComment = "";
+        if (element instanceof ISubmoduleOrConnection) {
+            INedTypeElement typeElement = ((ISubmoduleOrConnection)element).getEffectiveTypeRef();
+            if (typeElement != null)
+                typeComment = StringUtils.trimToEmpty(typeElement.getComment());
+        }
 
-		String htmlComment = "";
-		if (!StringUtils.isEmpty(comment)) {
-		    boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
-		    htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
-		}
+        String htmlComment = "";
+        if (!StringUtils.isEmpty(comment)) {
+            boolean tildeMode = comment.matches(".*(~[a-zA-Z_]).*");
+            htmlComment += NedCommentFormatter.makeHtmlDocu(comment, false, tildeMode, null);
+        }
 
-		if (!StringUtils.isEmpty(typeComment)) {
-			//typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
+        if (!StringUtils.isEmpty(typeComment)) {
+            //typeComment = "<i>" + typeElement.getName() + " documentation:</i><br/>\n" + typeComment;
             boolean tildeMode = typeComment.matches(".*(~[a-zA-Z_]).*");
             htmlComment += NedCommentFormatter.makeHtmlDocu(typeComment, false, tildeMode, null);
-		}
+        }
 
-		hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source
+        hoverText += StringUtils.isBlank(htmlComment) ? "<br><br>" : htmlComment; // if there's not comment that contains <p>, we need linefeed between title and source
 
-		//debug code:
-		//hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
-		//			", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
-		//INedElement fileElement = element.getParentWithTag(NedElementTags.NED_NED_FILE);
-		//hoverText += "<br/><br/>" + "File: SyntaxProblemMaxCumulatedSeverity:" + fileElement.getSyntaxProblemMaxCumulatedSeverity() +
-		//", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
+        //debug code:
+        //hoverText += "<br/><br/>" + "SyntaxProblemMaxCumulatedSeverity:" + element.getSyntaxProblemMaxCumulatedSeverity() +
+        //          ", ConsistencyProblemMaxCumulatedSeverity:" + element.getConsistencyProblemMaxCumulatedSeverity();
+        //INedElement fileElement = element.getParentWithTag(NedElementTags.NED_NED_FILE);
+        //hoverText += "<br/><br/>" + "File: SyntaxProblemMaxCumulatedSeverity:" + fileElement.getSyntaxProblemMaxCumulatedSeverity() +
+        //", ConsistencyProblemMaxCumulatedSeverity:" + fileElement.getConsistencyProblemMaxCumulatedSeverity();
 
-		String nedCode = StringUtils.stripLeadingCommentLines(element.getNedSource().trim(), "//");
-		hoverText += "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
+        String nedCode = StringUtils.stripLeadingCommentLines(element.getNedSource().trim(), "//");
+        hoverText += "<i>Source:</i><pre>" + StringUtils.quoteForHtml(StringUtils.abbreviate(nedCode, 1000)) + "</pre>";
 
-		return HoverSupport.addHTMLStyleSheet(hoverText);
-	}
+        return HoverSupport.addHTMLStyleSheet(hoverText);
+    }
 
-	/**
+    /**
      * For debugging
      */
     public static void dumpEditPartHierarchy(EditPart editPart, String indent) {
-    	Debug.println(indent + editPart.toString());
-    	for (Object child : editPart.getChildren())
-    		dumpEditPartHierarchy((EditPart)child, indent+"  ");
+        Debug.println(indent + editPart.toString());
+        for (Object child : editPart.getChildren())
+            dumpEditPartHierarchy((EditPart)child, indent+"  ");
     }
 
     /**
@@ -971,8 +971,8 @@ public class GraphicalNedEditor
 
                 // resize on MAC because the size of the field was too small
                 if (Platform.OS_MACOSX.equals(Platform.getOS())) {
-                	int bd = text.getBorderWidth();
-                	text.setBounds(text.getLocation().x-bd, text.getLocation().y-5-bd, text.getSize().x+2*bd, text.getSize().y+2*bd+8);
+                    int bd = text.getBorderWidth();
+                    text.setBounds(text.getLocation().x-bd, text.getLocation().y-5-bd, text.getSize().x+2*bd, text.getSize().y+2*bd+8);
                 }
 
             }

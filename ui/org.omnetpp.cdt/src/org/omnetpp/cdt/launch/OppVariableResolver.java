@@ -36,95 +36,95 @@ import org.omnetpp.common.util.StringUtils;
  * @author rhornig, andras
  */
 public class OppVariableResolver implements IDynamicVariableResolver {
-	public static final String OPP_STATIC_LIBS = "opp_static_libs";
-	public static final String OPP_SHARED_LIBS = "opp_shared_libs";
-	public static final String OPP_LD_LIBRARY_PATH = "opp_ld_library_path";
-	public static final String OPP_SIMPROGS = "opp_simprogs";
-	public static final String LOC_SUFFIX = "_loc";
-	public static final String OPP_ADDITIONAL_PATH = "opp_additional_path";
+    public static final String OPP_STATIC_LIBS = "opp_static_libs";
+    public static final String OPP_SHARED_LIBS = "opp_shared_libs";
+    public static final String OPP_LD_LIBRARY_PATH = "opp_ld_library_path";
+    public static final String OPP_SIMPROGS = "opp_simprogs";
+    public static final String LOC_SUFFIX = "_loc";
+    public static final String OPP_ADDITIONAL_PATH = "opp_additional_path";
 
     public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
-	    String varName = variable.getName();
+        String varName = variable.getName();
 
-		if (argument == null)
-			abort("${" + varName +"} requires an argument", null);
+        if (argument == null)
+            abort("${" + varName +"} requires an argument", null);
 
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
-		if (resource == null)
-			abort("argument to ${" + varName + "} needs to be an existing file, folder, or project", null);
+        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
+        if (resource == null)
+            abort("argument to ${" + varName + "} needs to be an existing file, folder, or project", null);
 
-		IProject project = resource.getProject();
+        IProject project = resource.getProject();
 
-		String result = "";
-		try {
-			result = resolveForProject(project, varName);
+        String result = "";
+        try {
+            result = resolveForProject(project, varName);
 
-			// do the same for the referenced projects
-			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
-				result += resolveForProject(p, varName);
-		}
-		catch (Exception e) {
-			Activator.logError(e);
-		}
-		return result;
-	}
+            // do the same for the referenced projects
+            for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
+                result += resolveForProject(p, varName);
+        }
+        catch (Exception e) {
+            Activator.logError(e);
+        }
+        return result;
+    }
 
-	protected String resolveForProject(IProject project, String varName) {
-		try {
-			String result = "";
-			boolean isLocation = varName.endsWith(LOC_SUFFIX);
-			varName = StringUtils.removeEnd(varName, LOC_SUFFIX);
+    protected String resolveForProject(IProject project, String varName) {
+        try {
+            String result = "";
+            boolean isLocation = varName.endsWith(LOC_SUFFIX);
+            varName = StringUtils.removeEnd(varName, LOC_SUFFIX);
 
-			BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
-			if (buildSpec == null)
-				return ""; // no build spec file
+            BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
+            if (buildSpec == null)
+                return ""; // no build spec file
 
-	        List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
-			for (IContainer folder : makemakeFolders) {
-				MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
-				Assert.isTrue(options!=null);
+            List<IContainer> makemakeFolders = buildSpec.getMakemakeFolders();
+            for (IContainer folder : makemakeFolders) {
+                MakemakeOptions options = buildSpec.getMakemakeOptions(folder);
+                Assert.isTrue(options!=null);
 
-				if (varName.equals(OPP_SIMPROGS)) {
-				    if (options.type == MakemakeOptions.Type.EXE) {
-				        String target = options.target != null ? options.target : project.getName();
-				        IFile file = folder.getFile(new Path(target));
-				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
-				        result += " " + targetPath;
-				    }
-				}
-				else if (varName.equals(OPP_SHARED_LIBS)) {
+                if (varName.equals(OPP_SIMPROGS)) {
+                    if (options.type == MakemakeOptions.Type.EXE) {
+                        String target = options.target != null ? options.target : project.getName();
+                        IFile file = folder.getFile(new Path(target));
+                        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
+                        result += " " + targetPath;
+                    }
+                }
+                else if (varName.equals(OPP_SHARED_LIBS)) {
                     if (options.type == MakemakeOptions.Type.SHAREDLIB) {
                         String target = options.target != null ? options.target : project.getName();
-				        IFile file = folder.getFile(new Path(target));
-				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
+                        IFile file = folder.getFile(new Path(target));
+                        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
                         result += " " + targetPath;
                     }
                 }
                 else if (varName.equals(OPP_STATIC_LIBS)) {
                     if (options.type == MakemakeOptions.Type.STATICLIB) {
                         String target = options.target != null ? options.target : project.getName();
-				        IFile file = folder.getFile(new Path(target));
-				        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
+                        IFile file = folder.getFile(new Path(target));
+                        String targetPath = (isLocation ? file.getLocation() : file.getFullPath()).toString();
                         result += " " + targetPath;
                     }
                 }
                 else if (varName.equals(OPP_LD_LIBRARY_PATH)) {
                     if (options.type == MakemakeOptions.Type.SHAREDLIB) {
-				        String targetPath = (isLocation ? folder.getLocation() : folder.getFullPath()).toString();
+                        String targetPath = (isLocation ? folder.getLocation() : folder.getFullPath()).toString();
                         result += System.getProperty("path.separator") + targetPath;
                     }
                 }
                 else {
                     abort("internal error: ${" + varName +"}: unexpected macro name by processing class", null);
                 }
-			}
-			return result;
-		}
-		catch (CoreException e) {
-			Activator.logError(e);
-			return "";
-		}
-	}
+            }
+            return result;
+        }
+        catch (CoreException e) {
+            Activator.logError(e);
+            return "";
+        }
+    }
 
     protected void abort(String message, Throwable exception) throws CoreException {
         throw new CoreException(new Status(IStatus.ERROR, Activator.PLUGIN_ID, 1, message, exception));

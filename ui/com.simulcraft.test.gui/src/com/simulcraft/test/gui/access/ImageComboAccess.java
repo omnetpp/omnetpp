@@ -20,38 +20,38 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class ImageComboAccess extends ControlAccess
 {
-	public ImageComboAccess(ImageCombo combo) {
-		super(combo);
-	}
+    public ImageComboAccess(ImageCombo combo) {
+        super(combo);
+    }
 
     @Override
-	public ImageCombo getControl() {
-		return (ImageCombo)widget;
-	}
-
-    @UIStep
-    public boolean isEditable() {
-    	return (getControl().getStyle() & SWT.READ_ONLY) == 0;
+    public ImageCombo getControl() {
+        return (ImageCombo)widget;
     }
 
     @UIStep
-	public String[] getComboItems() {
-	    TableItem[] items = getControl().getItems();
-	    String[] result = new String[items.length];
-	    for (int i=0; i<items.length; i++)
-	        result[i] = items[i].getText();
-        return result;
-	}
-
-	@UIStep
-	public String getTextContent() {
-		return getControl().getText();
-	}
+    public boolean isEditable() {
+        return (getControl().getStyle() & SWT.READ_ONLY) == 0;
+    }
 
     @UIStep
-	public void assertEditable() {
-		Assert.assertTrue("combo is readonly", isEditable());
-	}
+    public String[] getComboItems() {
+        TableItem[] items = getControl().getItems();
+        String[] result = new String[items.length];
+        for (int i=0; i<items.length; i++)
+            result[i] = items[i].getText();
+        return result;
+    }
+
+    @UIStep
+    public String getTextContent() {
+        return getControl().getText();
+    }
+
+    @UIStep
+    public void assertEditable() {
+        Assert.assertTrue("combo is readonly", isEditable());
+    }
 
     @UIStep
     public void assertTextContent(String regex) {
@@ -90,11 +90,11 @@ public class ImageComboAccess extends ControlAccess
         clickOnArrow();
 
         if (isEditable()) {
-        	typeOver("");
-        	pressKey(SWT.ARROW_DOWN);
+            typeOver("");
+            pressKey(SWT.ARROW_DOWN);
         }
         else
-        	pressKey(SWT.HOME);
+            pressKey(SWT.HOME);
 
         int index = findString(getComboItems(), content);
         for (int i=0; i<index; i++)

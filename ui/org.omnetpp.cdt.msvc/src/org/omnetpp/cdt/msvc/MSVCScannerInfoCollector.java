@@ -30,7 +30,7 @@ import org.omnetpp.common.engine.Common;
 import org.omnetpp.ide.OmnetppMainPlugin;
 
 /**
- * 
+ *
  * @author Andras Varga, Doug Schaefer
  */
 public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
@@ -49,7 +49,7 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
             if (vcDir != null) {
                 // add Visual C++ predefined symbols
                 int msc_version = Common.getPEVersion(vcDir+"/bin/cl.exe"); // returns -1 on failure
-                if (msc_version != -1) { 
+                if (msc_version != -1) {
                     symbols.put("_MSC_VER", String.valueOf(msc_version)+"00");
                     symbols.put("_M_IX86", "600");  // Pentium Pro or later
                     symbols.put("_WIN32", "1");
@@ -69,7 +69,7 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
             List<IContainer> folders = Activator.getIncludeFoldersCache().getProjectIncludeFolders(project);
             for (IContainer folder : folders)
                 paths.add(folder.getLocation());
-            
+
             this.paths = paths.toArray(new IPath[]{});
         }
 
@@ -91,30 +91,30 @@ public class MSVCScannerInfoCollector implements IScannerInfoCollector3 {
 
     }
 
-    
-	@SuppressWarnings("rawtypes")
+
+    @SuppressWarnings("rawtypes")
     public void contributeToScannerConfig(Object resource, Map scannerInfo) {
-	}
+    }
 
-	@SuppressWarnings("rawtypes")
+    @SuppressWarnings("rawtypes")
     public List getCollectedScannerInfo(Object resource, ScannerInfoTypes type) {
-		return null;
-	}
+        return null;
+    }
 
-	public IDiscoveredPathInfo createPathInfoObject() {
-	    Assert.isTrue(context != null);
-		return new MSVCDiscoveredPathInfo(context.getProject());
-	}
+    public IDiscoveredPathInfo createPathInfoObject() {
+        Assert.isTrue(context != null);
+        return new MSVCDiscoveredPathInfo(context.getProject());
+    }
 
-	public void setInfoContext(InfoContext context) {
-	    this.context = context;
-	}
+    public void setInfoContext(InfoContext context) {
+        this.context = context;
+    }
 
-	public void setProject(IProject project) {
-	    // CDT apparently never invokes this
-	}
+    public void setProject(IProject project) {
+        // CDT apparently never invokes this
+    }
 
-	public void updateScannerConfiguration(IProgressMonitor monitor) throws CoreException {
-	}
+    public void updateScannerConfiguration(IProgressMonitor monitor) throws CoreException {
+    }
 
 }

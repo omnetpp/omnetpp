@@ -16,24 +16,24 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class TextEditorAccess extends EditorPartAccess
 {
-	public TextEditorAccess(ITextEditor editorPart) {
-		super(editorPart);
-	}
+    public TextEditorAccess(ITextEditor editorPart) {
+        super(editorPart);
+    }
 
     @Override
-	public ITextEditor getWorkbenchPart() {
-	    return (ITextEditor)workbenchPart;
-	}
+    public ITextEditor getWorkbenchPart() {
+        return (ITextEditor)workbenchPart;
+    }
 
-	@UIStep
-	public void moveCursorAfter(String pattern) {
-		findStyledText().moveCursorAfter(pattern);
-	}
+    @UIStep
+    public void moveCursorAfter(String pattern) {
+        findStyledText().moveCursorAfter(pattern);
+    }
 
-	@UIStep
-	public void typeIn(String string) {
-		findStyledText().typeIn(string);
-	}
+    @UIStep
+    public void typeIn(String string) {
+        findStyledText().typeIn(string);
+    }
 
     @UIStep
     public String getTextContent() {

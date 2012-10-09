@@ -27,9 +27,9 @@ public class NewParameterTest extends InifileEditorTestCase {
         // check adding a parameter
         prepareTest(
                 "[General]\n" +
-        		"[Config Foo]\n" +
-        		"network = FooNetwork\n" +
-        		"**.par1 = 100\n");
+                "[Config Foo]\n" +
+                "network = FooNetwork\n" +
+                "**.par1 = 100\n");
         CompositeAccess parametersPage = findInifileEditor().ensureActiveFormPage("Parameters");
         parametersPage.findComboAfterLabel("Config.*").selectItem("Config Foo");
 

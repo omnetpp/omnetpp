@@ -240,9 +240,9 @@ public class GeneratorConfigurationDialog
         generatePerTypeUsageDiagrams.setEnabled(dotAvailable);
         generateFullInheritanceDiagrams.setEnabled(dotAvailable);
         generateFullUsageDiagrams.setEnabled(dotAvailable);
-        
+
         generateSourceContent = createCheckbox(group, "Source listings (NED, MSG)", configuration.nedSourceListings);
-        
+
         enableAutomaticHyperlinking = createCheckbox(group, "Automatic hyperlinking of NED and message type names", !configuration.generateExplicitLinksOnly);
         Label label = new Label(group, SWT.NONE);
         label.setText("   Note: when turned off, use the tilde notation for names to be hyperlinked: ~Sink, ~TCP.");
@@ -376,7 +376,7 @@ public class GeneratorConfigurationDialog
             catch (CoreException e) {
                 throw new RuntimeException(e);
             }
-           
+
             generator.setGenerateNedTypeFigures(configuration.generateNedTypeFigures);
             generator.setGeneratePerTypeUsageDiagrams(configuration.generatePerTypeUsageDiagrams);
             generator.setGenerateFullUsageDiagrams(configuration.generateFullUsageDiagrams);

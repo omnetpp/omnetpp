@@ -475,7 +475,7 @@ public class Makemake {
         for (String i : list) {
             sum += i.length() + 10; // assume 10 chars for item separator and possible quoting
             if (i.contains("$"))
-                sum += 80;  // assume expanded variables are at most 80 chars 
+                sum += 80;  // assume expanded variables are at most 80 chars
         }
         return sum;
     }

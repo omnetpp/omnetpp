@@ -38,10 +38,10 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
 
     public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor)
             throws CoreException {
-		// check if program name is not provided in this case we should use opp_run as the executable
-    	configuration = OmnetppLaunchUtils.convertLaunchConfig(configuration, mode);
+        // check if program name is not provided in this case we should use opp_run as the executable
+        configuration = OmnetppLaunchUtils.convertLaunchConfig(configuration, mode);
 
-    	if (monitor == null) {
+        if (monitor == null) {
             monitor = new NullProgressMonitor();
         }
         monitor.beginTask("Launching Simulation", 1);

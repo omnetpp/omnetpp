@@ -47,89 +47,89 @@ import org.omnetpp.eventlogtable.EventLogTablePlugin;
 import org.omnetpp.eventlogtable.editors.EventLogTableContributor;
 
 public class EventLogTable
-	extends VirtualTable<EventLogEntryReference>
-	implements IEventLogChangeListener, IEventLogProvider
+    extends VirtualTable<EventLogEntryReference>
+    implements IEventLogChangeListener, IEventLogProvider
 {
-	private static final boolean debug = false;
+    private static final boolean debug = false;
 
-	public static final String STATE_PROPERTY = "EventLogTableState";
+    public static final String STATE_PROPERTY = "EventLogTableState";
 
-	private boolean paintHasBeenFinished = false;
+    private boolean paintHasBeenFinished = false;
 
-	private boolean internalErrorHappenedDuringPaint = false;
+    private boolean internalErrorHappenedDuringPaint = false;
 
-	private boolean followEnd = false; // when the eventlog changes should we follow it or not?
+    private boolean followEnd = false; // when the eventlog changes should we follow it or not?
 
-	private EventLogInput eventLogInput;
+    private EventLogInput eventLogInput;
 
-	private IEventLog eventLog;
+    private IEventLog eventLog;
 
-	private EventLogTableFacade eventLogTableFacade;
+    private EventLogTableFacade eventLogTableFacade;
 
-	private EventLogTableContributor eventLogTableContributor;
+    private EventLogTableContributor eventLogTableContributor;
 
     public enum TypeMode {
         CPP,
         NED
     }
 
-	public enum NameMode {
-	    SMART_NAME,
-	    FULL_NAME,
-	    FULL_PATH
-	}
+    public enum NameMode {
+        SMART_NAME,
+        FULL_NAME,
+        FULL_PATH
+    }
 
-	public enum DisplayMode {
-	    DESCRIPTIVE,
-	    RAW
-	}
+    public enum DisplayMode {
+        DESCRIPTIVE,
+        RAW
+    }
 
-	private TypeMode typeMode = TypeMode.CPP;
+    private TypeMode typeMode = TypeMode.CPP;
 
-	private NameMode nameMode = NameMode.SMART_NAME;
+    private NameMode nameMode = NameMode.SMART_NAME;
 
-	private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
+    private DisplayMode displayMode = DisplayMode.DESCRIPTIVE;
 
     private IWorkbenchPart workbenchPart;
 
-	/*************************************************************************************
-	 * CONSTRUCTION
-	 */
+    /*************************************************************************************
+     * CONSTRUCTION
+     */
 
-	public EventLogTable(Composite parent, int style) {
-		super(parent, style);
+    public EventLogTable(Composite parent, int style) {
+        super(parent, style);
 
-		setContentProvider(new EventLogTableContentProvider());
-		setRowRenderer(new EventLogTableRowRenderer(this));
+        setContentProvider(new EventLogTableContentProvider());
+        setRowRenderer(new EventLogTableRowRenderer(this));
 
-		TableColumn tableColumn = createColumn();
-		tableColumn.setWidth(60);
-		tableColumn.setText("Event #");
+        TableColumn tableColumn = createColumn();
+        tableColumn.setWidth(60);
+        tableColumn.setText("Event #");
 
-		tableColumn = createColumn();
-		tableColumn.setWidth(140);
-		tableColumn.setText("Time");
+        tableColumn = createColumn();
+        tableColumn.setWidth(140);
+        tableColumn.setText("Time");
 
-		tableColumn = createColumn();
-		tableColumn.setWidth(2000);
-		tableColumn.setText("Details");
+        tableColumn = createColumn();
+        tableColumn.setWidth(2000);
+        tableColumn.setText("Details");
 
-		addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				if (eventLogInput != null) {
-					storeState(eventLogInput.getFile());
-					eventLogInput.removeEventLogChangedListener(EventLogTable.this);
-				}
-			}
-		});
-	}
+        addDisposeListener(new DisposeListener() {
+            public void widgetDisposed(DisposeEvent e) {
+                if (eventLogInput != null) {
+                    storeState(eventLogInput.getFile());
+                    eventLogInput.removeEventLogChangedListener(EventLogTable.this);
+                }
+            }
+        });
+    }
 
-	public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
-	    this.eventLogTableContributor = eventLogTableContributor;
-		MenuManager menuManager = new MenuManager();
-		eventLogTableContributor.contributeToPopupMenu(menuManager);
-		setMenu(menuManager.createContextMenu(this));
-	}
+    public void setEventLogTableContributor(EventLogTableContributor eventLogTableContributor) {
+        this.eventLogTableContributor = eventLogTableContributor;
+        MenuManager menuManager = new MenuManager();
+        eventLogTableContributor.contributeToPopupMenu(menuManager);
+        setMenu(menuManager.createContextMenu(this));
+    }
 
     public IWorkbenchPart getWorkbenchPart() {
         return workbenchPart;
@@ -139,33 +139,33 @@ public class EventLogTable
         this.workbenchPart = workbenchPart;
     }
 
-	/*************************************************************************************
-	 * OVERRIDING BEHAVIOR
-	 */
+    /*************************************************************************************
+     * OVERRIDING BEHAVIOR
+     */
 
-	@Override
-	protected void paint(final GC gc) {
-	    paintHasBeenFinished = false;
+    @Override
+    protected void paint(final GC gc) {
+        paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)
             drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
         else if (eventLogInput == null) {
-			super.paint(gc);
-			paintHasBeenFinished = true;
-		}
-		else if (eventLogInput.isCanceled())
-		    drawNotificationMessage(gc,
-		        "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
-		        "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
-		else if (eventLogInput.isLongRunningOperationInProgress())
-		    drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
-		else
-			eventLogInput.runWithProgressMonitor(new Runnable() {
-				public void run() {
-				    try {
-    					EventLogTable.super.paint(gc);
-    					paintHasBeenFinished = true;
-				    }
+            super.paint(gc);
+            paintHasBeenFinished = true;
+        }
+        else if (eventLogInput.isCanceled())
+            drawNotificationMessage(gc,
+                "Processing of a long running eventlog operation was cancelled, therefore the chart is incomplete and cannot be drawn.\n" +
+                "Either try changing some filter parameters or select refresh from the menu. Sorry for your inconvenience.");
+        else if (eventLogInput.isLongRunningOperationInProgress())
+            drawNotificationMessage(gc, "Processing a long running eventlog operation. Please wait.");
+        else
+            eventLogInput.runWithProgressMonitor(new Runnable() {
+                public void run() {
+                    try {
+                        EventLogTable.super.paint(gc);
+                        paintHasBeenFinished = true;
+                    }
                     catch (RuntimeException e) {
                         if (eventLogInput.isFileChangedException(e))
                             eventLogInput.synchronize(e);
@@ -174,19 +174,19 @@ public class EventLogTable
                             throw e;
                         }
                     }
-				}
-			});
-	}
+                }
+            });
+    }
 
-	@Override
-	public void refresh() {
+    @Override
+    public void refresh() {
         internalErrorHappenedDuringPaint = false;
         if (eventLogInput != null)
             eventLogInput.resetCanceled();
-		super.refresh();
-	}
+        super.refresh();
+    }
 
-	protected void drawNotificationMessage(GC gc, String text) {
+    protected void drawNotificationMessage(GC gc, String text) {
         String[] lines = text.split("\n");
         gc.setForeground(ColorFactory.RED4);
         gc.setBackground(ColorFactory.WHITE);
@@ -203,115 +203,115 @@ public class EventLogTable
         }
     }
 
-	@Override
-	public ISelection getSelection() {
-		if (eventLogInput == null)
-			return null;
-		else {
-			List<EventLogEntryReference> selectionElements = getSelectionElements();
-			ArrayList<Long> selectionEvents = new ArrayList<Long>();
-			if (selectionElements != null)
-    			for (EventLogEntryReference selectionElement : selectionElements)
-    				selectionEvents.add(selectionElement.getEventNumber());
-			return new EventLogSelection(eventLogInput, selectionEvents, null);
-		}
-	}
+    @Override
+    public ISelection getSelection() {
+        if (eventLogInput == null)
+            return null;
+        else {
+            List<EventLogEntryReference> selectionElements = getSelectionElements();
+            ArrayList<Long> selectionEvents = new ArrayList<Long>();
+            if (selectionElements != null)
+                for (EventLogEntryReference selectionElement : selectionElements)
+                    selectionEvents.add(selectionElement.getEventNumber());
+            return new EventLogSelection(eventLogInput, selectionEvents, null);
+        }
+    }
 
-	/**
-	 * Accepts only IEventLogSelections.
-	 */
-	@Override
-	public void setSelection(ISelection selection) {
-	    if (selection instanceof IEventLogSelection) {
-    		IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
-    		List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
-    		IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
-    		for (Long eventNumber : eventLogSelection.getEventNumbers())
-    			eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
-    		super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
-	    }
-	}
+    /**
+     * Accepts only IEventLogSelections.
+     */
+    @Override
+    public void setSelection(ISelection selection) {
+        if (selection instanceof IEventLogSelection) {
+            IEventLogSelection eventLogSelection = (IEventLogSelection)selection;
+            List<EventLogEntryReference> eventLogEntries = new ArrayList<EventLogEntryReference>();
+            IEventLog eventLog = eventLogSelection.getEventLogInput().getEventLog();
+            for (Long eventNumber : eventLogSelection.getEventNumbers())
+                eventLogEntries.add(new EventLogEntryReference(eventLog.getEventForEventNumber(eventNumber).getEventEntry()));
+            super.setSelection(new VirtualTableSelection<EventLogEntryReference>(eventLogSelection.getEventLogInput(), eventLogEntries));
+        }
+    }
 
-	@Override
-	public void setInput(Object input) {
-	    if (input != eventLogInput) {
-    		// store current settings
-    		if (eventLogInput != null) {
-    			eventLogInput.removeEventLogChangedListener(this);
-    			storeState(eventLogInput.getFile());
-    		}
-    		// remember input
-    		eventLogInput = (EventLogInput)input;
-    		eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
-    		eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
-    		// clear state
-    		followEnd = false;
-    		super.setInput(input);
-    		// restore last known settings
-    		if (eventLogInput != null) {
-    			eventLogInput.addEventLogChangedListener(this);
-    			if (!restoreState(eventLogInput.getFile()))
-    				scrollToBegin();
-    		}
-	    }
-	}
+    @Override
+    public void setInput(Object input) {
+        if (input != eventLogInput) {
+            // store current settings
+            if (eventLogInput != null) {
+                eventLogInput.removeEventLogChangedListener(this);
+                storeState(eventLogInput.getFile());
+            }
+            // remember input
+            eventLogInput = (EventLogInput)input;
+            eventLog = eventLogInput == null ? null : eventLogInput.getEventLog();
+            eventLogTableFacade = eventLogInput == null ? null : eventLogInput.getEventLogTableFacade();
+            // clear state
+            followEnd = false;
+            super.setInput(input);
+            // restore last known settings
+            if (eventLogInput != null) {
+                eventLogInput.addEventLogChangedListener(this);
+                if (!restoreState(eventLogInput.getFile()))
+                    scrollToBegin();
+            }
+        }
+    }
 
-	@Override
-	protected void relocateFixPoint(EventLogEntryReference element, int distance) {
-		Assert.isTrue(element == null || eventLog.getEventForEventNumber(element.getEventNumber()) != null);
-		super.relocateFixPoint(element, distance);
-	}
+    @Override
+    protected void relocateFixPoint(EventLogEntryReference element, int distance) {
+        Assert.isTrue(element == null || eventLog.getEventForEventNumber(element.getEventNumber()) != null);
+        super.relocateFixPoint(element, distance);
+    }
 
-	@Override
-	public void scroll(int numberOfElements) {
-		super.scroll(numberOfElements);
-		followEnd = false;
-	}
+    @Override
+    public void scroll(int numberOfElements) {
+        super.scroll(numberOfElements);
+        followEnd = false;
+    }
 
-	@Override
-	public void scrollToElement(EventLogEntryReference element) {
-		super.scrollToElement(element);
-		followEnd = false;
-	}
+    @Override
+    public void scrollToElement(EventLogEntryReference element) {
+        super.scrollToElement(element);
+        followEnd = false;
+    }
 
-	@Override
-	public void scrollToEnd() {
-		super.scrollToEnd();
-		followEnd = true;
-	}
+    @Override
+    public void scrollToEnd() {
+        super.scrollToEnd();
+        followEnd = true;
+    }
 
-	/*************************************************************************************
-	 * GETTERS & SETTERS
-	 */
+    /*************************************************************************************
+     * GETTERS & SETTERS
+     */
 
-	public EventLogInput getEventLogInput() {
-		return eventLogInput;
-	}
+    public EventLogInput getEventLogInput() {
+        return eventLogInput;
+    }
 
-	public boolean hasInput() {
-	    return eventLogInput != null;   // input may be null, e.g. when editor is not a Sequence Chart
-	}
+    public boolean hasInput() {
+        return eventLogInput != null;   // input may be null, e.g. when editor is not a Sequence Chart
+    }
 
-	public IEventLog getEventLog() {
-		return eventLog;
-	}
+    public IEventLog getEventLog() {
+        return eventLog;
+    }
 
-	public EventLogTableFacade getEventLogTableFacade() {
-		return eventLogTableFacade;
-	}
+    public EventLogTableFacade getEventLogTableFacade() {
+        return eventLogTableFacade;
+    }
 
-	public EventLogTableContentProvider getEventLogTableContentProvider() {
-		return (EventLogTableContentProvider)getContentProvider();
-	}
+    public EventLogTableContentProvider getEventLogTableContentProvider() {
+        return (EventLogTableContentProvider)getContentProvider();
+    }
 
-	public int getLineFilterMode() {
-		return eventLogTableFacade.getFilterMode();
-	}
+    public int getLineFilterMode() {
+        return eventLogTableFacade.getFilterMode();
+    }
 
-	public void setLineFilterMode(int i) {
-		eventLogTableFacade.setFilterMode(i);
-		stayNear();
-	}
+    public void setLineFilterMode(int i) {
+        eventLogTableFacade.setFilterMode(i);
+        stayNear();
+    }
 
     public String getCustomFilter() {
         return eventLogTableFacade.getCustomFilter();
@@ -354,11 +354,11 @@ public class EventLogTable
         redraw();
     }
 
-	/*************************************************************************************
-	 * EVENTLOG NOTIFICATIONS
-	 */
+    /*************************************************************************************
+     * EVENTLOG NOTIFICATIONS
+     */
 
-	public void eventLogAppended() {
+    public void eventLogAppended() {
         Display.getCurrent().asyncExec(new Runnable() {
             public void run() {
                 try {
@@ -372,7 +372,7 @@ public class EventLogTable
                 }
             }
         });
-	}
+    }
 
     public void eventLogOverwritten() {
         Display.getCurrent().asyncExec(new Runnable() {
@@ -401,125 +401,125 @@ public class EventLogTable
         else if (fixPointElement == null || fixPointElement.getEvent(eventLog) == null)
             scrollToBegin();
         if (debug)
-			Debug.println("EventLogTable got notification about eventlog change");
+            Debug.println("EventLogTable got notification about eventlog change");
         configureVerticalScrollBar();
-		updateVerticalBarPosition();
-		redraw();
+        updateVerticalBarPosition();
+        redraw();
     }
 
-	public void eventLogFiltered() {
-		eventLog = eventLogInput.getEventLog();
+    public void eventLogFiltered() {
+        eventLog = eventLogInput.getEventLog();
 
-		if (eventLog.isEmpty())
-		    fixPointElement = null;
-		else if (fixPointElement != null) {
-			FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
-			IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
+        if (eventLog.isEmpty())
+            fixPointElement = null;
+        else if (fixPointElement != null) {
+            FilteredEventLog filteredEventLog = (FilteredEventLog)eventLog;
+            IEvent closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), false);
 
-			if (closestEvent != null)
-				relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
-			else {
-				closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), true);
+            if (closestEvent != null)
+                relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
+            else {
+                closestEvent = filteredEventLog.getMatchingEventInDirection(fixPointElement.getEventNumber(), true);
 
-				if (closestEvent != null)
-					relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
-				else
-				    scrollToBegin();
-			}
-		}
-		else
-		    scrollToBegin();
+                if (closestEvent != null)
+                    relocateFixPoint(new EventLogEntryReference(closestEvent.getEventEntry()), 0);
+                else
+                    scrollToBegin();
+            }
+        }
+        else
+            scrollToBegin();
 
         for (EventLogEntryReference eventLogEntryReference : new ArrayList<EventLogEntryReference>(selectionElements))
             if (eventLog.getEventForEventNumber(eventLogEntryReference.getEventNumber()) == null)
                 selectionElements.remove(eventLogEntryReference);
 
         eventLogTableContributor.update();
-		redraw();
-	}
+        redraw();
+    }
 
-	public void eventLogFilterRemoved() {
-		eventLog = eventLogInput.getEventLog();
+    public void eventLogFilterRemoved() {
+        eventLog = eventLogInput.getEventLog();
         eventLogTableContributor.update();
-		redraw();
-	}
+        redraw();
+    }
 
-	public void eventLogLongOperationStarted() {
-	    // void
-	}
+    public void eventLogLongOperationStarted() {
+        // void
+    }
 
-	public void eventLogLongOperationEnded() {
-	    if (!paintHasBeenFinished)
-	        canvas.redraw();
-	}
+    public void eventLogLongOperationEnded() {
+        if (!paintHasBeenFinished)
+            canvas.redraw();
+    }
 
-	public void eventLogProgress() {
-		if (eventLogInput.getEventLogProgressManager().isCanceled())
-			canvas.redraw();
-	}
+    public void eventLogProgress() {
+        if (eventLogInput.getEventLogProgressManager().isCanceled())
+            canvas.redraw();
+    }
 
-	/*************************************************************************************
-	 * PERSISTING STATE
-	 */
+    /*************************************************************************************
+     * PERSISTING STATE
+     */
 
-	public boolean restoreState(IResource resource) {
-		PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
+    public boolean restoreState(IResource resource) {
+        PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
 
-		try {
-			if (manager.hasProperty(resource, STATE_PROPERTY)) {
-				EventLogTableState eventLogTableState = (EventLogTableState)manager.getProperty(resource, STATE_PROPERTY);
-				IEvent event = eventLog.getEventForEventNumber(eventLogTableState.topVisibleEventNumber);
+        try {
+            if (manager.hasProperty(resource, STATE_PROPERTY)) {
+                EventLogTableState eventLogTableState = (EventLogTableState)manager.getProperty(resource, STATE_PROPERTY);
+                IEvent event = eventLog.getEventForEventNumber(eventLogTableState.topVisibleEventNumber);
 
-				if (event != null) {
-					setLineFilterMode(eventLogTableState.lineFilterMode);
-					setCustomFilter(eventLogTableState.customFilter);
+                if (event != null) {
+                    setLineFilterMode(eventLogTableState.lineFilterMode);
+                    setCustomFilter(eventLogTableState.customFilter);
                     setTypeMode(eventLogTableState.typeMode);
                     setNameMode(eventLogTableState.nameMode);
-					setDisplayMode(eventLogTableState.displayMode);
+                    setDisplayMode(eventLogTableState.displayMode);
 
-					scrollToElement(new EventLogEntryReference(event.getEventEntry()));
+                    scrollToElement(new EventLogEntryReference(event.getEventEntry()));
 
-					return true;
-				}
-			}
+                    return true;
+                }
+            }
 
-			return false;
-		}
-		catch (Exception e) {
-			manager.removeProperty(resource, STATE_PROPERTY);
+            return false;
+        }
+        catch (Exception e) {
+            manager.removeProperty(resource, STATE_PROPERTY);
 
-			throw new RuntimeException(e);
-		}
-	}
+            throw new RuntimeException(e);
+        }
+    }
 
-	public void storeState(IResource resource) {
-		try {
-			PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
-			EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
+    public void storeState(IResource resource) {
+        try {
+            PersistentResourcePropertyManager manager = new PersistentResourcePropertyManager(EventLogTablePlugin.PLUGIN_ID, getClass().getClassLoader());
+            EventLogEntryReference eventLogEntryReference = getTopVisibleElement();
 
-			if (eventLogEntryReference == null)
-				manager.removeProperty(resource, STATE_PROPERTY);
-			else {
-				EventLogTableState eventLogTableState = new EventLogTableState();
-				eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
-				eventLogTableState.lineFilterMode = getLineFilterMode();
-				eventLogTableState.customFilter = getCustomFilter();
+            if (eventLogEntryReference == null)
+                manager.removeProperty(resource, STATE_PROPERTY);
+            else {
+                EventLogTableState eventLogTableState = new EventLogTableState();
+                eventLogTableState.topVisibleEventNumber = eventLogEntryReference.getEventLogEntry(eventLogInput).getEvent().getEventNumber();
+                eventLogTableState.lineFilterMode = getLineFilterMode();
+                eventLogTableState.customFilter = getCustomFilter();
                 eventLogTableState.typeMode = getTypeMode();
                 eventLogTableState.nameMode = getNameMode();
-				eventLogTableState.displayMode = getDisplayMode();
+                eventLogTableState.displayMode = getDisplayMode();
 
-				manager.setProperty(resource, STATE_PROPERTY, eventLogTableState);
-			}
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+                manager.setProperty(resource, STATE_PROPERTY, eventLogTableState);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public void findText(boolean continueSearch) {
-	    EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
+    public void findText(boolean continueSearch) {
+        EventLogFindTextDialog findTextDialog = eventLogInput.getFindTextDialog();
 
-	    if (continueSearch || findTextDialog.open() == Window.OK) {
+        if (continueSearch || findTextDialog.open() == Window.OK) {
             String findText = findTextDialog.getValue();
 
             if (findText != null) {
@@ -540,11 +540,11 @@ public class EventLogTable
  * Used to persistently store the eventlog table settings.
  */
 class EventLogTableState implements Serializable {
-	private static final long serialVersionUID = 1L;
-	public long topVisibleEventNumber;
-	public int lineFilterMode;
-	public String customFilter;
+    private static final long serialVersionUID = 1L;
+    public long topVisibleEventNumber;
+    public int lineFilterMode;
+    public String customFilter;
     public EventLogTable.TypeMode typeMode;
     public EventLogTable.NameMode nameMode;
-	public EventLogTable.DisplayMode displayMode;
+    public EventLogTable.DisplayMode displayMode;
 }

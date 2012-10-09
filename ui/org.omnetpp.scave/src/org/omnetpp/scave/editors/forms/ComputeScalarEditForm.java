@@ -274,7 +274,7 @@ public class ComputeScalarEditForm extends BaseScaveObjectEditForm {
                            "if there are several such pattern in the expression, then the computation is performed on their Cartesian product." +
                            "<p>If the expression mentions several unqualified scalars, they are expected to come from the same module. For example, " +
                            "if your expression is <i>foo+bar</i> but the <i>foo</i> and <i>bar</i> scalars have been recorded by different modules, " +
-                           "the result will be empty." + 
+                           "the result will be empty." +
                            "<p>The iteration can be restricted by binding some part of the module name to variables, and use those variables " +
                            "in other patterns. The <i>${x=&lt;pattern&gt;}</i> syntax in a module name pattern binds the part of the module name " +
                            "matched to <i>pattern</i> to a variable named <i>x</i>. These variables can be referred as <i>${x}</i> in other " +

@@ -25,78 +25,78 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  */
 public class PropertyEditForm extends BaseScaveObjectEditForm {
 
-	/**
-	 * Features edited on this panel.
-	 */
-	private static final EStructuralFeature[] features = new EStructuralFeature[] {
-		ScaveModelPackage.eINSTANCE.getProperty_Name(),
-		ScaveModelPackage.eINSTANCE.getProperty_Value(),
-	};
+    /**
+     * Features edited on this panel.
+     */
+    private static final EStructuralFeature[] features = new EStructuralFeature[] {
+        ScaveModelPackage.eINSTANCE.getProperty_Name(),
+        ScaveModelPackage.eINSTANCE.getProperty_Value(),
+    };
 
-	/**
-	 * The edited Property.
-	 */
-	//private Property property;
+    /**
+     * The edited Property.
+     */
+    //private Property property;
 
-	// edit controls of the features
-	private Text nameText;
-	private Text valueText;
+    // edit controls of the features
+    private Text nameText;
+    private Text valueText;
 
-	public PropertyEditForm(Property property, EObject parent) {
-	    super(property, parent);
-		//this.property = property;
-	}
+    public PropertyEditForm(Property property, EObject parent) {
+        super(property, parent);
+        //this.property = property;
+    }
 
-	/**
-	 * Returns the features edited on this form.
-	 */
-	public EStructuralFeature[] getFeatures() {
-		return features;
-	}
+    /**
+     * Returns the features edited on this form.
+     */
+    public EStructuralFeature[] getFeatures() {
+        return features;
+    }
 
-	/**
-	 * Add edit controls the panel.
-	 */
-	public void populatePanel(Composite panel) {
-		panel.setLayout(new GridLayout(2, false));
+    /**
+     * Add edit controls the panel.
+     */
+    public void populatePanel(Composite panel) {
+        panel.setLayout(new GridLayout(2, false));
 
-		Label label = new Label(panel, SWT.NONE);
-		label.setText("Name:");
-		nameText = new Text(panel, SWT.BORDER);
-		nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        Label label = new Label(panel, SWT.NONE);
+        label.setText("Name:");
+        nameText = new Text(panel, SWT.BORDER);
+        nameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-		label = new Label(panel, SWT.NONE);
-		label.setText("Value:");
-		valueText = new Text(panel, SWT.BORDER);
-		valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+        label = new Label(panel, SWT.NONE);
+        label.setText("Value:");
+        valueText = new Text(panel, SWT.BORDER);
+        valueText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-	}
+    }
 
-	/**
-	 * Reads the value of the specified feature from the corresponding control.
-	 */
-	public Object getValue(EStructuralFeature feature) {
-		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PROPERTY__NAME:
-			return nameText.getText();
-		case ScaveModelPackage.PROPERTY__VALUE:
-			return valueText.getText();
-		}
-		return null;
-	}
+    /**
+     * Reads the value of the specified feature from the corresponding control.
+     */
+    public Object getValue(EStructuralFeature feature) {
+        switch (feature.getFeatureID()) {
+        case ScaveModelPackage.PROPERTY__NAME:
+            return nameText.getText();
+        case ScaveModelPackage.PROPERTY__VALUE:
+            return valueText.getText();
+        }
+        return null;
+    }
 
 
-	/**
-	 * Writes the value of a feature into the corresponding control.
-	 */
-	public void setValue(EStructuralFeature feature, Object value) {
-		switch (feature.getFeatureID()) {
-		case ScaveModelPackage.PROPERTY__NAME:
-			nameText.setText((String)value);
-			break;
-		case ScaveModelPackage.PROPERTY__VALUE:
-			valueText.setText((String)value);
-			break;
-		}
-	}
+    /**
+     * Writes the value of a feature into the corresponding control.
+     */
+    public void setValue(EStructuralFeature feature, Object value) {
+        switch (feature.getFeatureID()) {
+        case ScaveModelPackage.PROPERTY__NAME:
+            nameText.setText((String)value);
+            break;
+        case ScaveModelPackage.PROPERTY__VALUE:
+            valueText.setText((String)value);
+            break;
+        }
+    }
 }

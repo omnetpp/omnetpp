@@ -25,26 +25,26 @@ public class MsgSyntaxHighlightPartitionScanner extends RuleBasedPartitionScanne
 
     public final static String MSG_PRIVATE_DOC = "__msg_privatedoc";
     public final static String MSG_DOC = "__msg_doc";
-	public final static String[] SUPPORTED_PARTITION_TYPES
+    public final static String[] SUPPORTED_PARTITION_TYPES
         = new String[] { IDocument.DEFAULT_CONTENT_TYPE, MSG_PRIVATE_DOC, MSG_DOC };
 
-	/**
-	 * Creates the partitioner and sets up the appropriate rules.
-	 */
-	public MsgSyntaxHighlightPartitionScanner() {
-		super();
+    /**
+     * Creates the partitioner and sets up the appropriate rules.
+     */
+    public MsgSyntaxHighlightPartitionScanner() {
+        super();
 
-		IToken nedDocToken= new Token(MSG_DOC);
+        IToken nedDocToken= new Token(MSG_DOC);
         IToken nedPrivateDocToken= new Token(MSG_PRIVATE_DOC);
 
-		List<IRule> rules= new ArrayList<IRule>();
+        List<IRule> rules= new ArrayList<IRule>();
 
         // Add rule for single line private comments.
         rules.add(new EndOfLineRule("//#", nedPrivateDocToken));
 
         // Add rule for single line comments.
-		rules.add(new EndOfLineRule("//", nedDocToken));
+        rules.add(new EndOfLineRule("//", nedDocToken));
 
-		setPredicateRules(rules.toArray(new IPredicateRule[]{}));
-	}
+        setPredicateRules(rules.toArray(new IPredicateRule[]{}));
+    }
 }

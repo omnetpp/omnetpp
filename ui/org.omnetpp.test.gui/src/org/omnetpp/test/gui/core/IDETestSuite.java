@@ -18,7 +18,7 @@ import org.omnetpp.test.gui.scave.ScaveTestSuite;
 import org.omnetpp.test.gui.sequencechart.SequenceChartTestSuite;
 
 public class IDETestSuite
-	extends TestSuite
+    extends TestSuite
 {
     public IDETestSuite() {
         addTest(NedEditorTestSuite.suite());
@@ -30,6 +30,6 @@ public class IDETestSuite
     }
 
     public static Test suite() {
-		return new IDETestSuite();
-	}
+        return new IDETestSuite();
+    }
 }

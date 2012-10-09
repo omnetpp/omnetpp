@@ -22,35 +22,35 @@ import org.omnetpp.common.util.UIUtils;
 
 /**
  * Represents a color selection widget in the Properties dialog
- * 
+ *
  * @author Andras
  */
 public class ColorFieldEditor implements IFieldEditor {
     private Composite composite;
     private Text text;
     private ColorSelector colorSelector;
-    private boolean grayed = false; 
+    private boolean grayed = false;
     private ControlDecoration problemDecoration;
-    
+
     public ColorFieldEditor(Composite parent, int style) {
         composite = new Composite(parent, SWT.NONE);
         GridLayout layout = new GridLayout(2, false);
         composite.setLayout(layout);
-        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0; 
+        layout.horizontalSpacing = layout.verticalSpacing = layout.marginHeight = layout.marginWidth = 0;
 
         text = new Text(composite, SWT.BORDER);
         text.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
         ((GridData)text.getLayoutData()).widthHint = 12 * PropertiesDialog.computeDialogFontAverageCharWidth(composite);
-        new ContentAssistCommandAdapter(text, new TextContentAdapter(), 
+        new ContentAssistCommandAdapter(text, new TextContentAdapter(),
                 new ColorCellEditorEx.ColorContentProposalProvider(),
                 ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, null, true);
-        
+
         colorSelector = new ColorSelector(composite);
         GridData gridData = new GridData(SWT.CENTER, SWT.CENTER, false, false);
         if (!Platform.getOS().equals(Platform.OS_MACOSX)) { // does not look good on OS X
-        	int textHeight = text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-        	gridData.heightHint = textHeight;
-        	gridData.widthHint = textHeight + 2;  // widthHint=textHeight is too small on Linux, 1 pixel columns get shaved off from the image both sides 
+            int textHeight = text.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+            gridData.heightHint = textHeight;
+            gridData.widthHint = textHeight + 2;  // widthHint=textHeight is too small on Linux, 1 pixel columns get shaved off from the image both sides
         }
         colorSelector.getButton().setLayoutData(gridData);
 
@@ -74,7 +74,7 @@ public class ColorFieldEditor implements IFieldEditor {
             }
         });
     }
-    
+
     public Composite getControl() {
         return composite;
     }
@@ -88,7 +88,7 @@ public class ColorFieldEditor implements IFieldEditor {
             text.setText("");
             text.setBackground(GREY);
             colorSelector.setColorValue(null);
-        } 
+        }
         else {
             text.setBackground(null); // default system color
         }
@@ -120,7 +120,7 @@ public class ColorFieldEditor implements IFieldEditor {
     public void setMessage(int severity, String text) {
         UIUtils.updateProblemDecoration(problemDecoration, severity, text);
     }
-    
+
     public void addModifyListener(ModifyListener listener) {
         text.addModifyListener(listener);
     }

@@ -11,7 +11,7 @@ import org.eclipse.gef.commands.Command;
 import org.omnetpp.ned.model.INedElement;
 
 /**
- * Sets an attribute of a NED element. Useful as a building block for 
+ * Sets an attribute of a NED element. Useful as a building block for
  * higher level compound commands.
  *
  * @author andras
@@ -23,9 +23,9 @@ public class SetAttributeCommand extends Command {
     private String oldValue;
 
     public SetAttributeCommand(INedElement element, String attribute, String value) {
-    	this.element = element;
-    	this.attribute = attribute;
-    	this.value = value;
+        this.element = element;
+        this.attribute = attribute;
+        this.value = value;
         setLabel("Modify");
     }
 

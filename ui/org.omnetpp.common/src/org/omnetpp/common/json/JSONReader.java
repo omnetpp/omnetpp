@@ -107,7 +107,7 @@ public class JSONReader {
         // System.out.println("token: " + token); // enable this line to see the token stream
         return token;
     }
-    
+
     private Object object() {
         Map<Object, Object> ret = new HashMap<Object, Object>();
         Object key = read();
@@ -140,7 +140,7 @@ public class JSONReader {
         int length = 0;
         boolean isFloatingPoint = false;
         buf.setLength(0);
-        
+
         if (c == '-') {
             add();
         }
@@ -158,13 +158,13 @@ public class JSONReader {
             addDigits();
             isFloatingPoint = true;
         }
- 
+
         String s = buf.toString();
-        return isFloatingPoint 
+        return isFloatingPoint
             ? (length < 17) ? (Object)Double.valueOf(s) : new BigDecimal(s)
             : (length < 19) ? (Object)Long.valueOf(s) : new BigInteger(s);
     }
- 
+
     private int addDigits() {
         int ret;
         for (ret = 0; Character.isDigit(c); ++ret) {
@@ -208,7 +208,7 @@ public class JSONReader {
         int value = 0;
         for (int i = 0; i < 4; ++i) {
             switch (next()) {
-            case '0': case '1': case '2': case '3': case '4': 
+            case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
                 value = (value << 4) + c - '0';
                 break;

@@ -35,72 +35,72 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class ExceptImpl extends EObjectImpl implements Except {
-	/**
+    /**
      * The default value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getFilterPattern()
      * @generated
      * @ordered
      */
-	protected static final String FILTER_PATTERN_EDEFAULT = null;
-	/**
+    protected static final String FILTER_PATTERN_EDEFAULT = null;
+    /**
      * The cached value of the '{@link #getFilterPattern() <em>Filter Pattern</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getFilterPattern()
      * @generated
      * @ordered
      */
-	protected String filterPattern = FILTER_PATTERN_EDEFAULT;
+    protected String filterPattern = FILTER_PATTERN_EDEFAULT;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	protected ExceptImpl() {
+    protected ExceptImpl() {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	protected EClass eStaticClass() {
+    @Override
+    protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.EXCEPT;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getFilterPattern() {
+    public String getFilterPattern() {
         return filterPattern;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setFilterPattern(String newFilterPattern) {
+    public void setFilterPattern(String newFilterPattern) {
         String oldFilterPattern = filterPattern;
         filterPattern = newFilterPattern;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.EXCEPT__FILTER_PATTERN, oldFilterPattern, filterPattern));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
                 return getFilterPattern();
@@ -108,13 +108,13 @@ public class ExceptImpl extends EObjectImpl implements Except {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eSet(int featureID, Object newValue) {
+    @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
                 setFilterPattern((String)newValue);
@@ -123,13 +123,13 @@ public class ExceptImpl extends EObjectImpl implements Except {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
                 setFilterPattern(FILTER_PATTERN_EDEFAULT);
@@ -138,13 +138,13 @@ public class ExceptImpl extends EObjectImpl implements Except {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.EXCEPT__FILTER_PATTERN:
                 return FILTER_PATTERN_EDEFAULT == null ? filterPattern != null : !FILTER_PATTERN_EDEFAULT.equals(filterPattern);
@@ -152,13 +152,13 @@ public class ExceptImpl extends EObjectImpl implements Except {
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

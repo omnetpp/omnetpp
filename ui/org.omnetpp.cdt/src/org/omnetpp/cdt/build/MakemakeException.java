@@ -31,6 +31,6 @@ public class MakemakeException extends Exception {
     }
 
     public boolean getDeleteMakefile() {
-		return deleteMakefile;
-	}
+        return deleteMakefile;
+    }
 }

@@ -22,72 +22,72 @@ import org.eclipse.ui.views.properties.PropertyDescriptor;
 
 public class FontPropertyDescriptor extends PropertyDescriptor {
 
-	public FontPropertyDescriptor(Object id, String displayName) {
-		super(id, displayName);
-	}
+    public FontPropertyDescriptor(Object id, String displayName) {
+        super(id, displayName);
+    }
 
-	public CellEditor createPropertyEditor(Composite parent) {
-		CellEditor editor = new FontDialogCellEditor(parent);
-		ICellEditorValidator validator = getValidator();
-		if (validator == null)
-			validator = new ICellEditorValidator() {
-				public String isValid(Object value) {
+    public CellEditor createPropertyEditor(Composite parent) {
+        CellEditor editor = new FontDialogCellEditor(parent);
+        ICellEditorValidator validator = getValidator();
+        if (validator == null)
+            validator = new ICellEditorValidator() {
+                public String isValid(Object value) {
 
-					if (value instanceof FontData)
-						return null;
-					else
-						return "FontData expected";
-				}
-		};
-		editor.setValidator(validator);
-		return editor;
-	}
+                    if (value instanceof FontData)
+                        return null;
+                    else
+                        return "FontData expected";
+                }
+        };
+        editor.setValidator(validator);
+        return editor;
+    }
 
-	public ILabelProvider getLabelProvider() {
-		return new LabelProvider() {
-			public String getText(Object object) {
-				return StringConverter.asString((FontData)object);
-			}
-		};
-	}
+    public ILabelProvider getLabelProvider() {
+        return new LabelProvider() {
+            public String getText(Object object) {
+                return StringConverter.asString((FontData)object);
+            }
+        };
+    }
 
-	static class FontDialogCellEditor extends DialogCellEditor {
+    static class FontDialogCellEditor extends DialogCellEditor {
 
-		protected FontDialogCellEditor(Composite parent) {
-			super(parent);
-		}
+        protected FontDialogCellEditor(Composite parent) {
+            super(parent);
+        }
 
-		protected Object openDialogBox(Control cellEditorWindow) {
-			FontDialog fontDialog = new FontDialog( cellEditorWindow.getShell());
+        protected Object openDialogBox(Control cellEditorWindow) {
+            FontDialog fontDialog = new FontDialog( cellEditorWindow.getShell());
 
-			FontData value = (FontData)getValue();
+            FontData value = (FontData)getValue();
 
-			if (value != null)
-				fontDialog.setFontList(new FontData[] {value});
-			FontData fd = fontDialog.open();
+            if (value != null)
+                fontDialog.setFontList(new FontData[] {value});
+            FontData fd = fontDialog.open();
 
-			if (fd != null) {
-				value = fd;
-			}
-			return value;
-		}
+            if (fd != null) {
+                value = fd;
+            }
+            return value;
+        }
 
-	    @Override
-		protected void updateContents(Object value) {
-	    	Label label = getDefaultLabel();
-	    	if (label != null) {
-	    		String text = ""; //$NON-NLS-1$
-	    		if (value != null && value instanceof FontData)
-	    			text = StringConverter.asString((FontData)value);
-	    		label.setText(text);
-	    	}
-	    }
+        @Override
+        protected void updateContents(Object value) {
+            Label label = getDefaultLabel();
+            if (label != null) {
+                String text = ""; //$NON-NLS-1$
+                if (value != null && value instanceof FontData)
+                    text = StringConverter.asString((FontData)value);
+                label.setText(text);
+            }
+        }
 
-		@Override
-		protected void doSetValue(Object value) {
-			super.doSetValue(value);
-			setValueValid(isCorrect(value));
-		}
-	}
+        @Override
+        protected void doSetValue(Object value) {
+            super.doSetValue(value);
+            setValueValid(isCorrect(value));
+        }
+    }
 }
 

@@ -32,52 +32,52 @@ import org.omnetpp.scave.engineext.IndexFile;
  */
 public class VectorFileIndexerJob extends WorkspaceJob {
 
-	private List<IFile> filesToBeIndexed;
+    private List<IFile> filesToBeIndexed;
 
-	public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
-		super(name);
+    public VectorFileIndexerJob(String name, IFile[] filesToBeIndexed) {
+        super(name);
 
-		ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
-		this.filesToBeIndexed = new ArrayList<IFile>();
-		for (IFile file : filesToBeIndexed)
-			if (isVectorFile(file)) {
-				this.filesToBeIndexed.add(file);
-				rule.add(file);
-				rule.add(IndexFile.getIndexFileFor(file));
-			}
+        ArrayList<ISchedulingRule> rule = new ArrayList<ISchedulingRule>();
+        this.filesToBeIndexed = new ArrayList<IFile>();
+        for (IFile file : filesToBeIndexed)
+            if (isVectorFile(file)) {
+                this.filesToBeIndexed.add(file);
+                rule.add(file);
+                rule.add(IndexFile.getIndexFileFor(file));
+            }
 
-		setRule(MultiRule.combine(rule.toArray(new ISchedulingRule[rule.size()])));
-		setPriority(Job.LONG);
-	}
+        setRule(MultiRule.combine(rule.toArray(new ISchedulingRule[rule.size()])));
+        setPriority(Job.LONG);
+    }
 
-	/**
-	 * Generate indeces for files in the queue.
-	 */
-	@Override
-	public IStatus runInWorkspace(IProgressMonitor monitor)
-			throws CoreException {
+    /**
+     * Generate indeces for files in the queue.
+     */
+    @Override
+    public IStatus runInWorkspace(IProgressMonitor monitor)
+            throws CoreException {
 
-		if (!filesToBeIndexed.isEmpty()) {
-			try {
-				monitor.beginTask(getName(), filesToBeIndexed.size());
+        if (!filesToBeIndexed.isEmpty()) {
+            try {
+                monitor.beginTask(getName(), filesToBeIndexed.size());
 
-				for (IFile file : filesToBeIndexed) {
-					if (monitor.isCanceled())
-						return Status.CANCEL_STATUS;
+                for (IFile file : filesToBeIndexed) {
+                    if (monitor.isCanceled())
+                        return Status.CANCEL_STATUS;
 
-					monitor.subTask("Indexing "+file.getName());
-					if (file.exists() && !isIndexFileUpToDate(file)) {
-						IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
-						IndexFile.performIndexing(file, subMonitor);
-						if (subMonitor.isCanceled())
-							return Status.CANCEL_STATUS;
-					}
-				}
-			}
-			finally {
-				monitor.done();
-			}
-		}
-		return Status.OK_STATUS;
-	}
+                    monitor.subTask("Indexing "+file.getName());
+                    if (file.exists() && !isIndexFileUpToDate(file)) {
+                        IProgressMonitor subMonitor = new SubProgressMonitor(monitor, 1);
+                        IndexFile.performIndexing(file, subMonitor);
+                        if (subMonitor.isCanceled())
+                            return Status.CANCEL_STATUS;
+                    }
+                }
+            }
+            finally {
+                monitor.done();
+            }
+        }
+        return Status.OK_STATUS;
+    }
 }

@@ -43,7 +43,7 @@ import org.omnetpp.common.util.StringUtils;
 /**
  * Keeps track of per-project include folders (basically all folders under source entries).
  * Its responsibility is to tell CDT when the include paths have changed.
- * 
+ *
  * @author Andras
  */
 public class IncludeFoldersCache {
@@ -51,7 +51,7 @@ public class IncludeFoldersCache {
     // take care not to cause deadlock with CDT's configuration access code. Therefore, all
     // access to member variables are synchronized, and we take care not to access CDT while
     // in a synchronized block.
-    
+
     // include folders for each project
     private Map<IProject, List<IContainer>> projectIncludeFolders = new HashMap<IProject, List<IContainer>>();
 
@@ -64,16 +64,16 @@ public class IncludeFoldersCache {
         public void resourceChanged(IResourceChangeEvent event) {
             IncludeFoldersCache.this.resourceChanged(event);
         }
-    }; 
+    };
     private ICProjectDescriptionListener projectDescriptionListener = new ICProjectDescriptionListener() {
         public void handleEvent(CProjectDescriptionEvent event) {
             IncludeFoldersCache.this.projectDescriptionChanged(event);
         }
     };
-    
+
     public IncludeFoldersCache() {
     }
-    
+
     public void hookListeners() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
         CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
@@ -92,7 +92,7 @@ public class IncludeFoldersCache {
         synchronized (projectIncludeFolders) {
             result = projectIncludeFolders.get(project);
         }
-        
+
         if (result != null)
             return result;
         else {
@@ -121,7 +121,7 @@ public class IncludeFoldersCache {
                 }
             }
         };
-        
+
         synchronized (todoList) {
             todoList.add(project);
             if (asyncExecJob == null) {
@@ -161,7 +161,7 @@ public class IncludeFoldersCache {
             Activator.logError(e);
         }
     }
-    
+
     protected void projectDescriptionChanged(CProjectDescriptionEvent event) {
         try {
             projectChanged(event.getProject());
@@ -170,7 +170,7 @@ public class IncludeFoldersCache {
             Activator.logError(e);
         }
     }
-    
+
     protected void projectChanged(IProject project) throws CoreException {
         rescanProject(project);
     }
@@ -187,7 +187,7 @@ public class IncludeFoldersCache {
 
         // compute current state
         List<IContainer> folders = scanProjectForIncludeFolders(project);
-        
+
         // and if changed, store it and tell CDT to pick it up
         boolean changed = false;
         synchronized (projectIncludeFolders) {
@@ -201,7 +201,7 @@ public class IncludeFoldersCache {
         if (changed)
             CDTUtils.invalidateDiscoveredPathInfo(project); // and ScannerInfoCollector classes will get it from us
     }
-    
+
     /**
      * Returns the include folders inside the project and all referenced projects.
      * This is currently all folders under the source entries, minus those covered
@@ -209,9 +209,9 @@ public class IncludeFoldersCache {
      */
     protected List<IContainer> scanProjectForIncludeFolders(IProject project) throws CoreException {
 
-        List<IContainer> outFolders = new ArrayList<IContainer>(); 
+        List<IContainer> outFolders = new ArrayList<IContainer>();
         BuildSpecification buildSpec = BuildSpecification.readBuildSpecFile(project);
-        if (buildSpec != null) { 
+        if (buildSpec != null) {
             for(IContainer makemakeFolder : buildSpec.getMakemakeFolders()) {
                 MakemakeOptions mo = buildSpec.getMakemakeOptions(makemakeFolder);
                 String outRoot = StringUtils.defaultIfEmpty(mo.outRoot, "out");
@@ -235,10 +235,10 @@ public class IncludeFoldersCache {
             if (dirOk)
                 result.add(folder);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Collects source directories from the project and all dependent projects. Nonexistent,
      * closed and non-CDT dependent projects will be ignored.
@@ -261,7 +261,7 @@ public class IncludeFoldersCache {
         ICProjectDescription projDesc = CoreModel.getDefault().getProjectDescription(project);
         if (projDesc == null)
             return; // likely project closed
-        
+
         final ICSourceEntry[] srcEntries = CDataUtil.makeRelative(project, projDesc.getActiveConfiguration().getSourceEntries());
 
         for (ICSourceEntry srcEntry : srcEntries) {
@@ -279,5 +279,5 @@ public class IncludeFoldersCache {
                 });
             }
         }
-    }        
+    }
 }

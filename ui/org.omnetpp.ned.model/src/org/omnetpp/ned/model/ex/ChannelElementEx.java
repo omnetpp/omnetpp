@@ -32,17 +32,17 @@ import org.omnetpp.ned.model.pojo.ExtendsElement;
 public class ChannelElementEx extends ChannelElement implements IChannelKindTypeElement {
 
     private INedTypeResolver resolver;
-	private INedTypeInfo typeInfo;
-	protected DisplayString displayString = null;
+    private INedTypeInfo typeInfo;
+    protected DisplayString displayString = null;
 
     protected ChannelElementEx(INedTypeResolver resolver) {
         init(resolver);
-	}
+    }
 
     protected ChannelElementEx(INedTypeResolver resolver, INedElement parent) {
-		super(parent);
+        super(parent);
         init(resolver);
-	}
+    }
 
     private void init(INedTypeResolver resolver) {
         Assert.isNotNull(resolver, "This NED element type needs a resolver");
@@ -55,22 +55,22 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
     }
 
     public INedTypeInfo getNedTypeInfo() {
-    	return typeInfo;
+        return typeInfo;
     }
 
     @Override
     public void fireModelEvent(NedModelEvent event) {
-    	// invalidate cached display string because NED tree may have changed outside the DisplayString class
-    	if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
-    		displayString = null;
-    	super.fireModelEvent(event);
+        // invalidate cached display string because NED tree may have changed outside the DisplayString class
+        if (!NedElementUtilEx.isDisplayStringUpToDate(displayString, this))
+            displayString = null;
+        super.fireModelEvent(event);
     }
 
     public DisplayString getDisplayString() {
-    	if (displayString == null)
-    		displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
-    	displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
-    	return displayString;
+        if (displayString == null)
+            displayString = new DisplayString(this, NedElementUtilEx.getDisplayStringLiteral(this));
+        displayString.setFallbackDisplayString(NedElement.displayStringOf(getSuperType()));
+        return displayString;
     }
 
     // "extends" support
@@ -87,12 +87,12 @@ public class ChannelElementEx extends ChannelElement implements IChannelKindType
     }
 
     public List<ExtendsElement> getAllExtends() {
-    	return getAllExtendsFrom(this);
+        return getAllExtendsFrom(this);
     }
 
-	public INedTypeLookupContext getParentLookupContext() {
-		return getParentLookupContextFor(this);
-	}
+    public INedTypeLookupContext getParentLookupContext() {
+        return getParentLookupContextFor(this);
+    }
 
     public Map<String, ParamElementEx> getParamAssignments() {
         return getNedTypeInfo().getParamAssignments();

@@ -16,18 +16,18 @@ import org.omnetpp.common.util.GraphUtils.GraphModel;
 
 /**
  * This class implements C3 linearization of section inheritance.
- * 
+ *
  * It also computes the cycles in the inheritance graph.
- * 
+ *
  * @author tomi
  */
 class SectionChainResolver {
-    
+
     private final IReadonlyInifileDocument doc;
     private final Map<String, List<String>> cache;
     private final Collection<Set<String>> cycles;
     private final Map<String,Set<String>> conflicts;
-    
+
     public SectionChainResolver(final IReadonlyInifileDocument doc) {
         this.doc = doc;
         this.cache = new HashMap<String,List<String>>();
@@ -35,21 +35,21 @@ class SectionChainResolver {
             public List<String> getAllNodes() {
                 return Arrays.asList(doc.getSectionNames());
             }
-        
+
             public List<String> getNextNodes(String node) {
                 return InifileUtils.resolveBaseSections(doc, node);
             }
         });
         this.conflicts = new HashMap<String,Set<String>>();
     }
-    
+
     /**
-     * Returns the cycles found in the inheritance graph. 
+     * Returns the cycles found in the inheritance graph.
      */
     public Collection<Set<String>> getCycles() {
         return cycles;
     }
-    
+
     /**
      * Returns true if the given section is in a cycle.
      */
@@ -60,7 +60,7 @@ class SectionChainResolver {
         }
         return false;
     }
-    
+
     /**
      * Returns the conflict found when resolving the chain of {@code section},
      * or null if no conflicts found.
@@ -70,11 +70,11 @@ class SectionChainResolver {
             computeSectionChain(section);
         return conflicts.get(section);
     }
-    
+
     /**
      * Returns the fallback chain of the given section.
      * The result is cached in this object.
-     * 
+     *
      * If there is an inconsistency in the inheritance graph,
      * then a partial result is returned. This partial result
      * always contains the given section.
@@ -84,7 +84,7 @@ class SectionChainResolver {
         Assert.isTrue(chain != null && chain.size() > 0 && section.equals(chain.get(chain.size()-1)));
         return toReversedArray(chain);
     }
-    
+
     /**
      * Resolves all fallback chains in the inifile document.
      */
@@ -97,24 +97,24 @@ class SectionChainResolver {
 
     /**
      * Resolves the fallback chain of a section that is not yet added to the document.
-     * 
+     *
      * @param baseSections the intended bases of the new section
      */
     public String[] resolveSectionChain(List<String> baseSections) {
         List<String> chain = computeSectionChain(new ArrayList<String>(baseSections)); // computeSectionChain mutates its argument!
         return toReversedArray(chain);
     }
-    
+
     /**
      * Computes the fallback chain as a merge of the fallback chains
      * of the base sections and the base sections itself (local precedence order).
-     * 
+     *
      * The result is the reversed fallback chain.
      */
     private List<String> computeSectionChain(String section) {
         if (cache.containsKey(section))
             return cache.get(section);
-        
+
         List<String> baseSections = InifileUtils.resolveBaseSections(doc, section);
         List<List<String>> chainsToMerge = new ArrayList<List<String>>();
         for (String baseSection : baseSections)
@@ -122,7 +122,7 @@ class SectionChainResolver {
                 chainsToMerge.add(new ArrayList<String>(computeSectionChain(baseSection)));
         Collections.reverse(baseSections);
         chainsToMerge.add(baseSections);
-        
+
         List<String> result = new ArrayList<String>();
         result.add(section);
         boolean ok = mergeSectionChains(chainsToMerge, result);
@@ -140,7 +140,7 @@ class SectionChainResolver {
         }
     }
 
-    
+
     private List<String> computeSectionChain(List<String> baseSections) {
         List<List<String>> chainsToMerge = new ArrayList<List<String>>();
         for (String baseSection : baseSections)
@@ -148,17 +148,17 @@ class SectionChainResolver {
                 chainsToMerge.add(new ArrayList<String>(computeSectionChain(baseSection)));
         Collections.reverse(baseSections);
         chainsToMerge.add(baseSections);
-        
+
         List<String> result = new ArrayList<String>();
         mergeSectionChains(chainsToMerge, result);
         return result;
     }
-    
+
     /**
      * Merges the given {@code chains} into {@code result}.
      * Returns false if any inconsistency found, in this case {@code result} contains
      * a partial result.
-     * 
+     *
      * Note: For performance reasons, it expects the chains to be reversed
      *       (the last element is the head). This method modifies the passed {@code chains}!
      */
@@ -171,10 +171,10 @@ class SectionChainResolver {
         while (!allChainsAreEmpty) {
             // select next output
             String next = selectNext(chains);
-            
+
             if (next == null)
                 break; // inconsistency found
-            
+
             // add next to the output and remove it from each input
             result.add(next);
             allChainsAreEmpty = true;
@@ -186,7 +186,7 @@ class SectionChainResolver {
                     allChainsAreEmpty = false;
             }
         }
-        
+
         Collections.reverse(result);
         return allChainsAreEmpty;
     }
@@ -214,7 +214,7 @@ class SectionChainResolver {
         }
         return null;
     }
-    
+
     private static String[] toReversedArray(Collection<String> strings) {
         String[] result = new String[strings.size()];
         int i = result.length;

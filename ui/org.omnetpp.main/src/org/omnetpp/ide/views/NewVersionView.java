@@ -28,29 +28,29 @@ import org.eclipse.ui.part.ViewPart;
 public class NewVersionView extends ViewPart {
     protected BrowserViewer browser;
 
-	/**
-	 * This is a callback that will allow us
-	 * to create the viewer and initialize it.
-	 */
-	public void createPartControl(Composite parent) {
-		browser = new BrowserViewer(parent, SWT.NONE); // note: shows error dialog if user does not have Firefox or any other suitable browser installed
-	}
+    /**
+     * This is a callback that will allow us
+     * to create the viewer and initialize it.
+     */
+    public void createPartControl(Composite parent) {
+        browser = new BrowserViewer(parent, SWT.NONE); // note: shows error dialog if user does not have Firefox or any other suitable browser installed
+    }
 
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus() {
-		browser.setFocus();
-	}
+    /**
+     * Passing the focus request to the viewer's control.
+     */
+    public void setFocus() {
+        browser.setFocus();
+    }
 
     public void setText(String textToShow) {
-    	if (browser.getBrowser() != null) {
-    		// we should remove all external references except "A" tags (download url!), otherwise
-    	    // the the browser control might try to contact the external web-site, and that may
-    	    // cause lockups (see note in class docu).
-    		textToShow = textToShow.replaceAll("src *= *\"http://.*?\"", "src=\"* removed absolute URL *\"");
-    		textToShow = textToShow.replaceAll("<link.*?>", "<!-- removed link tag -->");
-    		browser.getBrowser().setText(textToShow);
-    	}
-	}
+        if (browser.getBrowser() != null) {
+            // we should remove all external references except "A" tags (download url!), otherwise
+            // the the browser control might try to contact the external web-site, and that may
+            // cause lockups (see note in class docu).
+            textToShow = textToShow.replaceAll("src *= *\"http://.*?\"", "src=\"* removed absolute URL *\"");
+            textToShow = textToShow.replaceAll("<link.*?>", "<!-- removed link tag -->");
+            browser.getBrowser().setText(textToShow);
+        }
+    }
 }

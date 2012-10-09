@@ -26,9 +26,9 @@ public class ConfigOption {
       CFG_PATH,
       CFG_CUSTOM
     };
-    
+
     /**
-     * Configuration option object kinds. 
+     * Configuration option object kinds.
      */
     public enum ObjectKind {
         KIND_NONE,
@@ -66,7 +66,7 @@ public class ConfigOption {
         this.defaultValue = defaultValue;
         this.description = description;
     }
-    
+
     /**
      * Constructor for per-object options.
      */
@@ -81,41 +81,41 @@ public class ConfigOption {
        this.defaultValue = defaultValue;
        this.description = description;
     }
-    
+
 
     public String getName() {
-    	return name;
+        return name;
     }
 
     public boolean isPerObject() {
-		return isPerObject;
-	}
-    
+        return isPerObject;
+    }
+
     public ObjectKind getObjectKind() {
         return objectKind;
     }
 
     public boolean isGlobal() {
-    	return isGlobal;
+        return isGlobal;
     }
 
     public DataType getDataType() {
-    	return dataType;
+        return dataType;
     }
 
-	public String getDefaultValue() {
-		return defaultValue;
-	}
+    public String getDefaultValue() {
+        return defaultValue;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getUnit() {
-		return unit;
-	}
+    public String getUnit() {
+        return unit;
+    }
 
-	public boolean containsWildcard() {
-		return name.contains("%") || name.contains("*");
-	}
+    public boolean containsWildcard() {
+        return name.contains("%") || name.contains("*");
+    }
 }

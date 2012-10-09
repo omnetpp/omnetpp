@@ -25,34 +25,34 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  */
 @SuppressWarnings("restriction")
 public class OmnetppGCCScannerInfoCollector extends PerProjectSICollector
-		implements IManagedScannerInfoCollector {
+        implements IManagedScannerInfoCollector {
 
-	@Override
-	public IDiscoveredPathInfo createPathInfoObject() {
-		IPerProjectDiscoveredPathInfo pathInfoObject = (IPerProjectDiscoveredPathInfo)super.createPathInfoObject();
+    @Override
+    public IDiscoveredPathInfo createPathInfoObject() {
+        IPerProjectDiscoveredPathInfo pathInfoObject = (IPerProjectDiscoveredPathInfo)super.createPathInfoObject();
 
-		// add include dirs needed for OMNeT++
-		LinkedHashMap<String,Boolean> includeMap = pathInfoObject.getIncludeMap();
-		IProject project = getContext().getProject();
+        // add include dirs needed for OMNeT++
+        LinkedHashMap<String,Boolean> includeMap = pathInfoObject.getIncludeMap();
+        IProject project = getContext().getProject();
 
-		// remove the entries that point to a non-existent dir 
-		for (Object location : includeMap.keySet())
-		    if (location instanceof String && !new File((String)location).exists()) 
-		        includeMap.put((String)location, true);
+        // remove the entries that point to a non-existent dir
+        for (Object location : includeMap.keySet())
+            if (location instanceof String && !new File((String)location).exists())
+                includeMap.put((String)location, true);
 
-		// add the omnetpp include directory
-		includeMap.put(OmnetppMainPlugin.getOmnetppInclDir(), false);
+        // add the omnetpp include directory
+        includeMap.put(OmnetppMainPlugin.getOmnetppInclDir(), false);
 
-		// add the folders inside the project and in referenced projects
+        // add the folders inside the project and in referenced projects
         // Note: we MUST NOT compute the folders here, we must not access the CDT project configuration, see bug #299
-		List<IContainer> folders = Activator.getIncludeFoldersCache().getProjectIncludeFolders(project);
-		for (IContainer folder : folders)
-		    includeMap.put(folder.getLocation().toOSString(), false);
+        List<IContainer> folders = Activator.getIncludeFoldersCache().getProjectIncludeFolders(project);
+        for (IContainer folder : folders)
+            includeMap.put(folder.getLocation().toOSString(), false);
 
-		// set it back
-		pathInfoObject.setIncludeMap(includeMap);
+        // set it back
+        pathInfoObject.setIncludeMap(includeMap);
 
         return pathInfoObject;
-	}
-	
+    }
+
 }

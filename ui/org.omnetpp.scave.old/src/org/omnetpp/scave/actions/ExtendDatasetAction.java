@@ -19,30 +19,30 @@ import org.omnetpp.scave.editors.DatasetEditor;
 
 public class ExtendDatasetAction extends Action {
 
-	private final IWorkbenchWindow window;
+    private final IWorkbenchWindow window;
 
-	public ExtendDatasetAction(IWorkbenchWindow window) {
-		this.window = window;
+    public ExtendDatasetAction(IWorkbenchWindow window) {
+        this.window = window;
         // The id is used to refer to the action in a menu or toolbar
-		setId(ICommandIds.CMD_EXTEND_DATASET);
+        setId(ICommandIds.CMD_EXTEND_DATASET);
 
-		// Associate the action with a pre-defined command, to allow key bindings.
-		// TODO this would probably need a command definition in plugin.xml? (Otherwise we get "undefined command" exception in the log)
-		//setActionDefinitionId(ICommandIds.CMD_EXTEND_DATASET);
+        // Associate the action with a pre-defined command, to allow key bindings.
+        // TODO this would probably need a command definition in plugin.xml? (Otherwise we get "undefined command" exception in the log)
+        //setActionDefinitionId(ICommandIds.CMD_EXTEND_DATASET);
 
-		// Set other properties
-		setText("Extend Dataset...");
-		setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(IDE.SharedImages.IMG_OBJS_TASK_TSK)); // FIXME icon
-		//setImageDescriptor(ScavePlugin.getImageDescriptor("/icons/sample.gif")); --THIS FILE DOESN'T EXIST
-		setToolTipText("Add new items to current dataset");
-		setAccelerator(SWT.INSERT);
-	}
+        // Set other properties
+        setText("Extend Dataset...");
+        setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(IDE.SharedImages.IMG_OBJS_TASK_TSK)); // FIXME icon
+        //setImageDescriptor(ScavePlugin.getImageDescriptor("/icons/sample.gif")); --THIS FILE DOESN'T EXIST
+        setToolTipText("Add new items to current dataset");
+        setAccelerator(SWT.INSERT);
+    }
 
-	public void run() {
-		IEditorPart editor = window.getActivePage().getActiveEditor();
-		if (editor instanceof DatasetEditor) {
-			DatasetEditor dsEditor = (DatasetEditor)editor;
-			dsEditor.getFilterPanel().extendDataset();
-		}
-	}
+    public void run() {
+        IEditorPart editor = window.getActivePage().getActiveEditor();
+        if (editor instanceof DatasetEditor) {
+            DatasetEditor dsEditor = (DatasetEditor)editor;
+            dsEditor.getFilterPanel().extendDataset();
+        }
+    }
 }

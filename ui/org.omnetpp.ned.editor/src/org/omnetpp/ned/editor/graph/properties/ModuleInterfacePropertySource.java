@@ -40,7 +40,7 @@ public class ModuleInterfacePropertySource extends MergedPropertySource {
     }
 
     public ModuleInterfacePropertySource(ModuleInterfaceElementEx nodeModel) {
-    	super(nodeModel);
+        super(nodeModel);
         mergePropertySource(new NamePropertySource(nodeModel, new TypeNameValidator(nodeModel)));
         mergePropertySource(new DelegatingPropertySource(
                 new ExtendsListPropertySource(nodeModel),

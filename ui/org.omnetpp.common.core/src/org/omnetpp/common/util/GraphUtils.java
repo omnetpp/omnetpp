@@ -11,7 +11,7 @@ import java.util.Stack;
 
 /**
  * Graph related utilities.
- * 
+ *
  * @author tomi
  */
 public class GraphUtils {
@@ -20,12 +20,12 @@ public class GraphUtils {
         List<N> getAllNodes();
         List<N> getNextNodes(N node);
     }
-    
+
     public static <N> Collection<Set<N>> getStronglyConnectedComponents(GraphModel<N> graph) {
         TarjanSCCFinder<N> finder = new TarjanSCCFinder<N>(graph);
         return finder.computeSCCs();
     }
-    
+
     public static <N> Collection<Set<N>> getCycles(GraphModel<N> graph) {
         List<Set<N>> cycles = new ArrayList<Set<N>>();
         for (Set<N> component : getStronglyConnectedComponents(graph)) {
@@ -41,10 +41,10 @@ public class GraphUtils {
 
         return cycles;
     }
-    
+
     // see "http://en.wikipedia.org/wiki/Tarjan%E2%80%99s_strongly_connected_components_algorithm"
     static class TarjanSCCFinder<N> {
-        
+
         class Wrapper<Node> {
             Node node;
             int index;
@@ -55,19 +55,19 @@ public class GraphUtils {
                 lowlink = UNDEFINED;
             }
         }
-        
+
         private static final int UNDEFINED = -1;
-        
+
         GraphModel<N> graph;
         int index;
         Stack<Wrapper<N>> S = new Stack<Wrapper<N>>();
         Map<N, Wrapper<N>> nodes = new HashMap<N,Wrapper<N>>();
         List<Set<N>> result = new ArrayList<Set<N>>();
-        
+
         public TarjanSCCFinder(GraphModel<N> graph) {
             this.graph = graph;
         }
-        
+
         public List<Set<N>> computeSCCs() {
             result.clear();
             nodes.clear();
@@ -80,23 +80,23 @@ public class GraphUtils {
                 if (v.index == UNDEFINED)
                     tarjan(v);
             }
-            
+
             return result;
         }
-        
+
         private List<Wrapper<N>> getNextNodes(Wrapper<N> node) {
             List<Wrapper<N>> result = new ArrayList<Wrapper<N>>();
             for (N node1 : graph.getNextNodes(node.node))
                 result.add(nodes.get(node1));
             return result;
         }
-        
+
         private void tarjan(Wrapper<N> v) {
             v.index = index;
             v.lowlink = index;
             index++;
             S.push(v);
-            
+
             for (Wrapper<N> v1 : getNextNodes(v)) {
                 if (v1.index == UNDEFINED) {
                     tarjan(v1);
@@ -106,7 +106,7 @@ public class GraphUtils {
                     v.lowlink = Math.min(v.lowlink, v1.index);
                 }
             }
-            
+
             if (v.lowlink == v.index) {
                 Wrapper<N> v1;
                 Set<N> scc = new HashSet<N>();

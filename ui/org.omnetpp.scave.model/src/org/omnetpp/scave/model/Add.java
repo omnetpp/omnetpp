@@ -32,20 +32,20 @@ import org.eclipse.emf.common.util.EList;
  * @generated
  */
 public interface Add extends AddDiscardOp {
-	/**
+    /**
      * Returns the value of the '<em><b>Excepts</b></em>' containment reference list.
      * The list contents are of type {@link org.omnetpp.scave.model.Except}.
      * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Excepts</em>' containment reference list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
-	 * <!-- end-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Excepts</em>' containment reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
      * @return the value of the '<em>Excepts</em>' containment reference list.
      * @see org.omnetpp.scave.model.ScaveModelPackage#getAdd_Excepts()
      * @model containment="true"
      * @generated
      */
-	EList<Except> getExcepts();
+    EList<Except> getExcepts();
 
 } // Add

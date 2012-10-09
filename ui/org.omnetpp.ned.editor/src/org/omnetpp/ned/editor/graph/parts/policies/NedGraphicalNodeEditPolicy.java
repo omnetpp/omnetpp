@@ -32,13 +32,13 @@ import org.omnetpp.ned.model.interfaces.IConnectableElement;
  */
 public class NedGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy {
 
-	// Used to give feedback during dragging
-	@Override
-	protected Connection createDummyConnection(Request req) {
-		ConnectionFigure cf = new ConnectionFigure();
-		cf.setArrowHeadEnabled(true);
-		return cf;
-	}
+    // Used to give feedback during dragging
+    @Override
+    protected Connection createDummyConnection(Request req) {
+        ConnectionFigure cf = new ConnectionFigure();
+        cf.setArrowHeadEnabled(true);
+        return cf;
+    }
 
     /**
      * Feedback should be added to the scaled feedback layer.
@@ -60,8 +60,8 @@ public class NedGraphicalNodeEditPolicy extends GraphicalNodeEditPolicy {
         return connectable.getName();
     }
 
-	// called during connection creation on the first click
-	@Override
+    // called during connection creation on the first click
+    @Override
     protected Command getConnectionCreateCommand(CreateConnectionRequest request) {
         ConnectionElementEx conn = (ConnectionElementEx)request.getNewObject();
         conn.setSrcModule(getModuleNameForConnection(getGraphNodeModel()));

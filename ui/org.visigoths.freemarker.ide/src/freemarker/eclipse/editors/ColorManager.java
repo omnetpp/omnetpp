@@ -18,39 +18,39 @@ import freemarker.eclipse.preferences.IPreferenceConstants;
  */
 public class ColorManager implements IPreferenceConstants {
 
-	protected Map<RGB,Color> fColorTable = new HashMap<RGB, Color>(10);
+    protected Map<RGB,Color> fColorTable = new HashMap<RGB, Color>(10);
 
-	public void dispose() {
-		Iterator<Color> e= fColorTable.values().iterator();
-		while (e.hasNext())
-			e.next().dispose();
-	}
-	
-	
-	public Color getColor(RGB rgb) {
-		Color color= (Color) fColorTable.get(rgb);
-		if (color == null) {
-			color= new Color(Display.getCurrent(), rgb);
-			fColorTable.put(rgb, color);
-		}
-		return color;
-	}
-	
-	public Color getColor(String rgbString) {
-		int red=0, green=0, blue=0;
-		if(null!=rgbString) {
-			StringTokenizer tok = new StringTokenizer(rgbString, ",");
-			if(tok.countTokens() == 3) {		
-				red = Integer.parseInt(tok.nextToken());
-				green = Integer.parseInt(tok.nextToken());
-				blue = Integer.parseInt(tok.nextToken());
-			}
-		}
-		return getColor(new RGB(red, green, blue));	
-	} 
-	
-	public Color getColorFromPreference(String preferenceID) {
-		return getColor(FreemarkerPlugin.getInstance().getPreferenceStore().getString(preferenceID));
-	}
-	
+    public void dispose() {
+        Iterator<Color> e= fColorTable.values().iterator();
+        while (e.hasNext())
+            e.next().dispose();
+    }
+
+
+    public Color getColor(RGB rgb) {
+        Color color= (Color) fColorTable.get(rgb);
+        if (color == null) {
+            color= new Color(Display.getCurrent(), rgb);
+            fColorTable.put(rgb, color);
+        }
+        return color;
+    }
+
+    public Color getColor(String rgbString) {
+        int red=0, green=0, blue=0;
+        if(null!=rgbString) {
+            StringTokenizer tok = new StringTokenizer(rgbString, ",");
+            if(tok.countTokens() == 3) {
+                red = Integer.parseInt(tok.nextToken());
+                green = Integer.parseInt(tok.nextToken());
+                blue = Integer.parseInt(tok.nextToken());
+            }
+        }
+        return getColor(new RGB(red, green, blue));
+    }
+
+    public Color getColorFromPreference(String preferenceID) {
+        return getColor(FreemarkerPlugin.getInstance().getPreferenceStore().getString(preferenceID));
+    }
+
 }

@@ -19,10 +19,10 @@ public class ScatterChartProperties extends VectorChartProperties
 {
     public static final String PROP_X_AXIS_LOGARITHMIC = "X.Axis.Log";
 
-	public ScatterChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
-		super(chart, properties, manager);
-		Assert.isLegal(chart == null || chart instanceof ScatterChart);
-	}
+    public ScatterChartProperties(Chart chart, List<Property> properties, ResultFileManager manager) {
+        super(chart, properties, manager);
+        Assert.isLegal(chart == null || chart instanceof ScatterChart);
+    }
 
     @org.omnetpp.common.properties.Property(category="Axes",id=PROP_X_AXIS_LOGARITHMIC,
             description="Applies a logarithmic transformation to the x values.")

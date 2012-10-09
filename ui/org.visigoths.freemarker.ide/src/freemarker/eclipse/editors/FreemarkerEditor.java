@@ -27,60 +27,60 @@ import freemarker.eclipse.outline.OutlinePage;
  */
 public class FreemarkerEditor extends TextEditor {
 
-	private ITokenManager tokenManager;
-	private OutlinePage fOutlinePage;
-	private ReconcilingStrategy fReconcilingStrategy;
-	private int fLastCursorLine = -1;
-	
+    private ITokenManager tokenManager;
+    private OutlinePage fOutlinePage;
+    private ReconcilingStrategy fReconcilingStrategy;
+    private int fLastCursorLine = -1;
 
-	public FreemarkerEditor() {
-		super();
-		tokenManager = new TokenManager();
-		fReconcilingStrategy = new ReconcilingStrategy(this);
-		setSourceViewerConfiguration(new Configuration(this, tokenManager));
-	}
 
-	public void dispose() {
-		tokenManager.dispose();
-		super.dispose();
-	}
-	
-	@SuppressWarnings("unchecked")
-	public Object getAdapter(Class aClass) {
-	    Object adapter;
-		if (aClass.equals(IContentOutlinePage.class)) {
-			if (fOutlinePage == null) {
-			    fOutlinePage = new OutlinePage(this);
-				if (getEditorInput() != null) {
-					fOutlinePage.setInput(getEditorInput());
-				}
-			}
-			adapter = fOutlinePage;
-		} else {
-		    adapter = super.getAdapter(aClass);
-		}
-		return adapter;
-	}
-	
-	protected void handleCursorPositionChanged() {
-		super.handleCursorPositionChanged();
-		int line = getCursorLine();
-		if (line > 0 && line != fLastCursorLine) {
-			fLastCursorLine = line;
-			if (fOutlinePage != null) {
+    public FreemarkerEditor() {
+        super();
+        tokenManager = new TokenManager();
+        fReconcilingStrategy = new ReconcilingStrategy(this);
+        setSourceViewerConfiguration(new Configuration(this, tokenManager));
+    }
 
-			}
-		}
-	}
-	
-	protected void handleEditorInputChanged() {
-		
-	}
-	
-	public IDocument getDocument() {
+    public void dispose() {
+        tokenManager.dispose();
+        super.dispose();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Object getAdapter(Class aClass) {
+        Object adapter;
+        if (aClass.equals(IContentOutlinePage.class)) {
+            if (fOutlinePage == null) {
+                fOutlinePage = new OutlinePage(this);
+                if (getEditorInput() != null) {
+                    fOutlinePage.setInput(getEditorInput());
+                }
+            }
+            adapter = fOutlinePage;
+        } else {
+            adapter = super.getAdapter(aClass);
+        }
+        return adapter;
+    }
+
+    protected void handleCursorPositionChanged() {
+        super.handleCursorPositionChanged();
+        int line = getCursorLine();
+        if (line > 0 && line != fLastCursorLine) {
+            fLastCursorLine = line;
+            if (fOutlinePage != null) {
+
+            }
+        }
+    }
+
+    protected void handleEditorInputChanged() {
+
+    }
+
+    public IDocument getDocument() {
         return getDocumentProvider().getDocument(getEditorInput());
-	}
-	
+    }
+
     @Override
     protected void createActions() {
         super.createActions();
@@ -90,74 +90,74 @@ public class FreemarkerEditor extends TextEditor {
         a.setActionDefinitionId(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS);
         setAction(ITextEditorActionDefinitionIds.CONTENT_ASSIST_PROPOSALS, a);
     }
-	
-	public int getCursorLine() {
-		int line = -1;
 
-		ISourceViewer sourceViewer = getSourceViewer();
-		if (sourceViewer != null) {
-			int caret = sourceViewer.getVisibleRegion().getOffset() +
-								 sourceViewer.getTextWidget().getCaretOffset();
-			IDocument document = sourceViewer.getDocument();
-			if (document != null) {
-				try {
-					line = document.getLineOfOffset(caret) + 1;
-				} catch (BadLocationException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return line;
-	}
-	
-	public void selectTextRange(int beginLine, int beginColumn, int length) {
-		int bOffset = 0;
-		try {
-			bOffset = getDocument().getLineInformation(beginLine-1).getOffset();
-			setHighlightRange(bOffset+beginColumn-1, length , true);
-		} catch (Exception e) {
-			
-		}
-	}
-	
-	public void updateOutlinePage() {
-		if (fOutlinePage != null) {
-			fOutlinePage.update();
-		}
-	}
+    public int getCursorLine() {
+        int line = -1;
 
-	public ReconcilingStrategy getReconcilingStrategy() {
-		return fReconcilingStrategy;	
-	}
-	
-	
-	public void displayErrorMessage(String aMessage) {
-		IEditorActionBarContributor contributor =
-									 getEditorSite().getActionBarContributor();
-		if (contributor != null &&
-						  contributor instanceof EditorActionBarContributor) {
-			IStatusLineManager manager = ((EditorActionBarContributor)
-						   contributor).getActionBars().getStatusLineManager();
-			manager.setErrorMessage(aMessage);
-			
-		}
-	}
-	
-	public void addProblemMarker(String aMessage, int aLine) {
-		IFile file = ((IFileEditorInput)getEditorInput()).getFile(); 
-		try {
-			IMarker marker = file.createMarker(IMarker.PROBLEM);
-			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-			marker.setAttribute(IMarker.LINE_NUMBER, aLine);
-			marker.setAttribute(IMarker.MESSAGE, aMessage);
-			Position pos = new Position(getDocument().getLineOffset(aLine - 1));
-			getSourceViewer().getAnnotationModel().addAnnotation(
-											new MarkerAnnotation(marker), pos);
-			
-		} catch (Exception e) {
-			
-		}
-	}
+        ISourceViewer sourceViewer = getSourceViewer();
+        if (sourceViewer != null) {
+            int caret = sourceViewer.getVisibleRegion().getOffset() +
+                                 sourceViewer.getTextWidget().getCaretOffset();
+            IDocument document = sourceViewer.getDocument();
+            if (document != null) {
+                try {
+                    line = document.getLineOfOffset(caret) + 1;
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return line;
+    }
 
-	
+    public void selectTextRange(int beginLine, int beginColumn, int length) {
+        int bOffset = 0;
+        try {
+            bOffset = getDocument().getLineInformation(beginLine-1).getOffset();
+            setHighlightRange(bOffset+beginColumn-1, length , true);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void updateOutlinePage() {
+        if (fOutlinePage != null) {
+            fOutlinePage.update();
+        }
+    }
+
+    public ReconcilingStrategy getReconcilingStrategy() {
+        return fReconcilingStrategy;
+    }
+
+
+    public void displayErrorMessage(String aMessage) {
+        IEditorActionBarContributor contributor =
+                                     getEditorSite().getActionBarContributor();
+        if (contributor != null &&
+                          contributor instanceof EditorActionBarContributor) {
+            IStatusLineManager manager = ((EditorActionBarContributor)
+                           contributor).getActionBars().getStatusLineManager();
+            manager.setErrorMessage(aMessage);
+
+        }
+    }
+
+    public void addProblemMarker(String aMessage, int aLine) {
+        IFile file = ((IFileEditorInput)getEditorInput()).getFile();
+        try {
+            IMarker marker = file.createMarker(IMarker.PROBLEM);
+            marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+            marker.setAttribute(IMarker.LINE_NUMBER, aLine);
+            marker.setAttribute(IMarker.MESSAGE, aMessage);
+            Position pos = new Position(getDocument().getLineOffset(aLine - 1));
+            getSourceViewer().getAnnotationModel().addAnnotation(
+                                            new MarkerAnnotation(marker), pos);
+
+        } catch (Exception e) {
+
+        }
+    }
+
+
 }

@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Shell;
  * Information dialog opened when the ini file analysis is disabled and some operation
  * can not continue without analyzing the ini file.
  * It allows the user to turn on the analysis now.
- * 
+ *
  * @author tomi
  */
 public class AnalysisDisabledDialog {

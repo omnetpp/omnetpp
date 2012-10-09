@@ -22,150 +22,150 @@ import org.omnetpp.eventlog.engine.EventLogTableFacade;
  * able to find what we are looking for.
  */
 public class EventLogTableContentProvider implements IVirtualTableContentProvider<EventLogEntryReference> {
-	protected static boolean debug = false;
+    protected static boolean debug = false;
 
-	protected EventLogTableFacade eventLogTableFacade;
+    protected EventLogTableFacade eventLogTableFacade;
 
-	protected EventLogInput eventLogInput;
+    protected EventLogInput eventLogInput;
 
-	public EventLogEntryReference getFirstElement() {
-		if (debug)
-			Debug.println("Virtual table content provider getFirstElement");
+    public EventLogEntryReference getFirstElement() {
+        if (debug)
+            Debug.println("Virtual table content provider getFirstElement");
 
-		if (eventLogTableFacade == null)
-			return null;
-		else
-			return toEventLogEntryReference(eventLogTableFacade.getFirstEntry());
-	}
+        if (eventLogTableFacade == null)
+            return null;
+        else
+            return toEventLogEntryReference(eventLogTableFacade.getFirstEntry());
+    }
 
-	public EventLogEntryReference getLastElement() {
-		if (debug)
-			Debug.println("Virtual table content provider getLastElement");
+    public EventLogEntryReference getLastElement() {
+        if (debug)
+            Debug.println("Virtual table content provider getLastElement");
 
-		if (eventLogTableFacade == null)
-			return null;
-		else
-			return toEventLogEntryReference(eventLogTableFacade.getLastEntry());
-	}
+        if (eventLogTableFacade == null)
+            return null;
+        else
+            return toEventLogEntryReference(eventLogTableFacade.getLastEntry());
+    }
 
-	public long getDistanceToElement(EventLogEntryReference sourceElement, EventLogEntryReference targetElement, long limit)
-	{
-		if (debug)
-			Debug.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
+    public long getDistanceToElement(EventLogEntryReference sourceElement, EventLogEntryReference targetElement, long limit)
+    {
+        if (debug)
+            Debug.println("Virtual table content provider getDistanceToElement sourceElement: " + sourceElement + " targetElement: " + targetElement + " limit: " + limit);
 
-		if (sourceElement == null || targetElement == null)
-			throw new IllegalArgumentException();
+        if (sourceElement == null || targetElement == null)
+            throw new IllegalArgumentException();
 
-		if (eventLogTableFacade == null)
-			return 0;
-		else
-			return eventLogTableFacade.getDistanceToEntry(sourceElement.getEventLogEntry(eventLogInput), targetElement.getEventLogEntry(eventLogInput), (int)limit);
-	}
+        if (eventLogTableFacade == null)
+            return 0;
+        else
+            return eventLogTableFacade.getDistanceToEntry(sourceElement.getEventLogEntry(eventLogInput), targetElement.getEventLogEntry(eventLogInput), (int)limit);
+    }
 
-	public long getDistanceToFirstElement(EventLogEntryReference element, long limit) {
-		if (debug)
-			Debug.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
+    public long getDistanceToFirstElement(EventLogEntryReference element, long limit) {
+        if (debug)
+            Debug.println("Virtual table content provider getDistanceToFirstElement element: " + element + " limit: " + limit);
 
-		if (element == null)
-			throw new IllegalArgumentException();
+        if (element == null)
+            throw new IllegalArgumentException();
 
-		if (eventLogTableFacade == null)
-			return 0;
-		else
-			return eventLogTableFacade.getDistanceToFirstEntry(element.getEventLogEntry(eventLogInput), (int)limit);
-	}
+        if (eventLogTableFacade == null)
+            return 0;
+        else
+            return eventLogTableFacade.getDistanceToFirstEntry(element.getEventLogEntry(eventLogInput), (int)limit);
+    }
 
-	public long getDistanceToLastElement(EventLogEntryReference element, long limit) {
-		if (debug)
-			Debug.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
+    public long getDistanceToLastElement(EventLogEntryReference element, long limit) {
+        if (debug)
+            Debug.println("Virtual table content provider getDistanceToLastElement element: " + element + " limit: " + limit);
 
-		if (element == null)
-			throw new IllegalArgumentException();
+        if (element == null)
+            throw new IllegalArgumentException();
 
-		if (eventLogTableFacade == null)
-			return 0;
-		else
-			return eventLogTableFacade.getDistanceToLastEntry(element.getEventLogEntry(eventLogInput), (int)limit);
-	}
+        if (eventLogTableFacade == null)
+            return 0;
+        else
+            return eventLogTableFacade.getDistanceToLastEntry(element.getEventLogEntry(eventLogInput), (int)limit);
+    }
 
-	public EventLogEntryReference getNeighbourElement(EventLogEntryReference element, long distance) {
-		if (debug)
-			Debug.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
+    public EventLogEntryReference getNeighbourElement(EventLogEntryReference element, long distance) {
+        if (debug)
+            Debug.println("Virtual table content provider getNeighbourElement element: " + element + " distance: " + distance);
 
-		if (element == null)
-			throw new IllegalArgumentException();
+        if (element == null)
+            throw new IllegalArgumentException();
 
-		if (eventLogTableFacade == null)
-			return null;
-		else
-			return toEventLogEntryReference(eventLogTableFacade.getNeighbourEntry(element.getEventLogEntry(eventLogInput), (int)distance));
-	}
+        if (eventLogTableFacade == null)
+            return null;
+        else
+            return toEventLogEntryReference(eventLogTableFacade.getNeighbourEntry(element.getEventLogEntry(eventLogInput), (int)distance));
+    }
 
-	public double getApproximatePercentageForElement(EventLogEntryReference element) {
-		if (debug)
-			Debug.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
+    public double getApproximatePercentageForElement(EventLogEntryReference element) {
+        if (debug)
+            Debug.println("Virtual table content provider getApproximatePercentageForElement element: " + element);
 
-		if (element == null)
-			throw new IllegalArgumentException();
+        if (element == null)
+            throw new IllegalArgumentException();
 
-		if (eventLogTableFacade == null)
-			return 0;
-		else
-			return eventLogTableFacade.getApproximatePercentageForEntry(element.getEventLogEntry(eventLogInput));
-	}
+        if (eventLogTableFacade == null)
+            return 0;
+        else
+            return eventLogTableFacade.getApproximatePercentageForEntry(element.getEventLogEntry(eventLogInput));
+    }
 
-	public EventLogEntryReference getApproximateElementAt(double percentage) {
-		if (debug)
-			Debug.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
+    public EventLogEntryReference getApproximateElementAt(double percentage) {
+        if (debug)
+            Debug.println("Virtual table content provider getApproximateElementAt percentage: " + percentage);
 
-		if (percentage < 0 || percentage > 1)
-			throw new IllegalArgumentException();
+        if (percentage < 0 || percentage > 1)
+            throw new IllegalArgumentException();
 
-		if (eventLogTableFacade == null)
-			return null;
-		else
-			return toEventLogEntryReference(eventLogTableFacade.getApproximateEventLogEntryAt(percentage));
-	}
+        if (eventLogTableFacade == null)
+            return null;
+        else
+            return toEventLogEntryReference(eventLogTableFacade.getApproximateEventLogEntryAt(percentage));
+    }
 
-	public long getApproximateNumberOfElements() {
-		if (debug)
-			Debug.println("Virtual table content provider getApproximateNumberOfElements");
+    public long getApproximateNumberOfElements() {
+        if (debug)
+            Debug.println("Virtual table content provider getApproximateNumberOfElements");
 
-		if (eventLogTableFacade == null)
-			return 0;
-		else
-			return eventLogTableFacade.getApproximateNumberOfEntries();
-	}
+        if (eventLogTableFacade == null)
+            return 0;
+        else
+            return eventLogTableFacade.getApproximateNumberOfEntries();
+    }
 
-	public EventLogEntryReference getClosestElement(EventLogEntryReference element) {
-		if (element == null)
-			throw new IllegalArgumentException();
+    public EventLogEntryReference getClosestElement(EventLogEntryReference element) {
+        if (element == null)
+            throw new IllegalArgumentException();
 
-		return toEventLogEntryReference(eventLogTableFacade.getClosestEntryInEvent(element.getEventLogEntry(eventLogInput)));
-	}
+        return toEventLogEntryReference(eventLogTableFacade.getClosestEntryInEvent(element.getEventLogEntry(eventLogInput)));
+    }
 
-	public void dispose() {
-	}
+    public void dispose() {
+    }
 
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		eventLogInput = (EventLogInput)newInput;
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        eventLogInput = (EventLogInput)newInput;
 
-		if (eventLogInput == null)
-			eventLogTableFacade = null;
-		else
-			eventLogTableFacade = eventLogInput.getEventLogTableFacade();
-	}
+        if (eventLogInput == null)
+            eventLogTableFacade = null;
+        else
+            eventLogTableFacade = eventLogInput.getEventLogTableFacade();
+    }
 
-	public EventLogTableFacade getEventLogTableFacade() {
-		return eventLogTableFacade;
-	}
+    public EventLogTableFacade getEventLogTableFacade() {
+        return eventLogTableFacade;
+    }
 
-	private EventLogEntryReference toEventLogEntryReference(EventLogEntry eventLogEntry) {
-		if (eventLogEntry == null)
-			return null;
-		else {
-			Assert.isTrue(eventLogInput.getEventLog().getEventForEventNumber(eventLogEntry.getEvent().getEventNumber()) != null);
-			return new EventLogEntryReference(eventLogEntry);
-		}
-	}
+    private EventLogEntryReference toEventLogEntryReference(EventLogEntry eventLogEntry) {
+        if (eventLogEntry == null)
+            return null;
+        else {
+            Assert.isTrue(eventLogInput.getEventLog().getEventForEventNumber(eventLogEntry.getEvent().getEventNumber()) != null);
+            return new EventLogEntryReference(eventLogEntry);
+        }
+    }
 }

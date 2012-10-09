@@ -15,11 +15,11 @@ import org.eclipse.swt.SWT;
  * @author levy
  */
 public class SizeConstraint {
-	public int minimumWidth = SWT.DEFAULT;
+    public int minimumWidth = SWT.DEFAULT;
 
-	public int minimumHeight = SWT.DEFAULT;
+    public int minimumHeight = SWT.DEFAULT;
 
-	public int maximumWidth = SWT.DEFAULT;
+    public int maximumWidth = SWT.DEFAULT;
 
     public int maximumHeight = SWT.DEFAULT;
 

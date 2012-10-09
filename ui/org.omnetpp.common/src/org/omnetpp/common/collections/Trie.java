@@ -2,12 +2,12 @@ package org.omnetpp.common.collections;
 
 /**
  * Trie implementation (see http://en.wikipedia.org/wiki/Trie).
- * 
+ *
  * The trie maps strings to values and supports longest prefix searches.
- * 
+ *
  * This implementation designed to be fast. As a limitation it only accepts
  * ASCII characters in the keys (in the range 32-127).
- * 
+ *
  * @author tomi
  */
 // TODO implement Map<String,V> interface
@@ -16,7 +16,7 @@ public class Trie<V> {
     private static final int START = 32;
     private static final int END = 128;
     private static final int NUMLETTERS = END - START;
-    
+
     static class Node<V>
     {
         V value;
@@ -40,7 +40,7 @@ public class Trie<V> {
             char ch = key.charAt(i);
             if (ch < START || ch >= END)
                 throw new IllegalArgumentException("key contains non ASCII characters");
-            
+
             int k = ch - START;
             if (node.links == null)
                 node.links = new Node[NUMLETTERS];

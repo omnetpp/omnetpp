@@ -48,245 +48,245 @@ import org.omnetpp.scave.model2.ScaveModelUtil;
  */
 public class FilteredDataPanel extends Composite implements IHasFocusManager {
 
-	private FilteringPanel filterPanel;
-	private IDataControl data;
-	private IDList idlist; // the unfiltered data list
+    private FilteringPanel filterPanel;
+    private IDataControl data;
+    private IDList idlist; // the unfiltered data list
     private ResultType type;
     private FocusManager focusManager;
-    
-	public FilteredDataPanel(Composite parent, int style, ResultType type) {
-		super(parent, style);
-		this.type = type;
-		initialize(type);
-		configureFilterPanel();
-	}
 
-	public FilteringPanel getFilterPanel() {
-		return filterPanel;
-	}
+    public FilteredDataPanel(Composite parent, int style, ResultType type) {
+        super(parent, style);
+        this.type = type;
+        initialize(type);
+        configureFilterPanel();
+    }
 
-	public IDataControl getDataControl() {
-		return data;
-	}
+    public FilteringPanel getFilterPanel() {
+        return filterPanel;
+    }
 
-	public void setIDList(IDList idlist) {
-		this.idlist = idlist;
-		updateFilterCombos();
-		runFilter();
-	}
+    public IDataControl getDataControl() {
+        return data;
+    }
 
-	public IDList getIDList() {
-		return idlist;
-	}
+    public void setIDList(IDList idlist) {
+        this.idlist = idlist;
+        updateFilterCombos();
+        runFilter();
+    }
 
-	public void setResultFileManager(ResultFileManagerEx manager) {
-		data.setResultFileManager(manager);
-	}
+    public IDList getIDList() {
+        return idlist;
+    }
 
-	public ResultFileManager getResultFileManager() {
-		return data.getResultFileManager();
-	}
+    public void setResultFileManager(ResultFileManagerEx manager) {
+        data.setResultFileManager(manager);
+    }
 
-	public ResultType getType() {
+    public ResultFileManager getResultFileManager() {
+        return data.getResultFileManager();
+    }
+
+    public ResultType getType() {
         return type;
     }
 
-	protected void initialize(ResultType type) {
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.marginHeight = 0;
+    protected void initialize(ResultType type) {
+        GridLayout gridLayout = new GridLayout(1, false);
+        gridLayout.marginHeight = 0;
         gridLayout.marginWidth = 0;
-		setLayout(gridLayout);
-		filterPanel = new FilteringPanel(this, SWT.NONE);
-		filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
+        setLayout(gridLayout);
+        filterPanel = new FilteringPanel(this, SWT.NONE);
+        filterPanel.setLayoutData(new GridData(SWT.FILL, SWT.BEGINNING, true, false));
 
-		if (type == null)
-		    data = new DataTree(this, SWT.MULTI);
-		else
-		    data = new DataTable(this, SWT.MULTI, type);
+        if (type == null)
+            data = new DataTree(this, SWT.MULTI);
+        else
+            data = new DataTable(this, SWT.MULTI, type);
 
-		data.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+        data.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
-		filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
-			@Override
+        filterPanel.getToggleFilterTypeButton().addSelectionListener(new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
-				if (filterPanel.isShowingAdvancedFilter())
-					trySwitchToSimpleFilter();
-				else
-					switchToAdvancedFilter();
-			}
-		});
-		
-		focusManager = new FocusManager(this);
-	}
+                if (filterPanel.isShowingAdvancedFilter())
+                    trySwitchToSimpleFilter();
+                else
+                    switchToAdvancedFilter();
+            }
+        });
 
-	protected void configureFilterPanel() {
-		SelectionListener selectionListener = new SelectionAdapter() {
-			@Override
+        focusManager = new FocusManager(this);
+    }
+
+    protected void configureFilterPanel() {
+        SelectionListener selectionListener = new SelectionAdapter() {
+            @Override
             public void widgetSelected(SelectionEvent e) {
-				// check the filter string
-				if (!isFilterPatternValid()) {
-					MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Contents are not changed.");
-					return;
-				}
-				runFilter();
-			}
-			@Override
+                // check the filter string
+                if (!isFilterPatternValid()) {
+                    MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it. Contents are not changed.");
+                    return;
+                }
+                runFilter();
+            }
+            @Override
             public void widgetDefaultSelected(SelectionEvent e) {
-				widgetSelected(e);  //delegate
-			}
-		};
+                widgetSelected(e);  //delegate
+            }
+        };
 
-		// when the filter button gets pressed, update the content
-		filterPanel.getFilterButton().addSelectionListener(selectionListener);
-		filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
-		filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
-		filterPanel.getNameCombo().addSelectionListener(selectionListener);
-	}
+        // when the filter button gets pressed, update the content
+        filterPanel.getFilterButton().addSelectionListener(selectionListener);
+        filterPanel.getAdvancedFilterText().addSelectionListener(selectionListener);
+        filterPanel.getRunNameCombo().addSelectionListener(selectionListener);
+        filterPanel.getModuleNameCombo().addSelectionListener(selectionListener);
+        filterPanel.getNameCombo().addSelectionListener(selectionListener);
+    }
 
-	protected void updateFilterCombos() {
-		if (!filterPanel.isDisposed())
-			filterPanel.setFilterHints(getFilterHints());
-	}
+    protected void updateFilterCombos() {
+        if (!filterPanel.isDisposed())
+            filterPanel.setFilterHints(getFilterHints());
+    }
 
-	public FilterHints getFilterHints() {
-		if (data.getResultFileManager() != null)
-			return new FilterHints(data.getResultFileManager(), idlist);
-		else
-			return new FilterHints();
-	}
+    public FilterHints getFilterHints() {
+        if (data.getResultFileManager() != null)
+            return new FilterHints(data.getResultFileManager(), idlist);
+        else
+            return new FilterHints();
+    }
 
-	protected void runFilter() {
-		Assert.isTrue(idlist!=null);
+    protected void runFilter() {
+        Assert.isTrue(idlist!=null);
 
-		if (data.getResultFileManager() == null) {
-			// no result file manager, show empty content
-			data.setIDList(new IDList());
-		}
-		else if (isFilterPatternValid()) {
-			// run the filter on the unfiltered IDList, and set the result to the control
-			Filter filter = getFilter();
-			IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, data.getResultFileManager());
-			data.setIDList(filteredIDList);
-		}
-		else {
-			// fallback: if filter is not valid, just show an unfiltered list. This should be
-			// done because we get invoked indirectly as well, like when files get added/removed
-			// on the Inputs page. For the same reason, this function should not bring up an
-			// error dialog (but the Filter button itself may do so).
-			data.setIDList(idlist);
-		}
+        if (data.getResultFileManager() == null) {
+            // no result file manager, show empty content
+            data.setIDList(new IDList());
+        }
+        else if (isFilterPatternValid()) {
+            // run the filter on the unfiltered IDList, and set the result to the control
+            Filter filter = getFilter();
+            IDList filteredIDList = ScaveModelUtil.filterIDList(idlist, filter, data.getResultFileManager());
+            data.setIDList(filteredIDList);
+        }
+        else {
+            // fallback: if filter is not valid, just show an unfiltered list. This should be
+            // done because we get invoked indirectly as well, like when files get added/removed
+            // on the Inputs page. For the same reason, this function should not bring up an
+            // error dialog (but the Filter button itself may do so).
+            data.setIDList(idlist);
+        }
 
-		if (getParent() instanceof FilteredDataTabFolder)
-		    ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
-	}
+        if (getParent() instanceof FilteredDataTabFolder)
+            ((FilteredDataTabFolder)getParent()).refreshPanelTitles();
+    }
 
-	public boolean isFilterPatternValid() {
-		try {
-			ResultFileManager.checkPattern(getFilter().getFilterPattern());
-		} catch (Exception e) {
-			return false; // apparently not valid
-		}
-		return true;
-	}
+    public boolean isFilterPatternValid() {
+        try {
+            ResultFileManager.checkPattern(getFilter().getFilterPattern());
+        } catch (Exception e) {
+            return false; // apparently not valid
+        }
+        return true;
+    }
 
-	public Filter getFilter() {
-		String filterPattern;
-		if (filterPanel.isShowingAdvancedFilter())
-			filterPattern = filterPanel.getAdvancedFilterText().getText();
-		else
-			filterPattern = assembleFilterPattern();
-		return new Filter(filterPattern);
-	}
+    public Filter getFilter() {
+        String filterPattern;
+        if (filterPanel.isShowingAdvancedFilter())
+            filterPattern = filterPanel.getAdvancedFilterText().getText();
+        else
+            filterPattern = assembleFilterPattern();
+        return new Filter(filterPattern);
+    }
 
-	private String assembleFilterPattern() {
-		String runId = filterPanel.getRunNameCombo().getText();
-		String moduleName = filterPanel.getModuleNameCombo().getText();
-		String name = filterPanel.getNameCombo().getText();
-		String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
+    private String assembleFilterPattern() {
+        String runId = filterPanel.getRunNameCombo().getText();
+        String moduleName = filterPanel.getModuleNameCombo().getText();
+        String name = filterPanel.getNameCombo().getText();
+        String filterPattern = new FilterUtil(runId, moduleName, name).getFilterPattern();
         return filterPattern.equals("*") ? "" : filterPattern;  // replace "*": "" also works, and lets the filter field show the hint text
-	}
+    }
 
-	public void setFilterParams(Filter filter) {
-		String filterPattern = filter.getFilterPattern();
+    public void setFilterParams(Filter filter) {
+        String filterPattern = filter.getFilterPattern();
 
-		// an arbitrary pattern can only be shown in advanced view -- switch there
-		if (!filterPanel.isShowingAdvancedFilter())
-			filterPanel.showAdvancedFilter();
-		filterPanel.getAdvancedFilterText().setText(filterPattern);
-		runFilter();
-	}
+        // an arbitrary pattern can only be shown in advanced view -- switch there
+        if (!filterPanel.isShowingAdvancedFilter())
+            filterPanel.showAdvancedFilter();
+        filterPanel.getAdvancedFilterText().setText(filterPattern);
+        runFilter();
+    }
 
-	/**
-	 * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
-	 * (filter string invalid or too complex), the user is prompted with a dialog,
-	 * and switching may or may not actually take place depending on the answer.
-	 * @return true if switching was actually done.
-	 */
-	public boolean trySwitchToSimpleFilter() {
-		if (!isFilterPatternValid()) {
-			MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
-			return false;
-		}
+    /**
+     * Switches the filter from "Advanced" to "Basic" mode. If this cannot be done
+     * (filter string invalid or too complex), the user is prompted with a dialog,
+     * and switching may or may not actually take place depending on the answer.
+     * @return true if switching was actually done.
+     */
+    public boolean trySwitchToSimpleFilter() {
+        if (!isFilterPatternValid()) {
+            MessageDialog.openWarning(getShell(), "Error in Filter Expression", "Filter expression is invalid, please fix it first. (Or, just delete the whole text.)");
+            return false;
+        }
 
-		String filterPattern = filterPanel.getAdvancedFilterText().getText();
-		FilterUtil filterUtil = new FilterUtil(filterPattern, true);
-		if (filterUtil.isLossy()) {
-			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
-			if (!ok)
-				return false;  // user cancelled
-		}
+        String filterPattern = filterPanel.getAdvancedFilterText().getText();
+        FilterUtil filterUtil = new FilterUtil(filterPattern, true);
+        if (filterUtil.isLossy()) {
+            boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter cannot be represented in Basic view without losing some of its details.");
+            if (!ok)
+                return false;  // user cancelled
+        }
 
-		String[] supportedFields = new String[] {RUN, MODULE, NAME};
-		if (!filterUtil.containsOnly(supportedFields)) {
-			boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
-			if (!ok)
-				return false;  // user cancelled
-		}
+        String[] supportedFields = new String[] {RUN, MODULE, NAME};
+        if (!filterUtil.containsOnly(supportedFields)) {
+            boolean ok = MessageDialog.openConfirm(getShell(), "Filter Too Complex", "The current filter contains fields not present in Basic view. These extra fields will be discarded.");
+            if (!ok)
+                return false;  // user cancelled
+        }
 
-		filterPanel.getRunNameCombo().setText(filterUtil.getField(RUN));
-		filterPanel.getModuleNameCombo().setText(filterUtil.getField(MODULE));
-		filterPanel.getNameCombo().setText(filterUtil.getField(NAME));
+        filterPanel.getRunNameCombo().setText(filterUtil.getField(RUN));
+        filterPanel.getModuleNameCombo().setText(filterUtil.getField(MODULE));
+        filterPanel.getNameCombo().setText(filterUtil.getField(NAME));
 
-		filterPanel.showSimpleFilter();
-		runFilter();
-		return true;
-	}
+        filterPanel.showSimpleFilter();
+        runFilter();
+        return true;
+    }
 
-	/**
-	 * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
-	 */
-	public void switchToAdvancedFilter() {
-		filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());
-		filterPanel.showAdvancedFilter();
-		runFilter();
-	}
+    /**
+     * Switches the filter from "Basic" to "Advanced" mode. This is always successful (unlike the opposite way).
+     */
+    public void switchToAdvancedFilter() {
+        filterPanel.getAdvancedFilterText().setText(assembleFilterPattern());
+        filterPanel.showAdvancedFilter();
+        runFilter();
+    }
 
-	/**
-	 * Shows/hides the filter panel.
-	 */
-	public void showFilterPanel(boolean show) {
-		if (show != isFilterPanelVisible()) {
-			filterPanel.setVisible(show);
-			GridData data = (GridData)filterPanel.getLayoutData();
-			data.exclude = !show;
-			layout(true, true);
-		}
-	}
+    /**
+     * Shows/hides the filter panel.
+     */
+    public void showFilterPanel(boolean show) {
+        if (show != isFilterPanelVisible()) {
+            filterPanel.setVisible(show);
+            GridData data = (GridData)filterPanel.getLayoutData();
+            data.exclude = !show;
+            layout(true, true);
+        }
+    }
 
-	/**
-	 * Returns {@code true} iff the filter panel is visible.
-	 */
-	public boolean isFilterPanelVisible() {
-		GridData data = (GridData)filterPanel.getLayoutData();
-		return !data.exclude;
-	}
-	
-	@Override
-	public boolean setFocus() {
-	    // try to restore focus where it was last time
-	    if (focusManager.setFocus())
-	        return true;
-	    return super.setFocus();
-	}
+    /**
+     * Returns {@code true} iff the filter panel is visible.
+     */
+    public boolean isFilterPanelVisible() {
+        GridData data = (GridData)filterPanel.getLayoutData();
+        return !data.exclude;
+    }
+
+    @Override
+    public boolean setFocus() {
+        // try to restore focus where it was last time
+        if (focusManager.setFocus())
+            return true;
+        return super.setFocus();
+    }
 }

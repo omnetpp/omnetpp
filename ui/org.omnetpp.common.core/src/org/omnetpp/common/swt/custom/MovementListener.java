@@ -17,18 +17,18 @@ import org.eclipse.swt.internal.SWTEventListener;
  * offset and a movement type.
  *
  * @see org.eclipse.swt.SWT#MOVEMENT_WORD
- * @see org.eclipse.swt.SWT#MOVEMENT_WORD_END 
+ * @see org.eclipse.swt.SWT#MOVEMENT_WORD_END
  * @see org.eclipse.swt.SWT#MOVEMENT_WORD_START
  * @see org.eclipse.swt.SWT#MOVEMENT_CHAR
  * @see org.eclipse.swt.SWT#MOVEMENT_CLUSTER
- * 
+ *
  * @since 3.3
  */
 public interface MovementListener extends SWTEventListener {
 /**
  * This method is called when a new offset is required based on the current
  * offset and a movement type.
- * 
+ *
  * <p>
  * The following event fields are used:<ul>
  * <li>event.lineOffset line start offset (input)</li>
@@ -39,7 +39,7 @@ public interface MovementListener extends SWTEventListener {
  * </ul>
  *
  * @param event the event
- * 
+ *
  * @see MovementEvent
  * @see StyledText#addWordMovementListener(MovementListener)
  */
@@ -47,7 +47,7 @@ public void getNextOffset (MovementEvent event);
 /**
  * This method is called when a new offset is required based on the current
  * offset and a movement type.
- * 
+ *
  * <p>
  * The following event fields are used:<ul>
  * <li>event.lineOffset line start offset (input)</li>
@@ -58,7 +58,7 @@ public void getNextOffset (MovementEvent event);
  * </ul>
  *
  * @param event the event
- * 
+ *
  * @see MovementEvent
  * @see StyledText#addWordMovementListener(MovementListener)
  */

@@ -16,24 +16,24 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class TextAccess extends ControlAccess
 {
-	public TextAccess(Text text) {
-		super(text);
-	}
+    public TextAccess(Text text) {
+        super(text);
+    }
 
     @Override
-	public Text getControl() {
-		return (Text)widget;
-	}
-
-	@UIStep
-	public String getTextContent() {
-		return getControl().getText();
-	}
+    public Text getControl() {
+        return (Text)widget;
+    }
 
     @UIStep
-	public void assertEditable() {
-		Assert.assertTrue("text control is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
-	}
+    public String getTextContent() {
+        return getControl().getText();
+    }
+
+    @UIStep
+    public void assertEditable() {
+        Assert.assertTrue("text control is readonly", (widget.getStyle() & SWT.READ_ONLY) == 0);
+    }
 
     @UIStep
     public void assertTextContent(String regex) {
@@ -58,8 +58,8 @@ public class TextAccess extends ControlAccess
             typeIn(content);
     }
 
-	public void clickAndTypeOver(String content) {
-		click();
-		typeOver(content);
-	}
+    public void clickAndTypeOver(String content) {
+        click();
+        typeOver(content);
+    }
 }

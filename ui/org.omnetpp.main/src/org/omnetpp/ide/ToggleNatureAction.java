@@ -52,9 +52,9 @@ public class ToggleNatureAction implements IObjectActionDelegate {
         } catch (CoreException e) {
             OmnetppMainPlugin.logError(e);
             ErrorDialog.openError(
-                    Display.getCurrent().getActiveShell(), 
-                    "Error", 
-                    "Could not add or remove OMNeT++ nature.", 
+                    Display.getCurrent().getActiveShell(),
+                    "Error",
+                    "Could not add or remove OMNeT++ nature.",
                     e.getStatus());
         }
     }

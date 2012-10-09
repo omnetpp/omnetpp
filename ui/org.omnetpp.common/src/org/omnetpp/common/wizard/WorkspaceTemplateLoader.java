@@ -39,7 +39,7 @@ public class WorkspaceTemplateLoader implements TemplateLoader {
         } catch (CoreException e) {
             IOException ioException = new IOException("Cannot read template file " + ((IFile)templateSource).getFullPath());
             ioException.initCause(e);
-			throw ioException;
+            throw ioException;
         }
     }
 

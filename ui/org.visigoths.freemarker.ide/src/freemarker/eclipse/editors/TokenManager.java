@@ -17,51 +17,51 @@ import freemarker.eclipse.preferences.IPreferenceConstants;
  */
 public class TokenManager implements IPreferenceConstants, ITokenManager {
 
-	private ColorManager manager = null;
-	
-	public TokenManager() {
-		manager = new ColorManager();
-	}
-	
-	public IToken getInterpolationToken() {
-		return getTokenFromPreferenceColor(COLOR_INTERPOLATION);
-	}
-	
-	public IToken getXmlToken() {
-		return getTokenFromPreferenceColor(COLOR_XML_TAG);
-	}
-	
-	public IToken getXmlCommentToken() {
-		return getTokenFromPreferenceColor(COLOR_XML_COMMENT);
-	}
-	
-	public IToken getTextToken() {
-		return getTokenFromPreferenceColor(COLOR_TEXT);
-	}
-	
-	public IToken getDirectiveToken() {
-		return getTokenFromPreferenceColor(COLOR_DIRECTIVE);
-	}
-	
-	public IToken getStringToken() {
-		return getTokenFromPreferenceColor(COLOR_STRING);
-	}
-	
-	public IToken getCommentToken() {
-		return getTokenFromPreferenceColor(COLOR_COMMENT);
-	}
-	
-	private IToken getTokenFromPreferenceColor(String color) {
-		Color c = manager.getColorFromPreference(color);
-		return new Token(new TextAttribute(c));
-	}
+    private ColorManager manager = null;
 
-	public IToken getWhitespaceToken() {
-		return Token.WHITESPACE;
-	}
-	
-	public void dispose() {
-		manager.dispose();
-	}
-	
+    public TokenManager() {
+        manager = new ColorManager();
+    }
+
+    public IToken getInterpolationToken() {
+        return getTokenFromPreferenceColor(COLOR_INTERPOLATION);
+    }
+
+    public IToken getXmlToken() {
+        return getTokenFromPreferenceColor(COLOR_XML_TAG);
+    }
+
+    public IToken getXmlCommentToken() {
+        return getTokenFromPreferenceColor(COLOR_XML_COMMENT);
+    }
+
+    public IToken getTextToken() {
+        return getTokenFromPreferenceColor(COLOR_TEXT);
+    }
+
+    public IToken getDirectiveToken() {
+        return getTokenFromPreferenceColor(COLOR_DIRECTIVE);
+    }
+
+    public IToken getStringToken() {
+        return getTokenFromPreferenceColor(COLOR_STRING);
+    }
+
+    public IToken getCommentToken() {
+        return getTokenFromPreferenceColor(COLOR_COMMENT);
+    }
+
+    private IToken getTokenFromPreferenceColor(String color) {
+        Color c = manager.getColorFromPreference(color);
+        return new Token(new TextAttribute(c));
+    }
+
+    public IToken getWhitespaceToken() {
+        return Token.WHITESPACE;
+    }
+
+    public void dispose() {
+        manager.dispose();
+    }
+
 }

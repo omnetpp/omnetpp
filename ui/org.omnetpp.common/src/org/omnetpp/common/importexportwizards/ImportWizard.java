@@ -22,7 +22,7 @@ import org.omnetpp.common.wizard.TemplateSelectionPage;
  * Import OMNeT++ File wizard. Brings up the IContentTemplates that support the
  * wizard type "import", lets the user pick one, then delegates to a wizard
  * that can run the given template.
- *  
+ *
  * @author Andras
  */
 public class ImportWizard extends Wizard implements IImportWizard {
@@ -59,7 +59,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
 
     @Override
     public void addPages() {
-        addPage(templateSelectionPage = new TemplateSelectionPage("import", true)); 
+        addPage(templateSelectionPage = new TemplateSelectionPage("import", true));
         templateSelectionPage.setTitle("Select Importer");
     }
 
@@ -86,30 +86,30 @@ public class ImportWizard extends Wizard implements IImportWizard {
         }
         return super.getNextPage(page);
     }
-    
+
     protected String chooseWizardTypeFor(IContentTemplate template) {
-        // by default we'd like to invoke the "New Network" wizard; if not supported, 
+        // by default we'd like to invoke the "New Network" wizard; if not supported,
         // here's a decreasing preference order of wizards
         String[] preferredOrder = "network nedfile compoundmodule simplemodule msgfile inifile simulation project".split(" ");
         for (String type : preferredOrder)
             if (template.getSupportedWizardTypes().contains(type))
                 return type;
-        
+
         // ok, return what it supports
         for (String type : template.getSupportedWizardTypes())
             if (!type.equals("import"))
                 return type;
-        
+
         // looks like it does not support anything
         return null;
     }
 
-    
+
     protected ITemplateBasedWizard createWizard(String wizardType) throws CoreException {
         String id = wizardTypeToId.get(wizardType);
         if (id == null)
             throw new IllegalArgumentException("Cannot find wizard for wizardType='" + wizardType + "'");
-        
+
         IConfigurationElement wizardConfigElement = null;
         IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(NEWWIZARDS_EXTENSION_POINT_ID);
         for (IConfigurationElement e : config)
@@ -117,7 +117,7 @@ public class ImportWizard extends Wizard implements IImportWizard {
                 wizardConfigElement = e;
         if (wizardConfigElement == null)
             throw new IllegalArgumentException("Cannot find wizard for wizardType='" + wizardType + "'");
-        
+
         return (ITemplateBasedWizard) wizardConfigElement.createExecutableExtension("class");
     }
 

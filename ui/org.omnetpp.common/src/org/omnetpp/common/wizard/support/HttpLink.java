@@ -20,7 +20,7 @@ import org.omnetpp.common.wizard.IWidgetAdapter;
  * on a link will launch the external browser for an URL. The URL can be
  * given with setURL (i.e. the URL attribute in XSWT), or bound to a template
  * variable (using the x:id XSWT attribute).
- * 
+ *
  * @author Andras
  */
 public class HttpLink extends Composite implements IWidgetAdapter {
@@ -46,7 +46,7 @@ public class HttpLink extends Composite implements IWidgetAdapter {
     protected void openLink(String href) {
         // format the href for an html file (file:///<filename.html>
         // required for Mac only.
-        if (href.startsWith("file:")) { 
+        if (href.startsWith("file:")) {
             href = href.substring(5);
             while (href.startsWith("/")) {
                 href = href.substring(1);
@@ -70,7 +70,7 @@ public class HttpLink extends Composite implements IWidgetAdapter {
     public void setText(String text) {
         link.setText(text);
     }
-    
+
     public String getText() {
         return link.getText();
     }
@@ -78,7 +78,7 @@ public class HttpLink extends Composite implements IWidgetAdapter {
     public void setURL(String url) {
         this.url = url;
     }
-    
+
     public String getURL() {
         return url;
     }

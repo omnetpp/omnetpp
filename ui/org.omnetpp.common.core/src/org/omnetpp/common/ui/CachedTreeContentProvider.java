@@ -19,29 +19,29 @@ import org.eclipse.jface.viewers.Viewer;
  * @author Andras
  */
 public abstract class CachedTreeContentProvider extends GenericTreeContentProvider {
-	private GenericTreeNode root;
+    private GenericTreeNode root;
 
-	/**
-	 * Rebuilds the tree
-	 */
-	public abstract GenericTreeNode buildTree(Object element);
+    /**
+     * Rebuilds the tree
+     */
+    public abstract GenericTreeNode buildTree(Object element);
 
-	@Override
-	public void dispose() {
-	}
+    @Override
+    public void dispose() {
+    }
 
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		root = null; // force rebuild
-	}
+    @Override
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        root = null; // force rebuild
+    }
 
-	/**
-	 * Maps the input element to the cached GenericTreeNode tree.
-	 */
-	@Override
-	public Object[] getElements(Object inputElement) {
-		if (root==null)
-			root = buildTree(inputElement);
-		return root.getChildren();
-	}
+    /**
+     * Maps the input element to the cached GenericTreeNode tree.
+     */
+    @Override
+    public Object[] getElements(Object inputElement) {
+        if (root==null)
+            root = buildTree(inputElement);
+        return root.getChildren();
+    }
 }

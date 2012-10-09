@@ -34,7 +34,7 @@ import org.omnetpp.common.Debug;
  * Detects when a new configuration (ICConfigurationDescription) has been added
  * to a project, and configures it accordingly. Configuring currently means
  * copying the source entries from some other configuration of the same project.
- * 
+ *
  * @author Andras
  */
 public class NewConfigConfigurer {
@@ -45,14 +45,14 @@ public class NewConfigConfigurer {
             projectChanged(e);
         }
     };
-    
+
     public NewConfigConfigurer() {
     }
 
     public void hookListeners() {
         CoreModel.getDefault().addCProjectDescriptionListener(listener, CProjectDescriptionEvent.LOADED | CProjectDescriptionEvent.APPLIED);
     }
-    
+
     public void unhookListeners() {
         CoreModel.getDefault().removeCProjectDescriptionListener(listener);
     }
@@ -101,7 +101,7 @@ public class NewConfigConfigurer {
                 }
                 catch (Exception e) {
                     Activator.logError("Failed to update new build configuration(s) " + StringUtils.join(configIds, ", "), e);
-                }  
+                }
             }
         });
     }
@@ -110,7 +110,7 @@ public class NewConfigConfigurer {
         ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
         if (prjDesc == null)
             return; // project closed or something
-        
+
         // pick an existing config to copy the source entries from
         ICConfigurationDescription refCfg = null;
         for (ICConfigurationDescription cfg : prjDesc.getConfigurations())
@@ -118,15 +118,15 @@ public class NewConfigConfigurer {
             {refCfg = cfg; break;}
         if (refCfg == null)
             return; // nothing to copy from
-        
+
         boolean changed = false;
-        
+
         // copy source entries
         ICSourceEntry[] defaultSetting = CDataUtil.adjustEntries((ICSourceEntry[])null, true, project);
         for (String id : configIds) {
             ICConfigurationDescription cfg = prjDesc.getConfigurationById(id);
-            if (cfg != null) {  
-                // config still exists; so if its source entries haven't been changed yet by some other means, update it 
+            if (cfg != null) {
+                // config still exists; so if its source entries haven't been changed yet by some other means, update it
                 ICSourceEntry[] sourceEntries = cfg.getSourceEntries();
                 if (Arrays.equals(sourceEntries, defaultSetting) && !Arrays.equals(sourceEntries, refCfg.getSourceEntries())) {
                     cfg.setSourceEntries(refCfg.getSourceEntries());
@@ -134,7 +134,7 @@ public class NewConfigConfigurer {
                 }
             }
         }
-        
+
         // apply project feature settings (provided the project has features defined)
         ProjectFeaturesManager features = new ProjectFeaturesManager(project);
         if (features.loadFeaturesFile()) {
@@ -152,7 +152,7 @@ public class NewConfigConfigurer {
                 changed = true;
             }
         }
-        
+
         // save
         if (changed)
             CoreModel.getDefault().setProjectDescription(project, prjDesc);

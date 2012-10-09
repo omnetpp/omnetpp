@@ -31,7 +31,7 @@ public class SetConstraintCommand extends Command {
     private float scale = 1.0f;
 
     public SetConstraintCommand(IConnectableElement newModule, float scale, Rectangle oldBounds) {
-    	super();
+        super();
         this.scale = scale;
         this.oldBounds = oldBounds;
         module = newModule;

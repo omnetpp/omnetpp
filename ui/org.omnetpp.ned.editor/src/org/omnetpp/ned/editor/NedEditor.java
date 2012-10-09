@@ -75,19 +75,19 @@ import org.omnetpp.ned.model.pojo.SubmoduleElement;
  * @author rhornig
  */
 public class NedEditor
-	extends MultiPageEditorPart
-	implements IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource
+    extends MultiPageEditorPart
+    implements IGotoNedElement, IGotoMarker, IShowInTargetList, IShowInSource
 {
     public static final String ID = "org.omnetpp.ned.editor";
 
     private GraphicalNedEditor graphicalEditor;
-	private TextualNedEditor textEditor;
+    private TextualNedEditor textEditor;
     private final ResourceTracker resourceListener = new ResourceTracker();
 
     // we should store the currentPage so we can figure out whether text or the grahical editor is the active one
-	private int currentPageIndex;
-	private int graphPageIndex;
-	private int textPageIndex;
+    private int currentPageIndex;
+    private int graphPageIndex;
+    private int textPageIndex;
 
     protected IPartListener partListener = new IPartListener() {
         public void partOpened(IWorkbenchPart part) {
@@ -97,7 +97,7 @@ public class NedEditor
         }
 
         public void partActivated(IWorkbenchPart part) {
-        	Debug.println(part.toString()+" activated");
+            Debug.println(part.toString()+" activated");
             if (part == NedEditor.this) {
                 if (getEditorInput() != null && NedResourcesPlugin.getNedResources().containsNedFileElement(getFile())) {
                     // when switching from another MultiPageNedEditor to this one for the same file
@@ -106,7 +106,7 @@ public class NedEditor
                     // synchronization is normally done in a delayed job and here we enforce to happen it right now
                     NedFileElementEx nedFileElement = getModel();
                     if (getActivePage() == textPageIndex && graphicalEditor.hasContentChanged() &&
-                    	!nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
+                        !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError())
                         textEditor.pullChangesFromNedResourcesWhenPending();
                 }
 
@@ -127,7 +127,7 @@ public class NedEditor
             }
         }
 
-		public void partBroughtToTop(IWorkbenchPart part) {
+        public void partBroughtToTop(IWorkbenchPart part) {
         }
     };
 
@@ -141,8 +141,8 @@ public class NedEditor
                 // the problem is that workspace changes don't happen in the UI thread
                 // so we switch to it and call close from there
                 DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-        			public void run() {
-        			    closeEditor(false);
+                    public void run() {
+                        closeEditor(false);
                         if (file.isAccessible() && dirty) {
                             IWorkbench workbench = PlatformUI.getWorkbench();
                             IWorkbenchWindow workbenchWindow = workbench.getActiveWorkbenchWindow();
@@ -154,41 +154,41 @@ public class NedEditor
                                 NedEditorPlugin.logError(e);
                             }
                         }
-					}
-        		});
+                    }
+                });
             }
         }
     };
 
     @Override
     public void init(IEditorSite site, IEditorInput editorInput) throws PartInitException {
-		if (!(editorInput instanceof IFileEditorInput))
+        if (!(editorInput instanceof IFileEditorInput))
             throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + editorInput.getName(),
                 "Please make sure the project is open before trying to open a file in it.");
 
-		IFile file = ((FileEditorInput)editorInput).getFile();
-		if (!file.exists()) {
+        IFile file = ((FileEditorInput)editorInput).getFile();
+        if (!file.exists()) {
             IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "File "+file.getFullPath()+" does not exist", null);
             throw new PartInitException(status);
-		}
+        }
         if (NedResourcesPlugin.getNedResources().getNedSourceFolderFor(file) == null) {
-		    IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNeT++ Project, and cannot be opened with this editor.", null);
-		    throw new PartInitException(status);
-		}
+            IStatus status = new Status(IStatus.WARNING, NedEditorPlugin.PLUGIN_ID, 0, "NED File is not in a NED Source Folder of an OMNeT++ Project, and cannot be opened with this editor.", null);
+            throw new PartInitException(status);
+        }
 
-		super.init(site, editorInput);
+        super.init(site, editorInput);
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceListener);
         NedResourcesPlugin.getNedResources().addNedModelChangeListener(nedModelListener);
         getSite().getPage().addPartListener(partListener);
-	}
+    }
 
     @Override
     public void dispose() {
         // detach the editor file from the core plugin and do not set a new file
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceListener);
         if (getSite() != null && getSite().getPage() != null)
-        	getSite().getPage().removePartListener(partListener);
+            getSite().getPage().removePartListener(partListener);
         NedResourcesPlugin.getNedResources().removeNedModelChangeListener(nedModelListener);
 
         // super must be called before disconnect to let the child editors remove their listeners
@@ -204,15 +204,15 @@ public class NedEditor
         Assert.isNotNull(newInput, "input should not be null");
 
 
-    	//FIXME it should be checked that the file is a valid NED file (inside an
-    	// OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it.
-    	// Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
+        //FIXME it should be checked that the file is a valid NED file (inside an
+        // OMNeT++ project, inside a NED source folder), i.e. NEDResources knows about it.
+        // Otherwise the will be a NULL POINTER EXCEPTION pretty soon. --Andras
 
-		IEditorInput oldInput = getEditorInput();
-		if (ObjectUtils.equals(oldInput, newInput))
+        IEditorInput oldInput = getEditorInput();
+        if (ObjectUtils.equals(oldInput, newInput))
             return; // no change
 
-		// disconnect from the old file (if there was any)
+        // disconnect from the old file (if there was any)
         if (oldInput != null)
             NedResourcesPlugin.getNedResources().disconnect(getFile());
 
@@ -241,14 +241,14 @@ public class NedEditor
         setPartName(getFile().getName());
     }
 
-	@Override
-	protected void createPages() {
-		//Debug.println("createPages()");
+    @Override
+    protected void createPages() {
+        //Debug.println("createPages()");
 
         graphicalEditor = new GraphicalNedEditor();
         textEditor = new TextualNedEditor();
 
-		try {
+        try {
             // setup graphical editor
             graphPageIndex = addPage(graphicalEditor, getEditorInput());
             graphicalEditor.markContent();
@@ -263,40 +263,40 @@ public class NedEditor
             // switch to graphics mode initially if there's no error in the file
             setActivePage(maySwitchToGraphicalEditor() ? graphPageIndex : textPageIndex);
 
-		}
-		catch (PartInitException e) {
-		    NedEditorPlugin.logError(e);
-		}
+        }
+        catch (PartInitException e) {
+            NedEditorPlugin.logError(e);
+        }
 
-	}
+    }
 
-	/**
-	 * Returns true if the editor is allowed to switch to the graphical editor page.
-	 * By default, the criteria is that there should be no parse error or basic validation error.
-	 * (Consistency errors are allowed).
-	 */
-	protected boolean maySwitchToGraphicalEditor() {
-		return getModel().getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
-	}
+    /**
+     * Returns true if the editor is allowed to switch to the graphical editor page.
+     * By default, the criteria is that there should be no parse error or basic validation error.
+     * (Consistency errors are allowed).
+     */
+    protected boolean maySwitchToGraphicalEditor() {
+        return getModel().getSyntaxProblemMaxCumulatedSeverity() < IMarker.SEVERITY_ERROR;
+    }
 
-	@Override
-	protected void setActivePage(int pageIndex) {
-	    // check if there was a change at all (this prevents possible recursive calling)
-	    if (pageIndex == getActivePage())
-	        return;
+    @Override
+    protected void setActivePage(int pageIndex) {
+        // check if there was a change at all (this prevents possible recursive calling)
+        if (pageIndex == getActivePage())
+            return;
 
-	    super.setActivePage(pageIndex);
-	    // store the current active page. we should not rely on getActivePage because it accesses
-	    // SWT widgets so it cannot be called from NON GUI threads.
-	    currentPageIndex = pageIndex;
-	}
+        super.setActivePage(pageIndex);
+        // store the current active page. we should not rely on getActivePage because it accesses
+        // SWT widgets so it cannot be called from NON GUI threads.
+        currentPageIndex = pageIndex;
+    }
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
-	 * Responsible of synchronizing the two editor's model with each other and the NEDResources plugin
-	 */
-	@Override
-	protected void pageChange(int newPageIndex) {
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.part.MultiPageEditorPart#pageChange(int)
+     * Responsible of synchronizing the two editor's model with each other and the NEDResources plugin
+     */
+    @Override
+    protected void pageChange(int newPageIndex) {
         super.pageChange(newPageIndex);
 
         // XXX Kludge: currently the workbench do not send a partActivated/deactivated messages
@@ -313,18 +313,18 @@ public class NedEditor
 //        ContentOutline contentOutline = (ContentOutline)getEditorSite().getPage().findView(IPageLayout.ID_OUTLINE);
 //        if (contentOutline != null) {
 //            // notify from the old closed editor
-//        	// TODO: after switching to text page and back to graphical page the dragging will be broken in the outline view
-//        	//       look at somewhere near hookControl() and refreshDragSourceAdapter() in AbstractEditPartView
-//        	//       somehow the getDragSource() method returns a non null value and listeners are not correctly hooked up
-//        	//       and that's why dragging will not work AFAICT now. KLUDGE: this has been worked around in NedOutlinePage
+//          // TODO: after switching to text page and back to graphical page the dragging will be broken in the outline view
+//          //       look at somewhere near hookControl() and refreshDragSourceAdapter() in AbstractEditPartView
+//          //       somehow the getDragSource() method returns a non null value and listeners are not correctly hooked up
+//          //       and that's why dragging will not work AFAICT now. KLUDGE: this has been worked around in NedOutlinePage
 //            contentOutline.partClosed(this);
 //            contentOutline.partActivated(this);
 //        }
         // end of kludge
 
-		// switch from graphics to text:
+        // switch from graphics to text:
         if (newPageIndex == textPageIndex) {
-        	// generate text representation from the model NOW
+            // generate text representation from the model NOW
             NedFileElementEx nedFileElement = getModel();
             if (graphicalEditor.hasContentChanged() && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
                 textEditor.pullChangesFromNedResourcesWhenPending();
@@ -345,37 +345,37 @@ public class NedEditor
 
             if (currentNEDElementSelection != null)
                 showInEditor(currentNEDElementSelection, Mode.TEXT);
-		}
-		else if (newPageIndex == graphPageIndex) {
-		    textEditor.pushChangesIntoNedResources();
-		    graphicalEditor.markContent();
-		    // earlier ned changes may not caused a refresh (because of optimizations)
-		    // in the graphical editor (ie. the editor was not visible) so we must do it now
-		    graphicalEditor.refresh();
+        }
+        else if (newPageIndex == graphPageIndex) {
+            textEditor.pushChangesIntoNedResources();
+            graphicalEditor.markContent();
+            // earlier ned changes may not caused a refresh (because of optimizations)
+            // in the graphical editor (ie. the editor was not visible) so we must do it now
+            graphicalEditor.refresh();
 
             // keep the current selection between the two editors
-	        INedElement currentNEDElementSelection = null;
-	        if (textEditor.getSite().getSelectionProvider().getSelection() instanceof IStructuredSelection) {
-	            Object object = ((IStructuredSelection)textEditor.getSite()
-	                    .getSelectionProvider().getSelection()).getFirstElement();
-	            if (object != null)
-	                currentNEDElementSelection = ((INedModelProvider)object).getModel();
-	        }
+            INedElement currentNEDElementSelection = null;
+            if (textEditor.getSite().getSelectionProvider().getSelection() instanceof IStructuredSelection) {
+                Object object = ((IStructuredSelection)textEditor.getSite()
+                        .getSelectionProvider().getSelection()).getFirstElement();
+                if (object != null)
+                    currentNEDElementSelection = ((INedModelProvider)object).getModel();
+            }
             if (currentNEDElementSelection!=null)
                 showInEditor(currentNEDElementSelection, Mode.GRAPHICAL);
-		}
-		else
-			throw new RuntimeException("Unknown page index");
+        }
+        else
+            throw new RuntimeException("Unknown page index");
 
         currentPageIndex = newPageIndex;
-	}
+    }
 
-	@Override
-	public boolean isDirty() {
+    @Override
+    public boolean isDirty() {
         // The default behavior is wrong when undoing changes in both editors.
-	    // This way at least the text editor dirtiness flag will be good.
-	    return textEditor.isDirty();
-	}
+        // This way at least the text editor dirtiness flag will be good.
+        return textEditor.isDirty();
+    }
 
     /**
      * Prepares the content of the text editor before save.
@@ -387,10 +387,10 @@ public class NedEditor
         if (getActivePage() == graphPageIndex && !nedFileElement.isReadOnly() && !nedFileElement.hasSyntaxError()) {
             textEditor.pullChangesFromNedResourcesWhenPending();
             graphicalEditor.markSaved();
-		}
+        }
 
-		if (getActivePage() == textPageIndex)
-		    textEditor.pushChangesIntoNedResources();
+        if (getActivePage() == textPageIndex)
+            textEditor.pushChangesIntoNedResources();
     }
 
     @Override
@@ -409,10 +409,10 @@ public class NedEditor
         setInput(textEditor.getEditorInput());
     }
 
-	@Override
-	public boolean isSaveAsAllowed() {
-		return true;
-	}
+    @Override
+    public boolean isSaveAsAllowed() {
+        return true;
+    }
 
     /**
      * Closes the editor and optionally saves it.
@@ -434,7 +434,7 @@ public class NedEditor
                 if (delta != null) delta.accept(this);
             }
             catch (CoreException e) {
-            	throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
 
@@ -446,7 +446,7 @@ public class NedEditor
             if (delta.getKind() == IResourceDelta.CHANGED) {
                 display.asyncExec(new Runnable() {
                     public void run() {
-                    	inputFileModifiedOnDisk();
+                        inputFileModifiedOnDisk();
                     }
                 });
             }
@@ -454,14 +454,14 @@ public class NedEditor
         }
     }
 
-	protected void inputFileModifiedOnDisk() {
+    protected void inputFileModifiedOnDisk() {
         // the file was overwritten somehow (could have been
         // replaced by another version in the repository)
         // TODO ask the user and reload the file
-		if (isDirty()) {
-		    ; //FIXME ask user!
-		}
-	}
+        if (isDirty()) {
+            ; //FIXME ask user!
+        }
+    }
 
     public void gotoMarker(IMarker marker) {
         // switch to text page and delegate to it
@@ -518,21 +518,21 @@ public class NedEditor
     }
 
     public IFile getFile() {
-		return ((FileEditorInput)getEditorInput()).getFile();
-	}
+        return ((FileEditorInput)getEditorInput()).getFile();
+    }
 
     public NedFileElementEx getModel() {
-    	return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
+        return NedResourcesPlugin.getNedResources().getNedFileElement(getFile());
     }
 
     // NOTE: this method is called from NON UI thread too (notifications) so
     // you should not call any SWT only methods like getActiveEditor etc.
     // instead we store the current editorIndex and do the compare by hand
     public boolean isActiveEditor(IEditorPart editorPart) {
-    	if (editorPart == textEditor && currentPageIndex == textPageIndex)
-    		return true;
-    	if (editorPart == graphicalEditor && currentPageIndex == graphPageIndex)
-    		return true;
-    	return false;
+        if (editorPart == textEditor && currentPageIndex == textPageIndex)
+            return true;
+        if (editorPart == graphicalEditor && currentPageIndex == graphPageIndex)
+            return true;
+        return false;
     }
 }

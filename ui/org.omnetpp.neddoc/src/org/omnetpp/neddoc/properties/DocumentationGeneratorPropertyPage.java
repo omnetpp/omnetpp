@@ -62,17 +62,17 @@ public class DocumentationGeneratorPropertyPage
     public static QualifiedName NEDDOC_PATH_QNAME = new QualifiedName("DocumentationGenerator", "NeddocPath");
     public static QualifiedName CUSTOM_CSS_QNAME = new QualifiedName("DocumentationGenerator", "CustomCss");
 
-	private Text doxyPath;
-	private Text doxyConfigFilePath;
-	private Text neddocPath;
-	private Text customCssPath;
+    private Text doxyPath;
+    private Text doxyConfigFilePath;
+    private Text neddocPath;
+    private Text customCssPath;
 
     public DocumentationGeneratorPropertyPage() {
-		super();
-	}
+        super();
+    }
 
     @Override
-	protected Control createContents(Composite parent) {
+    protected Control createContents(Composite parent) {
         final IProject project = getProject();
 
         Composite composite = new Composite(parent, SWT.NONE);
@@ -153,7 +153,7 @@ public class DocumentationGeneratorPropertyPage
         }
 
         return composite;
-	}
+    }
 
     private void setText(Text text, String value) {
         if (value != null)
@@ -209,14 +209,14 @@ public class DocumentationGeneratorPropertyPage
     }
 
     @Override
-	protected void performDefaults() {
+    protected void performDefaults() {
         doxyPath.setText(DEFAULT_DOXY_PATH);
         doxyConfigFilePath.setText(DEFAULT_DOXY_CONFIG_FILE_PATH);
         neddocPath.setText(DEFAULT_NEDDOC_PATH);
-	}
+    }
 
-	@Override
-	public boolean performOk() {
+    @Override
+    public boolean performOk() {
         try {
             IProject project = getProject();
 
@@ -230,7 +230,7 @@ public class DocumentationGeneratorPropertyPage
         catch (CoreException e) {
             throw new RuntimeException(e);
         }
-	}
+    }
 
     private IProject getProject() {
         return (IProject)getElement().getAdapter(IProject.class);

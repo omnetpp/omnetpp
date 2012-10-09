@@ -22,37 +22,37 @@ import org.eclipse.ui.dialogs.ListSelectionDialog;
  */
 public class ChooseTableColumnsAction extends Action {
 
-	private DataTable table;
+    private DataTable table;
 
-	public ChooseTableColumnsAction(DataTable table) {
-		setText("Choose Table Columns...");
-		setToolTipText("Choose Table Columns");
-		this.table = table;
-	}
+    public ChooseTableColumnsAction(DataTable table) {
+        setText("Choose Table Columns...");
+        setToolTipText("Choose Table Columns");
+        this.table = table;
+    }
 
-	@Override
-	public void run() {
-		chooseTableColumns(table);
-	}
+    @Override
+    public void run() {
+        chooseTableColumns(table);
+    }
 
-	protected void chooseTableColumns(DataTable table) {
-		// create dialog with the column names
-		ListSelectionDialog dialog = new ListSelectionDialog(
-			 table.getShell(),
-			 table.getAllColumnNames(),
-			 new ArrayContentProvider(),
-			 new LabelProvider(), // plain toString()
-			 "Select which columns should be visible in the table:");
-		dialog.setTitle("Select Columns");
+    protected void chooseTableColumns(DataTable table) {
+        // create dialog with the column names
+        ListSelectionDialog dialog = new ListSelectionDialog(
+             table.getShell(),
+             table.getAllColumnNames(),
+             new ArrayContentProvider(),
+             new LabelProvider(), // plain toString()
+             "Select which columns should be visible in the table:");
+        dialog.setTitle("Select Columns");
 
-		// calculate initial selection
-		dialog.setInitialSelections(table.getVisibleColumnNames());
+        // calculate initial selection
+        dialog.setInitialSelections(table.getVisibleColumnNames());
 
-		// execute dialog and store result
-		if (dialog.open() == Dialog.OK) {
-			List<Object> selectedObjects = Arrays.asList(dialog.getResult());
-			String [] selectedColumnNames = selectedObjects.toArray(new String[selectedObjects.size()]);
-			table.setVisibleColumns(selectedColumnNames);
-		}
-	}
+        // execute dialog and store result
+        if (dialog.open() == Dialog.OK) {
+            List<Object> selectedObjects = Arrays.asList(dialog.getResult());
+            String [] selectedColumnNames = selectedObjects.toArray(new String[selectedObjects.size()]);
+            table.setVisibleColumns(selectedColumnNames);
+        }
+    }
 }

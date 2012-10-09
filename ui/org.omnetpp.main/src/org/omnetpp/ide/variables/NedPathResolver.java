@@ -27,36 +27,36 @@ import org.omnetpp.ide.OmnetppMainPlugin;
  */
 public class NedPathResolver implements IDynamicVariableResolver {
 
-	public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
-		if (argument == null)
-			abort("${opp_ned_path:arg} requires an argument", null);
+    public String resolveValue(IDynamicVariable variable, String argument) throws CoreException {
+        if (argument == null)
+            abort("${opp_ned_path:arg} requires an argument", null);
 
-		boolean wantLocation = variable.getName().endsWith("_loc");
+        boolean wantLocation = variable.getName().endsWith("_loc");
 
-		IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
-		if (resource == null)
-			abort("argument to ${opp_ned_path:arg} needs to be an existing file, folder, or project", null);
+        IResource resource = ResourcesPlugin.getWorkspace().getRoot().findMember(new Path(argument));
+        if (resource == null)
+            abort("argument to ${opp_ned_path:arg} needs to be an existing file, folder, or project", null);
 
-		IProject project = resource.getProject();
-		String result = wantLocation ? project.getLocation().toOSString() : project.getFullPath().toString();
-		// resolve the ned path files
-		try {
-			result = "";
-			String pathSep = System.getProperty("path.separator");
-			// read the actual projects nedfolders file
-			for (IContainer folder : ProjectUtils.readNedFoldersFile(project).getSourceFolders())
-				result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
+        IProject project = resource.getProject();
+        String result = wantLocation ? project.getLocation().toOSString() : project.getFullPath().toString();
+        // resolve the ned path files
+        try {
+            result = "";
+            String pathSep = System.getProperty("path.separator");
+            // read the actual projects nedfolders file
+            for (IContainer folder : ProjectUtils.readNedFoldersFile(project).getSourceFolders())
+                result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
 
-			// do the same for the referenced projects
-			for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
-				for(IContainer folder : ProjectUtils.readNedFoldersFile(p).getSourceFolders())
-					result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
-		}
-		catch (Exception e) {
-			OmnetppMainPlugin.logError(e);
-		}
-		return result;
-	}
+            // do the same for the referenced projects
+            for (IProject p : ProjectUtils.getAllReferencedOmnetppProjects(project))
+                for(IContainer folder : ProjectUtils.readNedFoldersFile(p).getSourceFolders())
+                    result += pathSep + (wantLocation ? folder.getLocation().toOSString() : folder.getFullPath().toString());
+        }
+        catch (Exception e) {
+            OmnetppMainPlugin.logError(e);
+        }
+        return result;
+    }
 
     protected void abort(String message, Throwable exception) throws CoreException {
         throw new CoreException(new Status(IStatus.ERROR, OmnetppMainPlugin.PLUGIN_ID, 1, message, exception));

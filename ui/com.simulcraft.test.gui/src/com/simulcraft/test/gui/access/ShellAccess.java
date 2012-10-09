@@ -19,14 +19,14 @@ import com.simulcraft.test.gui.core.InBackgroundThread;
 
 public class ShellAccess extends CompositeAccess
 {
-	public ShellAccess(Shell shell) {
-		super(shell);
-	}
+    public ShellAccess(Shell shell) {
+        super(shell);
+    }
 
     @Override
-	public Shell getControl() {
-		return (Shell)widget;
-	}
+    public Shell getControl() {
+        return (Shell)widget;
+    }
 
     @Override
     protected Point getAbsolutePointToClick() {
@@ -39,25 +39,25 @@ public class ShellAccess extends CompositeAccess
         return getControl().getBounds();
     }
 
-	@UIStep
-	public MenuAccess getMenuBar() {
-		return new MenuAccess(getControl().getMenuBar());
-	}
+    @UIStep
+    public MenuAccess getMenuBar() {
+        return new MenuAccess(getControl().getMenuBar());
+    }
 
-	@InBackgroundThread
-	public void chooseFromMainMenu(String labelPath) {
-	    MenuAccess menuAccess = getMenuBar();
-	    for (String label : labelPath.split("\\|"))
-	        //menuAccess = menuAccess.findMenuItemByLabel(label).activateWithMouseClick();
-	        menuAccess = menuAccess.activateMenuItemWithMouse(label);
-	}
+    @InBackgroundThread
+    public void chooseFromMainMenu(String labelPath) {
+        MenuAccess menuAccess = getMenuBar();
+        for (String label : labelPath.split("\\|"))
+            //menuAccess = menuAccess.findMenuItemByLabel(label).activateWithMouseClick();
+            menuAccess = menuAccess.activateMenuItemWithMouse(label);
+    }
 
-	/**
-	 * Asserts that this shell is the active shell, i.e. it waits (with timeout)
-	 * for it to become active.
-	 */
-	@UIStep
-	public void assertIsActive() {
-		Assert.assertTrue("not the active shell", Display.getCurrent().getActiveShell() == getControl());
-	}
+    /**
+     * Asserts that this shell is the active shell, i.e. it waits (with timeout)
+     * for it to become active.
+     */
+    @UIStep
+    public void assertIsActive() {
+        Assert.assertTrue("not the active shell", Display.getCurrent().getActiveShell() == getControl());
+    }
 }

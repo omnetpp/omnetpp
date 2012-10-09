@@ -61,136 +61,136 @@ import org.omnetpp.ned.model.ui.NedModelLabelProvider;
 //XXX currently doesn't show inner types
 //XXX add tooltip (see fixme below)
 public class NedInheritanceView extends AbstractModuleView {
-	private TreeViewer treeViewer;
+    private TreeViewer treeViewer;
 
-	private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+    private MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
-	// hashmap to save/restore view's state when switching across editors
-	private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
+    // hashmap to save/restore view's state when switching across editors
+    private WeakHashMap<IEditorInput, ISelection> selectedElements = new WeakHashMap<IEditorInput, ISelection>();
 
-	public NedInheritanceView() {
-	}
+    public NedInheritanceView() {
+    }
 
-	@Override
-	public Control createViewControl(Composite parent) {
-		createTreeViewer(parent);
-		createActions();
-		return treeViewer.getTree();
-	}
+    @Override
+    public Control createViewControl(Composite parent) {
+        createTreeViewer(parent);
+        createActions();
+        return treeViewer.getTree();
+    }
 
-	private void createTreeViewer(Composite parent) {
-		treeViewer = new TreeViewer(parent, SWT.SINGLE);
+    private void createTreeViewer(Composite parent) {
+        treeViewer = new TreeViewer(parent, SWT.SINGLE);
 
-		// set label provider and content provider
-		treeViewer.setLabelProvider(new LabelProvider() {
-			@Override
-			public Image getImage(Object element) {
-				if (element instanceof GenericTreeNode)
-					element = ((GenericTreeNode)element).getPayload();
-				return NedModelLabelProvider.getInstance().getImage(element);
-			}
+        // set label provider and content provider
+        treeViewer.setLabelProvider(new LabelProvider() {
+            @Override
+            public Image getImage(Object element) {
+                if (element instanceof GenericTreeNode)
+                    element = ((GenericTreeNode)element).getPayload();
+                return NedModelLabelProvider.getInstance().getImage(element);
+            }
 
-			@Override
-			public String getText(Object element) {
+            @Override
+            public String getText(Object element) {
                 if (element instanceof GenericTreeNode)
                     element = ((GenericTreeNode)element).getPayload();
                 return NedModelLabelProvider.getInstance().getText(element);
-			}
-		});
-		treeViewer.setContentProvider(new GenericTreeContentProvider());
+            }
+        });
+        treeViewer.setContentProvider(new GenericTreeContentProvider());
 
-		treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-			public void selectionChanged(SelectionChangedEvent event) {
-				IEditorPart editor = getAssociatedEditor();
-				if (!event.getSelection().isEmpty() && editor != null) {
-					// remember selection (we'll try to restore it after tree rebuild)
-					selectedElements.put(editor.getEditorInput(), event.getSelection());
-				}
-			}
-		});
+        treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+                IEditorPart editor = getAssociatedEditor();
+                if (!event.getSelection().isEmpty() && editor != null) {
+                    // remember selection (we'll try to restore it after tree rebuild)
+                    selectedElements.put(editor.getEditorInput(), event.getSelection());
+                }
+            }
+        });
 
-		// create context menu
- 		getViewSite().registerContextMenu(contextMenuManager, treeViewer);
- 		treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
+        // create context menu
+        getViewSite().registerContextMenu(contextMenuManager, treeViewer);
+        treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
 
- 		// add tooltip support to the tree
- 		new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
-			public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-				Item item = treeViewer.getTree().getItem(new Point(x,y));
-				Object element = item==null ? null : item.getData();
-				if (element instanceof GenericTreeNode)
-					element = ((GenericTreeNode)element).getPayload();
-				//FIXME produce some text
-				return null;
-			}
- 		});
+        // add tooltip support to the tree
+        new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
+            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+                Item item = treeViewer.getTree().getItem(new Point(x,y));
+                Object element = item==null ? null : item.getData();
+                if (element instanceof GenericTreeNode)
+                    element = ((GenericTreeNode)element).getPayload();
+                //FIXME produce some text
+                return null;
+            }
+        });
 
-	}
+    }
 
-	private void createActions() {
-		IAction pinAction = getOrCreatePinAction();
+    private void createActions() {
+        IAction pinAction = getOrCreatePinAction();
 
-		class GotoNedFileAction extends ActionExt {
-			GotoNedFileAction() {
-			    setText("Open NED Declaration");
-			}
-			@Override
-			public void run() {
-				INedElement sel = getNedElementFromSelection();
-				if (sel != null)
-					NedResourcesPlugin.openNedElementInEditor(sel);
-			}
-			public void selectionChanged(SelectionChangedEvent event) {
-				INedElement sel = getNedElementFromSelection();
-				setEnabled(sel != null);
-			}
-			private INedElement getNedElementFromSelection() {
-				Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
-				if (element instanceof GenericTreeNode)
-					element = ((GenericTreeNode)element).getPayload();
-				return (INedElement)element;
-			}
-		};
+        class GotoNedFileAction extends ActionExt {
+            GotoNedFileAction() {
+                setText("Open NED Declaration");
+            }
+            @Override
+            public void run() {
+                INedElement sel = getNedElementFromSelection();
+                if (sel != null)
+                    NedResourcesPlugin.openNedElementInEditor(sel);
+            }
+            public void selectionChanged(SelectionChangedEvent event) {
+                INedElement sel = getNedElementFromSelection();
+                setEnabled(sel != null);
+            }
+            private INedElement getNedElementFromSelection() {
+                Object element = ((IStructuredSelection)treeViewer.getSelection()).getFirstElement();
+                if (element instanceof GenericTreeNode)
+                    element = ((GenericTreeNode)element).getPayload();
+                return (INedElement)element;
+            }
+        };
 
-		final ActionExt gotoNedAction = new GotoNedFileAction();
-		treeViewer.addSelectionChangedListener(gotoNedAction);
+        final ActionExt gotoNedAction = new GotoNedFileAction();
+        treeViewer.addSelectionChangedListener(gotoNedAction);
 
-		// add double-click support to the tree
+        // add double-click support to the tree
         treeViewer.addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
-				gotoNedAction.run();
-			}
-		});
+                gotoNedAction.run();
+            }
+        });
 
-		// build menus and toolbar
-		contextMenuManager.add(gotoNedAction);
-		contextMenuManager.add(pinAction);
+        // build menus and toolbar
+        contextMenuManager.add(gotoNedAction);
+        contextMenuManager.add(pinAction);
 
-		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
-		toolBarManager.add(pinAction);
+        IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
+        toolBarManager.add(pinAction);
 
-		IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
-		menuManager.add(pinAction);
-	}
+        IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+        menuManager.add(pinAction);
+    }
 
-	@Override
-	protected void showMessage(String text) {
-		super.showMessage(text);
-		treeViewer.setInput(null);
-	}
+    @Override
+    protected void showMessage(String text) {
+        super.showMessage(text);
+        treeViewer.setInput(null);
+    }
 
-	@Override
-	public void setFocus() {
-		if (isShowingMessage())
-			super.setFocus();
-		else
-			treeViewer.getTree().setFocus();
-	}
+    @Override
+    public void setFocus() {
+        if (isShowingMessage())
+            super.setFocus();
+        else
+            treeViewer.getTree().setFocus();
+    }
 
-	public void buildContent(INedElement selectedElement, final InifileAnalyzer analyzer, final String section, String key) {
-	    INedTypeInfo inputNedType = null;
+    public void buildContent(INedElement selectedElement, final InifileAnalyzer analyzer, final String section, String key) {
+        INedTypeInfo inputNedType = null;
 
-	    // find first usable parent
+        // find first usable parent
         while (inputNedType == null && selectedElement != null) {
             if (selectedElement instanceof INedTypeElement)
                 inputNedType = ((INedTypeElement)selectedElement).getNedTypeInfo();
@@ -200,8 +200,8 @@ public class NedInheritanceView extends AbstractModuleView {
         }
 
         if (inputNedType == null) {
-        	showMessage("No NED type selected.");
-        	return;
+            showMessage("No NED type selected.");
+            return;
         }
 
         // build tree
@@ -211,30 +211,30 @@ public class NedInheritanceView extends AbstractModuleView {
         INedTypeInfo rootType = extendsChain.get(extendsChain.size()-1);
         buildInheritanceTreeOf(rootType, root, new HashSet<INedTypeInfo>());
 
-		// prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
-		if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
-			treeViewer.setInput(root);
+        // prevent collapsing all treeviewer nodes: only set it on viewer if it's different from old input
+        if (!GenericTreeUtils.treeEquals(root, (GenericTreeNode)treeViewer.getInput())) {
+            treeViewer.setInput(root);
 
-			// open root node (useful in case preserving the selection fails)
-			treeViewer.expandToLevel(2);
+            // open root node (useful in case preserving the selection fails)
+            treeViewer.expandToLevel(2);
 
-			// try to preserve selection
-			ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
-			if (oldSelection != null)
-				treeViewer.setSelection(oldSelection, true);
-		}
+            // try to preserve selection
+            ISelection oldSelection = selectedElements.get(getAssociatedEditor().getEditorInput());
+            if (oldSelection != null)
+                treeViewer.setSelection(oldSelection, true);
+        }
 
-		// refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
-		treeViewer.refresh();
+        // refresh the viewer anyway, because e.g. parameter value changes are not reflected in the input tree
+        treeViewer.refresh();
 
-		// update label
-		String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNedElement().getReadableTagName());
-		if (getPinnedToEditor() != null)
-		    text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
-		setContentDescription(text);
-	}
+        // update label
+        String text = inputNedType.getName() + " - " + StringUtils.capitalize(inputNedType.getNedElement().getReadableTagName());
+        if (getPinnedToEditor() != null)
+            text += ", in " + getPinnedToEditor().getEditorInput().getName() + " (pinned)";
+        setContentDescription(text);
+    }
 
-	private void buildInheritanceTreeOf(INedTypeInfo typeInfo, GenericTreeNode parentNode, Set<INedTypeInfo> visited) {
+    private void buildInheritanceTreeOf(INedTypeInfo typeInfo, GenericTreeNode parentNode, Set<INedTypeInfo> visited) {
         GenericTreeNode node = new GenericTreeNode(typeInfo.getNedElement());
         parentNode.addChild(node);
 

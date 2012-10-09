@@ -15,5 +15,5 @@ import org.eclipse.swt.widgets.Control;
  */
 public interface IControlContentAdapter2 extends IControlContentAdapter {
 
-	void replaceControlContents(Control control, int startPos, int endPos, String text, int cursorPos);
+    void replaceControlContents(Control control, int startPos, int endPos, String text, int cursorPos);
 }

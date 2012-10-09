@@ -23,14 +23,14 @@ import com.simulcraft.test.gui.core.UIStep;
 
 public class TableAccess extends ControlAccess
 {
-	public TableAccess(Table control) {
-		super(control);
-	}
+    public TableAccess(Table control) {
+        super(control);
+    }
 
-	@Override
-	public Table getControl() {
-		return (Table)widget;
-	}
+    @Override
+    public Table getControl() {
+        return (Table)widget;
+    }
 
     @UIStep
     public void assertEmpty() {
@@ -70,13 +70,13 @@ public class TableAccess extends ControlAccess
     public void assertContent(String[]... items) {
         Assert.assertEquals("Table item count does not match.", items.length, getControl().getItemCount());
         for (int i = 0; i< items.length; ++i) {
-        	String[] item = items[i];
-        	Assert.assertTrue("Table does not have enough columns. Expected: " + item.length + ", found: " + getControl().getColumnCount(),
-        			item.length <= getControl().getColumnCount());
-        	for (int j = 0; j < item.length; ++j) {
-        		String itemText = getControl().getItem(i).getText(j);
-        		Assert.assertTrue("Table item does not match. Expected: '"+item[j]+"' found: '"+itemText+"'", itemText.matches(item[j]));
-        	}
+            String[] item = items[i];
+            Assert.assertTrue("Table does not have enough columns. Expected: " + item.length + ", found: " + getControl().getColumnCount(),
+                    item.length <= getControl().getColumnCount());
+            for (int j = 0; j < item.length; ++j) {
+                String itemText = getControl().getItem(i).getText(j);
+                Assert.assertTrue("Table item does not match. Expected: '"+item[j]+"' found: '"+itemText+"'", itemText.matches(item[j]));
+            }
         }
     }
 
@@ -86,7 +86,7 @@ public class TableAccess extends ControlAccess
      */
     @UIStep
     public void assertContentStartWith(String items[], String restShouldMatch) {
-    	assertContentStartWith(0, items, restShouldMatch);
+        assertContentStartWith(0, items, restShouldMatch);
     }
 
     @UIStep
@@ -104,57 +104,57 @@ public class TableAccess extends ControlAccess
     }
 
     public void assertColumnContentMatches(String columnName, String pattern) {
-    	assertColumnContentStartWith(getTableColumnIndex(columnName), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
+        assertColumnContentStartWith(getTableColumnIndex(columnName), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
     }
 
     public void assertColumnContentMatches(TableColumnAccess column, String pattern) {
-    	assertColumnContentStartWith(getTableColumnIndex(column), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
+        assertColumnContentStartWith(getTableColumnIndex(column), ArrayUtils.EMPTY_STRING_ARRAY, pattern);
     }
 
     @UIStep
     public void assertColumnContentStartWith(int columnIndex, String[] items, String restShouldMatch) {
-    	assertContentStartWith(columnIndex, items, restShouldMatch);
+        assertContentStartWith(columnIndex, items, restShouldMatch);
     }
 
     @UIStep
     public void assertSelectionCount(int count) {
-    	Assert.assertEquals("Selection count does not match,", count, getControl().getSelectionCount());
+        Assert.assertEquals("Selection count does not match,", count, getControl().getSelectionCount());
     }
 
     @UIStep
     public void assertAllSelected() {
-    	Assert.assertEquals("Not all item selected,", getControl().getSelectionCount(), getControl().getItemCount());
+        Assert.assertEquals("Not all item selected,", getControl().getSelectionCount(), getControl().getItemCount());
     }
 
     public TableItemAccess findTableItemByContent(String content) {
-		return findTableItemByContent(0, content);
-	}
-
-	@UIStep
-	public TableItemAccess findTableItemByContent(String columnName, String content) {
-		return findTableItemByContent(getTableColumnIndex(columnName), content);
-	}
+        return findTableItemByContent(0, content);
+    }
 
     @UIStep
-	public TableItemAccess findTableItemByContent(int columnIndex, final String content) {
-		return new TableItemAccess((TableItem)findObject(getControl().getItems(), new IPredicate() {
-			public boolean matches(Object object) {
-				// true if the "main" text or any column text matches
-				TableItem tableItem = (TableItem)object;
-				log(debug, "  checking: " + tableItem);
-				if (tableItem.getText().matches(content)) // not the same as column[0]!
-					return true;
-				for (int i = 0; i < getControl().getColumnCount(); i++)
-					if (tableItem.getText(i).matches(content))
-						return true;
-				return false;
-			}
+    public TableItemAccess findTableItemByContent(String columnName, String content) {
+        return findTableItemByContent(getTableColumnIndex(columnName), content);
+    }
 
-			public String toString() {
-			    return "a TableItem with content: " + content;
-			}
-		}));
-	}
+    @UIStep
+    public TableItemAccess findTableItemByContent(int columnIndex, final String content) {
+        return new TableItemAccess((TableItem)findObject(getControl().getItems(), new IPredicate() {
+            public boolean matches(Object object) {
+                // true if the "main" text or any column text matches
+                TableItem tableItem = (TableItem)object;
+                log(debug, "  checking: " + tableItem);
+                if (tableItem.getText().matches(content)) // not the same as column[0]!
+                    return true;
+                for (int i = 0; i < getControl().getColumnCount(); i++)
+                    if (tableItem.getText(i).matches(content))
+                        return true;
+                return false;
+            }
+
+            public String toString() {
+                return "a TableItem with content: " + content;
+            }
+        }));
+    }
 
     @UIStep
     public TableColumnAccess[] getTableColumns() {
@@ -174,17 +174,17 @@ public class TableAccess extends ControlAccess
 
     @UIStep
     public TableColumnAccess getTableColumn(String columnName) {
-    	return wrapTableColumn(findObject(getControl().getColumns(), Predicate.itemWithText(columnName)));
+        return wrapTableColumn(findObject(getControl().getColumns(), Predicate.itemWithText(columnName)));
     }
 
     @UIStep
     public int getTableColumnIndex(String columnName) {
-    	return getTableColumnIndex(getTableColumn(columnName));
+        return getTableColumnIndex(getTableColumn(columnName));
     }
 
     @UIStep
     public int getTableColumnIndex(TableColumnAccess column) {
-    	return getControl().indexOf(column.getWidget());
+        return getControl().indexOf(column.getWidget());
     }
 
     @UIStep
@@ -201,6 +201,6 @@ public class TableAccess extends ControlAccess
     }
 
     private TableColumnAccess wrapTableColumn(Object column) {
-    	return column != null ? (TableColumnAccess)createAccess(column) : null;
+        return column != null ? (TableColumnAccess)createAccess(column) : null;
     }
 }

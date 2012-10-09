@@ -13,5 +13,5 @@ package org.omnetpp.common;
  * @author Andras
  */
 public interface ICoreConstants {
-	public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
+    public static final String PREF_OMNETPP_IMAGE_PATH = "omnetppImagePath";
 }

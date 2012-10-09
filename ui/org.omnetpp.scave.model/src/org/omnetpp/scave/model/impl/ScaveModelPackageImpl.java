@@ -58,196 +58,196 @@ import org.omnetpp.scave.model.SetOperation;
  * @generated
  */
 public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPackage {
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass datasetEClass = null;
+    private EClass datasetEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass chartEClass = null;
+    private EClass chartEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass addEClass = null;
+    private EClass addEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass applyEClass = null;
+    private EClass applyEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass exceptEClass = null;
+    private EClass exceptEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass propertyEClass = null;
+    private EClass propertyEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass setOperationEClass = null;
+    private EClass setOperationEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass groupEClass = null;
+    private EClass groupEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass discardEClass = null;
+    private EClass discardEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass datasetItemEClass = null;
+    private EClass datasetItemEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass paramEClass = null;
+    private EClass paramEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass chartSheetEClass = null;
+    private EClass chartSheetEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass analysisEClass = null;
+    private EClass analysisEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass selectEClass = null;
+    private EClass selectEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass deselectEClass = null;
+    private EClass deselectEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass addDiscardOpEClass = null;
+    private EClass addDiscardOpEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass selectDeselectOpEClass = null;
+    private EClass selectDeselectOpEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass inputsEClass = null;
+    private EClass inputsEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass chartSheetsEClass = null;
+    private EClass chartSheetsEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass datasetsEClass = null;
+    private EClass datasetsEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass inputFileEClass = null;
+    private EClass inputFileEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass processingOpEClass = null;
+    private EClass processingOpEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass computeEClass = null;
+    private EClass computeEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass barChartEClass = null;
+    private EClass barChartEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass lineChartEClass = null;
+    private EClass lineChartEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass histogramChartEClass = null;
+    private EClass histogramChartEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EClass scatterChartEClass = null;
+    private EClass scatterChartEClass = null;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -256,12 +256,12 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
     /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private EEnum resultTypeEEnum = null;
+    private EEnum resultTypeEEnum = null;
 
-	/**
+    /**
      * Creates an instance of the model <b>Package</b>, registered with
      * {@link org.eclipse.emf.ecore.EPackage.Registry EPackage.Registry} by the package
      * package URI value.
@@ -270,36 +270,36 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
      * initialization of the package, or returns the registered package,
      * if one already exists.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.eclipse.emf.ecore.EPackage.Registry
      * @see org.omnetpp.scave.model.ScaveModelPackage#eNS_URI
      * @see #init()
      * @generated
      */
-	private ScaveModelPackageImpl() {
+    private ScaveModelPackageImpl() {
         super(eNS_URI, ScaveModelFactory.eINSTANCE);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private static boolean isInited = false;
+    private static boolean isInited = false;
 
-	/**
+    /**
      * Creates, registers, and initializes the <b>Package</b> for this model, and for any others upon which it depends.
-     * 
+     *
      * <p>This method is used to initialize {@link ScaveModelPackage#eINSTANCE} when that field is accessed.
      * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
      * @generated
      */
-	public static ScaveModelPackage init() {
+    public static ScaveModelPackage init() {
         if (isInited) return (ScaveModelPackage)EPackage.Registry.INSTANCE.getEPackage(ScaveModelPackage.eNS_URI);
 
         // Obtain or create and register package
@@ -316,310 +316,310 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         // Mark meta-data to indicate it can't be changed
         theScaveModelPackage.freeze();
 
-  
+
         // Update the registry and return the package
         EPackage.Registry.INSTANCE.put(ScaveModelPackage.eNS_URI, theScaveModelPackage);
         return theScaveModelPackage;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getDataset() {
+    public EClass getDataset() {
         return datasetEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getDataset_Name() {
+    public EAttribute getDataset_Name() {
         return (EAttribute)datasetEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getDataset_Items() {
+    public EReference getDataset_Items() {
         return (EReference)datasetEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getDataset_BasedOn() {
+    public EReference getDataset_BasedOn() {
         return (EReference)datasetEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getChart() {
+    public EClass getChart() {
         return chartEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getChart_Name() {
+    public EAttribute getChart_Name() {
         return (EAttribute)chartEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getChart_Filters() {
+    public EReference getChart_Filters() {
         return (EReference)chartEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getChart_Properties() {
+    public EReference getChart_Properties() {
         return (EReference)chartEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getAdd() {
+    public EClass getAdd() {
         return addEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getAdd_Excepts() {
+    public EReference getAdd_Excepts() {
         return (EReference)addEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getApply() {
+    public EClass getApply() {
         return applyEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getExcept() {
+    public EClass getExcept() {
         return exceptEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getExcept_FilterPattern() {
+    public EAttribute getExcept_FilterPattern() {
         return (EAttribute)exceptEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getProperty() {
+    public EClass getProperty() {
         return propertyEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getProperty_Name() {
+    public EAttribute getProperty_Name() {
         return (EAttribute)propertyEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getProperty_Value() {
+    public EAttribute getProperty_Value() {
         return (EAttribute)propertyEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getSetOperation() {
+    public EClass getSetOperation() {
         return setOperationEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getSetOperation_SourceDataset() {
+    public EReference getSetOperation_SourceDataset() {
         return (EReference)setOperationEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getSetOperation_FilterPattern() {
+    public EAttribute getSetOperation_FilterPattern() {
         return (EAttribute)setOperationEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getSetOperation_Type() {
+    public EAttribute getSetOperation_Type() {
         return (EAttribute)setOperationEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getSetOperation_CachedIDs() {
+    public EAttribute getSetOperation_CachedIDs() {
         return (EAttribute)setOperationEClass.getEStructuralFeatures().get(3);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getGroup() {
+    public EClass getGroup() {
         return groupEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getGroup_Items() {
+    public EReference getGroup_Items() {
         return (EReference)groupEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getGroup_Name() {
+    public EAttribute getGroup_Name() {
         return (EAttribute)groupEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getDiscard() {
+    public EClass getDiscard() {
         return discardEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getDiscard_Excepts() {
+    public EReference getDiscard_Excepts() {
         return (EReference)discardEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getDatasetItem() {
+    public EClass getDatasetItem() {
         return datasetItemEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getParam() {
+    public EClass getParam() {
         return paramEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getParam_Name() {
+    public EAttribute getParam_Name() {
         return (EAttribute)paramEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getParam_Value() {
+    public EAttribute getParam_Value() {
         return (EAttribute)paramEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getChartSheet() {
+    public EClass getChartSheet() {
         return chartSheetEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getChartSheet_Name() {
+    public EAttribute getChartSheet_Name() {
         return (EAttribute)chartSheetEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getChartSheet_Charts() {
+    public EReference getChartSheet_Charts() {
         return (EReference)chartSheetEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -630,356 +630,356 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
     /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getAnalysis() {
+    public EClass getAnalysis() {
         return analysisEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getAnalysis_Inputs() {
+    public EReference getAnalysis_Inputs() {
         return (EReference)analysisEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getAnalysis_Datasets() {
+    public EReference getAnalysis_Datasets() {
         return (EReference)analysisEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getAnalysis_ChartSheets() {
+    public EReference getAnalysis_ChartSheets() {
         return (EReference)analysisEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getSelect() {
+    public EClass getSelect() {
         return selectEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getSelect_Excepts() {
+    public EReference getSelect_Excepts() {
         return (EReference)selectEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getDeselect() {
+    public EClass getDeselect() {
         return deselectEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getDeselect_Excepts() {
+    public EReference getDeselect_Excepts() {
         return (EReference)deselectEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getAddDiscardOp() {
+    public EClass getAddDiscardOp() {
         return addDiscardOpEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getSelectDeselectOp() {
+    public EClass getSelectDeselectOp() {
         return selectDeselectOpEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getInputs() {
+    public EClass getInputs() {
         return inputsEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getInputs_Inputs() {
+    public EReference getInputs_Inputs() {
         return (EReference)inputsEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getChartSheets() {
+    public EClass getChartSheets() {
         return chartSheetsEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getChartSheets_ChartSheets() {
+    public EReference getChartSheets_ChartSheets() {
         return (EReference)chartSheetsEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getDatasets() {
+    public EClass getDatasets() {
         return datasetsEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getDatasets_Datasets() {
+    public EReference getDatasets_Datasets() {
         return (EReference)datasetsEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getInputFile() {
+    public EClass getInputFile() {
         return inputFileEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getInputFile_Name() {
+    public EAttribute getInputFile_Name() {
         return (EAttribute)inputFileEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getProcessingOp() {
+    public EClass getProcessingOp() {
         return processingOpEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getProcessingOp_Operation() {
+    public EAttribute getProcessingOp_Operation() {
         return (EAttribute)processingOpEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getProcessingOp_Filters() {
+    public EReference getProcessingOp_Filters() {
         return (EReference)processingOpEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EReference getProcessingOp_Params() {
+    public EReference getProcessingOp_Params() {
         return (EReference)processingOpEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getProcessingOp_ComputedFile() {
+    public EAttribute getProcessingOp_ComputedFile() {
         return (EAttribute)processingOpEClass.getEStructuralFeatures().get(3);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getProcessingOp_ComputationHash() {
+    public EAttribute getProcessingOp_ComputationHash() {
         return (EAttribute)processingOpEClass.getEStructuralFeatures().get(4);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getProcessingOp_GroupBy() {
+    public EAttribute getProcessingOp_GroupBy() {
         return (EAttribute)processingOpEClass.getEStructuralFeatures().get(5);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getCompute() {
+    public EClass getCompute() {
         return computeEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getBarChart() {
+    public EClass getBarChart() {
         return barChartEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getBarChart_GroupByFields() {
+    public EAttribute getBarChart_GroupByFields() {
         return (EAttribute)barChartEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getBarChart_GroupNameFormat() {
+    public EAttribute getBarChart_GroupNameFormat() {
         return (EAttribute)barChartEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getBarChart_BarNameFormat() {
+    public EAttribute getBarChart_BarNameFormat() {
         return (EAttribute)barChartEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getBarChart_BarFields() {
+    public EAttribute getBarChart_BarFields() {
         return (EAttribute)barChartEClass.getEStructuralFeatures().get(3);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getBarChart_AveragedFields() {
+    public EAttribute getBarChart_AveragedFields() {
         return (EAttribute)barChartEClass.getEStructuralFeatures().get(4);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getLineChart() {
+    public EClass getLineChart() {
         return lineChartEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getLineChart_LineNameFormat() {
+    public EAttribute getLineChart_LineNameFormat() {
         return (EAttribute)lineChartEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getHistogramChart() {
+    public EClass getHistogramChart() {
         return histogramChartEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EClass getScatterChart() {
+    public EClass getScatterChart() {
         return scatterChartEClass;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getScatterChart_XDataPattern() {
+    public EAttribute getScatterChart_XDataPattern() {
         return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(0);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getScatterChart_IsoDataPattern() {
+    public EAttribute getScatterChart_IsoDataPattern() {
         return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(1);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EAttribute getScatterChart_AverageReplications() {
+    public EAttribute getScatterChart_AverageReplications() {
         return (EAttribute)scatterChartEClass.getEStructuralFeatures().get(2);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -1080,37 +1080,37 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
 
     /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EEnum getResultType() {
+    public EEnum getResultType() {
         return resultTypeEEnum;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public ScaveModelFactory getScaveModelFactory() {
+    public ScaveModelFactory getScaveModelFactory() {
         return (ScaveModelFactory)getEFactoryInstance();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private boolean isCreated = false;
+    private boolean isCreated = false;
 
-	/**
+    /**
      * Creates the meta-model objects for the package.  This method is
      * guarded to have no affect on any invocation but its first.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void createPackageContents() {
+    public void createPackageContents() {
         if (isCreated) return;
         isCreated = true;
 
@@ -1231,21 +1231,21 @@ public class ScaveModelPackageImpl extends EPackageImpl implements ScaveModelPac
         resultTypeEEnum = createEEnum(RESULT_TYPE);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	private boolean isInitialized = false;
+    private boolean isInitialized = false;
 
-	/**
+    /**
      * Complete the initialization of the package and its meta-model.  This
      * method is guarded to have no affect on any invocation but its first.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void initializePackageContents() {
+    public void initializePackageContents() {
         if (isInitialized) return;
         isInitialized = true;
 

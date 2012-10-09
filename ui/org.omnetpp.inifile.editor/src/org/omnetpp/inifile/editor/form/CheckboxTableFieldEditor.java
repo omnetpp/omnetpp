@@ -41,42 +41,42 @@ import org.omnetpp.inifile.editor.model.SectionKey;
 public class CheckboxTableFieldEditor extends TableFieldEditor {
 
     public CheckboxTableFieldEditor(Composite parent, ConfigOption entry, IInifileDocument inifile, FormPage formPage, String labelText, Map<String,Object> hints) {
-		super(parent, entry, inifile, formPage, labelText, hints);
-	}
+        super(parent, entry, inifile, formPage, labelText, hints);
+    }
 
-	public void setSectionColumnTitle(String text) {
-	    if (entry.isPerObject())  // otherwise there're no table headers
-	        tableViewer.getTable().getColumn(1).setText(text);
-	}
+    public void setSectionColumnTitle(String text) {
+        if (entry.isPerObject())  // otherwise there're no table headers
+            tableViewer.getTable().getColumn(1).setText(text);
+    }
 
-	public void setObjectColumnTitle(String text) {
+    public void setObjectColumnTitle(String text) {
         if (entry.isPerObject())  // otherwise there're no table headers
             tableViewer.getTable().getColumn(0).setText(text);
-	}
+    }
 
-	@Override
-	protected TableViewer createTableViewer(Composite parent) {
-		// set up table viewer and its label provider
-		Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK);
+    @Override
+    protected TableViewer createTableViewer(Composite parent) {
+        // set up table viewer and its label provider
+        Table table = new Table(parent, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION | SWT.CHECK);
         int height;
-		if (!entry.isPerObject()) {
-		    height = 2*table.getItemHeight(); // for some reason, 2* results in 3-line table...
-		}
-		else {
-		    table.setLinesVisible(true);
-		    table.setHeaderVisible(true);
-		    addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 150);
-		    addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 150);
-		    height = table.getHeaderHeight() + 6*table.getItemHeight();
-		}
+        if (!entry.isPerObject()) {
+            height = 2*table.getItemHeight(); // for some reason, 2* results in 3-line table...
+        }
+        else {
+            table.setLinesVisible(true);
+            table.setHeaderVisible(true);
+            addTableColumn(table, getStringHint(HINT_OBJECT_COL_TITLE, "Object"), 150);
+            addTableColumn(table, getStringHint(HINT_SECTION_COL_TITLE, "Section"), 150);
+            height = table.getHeaderHeight() + 6*table.getItemHeight();
+        }
         table.setLayoutData(new GridData(305, height));
 
-		final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
+        final CheckboxTableViewer tableViewer = new CheckboxTableViewer(table);
 
-		// set up label provider
+        // set up label provider
         tableViewer.setLabelProvider(new TableLabelProvider() {
-			@Override
-			public String getColumnText(Object element, int columnIndex) {
+            @Override
+            public String getColumnText(Object element, int columnIndex) {
                 SectionKey sectionKey = (SectionKey) element;
                 if (!entry.isPerObject())
                     switch (columnIndex) {
@@ -89,72 +89,72 @@ public class CheckboxTableFieldEditor extends TableFieldEditor {
                         case 1: return "["+sectionKey.section+"]";
                         default: throw new IllegalArgumentException();
                     }
-			}
-			@Override
-			public Image getColumnImage(Object element, int columnIndex) {
-				if (columnIndex == 0) {
-	                SectionKey sectionKey = (SectionKey) element;
-					IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionKey.section, sectionKey.key, inifile);
-					return getProblemImage(markers, true, true);
-				}
-				return null;
-			}
-		});
+            }
+            @Override
+            public Image getColumnImage(Object element, int columnIndex) {
+                if (columnIndex == 0) {
+                    SectionKey sectionKey = (SectionKey) element;
+                    IMarker[] markers = InifileUtils.getProblemMarkersFor(sectionKey.section, sectionKey.key, inifile);
+                    return getProblemImage(markers, true, true);
+                }
+                return null;
+            }
+        });
 
         // checkbox behavior
-		tableViewer.addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
+        tableViewer.addCheckStateListener(new ICheckStateListener() {
+            public void checkStateChanged(CheckStateChangedEvent event) {
                 SectionKey sectionKey = (SectionKey) event.getElement();
-				String value = event.getChecked() ? "true" : "false";
-				setValueInFile(sectionKey.section, sectionKey.key, value);
-			}
-		});
+                String value = event.getChecked() ? "true" : "false";
+                setValueInFile(sectionKey.section, sectionKey.key, value);
+            }
+        });
 
-		if (entry.isPerObject()) {
-		    // set up cell editor for object column
-		    tableViewer.setColumnProperties(new String[] {"object", "value"});
-		    final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {new TableTextCellEditor(tableViewer,1), null};
-		    tableViewer.setCellEditors(cellEditors);
+        if (entry.isPerObject()) {
+            // set up cell editor for object column
+            tableViewer.setColumnProperties(new String[] {"object", "value"});
+            final TableTextCellEditor[] cellEditors = new TableTextCellEditor[] {new TableTextCellEditor(tableViewer,1), null};
+            tableViewer.setCellEditors(cellEditors);
 
-		    tableViewer.setCellModifier(new ICellModifier() {
-		        public boolean canModify(Object element, String property) {
-		            return property.equals("object");
-		        }
+            tableViewer.setCellModifier(new ICellModifier() {
+                public boolean canModify(Object element, String property) {
+                    return property.equals("object");
+                }
 
-		        public Object getValue(Object element, String property) {
-		            Assert.isTrue(property.equals("object"));
-		            SectionKey sectionKey = (SectionKey) element;
-		            return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
-		        }
-
-		        public void modify(Object element, String property, Object value) {
+                public Object getValue(Object element, String property) {
                     Assert.isTrue(property.equals("object"));
-		            if (element instanceof Item)
-		                element = ((Item) element).getData(); // workaround, see super's comment
-		            SectionKey sectionKey = (SectionKey) element;
-		            renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getName());
-		            tableViewer.refresh();
-		        }
-		    });
+                    SectionKey sectionKey = (SectionKey) element;
+                    return StringUtils.removeEnd(sectionKey.key, "."+entry.getName());
+                }
 
-		    // content assist for the Object column
-		    //TODO see TextTableFieldEditor and InifileParamKeyContentProposalProvider
-		}
+                public void modify(Object element, String property, Object value) {
+                    Assert.isTrue(property.equals("object"));
+                    if (element instanceof Item)
+                        element = ((Item) element).getData(); // workaround, see super's comment
+                    SectionKey sectionKey = (SectionKey) element;
+                    renameKeyInInifile(sectionKey.section, sectionKey.key, value+"."+entry.getName());
+                    tableViewer.refresh();
+                }
+            });
 
- 		return tableViewer;
-	}
+            // content assist for the Object column
+            //TODO see TextTableFieldEditor and InifileParamKeyContentProposalProvider
+        }
 
-	@Override
-	public void reread() {
-		super.reread();
+        return tableViewer;
+    }
 
-		// (Checkbox)TableViewer cannot read the checked state via a label provider-like
-		// interface, so we have to set it explicitly here...
-		ArrayList<SectionKey> list = new ArrayList<SectionKey>();
-		for (SectionKey sectionKey : (SectionKey[]) tableViewer.getInput())
-			if (InifileUtils.parseAsBool(inifile.getValue(sectionKey.section, sectionKey.key)))
-				list.add(sectionKey);
-		((CheckboxTableViewer)tableViewer).setCheckedElements(list.toArray());
-	}
+    @Override
+    public void reread() {
+        super.reread();
+
+        // (Checkbox)TableViewer cannot read the checked state via a label provider-like
+        // interface, so we have to set it explicitly here...
+        ArrayList<SectionKey> list = new ArrayList<SectionKey>();
+        for (SectionKey sectionKey : (SectionKey[]) tableViewer.getInput())
+            if (InifileUtils.parseAsBool(inifile.getValue(sectionKey.section, sectionKey.key)))
+                list.add(sectionKey);
+        ((CheckboxTableViewer)tableViewer).setCheckedElements(list.toArray());
+    }
 
 }

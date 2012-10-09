@@ -46,77 +46,77 @@ import org.omnetpp.scave.model.ScaveModelPackage;
  * @generated
  */
 public class BarChartImpl extends ChartImpl implements BarChart {
-	/**
+    /**
      * The cached value of the '{@link #getGroupByFields() <em>Group By Fields</em>}' attribute list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getGroupByFields()
      * @generated
      * @ordered
      */
-	protected EList<String> groupByFields;
+    protected EList<String> groupByFields;
 
-	/**
+    /**
      * The default value of the '{@link #getGroupNameFormat() <em>Group Name Format</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getGroupNameFormat()
      * @generated
      * @ordered
      */
-	protected static final String GROUP_NAME_FORMAT_EDEFAULT = null;
+    protected static final String GROUP_NAME_FORMAT_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getGroupNameFormat() <em>Group Name Format</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getGroupNameFormat()
      * @generated
      * @ordered
      */
-	protected String groupNameFormat = GROUP_NAME_FORMAT_EDEFAULT;
+    protected String groupNameFormat = GROUP_NAME_FORMAT_EDEFAULT;
 
-	/**
+    /**
      * The default value of the '{@link #getBarNameFormat() <em>Bar Name Format</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getBarNameFormat()
      * @generated
      * @ordered
      */
-	protected static final String BAR_NAME_FORMAT_EDEFAULT = null;
+    protected static final String BAR_NAME_FORMAT_EDEFAULT = null;
 
-	/**
+    /**
      * The cached value of the '{@link #getBarNameFormat() <em>Bar Name Format</em>}' attribute.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getBarNameFormat()
      * @generated
      * @ordered
      */
-	protected String barNameFormat = BAR_NAME_FORMAT_EDEFAULT;
+    protected String barNameFormat = BAR_NAME_FORMAT_EDEFAULT;
 
-	/**
+    /**
      * The cached value of the '{@link #getBarFields() <em>Bar Fields</em>}' attribute list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getBarFields()
      * @generated
      * @ordered
      */
-	protected EList<String> barFields;
+    protected EList<String> barFields;
 
-	/**
+    /**
      * The cached value of the '{@link #getAveragedFields() <em>Averaged Fields</em>}' attribute list.
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @see #getAveragedFields()
      * @generated
      * @ordered
      */
-	protected EList<String> averagedFields;
+    protected EList<String> averagedFields;
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
@@ -125,101 +125,101 @@ public class BarChartImpl extends ChartImpl implements BarChart {
         super();
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
     @Override
-				protected EClass eStaticClass() {
+                protected EClass eStaticClass() {
         return ScaveModelPackage.Literals.BAR_CHART;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<String> getGroupByFields() {
+    public EList<String> getGroupByFields() {
         if (groupByFields == null) {
             groupByFields = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS);
         }
         return groupByFields;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getGroupNameFormat() {
+    public String getGroupNameFormat() {
         return groupNameFormat;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setGroupNameFormat(String newGroupNameFormat) {
+    public void setGroupNameFormat(String newGroupNameFormat) {
         String oldGroupNameFormat = groupNameFormat;
         groupNameFormat = newGroupNameFormat;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.BAR_CHART__GROUP_NAME_FORMAT, oldGroupNameFormat, groupNameFormat));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public String getBarNameFormat() {
+    public String getBarNameFormat() {
         return barNameFormat;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public void setBarNameFormat(String newBarNameFormat) {
+    public void setBarNameFormat(String newBarNameFormat) {
         String oldBarNameFormat = barNameFormat;
         barNameFormat = newBarNameFormat;
         if (eNotificationRequired())
             eNotify(new ENotificationImpl(this, Notification.SET, ScaveModelPackage.BAR_CHART__BAR_NAME_FORMAT, oldBarNameFormat, barNameFormat));
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<String> getBarFields() {
+    public EList<String> getBarFields() {
         if (barFields == null) {
             barFields = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.BAR_CHART__BAR_FIELDS);
         }
         return barFields;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	public EList<String> getAveragedFields() {
+    public EList<String> getAveragedFields() {
         if (averagedFields == null) {
             averagedFields = new EDataTypeUniqueEList<String>(String.class, this, ScaveModelPackage.BAR_CHART__AVERAGED_FIELDS);
         }
         return averagedFields;
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public Object eGet(int featureID, boolean resolve, boolean coreType) {
+    @Override
+    public Object eGet(int featureID, boolean resolve, boolean coreType) {
         switch (featureID) {
             case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
                 return getGroupByFields();
@@ -235,14 +235,14 @@ public class BarChartImpl extends ChartImpl implements BarChart {
         return super.eGet(featureID, resolve, coreType);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@SuppressWarnings("unchecked")
-		@Override
-	public void eSet(int featureID, Object newValue) {
+    @SuppressWarnings("unchecked")
+        @Override
+    public void eSet(int featureID, Object newValue) {
         switch (featureID) {
             case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
                 getGroupByFields().clear();
@@ -266,13 +266,13 @@ public class BarChartImpl extends ChartImpl implements BarChart {
         super.eSet(featureID, newValue);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public void eUnset(int featureID) {
+    @Override
+    public void eUnset(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
                 getGroupByFields().clear();
@@ -293,13 +293,13 @@ public class BarChartImpl extends ChartImpl implements BarChart {
         super.eUnset(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public boolean eIsSet(int featureID) {
+    @Override
+    public boolean eIsSet(int featureID) {
         switch (featureID) {
             case ScaveModelPackage.BAR_CHART__GROUP_BY_FIELDS:
                 return groupByFields != null && !groupByFields.isEmpty();
@@ -315,13 +315,13 @@ public class BarChartImpl extends ChartImpl implements BarChart {
         return super.eIsSet(featureID);
     }
 
-	/**
+    /**
      * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-	@Override
-	public String toString() {
+    @Override
+    public String toString() {
         if (eIsProxy()) return super.toString();
 
         StringBuffer result = new StringBuffer(super.toString());

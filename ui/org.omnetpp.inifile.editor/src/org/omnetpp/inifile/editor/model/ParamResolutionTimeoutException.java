@@ -3,7 +3,7 @@ package org.omnetpp.inifile.editor.model;
 /**
  * Exception thrown when a computation needs parameter resolution,
  * and it did not finished in the specified amount of time.
- * 
+ *
  * @author tomi
  */
 public class ParamResolutionTimeoutException extends Exception {

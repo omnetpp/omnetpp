@@ -22,7 +22,7 @@ public class XSWTEditor extends TextEditor {
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
-        
+
         // open the "XSWTPreview" view
         try {
             IWorkbenchPage workbenchPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -32,7 +32,7 @@ public class XSWTEditor extends TextEditor {
             XswtPlugin.logError(e);
         }
     }
-    
+
     public void dispose() {
         this.colorManager.dispose();
         super.dispose();

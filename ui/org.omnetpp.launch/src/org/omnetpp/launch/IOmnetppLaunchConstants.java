@@ -15,7 +15,7 @@ package org.omnetpp.launch;
  *
  */
 public interface IOmnetppLaunchConstants {
-	public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
+    public static final String SIMULATION_LAUNCH_CONFIGURATION_TYPE = "org.omnetpp.launch.simulationLaunchConfigurationType";
     public static final String CDT_LAUNCH_ID = "org.eclipse.cdt.launch";
     public static final String CDT_DEBUG_CORE_ID ="org.eclipse.cdt.debug.mi.core";
     public static final String OMNETPP_LAUNCH_ID = "org.omnetpp.launch";

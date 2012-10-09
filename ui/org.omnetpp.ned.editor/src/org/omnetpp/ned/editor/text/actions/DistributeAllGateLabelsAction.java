@@ -43,24 +43,24 @@ import org.omnetpp.ned.model.interfaces.INedTypeElement;
  * @author levy
  */
 public class DistributeAllGateLabelsAction extends NedTextEditorAction {
-	public static final String ID = "DistributeAllGateLabels";
+    public static final String ID = "DistributeAllGateLabels";
 
-	public DistributeAllGateLabelsAction(TextualNedEditor editor) {
-		super(ID, editor);
-	}
+    public DistributeAllGateLabelsAction(TextualNedEditor editor) {
+        super(ID, editor);
+    }
 
-	private String getAddGateLabelsText(AddGateLabels addGateLabels) {
-	    INedTypeInfo typeInfo = addGateLabels.gate.getEnclosingTypeElement().getNedTypeInfo();
+    private String getAddGateLabelsText(AddGateLabels addGateLabels) {
+        INedTypeInfo typeInfo = addGateLabels.gate.getEnclosingTypeElement().getNedTypeInfo();
         String packageName = typeInfo.getPackageName();
         String labels = " @labels(" + StringUtils.join(addGateLabels.labels, ",") + ")";
-	    String gateName = addGateLabels.gate.getName();
-	    String gateType = addGateLabels.gate.getAttribute("type");
+        String gateName = addGateLabels.gate.getName();
+        String gateType = addGateLabels.gate.getAttribute("type");
         return typeInfo.getName() + "." + gateName + " (" + gateType + ")" + labels + "          " + packageName;
-	}
+    }
 
-	@Override
-	protected void doRun() {
-	    TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();
+    @Override
+    protected void doRun() {
+        TextualNedEditor textEditor = (TextualNedEditor)getTextEditor();
         ISelection selection = textEditor.getSelectionProvider().getSelection();
 
         if (selection instanceof ITextSelection) {
@@ -79,16 +79,16 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
 
             final Collection<AddGateLabels> runnables = new ArrayList<AddGateLabels>();
 
-		    for (INedTypeElement typeElement : textEditor.getModel().getTopLevelTypeNodes())
-		        runnables.addAll(RefactoringTools.inferAllGateLabels(typeElement, true));
+            for (INedTypeElement typeElement : textEditor.getModel().getTopLevelTypeNodes())
+                runnables.addAll(RefactoringTools.inferAllGateLabels(typeElement, true));
 
-	        CheckedTreeSelectionDialog dialog = new CheckedTreeSelectionDialog(null,
+            CheckedTreeSelectionDialog dialog = new CheckedTreeSelectionDialog(null,
                 new LabelProvider() {
                     @Override
                     public String getText(Object element) {
                         return getAddGateLabelsText((AddGateLabels)element);
                     }
-	            },
+                },
                 new ITreeContentProvider() {
                     public Object[] getChildren(Object parentElement) {
                         return null;
@@ -114,8 +114,8 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                         // void
                     }
 
-	        });
-	        dialog.setSize(100, 40);
+            });
+            dialog.setSize(100, 40);
             dialog.setTitle("Select Gates");
             dialog.setMessage("Select labels that should be added:");
             dialog.setHelpAvailable(false);
@@ -171,6 +171,6 @@ public class DistributeAllGateLabelsAction extends NedTextEditorAction {
                 for (NedEditor nedEditor : switchedEditors)
                     nedEditor.setActiveEditor(nedEditor.getTextEditor());
             }
-		}
-	}
+        }
+    }
 }

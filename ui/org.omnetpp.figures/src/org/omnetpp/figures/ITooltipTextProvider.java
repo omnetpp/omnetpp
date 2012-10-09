@@ -11,8 +11,8 @@ package org.omnetpp.figures;
  * @author Andras
  */
 public interface ITooltipTextProvider {
-	/**
-	 * Receives canvas coordinates.
-	 */
-	String getTooltipText(int x, int y);
+    /**
+     * Receives canvas coordinates.
+     */
+    String getTooltipText(int x, int y);
 }

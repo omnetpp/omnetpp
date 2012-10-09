@@ -11,14 +11,14 @@ import org.omnetpp.ned.model.notification.NedModelEvent;
 
 public class NedModelReadOnlyEvent extends NedModelEvent
 {
-	private boolean readOnly;
+    private boolean readOnly;
 
-	public NedModelReadOnlyEvent(NedFileElementEx source, boolean editable) {
-		super(source);
-		this.readOnly = editable;
-	}
+    public NedModelReadOnlyEvent(NedFileElementEx source, boolean editable) {
+        super(source);
+        this.readOnly = editable;
+    }
 
-	public boolean getEditable() {
-		return readOnly;
-	}
+    public boolean getEditable() {
+        return readOnly;
+    }
 }

@@ -17,36 +17,36 @@ import org.apache.commons.lang.ObjectUtils;
  */
 public class Pair<T1,T2> {
 
-	public T1 first;
-	public T2 second;
+    public T1 first;
+    public T2 second;
 
-	public Pair(T1 first, T2 second) {
-		this.first = first;
-		this.second = second;
-	}
+    public Pair(T1 first, T2 second) {
+        this.first = first;
+        this.second = second;
+    }
 
-	public static <T1,T2> Pair<T1,T2> pair(T1 first, T2 second) {
-		return new Pair<T1,T2>(first, second);
-	}
+    public static <T1,T2> Pair<T1,T2> pair(T1 first, T2 second) {
+        return new Pair<T1,T2>(first, second);
+    }
 
-	@Override
-	public int hashCode() {
-		return ObjectUtils.hashCode(first) ^ ObjectUtils.hashCode(second);
-	}
+    @Override
+    public int hashCode() {
+        return ObjectUtils.hashCode(first) ^ ObjectUtils.hashCode(second);
+    }
 
-	@Override
-	public boolean equals(Object other) {
-		if (this == other)
-			return true;
-		if (other == null || getClass() != other.getClass())
-			return false;
-		Pair<?,?> otherPair = (Pair<?,?>)other;
-		return ObjectUtils.equals(first, otherPair.first) &&
-				ObjectUtils.equals(second, otherPair.second);
-	}
+    @Override
+    public boolean equals(Object other) {
+        if (this == other)
+            return true;
+        if (other == null || getClass() != other.getClass())
+            return false;
+        Pair<?,?> otherPair = (Pair<?,?>)other;
+        return ObjectUtils.equals(first, otherPair.first) &&
+                ObjectUtils.equals(second, otherPair.second);
+    }
 
-	@Override
-	public String toString() {
-	    return "(" + first.toString() + ", " + second.toString() + ")";
-	}
+    @Override
+    public String toString() {
+        return "(" + first.toString() + ", " + second.toString() + ")";
+    }
 }
