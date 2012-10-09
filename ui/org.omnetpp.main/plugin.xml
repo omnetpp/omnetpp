@@ -284,6 +284,12 @@
    <extension
          point="org.eclipse.ui.commands">
       <command
+            categoryId="org.eclipse.ui.category.project"
+            defaultHandler="org.omnetpp.common.handlers.FullScreenHandler"
+            id="org.omnetpp.common.handlers.fullScreen"
+            name="Full Screen">
+      </command>
+      <command
             categoryId="org.eclipse.ui.category.help"
             defaultHandler="org.omnetpp.ide.ReportBugHandler"
             description="Report a bug or enhancement in the OMNeT++ bugtracker"
@@ -292,7 +298,22 @@
       </command>
    </extension>
    <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.omnetpp.common.handlers.fullScreen"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+Shift+F11">
+      </key>
+   </extension>
+   <extension
          point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:window?after=additions">
+         <command
+               commandId="org.omnetpp.common.handlers.fullScreen"
+               id="fullScreen">
+         </command>
+      </menuContribution>
       <menuContribution
             locationURI="menu:help?before=helpEnd">
             <command
