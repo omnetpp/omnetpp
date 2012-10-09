@@ -77,7 +77,7 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
             inspectorContainer.select(getObject(), true);
         //note: no me.consume()! it would kill the move/resize listener
     }
-    
+
     @Override
     public int getDragOperation(IFigure figure, int x, int y) {
         return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, figure.getBounds());

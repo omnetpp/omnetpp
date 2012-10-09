@@ -42,7 +42,7 @@ public class DragHandle extends ControlContribution {
         dragHandle = new Label(parent, SWT.NONE);
         dragHandle.setImage(IMG_DRAGHANDLE);
         dragHandle.setToolTipText("Drag handle");
-    
+
         // configure drag handle (allows inspector to be moved around with the mouse)
         dragHandle.addMouseListener(new MouseAdapter() {
             public void mouseDown(MouseEvent e) {
@@ -57,8 +57,8 @@ public class DragHandle extends ControlContribution {
                 inspector.raiseToTop();
 
                 // By default draw2d updates canvas bounds continually while dragging, which
-                // results in a weird effect: when dragging up an inspector from near the bottom 
-                // of the canvas and the canvas shrinks as a result, the mouse overtakes the 
+                // results in a weird effect: when dragging up an inspector from near the bottom
+                // of the canvas and the canvas shrinks as a result, the mouse overtakes the
                 // drag handle and other interesting things happen. The workaround is to disable
                 // updating the canvas bounds while dragging; this can be achieved by setting
                 // preferredSize.
@@ -75,7 +75,7 @@ public class DragHandle extends ControlContribution {
                 contents.setPreferredSize(null);
             }
         });
-        
+
         dragHandle.addMouseMoveListener(new MouseMoveListener() {
             public void mouseMove(MouseEvent e) {
                 if (dragInProgress && (e.stateMask&SWT.BUTTON_MASK) != SWT.BUTTON1)
@@ -83,12 +83,12 @@ public class DragHandle extends ControlContribution {
                 if (dragInProgress) {
                     Point p = Display.getCurrent().getCursorLocation();
                     IInspectorContainer inspectorContainer = inspector.getContainer();
-                    org.eclipse.draw2d.geometry.Point pp = inspectorContainer.translateCanvasToAbsoluteFigureCoordinates(p.x, p.y); // well, p is screen coord not canvas, but here it only affects moveOffset  
+                    org.eclipse.draw2d.geometry.Point pp = inspectorContainer.translateCanvasToAbsoluteFigureCoordinates(p.x, p.y); // well, p is screen coord not canvas, but here it only affects moveOffset
                     IInspectorFigure figure = inspector.getFigure();
                     Rectangle r = figure.getBounds().getCopy();
                     r.setLocation(pp.x + moveOffsetX, pp.y + moveOffsetY);
 
-                    // don't allow inspectors to stick out on the left or top, because 
+                    // don't allow inspectors to stick out on the left or top, because
                     // it can be difficult or impossible to bring them back
                     if (r.x < 0) r.x = 0;
                     if (r.y < 0) r.y = 0;
@@ -96,9 +96,9 @@ public class DragHandle extends ControlContribution {
                 }
             }
         });
-        
+
         return dragHandle;
     }
-    
+
 }
 

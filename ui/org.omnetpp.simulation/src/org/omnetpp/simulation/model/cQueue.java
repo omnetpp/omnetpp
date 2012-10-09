@@ -19,7 +19,7 @@ public class cQueue extends cObject {
     public int getCount() {
         return count;
     }
-    
+
     @Override
     @SuppressWarnings("rawtypes")
     protected void doFillFromJSON(Map jsonObject) {

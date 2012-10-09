@@ -20,42 +20,42 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
  * @author andras
  */
 public class DelegatingSelectionProvider implements ISelectionProvider {
-	private ListenerList listeners = new ListenerList();
-	private ISelectionProvider currentSelectionProvider = null;
+    private ListenerList listeners = new ListenerList();
+    private ISelectionProvider currentSelectionProvider = null;
 
-	private ISelectionChangedListener listener = new ISelectionChangedListener() {
+    private ISelectionChangedListener listener = new ISelectionChangedListener() {
         public void selectionChanged(SelectionChangedEvent event) {
             fireSelectionChanged(event);
         }
-    }; 
-	
-	public DelegatingSelectionProvider() {
-	}
+    };
 
-	public void setSelectionProvider(ISelectionProvider selectionProvider) {
-	    if (currentSelectionProvider != null)
-	        currentSelectionProvider.removeSelectionChangedListener(listener);
-	    currentSelectionProvider = selectionProvider;
-	    currentSelectionProvider.addSelectionChangedListener(listener);
-	    
-	    SelectionChangedEvent e = new SelectionChangedEvent(selectionProvider, selectionProvider.getSelection());
+    public DelegatingSelectionProvider() {
+    }
+
+    public void setSelectionProvider(ISelectionProvider selectionProvider) {
+        if (currentSelectionProvider != null)
+            currentSelectionProvider.removeSelectionChangedListener(listener);
+        currentSelectionProvider = selectionProvider;
+        currentSelectionProvider.addSelectionChangedListener(listener);
+
+        SelectionChangedEvent e = new SelectionChangedEvent(selectionProvider, selectionProvider.getSelection());
         fireSelectionChanged(e);
-	}
-	
-	private void fireSelectionChanged(SelectionChangedEvent event) {
-		for (Object listener : listeners.getListeners())
-			((ISelectionChangedListener)listener).selectionChanged(event); //TODO SafeRunner, etc
-	}
+    }
 
-	public void setSelection(ISelection selection) {
-	    currentSelectionProvider.setSelection(selection);
-	}
-	
-	public ISelection getSelection() {
-		return currentSelectionProvider.getSelection();
-	}
+    private void fireSelectionChanged(SelectionChangedEvent event) {
+        for (Object listener : listeners.getListeners())
+            ((ISelectionChangedListener)listener).selectionChanged(event); //TODO SafeRunner, etc
+    }
 
-	public void addSelectionChangedListener(ISelectionChangedListener listener) {
+    public void setSelection(ISelection selection) {
+        currentSelectionProvider.setSelection(selection);
+    }
+
+    public ISelection getSelection() {
+        return currentSelectionProvider.getSelection();
+    }
+
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
         listeners.add(listener);
     }
 

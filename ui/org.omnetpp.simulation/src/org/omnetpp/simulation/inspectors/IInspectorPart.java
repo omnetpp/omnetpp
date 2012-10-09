@@ -93,17 +93,17 @@ public interface IInspectorPart {
      * coordinates (figure coordinates), return a binary OR of the appropriate
      * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise return 0.
      * For move operation it should set all four.
-     * 
+     *
      * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
      */
     int getDragOperation(IFigure figure, int x, int y);
 
     /**
-     * For SWT-based inspectors. If there's a move/resize handle in the given control 
+     * For SWT-based inspectors. If there's a move/resize handle in the given control
      * at the given coordinates (control coordinates), return a binary OR of the appropriate
      * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise return 0.
      * For move operation it should set all four.
-     * 
+     *
      * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
      */
     int getDragOperation(Control control, int x, int y);

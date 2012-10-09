@@ -28,15 +28,15 @@ import org.omnetpp.simulation.model.cSimulation;
 /**
  * Director of the animated movie: translates log entries into a set of animation primitives.
  * Animations appear on the simulation canvas.
- * 
+ *
  * @author Andras
  */
 public class AnimationDirector {
     private SimulationCanvas simulationCanvas;
     private Simulation simulation;
 
-    private class AnimStep { 
-        cModule src, dest; 
+    private class AnimStep {
+        cModule src, dest;
         AnimStep(cModule src, cModule dest) {this.src = src; this.dest = dest;}
         public String toString() { return src + "-->" + dest; }
     };
@@ -44,7 +44,7 @@ public class AnimationDirector {
     /**
      * An ad-hoc collection of variables needed while we are generating the animation primitives
      */
-    protected class State { 
+    protected class State {
         double time = 0;  // current animation time
         cMessage messageBeingSent = null;  // set by BeginSend, cleared by EndSend
         Stack<List<MethodCallAnimation>> methodCallStack = new Stack<List<MethodCallAnimation>>(); // active method calls (every call may consist of several arrows)
@@ -63,7 +63,7 @@ public class AnimationDirector {
 
         List<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
 
-        // Act One: animate current event (zero time duration) 
+        // Act One: animate current event (zero time duration)
         for (Object o : event.logItems) {
             if (o instanceof BeginSendEntry)
                 doBeginSendEntry((BeginSendEntry)o, animationPrimitives, state);
@@ -126,19 +126,19 @@ public class AnimationDirector {
 
     protected void doSendDirectEntry(MessageSendDirectEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
         Assert.isTrue(state.messageBeingSent != null, "missing BeginSend");
-        cModule srcModule = e.srcModule; 
+        cModule srcModule = e.srcModule;
         loadContextualObjects(srcModule);
         cGate destGate = e.destGate;
         loadContextualObjects(destGate);
         cModule destModule = destGate.getOwnerModule();
 
         // Note: srcModule and destModule may be at completely unrelated places in the module hierarchy,
-        // so we need to animate from srcModule up to their common ancestor compound module, 
+        // so we need to animate from srcModule up to their common ancestor compound module,
         // then between two submodules inside the common ancestor, then down to destModule
 
         // first, assemble the path
         List<AnimStep> path = findSendDirectPath(srcModule, destModule);
-        
+
         // then add the animations
         for (AnimStep step : path) {
             cModule containingModule = step.src != null ? step.src.getParentModule() : step.dest.getParentModule();
@@ -162,10 +162,10 @@ public class AnimationDirector {
         cModule destModule = state.csimulation.getModuleById(e.destModuleId);
 
         // src and/or dest module may have been deleted later during the same event; if so, skip the animation
-        if (srcModule != null && destModule != null) {  
+        if (srcModule != null && destModule != null) {
 
             // Note: srcModule and destModule may be at completely unrelated places in the module hierarchy,
-            // so we need to animate from srcModule up to their common ancestor compound module, 
+            // so we need to animate from srcModule up to their common ancestor compound module,
             // then between two submodules inside the common ancestor, then down to destModule
 
             // first, assemble the path
@@ -195,7 +195,7 @@ public class AnimationDirector {
 
     protected void doMethodEndEntry(ComponentMethodEndEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
         Assert.isTrue(!state.methodCallStack.isEmpty(), "unmatched ComponentMethodEnd");
-        
+
         // remove all arrows that this call consists of
         List<MethodCallAnimation> methodCallAnimationList = state.methodCallStack.pop();
         if (methodCallAnimationList != null) { // i.e. it was animated
@@ -204,7 +204,7 @@ public class AnimationDirector {
                 a.setRemovalTime(state.time);
         }
     }
-    
+
     protected String makeMessageLabel(cMessage message) {
         if (!message.isFilledIn())
             message.safeLoad();

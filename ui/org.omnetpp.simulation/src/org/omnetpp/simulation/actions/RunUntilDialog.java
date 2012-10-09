@@ -121,8 +121,8 @@ public class RunUntilDialog extends TrayDialog {
         expressRunButton.setText("Express");
 
         // track focus so we can save/restore it (in okPressed() it's too late)
-        FocusListener focusListener = new FocusAdapter() { 
-            public void focusGained(FocusEvent e) { lastFocus = e.widget; } 
+        FocusListener focusListener = new FocusAdapter() {
+            public void focusGained(FocusEvent e) { lastFocus = e.widget; }
         };
         simtimeText.addFocusListener(focusListener);
         eventNumberText.addFocusListener(focusListener);
@@ -175,7 +175,7 @@ public class RunUntilDialog extends TrayDialog {
             return RunMode.FAST;
         else if (expressRunButton.getSelection())
             return RunMode.EXPRESS;
-        else 
+        else
             return RunMode.NONE;
     }
 

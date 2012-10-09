@@ -17,12 +17,12 @@ import org.eclipse.draw2d.geometry.PointList;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class MethodCallAnimation extends AbstractAnimationPrimitive {
     private IFigure layer;
-    private PolylineConnection arrowFigure; //TODO use a PolylineConnection; plus see ConnectionFigure.setArrowHeadEnabled() for creating an arrowhead 
+    private PolylineConnection arrowFigure; //TODO use a PolylineConnection; plus see ConnectionFigure.setArrowHeadEnabled() for creating an arrowhead
     private Point startLocation, endLocation;  //TODO connection anchors
     private double creationTime, removalTime;
     private String methodCallText;
@@ -33,23 +33,23 @@ public class MethodCallAnimation extends AbstractAnimationPrimitive {
         this.startLocation = startLocation;
         this.endLocation = endLocation;
         this.creationTime = creationTime;
-        // and to set this.removalTime use setRemovalTime() 
+        // and to set this.removalTime use setRemovalTime()
     }
 
     // needed because we only learn this later!
     public void setRemovalTime(double removalTime) {
         this.removalTime = removalTime;
     }
-    
+
     @Override
     public boolean updateFor(double time) {
         if (time < creationTime) {
             return true;
-        } 
+        }
         else if (time >= removalTime) {
             removeFigure();
             return false;
-        } 
+        }
         else {
             if (arrowFigure == null) {
                 arrowFigure = new PolylineConnection();

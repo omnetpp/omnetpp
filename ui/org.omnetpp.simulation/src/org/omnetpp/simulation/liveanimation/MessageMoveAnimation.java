@@ -12,7 +12,7 @@ import org.eclipse.draw2d.geometry.Point;
 import org.omnetpp.simulation.figures.MessageFigure;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class MessageMoveAnimation extends AbstractAnimationPrimitive {

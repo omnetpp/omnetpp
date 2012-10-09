@@ -73,7 +73,7 @@ public class Simulation {
     public enum SimState {
         DISCONNECTED, // no simulation process, e.g. it has terminated
         NONETWORK, READY, RUNNING, TERMINATED /*TODO COMPLETED -- ez egyebkent nincs sose!!*/, ERROR, FINISHCALLED  // as defined in cmdenv.h
-        //TODO consider: BUSY (or ==INPROGRESS) and CANCELLED (useful if setupNetwork() and callFinish() can be cancelled) 
+        //TODO consider: BUSY (or ==INPROGRESS) and CANCELLED (useful if setupNetwork() and callFinish() can be cancelled)
     };
 
     public enum RunMode {
@@ -81,7 +81,7 @@ public class Simulation {
     }
 
     public enum StoppingReason {
-        NONE, UNTILSIMTIME, UNTILEVENT, UNTILMODULE, UNTILMESSAGE, 
+        NONE, UNTILSIMTIME, UNTILEVENT, UNTILMODULE, UNTILMESSAGE,
         REALTIMECHUNK, STOPCOMMAND, TERMINATION;
         static boolean isUntil(StoppingReason r) {return r==UNTILSIMTIME || r==UNTILEVENT || r==UNTILMODULE || r==UNTILMESSAGE;}
     };
@@ -469,7 +469,7 @@ public class Simulation {
 
         // if we added something to the log, tell everyone interested about it
         if (lastEventEntry != null)
-            logBuffer.fireChangeNotification();  
+            logBuffer.fireChangeNotification();
 
         return request;
     }
@@ -478,7 +478,7 @@ public class Simulation {
         //
         // Maintain object cache:
         // - purge objects from cache that are unreferenced in Java, or have been deleted from C++;
-        //   also unload (~clear) objects that have not been accessed lately, to reduce HTTP load 
+        //   also unload (~clear) objects that have not been accessed lately, to reduce HTTP load
         //   and allow other objects they reference to be garbage collected
         // - refresh contents of already-filled objects
         // - refresh the detail fields of loaded objects too (where filled in)
@@ -486,7 +486,7 @@ public class Simulation {
         List<Long> garbage = new ArrayList<Long>();
         List<cObject> objectsToReload = new ArrayList<cObject>();
         List<cObject> objectsToReloadFields = new ArrayList<cObject>();
-        int numFilled = 0, numUnloads = 0; 
+        int numFilled = 0, numUnloads = 0;
         for (Long id : cachedObjects.keySet()) {
             cObject obj = cachedObjects.get(id).get();
             if (obj == null) {
@@ -513,7 +513,7 @@ public class Simulation {
         doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT);
         doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS);
 
-        if (debugCache) 
+        if (debugCache)
             Debug.println("Object cache after refresh: size " + cachedObjects.size() + " (" + (numFilled-numUnloads) + " filled); " +
                     "refresh purged " + garbage.size() + ", unloaded " + numUnloads + ", reloaded " + objectsToReload.size() + ", fields-reloaded " + objectsToReloadFields.size());
     }

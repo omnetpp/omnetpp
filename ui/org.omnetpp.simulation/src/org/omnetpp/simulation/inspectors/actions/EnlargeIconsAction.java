@@ -9,7 +9,7 @@ public class EnlargeIconsAction extends AbstractInspectorAction {
     public EnlargeIconsAction() {
         super("Enlarge icons", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_ENLARGEICONS));
     }
-    
+
     @Override
     public void run() {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();

@@ -81,7 +81,7 @@ public class SimulationController implements ISimulationCallback {
     // msg ptr, ID, name, className (ptr is not enough, because message itself may have been deleted already)
     //TODO group eventnum,simtime,module,msg into an EventInfo class?
 
-    public int getEventModuleId() { 
+    public int getEventModuleId() {
         return isLastEventAnimationDone() ? simulation.getNextEventModuleIdGuess() : 0 /*XXX no getLastEventModuleId*/;
     }
 
@@ -253,8 +253,8 @@ public class SimulationController implements ISimulationCallback {
         }
 
         long untilEvent = (runUntilEventNumber == 0 && eventDelta == 0) ? 0 :
-            runUntilEventNumber == 0 ? simulation.getLastEventNumber()+eventDelta : 
-                eventDelta == 0 ? runUntilEventNumber : 
+            runUntilEventNumber == 0 ? simulation.getLastEventNumber()+eventDelta :
+                eventDelta == 0 ? runUntilEventNumber :
                 Math.min(runUntilEventNumber, simulation.getLastEventNumber()+eventDelta);
 
         // tell process to run...
@@ -348,15 +348,15 @@ public class SimulationController implements ISimulationCallback {
     }
 
     /**
-     * Repeatedly issue refreshStatus() until the state reported by simulation process becomes 
+     * Repeatedly issue refreshStatus() until the state reported by simulation process becomes
      * the expected state, or a quasi terminal state (TERMINATED, ERROR or DISCONNECTED).
      * The caller should check which one occurred.
      */
     public void refreshUntil(SimState expectedState) throws IOException {
-        //TODO this method is called after sending commands for potentially long-running operations 
+        //TODO this method is called after sending commands for potentially long-running operations
         // in the simulation process, e.g. setting up a network, calling finish, or processing and event.
         // Then HTTP (or this loop) will keep up the UI thread and make the IDE nonresponsive.
-        // So, this whole thing should be probably done in a background thread, and report completion 
+        // So, this whole thing should be probably done in a background thread, and report completion
         // via a callback...
         //TODO or, at least bring up a cancellable progress dialog after a few seconds
 

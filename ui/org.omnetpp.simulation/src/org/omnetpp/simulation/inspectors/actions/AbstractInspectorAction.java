@@ -7,7 +7,7 @@ import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * Abstract base class for inspector-related actions
- * 
+ *
  * @author Andras
  */
 public class AbstractInspectorAction extends Action implements IInspectorAction {
@@ -15,7 +15,7 @@ public class AbstractInspectorAction extends Action implements IInspectorAction 
 
     public AbstractInspectorAction() {
     }
-    
+
     public AbstractInspectorAction(String text, int style, ImageDescriptor image) {
         super(text, style);
         setToolTipText(text);  //XXX as a default
@@ -33,7 +33,7 @@ public class AbstractInspectorAction extends Action implements IInspectorAction 
         this.inspector = inspector;
         update();
     }
-    
+
     public IInspectorPart getInspectorPart() {
         Assert.isNotNull(inspector, "setInspectorPart() should have been called");
         return inspector;

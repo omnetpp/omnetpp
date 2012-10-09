@@ -7,15 +7,15 @@ import org.eclipse.ui.IPersistableElement;
 
 /**
  * IEditorInput for launching SimulationEditor, the simulation front-end.
- * 
+ *
  * @author Andras
  */
 public class SimulationEditorInput implements IEditorInput {
-	private String name;
-	private String hostName = "localhost";
-	private int portNumber = 4242;
+    private String name;
+    private String hostName = "localhost";
+    private int portNumber = 4242;
     private Job launcherJob;
-	
+
 
     public SimulationEditorInput(String name, String hostName, int portNumber, Job launcherJob) {
         this.name = name;
@@ -23,7 +23,7 @@ public class SimulationEditorInput implements IEditorInput {
         this.portNumber = portNumber;
         this.launcherJob = launcherJob;
     }
-    
+
     //@Override
     public boolean exists() {
         return false;
@@ -45,14 +45,14 @@ public class SimulationEditorInput implements IEditorInput {
     public String getHostName() {
         return hostName;
     }
-    
+
     /**
      * Port where the simulation listens to HTTP requests.
      */
     public int getPortNumber() {
         return portNumber;
     }
-    
+
     public Job getLauncherJob() {
         return launcherJob;
     }

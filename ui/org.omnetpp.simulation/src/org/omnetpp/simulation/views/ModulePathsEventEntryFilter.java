@@ -31,7 +31,7 @@ public class ModulePathsEventEntryFilter implements IEventEntryFilter {
         }
         return false;
     }
-    
+
     @Override
     public String toString() {
         return moduleFullPaths.toString();

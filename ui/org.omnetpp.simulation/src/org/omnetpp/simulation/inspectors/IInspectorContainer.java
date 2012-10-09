@@ -67,27 +67,27 @@ public interface IInspectorContainer extends ISelectionProvider {
     Layer getControlsLayer();
 
     /**
-     * TODO 
+     * TODO
      */
     void openFloatingToolbarFor(IInspectorPart inspector);
-    
+
     /**
-     * TODO 
+     * TODO
      */
     void closeFloatingToolbar();
 
     /**
-     * TODO 
+     * TODO
      */
     Control getFloatingToolbar();
 
     /**
-     * TODO 
+     * TODO
      */
     IInspectorPart getFloatingToolbarOwner();
 
     /**
-     * TODO 
+     * TODO
      */
     void updateFloatingToolbarActions();
 
@@ -101,7 +101,7 @@ public interface IInspectorContainer extends ISelectionProvider {
      * TODO
      */
     void removeMoveResizeSupport(IFigure figure);
-    
+
     /**
      * TODO
      */

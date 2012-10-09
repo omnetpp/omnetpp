@@ -27,7 +27,7 @@ public class cComponent extends cObject {
         checkState();
         return componentType;
     }
-    
+
     public String getNedTypeName() {
         checkState();
         if (componentType == null)
@@ -36,7 +36,7 @@ public class cComponent extends cObject {
             componentType.safeLoad();
         return componentType.getFullName();
     }
-    
+
     @Override
     public String getShortTypeName() {
         if (shortTypeName == null) {
@@ -46,7 +46,7 @@ public class cComponent extends cObject {
         }
         return shortTypeName;
     }
-    
+
     public cModule getParentModule() {
         checkState();
         return parentModule;

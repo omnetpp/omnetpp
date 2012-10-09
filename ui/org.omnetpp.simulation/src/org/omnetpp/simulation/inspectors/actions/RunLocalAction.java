@@ -9,7 +9,7 @@ import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.model.cModule;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class RunLocalAction extends AbstractInspectorAction {

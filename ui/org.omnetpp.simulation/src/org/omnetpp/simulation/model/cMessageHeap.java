@@ -7,7 +7,7 @@ import java.util.Map;
 import org.omnetpp.simulation.controller.Simulation;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class cMessageHeap extends cObject {

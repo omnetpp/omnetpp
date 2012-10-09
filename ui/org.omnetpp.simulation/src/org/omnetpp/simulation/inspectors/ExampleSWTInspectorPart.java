@@ -49,7 +49,7 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
     @Override
     public void populateFloatingToolbar(ToolBarManager manager) {
     }
-    
+
     @Override
     public void refresh() {
         super.refresh();

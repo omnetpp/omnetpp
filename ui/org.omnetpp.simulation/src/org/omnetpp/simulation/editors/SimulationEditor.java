@@ -379,7 +379,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             return new SimulationObjectPropertySheetPage();
         return super.getAdapter(adapter);
     }
-    
+
     public SimulationController getSimulationController() {
         return simulationController;
     }
@@ -480,7 +480,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         InputDialog dialog = new InputDialog(getSite().getShell(), "Simulation", prompt, defaultValue, null);
         if (dialog.open() != Dialog.OK)
             return null;
-        else 
+        else
             return dialog.getValue();
     }
 

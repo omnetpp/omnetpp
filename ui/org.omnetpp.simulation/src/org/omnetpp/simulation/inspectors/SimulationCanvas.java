@@ -126,7 +126,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         });
 
         // add advanced tooltip support for inspectors -- TODO make use of this!!!
-        FigureUtils.addTooltipSupport(this, this.getContents());  
+        FigureUtils.addTooltipSupport(this, this.getContents());
 
         // add move/resize support inspectors
         moveResizeSupport = new MoveResizeSupport(this);
@@ -193,7 +193,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         }
         return null;
     }
-    
+
     @Override
     public FigureCanvas getControl() {
         return this;

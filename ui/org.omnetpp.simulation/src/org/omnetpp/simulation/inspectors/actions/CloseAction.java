@@ -9,7 +9,7 @@ public class CloseAction extends AbstractInspectorAction {
     public CloseAction() {
         super("Close", AS_PUSH_BUTTON, PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
     }
-    
+
     @Override
     public void run() {
         IInspectorPart inspector = getInspectorPart();

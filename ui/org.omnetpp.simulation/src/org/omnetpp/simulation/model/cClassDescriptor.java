@@ -6,7 +6,7 @@ import org.omnetpp.simulation.controller.Simulation;
 
 /**
  * TODO
- * 
+ *
  * @author Andras
  */
 public class cClassDescriptor extends cObject {

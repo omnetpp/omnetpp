@@ -4,7 +4,7 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.swt.SWT;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class FigureUtils extends org.omnetpp.figures.misc.FigureUtils {

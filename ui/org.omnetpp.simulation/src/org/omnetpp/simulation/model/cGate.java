@@ -88,7 +88,7 @@ public class cGate extends cObject {
         nextGate = (cGate) getSimulation().getObjectByJSONRef((String) jsonObject.get("nextGate"));
         channel = (cChannel) getSimulation().getObjectByJSONRef((String) jsonObject.get("channel"));
     }
-    
+
     protected void clearReferences() {
         super.clearReferences();
         ownerModule = null;

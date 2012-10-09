@@ -41,7 +41,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private Composite frame;
     private Label label;
     private ObjectFieldsViewer viewer;
-    
+
     public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
         super(parent, object);
     }
@@ -53,7 +53,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
         boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
         boolean isContainer = (object instanceof cModule) || (object instanceof cQueue) || (object instanceof cArray);
-        Mode initialMode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET : 
+        Mode initialMode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET :
             isContainer ? ObjectFieldsViewer.Mode.CHILDREN : ObjectFieldsViewer.Mode.GROUPED;
 
         frame = new Composite(parent, SWT.BORDER);
@@ -151,7 +151,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
             viewer.refresh();
         }
     }
-    
+
     @Override
     public int getDragOperation(Control control, int x, int y) {
         Point size = control.getSize();

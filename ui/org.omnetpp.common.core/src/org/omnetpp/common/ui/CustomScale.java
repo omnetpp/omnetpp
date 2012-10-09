@@ -30,12 +30,12 @@ import org.omnetpp.common.color.ColorFactory;
 /**
  * Custom Scale control. Needed because the normal Scale's height cannot
  * be small enough to fit into a toolbar (Windows).
- * 
+ *
  * Intended to be a drop-in replacement of Scale.
- * 
+ *
  * Can be rendered in two styles: 3D or flat. 3D is the default; flat can be
  * selected with the SWT.FLAT style bit.
- * 
+ *
  * @author Andras
  */
 public class CustomScale extends Canvas {
@@ -228,7 +228,7 @@ public class CustomScale extends Canvas {
         Rectangle r = getClientArea();
         double selection01 = (handleLeft - marginWidth  + handleWidth/2) / (double)(r.width - 2*marginWidth);
         int selection = minimum + (int)(selection01 * (double)(maximum - minimum));
-        selection = Math.max(minimum, Math.min(maximum, selection)); 
+        selection = Math.max(minimum, Math.min(maximum, selection));
         return selection;
     }
 

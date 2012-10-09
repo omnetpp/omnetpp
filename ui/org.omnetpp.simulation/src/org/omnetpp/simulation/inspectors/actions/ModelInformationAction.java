@@ -10,7 +10,7 @@ public class ModelInformationAction extends AbstractInspectorAction {
     public ModelInformationAction() {
         super("Model information", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_INFO));
     }
-    
+
     @Override
     public void run() {
         cComponent component = (cComponent) getInspectorPart().getObject();

@@ -5,7 +5,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.Assert;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class FieldDescriptor {

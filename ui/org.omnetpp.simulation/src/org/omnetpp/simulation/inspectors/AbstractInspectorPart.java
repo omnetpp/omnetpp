@@ -133,7 +133,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         Point size = control.getSize();
         return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, new Rectangle(0, 0, size.x, size.y));
     }
-    
+
     @Override
     public String toString() {
         if (object.isDisposed())

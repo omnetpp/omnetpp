@@ -50,7 +50,7 @@ public class MoveResizeSupport {
      */
     public MoveResizeSupport(SimulationCanvas canvas) {
         this.simulationCanvas = canvas;
-        
+
         mouseListener = new MouseListener.Stub() {
             @Override
             public void mousePressed(MouseEvent me) {
@@ -69,8 +69,8 @@ public class MoveResizeSupport {
                 inspector.raiseToTop();
 
                 // By default draw2d updates canvas bounds continually while dragging, which
-                // results in a weird effect: when dragging up an inspector from near the bottom 
-                // of the canvas and the canvas shrinks as a result, the mouse overtakes the 
+                // results in a weird effect: when dragging up an inspector from near the bottom
+                // of the canvas and the canvas shrinks as a result, the mouse overtakes the
                 // drag handle and other interesting things happen. The workaround is to disable
                 // updating the canvas bounds while dragging; this can be achieved by setting
                 // preferredSize. (See also DragHandle.)
@@ -129,15 +129,15 @@ public class MoveResizeSupport {
                 inspector.raiseToTop();
 
                 // By default draw2d updates canvas bounds continually while dragging, which
-                // results in a weird effect: when dragging up an inspector from near the bottom 
-                // of the canvas and the canvas shrinks as a result, the mouse overtakes the 
+                // results in a weird effect: when dragging up an inspector from near the bottom
+                // of the canvas and the canvas shrinks as a result, the mouse overtakes the
                 // drag handle and other interesting things happen. The workaround is to disable
                 // updating the canvas bounds while dragging; this can be achieved by setting
                 // preferredSize. (See also DragHandle.)
                 IFigure contents = simulationCanvas.getContents();
                 contents.setPreferredSize(contents.getPreferredSize());
             }
-            
+
             @Override
             public void mouseUp(org.eclipse.swt.events.MouseEvent e) {
                 dragOperation = 0;
@@ -145,13 +145,13 @@ public class MoveResizeSupport {
                 simulationCanvas.getContents().setPreferredSize(null);  // restore original state
             }
         };
-        
+
         swtMouseMoveListener = new MouseMoveListener() {
             @Override
             public void mouseMove(org.eclipse.swt.events.MouseEvent e) {
                 Control control = (Control) e.widget;
                 IInspectorPart inspector = simulationCanvas.findInspectorFor(control);
-                
+
                 if (dragOperation == 0) {
                     // update cursor
                     int dragOperation = inspector.getDragOperation(control, e.x, e.y);
@@ -167,7 +167,7 @@ public class MoveResizeSupport {
                 }
             }
         };
-        
+
         swtMouseTrackListener = new MouseTrackAdapter() {
             @Override
             public void mouseExit(org.eclipse.swt.events.MouseEvent e) {
@@ -231,11 +231,11 @@ public class MoveResizeSupport {
         if (x > max) x = max;
         return x;
     }
-    
+
     /**
-     * Adds mouse listeners to the given figure. Figure must be part of the given inspector. 
-     * The inspector will be asked which part of the figure represent what operation 
-     * (see IInspectorPart.getDragOperation(IFigure, int x, int y)). 
+     * Adds mouse listeners to the given figure. Figure must be part of the given inspector.
+     * The inspector will be asked which part of the figure represent what operation
+     * (see IInspectorPart.getDragOperation(IFigure, int x, int y)).
      */
     public void adopt(IFigure figure) {
         figure.addMouseListener(mouseListener);

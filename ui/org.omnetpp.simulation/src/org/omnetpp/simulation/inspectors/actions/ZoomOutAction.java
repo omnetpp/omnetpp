@@ -9,7 +9,7 @@ public class ZoomOutAction extends AbstractInspectorAction {
     public ZoomOutAction() {
         super("Zoom out", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_ZOOMOUT));
     }
-    
+
     @Override
     public void run() {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();

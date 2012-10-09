@@ -38,7 +38,7 @@ import org.omnetpp.simulation.model.cPacket;
 import org.omnetpp.simulation.model.cQueue;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
@@ -198,7 +198,7 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         cObject object = (cObject) viewer.getTreeViewer().getInput();
         boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
         boolean isContainer = (object instanceof cModule) || (object instanceof cQueue) || (object instanceof cArray);
-        Mode mode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET : 
+        Mode mode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET :
             isContainer ? ObjectFieldsViewer.Mode.CHILDREN : ObjectFieldsViewer.Mode.GROUPED;
         viewer.setMode(mode);
         updateActions();

@@ -78,7 +78,7 @@ public class SimulationLauncherJob extends Job {
         }
         catch (CoreException e) {
             return e.getStatus();
-        } 
+        }
         finally {
             monitor.done();
         }

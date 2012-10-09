@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.CustomScale;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class SpeedControl extends ControlContribution {

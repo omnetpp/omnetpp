@@ -31,7 +31,7 @@ public class LiveAnimationController {
     // configuration
     private double animationSpeed = 1.0;
 
-    // state 
+    // state
     private Runnable todoWhenDone;
     private boolean isAnimating = false;
     private boolean isStopping = false; // needed if we call Display.readAndDispatch() from cancelAnimation()
@@ -95,7 +95,7 @@ public class LiveAnimationController {
         if (!isAnimating)
             throw new IllegalStateException("animation not running");
 
-        if (isStopping) 
+        if (isStopping)
             return;
         isStopping = true;
 

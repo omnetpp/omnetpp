@@ -137,8 +137,8 @@ public class cObject {
 
     @SuppressWarnings("rawtypes")
     public void fillFieldsFromJSON(Map jsonObject) {
-        // IMPORTANT: we MUST NOT access cClassDescriptor here, because it might not be loaded at this point! 
-        // We must be able to load fields without cClassDescriptor present, and have it loaded only later. 
+        // IMPORTANT: we MUST NOT access cClassDescriptor here, because it might not be loaded at this point!
+        // We must be able to load fields without cClassDescriptor present, and have it loaded only later.
 
         List jsonFields = (List) jsonObject.get("fields");
         int numFields = jsonFields.size();
@@ -158,7 +158,7 @@ public class cObject {
                 if (isObjRef)
                     value = simulation.getObjectByJSONRef((String)value);
                 field = new Field(this, fieldId, value);
-            } 
+            }
             else {
                 Object[] values = ((List)jsonField.get("values")).toArray();
                 if (isObjRef)

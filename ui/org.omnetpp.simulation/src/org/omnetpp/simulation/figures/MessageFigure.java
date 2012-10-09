@@ -14,12 +14,12 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class MessageFigure extends Figure {
     private static final Image DEFAULT_IMAGE = SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_MESSAGE);
-    
+
     private Image image;
     private String label;
     private Point centerLocation;
@@ -71,11 +71,11 @@ public class MessageFigure extends Figure {
     public Point getCenterLocation() {
         return centerLocation;
     }
-    
+
     public void setCenterLocation(Point centerLocation) {
         if (getParent() != null)
             erase();
-        
+
         this.centerLocation = centerLocation;
 
         if (getParent() != null) {
@@ -108,7 +108,7 @@ public class MessageFigure extends Figure {
     public Dimension getPreferredSize(int hint, int hint2) {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public Rectangle getBounds() {
         if (imageWidth == -1)

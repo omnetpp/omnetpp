@@ -9,7 +9,7 @@ public class ReduceIconsAction extends AbstractInspectorAction {
     public ReduceIconsAction() {
         super("Reduce icons", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_REDUCEICONS));
     }
-    
+
     @Override
     public void run() {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();

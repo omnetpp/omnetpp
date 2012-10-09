@@ -25,12 +25,12 @@ public class cSimulation extends cObject {
         checkState();
         return scheduler;
     }
-    
+
     public cMessageHeap getMessageQueue() {
         checkState();
         return messageQueue;
     }
-    
+
     public cModule getRootModule() {
         checkState();
         return rootModule;
@@ -50,7 +50,7 @@ public class cSimulation extends cObject {
     @SuppressWarnings("rawtypes")
     protected void doFillFromJSON(Map jsonObject) {
         super.doFillFromJSON(jsonObject);
-        
+
         scheduler = getSimulation().getObjectByJSONRef((String) jsonObject.get("scheduler"));
         messageQueue = (cMessageHeap) getSimulation().getObjectByJSONRef((String) jsonObject.get("messageQueue"));
         rootModule = (cModule) getSimulation().getObjectByJSONRef((String) jsonObject.get("systemModule"));

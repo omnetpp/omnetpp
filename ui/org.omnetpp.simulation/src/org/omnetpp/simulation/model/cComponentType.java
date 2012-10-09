@@ -10,7 +10,7 @@ import org.omnetpp.simulation.controller.Simulation;
  */
 public class cComponentType extends cObject {
     // note: C++ class has no useful fields to reproduce here
-    
+
     public cComponentType(Simulation simulation, long id) {
         super(simulation, id);
     }

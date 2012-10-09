@@ -13,7 +13,7 @@ import org.omnetpp.common.image.ImageFactory;
 
 /**
  * Custom cursors.
- * 
+ *
  * @author tomi
  */
 public class CustomCursors {

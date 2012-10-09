@@ -5,20 +5,20 @@ import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 
 /**
- * 
+ *
  * @author Andras
  */
 public class ShowArrowheadsAction extends AbstractInspectorAction {
     public ShowArrowheadsAction() {
         super("Show arrowheads", AS_CHECK_BOX, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_ARROWHEADS));
     }
-    
+
     @Override
     public void run() {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
         inspector.setShowArrowHeads(isChecked());
     }
-    
+
     @Override
     public void update() {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();

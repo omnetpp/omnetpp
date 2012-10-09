@@ -10,7 +10,7 @@ public class InspectAsObject extends AbstractInspectorAction {
     public InspectAsObject() {
         super("Inspect as object", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_ASOBJECT));
     }
-    
+
     @Override
     public void run() {
         cObject object = getInspectorPart().getObject();

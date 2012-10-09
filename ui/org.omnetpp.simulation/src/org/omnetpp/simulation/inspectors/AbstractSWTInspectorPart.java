@@ -102,7 +102,7 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         super.raiseToTop();
         control.moveAbove(null);
     }
-    
+
     @Override
     protected void setSelectionMark(boolean isSelected) {
         control.setBackground(isSelected ? ColorFactory.GREY50 : null);
@@ -114,5 +114,5 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         control = null;
         super.dispose();
     }
-   
+
 }

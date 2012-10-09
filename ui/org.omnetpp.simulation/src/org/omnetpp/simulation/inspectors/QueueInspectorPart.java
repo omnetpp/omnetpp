@@ -120,7 +120,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     public void populateFloatingToolbar(ToolBarManager manager) {
         manager.add(my(new InspectParentAction()));
     }
-    
+
     @Override
     @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
@@ -167,7 +167,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
 
     protected void handleMouseReleased(MouseEvent me) {
     }
-    
+
     @Override
     public int getDragOperation(IFigure figure, int x, int y) {
         return FigureUtils.getBorderResizeInsideMoveDragOperation(x, y, figure.getBounds());

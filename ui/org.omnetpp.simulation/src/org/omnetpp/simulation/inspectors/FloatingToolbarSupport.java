@@ -34,7 +34,7 @@ import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 //FIXME SWT inspector cannot steal floating toolbar if it's over (and inside the bounds of) the toolbar's current owner (non-SWT inspector)
 public class FloatingToolbarSupport {
     private SimulationCanvas simulationCanvas;
-    
+
     private IInspectorPart floatingToolbarOwner = null;
     private Control floatingToolbar = null;
     private Point floatingToolbarDisplacement;  // relative to its normal location (= right-aligned just above the inspector)
@@ -72,7 +72,7 @@ public class FloatingToolbarSupport {
     };
 
     /**
-     * Constructor 
+     * Constructor
      */
     public FloatingToolbarSupport(SimulationCanvas canvas) {
         this.simulationCanvas = canvas;
@@ -151,7 +151,7 @@ public class FloatingToolbarSupport {
                         cancelFloatingToolbarStickyTimer();
                     }
                 }
-                
+
             }
         };
 
@@ -239,14 +239,14 @@ public class FloatingToolbarSupport {
         // move it to the correct location
         relocateFloatingToolbar();
 
-        // when figure is moved/resized, make the toolbar follow it 
+        // when figure is moved/resized, make the toolbar follow it
         inspector.getFigure().addFigureListener(floatingToolbarRelocator);
 
-        // This listener solves the following problem: Zoom buttons on module inspectors' 
+        // This listener solves the following problem: Zoom buttons on module inspectors'
         // floating toolbar could not be clicked repeatedly, because toolbar jumped away
         // after the first click (due to the inspector being resized). Workaround is to
         // decouple the toolbar from the inspector while the mouse is over the toolbar.
-        // Luckily, according to the listener the DragHandle is NOT part of the toolbar, 
+        // Luckily, according to the listener the DragHandle is NOT part of the toolbar,
         // so dragging by the handle DOES move the toolbar too, as it should.
         toolbar.addMouseTrackListener(new MouseTrackAdapter() {
             @Override
@@ -277,12 +277,12 @@ public class FloatingToolbarSupport {
     }
     protected void reattachFloatingToolbarToInspector() {
         Assert.isTrue(floatingToolbar != null);
-        
+
         // recompute displacement
         Point naturalLoc = computeFloatingToolbarNaturalLocation(floatingToolbarOwner.getFigure(), floatingToolbar);
         Point actualLoc = floatingToolbar.getLocation();
         floatingToolbarDisplacement = new Point(actualLoc.x - naturalLoc.x, actualLoc.y - naturalLoc.y);
-        
+
         floatingToolbarOwner.getFigure().addFigureListener(floatingToolbarRelocator);
     }
 

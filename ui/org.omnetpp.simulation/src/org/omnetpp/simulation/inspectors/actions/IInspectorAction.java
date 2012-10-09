@@ -6,7 +6,7 @@ import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * Action that can appear in an inspectors' floating toolbar or context menu.
- * 
+ *
  * @author Andras
  */
 public interface IInspectorAction extends IAction {
