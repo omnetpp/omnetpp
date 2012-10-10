@@ -19,7 +19,6 @@ import org.omnetpp.simulation.model.cObject;
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
  */
-//TODO normal resize for SWT inspectors, module inspectors, etc
 public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptable {
     protected cObject object;
     protected IInspectorFigure figure;
@@ -47,7 +46,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     }
 
     protected IInspectorAction my(IInspectorAction action) {
-        action.setInspectorPart(this);
+        action.setContext(this);
         return action;
     }
 

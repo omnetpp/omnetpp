@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
@@ -62,14 +65,27 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         viewer = new ObjectFieldsViewer(composite, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
+        // create context menu
+        final MenuManager contextMenuManager = new MenuManager("#PopupMenu");
+        // getViewSite().registerContextMenu(contextMenuManager, viewer); --XXX how?
+        viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
+        contextMenuManager.setRemoveAllWhenShown(true);
+        contextMenuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                IEditorPart activeEditor = getActiveEditor();
+                if (activeEditor instanceof SimulationEditor)
+                    ((SimulationEditor)activeEditor).populateContextMenu(contextMenuManager, viewer.getSelection());
+            }
+        });
+
         viewer.getTree().addSelectionListener(new SelectionAdapter() {
             @Override
-            @SuppressWarnings("unchecked")
             public void widgetDefaultSelected(SelectionEvent e) {
                 // inspect the selected object(s)
                 IEditorPart activeEditor = getActiveEditor();
                 if (activeEditor instanceof SimulationEditor) {
-                    ISelection selection = viewer.getTreeViewer().getSelection();
+                    ISelection selection = viewer.getSelection();
                     List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
                     SimulationCanvas simulationCanvas = ((SimulationEditor)activeEditor).getSimulationCanvas();
                     for (cObject object : objects)

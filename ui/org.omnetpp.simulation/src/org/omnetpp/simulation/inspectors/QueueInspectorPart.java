@@ -130,7 +130,6 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
         super.selectionChanged(selection);
 

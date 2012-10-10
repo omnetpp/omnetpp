@@ -25,7 +25,8 @@ public class SetModeAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        ObjectFieldsInspectorPart inspector = (ObjectFieldsInspectorPart) getInspectorPart();
-        setChecked(inspector.getMode() == mode);
+        ObjectFieldsInspectorPart inspector = (getInspectorPart() instanceof ObjectFieldsInspectorPart) ? (ObjectFieldsInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null);
+        setChecked(inspector != null && inspector.getMode() == mode);
     }
 }

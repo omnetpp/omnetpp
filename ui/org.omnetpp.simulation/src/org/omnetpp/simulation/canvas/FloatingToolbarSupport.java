@@ -196,7 +196,7 @@ public class FloatingToolbarSupport {
         manager.add(new DragHandle(inspector));
 
         CloseAction closeAction = new CloseAction();
-        closeAction.setInspectorPart(inspector);
+        closeAction.setContext(inspector);
         manager.add(closeAction);
         manager.update(true);
 

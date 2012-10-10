@@ -21,7 +21,8 @@ public class ShowArrowheadsAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
-        setChecked(inspector.getShowArrowHeads());
+        GraphicalModuleInspectorPart inspector = (getInspectorPart() instanceof GraphicalModuleInspectorPart) ? (GraphicalModuleInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null);
+        setChecked(inspector != null && inspector.getShowArrowHeads());
     }
 }

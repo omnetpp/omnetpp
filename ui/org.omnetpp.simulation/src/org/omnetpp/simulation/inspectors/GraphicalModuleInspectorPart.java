@@ -22,13 +22,11 @@ import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.figures.CompoundModuleFigure;
@@ -48,7 +46,7 @@ import org.omnetpp.simulation.figures.MessageFigure;
 import org.omnetpp.simulation.figures.SubmoduleFigureEx;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.EnlargeIconsAction;
-import org.omnetpp.simulation.inspectors.actions.InspectAsObject;
+import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
 import org.omnetpp.simulation.inspectors.actions.InspectComponentTypeAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.ModelInformationAction;
@@ -599,20 +597,39 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
 
     protected void handleMousePressed(MouseEvent me) {
+        //TODO also allow selecting connections!!!
         SubmoduleFigureEx submoduleFigure = findSubmoduleAt(me.x,me.y);
-        System.out.println("clicked submodule: " + submoduleFigure);
-        if (submoduleFigure == null) {
-            if ((me.getState()&SWT.CONTROL) != 0)
-                inspectorContainer.toggleSelection(this);
-            else
-                inspectorContainer.select(this, true);
-        }
+        System.out.println("clicked: " + submoduleFigure);
+
+        // make selection item
+        Object selectionItem;
+        if (submoduleFigure == null)
+            selectionItem = null;  //XXX currently this only happens when one clicks on a connection -- when clicking on the background, MoveResizeSupport handles in somehow (?)
         else {
             cModule submodule = findSubmoduleFor(submoduleFigure);
-            if ((me.getState()&SWT.CONTROL) != 0)
-                inspectorContainer.toggleSelection(new SelectionItem(this, submodule));
-            else
-                inspectorContainer.select(new SelectionItem(this, submodule), true);
+            selectionItem = new SelectionItem(this, submodule);
+        }
+
+        // modify selection
+        if (selectionItem == null) {
+            if (me.button == 1 && (me.getState()&SWT.CONTROL) == 0)
+                inspectorContainer.deselectAll();
+        }
+        else {
+            if (me.button == 1) {
+                if ((me.getState()&SWT.CONTROL) != 0)
+                    inspectorContainer.toggleSelection(selectionItem);
+                else
+                    inspectorContainer.select(selectionItem, true);
+            }
+            else if (me.button == 3) { // right-click
+                if ((me.getState()&SWT.CONTROL) != 0)
+                    inspectorContainer.select(selectionItem, false);
+                else if (SelectionUtils.contains(inspectorContainer.getSelection(), selectionItem))
+                    /* no selection change*/;
+                else
+                    inspectorContainer.select(selectionItem, true);
+            }
         }
         //note: no me.consume()! it would kill the move/resize listener
     }
@@ -628,7 +645,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void selectionChanged(IStructuredSelection selection) {
         super.selectionChanged(selection);
 
@@ -640,82 +656,54 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    public void populateContextMenu(final MenuManager contextMenuManager, org.eclipse.swt.graphics.Point p) {
+    public void populateContextMenu(final MenuManager menu, org.eclipse.swt.graphics.Point p) {
         System.out.println(this + ": populateContextMenu invoked");
         SubmoduleFigureEx submoduleFigure = findSubmoduleAt(p.x, p.y);
         if (submoduleFigure == null)
-            populateBackgroundContextMenu(contextMenuManager, p);
+            populateBackgroundContextMenu(menu);
         else
-            populateSubmoduleContextMenu(contextMenuManager, submoduleFigure, p);
+            getContainer().populateContextMenu(menu, getContainer().getSelection()); // submodule is already selected at this point
     }
 
-    protected void populateBackgroundContextMenu(MenuManager contextMenuManager, Point p) {
-        contextMenuManager.add(my(new RelayoutAction()));
-        contextMenuManager.add(new Separator());
-        contextMenuManager.add(my(new ZoomInAction()));
-        contextMenuManager.add(my(new ZoomOutAction()));
-        contextMenuManager.add(my(new EnlargeIconsAction()));
-        contextMenuManager.add(my(new ReduceIconsAction()));
-        contextMenuManager.add(new Separator());
-        contextMenuManager.add(my(new ShowSubmoduleNamesAction()));
-        contextMenuManager.add(my(new ShowArrowheadsAction()));
-        contextMenuManager.add(new Separator());
-        contextMenuManager.add(my(new InspectParentAction()));
-        contextMenuManager.add(new Separator());
-        contextMenuManager.add(my(new CloseAction()));
-    }
-
-    protected void populateSubmoduleContextMenu(MenuManager contextMenuManager, SubmoduleFigureEx submoduleFigure, Point p) {
-        final cModule module = findSubmoduleFor(submoduleFigure);
-
-        //XXX factor out actions
-        contextMenuManager.add(new Action("Go into") {
-            @Override
-            public void run() {
-                //Close this inspector; open new inspector at these coordinates; also add to navigation history
-            }
-        });
-
-        contextMenuManager.add(new Action("Open in New Canvas") {
-            @Override
-            public void run() {
-                //MessageDialog.openInformation(null,  "Open", "TODO: open module " + module.getFullPath());
-                inspectorContainer.inspect(module);  //TODO on new canvas!
-            }
-        });
-
-        contextMenuManager.add(new Action("Add to Canvas") {
-            @Override
-            public void run() {
-                //MessageDialog.openInformation(null,  "Open", "TODO: open module " + module.getFullPath());
-                inspectorContainer.inspect(module); //TODO on same canvas!
-            }
-        });
+    protected void populateBackgroundContextMenu(MenuManager menu) {
+        menu.add(my(new RelayoutAction()));
+        menu.add(new Separator());
+        menu.add(my(new ZoomInAction()));
+        menu.add(my(new ZoomOutAction()));
+        menu.add(my(new EnlargeIconsAction()));
+        menu.add(my(new ReduceIconsAction()));
+        menu.add(new Separator());
+        menu.add(my(new ShowSubmoduleNamesAction()));
+        menu.add(my(new ShowArrowheadsAction()));
+        menu.add(new Separator());
+        menu.add(my(new InspectParentAction()));
+        menu.add(new Separator());
+        menu.add(my(new CloseAction()));
     }
 
     @Override
-    public void populateFloatingToolbar(ToolBarManager manager) {
+    public void populateFloatingToolbar(ToolBarManager toolbar) {
         //XXX the following buttons are from Tkenv -- revise which ones we really need
-        manager.add(my(new InspectParentAction()));
-        manager.add(my(new InspectAsObject()));
-        manager.add(my(new InspectComponentTypeAction()));
-        manager.add(my(new ModelInformationAction()));
+        toolbar.add(my(new InspectParentAction()));
+        toolbar.add(my(new InspectAsObjectAction()));
+        toolbar.add(my(new InspectComponentTypeAction()));
+        toolbar.add(my(new ModelInformationAction()));
 //        ToolItem search = addToolItem(toolbar, "Find and inspect messages, queues, watched variables, statistics, etc (Ctrl+S)", SimulationUIConstants.IMG_TOOL_FINDOBJ);
-        manager.add(new Separator());
-        manager.add(my(new RunLocalAction()));
-        manager.add(my(new RunLocalFastAction()));
-        manager.add(my(new StopAction()));
-        manager.add(new Separator());
+        toolbar.add(new Separator());
+        toolbar.add(my(new RunLocalAction()));
+        toolbar.add(my(new RunLocalFastAction()));
+        toolbar.add(my(new StopAction()));
+        toolbar.add(new Separator());
 //        ToolItem moduleOutput = addToolItem(toolbar, "See module output", SimulationUIConstants.IMG_TOOL_ASOUTPUT);
-        manager.add(my(new RelayoutAction()));
-        manager.add(new Separator());
-        manager.add(my(new ShowSubmoduleNamesAction()));
-        manager.add(my(new ShowArrowheadsAction()));
-        manager.add(my(new EnlargeIconsAction()));
-        manager.add(my(new ReduceIconsAction()));
-        manager.add(my(new ZoomInAction()));
-        manager.add(my(new ZoomOutAction()));
-        manager.update(false);
+        toolbar.add(my(new RelayoutAction()));
+        toolbar.add(new Separator());
+        toolbar.add(my(new ShowSubmoduleNamesAction()));
+        toolbar.add(my(new ShowArrowheadsAction()));
+        toolbar.add(my(new EnlargeIconsAction()));
+        toolbar.add(my(new ReduceIconsAction()));
+        toolbar.add(my(new ZoomInAction()));
+        toolbar.add(my(new ZoomOutAction()));
+        toolbar.update(false);
     }
 
     public void setNextEventMarker(cModule submodule, boolean primary) {

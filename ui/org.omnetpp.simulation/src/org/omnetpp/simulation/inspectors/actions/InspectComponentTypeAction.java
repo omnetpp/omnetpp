@@ -18,7 +18,12 @@ public class InspectComponentTypeAction extends AbstractInspectorAction {
     @Override
     public void run() {
         cComponent component = (cComponent) getInspectorPart().getObject();
-        IInspectorContainer container = getInspectorPart().getContainer();
+        IInspectorContainer container = getInspectorContainer();
         container.inspect(component.getComponentType());
+    }
+
+    @Override
+    public void update() {
+        setEnabled(getInspectorPart() != null);
     }
 }

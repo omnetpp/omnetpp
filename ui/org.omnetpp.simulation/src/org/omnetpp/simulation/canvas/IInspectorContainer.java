@@ -6,6 +6,8 @@ import org.eclipse.draw2d.Figure;
 import org.eclipse.draw2d.FigureCanvas;
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.editors.SimulationEditor;
@@ -36,6 +38,15 @@ public interface IInspectorContainer extends ISelectionProvider {
      * @return
      */
     IInspectorPart inspect(cObject object);
+
+    /**
+     * Convenience function: Inspect many objects at once, possibly by
+     * offering the user a selection dialog first.
+     * 
+     * @param objects
+     * @param interactive  if true, and if there are many objects in the list, prompt user with a selection dialog first
+     */
+    void inspect(List<cObject> objects, boolean interactive);
 
     /**
      * Closes the given inspector.
@@ -146,4 +157,8 @@ public interface IInspectorContainer extends ISelectionProvider {
      */
     void deselectAll();
 
+    /**
+     * Populate a context menu with actions applicable for items in the selection.
+     */
+    void populateContextMenu(MenuManager contextMenuManager, ISelection selection);
 }

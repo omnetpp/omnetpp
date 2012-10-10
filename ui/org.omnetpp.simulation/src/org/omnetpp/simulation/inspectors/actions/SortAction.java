@@ -27,7 +27,8 @@ public class SortAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        ObjectFieldsInspectorPart inspector = (ObjectFieldsInspectorPart) getInspectorPart();
-        setChecked(inspector.getOrdering() == Ordering.ALPHABETICAL);
+        ObjectFieldsInspectorPart inspector = (getInspectorPart() instanceof ObjectFieldsInspectorPart) ? (ObjectFieldsInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null);
+        setChecked(inspector != null && inspector.getOrdering() == Ordering.ALPHABETICAL);
     }
 }

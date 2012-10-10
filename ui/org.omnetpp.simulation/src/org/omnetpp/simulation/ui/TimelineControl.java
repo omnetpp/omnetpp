@@ -83,7 +83,8 @@ public class TimelineControl extends Canvas {
             }
             @Override
             public void mouseDoubleClick(MouseEvent e) {
-                fireWidgetDefaultSelected(e);
+                if (e.button == 1)
+                    fireWidgetDefaultSelected(e);
             }
         });
 

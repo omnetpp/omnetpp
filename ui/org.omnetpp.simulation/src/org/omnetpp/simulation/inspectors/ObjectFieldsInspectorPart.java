@@ -3,6 +3,8 @@ package org.omnetpp.simulation.inspectors;
 import java.util.List;
 
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
@@ -72,19 +74,19 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         viewer.setMode(initialMode);
         viewer.setInput(object);
 
+        // double-click to inspect
         viewer.getTree().addSelectionListener(new SelectionAdapter() {
             @Override
-            @SuppressWarnings("unchecked")
             public void widgetDefaultSelected(SelectionEvent e) {
                 // inspect the selected object(s)
-                ISelection selection = viewer.getTreeViewer().getSelection();
+                ISelection selection = viewer.getSelection();
                 List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
-                for (cObject object : objects)
-                    getContainer().inspect(object);
+                getContainer().inspect(objects, true);
             }
         });
 
-        viewer.getTreeViewer().addSelectionChangedListener(new ISelectionChangedListener() {
+        // export selection
+        viewer.addSelectionChangedListener(new ISelectionChangedListener() {
             @Override
             public void selectionChanged(SelectionChangedEvent e) {
                 // wrap to SelectionItems and export to the inspector canvas
@@ -92,6 +94,17 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
                 for (int i = 0; i < array.length; i++)
                     array[i] = new SelectionItem(ObjectFieldsInspectorPart.this, array[i]);
                 getContainer().select(array, true);
+            }
+        });
+
+        // add context menu
+        final MenuManager menuManager = new MenuManager("#PopupMenu");
+        viewer.getTree().setMenu(menuManager.createContextMenu(viewer.getTree()));
+        menuManager.setRemoveAllWhenShown(true);
+        menuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                getContainer().populateContextMenu(menuManager, viewer.getSelection());
             }
         });
 

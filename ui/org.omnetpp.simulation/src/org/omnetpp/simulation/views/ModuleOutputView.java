@@ -105,7 +105,6 @@ public class ModuleOutputView extends ViewWithMessagePart {
 
         selectionChangeListener = new ISelectionChangedListener() {
             @Override
-            @SuppressWarnings("unchecked")
             public void selectionChanged(SelectionChangedEvent e) {
                 System.out.println("module output view: got selection change, new selection: " + e.getSelection());  //TODO
                 if (e.getSelection() instanceof IStructuredSelection) {

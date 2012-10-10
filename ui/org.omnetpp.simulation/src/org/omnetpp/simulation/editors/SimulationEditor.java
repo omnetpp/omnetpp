@@ -4,10 +4,17 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -18,6 +25,7 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -47,6 +55,10 @@ import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
+import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
+import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
+import org.omnetpp.simulation.inspectors.actions.RunLocalAction;
+import org.omnetpp.simulation.inspectors.actions.RunLocalFastAction;
 import org.omnetpp.simulation.liveanimation.AnimationDirector;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cMessage;
@@ -167,7 +179,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         new HoverSupport().adapt(timeline, new IHTMLHoverProvider() {
             @Override
             public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-                Object[] messages = timeline.getMessagesForX(x, 2);
+                Object[] messages = timeline.findMessages(new Point(x,y), 3);
                 if (messages.length == 0)
                     return null;
                 String html = "<ul>\n";
@@ -187,23 +199,26 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
-                Object[] messages = timeline.getSelection();
-                if (messages.length == 1)
-                    simulationCanvas.inspect((cObject)messages[0]);
-                else if (messages.length > 1) {
-                    // offer a checkbox list dialog
-                    messages = chooseObjectsToInspect(messages);
-                    if (messages != null)
-                        for (Object msg : messages)
-                            simulationCanvas.inspect((cObject)msg);
-                }
+                ISelection selection = timeline.getSelection();
+                List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
+                simulationCanvas.inspect(objects, true);
+            }
+        });
+
+        // timeline context menu
+        final MenuManager timelineMenuManager = new MenuManager("#PopupMenu");
+        timeline.setMenu(timelineMenuManager.createContextMenu(timeline));
+        timelineMenuManager.setRemoveAllWhenShown(true);
+        timelineMenuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                SimulationEditor.this.populateContextMenu(timelineMenuManager, timeline.getSelection());
             }
         });
 
         // timeline follows selection
         ISelectionChangedListener selectionChangeListener = new ISelectionChangedListener() {
             @Override
-            @SuppressWarnings("unchecked")
             public void selectionChanged(SelectionChangedEvent e) {
                 System.out.println("timeline: got selection change, new selection: " + e.getSelection());  //TODO
                 if (e.getSelection() instanceof IStructuredSelection) {
@@ -535,23 +550,6 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         }
     }
 
-    protected Object[] chooseObjectsToInspect(Object[] elements) {
-        CheckedTreeSelectionDialog2 dialog = new CheckedTreeSelectionDialog2(
-                Display.getCurrent().getActiveShell(),
-                new DecoratingStyledCellLabelProvider(new ObjectTreeView.ViewLabelProvider(), null, null), //TODO make that inner class top-level...
-                new ArrayTreeContentProvider());
-        dialog.setTitle("Inspect Objects");
-        dialog.setMessage("Choose objects to be inspected:");
-        dialog.setHelpAvailable(false);
-        dialog.setInput(elements);
-        dialog.setStatusLineAboveButtons(false);
-        dialog.setInitialSelections(elements);
-
-        if (dialog.open() == Window.OK)
-            return dialog.getResult();
-        return null;
-    }
-
     public void openInspector(cObject object) {
         simulationCanvas.inspect(object);  //FIXME probably inspector creation should be brought out of SimulationCanvas!!!
     }
@@ -587,6 +585,30 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     @Override
     public void messageDialog(String message) {
         MessageDialog.openError(getSite().getShell(), "Simulation", message);
+    }
+
+    public void populateContextMenu(MenuManager menu, ISelection selection) {
+        List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
+        if (objects.size() == 0)
+            return;
+
+        // assemble the context menu
+        //XXX for now, let's deal with the first object only
+        if (objects.size() == 1 && objects.get(0) instanceof cModule) {
+            menu.add(new RunLocalAction());
+            menu.add(new RunLocalFastAction());
+            menu.add(new Separator());
+        }
+        menu.add(new InspectAsObjectAction());
+
+        // call setContext() on the added actions
+        for (IContributionItem item : menu.getItems()) {
+            if (item instanceof ActionContributionItem) {
+                IAction action = ((ActionContributionItem)item).getAction();
+                if (action instanceof IInspectorAction)
+                    ((IInspectorAction) action).setContext(simulationCanvas, selection);
+            }
+        }
     }
 
     @Override

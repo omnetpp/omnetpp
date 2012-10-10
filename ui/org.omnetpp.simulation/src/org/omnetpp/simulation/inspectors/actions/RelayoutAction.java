@@ -19,4 +19,10 @@ public class RelayoutAction extends AbstractInspectorAction {
         GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
         inspector.relayout();
     }
+
+    @Override
+    public void update() {
+        setEnabled(getInspectorPart() != null && getInspectorPart() instanceof GraphicalModuleInspectorPart);
+    }
+
 }

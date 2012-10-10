@@ -14,6 +14,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
@@ -533,4 +535,17 @@ public class ObjectFieldsViewer {
     public void refresh() {
         treeViewer.refresh();
     }
+
+    public ISelection getSelection() {
+        return treeViewer.getSelection();
+    }
+
+    public void addSelectionChangedListener(ISelectionChangedListener listener) {
+        treeViewer.addSelectionChangedListener(listener);
+    }
+
+    public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+        treeViewer.removeSelectionChangedListener(listener);
+    }
+
 }

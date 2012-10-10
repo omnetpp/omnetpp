@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
-import org.omnetpp.simulation.controller.SimulationController;
 
 
 /**
@@ -18,9 +17,8 @@ public class StopAction extends AbstractInspectorAction {
 
     @Override
     public void run() {
-        SimulationController controller = getInspectorPart().getContainer().getEditor().getSimulationController();
         try {
-            controller.stop();
+            getSimulationController().stop();
         }
         catch (IOException e) {
             // TODO Auto-generated catch block

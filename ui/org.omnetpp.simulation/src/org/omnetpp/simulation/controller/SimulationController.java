@@ -97,6 +97,10 @@ public class SimulationController implements ISimulationCallback {
         return getUIState() == SimState.READY || getUIState() == SimState.RUNNING;
     }
 
+    public boolean isReady() {
+        return getUIState() == SimState.READY;
+    }
+
     public boolean isRunning() {
         return getUIState() == SimState.RUNNING;
     }

@@ -17,22 +17,27 @@ import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.XYLayout;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.util.SafeRunnable;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MenuDetectEvent;
-import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.omnetpp.common.ui.ArrayTreeContentProvider;
+import org.omnetpp.common.ui.CheckedTreeSelectionDialog2;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
@@ -50,6 +55,7 @@ import org.omnetpp.simulation.model.cPar;
 import org.omnetpp.simulation.model.cQueue;
 import org.omnetpp.simulation.model.cSimpleModule;
 import org.omnetpp.simulation.model.cWatchBase;
+import org.omnetpp.simulation.views.ObjectTreeView;
 
 /**
  *
@@ -120,21 +126,23 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         setContents(layeredPane);
 
-        // create context menu
-        final MenuManager contextMenuManager = new MenuManager("#popup");
-        setMenu(contextMenuManager.createContextMenu(this));
-        addMenuDetectListener(new MenuDetectListener() {
+        // create context menu (note: addMenuDetectListener() is not good because it's too early:
+        // setRemoveAllWhenShown() takes effect after that, clearing our newly added actions;
+        // and calling removeAll() in the listener would remove contributed actions too)
+        final MenuManager menuManager = new MenuManager("#popup");
+        menuManager.setRemoveAllWhenShown(true);
+        setMenu(menuManager.createContextMenu(this));
+        menuManager.addMenuListener(new IMenuListener() {
             @Override
-            public void menuDetected(MenuDetectEvent e) {
-                contextMenuManager.removeAll();
-                Point p = toControl(e.x, e.y);
+            public void menuAboutToShow(IMenuManager manager) {
+                Point p = toControl(Display.getCurrent().getCursorLocation());
                 IInspectorPart inspectorPart = findInspectorAt(p.x, p.y);
                 if (inspectorPart != null)
-                    inspectorPart.populateContextMenu(contextMenuManager, p);
+                    inspectorPart.populateContextMenu(menuManager, p);
             }
         });
 
-        // add advanced tooltip support for inspectors -- TODO make use of this!!!
+        // add advanced tooltip support for inspectors
         FigureUtils.addTooltipSupport(this, this.getContents());
 
         // add move/resize support inspectors
@@ -449,6 +457,42 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
                 }
             });
         }
+    }
+
+    @Override
+    public void populateContextMenu(MenuManager menu, ISelection selection) {
+        getEditor().populateContextMenu(menu, selection);
+    }
+
+    public void inspect(List<cObject> objects, boolean interactive) {
+        // if there are many objects, offer a checkbox list dialog for selection
+        if (objects.size() > 1 && interactive)
+            objects = chooseObjectsToInspect(Display.getCurrent().getActiveShell(), objects);
+
+        if (objects != null)
+            for (cObject obj : objects)
+                inspect(obj);
+    }
+
+    /**
+     * Utility function: pops up a dialog and lets the user choose one or more of the offered objects.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected List<cObject> chooseObjectsToInspect(Shell parent, List<cObject> objects) {
+        CheckedTreeSelectionDialog2 dialog = new CheckedTreeSelectionDialog2(
+                parent,
+                new DecoratingStyledCellLabelProvider(new ObjectTreeView.ViewLabelProvider(), null, null), //TODO make that inner class top-level...
+                new ArrayTreeContentProvider());
+        dialog.setTitle("Inspect Objects");
+        dialog.setMessage("Choose objects you want to open inspectors for:");
+        dialog.setHelpAvailable(false);
+        dialog.setInput(objects);
+        dialog.setStatusLineAboveButtons(false);
+        dialog.setInitialSelections(objects.toArray());
+
+        if (dialog.open() == Window.OK)
+            return (List<cObject>)(List)Arrays.asList(dialog.getResult());
+        return null;
     }
 
 }

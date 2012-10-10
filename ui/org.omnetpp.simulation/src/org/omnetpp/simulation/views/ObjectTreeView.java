@@ -3,6 +3,8 @@ package org.omnetpp.simulation.views;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
@@ -50,12 +52,9 @@ import org.omnetpp.simulation.model.cObject;
  *
  * @author Andras
  */
-//FIXME display message if no active simulation
-//FIXME better loading of objects!! (from bg, etc)
 public class ObjectTreeView extends ViewWithMessagePart {
     // note: view ID is defined in IConstants.java
     protected TreeViewer viewer;
-    protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
 
     private SimulationEditor associatedSimulationEditor;
     private IPartListener partListener;
@@ -176,9 +175,16 @@ public class ObjectTreeView extends ViewWithMessagePart {
         viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
 
         // create context menu
+        final MenuManager contextMenuManager = new MenuManager("#PopupMenu");
         getViewSite().registerContextMenu(contextMenuManager, viewer);
         viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
-        //TODO dynamic menu based on which object is selected
+        contextMenuManager.setRemoveAllWhenShown(true);
+        contextMenuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                associatedSimulationEditor.populateContextMenu(contextMenuManager, viewer.getSelection());
+            }
+        });
 
         // double-click opens an inspector
         viewer.addDoubleClickListener(new IDoubleClickListener() {

@@ -4,7 +4,10 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 
-
+/**
+ * 
+ * @author Andras
+ */
 public class ReduceIconsAction extends AbstractInspectorAction {
     public ReduceIconsAction() {
         super("Reduce icons", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_REDUCEICONS));
@@ -18,7 +21,7 @@ public class ReduceIconsAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
-        setEnabled(inspector.canReduceIcons());
+        GraphicalModuleInspectorPart inspector = (getInspectorPart() instanceof GraphicalModuleInspectorPart) ? (GraphicalModuleInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null && inspector.canReduceIcons());
     }
 }

@@ -1,10 +1,8 @@
 package org.omnetpp.simulation.inspectors.actions;
 
 import java.io.IOException;
-
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
-import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.Simulation.RunMode;
 import org.omnetpp.simulation.model.cModule;
 
@@ -19,14 +17,18 @@ public class RunLocalFastAction extends AbstractInspectorAction {
 
     @Override
     public void run() {
-        cModule module = (cModule) getInspectorPart().getObject();
-        SimulationController controller = getInspectorPart().getContainer().getEditor().getSimulationController();
         try {
-            controller.runLocal(RunMode.FAST, module);
+            cModule module = getModule();
+            getSimulationController().runLocal(RunMode.FAST, module);
         }
         catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void update() {
+        setEnabled(getModule() != null && getSimulationController().isSimulationOK());
     }
 }

@@ -21,7 +21,8 @@ public class ShowSubmoduleNamesAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
-        setChecked(inspector.getShowNameLabels());
+        GraphicalModuleInspectorPart inspector = (getInspectorPart() instanceof GraphicalModuleInspectorPart) ? (GraphicalModuleInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null);
+        setChecked(inspector != null && inspector.getShowNameLabels());
     }
 }

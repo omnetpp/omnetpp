@@ -18,7 +18,8 @@ public class ZoomOutAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
-        setEnabled(inspector.canZoomOut());
+        GraphicalModuleInspectorPart inspector = (getInspectorPart() instanceof GraphicalModuleInspectorPart) ? (GraphicalModuleInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null);
+        setChecked(inspector != null && inspector.canZoomOut());
     }
 }

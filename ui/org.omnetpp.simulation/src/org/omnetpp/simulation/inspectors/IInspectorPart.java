@@ -83,7 +83,7 @@ public interface IInspectorPart {
     /**
      * TODO
      */
-    void populateContextMenu(MenuManager manager, Point p);
+    void populateContextMenu(MenuManager menu, Point p);
 
     /**
      * TODO

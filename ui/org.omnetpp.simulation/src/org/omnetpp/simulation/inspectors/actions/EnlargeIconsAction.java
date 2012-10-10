@@ -4,7 +4,10 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 
-
+/**
+ * 
+ * @author Andras
+ */
 public class EnlargeIconsAction extends AbstractInspectorAction {
     public EnlargeIconsAction() {
         super("Enlarge icons", AS_PUSH_BUTTON, SimulationPlugin.getImageDescriptor(SimulationUIConstants.IMG_TOOL_ENLARGEICONS));
@@ -18,7 +21,7 @@ public class EnlargeIconsAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        GraphicalModuleInspectorPart inspector = (GraphicalModuleInspectorPart)getInspectorPart();
-        setEnabled(inspector.canEnlargeIcons());
+        GraphicalModuleInspectorPart inspector = (getInspectorPart() instanceof GraphicalModuleInspectorPart) ? (GraphicalModuleInspectorPart)getInspectorPart() : null;
+        setEnabled(inspector != null && inspector.canEnlargeIcons());
     }
 }
