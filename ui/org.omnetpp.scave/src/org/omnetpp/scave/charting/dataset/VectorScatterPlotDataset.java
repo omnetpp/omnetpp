@@ -37,7 +37,7 @@ public class VectorScatterPlotDataset extends XYDatasetSupport implements IXYDat
     }
 
     public String getSeriesTitle(int series, String format) {
-        return getSeriesKey(series); // TODO
+        return format == null ? getSeriesKey(series) : format;
     }
 
     public int getItemCount(int series) {

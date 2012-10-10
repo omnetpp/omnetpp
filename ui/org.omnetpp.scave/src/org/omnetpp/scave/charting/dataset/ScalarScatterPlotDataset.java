@@ -52,7 +52,7 @@ public class ScalarScatterPlotDataset extends XYDatasetSupport implements IAvera
     }
 
     public String getSeriesTitle(int series, String format) {
-        return getSeriesKey(series); // TODO
+        return format == null ? getSeriesKey(series) : format;
     }
 
     public int getItemCount(int series) {

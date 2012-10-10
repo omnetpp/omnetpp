@@ -47,7 +47,7 @@ public class CompoundXYDataset extends XYDatasetSupport implements IAveragedXYDa
     }
 
     public String getSeriesTitle(int series, String format) {
-        return getSeriesKey(series); // TODO
+        return seriesToDatasetMap[series].getSeriesTitle(series - seriesToOffsetMap[series], format);
     }
 
     public int getItemCount(int series) {
