@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -41,6 +42,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.properties.ColorCellEditorEx.ColorContentProposalProvider;
 import org.omnetpp.common.util.Converter;
 import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.scave.ScavePlugin;
 import org.omnetpp.scave.charting.properties.ChartDefaults;
 import org.omnetpp.scave.charting.properties.ChartProperties;
 import org.omnetpp.scave.charting.properties.ChartProperties.LegendAnchor;
@@ -51,6 +53,7 @@ import org.omnetpp.scave.engine.ResultFileManager;
 import org.omnetpp.scave.model.Chart;
 import org.omnetpp.scave.model.Property;
 import org.omnetpp.scave.model.ScaveModelPackage;
+import org.omnetpp.scave.model2.ChartLine;
 
 /**
  * Edit form of charts.
@@ -151,7 +154,7 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
      */
     public void populatePanel(Composite panel) {
         panel.setLayout(new GridLayout(1, false));
-        TabFolder tabfolder = createTabFolder(panel);
+        final TabFolder tabfolder = createTabFolder(panel);
 
         populateTabFolder(tabfolder);
         for (int i=0; i < tabfolder.getItemCount(); ++i)
@@ -159,12 +162,35 @@ public class ChartEditForm extends BaseScaveObjectEditForm {
 
         // switch to the requested page
         String defaultPage = formParameters==null ? null : (String) formParameters.get(PROP_DEFAULT_TAB);
+        if (formParameters.get(PARAM_SELECTED_OBJECT) instanceof ChartLine)
+            defaultPage = BaseLineChartEditForm.TAB_LINES; // when editing a line, open with the "Lines" tab
+        if (defaultPage == null)
+            defaultPage = getDialogSettings().get(PROP_DEFAULT_TAB);
         if (defaultPage != null)
             for (TabItem tabItem : tabfolder.getItems())
                 if (tabItem.getText().equals(defaultPage)) {
                     tabfolder.setSelection(tabItem);
                     break;
                 }
+
+        // save current tab as dialog setting (the code is here because there's no convenient function that is invoked on dialog close (???))
+        tabfolder.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent e) {
+                TabItem[] selectedTabs = tabfolder.getSelection();
+                if (selectedTabs.length > 0)
+                    getDialogSettings().put(PROP_DEFAULT_TAB, selectedTabs[0].getText());
+            }
+        });
+    }
+
+    protected IDialogSettings getDialogSettings() {
+        final String KEY = "ChartEditForm";
+        IDialogSettings dialogSettings = ScavePlugin.getDefault().getDialogSettings();
+        IDialogSettings section = dialogSettings.getSection(KEY);
+        if (section == null)
+            section = dialogSettings.addNewSection(KEY);
+        return section;
     }
 
     /**
