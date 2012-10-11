@@ -13,12 +13,10 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -41,10 +39,10 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
-import org.omnetpp.common.ui.ArrayTreeContentProvider;
-import org.omnetpp.common.ui.CheckedTreeSelectionDialog2;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.common.ui.HoverSupport;
+import org.omnetpp.common.ui.HtmlHoverInfo;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
@@ -69,7 +67,6 @@ import org.omnetpp.simulation.ui.ModulePathsMessageFilter;
 import org.omnetpp.simulation.ui.SpeedControl;
 import org.omnetpp.simulation.ui.TimelineContentProvider;
 import org.omnetpp.simulation.ui.TimelineControl;
-import org.omnetpp.simulation.views.ObjectTreeView;
 import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
 
 /**
@@ -175,64 +172,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         timeline.setContentProvider(timelineProvider);
         timeline.setLabelProvider(timelineProvider);
 
-        //XXX temporary code: display the names of hovered messages
-        new HoverSupport().adapt(timeline, new IHTMLHoverProvider() {
-            @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-                Object[] messages = timeline.findMessages(new Point(x,y), 3);
-                if (messages.length == 0)
-                    return null;
-                String html = "<ul>\n";
-                for (Object o : messages) {
-                    cMessage msg = (cMessage)o;
-                    html += "<li>(" + msg.getClassName() + ")&nbsp;<b>" + msg.getName() + "</b> -- "+ msg.getInfo() + "<br>\n";
-                }
-                html += "</ul>";
-                return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(html));
-            }
-        });
-
-        // double-clicking opens messages
-        timeline.addSelectionListener(new SelectionListener() {
-            @Override
-            public void widgetSelected(SelectionEvent e) { }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e) {
-                ISelection selection = timeline.getSelection();
-                List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
-                simulationCanvas.inspect(objects, true);
-            }
-        });
-
-        // timeline context menu
-        final MenuManager timelineMenuManager = new MenuManager("#PopupMenu");
-        timeline.setMenu(timelineMenuManager.createContextMenu(timeline));
-        timelineMenuManager.setRemoveAllWhenShown(true);
-        timelineMenuManager.addMenuListener(new IMenuListener() {
-            @Override
-            public void menuAboutToShow(IMenuManager manager) {
-                SimulationEditor.this.populateContextMenu(timelineMenuManager, timeline.getSelection());
-            }
-        });
-
-        // timeline follows selection
-        ISelectionChangedListener selectionChangeListener = new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent e) {
-                System.out.println("timeline: got selection change, new selection: " + e.getSelection());  //TODO
-                if (e.getSelection() instanceof IStructuredSelection) {
-                    List<cModule> selectedModules = SelectionUtils.getObjects(e.getSelection(), cModule.class);
-                    TimelineContentProvider provider = (TimelineContentProvider) timeline.getContentProvider();
-                    if (selectedModules.isEmpty())
-                        provider.setFilter(null); // no filtering
-                    else
-                        provider.setFilter(new ModulePathsMessageFilter(selectedModules.toArray(new cModule[]{})));
-                    timeline.redraw();
-                }
-            }
-        };
-        getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
+        configureTimeline();
 
 
 //        // create animation ribbon
@@ -429,6 +369,67 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             }
         });
 
+    }
+
+    protected void configureTimeline() {
+        // add hover support
+        new HoverSupport().adapt(timeline, new IHoverInfoProvider() {
+            @Override
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+                Object[] messages = timeline.findMessages(new Point(x,y), 3);
+                if (messages.length == 0)
+                    return null;
+                String html = "<ul>\n";
+                for (Object o : messages) {
+                    cMessage msg = (cMessage)o;
+                    html += "<li>(" + msg.getClassName() + ")&nbsp;<b>" + msg.getName() + "</b> -- "+ msg.getInfo() + "<br>\n";
+                }
+                html += "</ul>";
+                return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(html));
+            }
+        });
+
+        // double-clicking opens messages
+        timeline.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent e) { }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                ISelection selection = timeline.getSelection();
+                List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
+                simulationCanvas.inspect(objects, true);
+            }
+        });
+
+        // timeline context menu
+        final MenuManager timelineMenuManager = new MenuManager("#PopupMenu");
+        timeline.setMenu(timelineMenuManager.createContextMenu(timeline));
+        timelineMenuManager.setRemoveAllWhenShown(true);
+        timelineMenuManager.addMenuListener(new IMenuListener() {
+            @Override
+            public void menuAboutToShow(IMenuManager manager) {
+                SimulationEditor.this.populateContextMenu(timelineMenuManager, timeline.getSelection());
+            }
+        });
+
+        // timeline follows selection
+        ISelectionChangedListener selectionChangeListener = new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent e) {
+                System.out.println("timeline: got selection change, new selection: " + e.getSelection());  //TODO
+                if (e.getSelection() instanceof IStructuredSelection) {
+                    List<cModule> selectedModules = SelectionUtils.getObjects(e.getSelection(), cModule.class);
+                    TimelineContentProvider provider = (TimelineContentProvider) timeline.getContentProvider();
+                    if (selectedModules.isEmpty())
+                        provider.setFilter(null); // no filtering
+                    else
+                        provider.setFilter(new ModulePathsMessageFilter(selectedModules.toArray(new cModule[]{})));
+                    timeline.redraw();
+                }
+            }
+        };
+        getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
     }
 
 //    private void setEventlogFileName(String fileName) {
