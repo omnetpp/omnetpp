@@ -187,6 +187,10 @@ public class SimulationController implements ISimulationCallback {
         runUntil(mode, null, 0, module, null);
     }
 
+    public void runUntilMessage(RunMode mode, cMessage message) throws IOException {
+        runUntil(mode, null, 0, null, message);
+    }
+
     public void switchToRunMode(RunMode mode) {
         if (mode != currentRunMode) {
             Assert.isTrue(mode != RunMode.NONE);

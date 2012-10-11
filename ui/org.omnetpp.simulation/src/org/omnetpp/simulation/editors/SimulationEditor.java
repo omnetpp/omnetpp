@@ -57,6 +57,8 @@ import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
 import org.omnetpp.simulation.inspectors.actions.RunLocalAction;
 import org.omnetpp.simulation.inspectors.actions.RunLocalFastAction;
+import org.omnetpp.simulation.inspectors.actions.RunUntilMessageAction;
+import org.omnetpp.simulation.inspectors.actions.RunUntilMessageFastAction;
 import org.omnetpp.simulation.liveanimation.AnimationDirector;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cMessage;
@@ -600,6 +602,12 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             menu.add(new RunLocalFastAction());
             menu.add(new Separator());
         }
+        if (objects.size() == 1 && objects.get(0) instanceof cMessage) {
+            menu.add(new RunUntilMessageAction());
+            menu.add(new RunUntilMessageFastAction());
+            menu.add(new Separator());
+        }
+
         menu.add(new InspectAsObjectAction());
 
         // call setContext() on the added actions
