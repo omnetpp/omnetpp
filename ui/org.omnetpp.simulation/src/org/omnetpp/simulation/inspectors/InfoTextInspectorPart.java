@@ -47,6 +47,8 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
+            if (!object.isFilledIn())
+                object.safeLoad(); //XXX revise exception handling
             ((InfoTextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.getInfo());
         }
     }

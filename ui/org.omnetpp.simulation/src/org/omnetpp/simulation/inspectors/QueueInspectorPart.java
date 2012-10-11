@@ -24,10 +24,12 @@ import org.omnetpp.simulation.figures.QueueInspectorFigure;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cQueue;
 
 /**
- * Experimental graphical inspector for queues
+ * Experimental graphical inspector for queues. Note: the code does not assume the object is
+ * actually a cQueue -- it simply displays the object's children (getChildObjects())
+ * in a queue-like figure.
+ *
  * @author Andras
  */
 //XXX add tooltip for message items
@@ -75,13 +77,15 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
-            cQueue queue = (cQueue)object;
             QueueInspectorFigure queueFigure = (QueueInspectorFigure)figure;
 
+            if (!object.isFilledIn())
+                object.safeLoad(); //XXX exception handling
+
             // only rebuild everything if queue contents has changed
-            cObject[] childObjects = queue.getChildObjects();
+            cObject[] childObjects = object.getChildObjects();
             try {
-                queue.getSimulation().loadUnfilledObjects(childObjects);
+                object.getSimulation().loadUnfilledObjects(childObjects);
             }
             catch (IOException e) {
                 e.printStackTrace();  //FIXME better error handling

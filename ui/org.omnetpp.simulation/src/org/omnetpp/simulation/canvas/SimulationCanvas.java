@@ -40,12 +40,16 @@ import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
+import org.omnetpp.simulation.inspectors.InfoTextInspectorPart;
 import org.omnetpp.simulation.inspectors.ObjectFieldsInspectorPart;
 import org.omnetpp.simulation.inspectors.QueueInspectorPart;
+import org.omnetpp.simulation.model.cMessageHeap;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.model.cPar;
 import org.omnetpp.simulation.model.cQueue;
 import org.omnetpp.simulation.model.cSimpleModule;
+import org.omnetpp.simulation.model.cWatchBase;
 
 /**
  *
@@ -311,13 +315,14 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         IInspectorPart inspector = null;
         if (object instanceof cModule && !(object instanceof cSimpleModule))
             inspector = new GraphicalModuleInspectorPart(this, (cModule)object);
-//        else if (object instanceof cMessage)
-//            inspectorPart = new MessageInspectorPart(this, (cMessage)object);
         else if (object instanceof cQueue)
-            inspector = new QueueInspectorPart(this, (cQueue)object);
+            inspector = new QueueInspectorPart(this, object);
+        else if (object instanceof cMessageHeap)  // khmm...
+            inspector = new QueueInspectorPart(this, object);
+        else if (object instanceof cPar || object instanceof cWatchBase)
+            inspector = new InfoTextInspectorPart(this, object);
         else // fallback
             inspector = new ObjectFieldsInspectorPart(this, object);
-//            inspector = new InfoTextInspectorPart(this, object);
         return inspector;
     }
 
