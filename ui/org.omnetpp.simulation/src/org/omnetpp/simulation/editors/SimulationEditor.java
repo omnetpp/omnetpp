@@ -420,7 +420,16 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         timelineMenuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                SimulationEditor.this.populateContextMenu(timelineMenuManager, timeline.getSelection());
+                ISelection selection = timeline.getSelection();
+                if (!selection.isEmpty()) {
+                    SimulationEditor.this.populateContextMenu(timelineMenuManager, selection);
+                }
+                else {
+                    // TODO show its own context menu:
+                    // "Follow Selection"
+                    // "Collapsed View"
+                    // "Filter..."
+                }
             }
         });
 
