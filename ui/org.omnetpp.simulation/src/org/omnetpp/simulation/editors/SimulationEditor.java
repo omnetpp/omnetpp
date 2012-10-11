@@ -18,11 +18,8 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -88,11 +85,12 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     protected SimulationController simulationController;
 
+    protected Composite editorRootControl;
 //    protected EventLogAnimationCanvas animationCanvas;
     protected SimulationCanvas simulationCanvas;
 
-    private Label statusLabel;
-    private TimelineControl timeline;
+    protected Label statusLabel;
+    protected TimelineControl timeline;
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -115,28 +113,30 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     @Override
     public void createPartControl(Composite parent) {
+        editorRootControl = parent;
         parent.setLayout(removeSpacing(new GridLayout(1, true)));
 
-        // create tabfolder for simulation and animation ribbons
-        CTabFolder tabFolder = new CTabFolder(parent, SWT.HORIZONTAL);
-        tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
-
-        // make tab colors nicer; see Scave's FormToolkit2.setColors() for the original
-        Color blue = new Color(null, 183, 202, 232);
-        Color lighterBlue = new Color(null, 233, 239, 245);
-        tabFolder.setSelectionBackground(new Color[]{blue, lighterBlue}, new int[] {25}, true);
-
-        // create tabs
-        CTabItem simulationTab = new CTabItem(tabFolder, SWT.NONE);
-        simulationTab.setText("Simulate");
-        CTabItem animationTab = new CTabItem(tabFolder, SWT.NONE);
-        animationTab.setText("Playback");
-
-        tabFolder.setSelection(simulationTab);
+//        // create tabfolder for simulation and animation ribbons
+//        CTabFolder tabFolder = new CTabFolder(parent, SWT.HORIZONTAL);
+//        tabFolder.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+//
+//        // make tab colors nicer; see Scave's FormToolkit2.setColors() for the original
+//        Color blue = new Color(null, 183, 202, 232);
+//        Color lighterBlue = new Color(null, 233, 239, 245);
+//        tabFolder.setSelectionBackground(new Color[]{blue, lighterBlue}, new int[] {25}, true);
+//
+//        // create tabs
+//        CTabItem simulationTab = new CTabItem(tabFolder, SWT.NONE);
+//        simulationTab.setText("Simulate");
+//        CTabItem animationTab = new CTabItem(tabFolder, SWT.NONE);
+//        animationTab.setText("Playback");
+//
+//        tabFolder.setSelection(simulationTab);
 
         // create simulation ribbon
-        Composite simulationRibbon = new Composite(tabFolder, SWT.NONE);
-        simulationTab.setControl(simulationRibbon);
+        Composite simulationRibbon = new Composite(parent, SWT.NONE);
+//        simulationTab.setControl(simulationRibbon);
+        simulationRibbon.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         simulationRibbon.setLayout(removeSpacing(new GridLayout(1, false)));
 
         Composite simulationToolbars = new Composite(simulationRibbon, SWT.NONE);
