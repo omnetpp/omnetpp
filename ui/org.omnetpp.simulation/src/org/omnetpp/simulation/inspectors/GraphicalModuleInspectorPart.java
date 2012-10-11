@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.displaymodel.IDisplayString;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.figures.CompoundModuleFigure;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.figures.SubmoduleFigure;
@@ -64,6 +65,7 @@ import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
+import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
  * An inspector that displays a compound module graphically.
@@ -221,6 +223,20 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         getContainer().addMoveResizeSupport(labelFigure);  // for drag
 
         return root;
+    }
+
+    @Override
+    public HoverInfo getHoverFor(int x, int y) {
+        SubmoduleFigureEx submoduleFigure = findSubmoduleAt(x,y);
+        if (submoduleFigure != null) {
+            cModule submodule = findSubmoduleFor(submoduleFigure);
+            if (submodule != null)
+                return new ObjectTreeHoverInfo(new Object[] { submodule });
+        }
+        else if (labelFigure.containsPoint(x, y)) {
+            return new ObjectTreeHoverInfo(new Object[] { object });
+        }
+        return null;
     }
 
     @Override
@@ -594,7 +610,6 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
                 inspectorContainer.inspect(submodule);
         }
     }
-
 
     protected void handleMousePressed(MouseEvent me) {
         //TODO also allow selecting connections!!!

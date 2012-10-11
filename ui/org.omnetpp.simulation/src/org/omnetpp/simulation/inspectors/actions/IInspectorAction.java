@@ -1,7 +1,7 @@
 package org.omnetpp.simulation.inspectors.actions;
 
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.omnetpp.common.ui.IUpdateableAction;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 
@@ -11,7 +11,7 @@ import org.omnetpp.simulation.inspectors.IInspectorPart;
  *
  * @author Andras
  */
-public interface IInspectorAction extends IAction {
+public interface IInspectorAction extends IUpdateableAction {
 
     /**
      * Sets the context for this action. The action should operate on the given inspector.
@@ -24,10 +24,4 @@ public interface IInspectorAction extends IAction {
      * as the selection of the inspector container, editor or the workbench.
      */
     void setContext(IInspectorContainer container, ISelection selection);
-
-    /**
-     * Refreshes the inspector's state
-     */
-    void update();
-
 }

@@ -27,7 +27,6 @@ import org.omnetpp.simulation.editors.SimulationEditor;
  *
  * @author andras
  */
-//TODO disable if simulationController is DETACHED
 public abstract class AbstractSimulationActionDelegate implements IEditorActionDelegate {
     private IAction thisAction;
     private SimulationEditor simulationEditor;

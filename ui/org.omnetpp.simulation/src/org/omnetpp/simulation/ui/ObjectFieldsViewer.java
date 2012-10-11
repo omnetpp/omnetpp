@@ -317,8 +317,14 @@ public class ObjectFieldsViewer {
             return fields.toArray(new Field[]{});
         }
 
+        @SuppressWarnings("rawtypes")
         public Object[] getElements(Object inputElement) {
-            return getChildren(inputElement);  // leave out toplevel element itself (the inspected object) from the tree
+            if (inputElement.getClass().isArray())
+                return (Object[])inputElement;
+            else if (inputElement instanceof Collection)
+                return ((Collection)inputElement).toArray();
+            else
+                return getChildren(inputElement);  // leave out toplevel element itself (the inspected object) from the tree
         }
 
         public Object getParent(Object element) {
@@ -505,9 +511,13 @@ public class ObjectFieldsViewer {
         treeViewer.setContentProvider(new TreeContentProvider());
     }
 
-    public void setInput(cObject object) {
+    public void setInput(Object object) {
         treeViewer.setInput(object);
         refresh();
+    }
+
+    public Object getInput() {
+        return treeViewer.getInput();
     }
 
     public TreeViewer getTreeViewer() {
@@ -597,5 +607,4 @@ public class ObjectFieldsViewer {
             default: return "";
         }
     }
-
 }

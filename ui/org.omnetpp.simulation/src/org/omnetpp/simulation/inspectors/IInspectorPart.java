@@ -6,6 +6,7 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.model.cObject;
@@ -89,6 +90,12 @@ public interface IInspectorPart {
      * TODO
      */
     void populateFloatingToolbar(ToolBarManager manager);
+
+    /**
+     * Return hover information for what is at the given (canvas) x,y coordinates.
+     * (The point falls inside the inspector area.)
+     */
+    HoverInfo getHoverFor(int x, int y);
 
     /**
      * If there's a move/resize handle in the given figure at the given

@@ -28,12 +28,14 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.ui.IUpdateableAction;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
+import org.omnetpp.simulation.ui.SetObjectViewerModeAction;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
 /**
@@ -47,7 +49,7 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     private Label label;
     private ObjectFieldsViewer viewer;
     private boolean autoMode = true; //TODO
-    private List<UpdateableAction> actions = new ArrayList<UpdateableAction>();
+    private List<IUpdateableAction> actions = new ArrayList<IUpdateableAction>();
 
     @Override
     public void createControl(Composite parent) {
@@ -105,15 +107,7 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     public void dispose() {
     }
 
-    protected abstract class UpdateableAction extends Action {
-        public UpdateableAction(String text, int style) {
-            super(text, style);
-        }
-
-        abstract void update();
-    }
-
-    public class SetAutoModeAction extends UpdateableAction {
+    protected class SetAutoModeAction extends Action implements IUpdateableAction {
         public SetAutoModeAction(String tooltip, ImageDescriptor image) {
             super(tooltip, AS_CHECK_BOX);
             setToolTipText(tooltip);
@@ -133,26 +127,15 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         }
     }
 
-    public class SetModeAction extends UpdateableAction {
-        private Mode mode;
-
-        public SetModeAction(Mode mode, String tooltip, ImageDescriptor image) {
-            super(tooltip, AS_CHECK_BOX);
-            setToolTipText(tooltip);
-            setImageDescriptor(image);
-            this.mode = mode;
+    protected class SetModeAction extends SetObjectViewerModeAction {
+        public SetModeAction(ObjectFieldsViewer viewer, Mode mode) {
+            super(viewer, mode);
         }
 
         @Override
         public void run() {
-            viewer.setMode(mode);
-            autoMode = false;
+            super.run();
             updateActions();
-        }
-
-        @Override
-        public void update() {
-            setChecked(viewer.getMode() == mode);
         }
     }
 
@@ -162,21 +145,21 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         //TODO manager.add(my(new SortAction()));
         manager.add(new Separator());
         manager.add(my(new SetAutoModeAction("Auto mode", IMG_MODE_AUTO)));
-        manager.add(my(new SetModeAction(Mode.PACKET, "Packet mode", ObjectFieldsViewer.IMG_MODE_PACKET)));
-        manager.add(my(new SetModeAction(Mode.CHILDREN, "Children mode", ObjectFieldsViewer.IMG_MODE_CHILDREN)));
-        manager.add(my(new SetModeAction(Mode.GROUPED, "Grouped mode", ObjectFieldsViewer.IMG_MODE_GROUPED)));
-        manager.add(my(new SetModeAction(Mode.INHERITANCE, "Inheritance mode", ObjectFieldsViewer.IMG_MODE_INHERITANCE)));
-        manager.add(my(new SetModeAction(Mode.FLAT, "Flat mode", ObjectFieldsViewer.IMG_MODE_FLAT)));
+        manager.add(my(new SetModeAction(viewer, Mode.PACKET)));
+        manager.add(my(new SetModeAction(viewer, Mode.CHILDREN)));
+        manager.add(my(new SetModeAction(viewer, Mode.GROUPED)));
+        manager.add(my(new SetModeAction(viewer, Mode.INHERITANCE)));
+        manager.add(my(new SetModeAction(viewer, Mode.FLAT)));
         updateActions();
     }
 
-    protected UpdateableAction my(UpdateableAction action) {
+    protected IUpdateableAction my(IUpdateableAction action) {
         actions.add(action);
         return action;
     }
 
     protected void updateActions() {
-        for (UpdateableAction action : actions)
+        for (IUpdateableAction action : actions)
             action.update();
     }
 

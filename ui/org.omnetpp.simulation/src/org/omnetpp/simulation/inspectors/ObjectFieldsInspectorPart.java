@@ -140,11 +140,11 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         manager.add(new Separator());
         manager.add(my(new SortAction()));
         manager.add(new Separator());
-        manager.add(my(new SetModeAction(Mode.PACKET, "Packet mode", ObjectFieldsViewer.IMG_MODE_PACKET)));
-        manager.add(my(new SetModeAction(Mode.CHILDREN, "Children mode", ObjectFieldsViewer.IMG_MODE_CHILDREN)));
-        manager.add(my(new SetModeAction(Mode.GROUPED, "Grouped mode", ObjectFieldsViewer.IMG_MODE_GROUPED)));
-        manager.add(my(new SetModeAction(Mode.INHERITANCE, "Inheritance mode", ObjectFieldsViewer.IMG_MODE_INHERITANCE)));
-        manager.add(my(new SetModeAction(Mode.FLAT, "Flat mode", ObjectFieldsViewer.IMG_MODE_FLAT)));
+        manager.add(my(new SetModeAction(Mode.PACKET)));
+        manager.add(my(new SetModeAction(Mode.CHILDREN)));
+        manager.add(my(new SetModeAction(Mode.GROUPED)));
+        manager.add(my(new SetModeAction(Mode.INHERITANCE)));
+        manager.add(my(new SetModeAction(Mode.FLAT)));
     }
 
     @Override

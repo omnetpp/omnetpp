@@ -15,6 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.canvas.SelectionItem;
 import org.omnetpp.simulation.canvas.SelectionUtils;
@@ -24,6 +25,7 @@ import org.omnetpp.simulation.figures.QueueInspectorFigure;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
  * Experimental graphical inspector for queues. Note: the code does not assume the object is
@@ -173,6 +175,18 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     }
 
     protected void handleMouseReleased(MouseEvent me) {
+    }
+
+    @Override
+    public HoverInfo getHoverFor(int x, int y) {
+        IFigure queueItemFigure = findQueueItemFigureAt(x,y);
+        if (queueItemFigure != null) {
+            cObject queueItem = figureToObjectMap.get(queueItemFigure);
+            return new ObjectTreeHoverInfo(new Object[] { queueItem });
+        }
+        else {
+            return new ObjectTreeHoverInfo(new Object[] { object });
+        }
     }
 
     @Override

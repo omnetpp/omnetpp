@@ -8,11 +8,13 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
  *
@@ -80,6 +82,11 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
         else
             inspectorContainer.select(getObject(), true);
         //note: no me.consume()! it would kill the move/resize listener
+    }
+
+    @Override
+    public HoverInfo getHoverFor(int x, int y) {
+        return new ObjectTreeHoverInfo(new Object[] { object });
     }
 
     @Override

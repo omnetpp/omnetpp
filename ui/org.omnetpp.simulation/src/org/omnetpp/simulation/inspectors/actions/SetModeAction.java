@@ -1,7 +1,7 @@
 package org.omnetpp.simulation.inspectors.actions;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.omnetpp.simulation.inspectors.ObjectFieldsInspectorPart;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
 
@@ -12,8 +12,11 @@ import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 public class SetModeAction extends AbstractInspectorAction {
     private Mode mode;
 
-    public SetModeAction(Mode mode, String tooltip, ImageDescriptor desc) {
-        super(tooltip, AS_CHECK_BOX, desc);
+    public SetModeAction(Mode mode) {
+        super("", AS_CHECK_BOX, null);
+        setImageDescriptor(ObjectFieldsViewer.getImageDescriptorFor(mode));
+        setText(ObjectFieldsViewer.getActionTooltipFor(mode));
+        setToolTipText(ObjectFieldsViewer.getActionTooltipFor(mode));
         this.mode = mode;
     }
 

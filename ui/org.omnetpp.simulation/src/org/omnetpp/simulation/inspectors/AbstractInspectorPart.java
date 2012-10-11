@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
@@ -18,6 +19,8 @@ import org.omnetpp.simulation.model.cObject;
 
 /**
  * Default implementation for IInspectorPart, base class for inspector classes
+ *
+ * @author andras
  */
 public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptable {
     protected cObject object;
@@ -120,6 +123,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     protected void setSelectionMark(boolean isSelected) {
         // override in subclasses to provide a visually more attractive implementation
         figure.setBackgroundColor(isSelected ? ColorFactory.GREY50 : null);
+    }
+
+    @Override
+    public HoverInfo getHoverFor(int x, int y) {
+        return null;  // override to provide hover information
     }
 
     @Override

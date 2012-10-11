@@ -37,8 +37,8 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
@@ -63,6 +63,7 @@ import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cSimulation;
 import org.omnetpp.simulation.ui.ModulePathsMessageFilter;
+import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 import org.omnetpp.simulation.ui.SpeedControl;
 import org.omnetpp.simulation.ui.TimelineContentProvider;
 import org.omnetpp.simulation.ui.TimelineControl;
@@ -91,6 +92,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     protected Label statusLabel;
     protected TimelineControl timeline;
+
+    protected HoverSupport hoverSupport = new HoverSupport();
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -177,7 +180,6 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
         configureTimeline();
 
-
 //        // create animation ribbon
 //        Composite animationRibbon = new Composite(tabFolder, SWT.NONE);
 //        animationTab.setControl(animationRibbon);
@@ -230,6 +232,14 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 timeline.redraw();
                 if (controller.isLastEventAnimationDone())
                     showNextEventMarker();
+            }
+        });
+
+        // hover support for the canvas
+        hoverSupport.adapt(simulationCanvas, new IHoverInfoProvider() {
+            @Override
+            public HoverInfo getHoverFor(Control control, int x, int y) {
+                return simulationCanvas.getHoverFor(x, y);
             }
         });
 
@@ -376,19 +386,11 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     protected void configureTimeline() {
         // add hover support
-        new HoverSupport().adapt(timeline, new IHoverInfoProvider() {
+        hoverSupport.adapt(timeline, new IHoverInfoProvider() {
             @Override
-            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
-                Object[] messages = timeline.findMessages(new Point(x,y), 3);
-                if (messages.length == 0)
-                    return null;
-                String html = "<ul>\n";
-                for (Object o : messages) {
-                    cMessage msg = (cMessage)o;
-                    html += "<li>(" + msg.getClassName() + ")&nbsp;<b>" + msg.getName() + "</b> -- "+ msg.getInfo() + "<br>\n";
-                }
-                html += "</ul>";
-                return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(html));
+            public HoverInfo getHoverFor(Control control, int x, int y) {
+              Object[] messages = timeline.findMessages(new Point(x,y), 3);
+              return (messages.length == 0) ? null : new ObjectTreeHoverInfo(messages);
             }
         });
 

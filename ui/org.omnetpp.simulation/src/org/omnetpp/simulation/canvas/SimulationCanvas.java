@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.ui.ArrayTreeContentProvider;
 import org.omnetpp.common.ui.CheckedTreeSelectionDialog2;
+import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
@@ -429,6 +430,11 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     public void updateFloatingToolbarActions() {
         if (floatingToolbarSupport != null)
             floatingToolbarSupport.updateFloatingToolbarActions();
+    }
+
+    public HoverInfo getHoverFor(int x, int y) {
+        IInspectorPart inspector = findInspectorAt(x, y);
+        return inspector == null ? null : inspector.getHoverFor(x, y);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
