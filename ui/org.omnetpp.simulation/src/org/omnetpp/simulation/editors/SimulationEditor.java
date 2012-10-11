@@ -142,6 +142,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         Composite simulationToolbars = new Composite(simulationRibbon, SWT.NONE);
         simulationToolbars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
         simulationToolbars.setLayout(new GridLayout(5, false));
+        //((GridLayout)simulationToolbars.getLayout()).marginHeight = 2;
 
         ToolBar toolbar1 = new ToolBar(simulationToolbars, SWT.NONE);
         new ActionContributionItem(SimulationEditorContributor.linkWithSimulationAction).fill(toolbar1, -1);
@@ -399,8 +400,16 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 ISelection selection = timeline.getSelection();
-                List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
-                simulationCanvas.inspect(objects, true);
+                if (!selection.isEmpty()) {
+                    List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
+                    simulationCanvas.inspect(objects, true);
+                }
+                else {
+                    // collapse/expand: toggle height hint between SWT.DEFAULT and collapsedHeightHint
+                    GridData data = (GridData)timeline.getLayoutData();
+                    data.heightHint = (data.heightHint==SWT.DEFAULT) ? data.heightHint = timeline.getCollapsedHeightHint() : SWT.DEFAULT;
+                    editorRootControl.layout();
+                }
             }
         });
 
