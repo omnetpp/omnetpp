@@ -289,6 +289,40 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         return null;
     }
 
+    public List<IInspectorPart> inspect(List<cObject> objects, boolean interactive) {
+        List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
+
+        // count how many new inspectors we'll need to open
+        List<cObject> uninspected = new ArrayList<cObject>();
+        for (cObject object : objects) {
+            IInspectorPart inspector = findInspectorFor(object);
+            if (inspector == null)
+                uninspected.add(object);
+            else
+                inspectors.add(inspector);
+        }
+
+        // if there are many inspectors to open, offer a checkbox list dialog for selection
+        if (uninspected.size() >= 5 && interactive)
+            uninspected = chooseObjectsToInspect(Display.getCurrent().getActiveShell(), "Select new inspectors to open:", uninspected);
+
+        // open, select, reveal
+        if (uninspected != null) {
+            for (cObject object : uninspected) {
+                IInspectorPart inspector = createInspectorFor(object);
+                addInspectorPart(inspector);
+                inspectors.add(inspector);
+            }
+
+            if (!inspectors.isEmpty()) {
+                asyncReveal(inspectors.get(0));
+                select(inspectors.toArray(), true);
+            }
+        }
+
+        return inspectors;
+    }
+
     public IInspectorPart inspect(cObject object) {
         Assert.isNotNull(object);
 
@@ -299,21 +333,10 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         else {
             inspector = createInspectorFor(object);
             addInspectorPart(inspector);
-
-            // Note: the following layout() call doesn't work to reveal the inspector (looks like
-            // it doesn't cause the scrollbar or getContents().getBounds() to be updated); as a
-            // workaround, we call reveal() in an asyncExec().
-            //getContents().getLayoutManager().layout(getContents());
-            //reveal(finalInspector);
-
-            final IInspectorPart finalInspector = inspector;
-            Display.getDefault().asyncExec(new Runnable() {
-                @Override
-                public void run() {
-                    reveal(finalInspector);
-                }
-            });
+            asyncReveal(inspector);
         }
+        select(inspector, true);
+
         return inspector;
     }
 
@@ -335,9 +358,48 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     public void reveal(IInspectorPart inspector) {
+        // note: not good for newly created inspectors; use asyncReveal for them
         inspector.raiseToTop();
         Rectangle bounds = inspector.getFigure().getBounds();
         scrollSmoothTo(bounds.x, bounds.y);  // scrolls so that inspector is at the top of the screen (behavior could be improved)
+    }
+
+    protected void asyncReveal(final IInspectorPart inspector) {
+        // Why needed: for new inspectors the following layout() call doesn't work to reveal the inspector 
+        // (looks like it doesn't cause the scrollbar or getContents().getBounds() to be updated); as a
+        // workaround, we call reveal() in an asyncExec().
+        //
+        //getContents().getLayoutManager().layout(getContents());
+        //reveal(finalInspector);
+
+        Display.getDefault().asyncExec(new Runnable() {
+            @Override
+            public void run() {
+                reveal(inspector);
+            }
+        });
+    }
+
+    /**
+     * Utility function: pops up a dialog and lets the user choose one or more of the offered objects.
+     * Null as return value means cancel.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected List<cObject> chooseObjectsToInspect(Shell parent, String message, List<cObject> objects) {
+        CheckedTreeSelectionDialog2 dialog = new CheckedTreeSelectionDialog2(
+                parent,
+                new DecoratingStyledCellLabelProvider(new ObjectTreeView.ViewLabelProvider(), null, null), //TODO make that inner class top-level...
+                new ArrayTreeContentProvider());
+        dialog.setTitle("Inspect Objects");
+        dialog.setMessage(message);
+        dialog.setHelpAvailable(false);
+        dialog.setInput(objects);
+        dialog.setStatusLineAboveButtons(false);
+        dialog.setInitialSelections(objects.toArray());
+
+        if (dialog.open() == Window.OK)
+            return (List<cObject>)(List)Arrays.asList(dialog.getResult());
+        return null;
     }
 
     public void openFloatingToolbarFor(IInspectorPart inspector) {
@@ -464,35 +526,5 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         getEditor().populateContextMenu(menu, selection);
     }
 
-    public void inspect(List<cObject> objects, boolean interactive) {
-        // if there are many objects, offer a checkbox list dialog for selection
-        if (objects.size() > 1 && interactive)
-            objects = chooseObjectsToInspect(Display.getCurrent().getActiveShell(), objects);
-
-        if (objects != null)
-            for (cObject obj : objects)
-                inspect(obj);
-    }
-
-    /**
-     * Utility function: pops up a dialog and lets the user choose one or more of the offered objects.
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected List<cObject> chooseObjectsToInspect(Shell parent, List<cObject> objects) {
-        CheckedTreeSelectionDialog2 dialog = new CheckedTreeSelectionDialog2(
-                parent,
-                new DecoratingStyledCellLabelProvider(new ObjectTreeView.ViewLabelProvider(), null, null), //TODO make that inner class top-level...
-                new ArrayTreeContentProvider());
-        dialog.setTitle("Inspect Objects");
-        dialog.setMessage("Choose objects you want to open inspectors for:");
-        dialog.setHelpAvailable(false);
-        dialog.setInput(objects);
-        dialog.setStatusLineAboveButtons(false);
-        dialog.setInitialSelections(objects.toArray());
-
-        if (dialog.open() == Window.OK)
-            return (List<cObject>)(List)Arrays.asList(dialog.getResult());
-        return null;
-    }
 
 }

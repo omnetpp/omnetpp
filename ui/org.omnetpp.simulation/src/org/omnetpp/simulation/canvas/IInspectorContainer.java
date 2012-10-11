@@ -46,7 +46,7 @@ public interface IInspectorContainer extends ISelectionProvider {
      * @param objects
      * @param interactive  if true, and if there are many objects in the list, prompt user with a selection dialog first
      */
-    void inspect(List<cObject> objects, boolean interactive);
+    List<IInspectorPart> inspect(List<cObject> objects, boolean interactive);
 
     /**
      * Closes the given inspector.
