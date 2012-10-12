@@ -71,9 +71,9 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.NedSourceFoldersConfiguration;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.ui.FilteredCheckboxTree;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.ProblemsMessageDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.UIUtils;
@@ -225,14 +225,14 @@ public class ProjectFeaturesPropertyPage extends PropertyPage {
             }
         });
 
-        new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
+        new HoverSupport().adapt(treeViewer.getTree(), new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof ProjectFeature) {
                     String result = getHtmlFeatureInfo((ProjectFeature)element);
-                    return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(result));
+                    return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(result));
                 }
                 return null;
             }

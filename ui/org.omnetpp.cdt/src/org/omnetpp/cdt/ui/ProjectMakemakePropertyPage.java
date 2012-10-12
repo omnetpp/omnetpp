@@ -80,9 +80,9 @@ import org.omnetpp.cdt.build.MakemakeOptions.Type;
 import org.omnetpp.cdt.build.MetaMakemake;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.StringUtils;
 
 /**
@@ -309,13 +309,13 @@ public class ProjectMakemakePropertyPage extends PropertyPage {
             }
         });
 
-        new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
+        new HoverSupport().adapt(treeViewer.getTree(), new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof IContainer)
-                    return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getFolderInfo((IContainer)element).tooltipBody));
+                    return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(getFolderInfo((IContainer)element).tooltipBody));
                 return null;
             }
         });

@@ -9,6 +9,9 @@ package org.omnetpp.common.ui;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.text.AbstractInformationControl;
+import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension2;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -72,8 +75,40 @@ public class StyledTextInformationControl extends AbstractInformationControl imp
         if (input instanceof String)
             HTMLUtils.htmlToStyledText((String)input, styledText, null);
         else {
-            HTMLHoverInfo hoverInfo = (HTMLHoverInfo)input;
-            HTMLUtils.htmlToStyledText(hoverInfo.getContent(), styledText, hoverInfo.getImageMap());
+            HtmlInput htmlInput = (HtmlInput)input;
+            HTMLUtils.htmlToStyledText(htmlInput.getContent(), styledText, htmlInput.getImageMap());
         }
+    }
+
+    /**
+     * Utility method: returns a creator that creates a (transient) StyledTextInformationControl.
+     */
+    public static IInformationControlCreator getCreator() {
+        return new AbstractReusableInformationControlCreator() {
+            @Override
+            public IInformationControl doCreateInformationControl(Shell shell) {
+                return new StyledTextInformationControl(shell, HoverSupport.AFFORDANCE);
+            }
+        };
+    }
+
+    /**
+     * Utility method: returns a creator that creates a (sticky) StyledTextInformationControl.
+     */
+    public static IInformationControlCreator getStickyCreator() {
+        return new AbstractReusableInformationControlCreator() {
+            @Override
+            public IInformationControl doCreateInformationControl(Shell shell) {
+                return new StyledTextInformationControl(shell, true);
+            }
+        };
+    }
+
+    /**
+     * Implements IInformationControlExtension5.getInformationPresenterControlCreator().
+     */
+    @Override
+    public IInformationControlCreator getInformationPresenterControlCreator() {
+        return getStickyCreator();
     }
 }

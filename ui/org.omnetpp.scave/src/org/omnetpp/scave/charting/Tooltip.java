@@ -8,9 +8,9 @@
 package org.omnetpp.scave.charting;
 
 import org.eclipse.swt.widgets.Control;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 
 /**
  * Chart tooltip
@@ -24,10 +24,10 @@ class Tooltip {
     public Tooltip(final ChartCanvas canvas) {
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 400);
-        hoverSupport.adapt(canvas, new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        hoverSupport.adapt(canvas, new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 String html = canvas.getHoverHtmlText(x, y);
-                return html != null ? new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(html)) : null;
+                return html != null ? new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(html)) : null;
             }
         });
     }

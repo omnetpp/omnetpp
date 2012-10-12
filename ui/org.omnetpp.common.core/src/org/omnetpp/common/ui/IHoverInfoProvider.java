@@ -10,12 +10,16 @@ package org.omnetpp.common.ui;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * Produces an HTML page to display as hover info (tooltip), for a given mouse
- * position over a widget. For use with HoverSupport.
+ * Interface to produce information that will be displayed in a tooltip-like
+ * floating information window , for a given mouse position over a widget.
+ * What the information window will contain is determined by the returned
+ * HoverInfo object.
+ *
+ * For use with HoverSupport; see HoverSupport.adapt().
  *
  * @author Andras
  */
-public interface IHTMLHoverProvider {
+public interface IHoverInfoProvider {
     /**
      * Return a tooltip, or null if there is no tooltip to be shown.
      * The (x,y) coordinates are relative to the widget.
@@ -24,5 +28,5 @@ public interface IHTMLHoverProvider {
      * @param x         the x coordinate of the mouse cursor
      * @param y         the y coordinate of the mouse cursor
      */
-    HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y);
+    HoverInfo getHoverFor(Control control, int x, int y);
 }

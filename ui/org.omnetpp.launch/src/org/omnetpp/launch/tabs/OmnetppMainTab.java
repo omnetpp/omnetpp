@@ -53,9 +53,9 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.views.navigator.ResourceComparator;
 import org.omnetpp.common.project.ProjectUtils;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.ToggleLink;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.model.InifileParser;
@@ -790,12 +790,12 @@ public class OmnetppMainTab extends AbstractLaunchConfigurationTab implements Mo
         fRunText = SWTFactory.createSingleText(composite, runSpan);
         fRunText.addModifyListener(this);
         HoverSupport hover = new HoverSupport();
-        hover.adapt(fRunText, new IHTMLHoverProvider() {
+        hover.adapt(fRunText, new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 if (infoText == null)
                     infoText = truncateHoverText(OmnetppLaunchUtils.getSimulationRunInfo(config), MAX_TOOLTIP_CHARS);
-                return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>"));
+                return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(runTooltip+"<pre>"+infoText+"</pre>"));
             }
         });
 

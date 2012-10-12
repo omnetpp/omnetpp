@@ -78,13 +78,13 @@ public class NedTextHover implements ITextHover, ITextHoverExtension, IInformati
      * @see org.eclipse.jface.text.ITextHoverExtension#getHoverControlCreator()
      */
     public IInformationControlCreator getHoverControlCreator() {
-        return HoverSupport.getHoverControlCreator();
+        return HoverSupport.getHtmlHoverControlCreator();
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.jface.text.information.IInformationProviderExtension2#getInformationPresenterControlCreator()
      */
     public IInformationControlCreator getInformationPresenterControlCreator() {
-        return HoverSupport.getInformationPresenterControlCreator();
+        return HoverSupport.getHtmlInformationPresenterControlCreator();
     }
 }

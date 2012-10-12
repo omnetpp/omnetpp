@@ -102,9 +102,9 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.editor.text.NedCommentFormatter;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
@@ -388,8 +388,8 @@ public class GraphicalNedEditor
         // add hover tooltip support for help and documentation tooltips
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(600, 200);
-        hoverSupport.adapt(getFigureCanvas(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        hoverSupport.adapt(getFigureCanvas(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 GraphicalEditPart epUnderMouse = (GraphicalEditPart)getGraphicalViewer().findObjectAt(new Point(x,y));
                 // check if the figure has its own tooltip in this case we do not provide our own information provider
                 IFigure figureUnderMouse = epUnderMouse.getFigure().findFigureAt(x, y);
@@ -402,7 +402,7 @@ public class GraphicalNedEditor
                         !((CompoundModuleEditPart)epUnderMouse).getFigure().isOnBorder(x, y))
                     return null;
 
-                return new HTMLHoverInfo(getHTMLHoverTextFor(epUnderMouse));
+                return new HtmlHoverInfo(getHTMLHoverTextFor(epUnderMouse));
             }
         });
 

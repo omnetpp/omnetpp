@@ -7,9 +7,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.wizard.IWidgetAdapter;
@@ -35,10 +35,10 @@ public class InfoLink extends Composite implements IWidgetAdapter {
         link = new Link(this, SWT.NONE);
 
         hoverSupport = new HoverSupport();
-        hoverSupport.adapt(link, new IHTMLHoverProvider() {
+        hoverSupport.adapt(link, new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-                return new HTMLHoverInfo(getHoverText(x, y), sizeConstraint);
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+                return new HtmlHoverInfo(getHoverText(x, y), sizeConstraint);
             }
         });
 

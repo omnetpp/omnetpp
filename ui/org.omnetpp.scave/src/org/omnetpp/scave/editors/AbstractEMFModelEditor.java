@@ -113,9 +113,9 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheet;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetSorter;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.MultiPageEditorPartExt;
 import org.omnetpp.common.util.ReflectionUtils;
 import org.omnetpp.common.util.StringUtils;
@@ -748,15 +748,15 @@ public abstract class AbstractEMFModelEditor extends MultiPageEditorPartExt
             }
         });
 
-        new HoverSupport().adapt(modelViewer.getTree(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        new HoverSupport().adapt(modelViewer.getTree(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = modelViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element != null && modelViewer.getLabelProvider() instanceof DecoratingLabelProvider) {
                     ILabelProvider labelProvider = ((DecoratingLabelProvider)modelViewer.getLabelProvider()).getLabelProvider();
                     if (labelProvider instanceof ScaveModelLabelProvider) {
                         ScaveModelLabelProvider scaveLabelProvider = (ScaveModelLabelProvider)labelProvider;
-                        return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
+                        return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(scaveLabelProvider.getTooltipText(element)));
                     }
                 }
                 return null;

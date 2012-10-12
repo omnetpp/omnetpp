@@ -32,8 +32,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.dialogs.ListDialog;
-import org.omnetpp.common.ui.HTMLHoverInfo;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.HtmlHoverInfo;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.inifile.editor.model.ConfigOption;
 import org.omnetpp.inifile.editor.model.IInifileDocument;
 import org.omnetpp.inifile.editor.model.InifileHoverUtils;
@@ -122,15 +122,15 @@ public abstract class TableFieldEditor extends FieldEditor {
         });
 
         // add hover support
-        formPage.addTooltipSupport(tableViewer.getTable(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        formPage.addTooltipSupport(tableViewer.getTable(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = tableViewer.getTable().getItem(new Point(x,y));
                 SectionKey sectionKey = (SectionKey) (item==null ? null : item.getData());
                 if (sectionKey != null) {
                     if (entry.isPerObject())
-                        return new HTMLHoverInfo(InifileHoverUtils.getPerObjectConfigHoverText(sectionKey.section, sectionKey.key, inifile));
+                        return new HtmlHoverInfo(InifileHoverUtils.getPerObjectConfigHoverText(sectionKey.section, sectionKey.key, inifile));
                     else
-                        return new HTMLHoverInfo(InifileHoverUtils.getConfigHoverText(sectionKey.section, sectionKey.key, inifile));
+                        return new HtmlHoverInfo(InifileHoverUtils.getConfigHoverText(sectionKey.section, sectionKey.key, inifile));
                 }
                 else
                     return null;

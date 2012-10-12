@@ -42,9 +42,9 @@ import org.omnetpp.common.image.ImageFactory;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.inifile.editor.IGotoInifile;
@@ -364,8 +364,8 @@ public class ModuleHierarchyView extends AbstractModuleView {
         treeViewer.getTree().setMenu(contextMenuManager.createContextMenu(treeViewer.getTree()));
 
         // add tooltip support to the tree
-        new HoverSupport().adapt(treeViewer.getTree(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        new HoverSupport().adapt(treeViewer.getTree(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof GenericTreeNode)
@@ -374,9 +374,9 @@ public class ModuleHierarchyView extends AbstractModuleView {
                     ParamResolution res = (ParamResolution) element;
                     if (res.section != null && res.key != null)
                         //XXX make sure "res" and inifile editor refer to the same IFile!!!
-                        return new HTMLHoverInfo(InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer));
+                        return new HtmlHoverInfo(InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer));
                     else
-                        return new HTMLHoverInfo(InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment));
+                        return new HtmlHoverInfo(InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment));
                 }
                 else {
                     //TODO produce some text

@@ -11,9 +11,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.wizard.IWidgetAdapter;
 
@@ -64,9 +64,9 @@ public abstract class AbstractChooser extends Composite implements IWidgetAdapte
         });
 
         hoverSupport = new HoverSupport();
-        hoverSupport.adapt(text, new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-                return new HTMLHoverInfo(getHoverText(x, y));
+        hoverSupport.adapt(text, new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+                return new HtmlHoverInfo(getHoverText(x, y));
             }
         });
 

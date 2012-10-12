@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.inifile.editor.InifileEditorPlugin;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -176,7 +176,7 @@ public abstract class FormPage extends Composite {
      * HoverSupport for each control or field editor, otherwise "F2 to focus" will only
      * work when hovering the control that owns the focus.
      */
-    protected void addTooltipSupport(Control control, IHTMLHoverProvider hoverTextProvider) {
+    protected void addTooltipSupport(Control control, IHoverInfoProvider hoverTextProvider) {
         hoverSupport.adapt(control, hoverTextProvider);
     }
 

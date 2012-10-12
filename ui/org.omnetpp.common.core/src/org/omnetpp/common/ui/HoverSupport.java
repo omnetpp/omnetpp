@@ -12,7 +12,6 @@ import java.util.HashMap;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.internal.text.InformationControlReplacer;
 import org.eclipse.jface.text.AbstractHoverInformationControlManager;
-import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension3;
@@ -35,7 +34,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
-import org.eclipse.swt.widgets.Shell;
 import org.omnetpp.common.util.ReflectionUtils;
 
 /**
@@ -46,7 +44,7 @@ import org.omnetpp.common.util.ReflectionUtils;
  */
 @SuppressWarnings("restriction")
 public class HoverSupport {
-    private static final String AFFORDANCE = "Press 'F2' for focus";
+    public static final String AFFORDANCE = "Press 'F2' for focus";
     // Note: this is a copy of the stylesheet used by JDT (we want to avoid depending on the JDT plugins)
     private static final String HTML_PROLOG =
         "<html><head><style CHARSET=\"ISO-8859-1\" TYPE=\"text/css\">\n" +
@@ -110,13 +108,14 @@ public class HoverSupport {
         @Override
         protected void computeInformation() {
             Point location = getHoverEventLocation();
+            HoverInfo hoverInfo = hoverInfoProviders.get(getSubjectControl()).getHoverFor(getSubjectControl(), location.x, location.y);
+            if (hoverInfo != null)
+                setCustomInformationControlCreator(hoverInfo.getHoverControlCreator());
             IInformationControl informationControl = getInformationControl();
             Point mouseLocation = Display.getDefault().getCursorLocation();
-            HTMLHoverInfo hover = hoverTextProviders.get(getSubjectControl()).getHTMLHoverFor(getSubjectControl(), location.x, location.y);
             org.eclipse.swt.graphics.Rectangle subjectArea = new org.eclipse.swt.graphics.Rectangle(location.x, location.y, 1, 1);
-            // TODO: apply size constraints of hover
-            if (hover != null && hover.getContent() != null) {
-                setInformation(hover, subjectArea);
+            if (hoverInfo != null && hoverInfo.getInput() != null) {
+                setInformation(hoverInfo.getInput(), subjectArea);
                 Point size = informationControl.computeSizeHint();
                 informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
             }
@@ -152,18 +151,6 @@ public class HoverSupport {
             Display.getDefault().removeFilter(SWT.KeyDown, eventFilter);
         }
 
-        private int calculateSize(int hoverSizeConstraint, int sizeHint, int minimumSize, int preferredSize) {
-            int size = sizeHint;
-
-            if (minimumSize != SWT.DEFAULT)
-                size = Math.max(minimumSize, size);
-
-            if (preferredSize != SWT.DEFAULT)
-                size = Math.min(preferredSize, hoverSizeConstraint);
-
-            return size;
-        }
-
         private Point calculateHoverPosition(Point mouse, Point size) {
             Monitor monitor = findMonitorByPosition(mouse);
             if (monitor == null)
@@ -183,26 +170,6 @@ public class HoverSupport {
                 if (monitor.getBounds().contains(position))
                     return monitor;
             return null;
-        }
-    }
-
-    private static class StyledTextInformationControlCreator extends AbstractReusableInformationControlCreator {
-        @Override
-        public IInformationControl doCreateInformationControl(Shell shell) {
-            return new StyledTextInformationControl(shell, AFFORDANCE) {
-                @Override
-                public IInformationControlCreator getInformationPresenterControlCreator() {
-                    return HoverSupport.getInformationPresenterControlCreator();
-                }
-            };
-        }
-    }
-
-
-    private static class StickyStyledTextInformationControlCreator extends AbstractReusableInformationControlCreator {
-        @Override
-        public IInformationControl doCreateInformationControl(Shell shell) {
-            return new StyledTextInformationControl(shell, true);
         }
     }
 
@@ -370,7 +337,7 @@ public class HoverSupport {
         }
     }
 
-    private HashMap<Control,IHTMLHoverProvider> hoverTextProviders = new HashMap<Control, IHTMLHoverProvider>();
+    private HashMap<Control,IHoverInfoProvider> hoverInfoProviders = new HashMap<Control, IHoverInfoProvider>();
 
     private HashMap<Control, LocalHoverInformationControlManager> hoverInformationControlManagers = new HashMap<Control, LocalHoverInformationControlManager>();
 
@@ -393,19 +360,19 @@ public class HoverSupport {
     /**
      * Adds hover support for the given control.
      */
-    public void adapt(final Control control, IHTMLHoverProvider hoverTextProvider) {
-        Assert.isTrue(hoverTextProvider != null);
-        Assert.isTrue(!hoverTextProviders.containsKey(control), "control already registered");
-        hoverTextProviders.put(control, hoverTextProvider);
+    public void adapt(final Control control, IHoverInfoProvider hoverInfoProvider) {
+        Assert.isTrue(hoverInfoProvider != null);
+        Assert.isTrue(!hoverInfoProviders.containsKey(control), "control already registered");
+        hoverInfoProviders.put(control, hoverInfoProvider);
         control.addDisposeListener(new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent e) {
                 forget(control);
             }
         });
-        LocalInformationControlReplacer informationControlReplacer = new LocalInformationControlReplacer(getInformationPresenterControlCreator());
+        LocalInformationControlReplacer informationControlReplacer = new LocalInformationControlReplacer(getHtmlInformationPresenterControlCreator());
         informationControlReplacer.install(control);
-        LocalHoverInformationControlManager hoverInformationControlManager = new LocalHoverInformationControlManager(getHoverControlCreator());
+        LocalHoverInformationControlManager hoverInformationControlManager = new LocalHoverInformationControlManager(getHtmlHoverControlCreator());
         hoverInformationControlManager.getInternalAccessor().setInformationControlReplacer(informationControlReplacer);
         hoverInformationControlManager.install(control);
         hoverInformationControlManagers.put(control, hoverInformationControlManager);
@@ -418,7 +385,7 @@ public class HoverSupport {
      */
     //XXX but widgetDisposed is not always called when the widget gets disposed
     public void forget(Control control) {
-        hoverTextProviders.remove(control);
+        hoverInfoProviders.remove(control);
         hoverInformationControlManagers.remove(control);
     }
 
@@ -436,15 +403,15 @@ public class HoverSupport {
     /**
      * Utility method for ITextHoverExtension.
      */
-    public static IInformationControlCreator getHoverControlCreator() {
-        return new StyledTextInformationControlCreator();
+    public static IInformationControlCreator getHtmlHoverControlCreator() {
+        return StyledTextInformationControl.getCreator();
     }
 
     /**
      * Utility method for IInformationProviderExtension2.
      */
-    public static IInformationControlCreator getInformationPresenterControlCreator() {
-        return new StickyStyledTextInformationControlCreator();
+    public static IInformationControlCreator getHtmlInformationPresenterControlCreator() {
+        return StyledTextInformationControl.getStickyCreator();
     }
 
     /**

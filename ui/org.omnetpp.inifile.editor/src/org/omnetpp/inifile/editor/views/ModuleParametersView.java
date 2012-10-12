@@ -51,9 +51,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.util.ActionExt;
 import org.omnetpp.common.util.StringUtils;
@@ -156,17 +156,17 @@ public class ModuleParametersView extends AbstractModuleView {
         tableViewer.setContentProvider(new ArrayContentProvider());
 
         // add tooltip support to the table
-        new HoverSupport().adapt(tableViewer.getTable(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        new HoverSupport().adapt(tableViewer.getTable(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = tableViewer.getTable().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 if (element instanceof ParamResolution) {
                     ParamResolution res = (ParamResolution) element;
                     if (res.section != null && res.key != null)
                         //XXX make sure "res" and inifile editor refer to the same IFile!!!
-                        return new HTMLHoverInfo(InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer));
+                        return new HtmlHoverInfo(InifileHoverUtils.getEntryHoverText(res.section, res.key, inifileDocument, inifileAnalyzer));
                     else
-                        return new HTMLHoverInfo(InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment));
+                        return new HtmlHoverInfo(InifileHoverUtils.getParamHoverText(res.elementPath, res.paramDeclaration, res.paramAssignment));
                 }
                 return null;
             }

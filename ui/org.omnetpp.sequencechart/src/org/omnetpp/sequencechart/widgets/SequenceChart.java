@@ -76,9 +76,9 @@ import org.omnetpp.common.eventlog.IEventLogChangeListener;
 import org.omnetpp.common.eventlog.IEventLogProvider;
 import org.omnetpp.common.eventlog.IEventLogSelection;
 import org.omnetpp.common.eventlog.ModuleTreeItem;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.PersistentResourcePropertyManager;
 import org.omnetpp.common.util.StringUtils;
@@ -327,11 +327,11 @@ public class SequenceChart
     private void setupHoverSupport() {
         hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(700, 200);
-        hoverSupport.adapt(this, new IHTMLHoverProvider() {
+        hoverSupport.adapt(this, new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 if (!internalErrorHappenedDuringPaint)
-                    return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(getTooltipText(x, y)));
+                    return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(getTooltipText(x, y)));
                 else
                     return null;
             }

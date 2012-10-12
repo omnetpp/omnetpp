@@ -58,8 +58,8 @@ import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeLabelProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
 import org.omnetpp.common.ui.GenericTreeUtils;
-import org.omnetpp.common.ui.HTMLHoverInfo;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.HtmlHoverInfo;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.inifile.editor.actions.AddInifileKeysAction;
 import org.omnetpp.inifile.editor.editors.InifileEditor;
@@ -210,11 +210,11 @@ public class SectionsPage extends FormPage {
         });
 
         // add tooltip support
-        addTooltipSupport(treeViewer.getTree(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        addTooltipSupport(treeViewer.getTree(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 String section = getSectionNameFromTreeNode(item==null ? null : item.getData());
-                return section==null ? null : new HTMLHoverInfo(InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer(), true));
+                return section==null ? null : new HtmlHoverInfo(InifileHoverUtils.getSectionHoverText(section, getInifileDocument(), getInifileAnalyzer(), true));
             }
         });
 

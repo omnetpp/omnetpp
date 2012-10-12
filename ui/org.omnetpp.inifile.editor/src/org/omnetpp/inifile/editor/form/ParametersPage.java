@@ -51,8 +51,8 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.contentassist.ContentAssistUtil;
 import org.omnetpp.common.ui.GenericTreeContentProvider;
 import org.omnetpp.common.ui.GenericTreeNode;
-import org.omnetpp.common.ui.HTMLHoverInfo;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.HtmlHoverInfo;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.TableLabelProvider;
 import org.omnetpp.common.ui.TableTextCellEditor;
 import org.omnetpp.common.util.StringUtils;
@@ -346,17 +346,17 @@ public class ParametersPage extends FormPage {
         });
 
         // add tooltip support
-        addTooltipSupport(treeViewer.getTree(), new IHTMLHoverProvider() {
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+        addTooltipSupport(treeViewer.getTree(), new IHoverInfoProvider() {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 Item item = treeViewer.getTree().getItem(new Point(x,y));
                 Object element = item==null ? null : item.getData();
                 element = element!=null ? ((GenericTreeNode)element).getPayload() : null;
                 if (element instanceof SectionKey) {
                     SectionKey entry = (SectionKey) element;
-                    return new HTMLHoverInfo(InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer()));
+                    return new HtmlHoverInfo(InifileHoverUtils.getEntryHoverText(entry.section, entry.key, getInifileDocument(), getInifileAnalyzer()));
                 }
                 else if (element!=null) {
-                    return new HTMLHoverInfo(InifileHoverUtils.getSectionHoverText(element.toString(), getInifileDocument(), getInifileAnalyzer(), false));
+                    return new HtmlHoverInfo(InifileHoverUtils.getSectionHoverText(element.toString(), getInifileDocument(), getInifileAnalyzer(), false));
                 }
                 return null;
             }

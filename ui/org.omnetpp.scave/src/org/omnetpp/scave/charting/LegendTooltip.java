@@ -23,9 +23,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.scave.charting.plotter.IChartSymbol;
 
 /**
@@ -57,9 +57,9 @@ class LegendTooltip implements ILegend
 
         final HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(320,400);
-        hoverSupport.adapt(button, new IHTMLHoverProvider() {
+        hoverSupport.adapt(button, new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
                 return getTooltip(x, y);
             }
         });
@@ -97,7 +97,7 @@ class LegendTooltip implements ILegend
         // button is drawn as a child of the canvas
     }
 
-    public HTMLHoverInfo getTooltip(int x, int y) {
+    public HtmlHoverInfo getTooltip(int x, int y) {
         if (items.size() > 0) {
             Map<String, Image> imageMap = new HashMap<String, Image>();
             StringBuffer sb = new StringBuffer();
@@ -111,7 +111,7 @@ class LegendTooltip implements ILegend
                 }
                 sb.append(htmlText(item.label)).append("</div>");
             }
-            return new HTMLHoverInfo(HoverSupport.addHTMLStyleSheet(sb.toString()), imageMap, null);
+            return new HtmlHoverInfo(HoverSupport.addHTMLStyleSheet(sb.toString()), imageMap, null);
         }
         else
             return null;

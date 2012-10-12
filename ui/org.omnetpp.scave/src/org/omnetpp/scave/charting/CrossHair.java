@@ -35,9 +35,9 @@ import org.omnetpp.common.canvas.ICoordsMapping;
 import org.omnetpp.common.canvas.ZoomableCanvasMouseSupport;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
-import org.omnetpp.common.ui.HTMLHoverInfo;
+import org.omnetpp.common.ui.HtmlHoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
-import org.omnetpp.common.ui.IHTMLHoverProvider;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.GraphicsUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.charting.VectorChart.LineProperties;
@@ -163,10 +163,10 @@ class CrossHair {
         });
         HoverSupport hoverSupport = new HoverSupport();
         hoverSupport.setHoverSizeConstaints(500, 400);
-        hoverSupport.adapt(chart, new IHTMLHoverProvider() {
+        hoverSupport.adapt(chart, new IHoverInfoProvider() {
             @Override
-            public HTMLHoverInfo getHTMLHoverFor(Control control, int x, int y) {
-                return new HTMLHoverInfo(getHoverText(x, y, finalChart.getOptimizedCoordinateMapper()));
+            public HtmlHoverInfo getHoverFor(Control control, int x, int y) {
+                return new HtmlHoverInfo(getHoverText(x, y, finalChart.getOptimizedCoordinateMapper()));
             }
         });
     }
