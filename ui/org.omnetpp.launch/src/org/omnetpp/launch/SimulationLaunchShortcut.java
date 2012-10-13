@@ -210,6 +210,8 @@ public class SimulationLaunchShortcut implements ILaunchShortcut {
                             return;
                         }
                         INedTypeInfo network = networks.size()==1 ? networks.get(0) : chooseNetwork(networks);
+                        if (network == null)
+                            return; // user cancelled
                         IniSection newIni = askAndCreateInifile(network);
                         if (newIni == null)
                             return; // user cancelled
