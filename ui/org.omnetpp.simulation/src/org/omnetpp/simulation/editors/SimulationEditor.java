@@ -507,6 +507,10 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         return simulationCanvas;
     }
 
+    public HoverSupport getHoverSupport() {
+        return hoverSupport;
+    }
+
     protected void updateStatusDisplay() {
         if (!statusLabel.isDisposed()) {
             //TODO this should not be a single label because text jumps due to the use of proportional font

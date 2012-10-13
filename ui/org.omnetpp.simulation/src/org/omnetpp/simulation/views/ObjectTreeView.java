@@ -3,6 +3,7 @@ package org.omnetpp.simulation.views;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -22,10 +23,12 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener;
@@ -36,6 +39,8 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.ui.HoverInfo;
+import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
@@ -47,11 +52,13 @@ import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
  *
  * @author Andras
  */
+//FIXME hasznaljuk a sajat hoverSupportunkat, ne az editoret!!! (forget() nem megy!!!)
 public class ObjectTreeView extends ViewWithMessagePart {
     // note: view ID is defined in IConstants.java
     protected TreeViewer viewer;
@@ -243,10 +250,10 @@ public class ObjectTreeView extends ViewWithMessagePart {
             @Override
             public void run() {
                 SimulationEditor editor = getActiveSimulationEditor();
-                if (editor != null)
-                    associateWithEditor(editor);
-                else
+                if (editor == null)
                     showMessage("No associated simulation.");
+                else if (editor != associatedSimulationEditor)
+                    associateWithEditor(editor);
             }
         });
 
@@ -289,10 +296,24 @@ public class ObjectTreeView extends ViewWithMessagePart {
     }
 
     protected void associateWithEditor(SimulationEditor editor) {
+        Assert.isTrue(associatedSimulationEditor != editor);
+
         associatedSimulationEditor = editor;
 
-        SimulationController controller = ((SimulationEditor)editor).getSimulationController();
+        SimulationController controller = editor.getSimulationController();
         controller.addSimulationStateListener(simulationListener);
+
+        editor.getHoverSupport().adapt(viewer.getTree(), new IHoverInfoProvider() {
+            @Override
+            public HoverInfo getHoverFor(Control control, int x, int y) {
+                TreeItem item = viewer.getTree().getItem(new Point(x,y));
+                if (item != null) {
+                    Object data = item.getData();
+                    return new ObjectTreeHoverInfo(data);
+                }
+                return null;
+            }
+        });
 
         if (controller.getUIState() == SimState.DISCONNECTED || !controller.getSimulation().hasRootObjects()) {
             showMessage("No simulation process.");
@@ -307,6 +328,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
 
     protected void disassociateFromEditor() {
         associatedSimulationEditor.getSimulationController().removeSimulationStateListener(simulationListener);
+        associatedSimulationEditor.getHoverSupport().forget(viewer.getTree());
         associatedSimulationEditor = null;
         viewer.setInput(null);
         viewer.refresh();
