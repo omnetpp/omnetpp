@@ -32,11 +32,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.editors.SimulationEditor;
-import org.omnetpp.simulation.model.cArray;
-import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cPacket;
-import org.omnetpp.simulation.model.cQueue;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
@@ -211,11 +207,8 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     }
 
     protected void chooseAutoMode() {
-        cObject object = (cObject) viewer.getTreeViewer().getInput();
-        boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
-        boolean isContainer = (object instanceof cModule) || (object instanceof cQueue) || (object instanceof cArray);
-        Mode mode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET :
-            isContainer ? ObjectFieldsViewer.Mode.CHILDREN : ObjectFieldsViewer.Mode.GROUPED;
+        Object input = viewer.getTreeViewer().getInput();
+        Mode mode = ObjectFieldsViewer.getPreferredMode(input);
         viewer.setMode(mode);
         updateActions();
     }

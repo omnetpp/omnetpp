@@ -29,11 +29,7 @@ import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
 import org.omnetpp.simulation.inspectors.actions.SortAction;
-import org.omnetpp.simulation.model.cArray;
-import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cPacket;
-import org.omnetpp.simulation.model.cQueue;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Ordering;
@@ -57,11 +53,6 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         if (!object.isFilledIn())
             object.safeLoad(); // for getClassName() in next line
 
-        boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
-        boolean isContainer = (object instanceof cModule) || (object instanceof cQueue) || (object instanceof cArray);
-        Mode initialMode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET :
-            isContainer ? ObjectFieldsViewer.Mode.CHILDREN : ObjectFieldsViewer.Mode.GROUPED;
-
         frame = new Composite(parent, SWT.BORDER);
         frame.setSize(300, 200);
         frame.setLayout(new GridLayout(1, false));
@@ -71,7 +62,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
         viewer = new ObjectFieldsViewer(frame, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
         viewer.getTree().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-        viewer.setMode(initialMode);
+        viewer.setMode(ObjectFieldsViewer.getPreferredMode(object));
         viewer.setInput(object);
 
         // double-click to inspect

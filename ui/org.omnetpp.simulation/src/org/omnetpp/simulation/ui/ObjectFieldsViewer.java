@@ -3,6 +3,7 @@ package org.omnetpp.simulation.ui;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -32,8 +33,11 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.model.Field;
+import org.omnetpp.simulation.model.cArray;
+import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
+import org.omnetpp.simulation.model.cQueue;
 
 /**
  * Based on TreeViewer, it can display fields of an object in various ways.
@@ -546,6 +550,52 @@ public class ObjectFieldsViewer {
 
     public void removeSelectionChangedListener(ISelectionChangedListener listener) {
         treeViewer.removeSelectionChangedListener(listener);
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static Mode getPreferredMode(Object input) {
+        Object referenceObject;
+        if (input.getClass().isArray() && ((Object[])input).length != 0)
+            referenceObject = ((Object[])input)[0];
+        else if (input instanceof Collection && !((Collection)input).isEmpty())
+            referenceObject = ((Collection)input).toArray()[0];
+        else
+            referenceObject = input;
+
+        if (!(referenceObject instanceof cObject))
+            return Mode.GROUPED; // whichever, won't make any difference
+
+        return getPreferredMode((cObject)referenceObject);
+    }
+
+    public static Mode getPreferredMode(cObject object) {
+        boolean isSubclassedFromcPacket = (object instanceof cPacket) && !object.getClassName().equals("cPacket");
+        boolean isContainer = (object instanceof cModule) || (object instanceof cQueue) || (object instanceof cArray);
+        Mode initialMode = isSubclassedFromcPacket ? ObjectFieldsViewer.Mode.PACKET :
+            isContainer ? ObjectFieldsViewer.Mode.CHILDREN : ObjectFieldsViewer.Mode.GROUPED;
+        return initialMode;
+    }
+
+    public static ImageDescriptor getImageDescriptorFor(Mode mode) {
+        switch (mode) {
+            case PACKET: return ObjectFieldsViewer.IMG_MODE_PACKET;
+            case CHILDREN: return ObjectFieldsViewer.IMG_MODE_CHILDREN;
+            case GROUPED: return ObjectFieldsViewer.IMG_MODE_GROUPED;
+            case INHERITANCE: return ObjectFieldsViewer.IMG_MODE_INHERITANCE;
+            case FLAT: return ObjectFieldsViewer.IMG_MODE_FLAT;
+            default: return null;
+        }
+    }
+
+    public static String getActionTooltipFor(Mode mode) {
+        switch (mode) {
+            case PACKET: return "Packet mode";
+            case CHILDREN: return "Children mode";
+            case GROUPED: return "Grouped mode";
+            case INHERITANCE: return "Inheritance mode";
+            case FLAT: return "Flat mode";
+            default: return "";
+        }
     }
 
 }
