@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.canvas;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.eclipse.draw2d.Layer;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.model.cObject;
 
 /**

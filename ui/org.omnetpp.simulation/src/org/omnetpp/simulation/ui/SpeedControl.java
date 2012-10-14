@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.liveanimation;
+package org.omnetpp.simulation.ui;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.ControlContribution;
@@ -8,6 +8,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.CustomScale;
+import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 
 /**
  *

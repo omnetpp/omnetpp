@@ -1,7 +1,8 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.canvas;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IAdaptable;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * TODO

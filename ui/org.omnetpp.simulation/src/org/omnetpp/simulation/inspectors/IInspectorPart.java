@@ -6,6 +6,8 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.model.cObject;
 
 

@@ -20,14 +20,14 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
-import org.omnetpp.simulation.inspectors.SelectionUtils;
 import org.omnetpp.simulation.model.cModule;
-import org.omnetpp.simulation.widgets.TextViewer;
-import org.omnetpp.simulation.widgets.StringTextViewerContentProvider;
+import org.omnetpp.simulation.ui.StringTextViewerContentProvider;
+import org.omnetpp.simulation.ui.TextViewer;
 
 /**
  *

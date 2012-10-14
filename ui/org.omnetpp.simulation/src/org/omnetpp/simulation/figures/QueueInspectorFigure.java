@@ -10,7 +10,6 @@ import org.eclipse.draw2d.RoundedRectangle;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.simulation.inspectors.IInspectorFigure;
 
 /**
  * Figure for QueueInspectorPart

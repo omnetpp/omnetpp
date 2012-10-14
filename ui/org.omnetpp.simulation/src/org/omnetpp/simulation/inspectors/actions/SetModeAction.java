@@ -2,7 +2,7 @@ package org.omnetpp.simulation.inspectors.actions;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.omnetpp.simulation.inspectors.ObjectFieldsInspectorPart;
-import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
 
 /**

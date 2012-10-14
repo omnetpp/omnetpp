@@ -7,7 +7,6 @@ import org.eclipse.draw2d.ToolbarLayout;
 import org.eclipse.draw2d.geometry.Insets;
 import org.eclipse.jface.resource.JFaceResources;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.simulation.inspectors.IInspectorFigure;
 
 /**
  * Experimental inspector figure, for InfoTextInspectorPart

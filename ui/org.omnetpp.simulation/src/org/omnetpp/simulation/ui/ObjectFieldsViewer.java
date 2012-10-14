@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;

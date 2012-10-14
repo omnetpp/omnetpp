@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.canvas;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * Static utility methods for extracting objects from an IStructuredSelection

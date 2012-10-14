@@ -11,6 +11,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.model.Field;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;

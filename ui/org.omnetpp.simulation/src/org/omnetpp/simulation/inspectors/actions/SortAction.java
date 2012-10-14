@@ -4,7 +4,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.inspectors.ObjectFieldsInspectorPart;
-import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer.Ordering;
 
 
 /**

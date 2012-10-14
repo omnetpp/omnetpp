@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.simulation.widgets;
+package org.omnetpp.simulation.ui;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.figures;
 
 import org.eclipse.draw2d.IFigure;
 

@@ -16,11 +16,11 @@ import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
-import org.omnetpp.simulation.inspectors.SimulationCanvas;
 
 /**
  * Base class to factor out common code in Action classes.

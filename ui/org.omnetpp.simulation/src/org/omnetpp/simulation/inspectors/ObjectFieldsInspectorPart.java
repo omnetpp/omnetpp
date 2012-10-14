@@ -20,9 +20,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.canvas.SelectionItem;
+import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.figures.FigureUtils;
-import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
-import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Ordering;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
 import org.omnetpp.simulation.inspectors.actions.SortAction;
@@ -31,6 +32,9 @@ import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
 import org.omnetpp.simulation.model.cQueue;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer.Ordering;
 
 /**
  *

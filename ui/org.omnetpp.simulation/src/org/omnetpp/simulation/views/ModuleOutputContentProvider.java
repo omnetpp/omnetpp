@@ -12,8 +12,8 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.LogBuffer;
 import org.omnetpp.simulation.controller.LogBuffer.ILogBufferChangedListener;
-import org.omnetpp.simulation.widgets.ITextChangeListener;
-import org.omnetpp.simulation.widgets.ITextViewerContentProvider;
+import org.omnetpp.simulation.ui.ITextChangeListener;
+import org.omnetpp.simulation.ui.ITextViewerContentProvider;
 
 /**
  * TODO

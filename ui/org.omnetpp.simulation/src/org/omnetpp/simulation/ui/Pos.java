@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.widgets;
+package org.omnetpp.simulation.ui;
 
 /**
  * Primarily for TextViewer

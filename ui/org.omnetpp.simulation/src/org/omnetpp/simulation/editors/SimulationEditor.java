@@ -27,6 +27,7 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
@@ -34,13 +35,12 @@ import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
-import org.omnetpp.simulation.inspectors.SimulationCanvas;
 import org.omnetpp.simulation.liveanimation.AnimationDirector;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
-import org.omnetpp.simulation.liveanimation.SpeedControl;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cSimulation;
+import org.omnetpp.simulation.ui.SpeedControl;
 import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
 
 /**

@@ -8,7 +8,9 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.figures.FigureUtils;
+import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
 import org.omnetpp.simulation.model.cObject;
 

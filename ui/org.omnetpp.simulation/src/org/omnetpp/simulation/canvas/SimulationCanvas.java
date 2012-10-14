@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.canvas;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +37,11 @@ import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.editors.SimulationEditor;
+import org.omnetpp.simulation.figures.IInspectorFigure;
+import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
+import org.omnetpp.simulation.inspectors.ObjectFieldsInspectorPart;
+import org.omnetpp.simulation.inspectors.QueueInspectorPart;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cQueue;

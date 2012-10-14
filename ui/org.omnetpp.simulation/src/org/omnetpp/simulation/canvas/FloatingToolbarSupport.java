@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.canvas;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
+import org.omnetpp.simulation.figures.IInspectorFigure;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
 import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
 

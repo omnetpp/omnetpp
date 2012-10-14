@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.canvas;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
+import org.omnetpp.simulation.figures.IInspectorFigure;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
 
 /**
  * TODO

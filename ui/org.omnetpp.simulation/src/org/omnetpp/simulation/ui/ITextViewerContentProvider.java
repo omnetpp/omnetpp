@@ -5,7 +5,7 @@
   'License' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-package org.omnetpp.simulation.widgets;
+package org.omnetpp.simulation.ui;
 
 import org.eclipse.swt.graphics.Color;
 

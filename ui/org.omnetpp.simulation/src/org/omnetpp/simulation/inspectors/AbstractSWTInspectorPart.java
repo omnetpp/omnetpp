@@ -14,6 +14,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.model.cObject;
 
 /**

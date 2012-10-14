@@ -26,16 +26,16 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.canvas.SelectionUtils;
+import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.editors.SimulationEditor;
-import org.omnetpp.simulation.inspectors.ObjectFieldsViewer;
-import org.omnetpp.simulation.inspectors.SelectionUtils;
-import org.omnetpp.simulation.inspectors.ObjectFieldsViewer.Mode;
-import org.omnetpp.simulation.inspectors.SimulationCanvas;
 import org.omnetpp.simulation.model.cArray;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
 import org.omnetpp.simulation.model.cQueue;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
 /**
  *

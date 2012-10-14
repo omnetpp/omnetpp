@@ -2,7 +2,7 @@ package org.omnetpp.simulation.inspectors.actions;
 
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
-import org.omnetpp.simulation.inspectors.IInspectorContainer;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.model.cObject;
 
 /**
