@@ -3,7 +3,6 @@ package org.omnetpp.simulation.views;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -166,21 +165,21 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
         if (selection instanceof IStructuredSelection) {
-            Object element = ((IStructuredSelection)selection).getFirstElement();
-            cObject object = null;
-            if (element instanceof cObject)
-                object = (cObject)element;
-            else if (element instanceof IAdaptable)
-                object = (cObject) ((IAdaptable)element).getAdapter(cObject.class);
-
-            if (object != null) {
-                // update label
-                String text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
+            List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
+            if (!objects.isEmpty()) {
+                // update label and set input to the tree
+                String text;
+                if (objects.size() == 1) {
+                    cObject object = objects.get(0);
+                    text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
+                    viewer.setInput(object);
+                }
+                else {
+                    text = objects.size() + " objects";
+                    viewer.setInput(objects);
+                }
                 label.setText(text);
                 label.setToolTipText(text); // because label text is usually not fully visible
-
-                // set input to the tree
-                viewer.setInput(object);
 
                 // refresh tree mode (if automatic)
                 if (autoMode)
