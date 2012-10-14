@@ -26,16 +26,18 @@ import org.eclipse.swt.widgets.Event;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.IPredicate;
 
 /**
  * 
  * @author Andras
  */
-//TODO msg labels: place them in several rows (depending on available room)?
+//TODO msg labels: long names could be abbreviated (e.g. to 4-5 chars) so that more labels fit...
 //TODO when there are many msgs at the same X coord: use vertical offset?
 public class TimelineControl extends Canvas {
     private ITimelineContentProvider contentProvider;
     private ITimelineLabelProvider labelProvider;
+    private IPredicate highlightFilter; // non-matching messages will be drawn with transparency
     private ListenerList selectionListeners = new ListenerList();
     private boolean drawMinorTicks = true;
     private boolean adaptiveMinExponent = true;
@@ -106,6 +108,15 @@ public class TimelineControl extends Canvas {
 
     public ITimelineLabelProvider getLabelProvider() {
         return labelProvider;
+    }
+
+    public void setHighlightFilter(IPredicate filter) {
+        this.highlightFilter = filter;
+        redraw();
+    }
+
+    public IPredicate getHighlightFilter() {
+        return highlightFilter;
     }
 
     public int getMinExponent() {
@@ -345,16 +356,29 @@ public class TimelineControl extends Canvas {
         gc.setFont(messageLabelFont!=null ? messageLabelFont : defaultFont);
         int messageLabelHeight = gc.textExtent("Lj").y;
         int numRows = (axisY-3) / messageLabelHeight;  // we can place message labels in multiple rows, depending on available space
+
+        if (highlightFilter != null)
+            paintMessages(gc, messages, false, messageLabelHeight, numRows); // draw non-highlighted (alpha) msgs first
+        paintMessages(gc, messages, true, messageLabelHeight, numRows);
+    }
+
+    public void paintMessages(GC gc, Object[] messages, boolean wantHighlighted, int messageLabelHeight, int numRows) {
         int[] labelRowLastX = new int[numRows]; // right edge of last label written in each row, with [0] being the bottom and [numRows-1] the top line
         for (int i = 0; i < numRows; i++)
             labelRowLastX[i] = Integer.MIN_VALUE;
         int bottomLabelRowY = axisY-3 - messageLabelHeight;
 
         for (int i = 0; i < messages.length; i++) {
-            // draw symbol
             Object msg = messages[i];
+
+            // filter: draw either only the highlighted ones or the not highlighted ones
+            boolean isHighlighted = highlightFilter == null || highlightFilter.matches(msg);
+            if (isHighlighted != wantHighlighted)
+                continue;
+
+            // draw symbol
             int x = messageXCoords[i];
-            labelProvider.drawMessageSymbol(msg, gc, x, axisY);
+            labelProvider.drawMessageSymbol(gc, msg, isHighlighted, x, axisY);
 
             // draw label
             if (enableMessageLabels && numRows > 0) {
@@ -367,6 +391,7 @@ public class TimelineControl extends Canvas {
                         break;
                 if (row < numRows) {
                     gc.setForeground(ColorFactory.BLACK);
+                    gc.setAlpha(isHighlighted ? 255 : 40);
                     gc.drawText(label, labelX, bottomLabelRowY - row*messageLabelHeight, true);
                     labelRowLastX[row] = labelX + labelWidth;
                 }

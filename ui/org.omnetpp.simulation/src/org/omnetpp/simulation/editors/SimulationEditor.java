@@ -40,6 +40,7 @@ import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverInfoProvider;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
@@ -442,11 +443,9 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 System.out.println("timeline: got selection change, new selection: " + e.getSelection());  //TODO
                 if (e.getSelection() instanceof IStructuredSelection) {
                     List<cModule> selectedModules = SelectionUtils.getObjects(e.getSelection(), cModule.class);
-                    TimelineContentProvider provider = (TimelineContentProvider) timeline.getContentProvider();
-                    if (selectedModules.isEmpty())
-                        provider.setFilter(null); // no filtering
-                    else
-                        provider.setFilter(new ModulePathsMessageFilter(selectedModules.toArray(new cModule[]{})));
+                    IPredicate filter = selectedModules.isEmpty() ? null : new ModulePathsMessageFilter(selectedModules.toArray(new cModule[]{}));
+                    timeline.setHighlightFilter(filter);
+                    // to make filtered-out messages completely disappear: ((TimelineContentProvider) timeline.getContentProvider()).setFilter(filter);
                     timeline.redraw();
                 }
             }

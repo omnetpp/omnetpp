@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.model.cMessage;
@@ -21,7 +22,7 @@ import org.omnetpp.simulation.model.cMessageHeap;
  */
 public class TimelineContentProvider implements ITimelineContentProvider, ITimelineLabelProvider {
     protected Simulation simulation;
-    protected IMessageFilter filter;
+    protected IPredicate filter;
     protected boolean colorByMessageKind = true;
 
     protected Color defaultMessageFillColor = ColorFactory.RED;
@@ -40,13 +41,13 @@ public class TimelineContentProvider implements ITimelineContentProvider, ITimel
         this.simulation = simulation;
     }
 
-    public void setFilter(IMessageFilter filter) {
+    public void setFilter(IPredicate filter) {
         if (!ObjectUtils.equals(this.filter, filter)) {
             this.filter = filter;
         }
     }
 
-    public IMessageFilter getFilter() {
+    public IPredicate getFilter() {
         return filter;
     }
 
@@ -93,7 +94,7 @@ public class TimelineContentProvider implements ITimelineContentProvider, ITimel
     }
 
     @Override
-    public void drawMessageSymbol(Object message, GC gc, int x, int y) {
+    public void drawMessageSymbol(GC gc, Object message, boolean active, int x, int y) {
         if (colorByMessageKind) {
             int colorIndex = ((cMessage)message).getKind() & 0x07; // not "x % 8" because it yields negative numbers for negative msgkind!
             gc.setBackground(msgKindFillColors[colorIndex]);
@@ -103,6 +104,7 @@ public class TimelineContentProvider implements ITimelineContentProvider, ITimel
             gc.setBackground(defaultMessageFillColor);
             gc.setForeground(defaultMessageBorderColor);
         }
+        gc.setAlpha(active ? 255 : 40);
         gc.fillOval(x-2, y-4, 5, 9);
         gc.drawOval(x-2, y-4, 5, 9);
     }
