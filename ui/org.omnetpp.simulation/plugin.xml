@@ -14,8 +14,7 @@
       <editor
             class="org.omnetpp.simulation.editors.SimulationEditor"
             contributorClass="org.omnetpp.simulation.editors.SimulationEditorContributor"
-            extensions="sim"
-            icon="icons/sample.gif"
+            icon="icons/misc/editor.png"
             id="org.omnetpp.simulation.editors.SimulationEditor"
             name="Simulation">
       </editor>
