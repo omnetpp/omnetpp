@@ -143,7 +143,7 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         IToolBarManager manager = actionBars.getToolBarManager();
         //TODO manager.add(my(new SortAction()));
         manager.add(new Separator());
-        manager.add(my(new SetAutoModeAction("Auto mode", IMG_MODE_AUTO)));
+        manager.add(my(new SetAutoModeAction("Choose best mode automatically", IMG_MODE_AUTO)));
         manager.add(my(new SetModeAction(viewer, Mode.PACKET)));
         manager.add(my(new SetModeAction(viewer, Mode.CHILDREN)));
         manager.add(my(new SetModeAction(viewer, Mode.GROUPED)));
