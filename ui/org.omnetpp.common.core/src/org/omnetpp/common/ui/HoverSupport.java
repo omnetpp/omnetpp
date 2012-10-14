@@ -391,8 +391,13 @@ public class HoverSupport {
      */
     //XXX but widgetDisposed is not always called when the widget gets disposed
     public void forget(Control control) {
-        hoverInfoProviders.remove(control);
-        hoverInformationControlManagers.remove(control);
+        if (hoverInfoProviders.containsKey(control)) {
+            //FIXME still doesn't work??? after forget() we still get NPEs in computeInformation() when hovering over the "forgotten" widget!
+            LocalHoverInformationControlManager hoverInformationControlManager = hoverInformationControlManagers.get(control);
+            hoverInformationControlManager.install(null);
+            hoverInfoProviders.remove(control);
+            hoverInformationControlManagers.remove(control);
+        }
     }
 
     /**
