@@ -33,7 +33,7 @@ This is a quick how to/checklist what to do when updating to a new eclipse versi
   CDT installation): Can be done by invoking:
 
   $ what=sync-target-cdt ./build-ide-java
-  $ what=sync-target-linux ./build-ide-java
+  $ what=sync-target-linuxtools ./build-ide-java
 
   after finishing, the CDT repo mirror should be present in the $ECLIPSE_HOME/target/cdt directory
 
