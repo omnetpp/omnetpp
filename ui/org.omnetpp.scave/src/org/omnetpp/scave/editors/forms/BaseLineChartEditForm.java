@@ -383,7 +383,7 @@ public abstract class BaseLineChartEditForm extends ChartEditForm {
         boolean applyToAll = (selection.size() == ((Object[])linesTableViewer.getInput()).length);
 
         Boolean displayLine = displayLineCheckbox.getGrayed() ? null : displayLineCheckbox.getSelection();
-        String displayName = displayNameText.getText();
+        String displayName = displayNameText.isEnabled() ? displayNameText.getText() : null;
         String symbolType = symbolTypeCombo.getText();
         String symbolSize = symbolSizeCombo.getText();
         String lineType = lineTypeCombo.getText();
