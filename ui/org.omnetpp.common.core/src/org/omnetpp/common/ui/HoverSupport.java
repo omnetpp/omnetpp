@@ -107,6 +107,9 @@ public class HoverSupport {
 
         @Override
         protected void computeInformation() {
+            // NOTE: we must set something, otherwise the manager thinks
+            // that the computation is still going on and ignores subsequent
+            // hover events
             Point location = getHoverEventLocation();
             org.eclipse.swt.graphics.Rectangle subjectArea = new org.eclipse.swt.graphics.Rectangle(location.x, location.y, 1, 1);
             if ((getHoverEventStateMask() & SWT.BUTTON_MASK) != 0)
@@ -114,22 +117,33 @@ public class HoverSupport {
             else {
                 Control subjectControl = getSubjectControl();
                 HoverInfo hoverInfo = hoverInfoProviders.get(subjectControl).getHoverFor(subjectControl, location.x, location.y);
-                if (hoverInfo != null)
-                    setCustomInformationControlCreator(hoverInfo.getHoverControlCreator());
-                IInformationControl informationControl = getInformationControl();
-                Point mouseLocation = Display.getDefault().getCursorLocation();
                 if (hoverInfo != null && hoverInfo.getInput() != null) {
+                    setCustomInformationControlCreator(hoverInfo.getHoverControlCreator());
                     setInformation(hoverInfo.getInput(), subjectArea);
-                    Point size = informationControl.computeSizeHint();
-                    informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
                 }
-                else {
-                    // NOTE: we must set something, otherwise the manager thinks
-                    // that the computation is still going on and ignores subsequent
-                    // hover events
+                else
                     setInformation(null, subjectArea);
-                }
             }
+        }
+
+        @Override
+        protected Point computeInformationControlLocation(Rectangle subjectArea, Point controlSize) {
+            // NOTE: we could call super.computeInformationControlLocation(subjectArea, controlSize)
+            // and use the return value of that. unfortunately this function has some complicated, not easy to
+            // understand behavior (for the user) when the hover doesn't fit at the current mouse location.
+            // NOTE: there's also a bug in linux, the call to Device.getMonitors returns incorrect client area for
+            // the first monitor on multi monitor systems and it causes the hover to extend to other monitors
+            Point mouse = Display.getCurrent().getCursorLocation();
+            Monitor monitor = findMonitorByPosition(mouse);
+            if (monitor == null)
+                monitor = Display.getCurrent().getPrimaryMonitor();
+
+            Rectangle screen = monitor.getBounds();
+            Point p = new Point(mouse.x + 5, mouse.y + 20);
+            p.x = Math.min(p.x, screen.x + screen.width - controlSize.x - 5);
+            if (p.y + 20 + controlSize.y > screen.y + screen.height)
+                p.y = mouse.y - controlSize.y - 20; // if no room below mouse, show it above
+            return p;
         }
 
         @Override
@@ -154,19 +168,6 @@ public class HoverSupport {
 
         private void unhookGlobalEventFilter() {
             Display.getDefault().removeFilter(SWT.KeyDown, eventFilter);
-        }
-
-        private Point calculateHoverPosition(Point mouse, Point size) {
-            Monitor monitor = findMonitorByPosition(mouse);
-            if (monitor == null)
-                monitor = Display.getCurrent().getPrimaryMonitor();
-
-            Rectangle screen = monitor.getBounds();
-            Point p = new Point(mouse.x + 5, mouse.y + 20);
-            p.x = Math.min(p.x, screen.x + screen.width - size.x - 5);
-            if (p.y + 20 + size.y > screen.y + screen.height)
-                p.y = mouse.y - size.y - 20; // if no room below mouse, show it above
-            return p;
         }
 
         private Monitor findMonitorByPosition(Point position) {
