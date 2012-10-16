@@ -65,6 +65,7 @@ import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
+import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
@@ -599,6 +600,31 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             if (submodules.get(submodule) == submoduleFigure)
                 return submodule;
         return null;
+    }
+
+    @Override
+    public IFigure findFigureContaining(cObject object) {
+        cObject submoduleOrConnection = null;
+        for (cObject o = object; o != null; o = o.getOwner()) {
+            if (o.getOwner() == this.object) {
+                submoduleOrConnection = o;
+                break;
+            }
+        }
+
+        if (submoduleOrConnection instanceof cModule) {
+            System.out.println("FOR " + object + " FIGURE IS " + submoduleOrConnection);
+            return submodules.get((cModule)submoduleOrConnection);
+        }
+        else if (submoduleOrConnection instanceof cChannel) {
+            return null; //FIXME find and return connection figure
+        }
+        else if (submoduleOrConnection instanceof cChannel) {
+            return null; //FIXME find and return connection figure
+        }
+        else {
+            return figure; // whatever else it is, we cannot point to a figure that represents it
+        }
     }
 
     protected void handleMouseDoubleClick(MouseEvent me) {

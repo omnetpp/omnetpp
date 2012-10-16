@@ -23,13 +23,13 @@ import org.omnetpp.simulation.model.cObject;
  */
 public interface IInspectorPart {
     /**
-     * Returns container for the inspector. The container handles selection,
+     * Return container for the inspector. The container handles selection,
      * closing / maximizing / changing Z-order of inspectors, and other tasks.
      */
     IInspectorContainer getContainer();
 
     /**
-     * Returns the inspected object.
+     * Return the inspected object.
      */
     cObject getObject();
 
@@ -53,14 +53,28 @@ public interface IInspectorPart {
     boolean isDisposed();
 
     /**
-     * Brings this inspector to the front of all inspectors in Z-order.
+     * Bring this inspector to the front of all inspectors in Z-order.
      */
     void raiseToTop();
 
     /**
-     * Returns the inspector's root figure.
+     * Return the inspector's root figure.
      */
     IInspectorFigure getFigure();
+
+    /**
+     * Used for getting the target figure of callouts, see CalloutSupport.
+     *
+     * Return the figure within this inspector that contains (directly or
+     * indirectly) the given object. It may also return the main figure of this
+     * inspector, or null. Example: when called on a compound module inspector
+     * with object being a cPar: if the cPar belongs to the inspected module it
+     * should return the main figure; if the cPar belongs to a submodule it
+     * should return the submodule figure; if the cPar belongs to some
+     * sub-submodule, it should return the figure of the submodule that contains
+     * them; and for cPars outside the inspected module it should return null.
+     */
+    IFigure findFigureContaining(cObject object);
 
     /**
      * TODO
@@ -69,7 +83,7 @@ public interface IInspectorPart {
     Control getSWTControl();
 
     /**
-     * Returns whether this inspector can be maximized to fill the canvas.
+     * Return true if this inspector can be maximized to fill the canvas.
      */
     boolean isMaximizable();
 
@@ -82,12 +96,12 @@ public interface IInspectorPart {
     void selectionChanged(IStructuredSelection selection);
 
     /**
-     * TODO
+     * Add actions to the inspector's context menu for point p.
      */
     void populateContextMenu(MenuManager menu, Point p);
 
     /**
-     * TODO
+     * Add actions to the floating toolbar.
      */
     void populateFloatingToolbar(ToolBarManager manager);
 
@@ -116,5 +130,6 @@ public interface IInspectorPart {
      * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
      */
     int getDragOperation(Control control, int x, int y);
+
 
 }

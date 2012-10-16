@@ -25,6 +25,7 @@ import org.omnetpp.simulation.model.cObject;
  *
  * @author Andras
  */
+//XXX this is a mix of services provided for users of the simulation canvas (e.g. editor and views) and internally for inspectors (like addMoveResizeSupport())
 public interface IInspectorContainer extends ISelectionProvider {
     /**
      * Returns the SimulationEditor that contains this inspector container, or
@@ -42,7 +43,7 @@ public interface IInspectorContainer extends ISelectionProvider {
     /**
      * Convenience function: Inspect many objects at once, possibly by
      * offering the user a selection dialog first.
-     * 
+     *
      * @param objects
      * @param interactive  if true, and if there are many objects in the list, prompt user with a selection dialog first
      */

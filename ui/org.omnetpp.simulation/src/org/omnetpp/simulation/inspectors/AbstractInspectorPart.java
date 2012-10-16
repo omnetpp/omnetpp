@@ -91,6 +91,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
     }
 
     @Override
+    public IFigure findFigureContaining(cObject object) {
+        return figure; //FIXME only if our object is the same as, or ancestor of, the given object
+    }
+
+    @Override
     public Control getSWTControl() {
         return null;
     }
@@ -145,10 +150,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
 
     @Override
     public String toString() {
-        if (object.isDisposed())
-            return getClass().getSimpleName() + ":<disposed>";
-        else
-            return getClass().getSimpleName() + ":(" + object.getClassName() + ")" + object.getFullPath();
+        return getClass().getSimpleName() + ":" + (object==null ? "<object=null>" : object.toString());
     }
 
 }

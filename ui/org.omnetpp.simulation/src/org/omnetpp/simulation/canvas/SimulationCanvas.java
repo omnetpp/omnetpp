@@ -62,6 +62,7 @@ import org.omnetpp.simulation.views.ObjectTreeView;
  *
  * @author Andras
  */
+//TODO turn off callouts while the simulation is running!!! also add a global action to turn it on/off!
 //FIXME how to evaluate "$PARNAME" references in display strings???
 public class SimulationCanvas extends FigureCanvas implements IInspectorContainer {
     private final Image BACKGROUND_IMAGE = SimulationPlugin.getCachedImage("icons/misc/paper.png"); //XXX bg.png
@@ -84,6 +85,8 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
     // support for a floating toolbar for inspectors
     protected FloatingToolbarSupport floatingToolbarSupport;
+
+    protected CalloutSupport calloutSupport;
 
     /**
      * Inner class, used for the background with the paper pattern
@@ -151,6 +154,16 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
         // add support for a floating toolbar for inspectors
         floatingToolbarSupport = new FloatingToolbarSupport(this);
+
+        // when an inspector is selected, show its nearest parent
+        calloutSupport = new CalloutSupport(this);
+        addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event) {
+                setCalloutsToSelection(getSelection(), false); //XXX might also try "true", but it's not to my taste...
+            }
+        });
+
     }
 
     @Override
@@ -267,6 +280,11 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             floatingToolbarSupport.closeFloatingToolbar();
         inspectors.remove(inspectorPart);
         inspectorPart.dispose();
+
+        // note: this is done last (we don't want selection listeners see the nearly dead inspector)
+        if (SelectionUtils.contains(currentSelection, inspectorPart))
+            deselect(inspectorPart);
+        //FIXME: if a submodules are selected within that inspector, remove them too!!!
     }
 
     public void refreshInspectors() {
@@ -283,6 +301,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         return inspectors;
     }
 
+    //FIXME there can be more than one inspector for this object!!! rename this to "getInspectorsFor()" or "getFirstInspectorFor()" ??
     public IInspectorPart findInspectorFor(cObject object) {
         for (IInspectorPart inspector : inspectors)
             if (inspector.getObject() == object)
@@ -366,7 +385,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     protected void asyncReveal(final IInspectorPart inspector) {
-        // Why needed: for new inspectors the following layout() call doesn't work to reveal the inspector 
+        // Why needed: for new inspectors the following layout() call doesn't work to reveal the inspector
         // (looks like it doesn't cause the scrollbar or getContents().getBounds() to be updated); as a
         // workaround, we call reveal() in an asyncExec().
         //
@@ -532,5 +551,13 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         getEditor().populateContextMenu(menu, selection);
     }
 
-
+    /**
+     * Add callouts for the selected inspectors (and remove all other callouts)
+     */
+    protected void setCalloutsToSelection(ISelection selection, boolean allTheWayUp) {
+        calloutSupport.removeAllCallouts();
+        List<IInspectorPart> inspectors = SelectionUtils.getObjects(selection, IInspectorPart.class);
+        for (IInspectorPart inspector : inspectors)
+            calloutSupport.addCalloutFor(inspector, allTheWayUp);
+    }
 }
