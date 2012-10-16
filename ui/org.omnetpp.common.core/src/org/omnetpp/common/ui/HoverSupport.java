@@ -108,22 +108,27 @@ public class HoverSupport {
         @Override
         protected void computeInformation() {
             Point location = getHoverEventLocation();
-            HoverInfo hoverInfo = hoverInfoProviders.get(getSubjectControl()).getHoverFor(getSubjectControl(), location.x, location.y);
-            if (hoverInfo != null)
-                setCustomInformationControlCreator(hoverInfo.getHoverControlCreator());
-            IInformationControl informationControl = getInformationControl();
-            Point mouseLocation = Display.getDefault().getCursorLocation();
             org.eclipse.swt.graphics.Rectangle subjectArea = new org.eclipse.swt.graphics.Rectangle(location.x, location.y, 1, 1);
-            if (hoverInfo != null && hoverInfo.getInput() != null) {
-                setInformation(hoverInfo.getInput(), subjectArea);
-                Point size = informationControl.computeSizeHint();
-                informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
-            }
+            if ((getHoverEventStateMask() & SWT.BUTTON_MASK) != 0)
+                setInformation(null, subjectArea);
             else {
-                // NOTE: we must set something, otherwise the manager thinks
-                // that the computation is still going on and ignores subsequent
-                // hover events
-                setInformation("", subjectArea);
+                Control subjectControl = getSubjectControl();
+                HoverInfo hoverInfo = hoverInfoProviders.get(subjectControl).getHoverFor(subjectControl, location.x, location.y);
+                if (hoverInfo != null)
+                    setCustomInformationControlCreator(hoverInfo.getHoverControlCreator());
+                IInformationControl informationControl = getInformationControl();
+                Point mouseLocation = Display.getDefault().getCursorLocation();
+                if (hoverInfo != null && hoverInfo.getInput() != null) {
+                    setInformation(hoverInfo.getInput(), subjectArea);
+                    Point size = informationControl.computeSizeHint();
+                    informationControl.setLocation(calculateHoverPosition(mouseLocation, size));
+                }
+                else {
+                    // NOTE: we must set something, otherwise the manager thinks
+                    // that the computation is still going on and ignores subsequent
+                    // hover events
+                    setInformation(null, subjectArea);
+                }
             }
         }
 
