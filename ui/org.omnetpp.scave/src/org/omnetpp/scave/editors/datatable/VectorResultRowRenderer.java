@@ -63,8 +63,12 @@ public class VectorResultRowRenderer extends LabelProvider implements IVirtualTa
         return fontHeight + 3;
     }
 
-    public void drawCell(GC gc, OutputVectorEntry entry, int index) {
-        if (!gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
+    public void drawCell(GC gc, OutputVectorEntry entry, int index, boolean isSelected) {
+        if (isSelected) {
+            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+            gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION));
+        }
+        else
             gc.setForeground(DATA_COLOR);
 
         switch (index) {

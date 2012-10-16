@@ -9,8 +9,10 @@ package org.omnetpp.common.virtualtable;
 
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 
 /**
@@ -25,8 +27,13 @@ public class LongVirtualTableRowRenderer extends LabelProvider implements IVirtu
         // void
     }
 
-    public void drawCell(GC gc, Long element, int index) {
-        gc.setForeground(ColorFactory.BLACK);
+    public void drawCell(GC gc, Long element, int index, boolean isSelected) {
+        if (isSelected) {
+            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+            gc.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION));
+        }
+        else
+            gc.setForeground(ColorFactory.BLACK);
         gc.drawText("the number " + element.toString(), 5, 0); //XXX if we start at x=0, 1-2 pixel columns are off-screen
     }
 

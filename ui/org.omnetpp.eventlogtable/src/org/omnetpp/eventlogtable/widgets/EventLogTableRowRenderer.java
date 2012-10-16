@@ -24,7 +24,6 @@ import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.eventlog.EventLogEntryReference;
 import org.omnetpp.common.eventlog.EventLogInput;
 import org.omnetpp.common.image.ImageFactory;
-import org.omnetpp.common.ui.SizeConstraint;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.common.util.TimeUtils;
 import org.omnetpp.common.virtualtable.IVirtualTableRowRenderer;
@@ -122,6 +121,11 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
     private IEvent contextEvent;
 
+    /**
+     * Specifies if the current eventlog entry being rendered is selected or not.
+     */
+    private boolean contextEventLogEntrySelected;
+
     public EventLogTableRowRenderer(EventLogTable eventLogTable) {
         this.eventLogTable = eventLogTable;
     }
@@ -141,7 +145,8 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         return fontHeight + VERTICAL_SPACING;
     }
 
-    public void drawCell(GC gc, EventLogEntryReference eventLogEntryReference, int index) {
+    @Override
+    public void drawCell(GC gc, EventLogEntryReference eventLogEntryReference, int index, boolean isSelected) {
         Assert.isTrue(eventLogEntryReference != null);
 
         this.x = HORIZONTAL_SPACING;
@@ -150,6 +155,7 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
 
         EventLogEntry eventLogEntry = eventLogEntryReference.getEventLogEntry(eventLogInput);
         contextEvent = eventLogEntry.getEvent();
+        contextEventLogEntrySelected = isSelected;
         long eventNumber = contextEvent.getEventNumber();
         BigDecimal simulationTime = contextEvent.getSimulationTime();
         boolean isEventLogEntry = eventLogEntry instanceof EventEntry;
@@ -643,7 +649,9 @@ public class EventLogTableRowRenderer implements IVirtualTableRowRenderer<EventL
         Font newFont = new Font(oldFont.getDevice(), fontData.getName(), fontData.getHeight(), bold ? SWT.BOLD : SWT.NORMAL);
         gc.setFont(newFont);
 
-        if (color != null && !gc.getForeground().equals(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT)))
+        if (contextEventLogEntrySelected)
+            gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
+        else if (color != null)
             gc.setForeground(color);
 
         gc.drawText(text, x, VERTICAL_SPACING/2);

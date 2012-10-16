@@ -795,7 +795,7 @@ public class VirtualTable<T>
                         if (isSelectedElement && canvas.isFocusControl())
                             gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT));
 
-                        rowRenderer.drawCell(gc, element, columnOrder[j]);
+                        rowRenderer.drawCell(gc, element, columnOrder[j], isSelectedElement);
                         x += column.getWidth();
 
                         if (drawLines) {
