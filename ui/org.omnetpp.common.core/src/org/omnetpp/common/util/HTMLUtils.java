@@ -186,8 +186,12 @@ public class HTMLUtils {
             else if (stringName.matches("pre"))
                 context.isPreformatted = true;
             else if (stringName.matches("body")) {
-                styledText.setForeground(ColorFactory.asColor(document.getForeground(attributeSet)));
-                styledText.setBackground(ColorFactory.asColor(document.getBackground(attributeSet)));
+                Color foregroundColor = document.getForeground(attributeSet);
+                if (foregroundColor != null)
+                    styledText.setForeground(ColorFactory.asColor(foregroundColor));
+                Color backgroundColor = document.getBackground(attributeSet);
+                if (backgroundColor != null)
+                    styledText.setBackground(ColorFactory.asColor(backgroundColor));
             }
             // handle space above
             boolean realTag = name instanceof HTML.Tag && name != HTML.Tag.CONTENT && name != HTML.Tag.IMPLIED;

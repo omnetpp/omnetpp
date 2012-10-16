@@ -70,7 +70,7 @@ public class HoverSupport {
         "/* Styles and colors */\n" +
         "a:link    { color: #0000FF; }\n" +
         "a:hover   { color: #000080; }\n" +
-        "body      { color: #000000; background-color: #ffffe1 };\n" +
+        "body      { color: #000000; };\n" +
         "a:visited { text-decoration: underline; }\n" +
         "h4        { font-style: italic; }\n" +
         "strong    { font-weight: bold; }\n" +

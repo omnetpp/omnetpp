@@ -66,12 +66,14 @@ public class StyledTextInformationControl extends AbstractInformationControl imp
     @Override
     public void setInformation(String information) {
         styledText.setText("");
+        styledText.setBackground(styledText.getParent().getBackground());
         HTMLUtils.htmlToStyledText(information, styledText, null);
     }
 
     @Override
     public void setInput(Object input) {
         styledText.setText("");
+        styledText.setBackground(styledText.getParent().getBackground());
         if (input instanceof String)
             HTMLUtils.htmlToStyledText((String)input, styledText, null);
         else {
