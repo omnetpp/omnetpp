@@ -13,6 +13,8 @@ import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
+import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
+import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
@@ -72,7 +74,8 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
 
     @Override
     public void populateFloatingToolbar(ToolBarManager manager) {
-        // TODO Auto-generated method stub
+        manager.add(my(new InspectParentAction()));
+        manager.add(my(new InspectAsObjectAction()));
     }
 
     protected void handleMousePressed(MouseEvent me) {

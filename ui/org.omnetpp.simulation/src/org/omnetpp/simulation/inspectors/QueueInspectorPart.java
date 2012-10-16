@@ -23,6 +23,7 @@ import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.QueueInspectorFigure;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
+import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
@@ -129,6 +130,7 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     @Override
     public void populateFloatingToolbar(ToolBarManager manager) {
         manager.add(my(new InspectParentAction()));
+        manager.add(my(new InspectAsObjectAction()));
     }
 
     @Override
