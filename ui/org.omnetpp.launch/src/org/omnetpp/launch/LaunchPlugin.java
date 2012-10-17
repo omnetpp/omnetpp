@@ -10,6 +10,8 @@ package org.omnetpp.launch;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobManager;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -51,6 +53,11 @@ public class LaunchPlugin extends AbstractUIPlugin {
      */
     @Override
     public void stop(BundleContext context) throws Exception {
+        // cancel all running jobs and wait for them to finish before continuing with shutdown
+        IJobManager jobMan = Job.getJobManager();
+        jobMan.cancel(SimulationLauncherJob.SIMULATION_JOB_FAMILY);
+        jobMan.join(SimulationLauncherJob.SIMULATION_JOB_FAMILY, null);
+
         plugin = null;
         super.stop(context);
     }

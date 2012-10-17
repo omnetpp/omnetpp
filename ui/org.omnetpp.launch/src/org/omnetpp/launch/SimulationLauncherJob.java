@@ -43,6 +43,7 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  * @author rhornig
  */
 public class SimulationLauncherJob extends Job {
+    public final static String SIMULATION_JOB_FAMILY = "simulation";
     ILaunchConfiguration configuration;
     ILaunch launch;
     Integer runNo;
@@ -63,7 +64,7 @@ public class SimulationLauncherJob extends Job {
      */
     @Override
     public boolean belongsTo(Object family) {
-        return family == launch;
+        return family == launch || SIMULATION_JOB_FAMILY.equals(family);
     }
 
     @Override
