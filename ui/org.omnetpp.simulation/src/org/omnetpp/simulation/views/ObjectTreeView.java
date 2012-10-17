@@ -1,30 +1,16 @@
 package org.omnetpp.simulation.views;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
-import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -32,26 +18,23 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer;
+import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
@@ -61,129 +44,23 @@ import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 //FIXME hasznaljuk a sajat hoverSupportunkat, ne az editoret!!! (forget() nem megy!!!)
 public class ObjectTreeView extends ViewWithMessagePart {
     // note: view ID is defined in IConstants.java
-    protected TreeViewer viewer;
+    protected ObjectFieldsViewer viewer;
 
     private SimulationEditor associatedSimulationEditor;
     private IPartListener partListener;
 
     private ISimulationStateListener simulationListener;
 
-    public static class ViewContentProvider implements ITreeContentProvider {
-        public Object[] getChildren(Object element) {
-            if (element instanceof cObject) {
-                cObject object = (cObject)element;
-                if (!object.isFilledIn())
-                    object.safeLoad(); //FIXME return if failed!
-                cObject[] childObjects = object.getChildObjects();
-                try {
-                    object.getSimulation().loadUnfilledObjects(Arrays.asList(childObjects)); //FIXME return if failed??
-                }
-                catch (IOException e) {
-                    SimulationPlugin.logError("Could not retrieve objects from simulation process", e);
-                }
-                return childObjects;
-            }
-            return new Object[0];
-        }
-
-        public Object[] getElements(Object inputElement) {
-            return getChildren(inputElement);
-        }
-
-        public Object getParent(Object element) {
-            if (element instanceof cObject) {
-                cObject object = (cObject)element;
-                if (!object.isFilledIn())
-                    object.safeLoad(); //FIXME return if failed!
-                if (!object.isDisposed())
-                    return object.getOwner();
-            }
-            return null;  // we don't know
-        }
-
-        public boolean hasChildren(Object element) {
-            if (element instanceof cObject) {
-                cObject object = (cObject)element;
-                if (!object.isFilledIn())
-                    object.safeLoad();  //FIXME return if failed!
-                return object.getChildObjects().length > 0;
-            }
-            return false;
-        }
-
-        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-            // Do nothing
-        }
-
-        public void dispose() {
-            // Do nothing
-        }
-    }
-
-    public static class ViewLabelProvider implements IStyledLabelProvider {
-        private class ColorStyler extends Styler {
-            Color color;
-            public ColorStyler(Color color) { this.color = color; }
-            @Override public void applyStyles(TextStyle textStyle) { textStyle.foreground = color; }
-        };
-
-        private Styler greyStyle = new ColorStyler(ColorFactory.GREY60);
-        private Styler brownStyle = new ColorStyler(ColorFactory.BURLYWOOD4);
-
-        public StyledString getStyledText(Object element) {
-            if (element instanceof cObject) {
-                cObject object = (cObject)element;
-                if (!object.isFilledIn())
-                    object.safeLoad(); //FIXME return if failed!
-                if (object.isDisposed())
-                    return new StyledString("<n/a>"); // deleted or error
-                StyledString styledString = new StyledString(object.getFullName());
-                styledString.append(" (" + object.getClassName() + ")", greyStyle); //TODO use Simkernel.getObjectShortTypeName(obj);
-                styledString.append("  " + object.getInfo(), brownStyle);
-                return styledString;
-            }
-            return new StyledString(element.toString());
-        }
-
-        public Image getImage(Object element) {
-            if (element instanceof cObject) {
-                cObject object = (cObject)element;
-                if (!object.isFilledIn())
-                    object.safeLoad();
-                String icon = object.getIcon(); // note: may be empty
-                return SimulationPlugin.getCachedImage(SimulationUIConstants.IMG_OBJ_DIR + icon + ".png", SimulationUIConstants.IMG_OBJ_COGWHEEL);
-            }
-            return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
-        }
-
-        public boolean isLabelProperty(Object element, String property) {
-            return true;
-        }
-
-        public void dispose() {
-            // nothing
-        }
-
-        public void addListener(ILabelProviderListener listener) {
-            // nothing
-        }
-
-        public void removeListener(ILabelProviderListener listener) {
-            // nothing
-        }
-    }
-
     /**
      * This is a callback that will allow us to create the viewer and initialize it.
      */
     public Control createViewControl(Composite parent) {
-        viewer = new TreeViewer(parent, SWT.DOUBLE_BUFFERED | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-        viewer.setContentProvider(new ViewContentProvider());
-        viewer.setLabelProvider(new DecoratingStyledCellLabelProvider(new ViewLabelProvider(), null, null));
+        viewer = new ObjectFieldsViewer(parent, SWT.DOUBLE_BUFFERED | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+        viewer.setMode(Mode.CHILDREN);
 
         // create context menu
         final MenuManager contextMenuManager = new MenuManager("#PopupMenu");
-        getViewSite().registerContextMenu(contextMenuManager, viewer);
+        getViewSite().registerContextMenu(contextMenuManager, viewer.getTreeViewer());
         viewer.getTree().setMenu(contextMenuManager.createContextMenu(viewer.getTree()));
         contextMenuManager.setRemoveAllWhenShown(true);
         contextMenuManager.addMenuListener(new IMenuListener() {
@@ -194,7 +71,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
         });
 
         // double-click opens an inspector
-        viewer.addDoubleClickListener(new IDoubleClickListener() {
+        viewer.getTreeViewer().addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
                 if (element instanceof cObject)
@@ -354,7 +231,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
      * Passing the focus request to the viewer's control.
      */
     public void setFocus() {
-        viewer.getControl().setFocus();
+        viewer.getTree().setFocus();
     }
 
     @Override

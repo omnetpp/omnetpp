@@ -352,7 +352,7 @@ public class ObjectFieldsViewer {
         }
     }
 
-    protected class TreeLabelProvider implements IStyledLabelProvider {
+    public static class TreeLabelProvider implements IStyledLabelProvider {
 
         private class ColorStyler extends Styler {
             Color color;
