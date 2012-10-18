@@ -186,6 +186,17 @@ public class cObject {
         return fields;
     }
 
+    public Field getField(String name) {
+        Field[] fields = getFields();
+        int fieldId = getFieldIndex(name);
+        return fieldId == -1 ? null : fields[fieldId];
+    }
+
+    public int getFieldIndex(String name) {
+        checkState();
+        return descriptor.getFieldDescriptorIndex(name);
+    }
+
     public void markAsDisposed() {
         isDisposed = true;
         clearReferences(); // allow other objects to be garbage collected

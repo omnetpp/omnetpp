@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IAdaptable;
  */
 public class Field implements IAdaptable {
     private cObject owner;
-    private int fieldId;
+    private int fieldId;  // index in the Field[] array returned by owner.getFields()
     private Object value;
     private Object[] values;
 

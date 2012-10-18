@@ -2,6 +2,7 @@ package org.omnetpp.simulation.model;
 
 import java.util.List;
 import java.util.Map;
+
 import org.omnetpp.simulation.controller.Simulation;
 
 /**
@@ -46,6 +47,21 @@ public class cClassDescriptor extends cObject {
     public FieldDescriptor getFieldDescriptor(int fieldId) {
         checkState();
         return fieldDescriptors[fieldId];
+    }
+
+    public FieldDescriptor getFieldDescriptor(String name) {
+        checkState();
+        int fieldId = getFieldDescriptorIndex(name);
+        return fieldId == -1 ? null : fieldDescriptors[fieldId];
+    }
+
+    public int getFieldDescriptorIndex(String name) {
+        checkState();
+        //TODO replace linear search with HashMap lookup if it proves to be faster for the typical number of fields and usage
+        for (int i = 0; i < fieldDescriptors.length; i++)
+            if (fieldDescriptors[i].getName().equals(name))
+                return i;
+        return -1;
     }
 
     @Override
