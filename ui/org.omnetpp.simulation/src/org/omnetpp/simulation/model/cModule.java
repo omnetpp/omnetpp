@@ -67,6 +67,7 @@ public class cModule extends cComponent {
     }
 
     public cGate[] getGates() {
+        checkState();
         return gates;
     }
 

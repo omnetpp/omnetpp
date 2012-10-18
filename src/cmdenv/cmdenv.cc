@@ -772,6 +772,16 @@ JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
         jObject->put("submodules", jsubmodules);
     }
 
+    // cPar
+    if (dynamic_cast<cPar *>(obj)) {
+        cPar *par = (cPar *)obj;
+        jObject->put("value", jsonWrap(par->str()));
+        jObject->put("type", jsonWrap(cPar::getTypeName(par->getType())));
+        jObject->put("isVolatile", jsonWrap(par->isVolatile()));
+        jObject->put("unit", jsonWrap(par->getUnit()));
+        jObject->put("properties", jsonWrap(getIdStringForObject(par->getProperties())));
+    }
+
     // cGate
     if (dynamic_cast<cGate *>(obj)) {
         cGate *gate = (cGate *)obj;

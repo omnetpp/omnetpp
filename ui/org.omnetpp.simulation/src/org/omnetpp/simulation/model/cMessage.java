@@ -8,6 +8,8 @@ import org.omnetpp.simulation.controller.Simulation;
 public class cMessage extends cObject {
     private short kind;
     private short priority;
+    private cObject controlInfo; //TODO fill in!
+    private long contextPointer; //TODO fill in!
 
     private long id;
     private long treeId;
@@ -47,6 +49,11 @@ public class cMessage extends cObject {
     public boolean isSelfMessage() {
         checkState();
         return arrivalGate == null;
+    }
+
+    public boolean isScheduled() {
+        checkState();
+        return getOwner() instanceof cMessageHeap;
     }
 
     public cModule getSenderModule() {
