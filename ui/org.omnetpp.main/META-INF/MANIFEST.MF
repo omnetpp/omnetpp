@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Integrated Development Environment
 Bundle-SymbolicName: org.omnetpp.main;singleton:=true
-Bundle-Version: 4.2.1.qualifier
+Bundle-Version: 4.3.0.qualifier
 Bundle-Activator: org.omnetpp.ide.OmnetppMainPlugin
 Bundle-Localization: plugin
 Bundle-Vendor: OpenSim Ltd.
@@ -19,7 +19,7 @@ Require-Bundle: org.eclipse.ui,
  org.apache.commons.httpclient,
  org.apache.commons.logging,
  org.omnetpp.common,
- de.unikassel.imageexport;bundle-version="0.10.0";resolution:=optional
+ de.unikassel.imageexport;resolution:=optional
 Eclipse-LazyStart: true
 Export-Package: org.omnetpp.ide;
   uses:="org.eclipse.jface.action,

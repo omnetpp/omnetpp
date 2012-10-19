@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Multipage NED File Editor
 Bundle-SymbolicName: org.omnetpp.ned.editor;singleton:=true
-Bundle-Version: 4.2.1.qualifier
+Bundle-Version: 4.3.0.qualifier
 Bundle-Vendor: OpenSim Ltd.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
@@ -28,7 +28,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.batik.svggen;resolution:=optional,
  org.apache.batik.ext.awt;resolution:=optional,
  org.apache.batik.util;resolution:=optional,
- org.visigoths.freemarker;bundle-version="2.3.15",
+ org.visigoths.freemarker,
  org.swtworkbench.xswt
 Eclipse-LazyStart: true
 Bundle-Activator: org.omnetpp.ned.editor.NedEditorPlugin

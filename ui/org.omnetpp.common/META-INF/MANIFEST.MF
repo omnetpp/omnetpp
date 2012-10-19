@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Common Classes
 Bundle-SymbolicName: org.omnetpp.common; singleton:=true
-Bundle-Version: 4.2.1.qualifier
+Bundle-Version: 4.3.0.qualifier
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.compare.core,
@@ -15,14 +15,14 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs,
  org.omnetpp.common.core;visibility:=reexport,
- org.visigoths.freemarker;bundle-version="2.3.15",
- org.swtworkbench.xswt;bundle-version="1.1.2",
- org.apache.batik.svggen;bundle-version="1.6.0";resolution:=optional,
- org.apache.batik.ext.awt;bundle-version="1.6.0";resolution:=optional,
- org.apache.batik.util;bundle-version="1.6.0";resolution:=optional,
- org.eclipse.gmf.runtime.draw2d.ui;bundle-version="1.1.0";resolution:=optional,
- org.eclipse.gmf.runtime.draw2d.ui.render;bundle-version="1.1.0";resolution:=optional,
- org.eclipse.gmf.runtime.draw2d.ui.render.awt;bundle-version="1.1.0";resolution:=optional
+ org.visigoths.freemarker,
+ org.swtworkbench.xswt,
+ org.apache.batik.svggen;resolution:=optional,
+ org.apache.batik.ext.awt;resolution:=optional,
+ org.apache.batik.util;resolution:=optional,
+ org.eclipse.gmf.runtime.draw2d.ui;resolution:=optional,
+ org.eclipse.gmf.runtime.draw2d.ui.render;resolution:=optional,
+ org.eclipse.gmf.runtime.draw2d.ui.render.awt;resolution:=optional
 Export-Package: au.com.bytecode.opencsv,
  au.com.bytecode.opencsv.bean,
  org.apache.commons.collections,

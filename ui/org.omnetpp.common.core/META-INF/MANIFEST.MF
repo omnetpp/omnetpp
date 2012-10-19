@@ -2,16 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: OMNeT++ Common Core
 Bundle-SymbolicName: org.omnetpp.common.core
-Bundle-Version: 4.2.1.qualifier
+Bundle-Version: 4.3.0.qualifier
 Bundle-Activator: org.omnetpp.common.CommonCorePlugin
 Bundle-Vendor: OpenSim Ltd
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.core.variables;bundle-version="3.2.100",
- org.eclipse.core.filesystem;bundle-version="1.2.0",
- org.eclipse.ui;bundle-version="3.4.0",
- org.eclipse.jface;bundle-version="3.4.0",
- org.eclipse.jface.text;bundle-version="3.4.0",
- org.eclipse.draw2d;bundle-version="3.4.0",
+ org.eclipse.core.variables,
+ org.eclipse.core.filesystem,
+ org.eclipse.ui,
+ org.eclipse.jface,
+ org.eclipse.jface.text,
+ org.eclipse.draw2d,
  org.omnetpp.ide.nativelibs;visibility:=reexport
 Bundle-ActivationPolicy: lazy
 Export-Package: org.apache.commons.lang,

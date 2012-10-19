@@ -2,7 +2,7 @@
 <feature
       id="org.omnetpp.ide.linuxtools"
       label="OMNeT++ Linuxtools"
-      version="0.6.1"
+      version="4.3.0.qualifier"
       provider-name="Linuxtools project"
       os="linux">
 
