@@ -56,7 +56,7 @@ import org.omnetpp.simulation.model.cPar;
 import org.omnetpp.simulation.model.cQueue;
 import org.omnetpp.simulation.model.cSimpleModule;
 import org.omnetpp.simulation.model.cWatchBase;
-import org.omnetpp.simulation.ui.ObjectFieldsViewer;
+import org.omnetpp.simulation.ui.ObjectFieldsTreeLabelProvider;
 
 /**
  *
@@ -408,7 +408,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     protected List<cObject> chooseObjectsToInspect(Shell parent, String message, List<cObject> objects) {
         CheckedTreeSelectionDialog2 dialog = new CheckedTreeSelectionDialog2(
                 parent,
-                new DecoratingStyledCellLabelProvider(new ObjectFieldsViewer.TreeLabelProvider(), null, null),
+                new DecoratingStyledCellLabelProvider(new ObjectFieldsTreeLabelProvider(), null, null),
                 new ArrayTreeContentProvider());
         dialog.setTitle("Inspect Objects");
         dialog.setMessage(message);
