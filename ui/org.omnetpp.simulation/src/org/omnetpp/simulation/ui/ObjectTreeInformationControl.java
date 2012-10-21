@@ -120,6 +120,7 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
         IToolBarManager manager = new ToolBarManager(toolbar);
         //TODO manager.add(my(new SortAction()));
         manager.add(my(new SetModeAction(viewer, Mode.PACKET)));
+        manager.add(my(new SetModeAction(viewer, Mode.ESSENTIALS)));
         manager.add(my(new SetModeAction(viewer, Mode.CHILDREN)));
         manager.add(my(new SetModeAction(viewer, Mode.GROUPED)));
         manager.add(my(new SetModeAction(viewer, Mode.INHERITANCE)));

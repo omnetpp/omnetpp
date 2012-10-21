@@ -141,6 +141,7 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         manager.add(my(new SortAction()));
         manager.add(new Separator());
         manager.add(my(new SetModeAction(Mode.PACKET)));
+        manager.add(my(new SetModeAction(Mode.ESSENTIALS)));
         manager.add(my(new SetModeAction(Mode.CHILDREN)));
         manager.add(my(new SetModeAction(Mode.GROUPED)));
         manager.add(my(new SetModeAction(Mode.INHERITANCE)));

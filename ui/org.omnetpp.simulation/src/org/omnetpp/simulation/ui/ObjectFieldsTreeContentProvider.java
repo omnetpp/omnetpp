@@ -14,9 +14,11 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.omnetpp.simulation.model.Field;
-import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
+import org.omnetpp.simulation.model.essentials.cMessageEssentialsProvider;
+import org.omnetpp.simulation.model.essentials.cModuleEssentialsProvider;
+import org.omnetpp.simulation.model.essentials.cParEssentialsProvider;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Ordering;
 
@@ -29,6 +31,14 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
 
     private Mode mode = Mode.GROUPED;
     private Ordering ordering = Ordering.NATURAL;
+
+    private static List<IEssentialsProvider> providers = new ArrayList<IEssentialsProvider>();  //FIXME take it from some global state
+    static {
+        providers.add(new cModuleEssentialsProvider());
+        providers.add(new cMessageEssentialsProvider());
+        providers.add(new cParEssentialsProvider());
+    }
+
 
     /**
      * Represents an intermediate node in the tree
@@ -292,7 +302,38 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             }
             return result.toArray();
         }
-        return null;
+        else if (mode == Mode.ESSENTIALS) {
+            IEssentialsProvider bestProvider = getBestProvider(object);
+            if (bestProvider != null)
+                return bestProvider.getChildren(object);
+            else
+                return sortIfNeeded(Arrays.asList(object.getFields().clone())); // copypasta of FLAT mode
+        }
+        else {
+            throw new RuntimeException("unknow mode " + mode);
+        }
+    }
+
+    protected IEssentialsProvider getBestProvider(cObject object) {
+        // note: we only try to call getScore() if there are at least two candidates; maybe this is not necessary, and then supports() and getScore() can be merged
+        IEssentialsProvider bestProvider = null;
+        int bestProviderScore = Integer.MIN_VALUE;
+        for (IEssentialsProvider provider : providers) {
+            if (provider.supports(object)) {
+                if (bestProvider == null)
+                    bestProvider = provider;
+                else {
+                    if (bestProviderScore == Integer.MIN_VALUE)
+                        bestProviderScore = bestProvider.getScore(object);
+                    int score = provider.getScore(object);
+                    if (score > bestProviderScore) {
+                        bestProvider = provider;
+                        bestProviderScore = score;
+                    }
+                }
+            }
+        }
+        return bestProvider;
     }
 
     // utility function for groupFieldsOf()

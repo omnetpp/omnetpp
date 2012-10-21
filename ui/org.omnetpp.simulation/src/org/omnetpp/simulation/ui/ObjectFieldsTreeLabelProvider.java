@@ -132,6 +132,8 @@ public class ObjectFieldsTreeLabelProvider implements IStyledLabelProvider {
     public Image getImage(Object element) {
         if (element instanceof FieldGroup)
             return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJ_FOLDER);
+        if (element instanceof String)
+            return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK);
 
         Object value = element;
         if (element instanceof Field)
