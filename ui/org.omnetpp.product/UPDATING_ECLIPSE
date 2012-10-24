@@ -12,11 +12,7 @@ This is a quick how to/checklist what to do when updating to a new eclipse versi
   o CDT Visual C++ support
   o Eclipse EGit, JGit
   o GEF SDK, GEF Zest SDK, GMF Runtime,Third party components for GMF runtime
-  o SVN Team provider, connectors
   o Valgrind Tools
-
-- After restarting the IDE, access the WIndow/Preferences/Team/SVN page and download the 
-  SVNKIT 1.2.x and 1.3.x plugins
 
 - Create a directory named 'target' inside the eclipse dir.
 
@@ -44,73 +40,6 @@ This is a quick how to/checklist what to do when updating to a new eclipse versi
   You are now ready to use the new version.
 
 =============================================================================
-Creating the eclipse-omnetpp-addon.tgz
-
-- Create a directory named 'target' in the eclipse directory.
-
-
-- Download the CDT release for all the supported platforms (Win/Linux32/64/Mac) and 
-  extract them all into the same temporary folder. (overwrite the installations)
-  For linux32/64 platform download the linux tools version from : 
-  http://eclipse.org/downloads/packages/release/helios/r
-
-  Start this instance (copy the eclipse version of your current opsystem as last)
-  - download Cdt SDK from the Install Software manu point.
-
-  - copy out all org.eclipse.cdt.* plugins and features
-  - also the linux tools support plugins org.eclipse.linuxtools.*
-  - if you plan to use profiling reports you will need the org.eclipse.zest.*
-    org.eclipse.draw2d.* and org.eclipse.birt.* features/packages too
-  - the CDT 'features' and 'plugins' directory should go into 'dropins/cdt'
-
-- Download Gef,Zest,Draw2D SDK from http://www.eclipse.org/gef/downloads/
-  "All in one SDK" from: http://www.eclipse.org/gef/downloads/ (GEF-ALL-vvv.zip)
-- extract it in the "dropins" folder, then rename the created 'eclipse' dir to 'gef'
-
-- Download EMF SDK from http://www.eclipse.org/emf/downloads/
-  (look for the all in one SDK. i.e. emf-xsd-SDK-vvv.zip)
-- extract it in the "target" folder, then rename the created 'eclipse' dir to 'emf'
-
-- Download GMF runtime from http://www.eclipse.org/gmf/downloads/
-  GMF Runtime from: http://www.eclipse.org/modeling/gmp/ (gmf-sdk-runtime-vvv.zip)
-- extract it in the "target" folder, then rename the created 'eclipse' dir to 'gmf'
-
-- Install an eclipse version and install GIT and SVN from the update site. Be sure to install also the SVN kit provider.
-  (the install is stated only after you visit the Window/Preferences/SVN settings page)
-  - copy out all GIT (egit,jgit) and SVN specific plugins and features so it would look like:
-  dropins/svn/features
-  dropins/svn/plugins
-  dropins/git/features
-  dropins/git/plugins
-
-Plugins would look like (versions my differ of course)
-git features:
-org.eclipse.egit_0.6.0.201001271947
-org.eclipse.jgit_0.6.0.201001271946
-git plugins:
-org.eclipse.egit_0.6.0.201001271947.jar
-org.eclipse.egit.core_0.6.0.201001271947.jar
-org.eclipse.egit.ui_0.6.0.201001271947.jar
-org.eclipse.jgit_0.6.0.201001271939.jar
-svn features:
-org.eclipse.team.svn_0.7.8.I20090904-1300
-org.polarion.eclipse.team.svn.connector_2.2.0.I20090505-1500
-org.polarion.eclipse.team.svn.connector.svnkit15_2.2.0.I20090505-1500
-org.polarion.eclipse.team.svn.connector.svnkit16_2.2.0.I20090505-1500
-svn plugins:
-org.eclipse.team.svn_0.7.8.I20090904-1300.jar
-org.eclipse.team.svn.core_0.7.8.I20090904-1300.jar
-org.eclipse.team.svn.help_0.7.8.I20090904-1300.jar
-org.eclipse.team.svn.ui_0.7.8.I20090904-1300.jar
-org.polarion.eclipse.team.svn.connector_2.2.0.I20090505-1500.jar
-org.polarion.eclipse.team.svn.connector.svnkit15_2.2.0.I20090505-1500.jar
-org.polarion.eclipse.team.svn.connector.svnkit16_2.2.0.I20090505-1500.jar
-
-- put the 'imageexport' folder to the target dir (from a previous eclipse instllation)
-
-- Now create an archive containing the 'dropins' and 'target'. Let's call it eclipse3XY-omnetpp4X-addon.tgz
-
-----------------------------------------------------------------------------
 Migrating the project.
 
 Start the newly created eclipse ide.

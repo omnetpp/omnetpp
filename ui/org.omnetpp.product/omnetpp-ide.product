@@ -3,6 +3,7 @@
 
 <product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.3.0.qualifier" useFeatures="true" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -28,6 +29,7 @@
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>
@@ -278,13 +280,13 @@ POSSIBILITY OF SUCH DAMAGES.
 
    <features>
       <feature id="org.omnetpp.ide.academic"/>
-      <feature id="org.omnetpp.ide.linuxtools"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.equinox.p2.user.ui"/>
       <feature id="org.eclipse.equinox.p2.discovery.feature"/>
       <feature id="org.eclipse.equinox.p2.extras.feature"/>
       <feature id="org.eclipse.epp.mpc"/>
       <feature id="org.eclipse.platform"/>
+      <feature id="org.eclipse.help"/>
       <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.gef"/>
       <feature id="org.eclipse.gmf.runtime.thirdparty"/>
@@ -296,6 +298,21 @@ POSSIBILITY OF SUCH DAMAGES.
       <feature id="org.eclipse.emf.edit.ui"/>
       <feature id="org.eclipse.egit"/>
       <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.linuxtools.cdt.libhover.feature"/>
+      <feature id="org.eclipse.linuxtools.changelog"/>
+      <feature id="org.eclipse.linuxtools.profiling"/>
+      <feature id="org.eclipse.linuxtools.valgrind"/>
+      <feature id="de.unikassel.imageexport"/>
+      <feature id="com.lowagie.itext"/>
+      <feature id="org.eclipse.egit.psf"/>
+      <feature id="org.eclipse.cdt.gnu.build"/>
+      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
+      <feature id="org.eclipse.cdt.platform"/>
+      <feature id="org.eclipse.draw2d"/>
+      <feature id="org.eclipse.rcp"/>
+      <feature id="org.eclipse.cdt.gnu.dsf"/>
+      <feature id="org.eclipse.cdt.gnu.debug"/>
+      <feature id="org.eclipse.cdt.gdb"/>
    </features>
 
 

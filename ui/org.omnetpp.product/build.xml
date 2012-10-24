@@ -14,8 +14,8 @@
 		<p2.mirror>
 			<repository location="${baseLocation}/target/cdt" name="Local CDT repo" append="false" />
 			<source>
-				<repository location="http://download.eclipse.org/eclipse/updates/3.7" />
-				<repository location="http://download.eclipse.org/releases/indigo" />
+				<repository location="http://download.eclipse.org/eclipse/updates/3.8" />
+				<repository location="http://download.eclipse.org/releases/juno" />
 			</source>
 			<iu id="org.eclipse.cdt.feature.group"/>
 			<slicingoptions followStrict="true" />
@@ -30,7 +30,7 @@
 		<p2.mirror>
 			<repository location="${baseLocation}/target/linuxtools" name="Local LinuxTools repo" append="false" />
 			<source>
-				<repository location="http://download.eclipse.org/technology/linuxtools/update" />
+				<repository location="http://download.eclipse.org/linuxtools/update" />
 			</source>
 			<!-- <iu id="org.eclipse.linuxtools.feature.group"/> -->
 			<slicingoptions followStrict="true" />
@@ -55,7 +55,7 @@
 				<exclude name="org.omnetpp.ide.academic/**" />
 				<exclude name="org.omnetpp.ide.commercial/**" />
 				<exclude name="org.omnetpp.ide.scave/**" />
-				<exclude name="org.omnetpp.ide.linuxtools/**" />
+				<exclude name="org.omnetpp.samples/**" />
 				<exclude name="org.omnetpp.runtime/**" />
 				<exclude name="org.omnetpp.animation/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
@@ -69,7 +69,6 @@
 				<include name="org.omnetpp.ide/**" />
 				<include name="org.omnetpp.ide.commercial/**" />
 				<include name="org.omnetpp.ide.academic/**" />
-				<include name="org.omnetpp.ide.linuxtools/**" />
 			</fileset>
 		</copy>
 	</target>
@@ -168,7 +167,7 @@
             <property name="platdir" value="linux64"/>
           </ant>
           <ant target="package-config">
-            <property name="config" value="macosx.carbon.x86"/>
+            <property name="config" value="macosx.cocoa.x86"/>
             <property name="platdir" value="macosx"/>
           </ant>
 	</target>
@@ -178,7 +177,6 @@
         <p2.mirror source="file:${buildDirectory}/buildRepo" destination="${updateRepo}" description="OMNeT++ updates">
           <iu id="${main_feature_group}" />
           <iu id="org.omnetpp.ide.source.feature.group" />
-          <iu id="org.omnetpp.ide.linuxtools.feature.group" />
           <slicingOptions includeFeatures="true" followStrict="true"/>
         </p2.mirror>
     </target>
