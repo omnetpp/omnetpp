@@ -112,7 +112,9 @@ eventlog.cxx : eventlog.i
 
 $O/$(DLL): $(OBJS)
 	$(SHLIB_LD) $(LDFLAGS) -o $O/$(DLL) $(OBJS) $(LIBS) $(PTHREAD_LIBS)
+ifeq ("$(MODE)","release")
 	$(STRIP) $(STRIP_FLAGS) $O/$(DLL)
+endif
 
 $(DLL_TARGET_DIR)/$(DLL): $O/$(DLL)
 	cp $O/$(DLL) $(DLL_TARGET_DIR)
