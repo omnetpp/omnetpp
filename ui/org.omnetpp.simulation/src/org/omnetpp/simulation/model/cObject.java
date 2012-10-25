@@ -32,7 +32,7 @@ public class cObject {
     private cObject[] childObjects;
 
     private Field[] fields;
-    private long lastAccessEventNumber;
+    private long lastAccessSeq;
 
     public cObject(Simulation simulation, long id) {
         this.simulation = simulation;
@@ -58,8 +58,8 @@ public class cObject {
         return isDisposed;
     }
 
-    public long getLastAccessEventNumber() {
-        return lastAccessEventNumber;
+    public long getLastAccessSeq() {
+        return lastAccessSeq;
     }
 
     // technically public, but should only be called from the Simulation class!
@@ -203,7 +203,8 @@ public class cObject {
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is not yet filled in");
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
-        lastAccessEventNumber = simulation.getLastEventNumber();
+
+        lastAccessSeq = simulation.getCacheRefreshSeq();
     }
 
     public String getClassName() {

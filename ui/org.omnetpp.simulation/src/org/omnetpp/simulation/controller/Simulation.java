@@ -154,6 +154,7 @@ public class Simulation {
     private int nextEventModuleIdGuess;  //TODO why we use module ID? why not the module?
     private long nextEventMessageIdGuess; //TODO display on UI
     private String eventlogFile;
+    private int cacheRefreshSeq;
 
     // object cache
     private Map<String, cObject> rootObjects = new HashMap<String, cObject>(); // keys: "simulation", "network", etc.
@@ -339,6 +340,10 @@ public class Simulation {
         return eventlogFile;
     }
 
+    public int getCacheRefreshSeq() {
+        return cacheRefreshSeq;
+    }
+
     public void setCancelJobOnDispose(boolean cancelJobOnDispose) {
         this.cancelJobOnDispose = cancelJobOnDispose;
     }
@@ -513,6 +518,8 @@ public class Simulation {
         // - refresh contents of already-filled objects
         // - refresh the detail fields of loaded objects too (where filled in)
         //
+        if (debugCache)
+            Debug.println("\n======= Refreshing object cache, seq=" + cacheRefreshSeq + " ========");
         List<Long> garbage = new ArrayList<Long>();
         List<cObject> objectsToReload = new ArrayList<cObject>();
         List<cObject> objectsToReloadFields = new ArrayList<cObject>();
@@ -526,7 +533,7 @@ public class Simulation {
                 Assert.isTrue(!obj.isDisposed(), "deleted objects should not be in the cache");
                 if (obj.isFilledIn()) {
                     numFilled++;
-                    if (obj.getLastAccessEventNumber() < lastEventNumber-1) { //FIXME -1 is not good if simulation advanced >1 events since last refresh!
+                    if (obj.getLastAccessSeq() != getCacheRefreshSeq()) { // not accessed since last object cache refresh
                         obj.unload();
                         numUnloads++;
                     }
@@ -542,6 +549,7 @@ public class Simulation {
         cachedObjects.keySet().removeAll(garbage);
         doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT);
         doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS);
+        cacheRefreshSeq++;
 
         if (debugCache)
             Debug.println("Object cache after refresh: size " + cachedObjects.size() + " (" + (numFilled-numUnloads) + " filled); " +
