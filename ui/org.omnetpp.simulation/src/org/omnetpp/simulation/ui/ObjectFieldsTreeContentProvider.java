@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.controller.CommunicationException;
+import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.model.Field;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
@@ -244,10 +245,7 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
         try {
             if (element instanceof cObject) {
                 // resolve object to its fields
-                cObject object = (cObject)element;
-                object.loadIfUnfilled();
-                object.loadFieldsIfUnfilled();
-                return groupFieldsOf(object);
+                return getObjectChildren((cObject)element);
             }
             else if (element instanceof FieldGroup) {
                 // resolve field group to the fields it contains
@@ -260,12 +258,14 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
                 for (int i = 0; i < result.length; i++)
                     result[i] = new FieldArrayElement(field, i);
                 if (field.isCObject()) {
-                    for (Object value : field.getValues()) {  //TODO replace loop with controller bulk load operation!!!
-                        if (value != null) {
-                            ((cObject)value).load();
-                            ((cObject)value).loadFields();
-                        }
+                    List<cObject> objsToLoad = new ArrayList<cObject>();
+                    for (Object value : field.getValues()) {
+                        if (value != null)
+                            objsToLoad.add((cObject)value);
                     }
+                    Simulation simulation = field.getOwner().getSimulation();
+                    simulation.loadUnfilledObjects(objsToLoad);
+                    simulation.loadFieldsOfUnfilledObjects(objsToLoad);
                 }
                 return result;
             }
@@ -277,11 +277,7 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
 
                 if (value instanceof cObject) {
                     // treat like cObject: resolve object to its fields
-                    cObject object = (cObject)value;
-                    object.loadIfUnfilled();
-                    if (!object.isFieldsFilledIn())
-                        object.loadFields();
-                    return groupFieldsOf(object);
+                    return getObjectChildren((cObject)value);
                 }
 
                 //TODO if struct, return its fields, etc
@@ -293,9 +289,10 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
         }
     }
 
-    protected Object[] groupFieldsOf(cObject object) throws CommunicationException {
+    protected Object[] getObjectChildren(cObject object) throws CommunicationException {
         //TODO observe ordering, possibly filtering!
         if (mode == Mode.CHILDREN) {
+            object.loadIfUnfilled();
             cObject[] children = object.getChildObjects();
             object.getSimulation().loadUnfilledObjects(children);
             if (ordering == Ordering.ALPHABETICAL)
@@ -303,9 +300,11 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             return children;
         }
         else if (mode == Mode.FLAT) {
+            object.loadFieldsIfUnfilled();
             return sortIfNeeded(Arrays.asList(object.getFields().clone())); // clone needed because sort() is destructive
         }
         else if (mode == Mode.GROUPED) {
+            object.loadFieldsIfUnfilled();
             Field[] fields = object.getFields();
             Map<String,List<Field>> groups = new LinkedHashMap<String, List<Field>>();
             for (Field f : fields) {
@@ -316,13 +315,15 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             List<Object> result = new ArrayList<Object>(groups.size());
             if (groups.containsKey(null))
                 result.addAll(groups.get(null));
-            for (String groupName : groups.keySet())
+            for (String groupName : groups.keySet()) {
                 if (groupName != null)
                     result.add(new FieldGroup(object, groupName, sortIfNeeded(groups.get(groupName))));
-                    return result.toArray();
+            }
+            return result.toArray();
         }
         else if (mode == Mode.INHERITANCE) {
             //XXX this is a copypasta of the above, only groupProperty is replaced by declaredOn
+            object.loadFieldsIfUnfilled();
             Field[] fields = object.getFields();
             Map<String,List<Field>> groups = new LinkedHashMap<String, List<Field>>();
             for (Field f : fields) {
@@ -333,10 +334,11 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             List<Object> result = new ArrayList<Object>(groups.size());
             if (groups.containsKey(""))
                 result.addAll(groups.get(""));
-            for (String groupName : groups.keySet())
+            for (String groupName : groups.keySet()) {
                 if (!groupName.equals(""))
                     result.add(new FieldGroup(object, groupName, sortIfNeeded(groups.get(groupName))));
-                    return result.toArray();
+            }
+            return result.toArray();
         }
         else if (mode == Mode.PACKET) {
             List<Object> result = new ArrayList<Object>();
@@ -351,12 +353,11 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
                     if (!CPACKET_BASE_CLASSES.contains(f.getDeclaredOn()))
                         fields.add(f);
 
-                        // and form a new field group from it
-                        result.add(new FieldGroup(object, pk.getClassName(), sortIfNeeded(fields)));
+                // and form a new field group from it
+                result.add(new FieldGroup(object, pk.getClassName(), sortIfNeeded(fields)));
 
-                        // go down to the encapsulated packet
-                        pk = ((cPacket)pk).getEncapsulatedPacket();  //TODO also follow segments[] and suchlike!!!
-
+                // go down to the encapsulated packet
+                pk = ((cPacket)pk).getEncapsulatedPacket();  //TODO also follow segments[] and suchlike!!!
             }
             return result.toArray();
         }
@@ -364,8 +365,10 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             IEssentialsProvider bestProvider = getBestProvider(object);
             if (bestProvider != null)
                 return bestProvider.getChildren(object);
-            else
-                return sortIfNeeded(Arrays.asList(object.getFields().clone())); // copypasta of FLAT mode
+            else {
+                object.loadFieldsIfUnfilled();
+                return sortIfNeeded(Arrays.asList(object.getFields().clone())); // fall back to FLAT mode
+            }
         }
         else {
             throw new RuntimeException("unknow mode " + mode);
@@ -425,8 +428,87 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
     }
 
     public boolean hasChildren(Object element) {
-        // complicated, so reduce it to getChildren()
-        return getChildren(element).length > 0;
+        // For collapsed tree nodes TreeViewer only calls hasChildren() but not getChildren(),
+        // so it makes sense to have a proper, streamlined implementation for hasChildren().
+        // Note that getChildren() preloads the content of the child objects, so a simple
+        // 'return getChildren().length > 0' implementation here would do a lot of completely
+        // superfluous HTTP GETs for collapsed nodes.
+
+        // Note: to be kept consistent with getChildren()!
+        try {
+            if (element instanceof cObject) {
+                // resolve object to its fields
+                return objectHasChildren((cObject)element);
+            }
+            else if (element instanceof FieldGroup) {
+                // resolve field group to the fields it contains
+                return ((FieldGroup) element).fields.length > 0;
+            }
+            else if (element instanceof Field && ((Field)element).isArray()) {
+                // resolve array field to individual array elements
+                Field field = (Field)element;
+                return field.getValues().length > 0;
+            }
+            else if (element instanceof Field || element instanceof FieldArrayElement) {
+                // resolve children of a field value
+                boolean isArrayElement = element instanceof FieldArrayElement;
+                Field field = !isArrayElement ? (Field)element : ((FieldArrayElement)element).field;
+                Object value = !isArrayElement ? field.getValue() : field.getValues()[((FieldArrayElement)element).index];
+
+                if (value instanceof cObject) {
+                    // treat like cObject: resolve object to its fields
+                    return objectHasChildren((cObject)value);
+                }
+
+                //TODO if struct, return its fields, etc
+            }
+            return false;
+        }
+        catch (CommunicationException e) {
+            return true;  // child is the error element
+        }
+    }
+
+    protected boolean objectHasChildren(cObject object) throws CommunicationException {
+        if (mode == Mode.CHILDREN) {
+            object.loadIfUnfilled();
+            return object.getChildObjects().length > 0;
+        }
+        else if (mode == Mode.FLAT) {
+            return true; // all objects have fields, and we don't want to call loadFieldsIfUnfilled() just yet
+        }
+        else if (mode == Mode.GROUPED) {
+            return true; // all objects have fields, and we don't want to call loadFieldsIfUnfilled() just yet
+        }
+        else if (mode == Mode.INHERITANCE) {
+            return true; // unless it's a cObject which cannot happen...
+        }
+        else if (mode == Mode.PACKET) {
+            cObject pk = object;
+            while (pk instanceof cPacket) {
+                pk.loadIfUnfilled();
+                pk.loadFieldsIfUnfilled();
+
+                // find out if it has non-builtin fields
+                for (Field f : pk.getFields())
+                    if (!CPACKET_BASE_CLASSES.contains(f.getDeclaredOn()))
+                        return true;
+
+                // go down to the encapsulated packet
+                pk = ((cPacket)pk).getEncapsulatedPacket();  //TODO also follow segments[] and suchlike!!!
+            }
+            return false;
+        }
+        else if (mode == Mode.ESSENTIALS) {
+            IEssentialsProvider bestProvider = getBestProvider(object);
+            if (bestProvider != null)
+                return bestProvider.hasChildren(object);
+            else
+                return true; // as we fall back to FLAT mode
+        }
+        else {
+            throw new RuntimeException("unknow mode " + mode);
+        }
     }
 
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
