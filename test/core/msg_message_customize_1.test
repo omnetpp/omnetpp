@@ -54,15 +54,7 @@ class @TESTNAME@::SomePacket {
     short schedulingPriority = 0
     string displayString = ""
     cObject *controlInfo = NULL
-    cArray parList = class cArray {
-        string className = cArray
-        string fullName = parameters
-        string fullPath = Test.some.parameters
-        string info = empty
-        string detailedInfo = ""
-        string name = parameters
-        bool takeOwnership = true
-    }
+    cArray *parList = NULL
     bool isScheduled = false
     bool isSelfMessage = true
     simtime_t creationTime = 0

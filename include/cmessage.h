@@ -155,6 +155,9 @@ class SIM_API cMessage : public cEvent
     // internal: used by the parallel simulation kernel.
     virtual int getSrcProcId() const {return srcprocid;}
 
+    // internal: returns the parameter list object, or NULL if it hasn't been used yet
+    cArray *getParListPtr()  {return parlistp;}
+
   private: // hide cEvent methods from the cMessage API
 
     // overridden from cEvent: return true

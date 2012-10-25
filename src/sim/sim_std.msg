@@ -233,7 +233,7 @@ class cMessage extends cOwnedObject
     short schedulingPriority @group("message") @editable @hint("Controls order of messages with equal timestamps in FES");
     string displayString @group("message") @hint("Controls appearance of the message in GUI");
     cObject *controlInfo @group("message") @hint("Used with protocol stacks: carries extra information when a packet is sent between protocol layers");
-    cArray parList @group("message") @hint("OBSOLETE: use of \"parList\" should be replaced with message subclassing in the few models that still use it");
+    cArray *parList @getter(getParListPtr) @group("message") @hint("OBSOLETE: use of \"parList\" should be replaced with message subclassing in the few models that still use it");
 
     bool isScheduled @getter(isScheduled) @group(sending) @hint("Whether message is currently scheduled/in transit or not");
     bool isSelfMessage @getter(isSelfMessage) @group(sending) @hint("Whether message is a self-message, scheduled to be delivered back to the same module at a later time");
