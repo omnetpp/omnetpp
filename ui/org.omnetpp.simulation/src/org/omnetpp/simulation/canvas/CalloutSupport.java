@@ -14,6 +14,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.figures.misc.ISelectionHandleBounds;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.model.cObject;
 
@@ -113,11 +114,13 @@ public class CalloutSupport {
         calloutInfoList.remove(info);
     }
 
-    public void addCalloutFor(IInspectorPart sourceInspector, boolean allTheWayUp) {
+    public void addCalloutFor(IInspectorPart sourceInspector, boolean allTheWayUp) throws CommunicationException {
         // find an inspector that represents the nearest ancestor (i.e. container object) for sourceInspector's object
         cObject object = sourceInspector.getObject();
+        object.loadIfUnfilled();
         cObject firstInspectedAncestor = null;
         for (cObject o = object.getOwner(); o != null; o = o.getOwner()) {
+            o.loadIfUnfilled();
             if (simulationCanvas.findInspectorFor(o) != null) {
                 firstInspectedAncestor = o;
                 break;

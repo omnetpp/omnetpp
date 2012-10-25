@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.inspectors;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.canvas.SelectionItem;
 import org.omnetpp.simulation.canvas.SelectionUtils;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.QueueInspectorFigure;
@@ -45,9 +45,6 @@ public class QueueInspectorPart extends AbstractInspectorPart {
 
     public QueueInspectorPart(IInspectorContainer parent, cObject object) {
         super(parent, object);
-
-        if (object.isFilledIn())
-            object.safeLoad(); //XXX why not in refresh()?
 
         // mouse handling
         //XXX near copy-paste from GraphicalModuleInspectorPart, factor out!
@@ -79,38 +76,41 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     @Override
     public void refresh() {
         super.refresh();
+
         if (!isDisposed()) {
-            QueueInspectorFigure queueFigure = (QueueInspectorFigure)figure;
-
-            if (!object.isFilledIn())
-                object.safeLoad(); //XXX exception handling
-
-            // only rebuild everything if queue contents has changed
-            cObject[] childObjects = object.getChildObjects();
+            cObject[] childObjects;
             try {
+                object.loadIfUnfilled();
+                childObjects = object.getChildObjects();
                 object.getSimulation().loadUnfilledObjects(childObjects);
             }
-            catch (IOException e) {
-                e.printStackTrace();  //FIXME better error handling
+            catch (CommunicationException e) {
+                return; // leave everything as it is now
             }
+
             if (!Arrays.equals(childObjects, prevObjects)) {
-                // clear and re-add message figures
+                populateQueueFigure(childObjects);
                 prevObjects = childObjects;
-                queueFigure.removeAll();
-                objectToFigureMap.clear();
-                figureToObjectMap.clear();
-                for (cObject msg : childObjects) {
-                    IFigure msgFigure = queueFigure.createQueueItemFigure();
-                    queueFigure.add(msgFigure);
-                    objectToFigureMap.put(msg,msgFigure);
-                    figureToObjectMap.put(msgFigure,msg);
-                }
             }
         }
     }
 
+    protected void populateQueueFigure(cObject[] childObjects) {
+        // clear and re-add message figures
+        QueueInspectorFigure queueFigure = (QueueInspectorFigure)figure;
+        queueFigure.removeAll();
+        objectToFigureMap.clear();
+        figureToObjectMap.clear();
+        for (cObject msg : childObjects) {
+            IFigure msgFigure = queueFigure.createQueueItemFigure();
+            queueFigure.add(msgFigure);
+            objectToFigureMap.put(msg,msgFigure);
+            figureToObjectMap.put(msgFigure,msg);
+        }
+    }
+
     public IFigure findQueueItemFigureAt(int x, int y) {
-        for (IFigure f = figure.findFigureAt(x, y); f!=null && f!=figure; f=f.getParent())
+        for (IFigure f = figure.findFigureAt(x, y); f != null && f != figure; f = f.getParent())
             if (figureToObjectMap.containsKey(f))
                 return f;
         return null;

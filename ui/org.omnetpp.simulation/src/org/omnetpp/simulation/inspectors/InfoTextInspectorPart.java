@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
@@ -27,9 +28,6 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
 
     public InfoTextInspectorPart(IInspectorContainer parent, cObject object) {
         super(parent, object);
-
-        if (object.isFilledIn())  //XXX why not in refresh?
-            object.safeLoad();
 
         // add mouse selection support
         figure.addMouseListener(new MouseListener.Stub() {
@@ -51,9 +49,14 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
-            if (!object.isFilledIn())
-                object.safeLoad(); //XXX revise exception handling
-            ((InfoTextInspectorFigure)figure).setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.getInfo());
+            InfoTextInspectorFigure infoTextFigure = (InfoTextInspectorFigure)figure;
+            try {
+                object.loadIfUnfilled();
+                infoTextFigure.setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.getInfo());
+            }
+            catch (CommunicationException e) {
+                infoTextFigure.setTexts("(" + object.getClass().getSimpleName() + "?) n/a", "Error loading object info, try Refresh");
+            }
         }
     }
 

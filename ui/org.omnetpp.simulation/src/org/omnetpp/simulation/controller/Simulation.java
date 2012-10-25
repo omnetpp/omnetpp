@@ -35,6 +35,7 @@ import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
@@ -47,8 +48,6 @@ import org.omnetpp.simulation.model.cPar;
  *
  * @author Andras
  */
-// TODO errors in the simulation should be turned into SimulationException thrown from these methods?
-// TODO cmdenv: implement "runUntil" parameter "wallclocktimelimit", to be used with Express (or Fast too)
 public class Simulation {
     static boolean debugHttp = true;
     static boolean debugCache = true;
@@ -142,7 +141,8 @@ public class Simulation {
     private String[] argv;
     private String workingDir;
     private SimState state = SimState.NONETWORK;
-    private StoppingReason stoppingReason = StoppingReason.NONE;
+    private boolean inFailureMode = false;  // transient communication failure
+    private StoppingReason stoppingReason = StoppingReason.NONE; // after run/runUntil
     private String configName;
     private int runNumber;
     private String networkName;
@@ -263,6 +263,36 @@ public class Simulation {
     }
 
     /**
+     * Returns true if the simulation front-end is in the
+     * "transient communication failure" mode. In this mode, all HTTP requests
+     * result in an immediate CommunicationException. Call clearFailureMode() to exit this
+     * mode (Refresh does it.)
+     */
+    public boolean isInFailureMode() {
+        return inFailureMode;
+    }
+
+    /**
+     * Put the simulation front-end into the "transient communication failure" mode.
+     */
+    public void enterFailureMode() {
+        if (!inFailureMode) {
+            inFailureMode = true;
+            simulationCallback.enteringTransientCommunicationFailureMode(); // displays error dialog
+        }
+    }
+
+    /**
+     * Exit the "transient communication failure" mode.
+     */
+    public void clearFailureMode() {
+        if (inFailureMode) {
+            inFailureMode = false;
+            simulationCallback.leavingTransientCommunicationFailureMode();
+        }
+    }
+
+    /**
      * Why the last Run command stopped.
      */
     public StoppingReason getStoppingReason() {
@@ -322,7 +352,7 @@ public class Simulation {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public StatusResponse refreshStatus() throws IOException {
+    public StatusResponse refreshStatus() throws CommunicationException {
         Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
 
         // store basic simulation state
@@ -338,7 +368,7 @@ public class Simulation {
         stoppingReason = StoppingReason.valueOf(StringUtils.defaultString((String) responseMap.get("stoppingReason"), "none").toUpperCase());
         eventlogFile = (String) responseMap.get("eventlogfile");
 
-        lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);  //TODO rename JSON fields, also in cmdenv.cc!!!
+        lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);
         lastEventSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("lastEventSimtime"), "0"));
         nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
         nextEventSimulationTimeGuess = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimtimeGuess"), "0"));
@@ -474,7 +504,7 @@ public class Simulation {
         return request;
     }
 
-    public void refreshObjectCache() throws IOException {
+    public void refreshObjectCache() throws CommunicationException {
         //
         // Maintain object cache:
         // - purge objects from cache that are unreferenced in Java, or have been deleted from C++;
@@ -521,12 +551,12 @@ public class Simulation {
     /**
      * Send reply to a user interaction request.
      */
-    public void sendReply(String value) throws IOException {
+    public void sendReply(String value) throws CommunicationException {
         String params = (value == null) ? "" : "?value=" + urlEncode(value);
         getPageContent(urlBase + "sim/reply" + params);
     }
 
-    public void sendCancelReply() throws IOException {
+    public void sendCancelReply() throws CommunicationException {
         getPageContent(urlBase + "sim/reply");
     }
 
@@ -542,32 +572,39 @@ public class Simulation {
         return rootObjects.get(key);
     }
 
-    public void loadObject(cObject object) throws IOException {
+    public void loadObject(cObject object) throws CommunicationException {
         Set<cObject> objects = new HashSet<cObject>();
         objects.add(object);
         doLoadObjects(objects, ContentToLoadEnum.OBJECT);
     }
 
-    public void loadObjectFields(cObject object) throws IOException {
+    public void loadObjectFields(cObject object) throws CommunicationException {
         Set<cObject> objects = new HashSet<cObject>();
         objects.add(object);
         doLoadObjects(objects, ContentToLoadEnum.FIELDS);
     }
 
-    public void loadObjects(cObject[] objects) throws IOException {
+    public void loadObjects(cObject[] objects) throws CommunicationException {
         doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.OBJECT);
     }
 
-    public void loadObjects(List<? extends cObject>objects) throws IOException {
+    public void loadObjects(List<? extends cObject> objects) throws CommunicationException {
         doLoadObjects(objects, ContentToLoadEnum.OBJECT);
     }
 
-    //TODO we need a loadUnfilledObjectsAndTheirFields() too!!!  btw, why not 1 method and 2 flags: "unfilled objects only", "load fields too" ????
-    public void loadUnfilledObjects(cObject[] objects) throws IOException {
+    public void loadFieldsOfObjects(cObject[] objects) throws CommunicationException {
+        doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.FIELDS);
+    }
+
+    public void loadFieldsOfObjects(List<? extends cObject> objects) throws CommunicationException {
+        doLoadObjects(objects, ContentToLoadEnum.FIELDS);
+    }
+
+    public void loadUnfilledObjects(cObject[] objects) throws CommunicationException {
         loadUnfilledObjects(Arrays.asList(objects));
     }
 
-    public void loadUnfilledObjects(Collection<? extends cObject> objects) throws IOException {
+    public void loadUnfilledObjects(Collection<? extends cObject> objects) throws CommunicationException {
         // load objects that are not yet filled in
         List<cObject> missing = new ArrayList<cObject>();
         for (cObject obj : objects) {
@@ -577,8 +614,22 @@ public class Simulation {
         doLoadObjects(missing, ContentToLoadEnum.OBJECT);
     }
 
+    public void loadFieldsOfUnfilledObjects(cObject[] objects) throws CommunicationException {
+        loadFieldsOfUnfilledObjects(Arrays.asList(objects));
+    }
+
+    public void loadFieldsOfUnfilledObjects(Collection<? extends cObject> objects) throws CommunicationException {
+        // load objects that are not yet filled in
+        List<cObject> missing = new ArrayList<cObject>();
+        for (cObject obj : objects) {
+            if (!obj.isFieldsFilledIn())
+                missing.add(obj);
+        }
+        doLoadObjects(missing, ContentToLoadEnum.FIELDS);
+    }
+
     @SuppressWarnings("rawtypes")
-    protected void doLoadObjects(Collection<? extends cObject> objects, ContentToLoadEnum what) throws IOException {
+    protected void doLoadObjects(Collection<? extends cObject> objects, ContentToLoadEnum what) throws CommunicationException {
         if (objects.isEmpty())
             return;
         StringBuilder buf = new StringBuilder();
@@ -637,7 +688,7 @@ public class Simulation {
     }
 
     @SuppressWarnings("rawtypes")
-    public List<ConfigDescription> getConfigDescriptions() throws IOException {
+    public List<ConfigDescription> getConfigDescriptions() throws CommunicationException {
         Object json = getPageContentAsJSON(urlBase + "/sim/enumerateConfigs");
         List<ConfigDescription> result = new ArrayList<ConfigDescription>();
 
@@ -657,27 +708,27 @@ public class Simulation {
         return result;
     }
 
-    public void sendSetupRunCommand(String configName, int runNumber) throws IOException {
+    public void sendSetupRunCommand(String configName, int runNumber) throws CommunicationException {
         getPageContent(urlBase + "sim/setupRun?config=" + urlEncode(configName) + "&run=" + runNumber);
     }
 
-    public void sendSetupNetworkCommand(String networkName) throws IOException {
+    public void sendSetupNetworkCommand(String networkName) throws CommunicationException {
         getPageContent(urlBase + "sim/setupNetwork?network=" + urlEncode(networkName));
     }
 
-    public void sendRebuildNetworkCommand() throws IOException {
+    public void sendRebuildNetworkCommand() throws CommunicationException {
         getPageContent(urlBase + "sim/rebuild");
     }
 
-    public void sendStepCommand() throws IOException {
+    public void sendStepCommand() throws CommunicationException {
         getPageContent(urlBase + "sim/step");
     }
 
-    public void sendRunCommand(RunMode mode, long realtimeMillis) throws IOException {
+    public void sendRunCommand(RunMode mode, long realtimeMillis) throws CommunicationException {
         sendRunUntilCommand(mode, realtimeMillis, null, 0, null, null);
     }
 
-    public void sendRunUntilCommand(RunMode mode, long realtimeMillis, BigDecimal untilSimTime, long untilEventNumber, cModule untilModule, cMessage untilMessage) throws IOException {
+    public void sendRunUntilCommand(RunMode mode, long realtimeMillis, BigDecimal untilSimTime, long untilEventNumber, cModule untilModule, cMessage untilMessage) throws CommunicationException {
         String untilArgs = "";
         if (realtimeMillis > 0)
             untilArgs += "&rtlimit=" + realtimeMillis;
@@ -692,11 +743,11 @@ public class Simulation {
         getPageContent(urlBase + "sim/run?mode=" + mode.name().toLowerCase() + untilArgs);
     }
 
-    public void sendStopCommand() throws IOException {
+    public void sendStopCommand() throws CommunicationException {
         getPageContent(urlBase + "sim/stop");
     }
 
-    public void sendCallFinishCommand() throws IOException {
+    public void sendCallFinishCommand() throws CommunicationException {
         // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR but it comes handy in practice...
         Assert.isTrue(state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR);
         getPageContent(urlBase + "sim/callFinish");
@@ -711,7 +762,7 @@ public class Simulation {
         }
     }
 
-    protected Object getPageContentAsJSON(String url) throws IOException {
+    protected Object getPageContentAsJSON(String url) throws CommunicationException {
         //long startTime = System.currentTimeMillis();
         String response = getPageContent(url);
         if (response == null)
@@ -726,55 +777,76 @@ public class Simulation {
         return jsonTree;
     }
 
-    protected String getPageContent(String url) throws IOException {
-        if (debugHttp) Debug.println("GET " + url);
+    protected String getPageContent(String url) throws CommunicationException {
+        if (debugHttp)
+            Debug.println("GET " + url);
         if (url.length() > MONGOOSE_MAX_REQUEST_URI_SIZE)
             throw new RuntimeException("Request URL length " + url.length() + "exceeds Mongoose limit " + MONGOOSE_MAX_REQUEST_URI_SIZE);
 
         if (getState() == SimState.DISCONNECTED)
-            throw new IllegalStateException("Simulation process already terminated"); //TODO not good, as we catch IOException always
+            throw new IllegalStateException("Simulation process already terminated"); //TODO not good, as we catch CommunicationException always
 
-        // turn off log messages from Apache HttpClient if we can...
-        Log log = LogFactory.getLog("org.apache.commons.httpclient");
-        if (log instanceof Jdk14Logger)
-            ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
+        if (isInFailureMode())
+            throw new CommunicationException("Simulation front-end is in Failure Mode -- hit Refresh to try resuming normal mode");
 
-        HttpClient client = new HttpClient();
-        int timeoutMillis = 30 * 1000;
-        client.getParams().setSoTimeout(timeoutMillis);
-        client.getParams().setConnectionManagerTimeout(timeoutMillis);
-        client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMillis);
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMillis);
-
-        // do not retry
-        HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
-            public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
-                return false;
-            }
-        };
-
-        GetMethod method = new GetMethod(url);
-        method.getProxyAuthState().setAuthScheme(new BasicScheme());
-        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
-        method.setDoAuthentication(true);
 
         try {
-            int status = client.executeMethod(method);
-            if (status != HttpStatus.SC_OK)
-                throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
-            String responseBody = method.getResponseBodyAsString();
-            if (responseBody.length() > 1024)
-                if (debugHttp) Debug.println("  response: ~" + ((responseBody.length()+511)/1024) + "KiB");
-            return responseBody;
+            // turn off log messages from Apache HttpClient if we can...
+            Log log = LogFactory.getLog("org.apache.commons.httpclient");
+            if (log instanceof Jdk14Logger)
+                ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
+
+            HttpClient client = new HttpClient();
+            int timeoutMillis = 30 * 1000;
+            client.getParams().setSoTimeout(timeoutMillis);
+            client.getParams().setConnectionManagerTimeout(timeoutMillis);
+            client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMillis);
+            client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMillis);
+
+            // do not retry
+            HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
+                public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
+                    return false;
+                }
+            };
+
+            GetMethod method = new GetMethod(url);
+            method.getProxyAuthState().setAuthScheme(new BasicScheme());
+            method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
+            method.setDoAuthentication(true);
+
+            try {
+                //XXX for testing error resilience:
+                //if (System.currentTimeMillis() % 50 == 0)
+                //    throw new IOException("Injecting random failure!");
+
+                int status = client.executeMethod(method);
+                if (status != HttpStatus.SC_OK)
+                    throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
+                String responseBody = method.getResponseBodyAsString();
+                if (responseBody.length() > 1024)
+                    if (debugHttp) Debug.println("  response: ~" + ((responseBody.length()+511)/1024) + "KiB");
+                return responseBody;
+            }
+            catch (SocketException e) {
+                // this means connection refused -- very probably fatal
+                state = SimState.DISCONNECTED;
+                SimulationPlugin.logError("Fatal communication error -- going to state DISCONNECTED", e);
+                simulationCallback.fatalCommunicationError(e);
+                throw e;
+            }
+            catch (IOException e) {
+                // go to failure mode until user hits Refresh
+                SimulationPlugin.logError("Transient communication error -- going to failure mode", e);
+                enterFailureMode(); // displays error dialog
+                throw e;
+            }
+            finally {
+                method.releaseConnection();
+            }
         }
-        catch (SocketException e) {
-            // this means connection refused -- very probably fatal
-            state = SimState.DISCONNECTED;
-            simulationCallback.socketError(e);
-            throw e;
-        }
-        finally {
-            method.releaseConnection();
+        catch (IOException e) {
+            throw new CommunicationException(e);
         }
     }
 

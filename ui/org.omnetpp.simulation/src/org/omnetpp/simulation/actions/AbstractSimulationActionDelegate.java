@@ -15,9 +15,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
-import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
@@ -46,6 +47,10 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
 
     public SimulationController getSimulationController() {
         return simulationEditor.getSimulationController();
+    }
+
+    public Simulation getSimulation() {
+        return simulationEditor.getSimulationController().getSimulation();
     }
 
     public SimulationCanvas getSimulationCanvas() {
@@ -116,9 +121,8 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
             try {
                 controller.rebuildNetwork();
             }
-            catch (Exception e) { // notably IOException / HttpException
-                MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
-                SimulationPlugin.logError(e);
+            catch (CommunicationException e) {
+                // ignore -- logging etc already done by the thrower
             }
         }
         return controller.isSimulationOK();

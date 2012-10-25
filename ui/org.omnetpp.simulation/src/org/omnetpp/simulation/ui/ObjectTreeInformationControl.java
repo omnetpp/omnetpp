@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IUpdateableAction;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
 /**
@@ -135,8 +136,13 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
     }
 
     protected void updateActions() {
-        for (IUpdateableAction action : actions)
-            action.update();
+        for (IUpdateableAction action : actions) {
+            try {
+                action.update();
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error updating action " + action.toString(), e);
+            }
+        }
     }
 
     /**

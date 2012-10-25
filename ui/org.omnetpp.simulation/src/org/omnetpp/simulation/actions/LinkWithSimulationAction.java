@@ -1,9 +1,6 @@
 package org.omnetpp.simulation.actions;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
-import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
@@ -25,10 +22,6 @@ public class LinkWithSimulationAction extends AbstractSimulationActionDelegate {
                 return;
 
             getSimulationController().getSimulation().setCancelJobOnDispose(isChecked());
-        }
-        catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
-            SimulationPlugin.logError(e);
         }
         finally {
             updateState();

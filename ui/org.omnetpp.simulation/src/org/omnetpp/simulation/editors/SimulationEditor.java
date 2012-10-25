@@ -34,6 +34,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
@@ -44,6 +45,7 @@ import org.omnetpp.common.util.IPredicate;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
@@ -518,21 +520,29 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             String status = "   pid=" + controller.getSimulation().getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
             status += "   " + controller.getUIState().name();
 
+            statusLabel.setForeground(controller.getSimulation().isInFailureMode() ? ColorFactory.RED : null); //FIXME better way to indicate failure mode!!
+
             if (controller.getUIState() != SimState.DISCONNECTED && controller.getUIState() != SimState.NONETWORK) {
                 Simulation simulation = controller.getSimulation();
                 status += "  -  " + simulation.getConfigName() + " #" + simulation.getRunNumber() + "   (" + simulation.getNetworkName() + ")";
 
-                cSimulation csimulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
-                if (!csimulation.isFilledIn())
-                    csimulation.safeLoad();
-
                 long eventNumber = controller.getEventNumber();
                 BigDecimal simTime = controller.getSimulationTime();
-                cModule module = csimulation.getModuleById(controller.getEventModuleId());
-                if (module != null && !module.isFilledIn())
-                    module.safeLoad();
-                String moduleText = module == null ? "n/a" : module.getFullPath() + " (" + module.getShortTypeName() + ")";
-                status += "  -  Event #" + eventNumber + "   t=" + simTime + "s" + " in " + moduleText;
+                status += "  -  Event #" + eventNumber + "   t=" + simTime + "s";
+
+                try {
+                    cSimulation csimulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
+                    csimulation.loadIfUnfilled();
+
+                    cModule module = csimulation.getModuleById(controller.getEventModuleId());
+                    if (module != null)
+                        module.loadIfUnfilled();
+                    String moduleText = module == null ? "n/a" : module.getFullPath() + " (" + module.getShortTypeName() + ")";
+                    status += " in " + moduleText;
+                }
+                catch (CommunicationException e) {
+                    // nothing -- simply don't print the info if we cannot
+                }
             }
 
             statusLabel.setText(status);
@@ -551,19 +561,21 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         if (nextEventModuleId <= 1)
             return;
 
-        // add marker to it and all ancestors
-        cSimulation simulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
-        if (!simulation.isFilledIn())
-            simulation.safeLoad();
-        cModule module = simulation.getModuleById(nextEventModuleId);
-        if (!module.isFilledIn())
-            module.safeLoad();
+        try {
+            // add marker to it and all ancestors
+            cSimulation simulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
+            simulation.loadIfUnfilled();
+            cModule module = simulation.getModuleById(nextEventModuleId);
+            module.loadIfUnfilled();
 
-        addNextEventMarkerTo(module, true);
-        while ((module = module.getParentModule()) != null) {
-            if (!module.isFilledIn())
-                module.safeLoad();
-            addNextEventMarkerTo(module, false);
+            addNextEventMarkerTo(module, true);
+            while ((module = module.getParentModule()) != null) {
+                module.loadIfUnfilled();
+                addNextEventMarkerTo(module, false);
+            }
+        }
+        catch (CommunicationException e) {
+            // nothing -- don't draw the marker if we can't
         }
     }
 

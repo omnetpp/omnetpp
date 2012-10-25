@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.model.Field;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
@@ -69,7 +70,13 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
     }
 
     private void addObjectDetails(List listbox, cObject object) {
-        load(object);
+        try {
+            object.loadIfUnfilled();
+            object.loadFieldsIfUnfilled();
+        }
+        catch (CommunicationException e) {
+            listbox.add("Error loading object");
+        }
 
         String[] builtinClasses = StringUtils.split("cObject cNamedObject cOwnedObject cMessage cPacket");
 
@@ -89,13 +96,5 @@ public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
             }
         }
     }
-
-    private void load(cObject object) {
-        if (!object.isFilledIn())
-            object.safeLoad();
-        if (!object.isFieldsFilledIn())
-            object.safeLoadFields();
-    }
-
 
 }

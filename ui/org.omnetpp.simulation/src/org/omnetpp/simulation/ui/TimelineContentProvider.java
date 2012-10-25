@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,14 +9,14 @@ import org.eclipse.swt.graphics.GC;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.IPredicate;
-import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cMessageHeap;
 
 /**
  * An timeline content and label provider that uses cMessageHeap as input. Messages can be filtered.
- * 
+ *
  * @author Andras
  */
 public class TimelineContentProvider implements ITimelineContentProvider, ITimelineLabelProvider {
@@ -62,8 +61,7 @@ public class TimelineContentProvider implements ITimelineContentProvider, ITimel
             if (!simulation.hasRootObjects())
                 return new Object[0];
             cMessageHeap fes = (cMessageHeap)simulation.getRootObject(Simulation.ROOTOBJ_FES);
-            if (!fes.isFilledIn())
-                fes.load();
+            fes.loadIfUnfilled();
             cMessage[] messages = fes.getMessages();
             simulation.loadUnfilledObjects(messages);
 
@@ -77,8 +75,7 @@ public class TimelineContentProvider implements ITimelineContentProvider, ITimel
                 return list.toArray();
             }
         }
-        catch (IOException e) {
-            SimulationPlugin.logError("could not load FES content", e);
+        catch (CommunicationException e) {
             return new Object[0];
         }
     }

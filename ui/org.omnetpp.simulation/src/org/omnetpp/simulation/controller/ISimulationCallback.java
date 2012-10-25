@@ -9,12 +9,23 @@ import java.net.SocketException;
  * @author Andras
  */
 public interface ISimulationCallback {
+
+    /**
+     * TODO
+     */
+    void enteringTransientCommunicationFailureMode();
+
+    /**
+     * TODO
+     */
+    void leavingTransientCommunicationFailureMode();
+
     /**
      * Called when the socket cannot connect to the simulation, which we interpret
      * as a fatal condition. Timeout (which is likely a transient error) does NOT trigger
      * this callback; see subclasses of SocketException what does.
      */
-    void socketError(SocketException e);
+    void fatalCommunicationError(SocketException e);
 
     /**
      * Called when the simulation process exits (according to the Job that was used to launch it).

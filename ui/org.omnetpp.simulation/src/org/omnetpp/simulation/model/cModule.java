@@ -3,6 +3,7 @@ package org.omnetpp.simulation.model;
 import java.util.List;
 import java.util.Map;
 
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation;
 
 /**
@@ -90,24 +91,22 @@ public class cModule extends cComponent {
         return null;
     }
 
-    public cModule getCommonAncestorModule(cModule otherModule) {
+    public cModule getCommonAncestorModule(cModule otherModule) throws CommunicationException {
         checkState();
         for (cModule m = this; m != null; m = m.getParentModule()) {
-            if (!m.isFilledIn())
-                m.safeLoad();
+            m.loadIfUnfilled();
             if (m.isAncestorModuleOf(otherModule))
                 return m;
         }
         return null;
     }
 
-    public boolean isAncestorModuleOf(cModule module) {
+    public boolean isAncestorModuleOf(cModule module) throws CommunicationException {
         checkState();
         for (cModule m = module; m != null; m = m.getParentModule()) {
             if (m == this)
                 return true;
-            if (!m.isFilledIn())
-                m.safeLoad();
+            m.loadIfUnfilled();
         }
         return false;
     }

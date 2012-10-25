@@ -1,8 +1,7 @@
 package org.omnetpp.simulation.model;
 
-import java.io.IOException;
-
 import org.apache.commons.lang.ArrayUtils;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation;
 
 /**
@@ -177,7 +176,7 @@ public class FieldNames {
      * into the body of ProcessInfoAction and hit the Process Info button during
      * simulation.
      */
-    public static void generateConstants(Simulation simulation) throws IOException {
+    public static void generateConstants(Simulation simulation) throws CommunicationException {
         cObject classDescriptorsList = simulation.getRootObject(Simulation.ROOTOBJ_CLASSDESCRIPTORS);
         classDescriptorsList.load();
         cObject[] childObjects = classDescriptorsList.getChildObjects();

@@ -31,11 +31,12 @@ import org.omnetpp.common.ui.IUpdateableAction;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
-import org.omnetpp.simulation.ui.SetObjectViewerModeAction;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
+import org.omnetpp.simulation.ui.SetObjectViewerModeAction;
 
 /**
  *
@@ -159,8 +160,13 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     }
 
     protected void updateActions() {
-        for (IUpdateableAction action : actions)
-            action.update();
+        for (IUpdateableAction action : actions) {
+            try {
+                action.update();
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error updating action " + action.toString(), e);
+            }
+        }
     }
 
     @Override
@@ -172,7 +178,13 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
                 String text;
                 if (objects.size() == 1) {
                     cObject object = objects.get(0);
-                    text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
+                    try {
+                        object.loadIfUnfilled();
+                        text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
+                    }
+                    catch (CommunicationException e) {
+                        text = "(" + object.getClass().getSimpleName() + "?)";
+                    }
                     viewer.setInput(object);
                 }
                 else {

@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.ui;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,9 +9,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.model.Field;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
@@ -121,9 +125,7 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
         public boolean equals(Object obj) {
             if (this == obj)
                 return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
+            if (obj == null || getClass() != obj.getClass())
                 return false;
             // note: leave out fields[], otherwise turning sorting on/off closes the field group node
             // in the tree! (TreeViewer uses equals() to identify tree nodes)
@@ -137,6 +139,67 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             else if (!parent.equals(other.parent))
                 return false;
             return true;
+        }
+    }
+
+    public static class Notice {
+        Object parent;
+        Image image;
+        String message;
+
+        public Notice(Object parent, Image image, String message) {
+            this.parent = parent;
+            this.image = image;
+            this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return parent.toString() + "/" + message;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((image == null) ? 0 : image.hashCode());
+            result = prime * result + ((message == null) ? 0 : message.hashCode());
+            result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            Notice other = (Notice) obj;
+            if (!ObjectUtils.equals(image, other.image))
+                return false;
+            if (!ObjectUtils.equals(message, other.message))
+                return false;
+            if (!ObjectUtils.equals(parent, other.parent))
+                return false;
+            return true;
+        }
+    }
+
+    public static class ErrorNotice extends Notice {
+        public ErrorNotice(Object parent, String message) {
+            super(parent, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK), message);
+        }
+    }
+
+    public static class WarningNotice extends Notice {
+        public WarningNotice(Object parent, String message) {
+            super(parent, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_WARN_TSK), message);
+        }
+    }
+
+    public static class InfoNotice extends Notice {
+        public InfoNotice(Object parent, String message) {
+            super(parent, PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_INFO_TSK), message);
         }
     }
 
@@ -178,66 +241,63 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
         // Note: cObject only occurs here as root, at other places it's
         // always a field value somewhere, and as such, is wrapped into
         // Field or FieldArrayElement.
-        if (element instanceof cObject) {
-            // resolve object to its fields
-            cObject object = (cObject)element;
-            if (!object.isFilledIn())
-                object.safeLoad(); //FIXME return if failed!
-            if (!object.isFieldsFilledIn())
-                object.safeLoadFields(); //FIXME return if failed!
-            return groupFieldsOf(object);
-        }
-        else if (element instanceof FieldGroup) {
-            // resolve field group to the fields it contains
-            return ((FieldGroup) element).fields;
-        }
-        else if (element instanceof Field && ((Field)element).isArray()) {
-            // resolve array field to individual array elements
-            Field field = (Field)element;
-            FieldArrayElement[] result = new FieldArrayElement[field.getValues().length];
-            for (int i = 0; i < result.length; i++)
-                result[i] = new FieldArrayElement(field, i);
-            if (field.isCObject()) {
-                for (Object value : field.getValues()) {  //TODO replace loop with controller bulk load operation!!!
-                    if (value != null) {
-                        ((cObject)value).safeLoad();
-                        ((cObject)value).safeLoadFields();
-                    }
-                }
-            }
-            return result;
-        }
-        else if (element instanceof Field || element instanceof FieldArrayElement) {
-            // resolve children of a field value
-            boolean isArrayElement = element instanceof FieldArrayElement;
-            Field field = !isArrayElement ? (Field)element : ((FieldArrayElement)element).field;
-            Object value = !isArrayElement ? field.getValue() : field.getValues()[((FieldArrayElement)element).index];
-
-            if (value instanceof cObject) {
-                // treat like cObject: resolve object to its fields
-                cObject object = (cObject)value;
-                if (!object.isFilledIn())
-                    object.safeLoad(); //FIXME return if failed!
-                if (!object.isFieldsFilledIn())
-                    object.safeLoadFields(); //FIXME return if failed!
+        try {
+            if (element instanceof cObject) {
+                // resolve object to its fields
+                cObject object = (cObject)element;
+                object.loadIfUnfilled();
+                object.loadFieldsIfUnfilled();
                 return groupFieldsOf(object);
             }
+            else if (element instanceof FieldGroup) {
+                // resolve field group to the fields it contains
+                return ((FieldGroup) element).fields;
+            }
+            else if (element instanceof Field && ((Field)element).isArray()) {
+                // resolve array field to individual array elements
+                Field field = (Field)element;
+                FieldArrayElement[] result = new FieldArrayElement[field.getValues().length];
+                for (int i = 0; i < result.length; i++)
+                    result[i] = new FieldArrayElement(field, i);
+                if (field.isCObject()) {
+                    for (Object value : field.getValues()) {  //TODO replace loop with controller bulk load operation!!!
+                        if (value != null) {
+                            ((cObject)value).load();
+                            ((cObject)value).loadFields();
+                        }
+                    }
+                }
+                return result;
+            }
+            else if (element instanceof Field || element instanceof FieldArrayElement) {
+                // resolve children of a field value
+                boolean isArrayElement = element instanceof FieldArrayElement;
+                Field field = !isArrayElement ? (Field)element : ((FieldArrayElement)element).field;
+                Object value = !isArrayElement ? field.getValue() : field.getValues()[((FieldArrayElement)element).index];
 
-            //TODO if struct, return its fields, etc
+                if (value instanceof cObject) {
+                    // treat like cObject: resolve object to its fields
+                    cObject object = (cObject)value;
+                    object.loadIfUnfilled();
+                    if (!object.isFieldsFilledIn())
+                        object.loadFields();
+                    return groupFieldsOf(object);
+                }
+
+                //TODO if struct, return its fields, etc
+            }
+            return new Object[0];
         }
-        return new Object[0];
+        catch (CommunicationException e) {
+            return new Object[] { new ErrorNotice(element, "Error loading content, try Refresh") };
+        }
     }
 
-    protected Object[] groupFieldsOf(cObject object) {
+    protected Object[] groupFieldsOf(cObject object) throws CommunicationException {
         //TODO observe ordering, possibly filtering!
         if (mode == Mode.CHILDREN) {
             cObject[] children = object.getChildObjects();
-            try {
-                object.getSimulation().loadUnfilledObjects(children);
-            }
-            catch (IOException e) {
-                e.printStackTrace();  //TODO how to handle exceptions properly...
-            }
+            object.getSimulation().loadUnfilledObjects(children);
             if (ordering == Ordering.ALPHABETICAL)
                 Arrays.sort(children = children.clone(), new ObjectNameComparator());
             return children;
@@ -282,10 +342,8 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             List<Object> result = new ArrayList<Object>();
             cObject pk = object;
             while (pk instanceof cPacket) {
-                if (!pk.isFilledIn())
-                    pk.safeLoad();
-                if (!pk.isFieldsFilledIn())
-                    pk.safeLoadFields();
+                pk.loadIfUnfilled();
+                pk.loadFieldsIfUnfilled();
 
                 // add its non-builtin fields
                 List<Field> fields = new ArrayList<Field>();
@@ -360,6 +418,8 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             return ((FieldArrayElement) element).field;
         else if (element instanceof FieldGroup)
             return ((FieldGroup) element).parent;
+        else if (element instanceof Notice)
+            return ((Notice) element).parent;
         else // note: cObject can only occur in this tree as root, so we must ignore cObject.getOwner() here!
             return null;
     }

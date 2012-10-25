@@ -1,9 +1,7 @@
 package org.omnetpp.simulation.actions;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
-import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
@@ -28,14 +26,18 @@ public class StopAction extends AbstractSimulationActionDelegate {
 
             controller.stop();
         }
-        catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
-            SimulationPlugin.logError(e);
+        catch (CommunicationException e) {
+            // nothing -- error dialog and logging is already taken care of in the lower layers
+        }
+        finally {
+            updateState();
         }
     }
 
     @Override
     public void updateState() {
-        setEnabled(getSimulationController().getUIState() == SimState.RUNNING);
+        SimState state = getSimulationController().getUIState();
+        boolean failure = getSimulation().isInFailureMode();
+        setEnabled(!failure && state == SimState.RUNNING);
     }
 }

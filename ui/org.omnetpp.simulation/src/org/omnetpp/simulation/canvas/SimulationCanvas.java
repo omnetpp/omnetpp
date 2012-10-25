@@ -41,6 +41,7 @@ import org.omnetpp.common.ui.CheckedTreeSelectionDialog2;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.figures.IInspectorFigure;
@@ -288,8 +289,13 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     public void refreshInspectors() {
-        for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()]))
-            inspectorPart.refresh();
+        for (IInspectorPart inspectorPart : inspectors.toArray(new IInspectorPart[inspectors.size()])) {
+            try {
+                inspectorPart.refresh();
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error refreshing inspector " + inspectorPart.toString(), e);
+            }
+        }
     }
 
     public void close(IInspectorPart inspectorPart) {
@@ -557,7 +563,13 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     protected void setCalloutsToSelection(ISelection selection, boolean allTheWayUp) {
         calloutSupport.removeAllCallouts();
         List<IInspectorPart> inspectors = SelectionUtils.getObjects(selection, IInspectorPart.class);
-        for (IInspectorPart inspector : inspectors)
-            calloutSupport.addCalloutFor(inspector, allTheWayUp);
+        for (IInspectorPart inspector : inspectors) {
+            try {
+                calloutSupport.addCalloutFor(inspector, allTheWayUp);
+            }
+            catch (CommunicationException e) {
+                // skip it
+            }
+        }
     }
 }

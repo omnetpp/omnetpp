@@ -1,9 +1,7 @@
 package org.omnetpp.simulation.actions;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
-import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
@@ -23,17 +21,22 @@ public class RefreshAction extends AbstractSimulationActionDelegate {
     public void run(IAction action) {
         try {
             SimulationController controller = getSimulationController();
+            if (controller.getSimulation().isInFailureMode())
+                controller.getSimulation().clearFailureMode(); // give it another chance
             controller.refreshStatus();
         }
-        catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error: " + e.toString());
-            SimulationPlugin.logError(e);
+        catch (CommunicationException e) {
+            // nothing -- error dialog and logging is already taken care of in the lower layers
+        }
+        finally {
+            updateState();
         }
     }
 
     @Override
     public void updateState() {
         SimState state = getSimulationController().getUIState();
-        setEnabled(state != SimState.DISCONNECTED && state != SimState.RUNNING);
+        boolean failure = getSimulation().isInFailureMode();
+        setEnabled(failure || (state != SimState.DISCONNECTED && state != SimState.RUNNING));
     }
 }

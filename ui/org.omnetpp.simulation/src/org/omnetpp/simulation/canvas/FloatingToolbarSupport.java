@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.actions.CloseAction;
@@ -273,10 +274,17 @@ public class FloatingToolbarSupport {
     }
 
     public void updateFloatingToolbarActions() {
-        if (toolbarActions != null)
-            for (IInspectorAction action : toolbarActions)
-                action.update();
+        if (toolbarActions != null) {
+            for (IInspectorAction action : toolbarActions) {
+                try {
+                    action.update();
+                } catch (Exception e) {
+                    SimulationPlugin.logError("Error updating action " + action.toString(), e);
+                }
+            }
+        }
     }
+
     protected void reattachFloatingToolbarToInspector() {
         Assert.isTrue(floatingToolbar != null);
 

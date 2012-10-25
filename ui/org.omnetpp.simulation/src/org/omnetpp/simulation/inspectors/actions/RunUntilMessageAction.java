@@ -1,9 +1,10 @@
 package org.omnetpp.simulation.inspectors.actions;
 
-import java.io.IOException;
-
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation.RunMode;
 import org.omnetpp.simulation.model.cMessage;
 
@@ -22,15 +23,19 @@ public class RunUntilMessageAction extends AbstractInspectorAction {
             cMessage message = getMessage();
             getSimulationController().runUntilMessage(RunMode.NORMAL, message);
         }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        catch (CommunicationException e) {
+            // nothing -- error dialog and logging is already taken care of in the lower layers
+        }
+        catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error: " + e.toString());
+            SimulationPlugin.logError(e);
         }
     }
 
     @Override
     public void update() {
-        setEnabled(getMessage() != null && getSimulationController().isSimulationOK());
+        boolean failure = getSimulationController().getSimulation().isInFailureMode();
+        setEnabled(!failure && getMessage() != null && getSimulationController().isSimulationOK());
     }
 
 }

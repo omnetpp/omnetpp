@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.omnetpp.common.displaymodel.IDisplayString;
 import org.omnetpp.ned.model.DisplayString;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation;
 
 /**
@@ -28,13 +29,21 @@ public class cComponent extends cObject {
         return componentType;
     }
 
+    /**
+     * Returns the component's fully qualified NED type name, or null if the
+     * information for the NED type could not be obtained.
+     */
     public String getNedTypeName() {
         checkState();
         if (componentType == null)
             return null;
-        if (!componentType.isFilledIn())
-            componentType.safeLoad();
-        return componentType.getFullName();
+        try {
+            componentType.loadIfUnfilled();
+            return componentType.getFullName();
+        }
+        catch (CommunicationException e) {
+            return null;
+        }
     }
 
     @Override
@@ -42,6 +51,8 @@ public class cComponent extends cObject {
         if (shortTypeName == null) {
             // computed here and cached; discarded on every refresh
             String nedTypeName = getNedTypeName();
+            if (nedTypeName == null)
+                return super.getShortTypeName() + "?"; // but do not cache, as module are rarely refreshed
             shortTypeName = !nedTypeName.contains(".") ? nedTypeName : StringUtils.substringAfterLast(nedTypeName, ".");
         }
         return shortTypeName;

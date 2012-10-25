@@ -2,6 +2,7 @@ package org.omnetpp.simulation.ui;
 
 import org.apache.commons.lang.StringUtils;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
 
@@ -19,8 +20,12 @@ public class ModulePathsMessageFilter implements IPredicate {
     public boolean matches(Object object) {
         cMessage msg = (cMessage) object;
         cModule module = msg.getArrivalModule();
-        if (!module.isFilledIn())
-            module.safeLoad();
+        try {
+            module.loadIfUnfilled();
+        }
+        catch (CommunicationException e) {
+            return false;  // assume it does not match
+        }
         String moduleFullPath = module.getFullPath();
 
         // check if moduleFullPath is the same (or prefix of) one of the filter module paths

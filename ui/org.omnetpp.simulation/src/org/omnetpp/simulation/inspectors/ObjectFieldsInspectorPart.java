@@ -25,6 +25,7 @@ import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.canvas.SelectionItem;
 import org.omnetpp.simulation.canvas.SelectionUtils;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.inspectors.actions.SetModeAction;
@@ -50,9 +51,6 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
 
     @Override
     protected Control createControl(Composite parent) {
-        if (!object.isFilledIn())
-            object.safeLoad(); // for getClassName() in next line
-
         frame = new Composite(parent, SWT.BORDER);
         frame.setSize(300, 200);
         frame.setLayout(new GridLayout(1, false));
@@ -153,9 +151,17 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
         super.refresh();
 
         if (!isDisposed()) {
-            String text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
-            label.setText(text);
-            label.setToolTipText(text); // because label text is usually not fully visible
+            try {
+                object.loadIfUnfilled();
+                String text = "(" + object.getShortTypeName() + ") " + object.getFullPath() + " - " + object.getInfo();
+                label.setText(text);
+                label.setToolTipText(text); // because label text is usually not fully visible
+            }
+            catch (CommunicationException e) {
+                String text = "(" + object.getClass().getSimpleName() + "?) n/a";
+                label.setText(text);
+                label.setToolTipText(text);
+            }
 
             viewer.refresh();
         }

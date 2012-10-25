@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -18,6 +17,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ConfigDescription;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
@@ -203,15 +203,18 @@ public class SetupIniConfigAction extends AbstractSimulationActionDelegate {
                 getSimulationCanvas().inspect(network);
             }
         }
-        catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error: " + e.toString());
-            SimulationPlugin.logError(e);
+        catch (CommunicationException e) {
+            // nothing -- error dialog and logging is already taken care of in the lower layers
+        }
+        finally {
+            updateState();
         }
     }
 
     @Override
     public void updateState() {
         SimState state = getSimulationController().getUIState();
-        setEnabled(state != SimState.DISCONNECTED && state != SimState.RUNNING);
+        boolean failure = getSimulation().isInFailureMode();
+        setEnabled(!failure && (state != SimState.DISCONNECTED && state != SimState.RUNNING));
     }
 }

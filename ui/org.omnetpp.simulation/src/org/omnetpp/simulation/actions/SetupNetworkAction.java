@@ -1,9 +1,6 @@
 package org.omnetpp.simulation.actions;
 
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
-import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
@@ -28,15 +25,15 @@ public class SetupNetworkAction extends AbstractSimulationActionDelegate {
 
             throw new RuntimeException("NOT IMPLEMENTED"); //TODO
         }
-        catch (Exception e) {
-            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Internal error: " + e.toString());
-            SimulationPlugin.logError(e);
+        finally {
+            updateState();
         }
     }
 
     @Override
     public void updateState() {
         SimState state = getSimulationController().getUIState();
-        setEnabled(state != SimState.DISCONNECTED && state != SimState.RUNNING);
+        boolean failure = getSimulation().isInFailureMode();
+        setEnabled(!failure && (state != SimState.DISCONNECTED && state != SimState.RUNNING));
     }
 }

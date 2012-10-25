@@ -1,8 +1,11 @@
 package org.omnetpp.simulation.inspectors.actions;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.SimulationUIConstants;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.model.cObject;
 
@@ -17,16 +20,37 @@ public class InspectParentAction extends AbstractInspectorAction {
 
     @Override
     public void run() {
-        cObject parent = getInspectorPart().getObject().getOwner();
-        if (parent != null) {
-            IInspectorContainer container = getInspectorContainer();
-            container.inspect(parent);
+        try {
+            cObject object = getInspectorPart().getObject();
+            object.loadIfUnfilled();
+            cObject parent = object.getOwner();
+            if (parent != null) {
+                IInspectorContainer container = getInspectorContainer();
+                container.inspect(parent);
+            }
+        }
+        catch (CommunicationException e) {
+            // nothing -- error dialog and logging is already taken care of in the lower layers
+        }
+        catch (Exception e) {
+            MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", "Error: " + e.toString());
+            SimulationPlugin.logError(e);
         }
     }
 
     @Override
     public void update() {
-        IInspectorPart inspector = getInspectorPart();
-        setEnabled(inspector != null && inspector.getObject().getOwner() != null);
+        try {
+            IInspectorPart inspector = getInspectorPart();
+            if (inspector == null)
+                setEnabled(false);
+            else {
+                cObject object = inspector.getObject();
+                object.loadIfUnfilled();
+                setEnabled(object.getOwner() != null);
+            }
+        } catch (CommunicationException e) {
+            setEnabled(false);
+        }
     }
 }

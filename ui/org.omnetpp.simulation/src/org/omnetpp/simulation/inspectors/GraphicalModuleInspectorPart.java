@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.inspectors;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +36,10 @@ import org.omnetpp.figures.anchors.CompoundModuleGateAnchor;
 import org.omnetpp.figures.anchors.GateAnchor;
 import org.omnetpp.figures.layout.CompoundModuleLayout;
 import org.omnetpp.ned.model.DisplayString;
-import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.canvas.SelectionItem;
 import org.omnetpp.simulation.canvas.SelectionUtils;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.MessageFigure;
@@ -97,24 +96,19 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     public GraphicalModuleInspectorPart(IInspectorContainer parent, cModule module) {
         super(parent, module);
 
-        if (!module.isFilledIn())
-            module.safeLoad();
-        if (!module.isFieldsFilledIn())
-            module.safeLoadFields();
-
         // mouse handling
         compoundModuleFigure.addMouseListener(new MouseListener() {
-            //@Override
+            @Override
             public void mouseDoubleClicked(MouseEvent me) {
                 handleMouseDoubleClick(me);
             }
 
-            //@Override
+            @Override
             public void mousePressed(MouseEvent me) {
                 handleMousePressed(me);
             }
 
-            //@Override
+            @Override
             public void mouseReleased(MouseEvent me) {
                 handleMouseReleased(me);
             }
@@ -196,7 +190,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         root.setLayoutManager(new TitleAndContentLayout()); // note: GridLayout has problems (it does not observe getMaximumSize() of children, and its getMinimumSize() returns getPreferredSize() i.e. it cannot be shrunk)
         root.setMinimumSize(new Dimension(20, 20));
 
-        labelFigure = new Label("n/a");
+        labelFigure = new Label();
         labelFigure.setLabelAlignment(PositionConstants.LEFT);
         labelFigure.setForegroundColor(ColorFactory.BLACK); // otherwise it would inherit border's color from parent
         root.add(labelFigure);
@@ -211,6 +205,11 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
         compoundModuleFigure = new CompoundModuleFigure();
         scalableFigure.add(compoundModuleFigure);
+
+        // set an initial display string, otherwise bad things (NPE, red background, etc) will happen
+        // due to poor CompoundModuleFigure defaults if a HTTP error occurs before we set the proper
+        // display string in refreshVisuals()
+        compoundModuleFigure.setDisplayString(new DisplayString(""));
 
         // work around slightly odd default behavior of scrollPane (scrollbars don't appear immediately when you shrink the window)
         scrollPane.addLayoutListener(new LayoutListener.Stub() {
@@ -405,48 +404,53 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
     public void refresh() {
         super.refresh();
         if (!isDisposed()) {
-            cModule module = (cModule) object;
             try {
-                // load submodules, gates, channels in as few calls as possible:
-                // module and submodules first
-                if (!module.isFilledIn())
-                    module.safeLoad();
-                module.getSimulation().loadUnfilledObjects(module.getSubmodules());
-
-                // all gates (needed for connections)
-                List<cGate> gateList = new ArrayList<cGate>();
-                for (cGate gate : module.getGates())
-                    if (!gate.isFilledIn())
-                        gateList.add(gate);
-                for (cModule submodule : module.getSubmodules())
-                    for (cGate gate : submodule.getGates())
-                        if (!gate.isFilledIn())
-                            gateList.add(gate);
-                module.getSimulation().loadObjects(gateList); // pre-filtered to unfilled objects
-
-                // channel objects
-                List<cChannel> channelList = new ArrayList<cChannel>();
-                for (cGate gate : gateList)
-                    if (gate.getChannel() != null && !gate.getChannel().isFilledIn())
-                        channelList.add(gate.getChannel());
-                module.getSimulation().loadObjects(channelList); // pre-filtered to unfilled objects
+                cModule module = (cModule) object;
+                preloadObjects(module);
+                refreshLabel();
+                refreshChildren();
+                refreshConnections();
+                refreshVisuals();
             }
-            catch (IOException e) {
-                //TODO properly handle... (e.g. close inspector?)
-                SimulationPlugin.logError(e);
+            catch (CommunicationException e) {
+                // try setting the label if it's empty, otherwise leave everything as it is
+                if (labelFigure.getText().equals(""))
+                    refreshLabel(); // this works even if module is unfilled
             }
-
-            refreshLabel();
-            refreshChildren();
-            refreshConnections();
-            refreshVisuals();
         }
+    }
+
+    protected void preloadObjects(cModule module) throws CommunicationException {
+        // load submodules, gates, channels in as few calls as possible:
+        // module and submodules first
+        module.loadIfUnfilled();
+        module.getSimulation().loadUnfilledObjects(module.getSubmodules());
+
+        // all gates (needed for connections)
+        List<cGate> gateList = new ArrayList<cGate>();
+        for (cGate gate : module.getGates())
+            if (!gate.isFilledIn())
+                gateList.add(gate);
+        for (cModule submodule : module.getSubmodules())
+            for (cGate gate : submodule.getGates())
+                if (!gate.isFilledIn())
+                    gateList.add(gate);
+        module.getSimulation().loadObjects(gateList); // pre-filtered to unfilled objects
+
+        // channel objects
+        List<cChannel> channelList = new ArrayList<cChannel>();
+        for (cGate gate : gateList)
+            if (gate.getChannel() != null && !gate.getChannel().isFilledIn())
+                channelList.add(gate.getChannel());
+        module.getSimulation().loadObjects(channelList); // pre-filtered to unfilled objects
     }
 
     protected void refreshLabel() {
         cModule module = (cModule) getObject();
-        String text = "(" + module.getShortTypeName() + ") " + module.getFullPath() + " [id=" + module.getId() + "]";
-        labelFigure.setText(text);
+        if (module.isFilledIn())
+            labelFigure.setText("(" + module.getShortTypeName() + ") " + module.getFullPath() + " [id=" + module.getId() + "]");
+        else
+            labelFigure.setText("(" + module.getClass().getSimpleName() + ") n/a"); //FIXME TODO ebbol egy utility fuggvenyt csinalni!!!!!!!
     }
 
     protected void refreshChildren() {
@@ -492,7 +496,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    protected void refreshConnections() {
+    protected void refreshConnections() throws CommunicationException {
         ArrayList<cGate> toBeRemoved = null;
         ArrayList<cGate> toBeAdded = null;
 
@@ -514,13 +518,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
             cModule module = i < submodules2.length ? submodules2[i] : parentModule;
             if (module==parentModule)
                 atParent = true;
-            try {
-                module.getSimulation().loadUnfilledObjects(module.getGates());
-            }
-            catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+            module.getSimulation().loadUnfilledObjects(module.getGates());
             for (cGate gate : module.getGates()) {
                 if (gate.getType()==(atParent ? cGate.Type.INPUT : cGate.Type.OUTPUT) && gate.getNextGate() != null) {
                     if (!connections.containsKey(gate)) {
@@ -556,7 +554,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    protected void refreshVisuals() {
+    protected void refreshVisuals() throws CommunicationException {
         cModule parentModule = (cModule) object;
         compoundModuleFigure.setDisplayString(getDisplayStringFrom(parentModule));
 
@@ -564,8 +562,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
         // refresh submodules
         for (cModule submodule : submodules.keySet()) {
-            if (!submodule.isFilledIn())
-                submodule.safeLoad();
+            submodule.loadIfUnfilled();
             SubmoduleFigureEx submoduleFigure = submodules.get(submodule);
             submoduleFigure.setDisplayString(scale, getDisplayStringFrom(submodule));
             submoduleFigure.setName(showNameLabels ? submodule.getFullName() : null);
@@ -576,8 +573,7 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         // refresh connections
         //FIXME this is very slow!!!! even when there are no display strings at all. ConnectionFigure is not caching the displaystring?
         for (cGate gate : connections.keySet()) {
-            if (!gate.isFilledIn())
-                gate.safeLoad();
+            gate.loadIfUnfilled();
             ConnectionFigure connectionFigure = connections.get(gate);
             connectionFigure.setDisplayString(getDisplayStringFrom(gate.getChannel())); // note: gate.getDisplayString() would implicitly create a cIdealChannel!
             connectionFigure.setArrowHeadEnabled(showArrowHeads);
@@ -587,11 +583,10 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         //FigureUtils.debugPrintRootFigureHierarchy(figure);
     }
 
-    protected IDisplayString getDisplayStringFrom(cComponent component) {
+    protected IDisplayString getDisplayStringFrom(cComponent component) throws CommunicationException {
         if (component == null)
             return EMPTY_DISPLAYSTRING;
-        if (!component.isFilledIn())
-            component.safeLoad();  //XXX maybe not here...
+        component.loadIfUnfilled();  //XXX maybe not here...
         return component.getDisplayString();
     }
 

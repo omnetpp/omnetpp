@@ -15,6 +15,7 @@ import org.omnetpp.simulation.controller.Anim.ComponentMethodEndEntry;
 import org.omnetpp.simulation.controller.Anim.EndSendEntry;
 import org.omnetpp.simulation.controller.Anim.MessageSendDirectEntry;
 import org.omnetpp.simulation.controller.Anim.MessageSendHopEntry;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
@@ -57,35 +58,40 @@ public class AnimationDirector {
     }
 
     public List<IAnimationPrimitive> getAnimationsForLastEvent(EventEntry event) {
-        Assert.isNotNull(event);
+        try {
+            Assert.isNotNull(event);
+            State state = new State();
+            List<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
 
-        State state = new State();
+            // Act One: animate current event (zero time duration)
+            for (Object o : event.logItems) {
+                if (o instanceof BeginSendEntry)
+                    doBeginSendEntry((BeginSendEntry)o, animationPrimitives, state);
+                else if (o instanceof EndSendEntry)
+                    doEndSendEntry((EndSendEntry)o, animationPrimitives, state);
+                else if (o instanceof MessageSendHopEntry)
+                    doSendHopEntry((MessageSendHopEntry)o, animationPrimitives, state);
+                else if (o instanceof MessageSendDirectEntry)
+                    doSendDirectEntry((MessageSendDirectEntry)o, animationPrimitives, state);
+                else if (o instanceof ComponentMethodBeginEntry)
+                    doMethodBeginEntry((ComponentMethodBeginEntry)o, animationPrimitives, state);
+                else if (o instanceof ComponentMethodEndEntry)
+                    doMethodEndEntry((ComponentMethodEndEntry)o, animationPrimitives, state);
+                else
+                    /*skip*/;
+            }
+            Assert.isTrue(state.messageBeingSent == null, "missing EndSend");
+            Assert.isTrue(state.methodCallStack.isEmpty(), "unterminated ComponentMethodBegin");
 
-        List<IAnimationPrimitive> animationPrimitives = new ArrayList<IAnimationPrimitive>();
+            // Act Two: animate simulation time duration up to the next event: move messages that are underway, etc.
+            state.csimulation.getMessageQueue();
+            //TODO
 
-        // Act One: animate current event (zero time duration)
-        for (Object o : event.logItems) {
-            if (o instanceof BeginSendEntry)
-                doBeginSendEntry((BeginSendEntry)o, animationPrimitives, state);
-            else if (o instanceof EndSendEntry)
-                doEndSendEntry((EndSendEntry)o, animationPrimitives, state);
-            else if (o instanceof MessageSendHopEntry)
-                doSendHopEntry((MessageSendHopEntry)o, animationPrimitives, state);
-            else if (o instanceof MessageSendDirectEntry)
-                doSendDirectEntry((MessageSendDirectEntry)o, animationPrimitives, state);
-            else if (o instanceof ComponentMethodBeginEntry)
-                doMethodBeginEntry((ComponentMethodBeginEntry)o, animationPrimitives, state);
-            else if (o instanceof ComponentMethodEndEntry)
-                doMethodEndEntry((ComponentMethodEndEntry)o, animationPrimitives, state);
-            else
-                /*skip*/;
+            return animationPrimitives;
         }
-        Assert.isTrue(state.messageBeingSent == null, "missing EndSend");
-        Assert.isTrue(state.methodCallStack.isEmpty(), "unterminated ComponentMethodBegin");
-
-        // Act Two: animate simulation time duration up to the next event: move messages that are underway, etc.
-        state.csimulation.getMessageQueue();
-        return animationPrimitives;
+        catch (CommunicationException e) {
+            return new ArrayList<IAnimationPrimitive>(); // forget animation if we cannot even talk to the simulation process!
+        }
     }
 
     protected void doBeginSendEntry(BeginSendEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
@@ -98,7 +104,7 @@ public class AnimationDirector {
         state.messageBeingSent = null;
     }
 
-    protected void doSendHopEntry(MessageSendHopEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
+    protected void doSendHopEntry(MessageSendHopEntry e, List<IAnimationPrimitive> animationPrimitives, State state) throws CommunicationException {
         Assert.isTrue(state.messageBeingSent != null, "missing BeginSend");
         cGate srcGate = e.srcGate;
         loadContextualObjects(srcGate);
@@ -124,7 +130,7 @@ public class AnimationDirector {
         }
     }
 
-    protected void doSendDirectEntry(MessageSendDirectEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
+    protected void doSendDirectEntry(MessageSendDirectEntry e, List<IAnimationPrimitive> animationPrimitives, State state) throws CommunicationException {
         Assert.isTrue(state.messageBeingSent != null, "missing BeginSend");
         cModule srcModule = e.srcModule;
         loadContextualObjects(srcModule);
@@ -157,7 +163,7 @@ public class AnimationDirector {
         }
     }
 
-    protected void doMethodBeginEntry(ComponentMethodBeginEntry e, List<IAnimationPrimitive> animationPrimitives, State state) {
+    protected void doMethodBeginEntry(ComponentMethodBeginEntry e, List<IAnimationPrimitive> animationPrimitives, State state) throws CommunicationException {
         cModule srcModule = state.csimulation.getModuleById(e.srcModuleId);
         cModule destModule = state.csimulation.getModuleById(e.destModuleId);
 
@@ -205,16 +211,14 @@ public class AnimationDirector {
         }
     }
 
-    protected String makeMessageLabel(cMessage message) {
-        if (!message.isFilledIn())
-            message.safeLoad();
+    protected String makeMessageLabel(cMessage message) throws CommunicationException {
+        message.loadIfUnfilled();
         return "(" + message.getClassName() + ")" + message.getFullName();
     }
 
-    protected List<AnimStep> findSendDirectPath(cModule srcModule, cModule destModule) {
+    protected List<AnimStep> findSendDirectPath(cModule srcModule, cModule destModule) throws CommunicationException {
         List<AnimStep> path = new ArrayList<AnimStep>();
-        if (!destModule.isFilledIn())
-            destModule.safeLoad();
+        destModule.loadIfUnfilled();
         if (destModule.isAncestorModuleOf(srcModule)) {
             for (cModule m = srcModule; m != destModule; m = m.getParentModule())
                 path.add(new AnimStep(m, null));
@@ -238,23 +242,18 @@ public class AnimationDirector {
         return path;
     }
 
-    protected void loadContextualObjects(cGate gate) {
-        if (!gate.isFilledIn())
-            gate.safeLoad();
+    protected void loadContextualObjects(cGate gate) throws CommunicationException {
+        gate.loadIfUnfilled();
         cModule module = gate.getOwnerModule();
-        if (!module.isFilledIn())
-            module.safeLoad();
+        module.loadIfUnfilled();
         cModule parentModule = module.getParentModule();
-        if (!parentModule.isFilledIn())
-            parentModule.safeLoad();
+        parentModule.loadIfUnfilled();
     }
 
-    protected void loadContextualObjects(cModule module) {
-        if (!module.isFilledIn())
-            module.safeLoad();
+    protected void loadContextualObjects(cModule module) throws CommunicationException {
+        module.loadIfUnfilled();
         cModule parentModule = module.getParentModule();
-        if (!parentModule.isFilledIn())
-            parentModule.safeLoad();
+        parentModule.loadIfUnfilled();
     }
 
 }

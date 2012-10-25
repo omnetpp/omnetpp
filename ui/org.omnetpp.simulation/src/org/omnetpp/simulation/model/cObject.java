@@ -1,10 +1,11 @@
 package org.omnetpp.simulation.model;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.omnetpp.common.util.StringUtils;
+import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation;
 
 
@@ -46,6 +47,9 @@ public class cObject {
         return objectId;
     }
 
+    /**
+     * Note: deleted objects are also 'not filled in'.
+     */
     public boolean isFilledIn() {
         return isFilledIn;
     }
@@ -82,9 +86,17 @@ public class cObject {
             childObjects[i] = simulation.getObjectByJSONRef((String) jsonChildren.get(i));
     }
 
-    public void load() throws IOException {
-        if (isDisposed)
-            throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
+    public void loadIfUnfilled() throws CommunicationException {
+        if (!isFilledIn())
+            load();
+    }
+
+    public void load() throws CommunicationException {
+        if (isDisposed) {
+            Assert.isTrue(simulation.isInFailureMode()); // otherwise it should not occur!
+            // Note: we use CommunicationException (not InvalidSimulationObjectException) because we want it to be a *checked* exception, and handled together with other CommunicationExceptions
+            throw new CommunicationException("refusing to load object " + getObjectId() + "-" + getClass().getSimpleName() + " because it is already deleted");
+        }
         simulation.loadObject(this);
     }
 
@@ -102,37 +114,17 @@ public class cObject {
         fields = null;
     }
 
-    //TODO why not introduce a loadIfNeeded() method, to spare the "if"'s???
-    public void safeLoad() {
-        // convenience method
-        try {
-            load();
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+    public void loadFieldsIfUnfilled() throws CommunicationException {
+        if (!isFieldsFilledIn())
+            loadFields();
+        descriptor.loadIfUnfilled(); // for convenience -- will be needed for accessing the fields anyway
     }
 
-    //TODO should load base AND fields together! (unless base is already loaded)
-    public void loadFields() throws IOException {
+    public void loadFields() throws CommunicationException {
         if (isDisposed)
             throw new InvalidSimulationObjectException("object " + getObjectId() + "-" + getClass().getSimpleName() + " is already deleted");
-        if (!descriptor.isFilledIn())
-            simulation.loadObject(descriptor); // for convenience -- will be needed for accessing the fields anyway
+        descriptor.loadIfUnfilled(); // for convenience -- will be needed for accessing the fields anyway
         simulation.loadObjectFields(this);
-    }
-
-    //TODO should load base AND fields together! (unless base is already loaded)
-    public void safeLoadFields() {
-        // convenience method
-        try {
-            loadFields();
-        }
-        catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     @SuppressWarnings("rawtypes")
@@ -173,6 +165,9 @@ public class cObject {
         isFieldsFilledIn = true;
     }
 
+    /**
+     * Note: deleted objects are also 'not filled in'.
+     */
     public boolean isFieldsFilledIn() {
         return isFieldsFilledIn;
     }
@@ -199,6 +194,7 @@ public class cObject {
 
     public void markAsDisposed() {
         isDisposed = true;
+        isFilledIn = isFieldsFilledIn = false;
         clearReferences(); // allow other objects to be garbage collected
     }
 
@@ -215,8 +211,16 @@ public class cObject {
         return className;
     }
 
+    /**
+     * Utility function: it returns a short type name for the object suitable
+     * for displaying on the GUI, doing best effort. For most objects it returns
+     * the C++ class name; for modules and channels, it tries to obtain and
+     * return the NED type name without package. If the NED type cannot be
+     * obtained, the method falls back to the C++ class name.
+     */
     public String getShortTypeName() {
-        return getClassName();  // and for modules and channels, it will return the NED type name without package
+        String className = getClassName();
+        return !className.contains("::") ? className : StringUtils.substringAfterLast(className, "::"); // remove C++ namespace qualifiers
     }
 
     public String getIcon() {
