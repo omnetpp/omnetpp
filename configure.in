@@ -884,7 +884,7 @@ AC_CHECK_PROGS(JRE, $JRE java, nope)
 AC_CHECK_PROGS(PRIVATE_JRE, $PRIVATE_JRE ide/jre/bin/java, nope)
 if test "$JRE" = nope -a "$PRIVATE_JRE" = nope; then
    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES  JRE (recommended)"
-   AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.5 or later. Please install it before configuring])
+   AC_MSG_WARN([Cannot find a suitable Java Runtime Environment - The IDE requires JRE 1.6 or later. Please install it before configuring])
 fi
 
 #----------------------
@@ -1246,23 +1246,26 @@ echo "#define OMNETPP_EDITION \"$OMNETPP_EDITION\"" >>ver.h
 if test -d ide ; then
   if test ! -d ide/configuration ; then
     echo Configuring the IDE...
-    cp -r ide/linux/* ide
     case $PLATFORM in
     win32.x86)
         cp -r ide/win32/* ide
         echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
         ;;
     linux.x86_64)
         cp -r ide/linux64/* ide
         echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
         ;;
     linux.x86)
         cp -r ide/linux/* ide
         echo osgi.instance.area.default=../samples >>ide/configuration/config.ini
+        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
         ;;
     macosx)
         cp -r ide/macosx/* ide
         echo osgi.instance.area.default=../../../../samples >>ide/configuration/config.ini
+        rm -rf ide/win32 ide/linux ide/linux64 ide/macosx
         ;;
     *)
         echo IDE is supported only on: Linux 32/64bit, Windows 32bit, MacOS X Intel. Not configured.
