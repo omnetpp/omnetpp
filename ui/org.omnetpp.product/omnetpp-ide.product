@@ -3,6 +3,9 @@
 
 <product name="OMNeT++ IDE" uid="org.omnetpp.ide.product" id="org.omnetpp.main.product" application="org.eclipse.ui.ide.workbench" version="4.3.0.qualifier" useFeatures="true" includeLaunchers="true">
 
+   <aboutInfo>
+      <image path="/org.omnetpp.main.omnetpp/icons/about-image.png"/>
+   </aboutInfo>
 
    <configIni use="default">
    </configIni>
@@ -13,7 +16,7 @@
 -XX:MaxPermSize=192m</vmArgs>
    </launcherArgs>
 
-   <windowImages/>
+   <windowImages i16="/org.omnetpp.main/icons/logo16.png" i32="/org.omnetpp.main/icons/logo32.png" i48="/org.omnetpp.main/icons/logo48.png" i64="/org.omnetpp.main/icons/logo64.png" i128="/org.omnetpp.main/icons/logo128.png"/>
 
    <splash
       location="org.omnetpp.main.omnetpp"
@@ -30,6 +33,7 @@
       </win>
    </launcher>
 
+   <intro introId="org.eclipse.ui.intro.universal"/>
 
    <vm>
    </vm>
@@ -39,7 +43,7 @@
         <text>
    ACADEMIC PUBLIC LICENSE
 
-                    Copyright (C) 2003, 2010 Andras Varga
+                    Copyright (C) 2003, 2012 Andras Varga
 
 
                                 Preamble
