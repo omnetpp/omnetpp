@@ -76,13 +76,6 @@ import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
  *
  * @author Andras
  */
-//TODO better icons for animation controls
-//TODO when playing, the "Play" or "Play backward" icon should remain pushed!
-//TODO initial module creations should NOT be animated at all! (they are NOT part of initialize() but take place before that, as part of setupNetwork())
-//TODO StepForward: change to "StepForwardToNextEvent" from "NextAnimationChange"
-//TODO why animation toolbar cannot mirror the simulation toolbar, only with green buttons?
-//TODO toolbar icon: "tie editor lifetime to simulation process lifetime" ("terminate process when editor closes, and vice versa")
-//TODO an "Attach To" dialog that lists simulation processes on the given host (scans ports)
 public class SimulationEditor extends EditorPart implements /*TODO IAnimationCanvasProvider,*/ ISimulationUICallback {
     public static final String CONTEXT_SIMULATION = "org.omnetpp.context.simulation";
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
@@ -511,6 +504,14 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     public HoverSupport getHoverSupport() {
         return hoverSupport;
+    }
+
+    public void addSimulationStateListener(ISimulationStateListener listener) {
+        simulationController.addSimulationStateListener(listener);
+    }
+
+    public void removeSimulationStateListener(ISimulationStateListener listener) {
+        simulationController.removeSimulationStateListener(listener);
     }
 
     protected void updateStatusDisplay() {

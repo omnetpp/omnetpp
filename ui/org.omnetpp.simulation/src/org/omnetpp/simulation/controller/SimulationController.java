@@ -493,7 +493,7 @@ public class SimulationController implements ISimulationCallback {
 
     @Override
     public void simulationProcessExited() {
-        // this comes is a background thread, but listeners are typically UI related
+        // this comes in a background thread, but listeners are typically UI related
         DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
             @Override
             public void run() {
