@@ -5,6 +5,9 @@
 
    <aboutInfo>
       <image path="/org.omnetpp.main.omnetpp/icons/about-image.png"/>
+      <text>
+         %aboutText
+      </text>
    </aboutInfo>
 
    <configIni use="default">

@@ -176,7 +176,6 @@
     <target name="create-repo">
         <p2.mirror source="file:${buildDirectory}/buildRepo" destination="${updateRepo}" description="OMNeT++ updates">
           <iu id="${main_feature_group}" />
-          <iu id="org.omnetpp.ide.source.feature.group" />
           <slicingOptions includeFeatures="true" followStrict="true"/>
         </p2.mirror>
     </target>
