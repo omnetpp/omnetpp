@@ -25,6 +25,8 @@
 #ifdef _WIN32
 #include <direct.h>
 #include <stdlib.h>
+#else
+#include <unistd.h>
 #endif
 
 #include "../common/ver.h"
