@@ -4,8 +4,10 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.CommunicationException;
+import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
+import org.omnetpp.simulation.model.cObject;
 
 /**
  * The Rebuild Network action.
@@ -30,6 +32,9 @@ public class RebuildNetworkAction extends AbstractSimulationActionDelegate {
             }
 
             controller.rebuildNetwork();
+
+            cObject network = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SYSTEMMODULE);
+            getSimulationCanvas().inspect(network);
         }
         catch (CommunicationException e) {
             // nothing -- error dialog and logging is already taken care of in the lower layers
