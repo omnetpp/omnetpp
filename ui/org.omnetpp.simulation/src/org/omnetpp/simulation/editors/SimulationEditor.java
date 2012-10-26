@@ -476,6 +476,10 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationController = null;
     }
 
+    public boolean isDisposed() {
+        return simulationController == null;  //XXX
+    }
+
     @Override
     public void setFocus() {
         simulationCanvas.setFocus();

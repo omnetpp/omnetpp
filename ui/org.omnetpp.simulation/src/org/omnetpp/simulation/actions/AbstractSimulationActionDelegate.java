@@ -64,11 +64,11 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
             registerInContributor(action);
         }
 
-        if (simulationEditor != null)
-            simulationEditor.getSimulationController().removeSimulationStateListener(listener);
+        if (simulationEditor != null && !simulationEditor.isDisposed())  //XXX action will hold on to dead editors until you switch to another simulation editor!!!
+            simulationEditor.removeSimulationStateListener(listener);
         simulationEditor = (SimulationEditor) targetEditor;
         if (simulationEditor != null)
-            simulationEditor.getSimulationController().addSimulationStateListener(listener);
+            simulationEditor.addSimulationStateListener(listener);
     }
 
     protected abstract void registerInContributor(IAction action);
