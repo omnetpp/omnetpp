@@ -11,7 +11,6 @@ import org.eclipse.swt.graphics.Color;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.EventEntry;
 import org.omnetpp.simulation.controller.LogBuffer;
-import org.omnetpp.simulation.controller.LogBuffer.ILogBufferChangedListener;
 import org.omnetpp.simulation.ui.ITextChangeListener;
 import org.omnetpp.simulation.ui.ITextViewerContentProvider;
 
@@ -35,13 +34,21 @@ public class ModuleOutputContentProvider implements ITextViewerContentProvider {
         this.logBuffer = logBuffer;
         this.linesProvider = labelProvider;
 
-        logBuffer.addChangeListener(new ILogBufferChangedListener() {
-            @Override
-            public void changed(LogBuffer logBuffer) {
-                invalidateIndex();
-                fireTextChangeNotification();
-            }
-        });
+//        logBuffer.addChangeListener(new ILogBufferChangedListener() {
+//            @Override
+//            public void changed(LogBuffer logBuffer) {
+//                invalidateIndex();
+//                fireTextChangeNotification();
+//            }
+//        });
+    }
+
+    public LogBuffer getLogBuffer() {
+        return logBuffer;
+    }
+
+    public IEventEntryLinesProvider getLinesProvider() {
+        return linesProvider;
     }
 
     public void setFilter(IEventEntryFilter filter) {
@@ -56,7 +63,12 @@ public class ModuleOutputContentProvider implements ITextViewerContentProvider {
         return filter;
     }
 
-    public void invalidateIndex() {
+    public void refresh() {
+        invalidateIndex();
+        fireTextChangeNotification();
+    }
+
+    protected void invalidateIndex() {
         lineCount = -1;
         entryStartLineNumbers = null;
     }

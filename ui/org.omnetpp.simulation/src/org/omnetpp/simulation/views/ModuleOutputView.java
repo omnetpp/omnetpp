@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -11,12 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
@@ -33,26 +29,20 @@ import org.omnetpp.simulation.ui.TextViewer;
  *
  * @author Andras
  */
-//TODO when view is closed, it should deregister its listener from LogBuffer!!! (see ModuleOutputContent's ctor)
-public class ModuleOutputView extends ViewWithMessagePart {
+public class ModuleOutputView extends ViewWithMessagePart implements ISimulationEditorChangeListener, ISimulationStateListener, ISelectionChangedListener {
     // note: view ID is defined in IConstants.java
     protected TextViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
     protected StringTextViewerContentProvider BLANK_TEXT_CONTENT = new StringTextViewerContentProvider("<blank text content>\n"); //XXX
 
-    protected SimulationEditor associatedSimulationEditor;
-    protected IPartListener partListener;
-
-    protected ISimulationStateListener simulationListener;
-    protected ISelectionChangedListener selectionChangeListener;
-
+    protected SimulationEditorProxy simulationEditorProxy;
 
     /**
      * This is a callback that will allow us to create the viewer and initialize it.
      */
     public Control createViewControl(Composite parent) {
         viewer = new TextViewer(parent, SWT.V_SCROLL);
-        viewer.setContent(BLANK_TEXT_CONTENT);
+        viewer.setContentProvider(BLANK_TEXT_CONTENT);
         viewer.setFont(JFaceResources.getTextFont());
 
         // create context menu
@@ -68,135 +58,22 @@ public class ModuleOutputView extends ViewWithMessagePart {
             }
         });
 
-        // listen on editor changes
-        partListener = new IPartListener() {
-            public void partActivated(IWorkbenchPart part) {
-                if (part instanceof IEditorPart)
-                    editorActivated((IEditorPart) part);
-            }
-
-            public void partBroughtToTop(IWorkbenchPart part) {
-            }
-
-            public void partClosed(IWorkbenchPart part) {
-                if (part instanceof IEditorPart)
-                    editorClosed((IEditorPart) part);
-            }
-
-            public void partDeactivated(IWorkbenchPart part) {
-            }
-
-            public void partOpened(IWorkbenchPart part) {
-            }
-        };
-        getSite().getPage().addPartListener(partListener);  //TODO unhookListeners() etc -- see PinnableView!
-
-        simulationListener = new ISimulationStateListener() {
-            @Override
-            public void simulationStateChanged(final SimulationController controller) {
-                DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ModuleOutputView.this.simulationStateChanged(controller);
-                    }
-                });
-            }
-        };
-
-        selectionChangeListener = new ISelectionChangedListener() {
-            @Override
-            public void selectionChanged(SelectionChangedEvent e) {
-                System.out.println("module output view: got selection change, new selection: " + e.getSelection());  //TODO
-                if (e.getSelection() instanceof IStructuredSelection) {
-                    List<cModule> selectedModules = SelectionUtils.getObjects(e.getSelection(), cModule.class);
-                    String[] modulePaths = new String[selectedModules.size()];
-                    for (int i = 0; i < modulePaths.length; i++)
-                        modulePaths[i] = selectedModules.get(i).getFullPath();
-                    ModuleOutputContentProvider moduleOutputContentProvider = (ModuleOutputContentProvider)viewer.getContent();
-                    moduleOutputContentProvider.setFilter(new ModulePathsEventEntryFilter(modulePaths));
-                }
-            }
-        };
+        simulationEditorProxy = new SimulationEditorProxy();
+        simulationEditorProxy.addSimulationEditorChangeListener(this);
+        simulationEditorProxy.addSimulationStateListener(this);
+        simulationEditorProxy.addSelectionChangedListener(this);
+        //or to follow the global selection: getSite().getPage().getWorkbenchWindow().getSelectionService().addSelectionListener(this);
 
         // associate ourselves with the current simulation editor
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
-                SimulationEditor editor = getActiveSimulationEditor();
-                if (editor != null)
-                    associateWithEditor(editor);
-                else
-                    showMessage("No associated simulation.");
+                if (!isDisposed())
+                    refresh();
             }
         });
 
         return viewer;
-    }
-
-    protected void simulationStateChanged(SimulationController controller) {
-        if (controller.getUIState() == SimState.DISCONNECTED)
-            showMessage("No simulation process.");
-        else {
-            hideMessage();
-            if (!(viewer.getContent() instanceof ModuleOutputContentProvider))
-                viewer.setContent(new ModuleOutputContentProvider(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider()));
-            viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
-            viewer.refresh();
-        }
-    }
-
-    protected void editorActivated(IEditorPart editor) {
-        if (editor != associatedSimulationEditor && editor instanceof SimulationEditor)
-            associateWithEditor((SimulationEditor)editor);
-    }
-
-    protected void editorClosed(IEditorPart editor) {
-        if (editor == associatedSimulationEditor)
-            disassociateFromEditor();
-    }
-
-    protected void associateWithEditor(SimulationEditor editor) {
-        associatedSimulationEditor = editor;
-
-        SimulationController controller = associatedSimulationEditor.getSimulationController();
-        controller.addSimulationStateListener(simulationListener);
-
-        associatedSimulationEditor.getSite().getSelectionProvider().addSelectionChangedListener(selectionChangeListener);
-
-        if (controller.getUIState() == SimState.DISCONNECTED) {
-            showMessage("No simulation process.");
-        }
-        else {
-            hideMessage();
-            ModuleOutputContentProvider content = new ModuleOutputContentProvider(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider());
-            viewer.setContent(content);
-            viewer.setCaretPosition(viewer.getContent().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
-            viewer.refresh();
-        }
-    }
-
-    protected void disassociateFromEditor() {
-        associatedSimulationEditor.getSimulationController().removeSimulationStateListener(simulationListener);
-        associatedSimulationEditor.getSite().getSelectionProvider().removeSelectionChangedListener(selectionChangeListener);
-        associatedSimulationEditor = null;
-        viewer.setContent(BLANK_TEXT_CONTENT);
-        viewer.refresh();
-
-        showMessage("No associated simulation.");
-    }
-
-    protected SimulationEditor getActiveSimulationEditor() {
-        IWorkbenchPartSite site = getSite();
-        IWorkbenchPage page = site==null ? null : site.getWorkbenchWindow().getActivePage();
-        if (page != null) {
-            if (page.getActiveEditor() instanceof SimulationEditor)
-                return (SimulationEditor)page.getActiveEditor();
-            // no active simulation editor; just return the first one we find
-            for (IEditorReference ref : page.getEditorReferences())
-                if (ref.getEditor(false) instanceof SimulationEditor)
-                    return (SimulationEditor)ref.getEditor(false);
-        }
-        return null;
     }
 
     /**
@@ -207,9 +84,59 @@ public class ModuleOutputView extends ViewWithMessagePart {
     }
 
     @Override
+    public void associatedSimulationEditorChanged(SimulationEditor editor) {
+        refresh();
+    }
+
+    public void simulationStateChanged(SimulationController controller) {
+        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isDisposed())
+                    refresh();
+            }
+        });
+    }
+
+    public void refresh() {
+        SimulationEditor editor = simulationEditorProxy.getAssociatedSimulationEditor();
+        SimulationController controller = (editor == null) ? null : editor.getSimulationController();
+        if (controller == null || controller.getUIState() == SimState.DISCONNECTED) {
+            showMessage("No simulation process.");
+            viewer.setContentProvider(BLANK_TEXT_CONTENT);
+            viewer.refresh();
+        }
+        else {
+            hideMessage();
+            if (!(viewer.getContentProvider() instanceof ModuleOutputContentProvider) ||
+                    ((ModuleOutputContentProvider)viewer.getContentProvider()).getLogBuffer() != controller.getSimulation().getLogBuffer())
+                viewer.setContentProvider(new ModuleOutputContentProvider(controller.getSimulation().getLogBuffer(), new EventEntryLinesProvider()));
+            ((ModuleOutputContentProvider)viewer.getContentProvider()).refresh();
+            viewer.setCaretPosition(viewer.getContentProvider().getLineCount()-1, 0);  // "go to end"  FIXME but not if caret has been moved by user somewhere else!
+            viewer.refresh();
+        }
+    }
+
+    @Override
+    public void selectionChanged(SelectionChangedEvent e) {
+        ISelection selection = e.getSelection();
+        Debug.println("module output view: got selection change, new selection: " + selection);
+        if (selection instanceof IStructuredSelection) {
+            // update the module filter
+            List<cModule> selectedModules = SelectionUtils.getObjects(selection, cModule.class);
+            String[] modulePaths = new String[selectedModules.size()];
+            for (int i = 0; i < modulePaths.length; i++)
+                modulePaths[i] = selectedModules.get(i).getFullPath();
+            ModuleOutputContentProvider moduleOutputContentProvider = (ModuleOutputContentProvider)viewer.getContentProvider();
+            moduleOutputContentProvider.setFilter(new ModulePathsEventEntryFilter(modulePaths));
+        }
+    }
+
+    @Override
     public void dispose() {
-        if (associatedSimulationEditor != null)
-            associatedSimulationEditor.getSimulationController().removeSimulationStateListener(simulationListener);
+        simulationEditorProxy.dispose();
+        simulationEditorProxy = null;
         super.dispose();
     }
+
 }

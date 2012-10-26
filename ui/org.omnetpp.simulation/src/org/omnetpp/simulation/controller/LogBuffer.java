@@ -14,13 +14,12 @@ import org.omnetpp.simulation.SimulationPlugin;
  *
  * @author Andras
  */
-//TODO LogBuffer should notify ModuleOutputContent when it changes!
 //FIXME making it possible to change module name and parent after creation is a REALLY BAD IDEA -- makes our job much more difficult in the IDE!!!
 public class LogBuffer {
     private List<EventEntry> eventEntries = new ArrayList<EventEntry>();
     private ListenerList changeListeners = new ListenerList();
 
-    public interface ILogBufferChangedListener {
+    public interface ILogBufferChangedListener {  //XXX seems to be unused now -- ModuleOutputView uses SimulationStateListener
         void changed(LogBuffer logBuffer);
     }
 

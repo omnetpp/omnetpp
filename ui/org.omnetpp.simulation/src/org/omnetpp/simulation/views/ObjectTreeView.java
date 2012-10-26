@@ -1,6 +1,5 @@
 package org.omnetpp.simulation.views;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -10,20 +9,10 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.omnetpp.common.ui.HoverInfo;
-import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
@@ -35,21 +24,16 @@ import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
-import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 
 /**
  *
  * @author Andras
  */
 //FIXME hasznaljuk a sajat hoverSupportunkat, ne az editoret!!! (forget() nem megy!!!)
-public class ObjectTreeView extends ViewWithMessagePart {
+public class ObjectTreeView extends ViewWithMessagePart implements ISimulationEditorChangeListener, ISimulationStateListener {
     // note: view ID is defined in IConstants.java
     protected ObjectFieldsViewer viewer;
-
-    private SimulationEditor associatedSimulationEditor;
-    private IPartListener partListener;
-
-    private ISimulationStateListener simulationListener;
+    protected SimulationEditorProxy simulationEditorProxy;
 
     /**
      * This is a callback that will allow us to create the viewer and initialize it.
@@ -66,6 +50,7 @@ public class ObjectTreeView extends ViewWithMessagePart {
         contextMenuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
+                SimulationEditor associatedSimulationEditor = simulationEditorProxy.getAssociatedSimulationEditor();
                 associatedSimulationEditor.populateContextMenu(contextMenuManager, viewer.getSelection());
             }
         });
@@ -74,8 +59,10 @@ public class ObjectTreeView extends ViewWithMessagePart {
         viewer.getTreeViewer().addDoubleClickListener(new IDoubleClickListener() {
             public void doubleClick(DoubleClickEvent event) {
                 Object element = ((IStructuredSelection)event.getSelection()).getFirstElement();
-                if (element instanceof cObject)
+                if (element instanceof cObject) {
+                    SimulationEditor associatedSimulationEditor = simulationEditorProxy.getAssociatedSimulationEditor();
                     associatedSimulationEditor.openInspector((cObject)element);
+                }
             }
         });
 
@@ -87,50 +74,16 @@ public class ObjectTreeView extends ViewWithMessagePart {
             }
         });
 
-        // listen on editor changes
-        partListener = new IPartListener() {
-            public void partActivated(IWorkbenchPart part) {
-                if (part instanceof IEditorPart)
-                    editorActivated((IEditorPart) part);
-            }
-
-            public void partBroughtToTop(IWorkbenchPart part) {
-            }
-
-            public void partClosed(IWorkbenchPart part) {
-                if (part instanceof IEditorPart)
-                    editorClosed((IEditorPart) part);
-            }
-
-            public void partDeactivated(IWorkbenchPart part) {
-            }
-
-            public void partOpened(IWorkbenchPart part) {
-            }
-        };
-        getSite().getPage().addPartListener(partListener);  //TODO unhookListeners() etc -- see PinnableView!
-
-        simulationListener = new ISimulationStateListener() {
-            @Override
-            public void simulationStateChanged(final SimulationController controller) {
-                DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ObjectTreeView.this.simulationStateChanged(controller);
-                    }
-                });
-            }
-        };
+        simulationEditorProxy = new SimulationEditorProxy();
+        simulationEditorProxy.addSimulationEditorChangeListener(this);
+        simulationEditorProxy.addSimulationStateListener(this);
 
         // associate ourselves with the current simulation editor
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
-                SimulationEditor editor = getActiveSimulationEditor();
-                if (editor == null)
-                    showMessage("No associated simulation.");
-                else if (editor != associatedSimulationEditor)
-                    associateWithEditor(editor);
+                if (!isDisposed())
+                    refresh();
             }
         });
 
@@ -146,87 +99,6 @@ public class ObjectTreeView extends ViewWithMessagePart {
         return super.getAdapter(adapter);
     }
 
-    protected void simulationStateChanged(SimulationController controller) {
-        if (controller.getUIState() == SimState.DISCONNECTED)
-            showMessage("No simulation process.");
-        else {
-            hideMessage();
-
-            if (controller.getSimulation().hasRootObjects()) {
-                cObject input = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
-                if (!input.equals(viewer.getInput()))
-                    viewer.setInput(input);
-            }
-
-            viewer.refresh();
-        }
-    }
-
-    protected void editorActivated(IEditorPart editor) {
-        if (editor != associatedSimulationEditor && editor instanceof SimulationEditor)
-            associateWithEditor((SimulationEditor)editor);
-    }
-
-    protected void editorClosed(IEditorPart editor) {
-        if (editor == associatedSimulationEditor)
-            disassociateFromEditor();
-    }
-
-    protected void associateWithEditor(SimulationEditor editor) {
-        Assert.isTrue(associatedSimulationEditor != editor);
-
-        associatedSimulationEditor = editor;
-
-        SimulationController controller = editor.getSimulationController();
-        controller.addSimulationStateListener(simulationListener);
-
-        editor.getHoverSupport().adapt(viewer.getTree(), new IHoverInfoProvider() {
-            @Override
-            public HoverInfo getHoverFor(Control control, int x, int y) {
-                TreeItem item = viewer.getTree().getItem(new Point(x,y));
-                if (item != null) {
-                    Object data = item.getData();
-                    return new ObjectTreeHoverInfo(data);
-                }
-                return null;
-            }
-        });
-
-        if (controller.getUIState() == SimState.DISCONNECTED || !controller.getSimulation().hasRootObjects()) {
-            showMessage("No simulation process.");
-        }
-        else {
-            hideMessage();
-            cObject input = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
-            viewer.setInput(input);
-            viewer.refresh();
-        }
-    }
-
-    protected void disassociateFromEditor() {
-        associatedSimulationEditor.getSimulationController().removeSimulationStateListener(simulationListener);
-        associatedSimulationEditor.getHoverSupport().forget(viewer.getTree());
-        associatedSimulationEditor = null;
-        viewer.setInput(null);
-        viewer.refresh();
-
-        showMessage("No associated simulation.");
-    }
-
-    protected SimulationEditor getActiveSimulationEditor() {
-        IWorkbenchPartSite site = getSite();
-        IWorkbenchPage page = site==null ? null : site.getWorkbenchWindow().getActivePage();
-        if (page != null) {
-            if (page.getActiveEditor() instanceof SimulationEditor)
-                return (SimulationEditor)page.getActiveEditor();
-            // no active simulation editor; just return the first one we find
-            for (IEditorReference ref : page.getEditorReferences())
-                if (ref.getEditor(false) instanceof SimulationEditor)
-                    return (SimulationEditor)ref.getEditor(false);
-        }
-        return null;
-    }
-
     /**
      * Passing the focus request to the viewer's control.
      */
@@ -235,9 +107,40 @@ public class ObjectTreeView extends ViewWithMessagePart {
     }
 
     @Override
+    public void associatedSimulationEditorChanged(SimulationEditor editor) {
+        refresh();
+    }
+
+    public void simulationStateChanged(SimulationController controller) {
+        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isDisposed())
+                    refresh();
+            }
+        });
+    }
+
+    public void refresh() {
+        SimulationEditor editor = simulationEditorProxy.getAssociatedSimulationEditor();
+        SimulationController controller = (editor == null) ? null : editor.getSimulationController();
+        if (controller == null || controller.getUIState() == SimState.DISCONNECTED || !controller.getSimulation().hasRootObjects()) {
+            showMessage("No simulation process.");
+        }
+        else {
+            hideMessage();
+            cObject input = controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
+            if (!input.equals(viewer.getInput()))
+                viewer.setInput(input);
+            viewer.refresh();
+        }
+    }
+
+    @Override
     public void dispose() {
-        if (associatedSimulationEditor != null)
-            associatedSimulationEditor.getSimulationController().removeSimulationStateListener(simulationListener);
+        simulationEditorProxy.dispose();
+        simulationEditorProxy = null;
         super.dispose();
     }
+
 }

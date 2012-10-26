@@ -788,7 +788,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         redraw();
     }
 
-    public void setContent(ITextViewerContentProvider content) {
+    public void setContentProvider(ITextViewerContentProvider content) {
         if (this.content != null)
             this.content.removeTextChangeListener(textChangeListener);
         this.content = content;
@@ -798,7 +798,7 @@ public class TextViewer extends Canvas implements ISelectionProvider {
         contentChanged();
     }
 
-    public ITextViewerContentProvider getContent() {
+    public ITextViewerContentProvider getContentProvider() {
         return content;
     }
 

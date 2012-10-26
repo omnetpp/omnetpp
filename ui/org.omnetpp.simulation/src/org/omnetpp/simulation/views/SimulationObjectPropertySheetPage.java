@@ -21,17 +21,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.ui.IUpdateableAction;
+import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
+import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
@@ -42,7 +41,7 @@ import org.omnetpp.simulation.ui.SetObjectViewerModeAction;
  *
  * @author Andras
  */
-public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
+public class SimulationObjectPropertySheetPage implements IPropertySheetPage, ISimulationEditorChangeListener, ISimulationStateListener {
     public static final ImageDescriptor IMG_MODE_AUTO = SimulationPlugin.getImageDescriptor("icons/etool16/treemode_auto.png");
 
     private Composite composite;
@@ -50,6 +49,7 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     private ObjectFieldsViewer viewer;
     private boolean autoMode = true; //TODO
     private List<IUpdateableAction> actions = new ArrayList<IUpdateableAction>();
+    private SimulationEditorProxy simulationEditorProxy;
 
     @Override
     public void createControl(Composite parent) {
@@ -71,9 +71,9 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         contextMenuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                IEditorPart activeEditor = getActiveEditor();
-                if (activeEditor instanceof SimulationEditor)
-                    ((SimulationEditor)activeEditor).populateContextMenu(contextMenuManager, viewer.getSelection());
+                SimulationEditor editor = simulationEditorProxy.getAssociatedSimulationEditor();
+                if (editor != null)
+                    editor.populateContextMenu(contextMenuManager, viewer.getSelection());
             }
         });
 
@@ -81,16 +81,20 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
             @Override
             public void widgetDefaultSelected(SelectionEvent e) {
                 // inspect the selected object(s)
-                IEditorPart activeEditor = getActiveEditor();
-                if (activeEditor instanceof SimulationEditor) {
+                SimulationEditor editor = simulationEditorProxy.getAssociatedSimulationEditor();
+                if (editor != null) {
                     ISelection selection = viewer.getSelection();
                     List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
-                    SimulationCanvas simulationCanvas = ((SimulationEditor)activeEditor).getSimulationCanvas();
+                    SimulationCanvas simulationCanvas = editor.getSimulationCanvas();
                     for (cObject object : objects)
                         simulationCanvas.inspect(object);
                 }
             }
         });
+
+        simulationEditorProxy = new SimulationEditorProxy();
+        simulationEditorProxy.addSimulationEditorChangeListener(this);
+        simulationEditorProxy.addSimulationStateListener(this);
     }
 
     @Override
@@ -104,7 +108,28 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
     }
 
     @Override
+    public void associatedSimulationEditorChanged(SimulationEditor editor) {
+        refresh();
+    }
+
+    public void simulationStateChanged(SimulationController controller) {
+        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isDisposed())
+                    refresh();
+            }
+        });
+    }
+
+    @Override
     public void dispose() {
+        simulationEditorProxy.dispose();
+        simulationEditorProxy = null;
+    }
+
+    public boolean isDisposed() {
+        return simulationEditorProxy == null;
     }
 
     protected class SetAutoModeAction extends Action implements IUpdateableAction {
@@ -171,6 +196,13 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
 
     @Override
     public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+        refresh();
+    }
+
+    public void refresh() {
+        SimulationEditor editor = simulationEditorProxy.getAssociatedSimulationEditor();
+        ISelection selection = editor == null ? null : editor.getSite().getSelectionProvider().getSelection();
+
         if (selection instanceof IStructuredSelection) {
             List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
             if (!objects.isEmpty()) {
@@ -206,11 +238,5 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage {
         Mode mode = ObjectFieldsViewer.getPreferredMode(input);
         viewer.setMode(mode);
         updateActions();
-    }
-
-    protected IEditorPart getActiveEditor() {
-        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-        IWorkbenchPage workbenchPage = workbenchWindow==null ? null : workbenchWindow.getActivePage();
-        return workbenchPage==null ? null : workbenchPage.getActiveEditor();
     }
 }
