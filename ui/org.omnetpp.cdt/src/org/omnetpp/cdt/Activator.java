@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.IDecoration;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.omnetpp.cdt.cache.CachedFileContentProvider;
 import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
@@ -45,6 +46,7 @@ public class Activator extends AbstractUIPlugin {
     private DependencyCache dependencyCache = new DependencyCache();
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
     private CProjectChecker cprojectChecker = new CProjectChecker();
+    private CachedFileContentProvider fileContentProvider = new CachedFileContentProvider();
 
     /**
      * The constructor
@@ -65,6 +67,7 @@ public class Activator extends AbstractUIPlugin {
         dependencyCache.hookListeners();
         newConfigConfigurer.hookListeners();
         cprojectChecker.hookListeners();
+        fileContentProvider.hookListeners();
 
         cprojectChecker.checkAllOpenProjects();
 
@@ -88,6 +91,7 @@ public class Activator extends AbstractUIPlugin {
         dependencyCache.unhookListeners();
         newConfigConfigurer.unhookListeners();
         cprojectChecker.unhookListeners();
+        fileContentProvider.unhookListeners();
 
         plugin = null;
         super.stop(context);
@@ -201,5 +205,9 @@ public class Activator extends AbstractUIPlugin {
 
     public static NewConfigConfigurer getNewConfigConfigurer() {
         return getDefault().newConfigConfigurer;
+    }
+
+    public static CachedFileContentProvider getFileContentProvider() {
+        return getDefault().fileContentProvider;
     }
 }

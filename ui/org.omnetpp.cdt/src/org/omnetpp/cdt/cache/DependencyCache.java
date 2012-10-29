@@ -18,18 +18,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.cdt.core.CCorePlugin;
-import org.eclipse.cdt.core.index.IIndex;
-import org.eclipse.cdt.core.index.IIndexFile;
-import org.eclipse.cdt.core.index.IIndexFileLocation;
-import org.eclipse.cdt.core.index.IIndexInclude;
-import org.eclipse.cdt.core.index.IIndexManager;
-import org.eclipse.cdt.core.index.IndexLocationFactory;
+import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
 import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.ICElement;
-import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.core.model.IInclude;
-import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICDescriptionDelta;
@@ -41,10 +32,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -53,12 +41,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
 import org.omnetpp.cdt.build.MakefileTools;
+import org.omnetpp.cdt.cache.CachedFileContentProvider.ISourceFileChangeListener;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
@@ -69,16 +56,17 @@ import org.omnetpp.common.util.StringUtils;
  * Keeps track of which cc/h files include which other files, to be used for
  * dependencies in Makefiles.
  *
- * For cc/h files, we get the list of active #includes from CDT's index. Before accessing the
- * index, we ensure that the project is indexed and the index is up to date by calling the
- * index.update() method and sleeping until the indexer becomes idle again. One inconvenience
- * of using the index is that it does not store line numbers of #includes; when we need line
- * numbers (for markers), we read the file ourselves to figure out the line number of the
- * #include in question.
+ * First preprocessor instructions are extracted from cc/h and msg files, and cached in memory.
+ * Then these "compressed" source files are parsed by a CDT preprocessor. The preprocessor
+ * evaluates #defines and include files recursively. The includes can be queried from
+ * the preprocessor after the parsing has been finished.
  *
- * Strategy of handling msg files (they are not indexed by the CDT, so we cannot use the
- * "normal" way): parse them manually for #include lines. Also, for each .msg file we report
- * dependencies for the corresponding _m.cc file even if it doesn't currently exist.
+ * One inconvenience of using this method is that the line numbers of #includes are misaligned.
+ * When we need line numbers (for markers), we read the file ourselves to figure out the line
+ * number of the #include in question.
+ *
+ * For each .msg file we report dependencies for the corresponding _m.cc file even if
+ * it doesn't currently exist.
  *
  * Implementation note: cached dependency info is stored in a single CachedData object that
  * we never modify after initial creation. Invalidation just discards the object (nulls the pointer).
@@ -157,9 +145,9 @@ public class DependencyCache {
     private CachedData cachedData = null;
 
     // listeners
-    private IResourceChangeListener resourceChangeListener = new IResourceChangeListener() {
-        public void resourceChanged(IResourceChangeEvent event) {
-            DependencyCache.this.resourceChanged(event);
+    private ISourceFileChangeListener sourceFileChangeListener = new ISourceFileChangeListener() {
+        public void sourceFileChanged(IResourceDelta delta) {
+            DependencyCache.this.sourceFileChanged(delta);
         }
     };
 
@@ -176,40 +164,20 @@ public class DependencyCache {
     }
 
     public void hookListeners() {
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+        //ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+        Activator.getFileContentProvider().addFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+        //ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+        Activator.getFileContentProvider().removeFileChangeListener(sourceFileChangeListener);
         CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
-    protected void resourceChanged(IResourceChangeEvent event) {
-        try {
-            // invalidate the cache on resource change events
-            if (cachedData != null && event.getDelta() != null) {
-                event.getDelta().accept(new IResourceDeltaVisitor() {
-                    public boolean visit(IResourceDelta delta) throws CoreException {
-                        IResource resource = delta.getResource();
-                        if (cachedData != null && resource instanceof IFile) {
-                            int kind = delta.getKind();
-                            int flags = delta.getFlags();
-                            if (kind==IResourceDelta.ADDED || kind==IResourceDelta.REMOVED || (kind==IResourceDelta.CHANGED && (flags&IResourceDelta.CONTENT)!=0)) {
-                                if (MakefileTools.isNonGeneratedCppFile(resource) || MakefileTools.isMsgFile(resource)) {
-                                    cachedData = null;
-                                    return false;
-                                }
-                            }
-                        }
-                        return true;
-                    }
-                });
-            }
-        }
-        catch (CoreException e) {
-            Activator.logError(e);
-        }
+    protected void sourceFileChanged(IResourceDelta delta) {
+        Debug.format("DependencyCache: source file %s changed, discarding dependency info\n", delta.getResource().getLocation());
+        cachedData = null;
     }
 
     protected void projectDescriptionChanged(CProjectDescriptionEvent e) {
@@ -221,19 +189,6 @@ public class DependencyCache {
 
         // clear cache
         cachedData = null;
-
-        // invalidate index (because maybe some feature was turned on/off, and consequently #ifdefs have changed)
-        try {
-            IProject project = e.getProject();
-            IProject[] affectedProjects = ProjectUtils.getAllReferencingProjects(project, true);
-            for (IProject p : affectedProjects) {
-                ICProject cp = CoreModel.getDefault().getCModel().getCProject(p.getName());
-                CCorePlugin.getIndexManager().reindex(cp);
-            }
-        }
-        catch (Exception ex) {
-            Activator.logError("Could not initiate reindexing of affected projects on CDT project configuration change", ex);
-        }
     }
 
     /**
@@ -251,8 +206,11 @@ public class DependencyCache {
      * where UI responsiveness is an issue.
      */
     public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
-        if (cachedData == null)
+        if (cachedData == null) {
             cachedData = computeCachedData(monitor);
+            //for (IProject p : ProjectUtils.getOmnetppProjects())
+            //    dumpPerFileDependencies(p, monitor);
+        }
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
         return projectData.folderDependencies;
     }
@@ -315,7 +273,6 @@ public class DependencyCache {
             data.projectDependencyDataMap.put(project, computeDependencies(project, fileIncludes, markerSync));
 
         markerSync.runAsWorkspaceJob();
-
         return data;
     }
 
@@ -336,130 +293,72 @@ public class DependencyCache {
     }
 
     protected Map<IFile, List<Include>> collectIncludes(IProject project, final ProblemMarkerSynchronizer markerSync, IProgressMonitor monitor) throws CoreException {
-        // ensure index is up to date
-        Debug.println("DependencyCache: requesting update of index for project " + project.getName());
-        ICProject cproject = CoreModel.getDefault().getCModel().getCProject(project.getName());
-        IIndexManager indexManager = CCorePlugin.getIndexManager();
-        // Note: IIndexManager.FORCE_INDEX_INCLUSION is needed, otherwise if there is a Foo.h that
-        // only includes a Foo_m.h which doesn't exist yet (it will be generated during the build),
-        // Foo.h will be left out from the index for some reason and we won't know about its includes.
-        // See bug #410.
-        indexManager.update(new ICElement[] {cproject}, IIndexManager.UPDATE_CHECK_TIMESTAMPS | IIndexManager.FORCE_INDEX_INCLUSION);
-        if (!indexManager.isIndexerIdle()) {
-            Debug.print("DependencyCache: waiting for indexer to finish");
-            if (PlatformUI.getWorkbench().isStarting())  // indexer apparently won't run during startup, so we'd wait forever in the loop below...
-                throw Activator.wrapIntoCoreException("Workbench is not yet started, skipping build process", null);
-            while (!indexManager.isIndexerIdle()) {
-                Debug.print(".");
-                try { Thread.sleep(300); } catch (InterruptedException e) { }
-                if (monitor != null && monitor.isCanceled())
-                    throw new CoreException(Status.CANCEL_STATUS);
-            }
-            Debug.println("\nDependencyCache: indexer done");
-        }
 
         // collect #includes using the index, or (for msg files) by directly parsing the file
         Debug.println("DependencyCache: collecting #includes in project " + project.getName());
-        final IIndex index = indexManager.getIndex(cproject);
-        try {
-            index.acquireReadLock();
+        long start = System.currentTimeMillis();
+        final int[] count = new int[1];
 
-            // collect active #includes from all C++ source files; also warn for linked-in files
-            ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
-            ICConfigurationDescription cfg = prjDesc==null ? null : prjDesc.getActiveConfiguration();
-            final ICSourceEntry[] sourceEntries = cfg==null ? new ICSourceEntry[0] : cfg.getSourceEntries();
-            final Map<IFile, List<Include>> result = new HashMap<IFile, List<Include>>();
-            project.accept(new IResourceVisitor() {
-                // variables for caching CDTUtils.isExcluded(), which is expensive
-                IContainer lastFolder = null;
-                boolean lastFolderIsExcluded = false;
+        // collect active #includes from all C++ source files; also warn for linked-in files
+        ICProjectDescription prjDesc = CoreModel.getDefault().getProjectDescription(project);
+        ICConfigurationDescription cfg = prjDesc==null ? null : prjDesc.getActiveConfiguration();
+        final ICSourceEntry[] sourceEntries = cfg==null ? new ICSourceEntry[0] : cfg.getSourceEntries();
+        final Map<IFile, List<Include>> result = new HashMap<IFile, List<Include>>();
+        project.accept(new IResourceVisitor() {
+            // variables for caching CDTUtils.isExcluded(), which is expensive
+            IContainer lastFolder = null;
+            boolean lastFolderIsExcluded = false;
 
-                public boolean visit(IResource resource) throws CoreException {
-                    // warn for linked resources
-                    if (resource.isLinked())
-                        addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
-                    if (resource instanceof IFile) {
-                        IFile file = (IFile) resource;
-                        IContainer folder = file.getParent();
-                        if (folder != lastFolder) {
-                            lastFolder = folder;
-                            lastFolderIsExcluded = CDTUtils.isExcluded(folder, sourceEntries);
-                        }
-                        if (!lastFolderIsExcluded) {
-                            if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file)) {
-                                result.put(file, collectFileIncludes(file, index));
-                            }
+            public boolean visit(IResource resource) throws CoreException {
+                // warn for linked resources
+                if (resource.isLinked())
+                    addMarker(markerSync, resource, IMarker.SEVERITY_ERROR, "Linked resources are not supported by Makefiles");
+                if (resource instanceof IFile) {
+                    IFile file = (IFile) resource;
+                    IContainer folder = file.getParent();
+                    if (folder != lastFolder) {
+                        lastFolder = folder;
+                        lastFolderIsExcluded = CDTUtils.isExcluded(folder, sourceEntries);
+                    }
+                    if (!lastFolderIsExcluded) {
+                        if (MakefileTools.isNonGeneratedCppFile(file) || MakefileTools.isMsgFile(file)) {
+                            result.put(file, collectFileIncludes(file));
+                            count[0]++;
                         }
                     }
-                    return MakefileTools.isGoodFolder(resource);
                 }
-            });
-            return result;
-        }
-        catch (InterruptedException e) {
-            throw Activator.wrapIntoCoreException(e);
-        }
-        finally {
-            index.releaseReadLock();
-        }
+                return MakefileTools.isGoodFolder(resource);
+            }
+        });
+
+        Debug.println("  parsed " + count[0] + " files in " + (System.currentTimeMillis() - start) + "ms");
+        return result;
     }
 
     /**
      * Collect #includes from a C++ source file or a msg file
      */
-    protected static List<Include> collectFileIncludes(IFile file, IIndex lockedIndex) throws CoreException {
-        List<Include> result = new ArrayList<Include>();
+    protected static List<Include> collectFileIncludes(IFile file) throws CoreException {
+        //Debug.println("Collect includes from " + file.getLocation());
 
-        if (file.getFileExtension().equals("h") || file.getFileExtension().equals("cc")) {
-            // get list of includes from the CDT index
-            IIndexFileLocation fileLocation = IndexLocationFactory.getWorkspaceIFL(file);
-            IIndexFile[] indexFiles = lockedIndex.getFiles(fileLocation);
-            if (indexFiles.length == 0) {
-                // File not in index. Now, normally all cc/h files ARE in the index. However, it may happen (quite
-                // rarely though) that a header file which is not included by any cc or h file does not immediately
-                // make it to the index. In the OMNeT++ IDE this can happen when a project is built for the first time:
-                // if an RSVPPacket.h is only included into RSVPPathMsg.msg but RSVPPathMsg_m.cc does not exist yet,
-                // CDT sometimes thinks that RSCPPacket.h is an unused header file and does not index it.
-                // The workaround is to parse the file by means of ITranslationUnit. (We do need the includes from it,
-                // otherwise our generate makefile will miss dependencies!)
-                try {
-                    ICProject cproject = CoreModel.getDefault().getCModel().getCProject(file.getProject().getName());
-                    ICElement element = cproject.findElement(file.getProjectRelativePath());  // this apparently throws exception for non-source files instead of returning null
-                    ITranslationUnit unit = (ITranslationUnit)element;  // not clear whether we need to check for null or instanceof
-                    IInclude[] includes = unit.getIncludes();
-                    for (IInclude include : includes) {
-                        if (include.isActive()) {
-                            result.add(new Include(file, include.getSourceRange().getStartLine(), include.getIncludeName(), include.isStandard()));
+        List<Include> result = new ArrayList<Include>();
+        if (MakefileTools.isCppFile(file) || MakefileTools.isMsgFile(file)) {
+            try {
+                CppScanner scanner = new CppScanner(file);
+                scanner.scanFully();
+                for (IASTPreprocessorIncludeStatement include : scanner.getIncludeDirectives()) {
+                    if (include.isActive()) {
+                        IASTFileLocation location = scanner.getIncludeLocation(include);
+                        if (location != null && location.getFileName().equals(file.getLocation().toOSString())) {
+                            //Debug.println("    includes " + (include.isResolved() ? "+" : "-") +include.getName().toString() + " at " + location.getStartingLineNumber());
+
+                            // XXX because the scanner receives file contents that contains only the preprocessor directives,
+                            //     the line numbers in the location will be wrong. They cannot be cured by adding #line directives
+                            //     to the generated file contents, because CPreprocessor ignores them. So we did not fill the line
+                            //     numbers here. The line number can be computed by getLineForInclude() when needed.
+                            result.add(new Include(file, -1/*location.getStartingLineNumber()*/, include.getName().toString(), include.isSystemInclude()));
                         }
                     }
-                }
-                catch (Exception e) {
-                    throw Activator.wrapIntoCoreException("Error collecting #includes from " + file.getFullPath(), e);
-                }
-            }
-            else {
-                IIndexFile indexFile = indexFiles[0];
-                IIndexInclude[] includes = lockedIndex.findIncludes(indexFile);
-
-                //System.out.println("* " + file + ": " + includes.length + " includes");
-                for (IIndexInclude include : includes) {
-                    if (include.isActive()) {
-                        //System.out.println("   - " + include.getName() + (include.isSystemInclude() ? ">" : "\""));
-                        result.add(new Include(file, -1, include.getFullName(), include.isSystemInclude()));
-                    }
-                }
-            }
-        }
-        else if (file.getFileExtension().equals("msg")) {
-            try {
-                // CDT doesn't know about .msg files -- parse the file manually
-                String source = FileUtils.readTextFile(file.getContents(), file.getCharset()) + "\n";
-                Matcher matcher = INCLUDE_DIRECTIVE_PATTERN.matcher(source);
-                while (matcher.find()) {
-                    boolean isSysInclude = matcher.group(1).equals("<");
-                    String fileName = matcher.group(2);
-                    int line = StringUtils.countNewLines(source.substring(0, matcher.start())) + 1;
-                    result.add(new Include(file, line, fileName.trim().replace('\\','/'), isSysInclude));
                 }
             }
             catch (Exception e) {
