@@ -211,24 +211,23 @@ EventLogMessageEntry::EventLogMessageEntry(Event *event, int entryIndex)
 
 void EventLogMessageEntry::parse(char *line, int length)
 {
+    // line starts with '-' and SP, length includes CR/LF
     char *s = line + length - 1;
-    char ch = '\0';
-
+    char ch1 = '\0';
+    char ch2 = '\0';
     if (length > 0) {
-        ch = *s;
+        ch1 = *s;
         *s = '\0';
     }
-
-    if (length > 1 && *(s - 1) == '\r')
+    if (length > 1 && *(s - 1) == '\r') {
+        ch2 = *(s - 1);
         *(s - 1) = '\0';
-
+    }
     text = eventLogStringPool.get(line + 2);
-
-    if (length > 0)
-        *s = ch;
-
-    if (length > 1)
-        *(s - 1) = '\r';
+    if (length > 0 && *s == '\0')
+        *s = ch1;
+    if (length > 1 && *(s - 1) == '\0')
+        *(s - 1) = ch2;
 }
 
 void EventLogMessageEntry::print(FILE *fout)
