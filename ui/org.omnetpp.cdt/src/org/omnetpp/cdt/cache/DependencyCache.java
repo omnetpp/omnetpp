@@ -71,9 +71,7 @@ import org.omnetpp.common.util.StringUtils;
  * Implementation note: cached dependency info is stored in a single CachedData object that
  * we never modify after initial creation. Invalidation just discards the object (nulls the pointer).
  * When needed, we simply compute a new CachedData object from scratch, then assign it to the
- * cachedData pointer. Due to the use of a (conceptually) immutable CachedData object, we need
- * no locking mechanism at all (no "synchronized", etc.) Java guarantees that assigning an
- * object reference is atomic, and that's enough for us.
+ * cachedData pointer.
  *
  * @author Andras
  */
@@ -195,7 +193,7 @@ public class DependencyCache {
      * Discards cached #include information for this project. Useful for incremental
      * builder invocations with type==CLEAN_BUILD.
      */
-    public void clean(IProject project) {
+    public synchronized void clean(IProject project) {
         cachedData = null;
     }
 
@@ -205,11 +203,9 @@ public class DependencyCache {
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    public Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
+    public synchronized Map<IContainer,Set<IContainer>> getFolderDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
         if (cachedData == null) {
             cachedData = computeCachedData(monitor);
-            //for (IProject p : ProjectUtils.getOmnetppProjects())
-            //    dumpPerFileDependencies(p, monitor);
         }
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
         return projectData.folderDependencies;
@@ -225,7 +221,7 @@ public class DependencyCache {
      * Note: may be a long-running operation, so it needs to invoked from a background job
      * where UI responsiveness is an issue.
      */
-    public Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
+    public synchronized Map<IContainer,Map<IFile,Set<IFile>>> getPerFileDependencies(IProject project, IProgressMonitor monitor) throws CoreException {
         if (cachedData == null)
             cachedData = computeCachedData(monitor);
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
@@ -236,7 +232,7 @@ public class DependencyCache {
      * Return the given project and all projects referenced from it (transitively).
      * Note: may take long: needs to invoked from a background job where UI responsiveness is an issue.
      */
-    public IProject[] getProjectGroup(IProject project, IProgressMonitor monitor) throws CoreException {
+    public synchronized IProject[] getProjectGroup(IProject project, IProgressMonitor monitor) throws CoreException {
         if (cachedData == null)
             cachedData = computeCachedData(monitor);
         ProjectDependencyData projectData = cachedData.projectDependencyDataMap.get(project);
