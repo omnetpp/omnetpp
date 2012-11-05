@@ -50,6 +50,9 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
     int size;            // number of elements used in vect[] (0..size-1)
 
   private:
+    int64 lastChangeSerial;
+
+  private:
     void construct();
     void doInsert(cOwnedObject *obj);
     virtual void ownedObjectDeleted(cOwnedObject *obj);
@@ -58,6 +61,10 @@ class SIM_API cDefaultList : public cNoncopyableOwnedObject
   public:
     // internal: called from module creation code in ctypes.cc
     void takeAllObjectsFrom(cDefaultList& other);
+
+    // internal: used by the UI to optimize refreshes
+    void updateLastChangeSerial()  {lastChangeSerial = changeCounter++;}
+    virtual bool hasChangedSince(int64 lastRefreshSerial);
 
   protected:
     /** @name Redefined cObject member functions */

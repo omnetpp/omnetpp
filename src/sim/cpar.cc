@@ -300,6 +300,8 @@ void cPar::beforeChange()
 void cPar::afterChange()
 {
     ASSERT(ownercomponent);
+    ownercomponent->updateLastChangeSerial();
+
     // call owner's component's handleParameterChange() method,
     // i.e. parameter change notification is allowed only on fully initialized components
     if (ownercomponent->initialized())
@@ -315,6 +317,11 @@ void cPar::afterChange()
         ownercomponent->emit(POST_MODEL_CHANGE, &tmp);
     }
 
+}
+
+bool cPar::hasChangedSince(int64 lastRefreshSerial)
+{
+    return ownercomponent->hasChangedSince(lastRefreshSerial);
 }
 
 void cPar::read()

@@ -540,6 +540,7 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
         char wdbuf[1024] = "n/a";
         result->put("wd", jsonWrap(getcwd(wdbuf,sizeof(wdbuf))));
         result->put("state", jsonWrap(stateEnum.getStringFor(state)));
+        result->put("changeCounter", jsonWrap(cObject::getChangeCounter()));
         result->put("eventlogfile", jsonWrap(toAbsolutePath(eventlogmgr->getFileName())));
         if (state != SIM_NONETWORK) {
             ASSERT(simulation.getSystemModule());
@@ -629,6 +630,8 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
         bool wantInfo = (what=="" || what.find('i') != std::string::npos);
         bool wantChildren = (what=="" || what.find('c') != std::string::npos);
         bool wantDetails = (what=="" || what.find('d') != std::string::npos);
+        std::string sinceStr = commandArgs["since"];
+        int64 lastRefreshSerial = sinceStr=="" ? -1 : strtoll(sinceStr.c_str(), NULL, 10);
         JsonObject2 *result = new JsonObject2();
         StringTokenizer tokenizer(ids.c_str(), ",");
         while (tokenizer.hasMoreTokens())
@@ -639,11 +642,11 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
              {
                  JsonObject *jObject = new JsonObject();
                  if (wantInfo)
-                     serializeObject(obj, jObject);
+                     serializeObject(obj, jObject, lastRefreshSerial);
                  if (wantChildren)
-                     serializeObjectChildren(obj, jObject);
+                     serializeObjectChildren(obj, jObject, lastRefreshSerial);
                  if (wantDetails)
-                     serializeObjectFields(obj, jObject);
+                     serializeObjectFields(obj, jObject, lastRefreshSerial);
                  result->put(objectId, jObject);
              }
         }
@@ -716,8 +719,11 @@ void Cmdenv::processCommand(int command)
     debug("[cmdenv] command \"%s\" done\n", commandEnum.getStringFor(command));
 }
 
-JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
+JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial)
 {
+    if (!obj->hasChangedSince(lastRefreshSerial))
+        return jObject;
+
     if (!jObject)
         jObject = new JsonObject();
 
@@ -907,8 +913,11 @@ JsonObject *Cmdenv::serializeObject(cObject *obj, JsonObject *jObject)
     return jObject;
 }
 
-JsonObject *Cmdenv::serializeObjectChildren(cObject *obj, JsonObject *jObject)
+JsonObject *Cmdenv::serializeObjectChildren(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial)
 {
+    if (!obj->hasChangedSince(lastRefreshSerial))
+        return jObject;
+
     if (!jObject)
         jObject = new JsonObject();
 
@@ -922,8 +931,11 @@ JsonObject *Cmdenv::serializeObjectChildren(cObject *obj, JsonObject *jObject)
     return jObject;
 }
 
-JsonObject *Cmdenv::serializeObjectFields(cObject *obj, JsonObject *jObject)
+JsonObject *Cmdenv::serializeObjectFields(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial)
 {
+    if (!obj->hasChangedSince(lastRefreshSerial))
+        return jObject;
+
     if (!jObject)
         jObject = new JsonObject();
 
@@ -1788,6 +1800,11 @@ void Cmdenv::deinstallSignalHandler()
 {
     signal(SIGINT, SIG_DFL);
     signal(SIGTERM, SIG_DFL);
+}
+
+bool Cmdenv::isGUI() const
+{
+    return opt_httpcontrolled;
 }
 
 //-----------------------------------------------------

@@ -62,6 +62,7 @@ void cDefaultList::construct()
     vect = new cOwnedObject *[capacity];
     for (int i=0; i<capacity; i++)
         vect[i] = NULL;
+    lastChangeSerial = 0;
 }
 
 cDefaultList::~cDefaultList()
@@ -117,6 +118,7 @@ void cDefaultList::doInsert(cOwnedObject *obj)
 
     obj->ownerp = this;
     vect[obj->pos = size++] = obj;
+    lastChangeSerial = changeCounter++;
 }
 
 void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
@@ -126,6 +128,7 @@ void cDefaultList::ownedObjectDeleted(cOwnedObject *obj)
     // move last object to obj's old position
     int pos = obj->pos;
     (vect[pos] = vect[--size])->pos = pos;
+    lastChangeSerial = changeCounter++;
 }
 
 void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
@@ -138,6 +141,7 @@ void cDefaultList::yieldOwnership(cOwnedObject *obj, cObject *newowner)
     // move last object to obj's old position
     int pos = obj->pos;
     (vect[pos] = vect[--size])->pos = pos;
+    lastChangeSerial = changeCounter++;
 }
 
 void cDefaultList::takeAllObjectsFrom(cDefaultList& other)
@@ -210,5 +214,11 @@ bool cDefaultList::defaultListContains(cOwnedObject *obj) const
 {
     return obj && obj->getOwner()==const_cast<cDefaultList *>(this);
 }
+
+bool cDefaultList::hasChangedSince(int64 lastRefreshSerial)
+{
+    return lastChangeSerial > lastRefreshSerial;
+}
+
 
 NAMESPACE_END

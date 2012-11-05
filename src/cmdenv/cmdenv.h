@@ -202,7 +202,7 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      virtual void connectionDeleted(cGate *srcgate);
      virtual void displayStringChanged(cComponent *component);
 
-     virtual bool isGUI() const {return false;}
+     virtual bool isGUI() const;
      virtual cEnvir& flush();
      virtual std::string gets(const char *prompt, const char *defaultReply);
      virtual bool idle();
@@ -240,9 +240,9 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      long getIdForObject(cObject *obj);
      std::string getIdStringForObject(cObject *obj);
 
-     JsonObject *serializeObject(cObject *obj, JsonObject *jObject);
-     JsonObject *serializeObjectChildren(cObject *obj, JsonObject *jObject);
-     JsonObject *serializeObjectFields(cObject *obj, JsonObject *jObject);
+     JsonObject *serializeObject(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
+     JsonObject *serializeObjectChildren(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
+     JsonObject *serializeObjectFields(cObject *obj, JsonObject *jObject, int64 lastRefreshSerial);
      const char *getKnownBaseClass(cObject *object);
 
      // new functions:

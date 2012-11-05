@@ -36,12 +36,10 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.model.cComponent;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cPar;
 
 /**
  * Interacts with a simulation process over HTTP.
@@ -153,12 +151,14 @@ public class Simulation {
     private BigDecimal nextEventSimulationTimeGuess = BigDecimal.getZero(); // hw-in-the-loop may inject new event before first one in the FES!
     private int nextEventModuleIdGuess;  //TODO why we use module ID? why not the module?
     private long nextEventMessageIdGuess; //TODO display on UI
+    private long simulationChangeCounter; // cObject::changeCounter from the simulation process
     private String eventlogFile;
-    private int cacheRefreshSeq;
 
     // object cache
     private Map<String, cObject> rootObjects = new HashMap<String, cObject>(); // keys: "simulation", "network", etc.
     private Map<Long, WeakReference<cObject>> cachedObjects = new HashMap<Long, WeakReference<cObject>>();
+    private long lastCacheRefreshSerial;  // simulationChangeCounter on last refreshObjectCache() call
+    private int cacheRefreshSeq;
 
     // module logs
     private LogBuffer logBuffer = new LogBuffer();
@@ -371,9 +371,10 @@ public class Simulation {
         networkName = (String) responseMap.get("network");
         state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
         stoppingReason = StoppingReason.valueOf(StringUtils.defaultString((String) responseMap.get("stoppingReason"), "none").toUpperCase());
+        simulationChangeCounter = ((Number) responseMap.get("changeCounter")).longValue();
         eventlogFile = (String) responseMap.get("eventlogfile");
 
-        lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), 0);
+        lastEventNumber = defaultLongIfNull((Number) responseMap.get("lastEventNumber"), -1);
         lastEventSimulationTime = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("lastEventSimtime"), "0"));
         nextEventNumber = defaultLongIfNull((Number) responseMap.get("nextEventNumber"), 0);
         nextEventSimulationTimeGuess = BigDecimal.parse(StringUtils.defaultIfEmpty((String) responseMap.get("nextEventSimtimeGuess"), "0"));
@@ -537,8 +538,7 @@ public class Simulation {
                         obj.unload();
                         numUnloads++;
                     }
-                    else if (!(obj instanceof cComponent || obj instanceof cGate || obj instanceof cPar)) //XXX hack: do not repeatedly reload modules!!!
-                        objectsToReload.add(obj);
+                    objectsToReload.add(obj);
                 }
 
                 if (obj.isFieldsFilledIn()) {
@@ -547,9 +547,10 @@ public class Simulation {
             }
         }
         cachedObjects.keySet().removeAll(garbage);
-        doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT);
-        doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS);
+        doLoadObjects(objectsToReload, ContentToLoadEnum.OBJECT, true);
+        doLoadObjects(objectsToReloadFields, ContentToLoadEnum.FIELDS, true);
         cacheRefreshSeq++;
+        lastCacheRefreshSerial = simulationChangeCounter;
 
         if (debugCache)
             Debug.println("Object cache after refresh: size " + cachedObjects.size() + " (" + (numFilled-numUnloads) + " filled); " +
@@ -583,29 +584,29 @@ public class Simulation {
     public void loadObject(cObject object) throws CommunicationException {
         Set<cObject> objects = new HashSet<cObject>();
         objects.add(object);
-        doLoadObjects(objects, ContentToLoadEnum.OBJECT);
+        doLoadObjects(objects, ContentToLoadEnum.OBJECT, false);
     }
 
     public void loadObjectFields(cObject object) throws CommunicationException {
         Set<cObject> objects = new HashSet<cObject>();
         objects.add(object);
-        doLoadObjects(objects, ContentToLoadEnum.FIELDS);
+        doLoadObjects(objects, ContentToLoadEnum.FIELDS, false);
     }
 
     public void loadObjects(cObject[] objects) throws CommunicationException {
-        doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.OBJECT);
+        doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.OBJECT, false);
     }
 
     public void loadObjects(List<? extends cObject> objects) throws CommunicationException {
-        doLoadObjects(objects, ContentToLoadEnum.OBJECT);
+        doLoadObjects(objects, ContentToLoadEnum.OBJECT, false);
     }
 
     public void loadFieldsOfObjects(cObject[] objects) throws CommunicationException {
-        doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.FIELDS);
+        doLoadObjects(Arrays.asList(objects), ContentToLoadEnum.FIELDS, false);
     }
 
     public void loadFieldsOfObjects(List<? extends cObject> objects) throws CommunicationException {
-        doLoadObjects(objects, ContentToLoadEnum.FIELDS);
+        doLoadObjects(objects, ContentToLoadEnum.FIELDS, false);
     }
 
     public void loadUnfilledObjects(cObject[] objects) throws CommunicationException {
@@ -619,7 +620,7 @@ public class Simulation {
             if (!obj.isFilledIn())
                 missing.add(obj);
         }
-        doLoadObjects(missing, ContentToLoadEnum.OBJECT);
+        doLoadObjects(missing, ContentToLoadEnum.OBJECT, false);
     }
 
     public void loadFieldsOfUnfilledObjects(cObject[] objects) throws CommunicationException {
@@ -633,18 +634,22 @@ public class Simulation {
             if (!obj.isFieldsFilledIn())
                 missing.add(obj);
         }
-        doLoadObjects(missing, ContentToLoadEnum.FIELDS);
+        doLoadObjects(missing, ContentToLoadEnum.FIELDS, false);
     }
 
     @SuppressWarnings("rawtypes")
-    protected void doLoadObjects(Collection<? extends cObject> objects, ContentToLoadEnum what) throws CommunicationException {
+    protected void doLoadObjects(Collection<? extends cObject> objects, ContentToLoadEnum what, boolean isRefresh) throws CommunicationException {
         if (objects.isEmpty())
             return;
         StringBuilder buf = new StringBuilder();
         for (cObject obj: objects)
             buf.append(obj.getObjectId()).append(',');
         String idsArg = buf.substring(0, buf.length()-1);  // trim trailing comma
-        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo?what=" + (what==ContentToLoadEnum.OBJECT ? "ic" : "d") + "&ids=" + idsArg);
+        Object json = getPageContentAsJSON(urlBase + "/sim/getObjectInfo" +
+                "?what=" + (what==ContentToLoadEnum.OBJECT ? "ic" : "d") +
+                "&ids=" + idsArg +
+                (isRefresh ? "&since=" + lastCacheRefreshSerial : "")
+                );
 
         // process response; objects not in the response no longer exist, purge them from the cache
         List<Long> garbage = new ArrayList<Long>();
@@ -654,7 +659,7 @@ public class Simulation {
                 garbage.add(obj.getObjectId()); // calling remove() here would cause ConcurrentModificationException
                 obj.markAsDisposed();
             }
-            else {
+            else if (!jsonObjectInfo.isEmpty()) { // empty response means "no change since last refresh", i.e. nothing to do
                 if (what==ContentToLoadEnum.OBJECT)
                     obj.fillFromJSON(jsonObjectInfo);
                 else

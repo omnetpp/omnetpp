@@ -25,6 +25,7 @@
 
 USING_NAMESPACE
 
+int64 cObject::changeCounter = 0;
 
 cObject::~cObject()
 {
@@ -40,6 +41,11 @@ const char *cObject::getClassName() const
 cClassDescriptor *cObject::getDescriptor()
 {
     return cClassDescriptor::getDescriptorFor(this);
+}
+
+bool cObject::hasChangedSince(int64 lastRefreshSerial)
+{
+    return true;  // as we don't have more info
 }
 
 std::string cObject::getFullPath() const

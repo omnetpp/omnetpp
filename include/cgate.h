@@ -149,6 +149,9 @@ class SIM_API cGate : public cObject, noncopyable
     // internal
     void checkChannels() const;
 
+    // internal
+    virtual bool hasChangedSince(int64 lastRefreshSerial);
+
   public:
     /** @name Redefined cObject member functions */
     //@{

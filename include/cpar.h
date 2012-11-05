@@ -104,6 +104,8 @@ class SIM_API cPar : public cObject
     cParImpl *impl() const {return p;}
     // internal
     cParImpl *copyIfShared();
+    // internal
+    virtual bool hasChangedSince(int64 lastRefreshSerial);
 
   public:
     /**

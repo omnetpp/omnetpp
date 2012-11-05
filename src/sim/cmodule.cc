@@ -229,6 +229,8 @@ void cModule::updateFullName()
 
     if (cachefullpath)
         updateFullPath();
+
+    updateLastChangeSerial();
 }
 
 void cModule::updateFullPath()
@@ -332,6 +334,7 @@ void cModule::disposeGateDesc(cGate::Desc *desc, bool checkConnected)
     const char *gatename = desc->namep->name.c_str();
     cGate::Type gatetype = desc->getType();
     desc->namep = NULL; // mark as deleted, but leave shared Name struct in the pool
+    updateLastChangeSerial();
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {
@@ -550,6 +553,8 @@ cGate *cModule::addGate(const char *gatename, cGate::Type type, bool isVector)
             result = newGate;
     }
 
+    updateLastChangeSerial();
+
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {
         cPostGateAddNotification tmp;
@@ -676,6 +681,9 @@ void cModule::setGateSize(const char *gatename, int newSize)
             }
         }
     }
+
+    if (newSize != oldSize)
+        updateLastChangeSerial();
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {
@@ -1237,6 +1245,7 @@ void cModule::changeParentTo(cModule *mod)
 
     // notify environment
     EVCB.moduleReparented(this,oldparent);
+    updateLastChangeSerial();
 
     // notify post-change listeners
     if (hasListeners(POST_MODEL_CHANGE)) {

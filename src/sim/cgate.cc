@@ -235,6 +235,11 @@ cProperties *cGate::getProperties() const
     return props;
 }
 
+bool cGate::hasChangedSince(int64 lastRefreshSerial)
+{
+    return getOwnerModule()->hasChangedSince(lastRefreshSerial);
+}
+
 cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
 {
     if (nextgatep)
@@ -278,6 +283,7 @@ cChannel *cGate::connectTo(cGate *g, cChannel *chan, bool leaveUninitialized)
     if (chan)
         ev.configure(chan);
     EVCB.connectionCreated(this);
+    mod->updateLastChangeSerial();
 
     // initialize the channel here, to simplify dynamic connection creation.
     // Heuristics: if parent module is not yet initialized, we expect that
@@ -350,6 +356,8 @@ void cGate::disconnect()
 
     cChannel *oldchannelp = channelp;
     channelp = NULL;
+
+    mod->updateLastChangeSerial();
 
     // notify post-change listeners
     if (mod->hasListeners(POST_MODEL_CHANGE)) {

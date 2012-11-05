@@ -76,7 +76,14 @@ class SIM_API cObject
     // internal: returns a descriptor object for this object
     virtual cClassDescriptor *getDescriptor();
 
+    // internal: used by the UI to optimize refreshes
+    virtual bool hasChangedSince(int64 refreshSerial);
+    static int64 getChangeCounter() {return changeCounter;}
+
   protected:
+    // internal
+    static int64 changeCounter;
+
     // internal
     virtual void ownedObjectDeleted(cOwnedObject *obj);
 
