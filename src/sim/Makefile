@@ -89,50 +89,59 @@ GENERATED_SOURCES= expr.tab.hh expr.tab.cc lex.expryy.cc sim_std_m.cc sim_std_m.
 
 $O/%.o: %.cc
 	@mkdir -p $O $O/netbuilder $O/parsim
-	$(CXX) -c $(COPTS) -o $@ $<
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
+	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
-	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
+	@echo Creating static library: $@
+	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
-	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-	$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
-	rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
-	$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
+	$(Q)$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
+	$(Q)rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	$(Q)$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
-	mkdir -p $L
-	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
-	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
+	@mkdir -p $L
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
+	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 expr.tab.hh expr.tab.cc : expr.y
-	$(YACC) -o expr.tab.cc -p expryy -d expr.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o expr.tab.cc -p expryy -d expr.y
 
 lex.expryy.cc: expr.lex
-	$(LEX) -olex.expryy.cc -Pexpryy expr.lex
+	$(qecho) LEX: $<
+	$(Q)$(LEX) -olex.expryy.cc -Pexpryy expr.lex
 
 sim_std_m.cc sim_std_m.h : sim_std.msg
-	$(MSGC) -Xnc -Xns sim_std.msg
+	$(qecho) MSGC: $<
+	$(Q)$(MSGC) -Xnc -Xns sim_std.msg
 
 depend: $(GENERATED_SOURCES)
-	$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc netbuilder/*.cc parsim/*.cc
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc netbuilder/*.cc parsim/*.cc
 
 clean:
-	rm -f $(GENERATED_SOURCES)
-	rm -rf $O
-	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
+	$(qecho) Cleaning...
+	$(Q)rm -f $(GENERATED_SOURCES)
+	$(Q)rm -rf $O
+	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/carray.o: carray.cc \

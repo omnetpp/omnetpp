@@ -49,73 +49,86 @@ GENERATED_SOURCES=nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h \
 
 $O/%.o: %.cc
 	@mkdir -p $O
-	$(CXX) -c $(COPTS) -o $@ $<
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
 #
 all : $L/$(LIBNAME)$(LIB_SUFFIX) $O/nedtool$(EXE_SUFFIX)
-	cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
-	cp opp_msgc $(OMNETPP_BIN_DIR)
-	chmod +x $(OMNETPP_BIN_DIR)/opp_msgc
+	$(Q)cd $(OMNETPP_LIB_DIR) && rm -f $(LIBNAME).* && $(LN) $(TOOLCHAIN_NAME)/$(LIBNAME).* .
+	$(Q)cp opp_msgc $(OMNETPP_BIN_DIR)
+	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_msgc
 
 $O/nedtool$(EXE_SUFFIX): $O/nedtool.o $L/$(LIBNAME)$(LIB_SUFFIX)
-	$(CXX) $(LDFLAGS) -o $O/nedtool$(EXE_SUFFIX) $O/nedtool.o -L$L -loppnedxml$D -loppcommon$D $(XML_LIBS)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog nedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+	@echo Creating executable: $@
+	$(Q)$(CXX) $(LDFLAGS) -o $O/nedtool$(EXE_SUFFIX) $O/nedtool.o -L$L -loppnedxml$D -loppcommon$D $(XML_LIBS)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog nedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 
 $L/$(LIBNAME)$(A_LIB_SUFFIX): $(OBJS)
 	@mkdir -p $L
-	$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
-	$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
+	@echo Creating static library: $@
+	$(Q)$(AR) $O/$(LIBNAME)$(A_LIB_SUFFIX) $(OBJS)
+	$(Q)$(RANLIB) $O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
 
 $L/$(LIBNAME)$(SO_LIB_SUFFIX) : $(OBJS)
 	@mkdir -p $L
-	$(SHLIB_LD) $(LDFLAGS) $(XML_LIBS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
-	$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
-	rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
-	$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
+	@echo Creating shared library: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) $(XML_LIBS) -o $O/$(LIBNAME)$(SO_LIB_SUFFIX) $(OBJS) $(IMPLIBS)
+	$(Q)$(SHLIB_POSTPROCESS) $O/$(LIBNAME)$(SO_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(SO_LIB_SUFFIX) $L
+	$(Q)rm -f $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX) && $(LN) $L/$(LIBNAME)$(SO_LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	$(Q)$(SHLIB_POSTPROCESS) $(OMNETPP_LIB_DIR)/$(LIBNAME)$(SO_LIB_SUFFIX)
 
 $L/$(LIBNAME)$(DLL_LIB_SUFFIX) : $(OBJS)
-	mkdir -p $L
-	$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
-	cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
+	@mkdir -p $L
+	@echo Creating DLL: $@
+	$(Q)$(SHLIB_LD) $(LDFLAGS) -o $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OBJS) $(IMPLIBS) -Wl,--out-implib,$O/$(LIBNAME)$(A_LIB_SUFFIX)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-lib $(LIBNAME)$(A_LIB_SUFFIX) $L
+	$(Q)cp $O/$(LIBNAME)$(DLL_LIB_SUFFIX) $(OMNETPP_BIN_DIR)
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 	perl dtdclassgen.pl $(OMNETPP_ROOT)/doc/ned2/ned2.dtd
 
 ned1.tab.hh ned1.tab.cc : ned1.y
-	$(YACC) -o ned1.tab.cc -p ned1yy -d ned1.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o ned1.tab.cc -p ned1yy -d ned1.y
 
 lex.ned1yy.cc: ned1.lex
-	$(LEX) -olex.ned1yy.cc -Pned1yy ned1.lex
+	$(qecho) LEX: $<
+	$(Q)$(LEX) -olex.ned1yy.cc -Pned1yy ned1.lex
 
 ned2.tab.hh ned2.tab.cc : ned2.y
-	$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o ned2.tab.cc -p ned2yy -d ned2.y
 
 lex.ned2yy.cc: ned2.lex
-	$(LEX) -olex.ned2yy.cc -Pned2yy ned2.lex
+	$(qecho) LEX: $<
+	$(Q)$(LEX) -olex.ned2yy.cc -Pned2yy ned2.lex
 
 msg2.tab.hh msg2.tab.cc : msg2.y
-	$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
+	$(qecho) YACC: $<
+	$(Q)$(YACC) -o msg2.tab.cc -p msg2yy -d msg2.y
 
 lex.msg2yy.cc: msg2.lex
-	$(LEX) -olex.msg2yy.cc -Pmsg2yy msg2.lex
+	$(qecho) LEX: $<
+	$(Q)$(LEX) -olex.msg2yy.cc -Pmsg2yy msg2.lex
 
 depend: $(GENERATED_SOURCES)
-	$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I../../include -P\$$O/ -- *.cc
 
 doc:
 	# NOTE: doxy.cfg has the output directory hardcoded!
 	$(DOXYGEN) doxy.cfg
 
 clean:
-	rm -f $(GENERATED_SOURCES)
-	rm -rf $O
-	rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
-	cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) opp_msgc
+	$(qecho) Cleaning...
+	$(Q)rm -f $(GENERATED_SOURCES)
+	$(Q)rm -rf $O
+	$(Q)rm -f $L/$(LIBNAME).* $(OMNETPP_LIB_DIR)/$(LIBNAME).*
+	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f nedtool$(EXE_SUFFIX) opp_msgc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/lex.msg2yy.o: lex.msg2yy.cc \

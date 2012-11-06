@@ -25,8 +25,9 @@ L=$(OMNETPP_LIB_DIR)/$(OUTPUT_PREFIX)$(TOOLCHAIN_NAME)
 # Rules
 #
 all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
-	echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
-	if [ "$$OS" = "Windows_NT" ] ; then \
+	$(qecho) Copying scripts to bin directory...
+	$(Q)echo "#!/bin/sh" >opp_configfilepath && echo 'echo `dirname $$0`/../Makefile.inc' >>opp_configfilepath
+	$(Q)if [ "$$OS" = "Windows_NT" ] ; then \
 	  echo "@echo $(OMNETPP_ROOT)/Makefile.inc" >opp_configfilepath.cmd && \
 	  cp opp_configfilepath.cmd $(OMNETPP_BIN_DIR); \
 	  cp opp_makemake.cmd $(OMNETPP_BIN_DIR); \
@@ -36,37 +37,41 @@ all: $O/opp_lcg32_seedtool$(EXE_SUFFIX) $O/abspath$(EXE_SUFFIX)
 	  cp omnetpp.cmd $(OMNETPP_BIN_DIR); \
 	  cp omnest.cmd $(OMNETPP_BIN_DIR); \
 	fi
-	cp opp_configfilepath $(OMNETPP_BIN_DIR)
-	cp opp_makemake $(OMNETPP_BIN_DIR)
-	cp opp_test $(OMNETPP_BIN_DIR)
-	cp opp_makedep $(OMNETPP_BIN_DIR)
-	cp opp_shlib_postprocess $(OMNETPP_BIN_DIR)
-	cp opp_runall $(OMNETPP_BIN_DIR)
-	cp splitvec $(OMNETPP_BIN_DIR)
-	cp omnetpp $(OMNETPP_BIN_DIR)
-	cp omnest $(OMNETPP_BIN_DIR)
-	chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test $(OMNETPP_BIN_DIR)/opp_makedep $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog opp_lcg32_seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
-	cd $O && $(OMNETPP_ROOT)/src/utils/install-prog abspath$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_configfilepath $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_makemake $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_test $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_makedep $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_shlib_postprocess $(OMNETPP_BIN_DIR)
+	$(Q)cp opp_runall $(OMNETPP_BIN_DIR)
+	$(Q)cp splitvec $(OMNETPP_BIN_DIR)
+	$(Q)cp omnetpp $(OMNETPP_BIN_DIR)
+	$(Q)cp omnest $(OMNETPP_BIN_DIR)
+	$(Q)chmod +x $(OMNETPP_BIN_DIR)/opp_makemake $(OMNETPP_BIN_DIR)/opp_test $(OMNETPP_BIN_DIR)/opp_makedep $(OMNETPP_BIN_DIR)/splitvec $(OMNETPP_BIN_DIR)/opp_configfilepath $(OMNETPP_BIN_DIR)/opp_shlib_postprocess $(OMNETPP_BIN_DIR)/opp_runall $(OMNETPP_BIN_DIR)/omnetpp $(OMNETPP_BIN_DIR)/omnest
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog opp_lcg32_seedtool$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+	$(Q)cd $O && $(OMNETPP_ROOT)/src/utils/install-prog abspath$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
 	@# next line is for samples/rundemo
-	echo $(WISH) >$(HOME)/.wishname
+	$(Q)echo $(WISH) >$(HOME)/.wishname
 
 $O/opp_lcg32_seedtool$(EXE_SUFFIX) : opp_lcg32_seedtool.cc
 	@mkdir -p $O
-	$(CXX) opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
+	@echo Creating executable: $@
+	$(Q)$(CXX) opp_lcg32_seedtool.cc -o $O/opp_lcg32_seedtool$(EXE_SUFFIX)
 
 $O/abspath$(EXE_SUFFIX) : abspath.cc
 	@mkdir -p $O
-	$(CXX) abspath.cc -o $O/abspath$(EXE_SUFFIX)
+	@echo Creating executable: $@
+	$(Q)$(CXX) abspath.cc -o $O/abspath$(EXE_SUFFIX)
 
 depend:
-	$(MAKEDEPEND) -I. -P\$$O/ -- *.cc *.c
+	$(qecho) Creating dependencies...
+	$(Q)$(MAKEDEPEND) -I. -P\$$O/ -- *.cc *.c
 
 clean:
-	rm -rf $O
-	cd $(OMNETPP_BIN_DIR) && rm -f opp_lcg32_seedtool$(EXE_SUFFIX) abspath$(EXE_SUFFIX) opp_makemake opp_runall opp_test opp_makedep splitvec
-#	rm -f opp_configfilepath
-#	rm -f opp_configfilepath.cmd
+	$(qecho) Cleaning...
+	$(Q)rm -rf $O
+	$(Q)cd $(OMNETPP_BIN_DIR) && rm -f opp_lcg32_seedtool$(EXE_SUFFIX) abspath$(EXE_SUFFIX) opp_makemake opp_runall opp_test opp_makedep splitvec
+#	$(Q)rm -f opp_configfilepath
+#	$(Q)rm -f opp_configfilepath.cmd
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/abspath.o: abspath.cc \

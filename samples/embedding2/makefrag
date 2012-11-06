@@ -11,10 +11,11 @@ OMNETPP_LIBS = -L"$(OMNETPP_LIB_SUBDIR)" -L"$(OMNETPP_LIB_DIR)" $(KERNEL_LIBS) $
 all: $(TARGET)
 
 $(TARGET) : $O/$(TARGET)
-	ln -s -f $O/$(TARGET) .
+	$(Q)ln -s -f $O/$(TARGET) .
 
 $O/$(TARGET): $(OBJS) Makefile
 	@mkdir -p $O
-	$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(OMNETPP_LIBS)
+	@echo Creating executable: $@
+	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(OMNETPP_LIBS)
 
 

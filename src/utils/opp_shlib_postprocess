@@ -14,14 +14,12 @@ fi
 
 # set the context for the library on Security Enhanced Linux
 if chcon --version >/dev/null 2>/dev/null ; then
-  echo "chcon -t textrel_shlib_t $1"
-  chcon -t textrel_shlib_t $1
+  chcon -t textrel_shlib_t >/dev/null 2>/dev/null $1
 fi
 
 # the install name must be absolute on Mac OS X
 if [ "`uname`" = "Darwin" ];  then
   libname=`basename $1`
-  echo "install_name_tool -id `abspath $1` $1"
   install_name_tool -id `abspath $1` $1
 fi
 

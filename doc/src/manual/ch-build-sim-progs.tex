@@ -195,6 +195,17 @@ option for \fprog{opp\_makemake} when generating your makefiles.
 $ opp_makemake --mode release ...
 \end{commandline}
 
+\subsection{Debugging the Makefile}
+
+\fprog{opp\_makemake} generates a makefile that prints only minimal information
+during the build process (only the name of the compiled file.) If you want to 
+see the full compiler commands executed by the makefile, specify \ttt{V=1} as 
+a command line parameter for the \fprog{make} command.
+
+\begin{commandline}
+$ make V=1
+\end{commandline}
+
 
 \subsection{Using External C/C++ Libraries}
 

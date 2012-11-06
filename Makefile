@@ -94,15 +94,15 @@ queueinglibext : queueinglib
 #
 $(BASE):
 	@echo ===== Compiling $@ ====
-	cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
+	$(Q)cd $(OMNETPP_SRC_DIR)/$@ && $(MAKE)
 
 #
 # Native libs for the UI
 #
 $(JNILIBS): nedxml
 	@echo ===== Compiling $@ ====
-	cd $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
-	cd $(OMNETPP_UI_DIR)/$@ && $(MAKE)
+	$(Q)cd $(OMNETPP_UI_DIR)/$@ && $(MAKE) clean
+	$(Q)cd $(OMNETPP_UI_DIR)/$@ && $(MAKE)
 
 #
 # Sample programs
@@ -110,7 +110,7 @@ $(JNILIBS): nedxml
 
 $(SAMPLES):
 	@echo ===== Compiling $@ ====
-	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+	$(Q)cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 
 #
@@ -118,18 +118,18 @@ $(SAMPLES):
 #
 apis:
 	@echo ===== Building $@ ====
-	cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis
+	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis
 
 docu:
 	@echo ===== Building $@ ====
-	cd $(OMNETPP_DOC_DIR)/src && $(MAKE)
+	$(Q)cd $(OMNETPP_DOC_DIR)/src && $(MAKE)
 
 #
 # Test
 #
 tests: base
 	@echo ===== Running $@ ====
-	cd $(OMNETPP_TEST_DIR) && $(MAKE)
+	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE)
 
 #=====================================================================
 #
@@ -143,7 +143,7 @@ check-ui-vars:
 check-env:
 	@echo "***** Configuration: MODE=$(MODE), TOOLCHAIN_NAME=$(TOOLCHAIN_NAME), LIB_SUFFIX=$(LIB_SUFFIX) ****"
 	@echo ===== Checking environment =====
-	mkdir -p $(OMNETPP_BIN_DIR)
+	@mkdir -p $(OMNETPP_BIN_DIR)
 	@probefile=__probe__; \
 	if (echo '#!/bin/sh' >$(OMNETPP_BIN_DIR)/$$probefile && \
 	    chmod +x $(OMNETPP_BIN_DIR)/$$probefile) 2>/dev/null; then \
@@ -159,28 +159,28 @@ check-env:
 	rm -f $(OMNETPP_BIN_DIR)/$$probefile; \
 
 clean: makefiles
-	-rm -f $(OMNETPP_LIB_DIR)/*.*
-	-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
-	-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
-	for i in $(BASE); do \
-	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
-	done
-	for i in $(SAMPLES) ""; do \
+	$(Q)-rm -f $(OMNETPP_LIB_DIR)/*.*
+	$(Q)-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
+	$(Q)-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
+	$(Q)for i in $(BASE); do \
+	$(Q)    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
+	$(Q)done
+	$(Q)for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
-	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
-	-rm -f $(OMNETPP_BIN_DIR)/*
+	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
+	$(Q)-rm -f $(OMNETPP_BIN_DIR)/*
 
 cleanall: makefiles
-	-rm -rf $(OMNETPP_OUT_DIR)
-	-rm -rf $(OMNETPP_LIB_DIR)/*
-	for i in $(BASE); do \
+	$(Q)-rm -rf $(OMNETPP_OUT_DIR)
+	$(Q)-rm -rf $(OMNETPP_LIB_DIR)/*
+	$(Q)for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	for i in $(SAMPLES) ""; do \
+	$(Q)for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) cleanall); fi;\
 	done
-	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
+	$(Q)cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 # bin should be removed last because opp_configfilepath (in bin directory) is needed to clean
 	-rm -rf $(OMNETPP_BIN_DIR)/*
 
@@ -190,23 +190,23 @@ cleanui:
 	done
 
 depend:
-	for i in $(BASE); do \
+	$(Q)for i in $(BASE); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
-	for i in $(SAMPLES) ""; do \
+	$(Q)for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); fi;\
 	done
 
 makefiles:
-	for i in $(SAMPLES) ""; do \
+	$(Q)for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && (opp_makemake -f --deep)); fi;\
 	done
-	(cd $(OMNETPP_SAMPLES_DIR)/embedding && (opp_makemake -f --deep --nolink))
-	(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (opp_makemake -f --deep --nolink))
-	(cd $(OMNETPP_SAMPLES_DIR)/google-earth && (opp_makemake -f -o google-earth-demo))
-	(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
-	(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
-	(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding && (opp_makemake -f --deep --nolink))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/embedding2 && (opp_makemake -f --deep --nolink))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/google-earth && (opp_makemake -f -o google-earth-demo))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglib && (opp_makemake -f --make-so))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queueinglibext && (opp_makemake -f --make-so -I../queueinglib -L../queueinglib/out/$(CONFIGNAME) -lqueueinglib -KQUEUEINGLIB_PROJ=../queueinglib))
+	$(Q)(cd $(OMNETPP_SAMPLES_DIR)/queuenet && (opp_makemake -f -n))
 
 # copy the documentation to the UI doc folder too.
 # patch some files to have correct URLs and add generic eclipse stylesheet when needed

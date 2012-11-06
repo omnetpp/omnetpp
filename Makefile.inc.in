@@ -60,6 +60,22 @@ SHARED_LIBS=yes
 OUTPUT_PREFIX=
 endif
 
+#
+# Control verbosity. Specifiying V=1 will make the build output verbose. You can use:
+# $(Q) to hide commands only in quiet mode
+# $(qecho) to print out something only in quite mode
+# $(vecho) to print out something only in verbose mode
+#
+ifeq ($(V),1)
+Q :=
+vecho = @echo
+qecho = @true
+else
+Q := @
+vecho = @true
+qecho = @echo
+endif
+
 PERL = @PERL@
 YACC = @YACC@
 LEX = @LEX@

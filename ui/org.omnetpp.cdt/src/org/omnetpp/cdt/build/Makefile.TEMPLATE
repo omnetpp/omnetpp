@@ -121,7 +121,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {~nolink:}{nmake:}	copy $(O:/=\)\$(TARGET) .
 {~nolink:}{nmake:}	-copy $(O:/=\)\$(TARGET).manifest . >NUL
 {sharedlib:}{nmake:}	-copy $(O:/=\)\$(TARGET:.dll=.lib) . >NUL
-{~nolink:}{~nmake:}	$(LN) $O/$(TARGET) .
+{~nolink:}{~nmake:}	$(Q)$(LN) $O/$(TARGET) .
 {~nolink:}
 ### Rules for $TARGET. Note that end product will be softlinked into the
 ### Makefile's directory; on systems that don't support soft links it will
@@ -129,19 +129,22 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 {exe:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {exe:}{nmake:}	-@md $(O:/=\) 2>nul
 {exe:}{~nmake:}	@$(MKPATH) $O
-{gcclongline:}{exe:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
-{~gcclongline:}{exe:}	$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
+{exe:}	@echo Creating executable: $@
+{gcclongline:}{exe:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(CXX) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{~gcclongline:}{exe:}	$(Q)$({nmake?LINK}{~nmake?CXX}) $(LDFLAGS) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) {nmake_inlineend}
 {sharedlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {sharedlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {sharedlib:}{~nmake:}	@$(MKPATH) $O
-{gcclongline:}{sharedlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
-{~gcclongline:}{sharedlib:}	$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
-{sharedlib:}{~nmake:}	$(SHLIB_POSTPROCESS) $O/$(TARGET)
+{sharedlib:}{~nmake:}	@echo Creating shared library: $@
+{gcclongline:}{sharedlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) .tmplib$$$$ @.tmp$$$$ && $(SHLIB_LD) {-out}$O/$(TARGET) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) .tmplib$$$$ $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) && rm .tmp$$$$ && rm .tmplib$$$$
+{~gcclongline:}{sharedlib:}	$(Q)$(SHLIB_LD) {-out}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS) $(LDFLAGS) {nmake_inlineend}
+{sharedlib:}{~nmake:}	$(Q)$(SHLIB_POSTPROCESS) $O/$(TARGET)
 {staticlib:}$O/$(TARGET): {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {~nmake?$(wildcard }$(EXTRA_OBJS){~nmake?)} {makefile}
 {staticlib:}{nmake:}	-@md $(O:/=\) 2>nul
 {staticlib:}{~nmake:}	@$(MKPATH) $O
-{gcclongline:}{staticlib:}	echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) $O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
-{~gcclongline:}{staticlib:}	$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
+{staticlib:}{~nmake:}	@echo Creating static library: $@
+{gcclongline:}{staticlib:}	$(Q)echo >.tmp$$$$ {sourcedirs?$(OBJS)} $(EXTRA_OBJS) && $(AR) $O/$(TARGET) @.tmp$$$$ && rm .tmp$$$$
+{~gcclongline:}{staticlib:}	$(Q)$(AR) {nmake?/out:}$O/$(TARGET) {nmake_inlinefile} {sourcedirs?$(OBJS)} $(EXTRA_OBJS) {nmake_inlineend}
 {nolink:}all: {sourcedirs?$(OBJS)} {submakedirs?submakedirs} {makefile}
 {nolink:}	@{nmake?rem}{~nmake?#} Do nothing
 
@@ -166,7 +169,8 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### "." is in sourcedirs), because nmake doesn't recognize "$O/." as "$O"
 {sourcedirs:}{~nmake:}$O/%.{obj}: %.{cc} $(COPTS_FILE)
 {sourcedirs:}{~nmake:}	@$(MKPATH) $(dir $@)
-{sourcedirs:}{~nmake:}	$(CXX) -c $(COPTS) -o $@ $<
+{sourcedirs:}{~nmake:}	$(qecho) "$<"
+{sourcedirs:}{~nmake:}	$(Q)$(CXX) -c $(COPTS) -o $@ $<
 {sourcedirs:}{nmake:}{lbrace}.{rbrace}.{cc}{lbrace}$O{rbrace}.{obj}:
 {sourcedirs:}{nmake:}	-@md $(O:/=\) 2>nul
 {sourcedirs:}{nmake:}	$(CXX) -c $(COPTS) /Fo"$@" -Tp $<
@@ -178,7 +182,8 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 ### Pattern rules for msg files. For gnu make one rule is enough,
 ### nmake needs per-file rules
 {sourcedirs:}{~nmake:}%_m.{cc} %_m.h: %.msg
-{sourcedirs:}{~nmake:}	$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
+{sourcedirs:}{~nmake:}	$(qecho) MSGC: $<
+{sourcedirs:}{~nmake:}	$(Q)$(MSGC) -s _m.{cc} $(MSGCOPTS) $?
 {sourcedirs:}{~nmake:}
 {@msg:msgfiles,m_cc:msgccfiles,m_h:msghfiles}
 {nmake:}{m_cc} {m_h} : {msg}
@@ -198,9 +203,10 @@ clean:
 {nmake:}{sharedlib:}	-del $(TARGET) $(TARGET:.dll=.exe) $(TARGET:.dll=.lib) 2>nul
 {nmake:}{staticlib:}	-del $(TARGET) $(TARGET:.lib=.exe) $(TARGET:.lib=.dll) 2>nul
 {nmake:}{nolink:}	-del {target}.exe {target}.dll {target}.lib 2>nul
-{~nmake:}	-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
-{~nmake:}	-rm -f {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
-{~nmake:}{@dir:sourcedirs}	-rm -f {dir}/*_m.{cc} {dir}/*_m.h
+{~nmake:}	$(qecho) Cleaning...
+{~nmake:}	$(Q)-rm -rf $O  ### must be done separately, because it fails on MinGW ('rm' is bogus)
+{~nmake:}	$(Q)-rm -f {target} {target}.exe lib{target}.so lib{target}.a lib{target}.dll lib{target}.dylib
+{~nmake:}{@dir:sourcedirs}	$(Q)-rm -f {dir}/*_m.{cc} {dir}/*_m.h
 {~nmake:}{/@}
 {nmake:}{@bsdir:backslashedsourcedirs}	-del {bsdir}\*_m.{cc} {bsdir}\*_m.h 2>nul
 {nmake:}{/@}
@@ -209,12 +215,13 @@ clean:
 
 cleanall: clean
 {nmake:}	-rmdir /s /q $(PROJECT_OUTPUT_DIR:/=\) 2>nul
-{~nmake:}	-rm -rf $(PROJECT_OUTPUT_DIR)
+{~nmake:}	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
-{sourcedirs:}	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
+	$(qecho) Creating dependencies...
+{sourcedirs:}	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile{nmake?.vc} -P{nmake?^}{~nmake?\$}$O/ -- $(MSG_CC_FILES) {@d:sourcedirs} {d}/*.{cc}{/@}
 {@i:submakedirs}{nmake:}	-cd {i} && if exist Makefile.vc $(MAKE) depend
-{~nmake:}	-cd {i} && if [ -f Makefile ]; then $(MAKE) depend; fi
+{~nmake:}	$(Q)-cd {i} && if [ -f Makefile ]; then $(MAKE) depend; fi
 {/@}
 
 {sourcedirs:}# DO NOT DELETE THIS LINE -- make depend depends on it.

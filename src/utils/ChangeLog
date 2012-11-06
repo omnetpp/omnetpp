@@ -1,3 +1,10 @@
+2012-10-27  Rudolf Hornig
+
+	GNU Makefiles now print only the name of the compiled 
+	file, but not the whole command line. This makes the build output
+	a vit less verbose. Verbose mode can be turned on by specifying V=1
+	as a parameter for make.
+
 2012-03-13  ------ omnetpp-4.2.2 released ------
 
 2012-01-17  ------ omnetpp-4.2.1 released ------
