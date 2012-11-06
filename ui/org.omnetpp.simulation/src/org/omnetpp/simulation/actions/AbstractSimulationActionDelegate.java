@@ -69,6 +69,11 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
         simulationEditor = (SimulationEditor) targetEditor;
         if (simulationEditor != null)
             simulationEditor.addSimulationStateListener(listener);
+
+        if (simulationEditor == null)
+            setEnabled(false);
+        else
+            updateState();
     }
 
     protected abstract void registerInContributor(IAction action);

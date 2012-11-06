@@ -1,5 +1,7 @@
 package org.omnetpp.simulation.editors;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -13,6 +15,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -34,6 +38,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
+import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
@@ -357,27 +362,106 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             }
         });
 
-        // obtain initial status query
-        Display.getDefault().asyncExec(new Runnable() {
+        // we asyncExec this, because the editor is not yet set up at this point
+        Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
-                try {
-                    // KLUDGE: TODO: this is necessary, because connection timeout does not work as expected (apache HttpClient ignores the provided value)
-                    Thread.sleep(1000);
-                    simulationController.refreshStatus();
-                }
-                catch (Exception e) {
-                    MessageDialog.openError(getSite().getShell(), "Error", "An error occurred while connecting to the simulation: " + e.getMessage());
-                    SimulationPlugin.logError(e);
-                    return;
-                }
-
-                // immediately offer setting up a network
-                if (simulationController.getUIState() == SimState.NONETWORK)
-                    SimulationEditorContributor.setupIniConfigAction.run();
+                connectToSimulation();
             }
         });
 
+    }
+
+    /**
+     * Wait until the simulation process starts to respond to HTTP requests, then invoke runStartupTasks().
+     * Meanwhile, the simulation is in DISCONNECTED state, with all actions disabled.
+     */
+    protected void connectToSimulation() {
+        try {
+            final ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(getSite().getShell());
+            progressMonitorDialog.setOpenOnRun(false);
+            progressMonitorDialog.run(true, true, new IRunnableWithProgress() {
+                @Override
+                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+                    monitor.beginTask("Connecting to simulation process...", 10);
+                    if (SimulationEditor.this.isDisposed())
+                        return;
+                    Simulation simulation = simulationController.getSimulation();
+                    int origTimeout = simulation.getTimeoutMillis();
+                    simulation.setTimeoutMillis(1000); // 1s
+                    try {
+                        for (int seq = 1; true; seq++) {
+                            try {
+                                monitor.subTask("Ping " + seq + "...");
+
+                                // check if we're still relevant
+                                if (monitor.isCanceled())
+                                    throw new InterruptedException();
+                                if (SimulationEditor.this.isDisposed())
+                                    return;
+                                //TODO ha idokozben megdoglott a process (job exited!), eszre kellene venni!!!
+
+                                // after a while, open the progress dialog (so user can cancel)
+                                if (seq == 3) {
+                                    Display.getDefault().asyncExec(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            progressMonitorDialog.open();
+                                        }
+                                    });
+                                }
+
+                                // ping!
+                                Debug.println("Ping...");
+                                simulation.ping();
+                                Debug.println("Ping successful!");
+                                break;  // we're done
+                            }
+                            catch (IOException e) {
+                                // wait a little (so we do not hog the CPU), then we'll try pinging again
+                                Debug.println(" -> " + e.getClass().getSimpleName() + ": " + e.getMessage());
+                                try { Thread.sleep(500); } catch (InterruptedException ee) {}
+                            }
+                        }
+                    }
+                    finally {
+                        simulation.setTimeoutMillis(origTimeout);
+                    }
+
+                    // then run startup tasks (e.g. ask user which network to set up)
+                    Display.getDefault().asyncExec(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!SimulationEditor.this.isDisposed()) {
+                                boolean dialogStillOpen = progressMonitorDialog.getShell() != null && !progressMonitorDialog.getShell().isDisposed();
+                                if (dialogStillOpen)
+                                    Display.getDefault().asyncExec(this);
+                                else
+                                    runStartupTasks();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        catch (InvocationTargetException e) {
+            SimulationPlugin.logError(e);
+        }
+        catch (InterruptedException e) {
+        }
+    }
+
+    protected void runStartupTasks() {
+        try {
+            // initial refresh, then offer setting up a network
+            simulationController.getSimulation().setConnected();
+            simulationController.refreshStatus();
+            if (simulationController.getUIState() == SimState.NONETWORK)
+                SimulationEditorContributor.setupIniConfigAction.run();
+        }
+        catch (CommunicationException e) {
+            // dialog already shown
+        }
     }
 
     protected void configureTimeline() {

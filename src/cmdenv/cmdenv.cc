@@ -450,6 +450,12 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
         return false;
     }
 
+    // ping we accept any time, it has no side effect
+    if (strcmp(uri, "/sim/ping") == 0) {
+        request->print(OK_STATUS);
+        return true;
+    }
+
     // if user input is in progress, we only allow requests that post the reply or are side effect free
     if (userInput.state != INPSTATE_NONE) {
         if (strcmp(uri, "/sim/reply") != 0 && strcmp(uri, "/sim/status") != 0 && strcmp(uri, "/sim/getObjectInfo") != 0) {

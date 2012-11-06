@@ -9,8 +9,8 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -189,7 +189,7 @@ public class SetupIniConfigAction extends AbstractSimulationActionDelegate {
                 return;
 
             List<ConfigDescription> configDescriptions = controller.getConfigDescriptions(); //XXX in background thread!
-            RunSelectionDialog dialog = new RunSelectionDialog(Display.getCurrent().getActiveShell(), configDescriptions);
+            RunSelectionDialog dialog = new RunSelectionDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), configDescriptions);
 
             if (dialog.open() == ListDialog.OK) {
                 String configName = dialog.getConfigName();

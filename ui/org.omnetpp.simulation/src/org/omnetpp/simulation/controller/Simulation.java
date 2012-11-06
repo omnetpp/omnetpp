@@ -125,6 +125,7 @@ public class Simulation {
     private enum ContentToLoadEnum { OBJECT, FIELDS };
 
     private String urlBase;
+    private int timeoutMillis = 30 * 1000;
 
     private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
     private IJobChangeListener jobChangeListener;
@@ -138,7 +139,7 @@ public class Simulation {
     private long processId;
     private String[] argv;
     private String workingDir;
-    private SimState state = SimState.NONETWORK;
+    private SimState state;
     private boolean inFailureMode = false;  // transient communication failure
     private StoppingReason stoppingReason = StoppingReason.NONE; // after run/runUntil
     private String configName;
@@ -172,6 +173,8 @@ public class Simulation {
         this.urlBase = "http://" + hostName + ":" + portNumber + "/";
         this.launcherJob = launcherJob;
         this.cancelJobOnDispose = launcherJob != null;
+        this.state = SimState.DISCONNECTED;
+
 
         // if simulation was launched via a local launcher job (see SimulationLauncherJob),
         // set up simulationProcessExited() to be called when the launcher job exits
@@ -188,6 +191,11 @@ public class Simulation {
                 }
             });
         }
+    }
+
+    public void setConnected() {
+        if (state == SimState.DISCONNECTED)
+            state = SimState.NONETWORK;
     }
 
     protected void simulationProcessExited() {
@@ -221,6 +229,14 @@ public class Simulation {
 
     public ISimulationCallback getSimulationCallback() {
         return simulationCallback;
+    }
+
+    public int getTimeoutMillis() {
+        return timeoutMillis;
+    }
+
+    public void setTimeoutMillis(int timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
     }
 
     /**
@@ -362,8 +378,13 @@ public class Simulation {
 
         // store basic simulation state
         Map responseMap = (Map) responseJSON;
-        hostName = (String) responseMap.get("hostname");
+        long oldProcessId = processId;
         processId = ((Number) responseMap.get("processid")).longValue();
+        if (oldProcessId != 0 && processId != oldProcessId) {
+            //TODO dialog: not the same process as we used to talk to!
+            throw new CommunicationException("Simulation process has been replaced! old process ID: " + oldProcessId + ", new process ID: " + processId);
+        }
+        hostName = (String) responseMap.get("hostname");
         argv = (String[]) ((List)responseMap.get("argv")).toArray(new String[]{});
         workingDir = (String) responseMap.get("wd");
         configName = (String) responseMap.get("config");
@@ -802,64 +823,66 @@ public class Simulation {
         if (isInFailureMode())
             throw new CommunicationException("Simulation front-end is in Failure Mode -- hit Refresh to try resuming normal mode");
 
-
         try {
-            // turn off log messages from Apache HttpClient if we can...
-            Log log = LogFactory.getLog("org.apache.commons.httpclient");
-            if (log instanceof Jdk14Logger)
-                ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
-
-            HttpClient client = new HttpClient();
-            int timeoutMillis = 30 * 1000;
-            client.getParams().setSoTimeout(timeoutMillis);
-            client.getParams().setConnectionManagerTimeout(timeoutMillis);
-            client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMillis);
-            client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMillis);
-
-            // do not retry
-            HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
-                public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
-                    return false;
-                }
-            };
-
-            GetMethod method = new GetMethod(url);
-            method.getProxyAuthState().setAuthScheme(new BasicScheme());
-            method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
-            method.setDoAuthentication(true);
-
-            try {
-                //XXX for testing error resilience:
-                //if (System.currentTimeMillis() % 50 == 0)
-                //    throw new IOException("Injecting random failure!");
-
-                int status = client.executeMethod(method);
-                if (status != HttpStatus.SC_OK)
-                    throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
-                String responseBody = method.getResponseBodyAsString();
-                if (responseBody.length() > 1024)
-                    if (debugHttp) Debug.println("  response: ~" + ((responseBody.length()+511)/1024) + "KiB");
-                return responseBody;
-            }
-            catch (SocketException e) {
-                // this means connection refused -- very probably fatal
-                state = SimState.DISCONNECTED;
-                SimulationPlugin.logError("Fatal communication error -- going to state DISCONNECTED", e);
-                simulationCallback.fatalCommunicationError(e);
-                throw e;
-            }
-            catch (IOException e) {
-                // go to failure mode until user hits Refresh
-                SimulationPlugin.logError("Transient communication error -- going to failure mode", e);
-                enterFailureMode(); // displays error dialog
-                throw e;
-            }
-            finally {
-                method.releaseConnection();
-            }
+            String response = doHttpGet(url);
+            if (response.length() > 1024)
+                if (debugHttp) Debug.println("  response: ~" + ((response.length()+511)/1024) + "KiB");
+            return response;
+        }
+        catch (SocketException e) {
+            // this means connection refused -- very probably fatal
+            state = SimState.DISCONNECTED;
+            SimulationPlugin.logError("Fatal communication error -- going to state DISCONNECTED", e);
+            simulationCallback.fatalCommunicationError(e);
+            throw new CommunicationException(e);
         }
         catch (IOException e) {
+            // go to failure mode until user hits Refresh
+            SimulationPlugin.logError("Transient communication error -- going to failure mode", e);
+            enterFailureMode(); // displays error dialog
             throw new CommunicationException(e);
+        }
+    }
+
+    public void ping() throws IOException {
+        doHttpGet(urlBase + "sim/ping");
+    }
+
+    /**
+     * A low-level HTTP GET method. Returns the response body.
+     */
+    protected String doHttpGet(String url) throws IOException {
+        // turn off log messages from Apache HttpClient if we can...
+        Log log = LogFactory.getLog("org.apache.commons.httpclient");
+        if (log instanceof Jdk14Logger)
+            ((Jdk14Logger) log).getLogger().setLevel(Level.OFF); //XXX should be enough to do it only once!
+
+        HttpClient client = new HttpClient(); //XXX we could keep one instance for the whole session
+        client.getParams().setSoTimeout(timeoutMillis);
+        client.getParams().setConnectionManagerTimeout(timeoutMillis);
+        client.getHttpConnectionManager().getParams().setSoTimeout(timeoutMillis);
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(timeoutMillis);
+
+        // do not retry
+        HttpMethodRetryHandler noRetryhandler = new HttpMethodRetryHandler() {
+            public boolean retryMethod(final HttpMethod method, final IOException exception, int executionCount) {
+                return false;
+            }
+        };
+
+        GetMethod method = new GetMethod(url);
+        method.getProxyAuthState().setAuthScheme(new BasicScheme());
+        method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
+        method.setDoAuthentication(true);
+
+        try {
+            int status = client.executeMethod(method);
+            if (status != HttpStatus.SC_OK)
+                throw new HttpException("Received non-\"200 OK\" HTTP status: " + status);
+            return method.getResponseBodyAsString();
+        }
+        finally {
+            method.releaseConnection();
         }
     }
 
