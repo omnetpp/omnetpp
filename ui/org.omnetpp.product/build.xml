@@ -57,6 +57,7 @@
 				<exclude name="org.omnetpp.ide.scave/**" />
 				<exclude name="org.omnetpp.samples/**" />
 				<exclude name="org.omnetpp.runtime/**" />
+				<exclude name="org.omnetpp.main.sequencechart/**" />
 				<exclude name="org.omnetpp.animation/**" />
 				<exclude name="org.omnetpp.scave.old/**" />
 				<exclude name="org.omnetpp.scave.autoimport/**" />
