@@ -16,14 +16,13 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.omnetpp.simulation.EssentialsRegistry;
+import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.model.Field;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.model.cPacket;
-import org.omnetpp.simulation.model.essentials.cMessageEssentialsProvider;
-import org.omnetpp.simulation.model.essentials.cModuleEssentialsProvider;
-import org.omnetpp.simulation.model.essentials.cParEssentialsProvider;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Ordering;
 
@@ -36,13 +35,6 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
 
     private Mode mode = Mode.GROUPED;
     private Ordering ordering = Ordering.NATURAL;
-
-    private static List<IEssentialsProvider> providers = new ArrayList<IEssentialsProvider>();  //FIXME take it from some global state
-    static {
-        providers.add(new cModuleEssentialsProvider());
-        providers.add(new cMessageEssentialsProvider());
-        providers.add(new cParEssentialsProvider());
-    }
 
 
     /**
@@ -362,7 +354,8 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             return result.toArray();
         }
         else if (mode == Mode.ESSENTIALS) {
-            IEssentialsProvider bestProvider = getBestProvider(object);
+            EssentialsRegistry essentialsRegistry = SimulationPlugin.getDefault().getEssentialsRegistry();
+            IEssentialsProvider bestProvider = essentialsRegistry.getBestEssentialsProvider(object);
             if (bestProvider != null)
                 return bestProvider.getChildren(object);
             else {
@@ -373,28 +366,6 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
         else {
             throw new RuntimeException("unknow mode " + mode);
         }
-    }
-
-    protected IEssentialsProvider getBestProvider(cObject object) {
-        // note: we only try to call getScore() if there are at least two candidates; maybe this is not necessary, and then supports() and getScore() can be merged
-        IEssentialsProvider bestProvider = null;
-        int bestProviderScore = Integer.MIN_VALUE;
-        for (IEssentialsProvider provider : providers) {
-            if (provider.supports(object)) {
-                if (bestProvider == null)
-                    bestProvider = provider;
-                else {
-                    if (bestProviderScore == Integer.MIN_VALUE)
-                        bestProviderScore = bestProvider.getScore(object);
-                    int score = provider.getScore(object);
-                    if (score > bestProviderScore) {
-                        bestProvider = provider;
-                        bestProviderScore = score;
-                    }
-                }
-            }
-        }
-        return bestProvider;
     }
 
     // utility function for groupFieldsOf()
@@ -500,7 +471,8 @@ public class ObjectFieldsTreeContentProvider implements ITreeContentProvider {
             return false;
         }
         else if (mode == Mode.ESSENTIALS) {
-            IEssentialsProvider bestProvider = getBestProvider(object);
+            EssentialsRegistry essentialsRegistry = SimulationPlugin.getDefault().getEssentialsRegistry();
+            IEssentialsProvider bestProvider = essentialsRegistry.getBestEssentialsProvider(object);
             if (bestProvider != null)
                 return bestProvider.hasChildren(object);
             else

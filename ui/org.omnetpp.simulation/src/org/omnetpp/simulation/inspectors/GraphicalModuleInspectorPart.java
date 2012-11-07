@@ -92,9 +92,10 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
 
     /**
      * Constructor.
+     * @param descriptor TODO
      */
-    public GraphicalModuleInspectorPart(IInspectorContainer parent, cModule module) {
-        super(parent, module);
+    public GraphicalModuleInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cModule module) {
+        super(descriptor, parent, module);
 
         // mouse handling
         compoundModuleFigure.addMouseListener(new MouseListener() {

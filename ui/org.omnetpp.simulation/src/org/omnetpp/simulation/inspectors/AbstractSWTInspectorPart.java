@@ -37,8 +37,8 @@ public abstract class AbstractSWTInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    public AbstractSWTInspectorPart(IInspectorContainer parent, cObject object) {
-        super(parent, object);
+    public AbstractSWTInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
+        super(descriptor, parent, object);
     }
 
     @Override

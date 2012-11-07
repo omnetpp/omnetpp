@@ -23,16 +23,23 @@ import org.omnetpp.simulation.model.cObject;
  * @author andras
  */
 public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptable {
+    protected InspectorDescriptor descriptor;
     protected cObject object;
     protected IInspectorFigure figure;
     protected IInspectorContainer inspectorContainer;
     protected boolean isSelected;
 
-    public AbstractInspectorPart(IInspectorContainer parent, cObject object) {
+    public AbstractInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
+        this.descriptor = descriptor;
         this.object = object;
         this.inspectorContainer = parent;
 
         figure = createFigure();
+    }
+
+    @Override
+    public InspectorDescriptor getDescriptor() {
+        return descriptor;
     }
 
     protected abstract IInspectorFigure createFigure();

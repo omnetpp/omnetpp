@@ -43,8 +43,8 @@ public class QueueInspectorPart extends AbstractInspectorPart {
     private Map<IFigure,cObject> figureToObjectMap = new HashMap<IFigure, cObject>();
     private cObject[] prevObjects = null; // just to detect changes...
 
-    public QueueInspectorPart(IInspectorContainer parent, cObject object) {
-        super(parent, object);
+    public QueueInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
+        super(descriptor, parent, object);
 
         // mouse handling
         //XXX near copy-paste from GraphicalModuleInspectorPart, factor out!

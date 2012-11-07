@@ -45,8 +45,8 @@ public class ObjectFieldsInspectorPart extends AbstractSWTInspectorPart {
     private Label label;
     private ObjectFieldsViewer viewer;
 
-    public ObjectFieldsInspectorPart(IInspectorContainer parent, cObject object) {
-        super(parent, object);
+    public ObjectFieldsInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
+        super(descriptor, parent, object);
     }
 
     @Override

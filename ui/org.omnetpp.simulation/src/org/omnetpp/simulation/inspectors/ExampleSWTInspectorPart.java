@@ -19,8 +19,8 @@ import org.omnetpp.simulation.model.cPacket;
 
 public class ExampleSWTInspectorPart extends AbstractSWTInspectorPart {
 
-    public ExampleSWTInspectorPart(IInspectorContainer parent, cObject object) {
-        super(parent, object);
+    public ExampleSWTInspectorPart(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
+        super(descriptor, parent, object);
     }
 
     @Override

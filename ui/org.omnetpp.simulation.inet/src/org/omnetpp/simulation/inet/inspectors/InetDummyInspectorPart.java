@@ -1,4 +1,4 @@
-package org.omnetpp.simulation.inspectors;
+package org.omnetpp.simulation.inet.inspectors;
 
 import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.MouseEvent;
@@ -14,6 +14,10 @@ import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.figures.FigureUtils;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.figures.InfoTextInspectorFigure;
+import org.omnetpp.simulation.inspectors.AbstractInspectorPart;
+import org.omnetpp.simulation.inspectors.IInspectorPart;
+import org.omnetpp.simulation.inspectors.IInspectorType;
+import org.omnetpp.simulation.inspectors.InspectorDescriptor;
 import org.omnetpp.simulation.inspectors.actions.InspectAsObjectAction;
 import org.omnetpp.simulation.inspectors.actions.InspectParentAction;
 import org.omnetpp.simulation.model.cObject;
@@ -23,10 +27,25 @@ import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
  *
  * @author Andras
  */
-//XXX make more options what to display: class+name/fullpath, info, detailedinfo; change color, shape etc
-public class InfoTextInspectorPart extends AbstractInspectorPart {
+public class InetDummyInspectorPart extends AbstractInspectorPart {
+    public static class Type implements IInspectorType {
+        @Override
+        public boolean supports(cObject object) {
+            return true;
+        }
 
-    public InfoTextInspectorPart(IInspectorContainer parent, cObject object, InspectorDescriptor descriptor) {
+        @Override
+        public int getScore(cObject object) {
+            return 100;
+        }
+
+        @Override
+        public IInspectorPart create(InspectorDescriptor descriptor, IInspectorContainer parent, cObject object) {
+            return new InetDummyInspectorPart(parent, object, descriptor);
+        }
+    };
+
+    public InetDummyInspectorPart(IInspectorContainer parent, cObject object, InspectorDescriptor descriptor) {
         super(descriptor, parent, object);
 
         // add mouse selection support
@@ -52,7 +71,7 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
             InfoTextInspectorFigure infoTextFigure = (InfoTextInspectorFigure)figure;
             try {
                 object.loadIfUnfilled();
-                infoTextFigure.setTexts("(" + object.getClassName() + ") " + object.getFullPath(), object.getInfo());
+                infoTextFigure.setTexts("(" + object.getClassName() + ") " + object.getFullPath() + " -- BY THE INET PLUGIN!", object.getInfo());
             }
             catch (CommunicationException e) {
                 infoTextFigure.setTexts("(" + object.getClass().getSimpleName() + "?) n/a", "Error loading object info, try Refresh");
@@ -70,7 +89,7 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
         contextMenuManager.add(new Action("Close") {
             @Override
             public void run() {
-                getContainer().close(InfoTextInspectorPart.this);
+                getContainer().close(InetDummyInspectorPart.this);
             }
         });
     }

@@ -40,23 +40,15 @@ import org.omnetpp.common.ui.ArrayTreeContentProvider;
 import org.omnetpp.common.ui.CheckedTreeSelectionDialog2;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.figures.misc.FigureUtils;
+import org.omnetpp.simulation.InspectorRegistry;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.figures.IInspectorFigure;
-import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
-import org.omnetpp.simulation.inspectors.InfoTextInspectorPart;
-import org.omnetpp.simulation.inspectors.ObjectFieldsInspectorPart;
-import org.omnetpp.simulation.inspectors.QueueInspectorPart;
-import org.omnetpp.simulation.model.cMessageHeap;
-import org.omnetpp.simulation.model.cModule;
+import org.omnetpp.simulation.inspectors.InspectorDescriptor;
 import org.omnetpp.simulation.model.cObject;
-import org.omnetpp.simulation.model.cPar;
-import org.omnetpp.simulation.model.cQueue;
-import org.omnetpp.simulation.model.cSimpleModule;
-import org.omnetpp.simulation.model.cWatchBase;
 import org.omnetpp.simulation.ui.ObjectFieldsTreeLabelProvider;
 
 /**
@@ -367,20 +359,11 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     protected IInspectorPart createInspectorFor(cObject object) {
-        //TODO more dynamic inspector type selection
-        //TODO move inspector creation out of SimulationCanvas!!!
-        IInspectorPart inspector = null;
-        if (object instanceof cModule && !(object instanceof cSimpleModule))
-            inspector = new GraphicalModuleInspectorPart(this, (cModule)object);
-        else if (object instanceof cQueue)
-            inspector = new QueueInspectorPart(this, object);
-        else if (object instanceof cMessageHeap)  // khmm...
-            inspector = new QueueInspectorPart(this, object);
-        else if (object instanceof cPar || object instanceof cWatchBase)
-            inspector = new InfoTextInspectorPart(this, object);
-        else // fallback
-            inspector = new ObjectFieldsInspectorPart(this, object);
-        return inspector;
+        InspectorRegistry inspectorRegistry = SimulationPlugin.getDefault().getInspectorRegistry();
+        InspectorDescriptor bestInspectorType = inspectorRegistry.getBestInspectorType(object);
+        if (bestInspectorType == null)
+            throw new RuntimeException("No suitable inspector for object"); // cannot happen, as we have catch-all inspector types
+        return bestInspectorType.create(this, object);
     }
 
     public void reveal(IInspectorPart inspector) {

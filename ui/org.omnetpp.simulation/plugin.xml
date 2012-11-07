@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension-point id="inspectors" name="Inspectors" schema="schema/org.omnetpp.simulation.inspectors.exsd"/>
+   <extension-point id="essentialsProviders" name="Essentials Providers" schema="schema/org.omnetpp.simulation.essentialsProviders.exsd"/>
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
@@ -338,6 +340,55 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="F8">
       </key>
+   </extension>
+   <extension
+         point="org.omnetpp.simulation.inspectors">
+      <inspectorType
+            class="org.omnetpp.simulation.inspectors.BuiltinInspectorTypes$Queue"
+            description="Queue inspector"
+            icon="icons/obj16/queue.png"
+            id="org.omnetpp.simulation.inspectors.Queue"
+            name="Queue">
+      </inspectorType>
+      <inspectorType
+            class="org.omnetpp.simulation.inspectors.BuiltinInspectorTypes$ObjectFields"
+            description="Displays onject content in a tree"
+            icon="icons/obj16/field.png"
+            id="org.omnetpp.simulation.inspectors.ObjectFields"
+            name="Details">
+      </inspectorType>
+      <inspectorType
+            class="org.omnetpp.simulation.inspectors.BuiltinInspectorTypes$InfoText"
+            description="Displays object name, type, and a one-line info string"
+            icon="icons/obj16/info.png"
+            id="org.omnetpp.simulation.inspectors.InfoText"
+            name="Info Text">
+      </inspectorType>
+      <inspectorType
+            class="org.omnetpp.simulation.inspectors.BuiltinInspectorTypes$GraphicalModule"
+            description="Network/subnetwork/node diagram with animations"
+            icon="icons/obj16/compound.png"
+            id="org.omnetpp.simulation.inspectors.GraphicalModule"
+            name="Module">
+      </inspectorType>
+   </extension>
+   <extension
+         point="org.omnetpp.simulation.essentialsProviders">
+      <essentialsProvider
+            class="org.omnetpp.simulation.model.essentials.cMessageEssentialsProvider"
+            icon="icons/obj16/message.png"
+            name="Message and packet objects">
+      </essentialsProvider>
+      <essentialsProvider
+            class="org.omnetpp.simulation.model.essentials.cModuleEssentialsProvider"
+            icon="icons/obj16/compound.png"
+            name="Module objects">
+      </essentialsProvider>
+      <essentialsProvider
+            class="org.omnetpp.simulation.model.essentials.cParEssentialsProvider"
+            icon="icons/obj16/param.png"
+            name="Parameter objects">
+      </essentialsProvider>
    </extension>
 
 </plugin>

@@ -23,6 +23,11 @@ import org.omnetpp.simulation.model.cObject;
  */
 public interface IInspectorPart {
     /**
+     * TODO
+     */
+    InspectorDescriptor getDescriptor();
+
+    /**
      * Return container for the inspector. The container handles selection,
      * closing / maximizing / changing Z-order of inspectors, and other tasks.
      */

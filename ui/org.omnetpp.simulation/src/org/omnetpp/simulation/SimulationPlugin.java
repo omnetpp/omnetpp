@@ -19,6 +19,9 @@ public class SimulationPlugin extends AbstractUIPlugin {
     // The shared instance
     private static SimulationPlugin plugin;
 
+    private InspectorRegistry inspectorRegistry;
+    private EssentialsRegistry essentialsRegistry;
+
     /**
      * The constructor
      */
@@ -32,6 +35,8 @@ public class SimulationPlugin extends AbstractUIPlugin {
     public void start(BundleContext context) throws Exception {
         super.start(context);
         plugin = this;
+        inspectorRegistry = new InspectorRegistry();
+        essentialsRegistry = new EssentialsRegistry();
     }
 
     /*
@@ -39,6 +44,8 @@ public class SimulationPlugin extends AbstractUIPlugin {
      * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
      */
     public void stop(BundleContext context) throws Exception {
+        inspectorRegistry.dispose();
+        essentialsRegistry.dispose();
         plugin = null;
         super.stop(context);
     }
@@ -50,6 +57,14 @@ public class SimulationPlugin extends AbstractUIPlugin {
      */
     public static SimulationPlugin getDefault() {
         return plugin;
+    }
+
+    public InspectorRegistry getInspectorRegistry() {
+        return inspectorRegistry;
+    }
+
+    public EssentialsRegistry getEssentialsRegistry() {
+        return essentialsRegistry;
     }
 
     /**
