@@ -101,7 +101,6 @@ public class cObject {
     }
 
     public void unload() {
-        System.out.println("@@@ unloading: " + toString());
         Assert.isTrue(isFilledIn && !isDisposed);
         isFilledIn = false;
         isFieldsFilledIn = false;

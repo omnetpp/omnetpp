@@ -76,8 +76,6 @@ public class cComponent extends cObject {
     @Override
     @SuppressWarnings("rawtypes")
     protected void doFillFromJSON(Map jsonObject) {
-System.out.println("******* REFRESHING " + toString());
-
         super.doFillFromJSON(jsonObject);
 
         componentType = (cComponentType) getSimulation().getObjectByJSONRef((String) jsonObject.get("componentType"));

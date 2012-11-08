@@ -7,6 +7,7 @@ import java.util.Stack;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.geometry.Point;
+import org.omnetpp.common.Debug;
 import org.omnetpp.figures.ConnectionFigure;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.Anim.BeginSendEntry;
@@ -33,6 +34,7 @@ import org.omnetpp.simulation.model.cSimulation;
  * @author Andras
  */
 public class AnimationDirector {
+    public static boolean debug = true;
     private SimulationCanvas simulationCanvas;
     private Simulation simulation;
 
@@ -113,11 +115,11 @@ public class AnimationDirector {
 
         cModule srcModule = srcGate.getOwnerModule();
         cModule containingModule = srcGate.getType()==cGate.Type.INPUT ? srcModule : srcModule.getParentModule();
-        System.out.println("sendHop: " + srcGate.getFullPath() + " --> " + destGate.getFullPath() + " within " + containingModule.getFullPath());
+        if (debug) Debug.println("sendHop: " + srcGate.getFullPath() + " --> " + destGate.getFullPath() + " within " + containingModule.getFullPath());
 
         IInspectorPart inspector = simulationCanvas.findInspectorFor(containingModule);
         if (inspector instanceof GraphicalModuleInspectorPart) {
-            System.out.println("Animating on inspector " + inspector.getObject().getFullPath());
+            if (debug) Debug.println("Animating on inspector " + inspector.getObject().getFullPath());
             GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
             ConnectionFigure connectionFigure = moduleInspector.getConnectionFigure(srcGate);
             if (connectionFigure != null) {
@@ -150,7 +152,7 @@ public class AnimationDirector {
             cModule containingModule = step.src != null ? step.src.getParentModule() : step.dest.getParentModule();
             IInspectorPart inspector = simulationCanvas.findInspectorFor(containingModule);
             if (inspector instanceof GraphicalModuleInspectorPart) {
-                System.out.println("Animating on inspector " + inspector.getObject().getFullPath());
+                if (debug) Debug.println("Animating on inspector " + inspector.getObject().getFullPath());
                 GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
                 Layer layer = moduleInspector.getCompoundModuleFigure().getMessageLayer();
                 double duration = 1.0; // seconds; XXX for now
@@ -183,7 +185,7 @@ public class AnimationDirector {
                 cModule containingModule = step.src != null ? step.src.getParentModule() : step.dest.getParentModule();
                 IInspectorPart inspector = simulationCanvas.findInspectorFor(containingModule);
                 if (inspector instanceof GraphicalModuleInspectorPart) {
-                    System.out.println("Animating on inspector " + inspector.getObject().getFullPath());
+                    if (debug) Debug.println("Animating on inspector " + inspector.getObject().getFullPath());
                     GraphicalModuleInspectorPart moduleInspector = (GraphicalModuleInspectorPart)inspector;
                     Layer layer = moduleInspector.getCompoundModuleFigure().getMessageLayer();
                     Point startPos = step.src==null ? new Point(0,0) : moduleInspector.getSubmoduleFigure(step.src).getCenterLocation();

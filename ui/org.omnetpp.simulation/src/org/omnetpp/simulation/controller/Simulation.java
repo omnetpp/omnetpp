@@ -556,6 +556,8 @@ public class Simulation {
                 if (obj.isFilledIn()) {
                     numFilled++;
                     if (obj.getLastAccessSeq() != getCacheRefreshSeq()) { // not accessed since last object cache refresh
+                        if (debugCache)
+                            Debug.println("unloading: " + obj.toString());
                         obj.unload();
                         numUnloads++;
                     }
@@ -824,7 +826,9 @@ public class Simulation {
             throw new CommunicationException("Simulation front-end is in Failure Mode -- hit Refresh to try resuming normal mode");
 
         try {
+            long startTime = System.currentTimeMillis();
             String response = doHttpGet(url);
+            if (debugHttp) Debug.println("  took " + (System.currentTimeMillis() - startTime) + "ms");
             if (response.length() > 1024)
                 if (debugHttp) Debug.println("  response: ~" + ((response.length()+511)/1024) + "KiB");
             return response;
