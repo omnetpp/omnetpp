@@ -163,6 +163,10 @@ class CMDENV_API Cmdenv : public EnvirBase, public cHttpRequestHandler
      // stream to write output to
      FILE *fout;
 
+     // logging
+     bool logging;
+     FILE *logStream;
+
    protected:
      virtual void sputn(const char *s, int n);
      virtual void putsmsg(const char *s);

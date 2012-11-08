@@ -204,6 +204,11 @@ Cmdenv::Cmdenv()
     userInput.state = INPSTATE_NONE;
     userInput.type = INP_NONE;
 
+    //XXX log settings should come from some configuration or commmand-line arg
+    logging = true;
+    logStream = fopen(".cmdenv-log", "w");
+    if (!logStream) logStream = stdout;
+    //logStream = stdout;
 }
 
 Cmdenv::~Cmdenv()
@@ -1979,19 +1984,22 @@ std::string Cmdenv::getUserInput(UserInputType type, JsonObject *details)
 
 void Cmdenv::debug(const char *fmt,...)
 {
+    if (!logging)
+        return;
+
     struct timeval tv;
     gettimeofday(&tv, NULL);
     time_t t = (time_t) tv.tv_sec;
     struct tm tm = *localtime(&t);
 
-    ::printf("[%02d:%02d:%02d.%03d event #%"LL"d %s] ",
+    ::fprintf(logStream, "[%02d:%02d:%02d.%03d event #%"LL"d %s] ",
              tm.tm_hour, tm.tm_min, tm.tm_sec, (int)(tv.tv_usec/1000),
              simulation.getEventNumber(), stateEnum.getStringFor(state));
     va_list va;
     va_start(va, fmt);
-    ::vprintf(fmt, va);
+    ::vfprintf(logStream, fmt, va);
     va_end(va);
-    ::fflush(stdout); // needed for sensible output in the IDE console
+    ::fflush(logStream); // needed for sensible output in the IDE console
 }
 
 bool Cmdenv::idle()
