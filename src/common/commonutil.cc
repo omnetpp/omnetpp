@@ -20,6 +20,9 @@
 #include <locale.h>
 #include "platmisc.h"
 #include "commonutil.h"
+#ifndef _WIN32
+#include <unistd.h>
+#endif
 
 USING_NAMESPACE
 
