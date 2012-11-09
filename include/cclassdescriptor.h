@@ -256,25 +256,25 @@ class SIM_API cClassDescriptor : public cNoncopyableOwnedObject
 
     /** @name Functions for backwards compatibility (OMNeT++ 4.2 and earlier). */
     //@{
-    _OPPDEPRECATED int getFieldCount(void *UNUSED) const  {return getFieldCount();}
-    _OPPDEPRECATED const char *getFieldName(void *UNUSED, int field) const  {return getFieldName(field);}
-    _OPPDEPRECATED int findField(void *UNUSED, const char *fieldName) const {return findField(fieldName);}
-    _OPPDEPRECATED unsigned int getFieldTypeFlags(void *UNUSED, int field) const  {return getFieldTypeFlags(field);}
-    _OPPDEPRECATED bool getFieldIsArray(void *UNUSED, int field) const  {return getFieldIsArray(field);}
-    _OPPDEPRECATED bool getFieldIsCompound(void *UNUSED, int field) const  {return getFieldIsCompound(field);}
-    _OPPDEPRECATED bool getFieldIsPointer(void *UNUSED, int field) const  {return getFieldIsPointer(field);}
-    _OPPDEPRECATED bool getFieldIsCObject(void *UNUSED, int field) const  {return getFieldIsCObject(field);}
-    _OPPDEPRECATED bool getFieldIsCOwnedObject(void *UNUSED, int field) const  {return getFieldIsCOwnedObject(field);}
-    _OPPDEPRECATED bool getFieldIsEditable(void *UNUSED, int field) const  {return getFieldIsEditable(field);}
-    _OPPDEPRECATED const char *getFieldDeclaredOn(void *UNUSED, int field) const  {return getFieldDeclaredOn(field);}
-    _OPPDEPRECATED const char *getFieldTypeString(void *UNUSED, int field) const  {return getFieldTypeString(field);}
-    _OPPDEPRECATED const char *getFieldProperty(void *UNUSED, int field, const char *propertyname) const  {return getFieldProperty(field, propertyname);}
-    _OPPDEPRECATED int getArraySize(void *object, int field) const  {return getFieldArraySize(object, field);}
-    _OPPDEPRECATED std::string getFieldAsString(void *object, int field, int i) const  {return getFieldValueAsString(object, field, i);}
-    _OPPDEPRECATED bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;
-    _OPPDEPRECATED bool setFieldAsString(void *object, int field, int i, const char *value) const  {return setFieldValueAsString(object, field, i, value);}
-    _OPPDEPRECATED const char *getFieldStructName(void *UNUSED, int field) const  {return getFieldStructName(field);}
-    _OPPDEPRECATED void *getFieldStructPointer(void *object, int field, int i) const  {return getFieldStructValuePointer(object, field, i);}
+    _OPPDEPRECATED virtual int getFieldCount(void *UNUSED) const  {return getFieldCount();}
+    _OPPDEPRECATED virtual const char *getFieldName(void *UNUSED, int field) const  {return getFieldName(field);}
+    _OPPDEPRECATED virtual int findField(void *UNUSED, const char *fieldName) const {return findField(fieldName);}
+    _OPPDEPRECATED virtual unsigned int getFieldTypeFlags(void *UNUSED, int field) const  {return getFieldTypeFlags(field);}
+    _OPPDEPRECATED virtual bool getFieldIsArray(void *UNUSED, int field) const  {return getFieldIsArray(field);}
+    _OPPDEPRECATED virtual bool getFieldIsCompound(void *UNUSED, int field) const  {return getFieldIsCompound(field);}
+    _OPPDEPRECATED virtual bool getFieldIsPointer(void *UNUSED, int field) const  {return getFieldIsPointer(field);}
+    _OPPDEPRECATED virtual bool getFieldIsCObject(void *UNUSED, int field) const  {return getFieldIsCObject(field);}
+    _OPPDEPRECATED virtual bool getFieldIsCOwnedObject(void *UNUSED, int field) const  {return getFieldIsCOwnedObject(field);}
+    _OPPDEPRECATED virtual bool getFieldIsEditable(void *UNUSED, int field) const  {return getFieldIsEditable(field);}
+    _OPPDEPRECATED virtual const char *getFieldDeclaredOn(void *UNUSED, int field) const  {return getFieldDeclaredOn(field);}
+    _OPPDEPRECATED virtual const char *getFieldTypeString(void *UNUSED, int field) const  {return getFieldTypeString(field);}
+    _OPPDEPRECATED virtual const char *getFieldProperty(void *UNUSED, int field, const char *propertyname) const  {return getFieldProperty(field, propertyname);}
+    _OPPDEPRECATED virtual int getArraySize(void *object, int field) const  {return getFieldArraySize(object, field);}
+    _OPPDEPRECATED virtual std::string getFieldAsString(void *object, int field, int i) const  {return getFieldValueAsString(object, field, i);}
+    _OPPDEPRECATED virtual bool getFieldAsString(void *object, int field, int i, char *buf, int bufsize) const;
+    _OPPDEPRECATED virtual bool setFieldAsString(void *object, int field, int i, const char *value) const  {return setFieldValueAsString(object, field, i, value);}
+    _OPPDEPRECATED virtual const char *getFieldStructName(void *UNUSED, int field) const  {return getFieldStructName(field);}
+    _OPPDEPRECATED virtual void *getFieldStructPointer(void *object, int field, int i) const  {return getFieldStructValuePointer(object, field, i);}
     //@}
 };
 
