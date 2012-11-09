@@ -475,8 +475,18 @@ public class Simulation {
                 logBuffer.addEventEntry(lastEventEntry);
             }
             else if (type.equals("L")) {
-                String line = (String)logEntry.get("txt");
-                logItems.add(line);
+                String chunk = (String)logEntry.get("txt");
+                if (chunk.charAt(chunk.length()-1) == '\n')
+                    chunk = chunk.substring(0, chunk.length()-1);  // remove trailing LF
+                if (chunk.indexOf('\n') == -1) {
+                    // add single line (typical case)
+                    logItems.add(chunk);
+                }
+                else {
+                    // split multi-line string to lines (rare case)
+                    for (String line : chunk.split("\n", -1))
+                        logItems.add(line);
+                }
             }
             else if (type.equals("MB")) {
                 Anim.ComponentMethodBeginEntry item = new Anim.ComponentMethodBeginEntry();
