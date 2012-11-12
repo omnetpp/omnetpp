@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SXWT Plug-in
+Bundle-Name: XSWT - XML/SWT Page Description Language Plug-in
 Bundle-SymbolicName: org.swtworkbench.xswt;singleton:=true
 Bundle-Version: 1.1.2
-Bundle-Vendor: SWTWORKBENCH (improved and repackaged by OpenSim Ltd)
+Bundle-Vendor: Coconut Palm Software, Inc.
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.ui,
