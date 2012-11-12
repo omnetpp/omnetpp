@@ -36,8 +36,8 @@ public class MoveResizeSupport {
     private static final Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
 
     private SimulationCanvas simulationCanvas;
-    private MouseListener mouseListener;
-    private MouseMotionListener mouseMotionListener;
+    private MouseListener inspectorMouseListener;
+    private MouseMotionListener inspectorMouseMotionListener;
     private org.eclipse.swt.events.MouseListener swtMouseListener;
     private org.eclipse.swt.events.MouseMoveListener swtMouseMoveListener;
     private org.eclipse.swt.events.MouseTrackAdapter swtMouseTrackListener;
@@ -46,13 +46,16 @@ public class MoveResizeSupport {
     private Rectangle dragStartInspectorFigureBounds;  // bounds of inspector's *root* figure when drag starts
     private int dragOperation; // SWT.LEFT/RIGHT/TOP/BOTTOM; move if all are set
 
+    protected boolean backgroundDragged;
+    protected Point backgroundDragInitialScroll;
+
     /**
      * Constructor
      */
     public MoveResizeSupport(SimulationCanvas canvas) {
         this.simulationCanvas = canvas;
 
-        mouseListener = new MouseListener.Stub() {
+        inspectorMouseListener = new MouseListener.Stub() {
             @Override
             public void mousePressed(MouseEvent me) {
                 IFigure figure = (IFigure) me.getSource();
@@ -87,7 +90,7 @@ public class MoveResizeSupport {
             }
         };
 
-        mouseMotionListener = new MouseMotionListener.Stub() {
+        inspectorMouseMotionListener = new MouseMotionListener.Stub() {
             @Override
             public void mouseMoved(MouseEvent me) {
                 // update cursor
@@ -176,6 +179,41 @@ public class MoveResizeSupport {
                 control.setCursor(null); // because otherwise its child controls would inherit the (resize) cursor
             }
         };
+
+        // clicking the background should deselect all
+        simulationCanvas.getContents().addMouseListener(new MouseListener.Stub() {
+            @Override
+            public void mousePressed(MouseEvent me) {
+                if (me.button == 1) {
+                    // prepare for dragging
+                    backgroundDragged = false;
+                    org.eclipse.swt.graphics.Point mouse = Display.getCurrent().getCursorLocation();
+                    dragStart = new Point(mouse.x, mouse.y);  // note: don't use (me.x,me.y) because they are figure-relative and the figure itself will move!
+                    backgroundDragInitialScroll = simulationCanvas.getViewport().getViewLocation();
+                    me.consume();  // this makes the figure capture the mouse during dragging!
+                }
+            }
+            @Override
+            public void mouseReleased(MouseEvent me) {
+                if (me.button == 1 && !backgroundDragged)
+                    simulationCanvas.deselectAll();
+            }
+        });
+
+        // dragging the background should scroll the canvas
+        simulationCanvas.getContents().addMouseMotionListener(new MouseMotionListener.Stub() {
+            @Override
+            public void mouseDragged(MouseEvent me) {
+                if ((me.getState()&SWT.BUTTON_MASK) == SWT.BUTTON1) {
+                    backgroundDragged = true;
+                    org.eclipse.swt.graphics.Point mouse = Display.getCurrent().getCursorLocation();
+                    int dx = mouse.x - dragStart.x;
+                    int dy = mouse.y - dragStart.y;
+                    simulationCanvas.getViewport().setViewLocation(backgroundDragInitialScroll.x - dx, backgroundDragInitialScroll.y - dy);
+                }
+            }
+        });
+
     }
 
     protected Cursor getCursor(int dragOperation) {
@@ -239,13 +277,13 @@ public class MoveResizeSupport {
      * (see IInspectorPart.getDragOperation(IFigure, int x, int y)).
      */
     public void adopt(IFigure figure) {
-        figure.addMouseListener(mouseListener);
-        figure.addMouseMotionListener(mouseMotionListener);
+        figure.addMouseListener(inspectorMouseListener);
+        figure.addMouseMotionListener(inspectorMouseMotionListener);
     }
 
     public void forget(IFigure figure) {
-        figure.removeMouseListener(mouseListener);
-        figure.removeMouseMotionListener(mouseMotionListener);
+        figure.removeMouseListener(inspectorMouseListener);
+        figure.removeMouseMotionListener(inspectorMouseMotionListener);
     }
 
     public void adopt(Control control) {
