@@ -87,6 +87,10 @@ public class MoveResizeSupport {
                 dragOperation = 0;
                 dragStart = null;
                 simulationCanvas.getContents().setPreferredSize(null);  // restore original state
+
+                IFigure figure = (IFigure) me.getSource();
+                IInspectorPart inspector = simulationCanvas.findInspectorFor(figure);
+                simulationCanvas.asyncReveal(inspector);
             }
         };
 

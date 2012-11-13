@@ -16,6 +16,8 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.draw2d.Layer;
 import org.eclipse.draw2d.StackLayout;
 import org.eclipse.draw2d.XYLayout;
+import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -31,7 +33,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Pattern;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -132,7 +133,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                Point p = toControl(Display.getCurrent().getCursorLocation());
+                org.eclipse.swt.graphics.Point p = toControl(Display.getCurrent().getCursorLocation());
                 IInspectorPart inspectorPart = findInspectorAt(p.x, p.y);
                 if (inspectorPart != null)
                     inspectorPart.populateContextMenu(menuManager, p);
@@ -232,27 +233,41 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     @Override
-    public Point translateAbsoluteFigureCoordinatesToCanvas(int x, int y) {
+    public org.eclipse.swt.graphics.Point translateAbsoluteFigureCoordinatesToCanvas(int x, int y) {
         int xoffset = getHorizontalBar().getSelection();
         int yoffset = getVerticalBar().getSelection();
-        return new Point(x - xoffset, y - yoffset);
+        return new org.eclipse.swt.graphics.Point(x - xoffset, y - yoffset);
     }
 
     @Override
-    public org.eclipse.draw2d.geometry.Point translateCanvasToAbsoluteFigureCoordinates(int x, int y) {
+    public Point translateCanvasToAbsoluteFigureCoordinates(int x, int y) {
         int xoffset = getHorizontalBar().getSelection();
         int yoffset = getVerticalBar().getSelection();
-        return new org.eclipse.draw2d.geometry.Point(x + xoffset, y + yoffset);
+        return new Point(x + xoffset, y + yoffset);
     }
 
-    public void addInspectorPart(IInspectorPart inspectorPart) {
-        int lastY = getInspectorsLayer().getPreferredSize().height;
-        addInspectorPart(inspectorPart, 0, lastY+5);
+    public void addInspectorPart(IInspectorPart inspector) {
+        addInspectorPart(inspector, -1, -1);
     }
 
-    public void addInspectorPart(final IInspectorPart inspector, int x, int y) {
-        final IFigure inspectorFigure = inspector.getFigure();
-        getInspectorsLayer().add(inspectorFigure);
+    public void addInspectorPart(IInspectorPart inspector, int x, int y) {
+        // register the inspector, and add it to the canvas
+        inspectors.add(inspector);
+        IFigure inspectorFigure = inspector.getFigure();
+        getInspectorsLayer().add(inspectorFigure); // must precede location computation, otherwise getPreferredSize() might fail
+
+        // initial refresh
+        try {
+            inspector.refresh();  // side effect: fill figure with content, so getPreferredSize() returns a more realistic size during location computation
+        } catch (Exception e) {
+            SimulationPlugin.logError("Error refreshing inspector " + inspector.toString(), e);
+        }
+
+        // placement on canvas
+        if (x == -1 && y == -1) {
+            Point loc = getLocationForInspector(inspector);
+            x = loc.x; y = loc.y;
+        }
         getInspectorsLayer().setConstraint(inspectorFigure, new Rectangle(x, y, -1, -1));
 
         // if inspector has SWT parts, add listeners to show floating toolbar when mouse is over them
@@ -260,11 +275,72 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         if (control != null && floatingToolbarSupport != null)
             floatingToolbarSupport.addFloatingToolbarSupportTo(control, inspector);
 
-        // register the inspector
-        inspectors.add(inspector);
-        inspector.refresh();
     }
 
+    protected Point getLocationForInspector(IInspectorPart inspector) {
+        // choose best location (close to the top-left corner of the currently viewed area of the canvas)
+        Point targetPoint = getViewport().getViewLocation();
+
+        // collect potential locations
+        int spacing = 10;
+        IFigure figure = inspector.getFigure();
+        Dimension size = figure.getPreferredSize();
+        ArrayList<Point> candidates = new ArrayList<Point>();
+        candidates.add(targetPoint);
+        for (IInspectorPart otherInspector : getInspectors()) {
+            if (otherInspector != inspector) {
+                IFigure otherFigure = otherInspector.getFigure();
+                Rectangle otherRectangle = otherFigure.getBounds(); // assume bounds is already set (layouting has run)
+                candidates.add(otherRectangle.getTopLeft().translate(-spacing - size.width, 0)); //left
+                candidates.add(otherRectangle.getTopLeft().translate(0, -spacing - size.height)); //above
+                candidates.add(otherRectangle.getTopRight().translate(spacing, 0)); //right
+                candidates.add(otherRectangle.getBottomLeft().translate(0, spacing)); //below
+                candidates.add(new Point(targetPoint.x, otherRectangle.y)); //left-aligned 1
+                candidates.add(new Point(targetPoint.x, otherRectangle.bottom() + spacing)); //left-aligned 2
+            }
+        }
+
+        // choose best (smallest metric)
+        double bestMetric = Double.POSITIVE_INFINITY;
+        Point bestPoint = null;
+        int sheetWidth = getInspectorsLayer().getSize().width;
+        outer: for (Point point : candidates) {
+            if (point.x >= 0 && point.y >= 0) {
+                Rectangle rectangle = new Rectangle(point, size);
+
+                // if overlaps with any other rectangle, discard
+                for (IInspectorPart otherInspector : getInspectors()) {
+                    if (otherInspector != inspector) {
+                        IFigure otherFigure = otherInspector.getFigure();
+                        Rectangle otherRectangle = otherFigure.getBounds(); // assume bounds is already set (layouting has run)
+                        if (otherRectangle.intersects(rectangle))
+                            continue outer; // overlaps
+                    }
+                }
+
+                // compute metric
+                final double f = 100;
+                double metric = Math.sqrt(sqr(point.x - targetPoint.x) + f * sqr(point.y - targetPoint.y)); // f penalizes large delta y, to reduce the resulting "quarter-disc" effect
+                if (point.x < targetPoint.x)
+                    metric += 10 * (targetPoint.x - point.x); // penalty for hanging out on the left
+                if (point.y < targetPoint.y)
+                    metric += 10 * (targetPoint.y - point.y); // penalty for hanging out on the top
+                if (rectangle.right() > sheetWidth)
+                    metric += 10000 * (rectangle.right() - sheetWidth); // penalty for not fitting into sheetWidth
+
+                if (metric < bestMetric) {
+                    bestPoint = point;
+                    bestMetric = metric;
+                }
+            }
+        }
+        figure.setBounds(new Rectangle(bestPoint, size)); // needed when many inspectors are opened in one go (no layouting between them)
+        return bestPoint;
+    }
+
+    private static double sqr(double x) {
+        return x*x;
+    }
     public void removeInspectorPart(IInspectorPart inspectorPart) {
         System.out.println("removeInspectorPart: " + inspectorPart);
         Assert.isTrue(inspectors.contains(inspectorPart));
@@ -370,7 +446,20 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         // note: not good for newly created inspectors; use asyncReveal for them
         inspector.raiseToTop();
         Rectangle bounds = inspector.getFigure().getBounds();
-        scrollSmoothTo(bounds.x, bounds.y);  // scrolls so that inspector is at the top of the screen (behavior could be improved)
+        Rectangle viewport = getViewport().getBounds().getCopy().translate(getViewport().getViewLocation());
+        if (!viewport.contains(bounds)) {
+            // must scroll
+            int leftEdge = viewport.x;
+            int topEdge = viewport.y;
+
+            // scroll minimum amount so that the inspector (or at least its top-left corner) fits into the viewport
+            if (bounds.right() > leftEdge+viewport.width) leftEdge = bounds.right() - viewport.width;
+            if (bounds.bottom() > topEdge+viewport.height) topEdge = bounds.bottom() - viewport.height;
+            if (bounds.x < leftEdge) leftEdge = bounds.x;
+            if (bounds.y < topEdge) topEdge = bounds.y;
+
+            scrollSmoothTo(leftEdge, topEdge);
+        }
     }
 
     protected void asyncReveal(final IInspectorPart inspector) {
