@@ -21,6 +21,7 @@ public class SimulationPlugin extends AbstractUIPlugin {
 
     private InspectorRegistry inspectorRegistry;
     private EssentialsRegistry essentialsRegistry;
+    private PerspectiveSwitcher perspectiveSwitcher;
 
     /**
      * The constructor
@@ -37,6 +38,7 @@ public class SimulationPlugin extends AbstractUIPlugin {
         plugin = this;
         inspectorRegistry = new InspectorRegistry();
         essentialsRegistry = new EssentialsRegistry();
+        perspectiveSwitcher = new PerspectiveSwitcher();
     }
 
     /*
@@ -46,6 +48,7 @@ public class SimulationPlugin extends AbstractUIPlugin {
     public void stop(BundleContext context) throws Exception {
         inspectorRegistry.dispose();
         essentialsRegistry.dispose();
+        perspectiveSwitcher.dispose();
         plugin = null;
         super.stop(context);
     }

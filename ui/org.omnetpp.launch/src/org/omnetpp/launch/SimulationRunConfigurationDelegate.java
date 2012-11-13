@@ -8,6 +8,9 @@
 package org.omnetpp.launch;
 
 
+import static org.eclipse.jface.dialogs.MessageDialogWithToggle.ALWAYS;
+import static org.eclipse.jface.dialogs.MessageDialogWithToggle.NEVER;
+
 import java.net.ServerSocket;
 import java.net.SocketException;
 
@@ -23,7 +26,9 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.LaunchConfigurationDelegate;
 import org.eclipse.debug.ui.IDebugUIConstants;
 import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPerspectiveDescriptor;
@@ -32,12 +37,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
-
 
 /**
  * Can launch a single or multiple simulation process. Understands OMNeT++ specific launch attributes.
@@ -46,6 +51,7 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
  * @author rhornig
  */
 public class SimulationRunConfigurationDelegate extends LaunchConfigurationDelegate {
+    public static final String PREF_SWITCH_TO_SIMULATE_PERSPECTIVE = "org.omnetpp.launch.SwitchToSimulatePerspective";  //TODO add a way to clear this preference!
 
     public void launch(ILaunchConfiguration oldConfig, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
         OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
@@ -105,9 +111,25 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
                         IPerspectiveDescriptor desc = workbenchWindow.getWorkbench().getPerspectiveRegistry().findPerspectiveWithId(IConstants.SIMULATE_PERSPECTIVE_ID);
                         if (desc == null)
                             LaunchPlugin.logError("Perspective " + IConstants.SIMULATE_PERSPECTIVE_ID + "not found", new RuntimeException());
+
                         if (desc != null && !workbenchPage.getPerspective().equals(desc)) {
-                            if (MessageDialog.openConfirm(workbenchWindow.getShell(), "Switch Perspective", "Switch to the 'Simulate' perspective?"))
+                            IPreferenceStore preferences = LaunchPlugin.getDefault().getPreferenceStore();
+                            String pref = preferences.getString(PREF_SWITCH_TO_SIMULATE_PERSPECTIVE);
+                            boolean switchPerspective = ALWAYS.equals(pref);
+                            if (!NEVER.equals(pref) && !ALWAYS.equals(pref)) { // assuming PROMPT on null or "" too
+                                int result = MessageDialogWithToggle.openYesNoQuestion(
+                                        workbenchWindow.getShell(),
+                                        "Switch Perspective",
+                                        "Switch to the 'Simulate' perspective?",
+                                        "Remember choice and don't ask again", false,
+                                        preferences, PREF_SWITCH_TO_SIMULATE_PERSPECTIVE).getReturnCode();
+                                switchPerspective = (result == IDialogConstants.YES_ID);
+                            }
+
+                            if (switchPerspective) {
+                                CommonPlugin.getDefault().originalPerspective = workbenchPage.getPerspective();
                                 workbenchPage.setPerspective(desc);
+                            }
                         }
 
                         // open the editor

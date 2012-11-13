@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.IPerspectiveDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.common.image.ImageFactory;
@@ -37,6 +38,10 @@ public class CommonPlugin extends AbstractUIPlugin {
 
     // global preference store (per installation)
     private ScopedPreferenceStore configPreferenceStore;
+
+    // The perspective that was active when we switched to the 'Simulate' perspective during simulation launch
+    //FIXME there should be a better place (and form) to store this...
+    public IPerspectiveDescriptor originalPerspective;
 
     /**
      * The constructor
