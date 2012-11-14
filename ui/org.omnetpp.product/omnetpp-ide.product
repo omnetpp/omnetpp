@@ -286,40 +286,13 @@ POSSIBILITY OF SUCH DAMAGES.
    </plugins>
 
    <features>
-      <feature id="org.omnetpp.ide.academic"/>
-      <feature id="org.eclipse.equinox.p2.core.feature"/>
-      <feature id="org.eclipse.equinox.p2.user.ui"/>
-      <feature id="org.eclipse.equinox.p2.discovery.feature"/>
-      <feature id="org.eclipse.equinox.p2.extras.feature"/>
-      <feature id="org.eclipse.epp.mpc"/>
       <feature id="org.eclipse.platform"/>
-      <feature id="org.eclipse.help"/>
-      <feature id="org.eclipse.cdt"/>
-      <feature id="org.eclipse.gef"/>
-      <feature id="org.eclipse.gmf.runtime.thirdparty"/>
-      <feature id="org.eclipse.emf.common"/>
-      <feature id="org.eclipse.emf.common.ui"/>
-      <feature id="org.eclipse.emf.ecore"/>
-      <feature id="org.eclipse.emf.ecore.edit"/>
-      <feature id="org.eclipse.emf.edit"/>
-      <feature id="org.eclipse.emf.edit.ui"/>
       <feature id="org.eclipse.egit"/>
-      <feature id="org.eclipse.jgit"/>
+      <feature id="org.eclipse.cdt"/>
       <feature id="org.eclipse.linuxtools.cdt.libhover.feature"/>
-      <feature id="org.eclipse.linuxtools.changelog"/>
       <feature id="org.eclipse.linuxtools.profiling"/>
       <feature id="org.eclipse.linuxtools.valgrind"/>
-      <feature id="de.unikassel.imageexport"/>
-      <feature id="com.lowagie.itext"/>
-      <feature id="org.eclipse.egit.psf"/>
-      <feature id="org.eclipse.cdt.gnu.build"/>
-      <feature id="org.eclipse.equinox.p2.rcp.feature"/>
-      <feature id="org.eclipse.cdt.platform"/>
-      <feature id="org.eclipse.draw2d"/>
-      <feature id="org.eclipse.rcp"/>
-      <feature id="org.eclipse.cdt.gnu.dsf"/>
-      <feature id="org.eclipse.cdt.gnu.debug"/>
-      <feature id="org.eclipse.cdt.gdb"/>
+      <feature id="org.omnetpp.ide.academic"/>
    </features>
 
 
