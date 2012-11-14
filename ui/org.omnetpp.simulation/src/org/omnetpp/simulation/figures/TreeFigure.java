@@ -31,6 +31,8 @@ public class TreeFigure extends ScrollPane {
 
     private static final Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
 
+    private static TreeFigureTheme theme;  // static because tree items have no back pointer
+
     // panel containing TreeItemFigures
     class ContentsPanel extends Panel {
         @Override
@@ -129,6 +131,12 @@ public class TreeFigure extends ScrollPane {
             revalidate();
             repaint();
         }
+    }
+
+    static TreeFigureTheme getTheme() {
+        if (theme == null)
+            theme = new TreeFigureTheme();
+        return theme;
     }
 
     protected void rebuild() {

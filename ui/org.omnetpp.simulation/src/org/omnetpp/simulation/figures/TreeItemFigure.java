@@ -11,15 +11,10 @@ import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.color.ColorFactory;
 
 class TreeItemFigure extends Figure {
-
-    private static final Color SELECTION_BACKGROUND_COLOR = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION);
 
     static class ToggleFigure extends Figure{
 
@@ -205,14 +200,7 @@ class TreeItemFigure extends Figure {
             return;
 
         this.isSelected = isSelected;
-        if (isSelected) {
-            setOpaque(true);
-            setBackgroundColor(SELECTION_BACKGROUND_COLOR);
-        }
-        else {
-            setOpaque(false);
-            setBackgroundColor(null);
-        }
+        repaint();
     }
 
     public boolean isSelected() {
@@ -221,5 +209,11 @@ class TreeItemFigure extends Figure {
 
     public Figure getToggle() {
         return toggleFigure;
+    }
+
+    @Override
+    protected void paintFigure(Graphics graphics) {
+        TreeFigureTheme theme = TreeFigure.getTheme();
+        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, isSelected, false /*FIXME*/, true /*FIXME*/);
     }
 }
