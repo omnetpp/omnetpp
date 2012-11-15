@@ -214,6 +214,6 @@ class TreeItemFigure extends Figure {
     @Override
     protected void paintFigure(Graphics graphics) {
         TreeFigureTheme theme = TreeFigure.getTheme();
-        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, isSelected, false /*FIXME*/, true /*FIXME*/);
+        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, 200 /*FIXME*/, isSelected, false /*FIXME*/, true /*FIXME*/);
     }
 }
