@@ -59,7 +59,7 @@ public class AttachToSimulationHandler extends AbstractHandler {
 
             // open the editor
             try {
-                IEditorInput input = new SimulationEditorInput(result, hostName, portNumber, null);
+                IEditorInput input = new SimulationEditorInput(result, hostName, portNumber);
                 IDE.openEditor(workbenchPage, input, SimulationEditor.EDITOR_ID);
             }
             catch (PartInitException e) {

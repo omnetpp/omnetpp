@@ -11,30 +11,38 @@ import org.eclipse.ui.IPersistableElement;
  * @author Andras
  */
 public class SimulationEditorInput implements IEditorInput {
-    private String name;
-    private String hostName = "localhost";
-    private int portNumber = 4242;
+    // mandatory fields
+    private String name; // display name
+    private String hostName;
+    private int portNumber;
+
+    // only if simulation was started via a launch configuration (and not attached to)
     private Job launcherJob;
+    private String launchConfigurationName;
 
+    public SimulationEditorInput(String name, String hostName, int portNumber) {
+        this(name, hostName, portNumber, null, null);
+    }
 
-    public SimulationEditorInput(String name, String hostName, int portNumber, Job launcherJob) {
+    public SimulationEditorInput(String name, String hostName, int portNumber, Job launcherJob, String launchConfigurationName) {
         this.name = name;
         this.hostName = hostName;
         this.portNumber = portNumber;
         this.launcherJob = launcherJob;
+        this.launchConfigurationName = launchConfigurationName;
     }
 
-    //@Override
+    @Override
     public boolean exists() {
         return false;
     }
 
-    //@Override
+    @Override
     public ImageDescriptor getImageDescriptor() {
         return null;
     }
 
-    //@Override
+    @Override
     public String getName() {
         return name;
     }
@@ -57,6 +65,10 @@ public class SimulationEditorInput implements IEditorInput {
         return launcherJob;
     }
 
+    public String getLaunchConfigurationName() {
+        return launchConfigurationName;
+    }
+
     public IPersistableElement getPersistable() {
         return null;
     }
@@ -68,6 +80,4 @@ public class SimulationEditorInput implements IEditorInput {
     public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
         return null;
     }
-
-
 }

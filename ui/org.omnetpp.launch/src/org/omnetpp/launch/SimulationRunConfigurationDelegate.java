@@ -58,7 +58,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
 
         // we must use the updated configuration in 'launch' instead the original passed to us
         ILaunchConfiguration configuration = launch.getLaunchConfiguration();
-        final String name = configuration.getName();
+        final String launchConfigurationName = configuration.getName();
 
         if (monitor == null)
             monitor = new NullProgressMonitor();
@@ -133,7 +133,7 @@ public class SimulationRunConfigurationDelegate extends LaunchConfigurationDeleg
                         }
 
                         // open the editor
-                        IEditorInput input = new SimulationEditorInput(name, "localhost", port, launcherjob);
+                        IEditorInput input = new SimulationEditorInput(launchConfigurationName, "localhost", port, launcherjob, launchConfigurationName);
                         IDE.openEditor(workbenchPage, input, IConstants.SIMULATION_EDITOR_ID);
                     }
                     catch (PartInitException e) {
