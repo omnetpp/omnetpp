@@ -64,6 +64,16 @@ public class Simulation {
     public static final String ROOTOBJ_RESULTFILTERS = "resultFilters";
     public static final String ROOTOBJ_RESULTRECORDERS = "resultRecorders";
 
+    public static final int CATEGORY_ALL = ~0;
+    public static final int CATEGORY_MODULES = 0x01;
+    public static final int CATEGORY_QUEUES = 0x02;
+    public static final int CATEGORY_STATISTICS = 0x04;
+    public static final int CATEGORY_MESSAGES = 0x08;
+    public static final int CATEGORY_VARIABLES = 0x10;
+    public static final int CATEGORY_MODPARAMS = 0x20;
+    public static final int CATEGORY_CHANSGATES = 0x40;
+    public static final int CATEGORY_OTHERS = 0x80;
+
     /**
      * See Cmdenv for state transitions
      */
@@ -731,6 +741,38 @@ public class Simulation {
         catch (Exception e) {
             throw new RuntimeException("internal error: support for known C++ base class " + knownBaseClass, e);
         }
+    }
+
+    public List<cObject> searchForObjects(cObject root, String classNamePattern, String fullPathPattern, int categories, int maxCount) throws CommunicationException {
+        List<cObject> result = new ArrayList<cObject>();
+
+        String catStr = "";
+        if ((categories & CATEGORY_ALL) != 0)
+            catStr = "a";
+        else {
+            if ((categories & CATEGORY_MODULES) != 0) catStr += "m";
+            if ((categories & CATEGORY_QUEUES) != 0) catStr += "q";
+            if ((categories & CATEGORY_STATISTICS) != 0) catStr += "s";
+            if ((categories & CATEGORY_MESSAGES) != 0) catStr += "g";
+            if ((categories & CATEGORY_VARIABLES) != 0) catStr += "v";
+            if ((categories & CATEGORY_MODPARAMS) != 0) catStr += "p";
+            if ((categories & CATEGORY_CHANSGATES) != 0) catStr += "c";
+            if ((categories & CATEGORY_OTHERS) != 0) catStr += "o";
+        }
+
+        Object json = getPageContentAsJSON(urlBase + "/sim/search?root=" + root.getObjectId() +
+                (classNamePattern != null ? "&class=" + urlEncode(classNamePattern) : "") +
+                (fullPathPattern != null ? "&fullpath=" + urlEncode(fullPathPattern) : "") +
+                (categories != 0 ? "&cat=" + catStr : "") +
+                (maxCount > 0 ? "&max=" + maxCount : "")
+                );
+
+        @SuppressWarnings("rawtypes")
+        List objects = (List) ((Map)json).get("objects");
+        for (Object objRef : objects)
+            result.add(getObjectByJSONRef((String)objRef));
+
+        return result;
     }
 
     @SuppressWarnings("rawtypes")

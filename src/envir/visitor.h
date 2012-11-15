@@ -59,6 +59,7 @@ class ENVIR_API cCollectObjectsVisitor : public cVisitor
 
 
 /* Category constants for cFilteredCollectObjectsVisitor::setFilterPars() */
+#define CATEGORY_ALL         (~0U)
 #define CATEGORY_MODULES     0x01
 #define CATEGORY_QUEUES      0x02
 #define CATEGORY_STATISTICS  0x04

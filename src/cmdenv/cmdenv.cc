@@ -676,6 +676,57 @@ bool Cmdenv::handleHttpRequest(cHttpRequest *request)
 
         request->print(ss.str().c_str());
     }
+    else if (strcmp(uri, "/sim/search") == 0) {
+        request->print(OK_STATUS);
+        request->print("\n");
+
+        clock_t startTime = clock();
+
+        // take request params
+        cObject *root = getObjectById(atol(commandArgs["root"].c_str()));   //TODO exception handling
+        std::string categoriesParam = commandArgs["cat"];
+        std::string classNamePattern = commandArgs["class"];
+        std::string objectFullPathPattern = commandArgs["fullpath"];
+        int maxCount = atol(commandArgs["max"].c_str());  // 0 for infinite
+
+        // convert categories string to bitfield
+        unsigned int categories = (categoriesParam == "") ? CATEGORY_ALL : 0;  // empty means ALL
+        for (const char *s = categoriesParam.c_str(); *s; s++) {
+            switch (*s) {
+                case 'a': categories = CATEGORY_ALL; break;
+                case 'm': categories |= CATEGORY_MODULES; break;
+                case 'q': categories |= CATEGORY_QUEUES; break;
+                case 's': categories |= CATEGORY_STATISTICS; break;
+                case 'g': categories |= CATEGORY_MESSAGES; break;
+                case 'v': categories |= CATEGORY_VARIABLES; break;
+                case 'p': categories |= CATEGORY_MODPARAMS; break;
+                case 'c': categories |= CATEGORY_CHANSGATES; break;
+                case 'o': categories |= CATEGORY_OTHERS; break;
+            }
+        }
+
+        // execute query
+        cFilteredCollectObjectsVisitor visitor;
+        visitor.setSizeLimit(maxCount);
+        visitor.setFilterPars(categories, classNamePattern.c_str(), objectFullPathPattern.c_str());  //TODO try/catch!!!
+        visitor.process(root);
+
+        // convert result to json
+        JsonObject *result = new JsonObject();
+        JsonArray *jchildren = new JsonArray();
+        for (int i = 0; i < visitor.getArraySize(); i++)
+            jchildren->push_back(jsonWrap(getIdStringForObject(visitor.getArray()[i])));
+        result->put("objects", jchildren);
+
+        std::stringstream ss;
+        result->printOn(ss);
+        delete result;
+
+        double consumedCPU = (clock() - startTime) / (double)CLOCKS_PER_SEC;
+        debug("[http] processing took %lgs\n", consumedCPU);
+
+        request->print(ss.str().c_str());
+    }
     else {
         debug("[http] unrecognized request\n");
         return false; // not handled
