@@ -693,9 +693,9 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         }
     }
 
-    public void populateContextMenu(final MenuManager menu, org.eclipse.swt.graphics.Point p) {
+    public void populateContextMenu(MenuManager menu, int x, int y) {
         System.out.println(this + ": populateContextMenu invoked");
-        SubmoduleFigureEx submoduleFigure = findSubmoduleAt(p.x, p.y);
+        SubmoduleFigureEx submoduleFigure = findSubmoduleAt(x, y);
         if (submoduleFigure == null)
             populateBackgroundContextMenu(menu);
         else

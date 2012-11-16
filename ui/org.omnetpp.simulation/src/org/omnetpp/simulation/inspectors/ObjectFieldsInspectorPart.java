@@ -22,7 +22,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.figures.TooltipFigure;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
@@ -150,7 +149,7 @@ public class ObjectFieldsInspectorPart extends AbstractInspectorPart {
     }
 
     @Override
-    public void populateContextMenu(MenuManager contextMenuManager, Point p) {
+    public void populateContextMenu(MenuManager contextMenuManager, int x, int y) {
         contextMenuManager.add(my(new CloseAction()));
     }
 

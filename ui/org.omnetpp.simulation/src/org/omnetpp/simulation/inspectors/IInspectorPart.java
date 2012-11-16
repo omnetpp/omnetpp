@@ -4,7 +4,6 @@ import org.eclipse.draw2d.IFigure;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
@@ -106,9 +105,9 @@ public interface IInspectorPart {
     void selectionChanged(IStructuredSelection selection);
 
     /**
-     * Add actions to the inspector's context menu for point p.
+     * Add actions to the inspector's context menu for the given x,y inspector layer coordinates.
      */
-    void populateContextMenu(MenuManager menu, Point p);
+    void populateContextMenu(MenuManager menu, int x, int y);
 
     /**
      * Add actions to the floating toolbar.
@@ -116,16 +115,15 @@ public interface IInspectorPart {
     void populateFloatingToolbar(ToolBarManager manager);
 
     /**
-     * Return hover information for what is at the given (canvas) x,y coordinates.
+     * Return hover information for what is at the given x,y inspector layer coordinates.
      * (The point falls inside the inspector area.)
      */
     HoverInfo getHoverFor(int x, int y);
 
     /**
-     * If there's a move/resize handle in the given figure at the given
-     * coordinates (figure coordinates), return a binary OR of the appropriate
-     * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise return 0.
-     * For move operation it should set all four.
+     * If there's a move/resize handle in the given figure at the given x,y inspector layer
+     * coordinates, return a binary OR of the appropriate SWT.TOP, SWT.BOTTOM, SWT.LEFT or
+     * SWT.RIGHT constants, otherwise return 0. For move operation it should set all four.
      *
      * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
      */
@@ -133,7 +131,7 @@ public interface IInspectorPart {
 
     /**
      * For SWT-based inspectors. If there's a move/resize handle in the given control
-     * at the given coordinates (control coordinates), return a binary OR of the appropriate
+     * at the given x,y control coordinates, return a binary OR of the appropriate
      * SWT.TOP, SWT.BOTTOM, SWT.LEFT, SWT.RIGHT constants, otherwise return 0.
      * For move operation it should set all four.
      *

@@ -7,7 +7,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.simulation.canvas.IInspectorContainer;
 import org.omnetpp.simulation.controller.CommunicationException;
@@ -85,7 +84,7 @@ public class InetDummyInspectorPart extends AbstractInspectorPart {
     }
 
     @Override
-    public void populateContextMenu(MenuManager contextMenuManager, Point p) {
+    public void populateContextMenu(MenuManager contextMenuManager, int x, int y) {
         contextMenuManager.add(new Action("Close") {
             @Override
             public void run() {

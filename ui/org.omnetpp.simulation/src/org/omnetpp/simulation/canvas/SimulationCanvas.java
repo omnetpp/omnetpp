@@ -133,10 +133,11 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         menuManager.addMenuListener(new IMenuListener() {
             @Override
             public void menuAboutToShow(IMenuManager manager) {
-                org.eclipse.swt.graphics.Point p = toControl(Display.getCurrent().getCursorLocation());
+                org.eclipse.swt.graphics.Point loc = toControl(Display.getCurrent().getCursorLocation());
+                Point p = translateCanvasToAbsoluteFigureCoordinates(loc.x, loc.y);
                 IInspectorPart inspectorPart = findInspectorAt(p.x, p.y);
                 if (inspectorPart != null)
-                    inspectorPart.populateContextMenu(menuManager, p);
+                    inspectorPart.populateContextMenu(menuManager, p.x, p.y);
             }
         });
 
@@ -533,9 +534,10 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             floatingToolbarSupport.updateFloatingToolbarActions();
     }
 
-    public HoverInfo getHoverFor(int x, int y) {
-        IInspectorPart inspector = findInspectorAt(x, y);
-        return inspector == null ? null : inspector.getHoverFor(x, y);
+    public HoverInfo getHoverFor(int canvasX, int canvasY) {
+        Point p = translateCanvasToAbsoluteFigureCoordinates(canvasX, canvasY);
+        IInspectorPart inspector = findInspectorAt(p.x, p.y);
+        return inspector == null ? null : inspector.getHoverFor(p.x, p.y);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
