@@ -210,7 +210,7 @@ public class MoveResizeSupport {
         simulationCanvas.getContents().addMouseMotionListener(new MouseMotionListener.Stub() {
             @Override
             public void mouseDragged(MouseEvent me) {
-                if ((me.getState()&SWT.BUTTON_MASK) == SWT.BUTTON1) {
+                if ((me.getState()&SWT.BUTTON_MASK) == SWT.BUTTON1 && dragStart != null) { // dragStart should not be null here, but mysteriously it still occurs sometimes (??)
                     backgroundDragged = true;
                     org.eclipse.swt.graphics.Point mouse = Display.getCurrent().getCursorLocation();
                     int dx = mouse.x - dragStart.x;
