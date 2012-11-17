@@ -247,11 +247,30 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         return new Point(x + xoffset, y + yoffset);
     }
 
-    public void addInspectorPart(IInspectorPart inspector) {
-        addInspectorPart(inspector, -1, -1);
+    public void addInspectorPart(IInspectorPart inspector, Rectangle bounds) {
+        Assert.isNotNull(bounds);
+
+        // register the inspector, and add it to the canvas
+        inspectors.add(inspector);
+        IFigure inspectorFigure = inspector.getFigure();
+        getInspectorsLayer().add(inspectorFigure); // must precede location computation, otherwise getPreferredSize() might fail
+        getInspectorsLayer().setConstraint(inspectorFigure, bounds.getCopy());
+
+        // initial refresh
+        try {
+            inspector.refresh();
+        } catch (Exception e) {
+            SimulationPlugin.logError("Error refreshing inspector " + inspector.toString(), e);
+        }
+
+        // if inspector has SWT parts, add listeners to show floating toolbar when mouse is over them
+        Control control = inspector.getSWTControl();
+        if (control != null && floatingToolbarSupport != null)
+            floatingToolbarSupport.addFloatingToolbarSupportTo(control, inspector);
+
     }
 
-    public void addInspectorPart(IInspectorPart inspector, int x, int y) {
+    public void addInspectorPart(IInspectorPart inspector) {
         // register the inspector, and add it to the canvas
         inspectors.add(inspector);
         IFigure inspectorFigure = inspector.getFigure();
@@ -265,11 +284,8 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
         }
 
         // placement on canvas
-        if (x == -1 && y == -1) {
-            Point loc = getLocationForInspector(inspector);
-            x = loc.x; y = loc.y;
-        }
-        getInspectorsLayer().setConstraint(inspectorFigure, new Rectangle(x, y, -1, -1));
+        Point loc = getLocationForInspector(inspector);
+        getInspectorsLayer().setConstraint(inspectorFigure, new Rectangle(loc.x, loc.y, -1, -1));
 
         // if inspector has SWT parts, add listeners to show floating toolbar when mouse is over them
         Control control = inspector.getSWTControl();
@@ -422,16 +438,27 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
     }
 
     public IInspectorPart inspect(cObject object) {
+        IInspectorPart inspector = inspect(object, null, null, true);
+        select(inspector, true);
+        return inspector;
+    }
+
+    public IInspectorPart inspect(cObject object, String inspectorId, Rectangle bounds, boolean reveal) {
         Assert.isNotNull(object);
 
         IInspectorPart inspector = findInspectorFor(object);
-        if (inspector != null) {
-            reveal(inspector);
+        if (inspector != null && (inspectorId == null || inspector.getDescriptor().getId().equals(inspectorId))) { // exists and is the right type
+            if (reveal)
+                reveal(inspector);
         }
         else {
-            inspector = createInspectorFor(object);
-            addInspectorPart(inspector);
-            asyncReveal(inspector);
+            inspector = (inspectorId == null) ? createInspectorFor(object) : createInspectorFor(object, inspectorId);
+            if (bounds == null)
+                addInspectorPart(inspector);
+            else
+                addInspectorPart(inspector, bounds);
+            if (reveal)
+                asyncReveal(inspector);
         }
         select(inspector, true);
         inspector.setFocus();
@@ -441,10 +468,18 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
     protected IInspectorPart createInspectorFor(cObject object) {
         InspectorRegistry inspectorRegistry = SimulationPlugin.getDefault().getInspectorRegistry();
-        InspectorDescriptor bestInspectorType = inspectorRegistry.getBestInspectorType(object);
-        if (bestInspectorType == null)
+        InspectorDescriptor inspectorType = inspectorRegistry.getBestInspectorType(object);
+        if (inspectorType == null)
             throw new RuntimeException("No suitable inspector for object"); // cannot happen, as we have catch-all inspector types
-        return bestInspectorType.create(this, object);
+        return inspectorType.create(this, object);
+    }
+
+    protected IInspectorPart createInspectorFor(cObject object, String inspectorId) {
+        InspectorRegistry inspectorRegistry = SimulationPlugin.getDefault().getInspectorRegistry();
+        InspectorDescriptor inspectorType = inspectorRegistry.getInspectorType(inspectorId);
+        if (inspectorType == null)
+            throw new RuntimeException("No such inspector type: " + inspectorId);
+        return inspectorType.create(this, object);
     }
 
     public void reveal(IInspectorPart inspector) {
@@ -650,4 +685,5 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             }
         }
     }
+
 }
