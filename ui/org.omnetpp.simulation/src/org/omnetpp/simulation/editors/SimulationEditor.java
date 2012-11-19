@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
@@ -31,7 +32,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
@@ -49,11 +49,13 @@ import org.omnetpp.common.ui.HoverInfo;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IHoverInfoProvider;
 import org.omnetpp.common.util.IPredicate;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
+import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
@@ -97,7 +99,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     protected TimelineControl timeline;
 
     protected HoverSupport hoverSupport = new HoverSupport();
-    private List<Item> pendingInspectors = new ArrayList<Item>();
+    private List<InspectorMemento> pendingInspectors = new ArrayList<InspectorMemento>();
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -365,6 +367,39 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             }
         });
 
+        simulationController.addSimulationStateListener(new ISimulationStateListener() {
+
+            @Override
+            public void networkSetUp(SimulationController controller) {
+                try {
+                    loadInspectorList();
+                }
+                catch (Exception e) {
+                    SimulationPlugin.logError("Cannot restore inspector list", e);
+                }
+            }
+
+            @Override
+            public void eventsProcessed(SimulationController controller) {
+                try {
+                    tryOpenPendingInspectors();
+                }
+                catch (Exception e) {
+                    SimulationPlugin.logError("Error restoring pending inspectors", e);
+                }
+            }
+
+            @Override
+            public void beforeNetworkDelete(SimulationController controller) {
+                try {
+                    saveInspectorList();
+                }
+                catch (CoreException e) {
+                    SimulationPlugin.logError("Cannot save inspector list", e);
+                }
+            }
+        });
+
         // we asyncExec this, because the editor is not yet set up at this point
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
@@ -431,6 +466,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                         simulation.setTimeoutMillis(origTimeout);
                     }
 
+                    simulation.setConnected();
+
                     // then run startup tasks (e.g. ask user which network to set up)
                     Display.getDefault().asyncExec(new Runnable() {
                         @Override
@@ -457,8 +494,15 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     protected void runStartupTasks() {
         try {
             // initial refresh, then offer setting up a network
-            simulationController.getSimulation().setConnected();
             simulationController.refreshStatus();
+
+            try {
+                loadInspectorList(); // especially important when we attached to an already running simulation, because then there is no networkSetUp() callback
+            }
+            catch (Exception e) {
+                SimulationPlugin.logError("Error restoring pending inspectors", e);
+            }
+
             if (simulationController.getUIState() == SimState.NONETWORK)
                 SimulationEditorContributor.setupIniConfigAction.run();
         }
@@ -557,6 +601,13 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
     @Override
     public void dispose() {
+        try {
+            saveInspectorList();
+        }
+        catch (CoreException e) {
+            SimulationPlugin.logError("Cannot save inspector list", e);
+        }
+
         super.dispose();
 
         simulationController.dispose();
@@ -743,6 +794,58 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 IAction action = ((ActionContributionItem)item).getAction();
                 if (action instanceof IInspectorAction)
                     ((IInspectorAction) action).setContext(simulationCanvas, selection);
+            }
+        }
+    }
+
+    protected void saveInspectorList() throws CoreException {
+        // collect inspectors
+        List<InspectorMemento> list = new ArrayList<InspectorMemento>();
+        for (IInspectorPart inspector : simulationCanvas.getInspectors()) {
+            cObject object = inspector.getObject();
+            try {
+                object.loadIfUnfilled();
+            }
+            catch (Exception e) {
+                SimulationPlugin.logError(e);
+            }
+            InspectorMemento inspectorMemento = new InspectorMemento(object.getFullPath(), object.getClassName(),
+                    inspector.getDescriptor().getId(), inspector.getFigure().getBounds());
+            list.add(inspectorMemento);
+        }
+
+        // save list
+        String id = getInspectorListId();
+        InspectorList inspectorList = new InspectorList(id, list);
+        inspectorList.save();
+    }
+
+    protected void loadInspectorList() throws CoreException, CommunicationException {
+        String id = getInspectorListId();
+        InspectorList inspectorList = InspectorList.read(id);
+        if (inspectorList != null) {
+            pendingInspectors = new ArrayList<InspectorMemento>(inspectorList.getItems());
+            tryOpenPendingInspectors();
+        }
+    }
+
+    protected String getInspectorListId() {
+        // make an ID that will be the same when this simulation is run again and again
+        String launchConfigName = StringUtils.defaultString(((SimulationEditorInput)getEditorInput()).getLaunchConfigurationName(), "attach");
+        String id = launchConfigName + "%" + simulationController.getSimulation().getConfigName();
+        return id;
+    }
+
+    protected void tryOpenPendingInspectors() throws CommunicationException {
+        if (!pendingInspectors.isEmpty()) {
+            for (InspectorMemento inspectorMemento : pendingInspectors.toArray(new InspectorMemento[]{})) {
+                Simulation simulation = simulationController.getSimulation();
+                cSimulation csimulation = (cSimulation)simulation.getRootObject(Simulation.ROOTOBJ_SIMULATION);
+                List<cObject> objects = simulation.searchForObjects(csimulation, inspectorMemento.objectClassName, inspectorMemento.objectFullPath, Simulation.CATEGORY_ALL, 1);
+                if (!objects.isEmpty()) {
+                    simulationCanvas.inspect(objects.get(0), inspectorMemento.inspectorId, inspectorMemento.bounds, false);
+                    pendingInspectors.remove(inspectorMemento);
+                }
             }
         }
     }

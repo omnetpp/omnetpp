@@ -77,7 +77,7 @@ public class Simulation {
     /**
      * See Cmdenv for state transitions
      */
-    public enum SimState {
+    public enum SimState {  // FIXME still seems fishy around TERMINATED-ERROR-FINISHCALLED -- should be cleaned up. Rename TERMINATED to COMPLETED? define whether they include finish() having been called or not!!
         DISCONNECTED, // no simulation process, e.g. it has terminated
         NONETWORK, READY, RUNNING, TERMINATED /*TODO COMPLETED -- ez egyebkent nincs sose!!*/, ERROR, FINISHCALLED  // as defined in cmdenv.h
         //TODO consider: BUSY (or ==INPROGRESS) and CANCELLED (useful if setupNetwork() and callFinish() can be cancelled)
