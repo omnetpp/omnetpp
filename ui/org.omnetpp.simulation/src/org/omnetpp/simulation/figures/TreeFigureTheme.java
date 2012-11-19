@@ -4,9 +4,12 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.draw2d.Graphics;
 import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 
@@ -44,7 +47,6 @@ public class TreeFigureTheme {
     private static final Image win7Blue_toggleMouseoverClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_closed_mouseover.png");
     private static final Image win7Blue_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_open.png");
     private static final Image win7Blue_toggleMouseoverOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_open_mouseover.png");
-
 
     public TreeFigureTheme() {
     }
@@ -101,8 +103,14 @@ public class TreeFigureTheme {
     }
 
     public Color getSelectionForeground(boolean mouseOver, boolean active) {
-        //TODO StyledText should use this for selected text, instead of colors in the styles
         return listSelectionForeground;
     }
 
+    public StyledString getSelectedItemLabel(StyledString normalLabel, final boolean mouseOver, final boolean active) {
+        return new StyledString(normalLabel.getString(), new Styler() {
+            @Override public void applyStyles(TextStyle textStyle) {
+                textStyle.foreground = getSelectionForeground(mouseOver, active);
+            }
+        });
+    }
 }

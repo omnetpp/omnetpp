@@ -11,7 +11,9 @@ import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.omnetpp.common.color.ColorFactory;
 
 class TreeItemFigure extends Figure {
@@ -149,6 +151,8 @@ class TreeItemFigure extends Figure {
     private ToggleFigure toggleFigure;
     private ImageFigure imageFigure;
     private StyledLabel labelFigure;
+    private StyledString labelStyledString;
+    private StyledString selectedLabelStyledString;
     private boolean isSelected;
     private int level;
 
@@ -179,6 +183,8 @@ class TreeItemFigure extends Figure {
     }
 
     public void setLabel(StyledString label) {
+        labelStyledString = label;
+        selectedLabelStyledString = TreeFigure.getTheme().getSelectedItemLabel(label, false/*FIXME*/, false/*FIXME*/);
         labelFigure.setStyledString(label);
     }
 
@@ -200,6 +206,10 @@ class TreeItemFigure extends Figure {
             return;
 
         this.isSelected = isSelected;
+        if (isSelected)
+            labelFigure.setStyledString(selectedLabelStyledString);
+        else
+            labelFigure.setStyledString(labelStyledString);
         repaint();
     }
 
