@@ -1,5 +1,7 @@
 package org.omnetpp.simulation;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -68,6 +70,15 @@ public class SimulationPlugin extends AbstractUIPlugin {
 
     public EssentialsRegistry getEssentialsRegistry() {
         return essentialsRegistry;
+    }
+
+    public static CoreException wrapIntoCoreException(Throwable exception) {
+        String msg = StringUtils.defaultIfEmpty(exception.getMessage(), exception.getClass().getSimpleName());
+        return wrapIntoCoreException(msg, exception);
+    }
+
+    public static CoreException wrapIntoCoreException(String message, Throwable exception) {
+        return new CoreException(new Status(IStatus.ERROR, PLUGIN_ID, 0, message, exception));
     }
 
     /**

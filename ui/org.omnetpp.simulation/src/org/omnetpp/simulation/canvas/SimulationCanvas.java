@@ -44,7 +44,7 @@ import org.omnetpp.figures.misc.FigureUtils;
 import org.omnetpp.simulation.InspectorRegistry;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.CommunicationException;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.figures.IInspectorFigure;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
@@ -70,7 +70,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
 
     // inspectors, selection handling
     protected List<IInspectorPart> inspectors = new ArrayList<IInspectorPart>();
-    protected ISimulationStateListener simulationListener;
+    protected ISimulationChangeListener simulationChangeListener;
     protected ListenerList selectionChangedListeners = new ListenerList(); // list of selection change listeners (type ISelectionChangedListener)
     protected IStructuredSelection currentSelection = new StructuredSelection();
 

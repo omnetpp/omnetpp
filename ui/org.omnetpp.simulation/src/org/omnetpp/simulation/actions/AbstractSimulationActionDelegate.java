@@ -17,7 +17,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
@@ -32,7 +32,7 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
     private IAction thisAction;
     private SimulationEditor simulationEditor;
 
-    private ISimulationStateListener listener = new ISimulationStateListener() {
+    private ISimulationChangeListener listener = new ISimulationChangeListener() {
         @Override
         public void simulationStateChanged(SimulationController controller) {
             updateState();
@@ -65,10 +65,10 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
         }
 
         if (simulationEditor != null && !simulationEditor.isDisposed())  //XXX action will hold on to dead editors until you switch to another simulation editor!!!
-            simulationEditor.removeSimulationStateListener(listener);
+            simulationEditor.removeSimulationChangeListener(listener);
         simulationEditor = (SimulationEditor) targetEditor;
         if (simulationEditor != null)
-            simulationEditor.addSimulationStateListener(listener);
+            simulationEditor.addSimulationChangeListener(listener);
 
         if (simulationEditor == null)
             setEnabled(false);

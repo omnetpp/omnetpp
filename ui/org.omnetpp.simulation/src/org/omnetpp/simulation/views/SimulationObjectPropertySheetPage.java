@@ -29,7 +29,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
@@ -41,7 +41,7 @@ import org.omnetpp.simulation.ui.SetObjectViewerModeAction;
  *
  * @author Andras
  */
-public class SimulationObjectPropertySheetPage implements IPropertySheetPage, ISimulationEditorChangeListener, ISimulationStateListener {
+public class SimulationObjectPropertySheetPage implements IPropertySheetPage, ISimulationEditorChangeListener, ISimulationChangeListener {
     public static final ImageDescriptor IMG_MODE_AUTO = SimulationPlugin.getImageDescriptor("icons/etool16/treemode_auto.png");
 
     private Composite composite;

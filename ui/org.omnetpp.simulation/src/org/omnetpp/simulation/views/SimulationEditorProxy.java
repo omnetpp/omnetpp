@@ -14,7 +14,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.SimulationPlugin;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
 /**
@@ -30,7 +30,7 @@ public class SimulationEditorProxy {
     private IWorkbenchPage workbenchPage;
     private IPartListener partListener;
     private SimulationEditor associatedSimulationEditor;
-    private List<ISimulationStateListener> simulationStateListeners = new ArrayList<ISimulationStateListener>();
+    private List<ISimulationChangeListener> simulationChangeListeners = new ArrayList<ISimulationChangeListener>();
     private List<ISelectionChangedListener> selectionListeners = new ArrayList<ISelectionChangedListener>();
     private ListenerList editorChangeListeners = new ListenerList(); // of ISimulationEditorChangeListeners
 
@@ -86,16 +86,16 @@ public class SimulationEditorProxy {
     }
 
 
-    public void addSimulationStateListener(ISimulationStateListener listener) {
-        simulationStateListeners.add(listener);
+    public void addSimulationStateListener(ISimulationChangeListener listener) {
+        simulationChangeListeners.add(listener);
         if (associatedSimulationEditor != null)
-            associatedSimulationEditor.addSimulationStateListener(listener);
+            associatedSimulationEditor.addSimulationChangeListener(listener);
     }
 
-    public void removeSimulationStateListener(ISimulationStateListener listener) {
-        simulationStateListeners.remove(listener);
+    public void removeSimulationStateListener(ISimulationChangeListener listener) {
+        simulationChangeListeners.remove(listener);
         if (associatedSimulationEditor != null)
-            associatedSimulationEditor.removeSimulationStateListener(listener);
+            associatedSimulationEditor.removeSimulationChangeListener(listener);
     }
 
     public void addSelectionChangedListener(ISelectionChangedListener listener) {
@@ -127,8 +127,8 @@ public class SimulationEditorProxy {
 
         // remove listeners from old editor
         if (associatedSimulationEditor != null) {
-            for (ISimulationStateListener listener : simulationStateListeners)
-                associatedSimulationEditor.removeSimulationStateListener(listener);
+            for (ISimulationChangeListener listener : simulationChangeListeners)
+                associatedSimulationEditor.removeSimulationChangeListener(listener);
             for (ISelectionChangedListener listener : selectionListeners)
                 associatedSimulationEditor.getSite().getSelectionProvider().removeSelectionChangedListener(listener);
         }
@@ -136,8 +136,8 @@ public class SimulationEditorProxy {
         // add listeners to new editor
         associatedSimulationEditor = editor;
         if (associatedSimulationEditor != null) {
-             for (ISimulationStateListener listener : simulationStateListeners)
-                 associatedSimulationEditor.addSimulationStateListener(listener);
+             for (ISimulationChangeListener listener : simulationChangeListeners)
+                 associatedSimulationEditor.addSimulationChangeListener(listener);
              for (ISelectionChangedListener listener : selectionListeners)
                  associatedSimulationEditor.getSite().getSelectionProvider().addSelectionChangedListener(listener);
         }

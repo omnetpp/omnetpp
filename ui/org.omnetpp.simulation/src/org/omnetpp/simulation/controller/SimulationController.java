@@ -4,9 +4,7 @@ import java.net.SocketException;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.ListenerList;
-import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
@@ -46,7 +44,7 @@ public class SimulationController implements ISimulationCallback {
     private boolean stopRequested;
 
     private ISimulationUICallback simulationUICallback;
-    private ListenerList simulationListeners = new ListenerList(); // listeners we have to notify on changes
+    private ListenerList simulationChangeListeners = new ListenerList(); // listeners we have to notify on changes
 
 
     public SimulationController(Simulation simulation) {
@@ -135,12 +133,12 @@ public class SimulationController implements ISimulationCallback {
         return simulationUICallback;
     }
 
-    public void addSimulationStateListener(ISimulationStateListener listener) {
-        simulationListeners.add(listener);
+    public void addSimulationChangeListener(ISimulationChangeListener listener) {
+        simulationChangeListeners.add(listener);
     }
 
-    public void removeSimulationStateListener(ISimulationStateListener listener) {
-        simulationListeners.remove(listener);
+    public void removeSimulationChangeListener(ISimulationChangeListener listener) {
+        simulationChangeListeners.remove(listener);
     }
 
     public List<ConfigDescription> getConfigDescriptions() throws CommunicationException {
@@ -168,7 +166,7 @@ public class SimulationController implements ISimulationCallback {
 //            animationPlaybackController.jumpToEnd();
 
             currentRunMode = RunMode.STEP;
-            notifyListeners(); // because currentRunMode has changed
+            fireSimulationStateChanged(); // because currentRunMode has changed
             simulation.sendStepCommand();
             lastEventAnimationDone = false;
             refreshUntil(SimState.READY);
@@ -198,7 +196,7 @@ public class SimulationController implements ISimulationCallback {
             Assert.isTrue(mode != RunMode.NONE);
             Assert.isTrue(currentRunMode != RunMode.NONE, "must be running");
             currentRunMode = mode;
-            notifyListeners(); // because run mode has changed
+            fireSimulationStateChanged(); // because run mode has changed
         }
     }
 
@@ -217,7 +215,7 @@ public class SimulationController implements ISimulationCallback {
             Assert.isTrue(simulation.getState() == SimState.READY);
             stopRequested = false;
             currentRunMode = mode;
-            notifyListeners(); // because currentRunMode has changed
+            fireSimulationStateChanged(); // because currentRunMode has changed
             doRun();
         }
         else {
@@ -354,7 +352,7 @@ public class SimulationController implements ISimulationCallback {
         runUntilMessage = null;
         runUntilModule = null;
 
-        notifyListeners(); // because currentRunMode has changed
+        fireSimulationStateChanged(); // because currentRunMode has changed
     }
 
     public void callFinish() throws CommunicationException {
@@ -397,7 +395,7 @@ public class SimulationController implements ISimulationCallback {
                 if (response != null) {
                     // allow the UI to be updated before we pop up an parameter prompt or error dialog
                     simulation.refreshObjectCache();
-                    notifyListeners();
+                    fireSimulationStateChanged();
 
                     // carry out action requested by the simulation
                     if (response instanceof AskParameterRequest) {
@@ -448,14 +446,14 @@ public class SimulationController implements ISimulationCallback {
 
         // UI update
         simulation.refreshObjectCache(); // note: if state is still "running" (shouldn't be), the simulation may have progressed since the last simulation.refreshStatus() call, so results might be inconsistent
-        notifyListeners();
+        fireSimulationStateChanged();
 
         Debug.println("SimulationController.refreshUntil(): " + (System.currentTimeMillis() - startTime) + "ms\n");
     }
 
     @Override
     public void enteringTransientCommunicationFailureMode() {
-        notifyListeners();
+        fireSimulationStateChanged();
 
         Display.getDefault().asyncExec(new Runnable() {
             @Override
@@ -483,12 +481,12 @@ public class SimulationController implements ISimulationCallback {
 
     @Override
     public void leavingTransientCommunicationFailureMode() {
-        notifyListeners();
+        fireSimulationStateChanged();
     }
 
     @Override
     public void fatalCommunicationError(SocketException e) {
-        notifyListeners();
+        fireSimulationStateChanged();
     }
 
     @Override
@@ -497,24 +495,18 @@ public class SimulationController implements ISimulationCallback {
         DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
             @Override
             public void run() {
-                notifyListeners();
+                fireSimulationStateChanged();
             }
         });
     }
 
-    protected void notifyListeners() {
-        for (final Object listener : simulationListeners.getListeners()) {
-            SafeRunner.run(new ISafeRunnable() {
-                @Override
-                public void run() throws Exception {
-                    ((ISimulationStateListener) listener).simulationStateChanged(SimulationController.this);
-                }
-
-                @Override
-                public void handleException(Throwable e) {
-                    SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
-                }
-            });
+    protected void fireSimulationStateChanged() {
+        for (final Object listener : simulationChangeListeners.getListeners()) {
+            try {
+                ((ISimulationChangeListener) listener).simulationStateChanged(this);
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
+            }
         }
     }
 

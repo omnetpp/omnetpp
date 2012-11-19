@@ -16,7 +16,7 @@ import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
@@ -30,7 +30,7 @@ import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
  * @author Andras
  */
 //FIXME hasznaljuk a sajat hoverSupportunkat, ne az editoret!!! (forget() nem megy!!!)
-public class ObjectTreeView extends ViewWithMessagePart implements ISimulationEditorChangeListener, ISimulationStateListener {
+public class ObjectTreeView extends ViewWithMessagePart implements ISimulationEditorChangeListener, ISimulationChangeListener {
     // note: view ID is defined in IConstants.java
     protected ObjectFieldsViewer viewer;
     protected SimulationEditorProxy simulationEditorProxy;

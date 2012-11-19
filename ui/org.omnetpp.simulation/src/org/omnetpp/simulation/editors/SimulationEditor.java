@@ -2,6 +2,7 @@ package org.omnetpp.simulation.editors;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -30,6 +31,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
@@ -51,7 +53,7 @@ import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
@@ -95,6 +97,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     protected TimelineControl timeline;
 
     protected HoverSupport hoverSupport = new HoverSupport();
+    private List<Item> pendingInspectors = new ArrayList<Item>();
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
@@ -226,7 +229,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationCanvas.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 
         // update inspectors when something happens in the simulation
-        simulationController.addSimulationStateListener(new ISimulationStateListener() {
+        simulationController.addSimulationChangeListener(new ISimulationChangeListener() {
             @Override
             public void simulationStateChanged(SimulationController controller) {
                 simulationCanvas.refreshInspectors();
@@ -332,7 +335,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 //        getSite().setSelectionProvider(animationCanvas);  //TODO does not work for now
 
         // update status display when something happens to the simulation
-        simulationController.addSimulationStateListener(new ISimulationStateListener() {
+        simulationController.addSimulationChangeListener(new ISimulationChangeListener() {
             @Override
             public void simulationStateChanged(final SimulationController controller) {
 //                if (controller.getState() == SimState.DISCONNECTED || controller.getState() == SimState.NONETWORK)
@@ -594,12 +597,12 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         return hoverSupport;
     }
 
-    public void addSimulationStateListener(ISimulationStateListener listener) {
-        simulationController.addSimulationStateListener(listener);
+    public void addSimulationChangeListener(ISimulationChangeListener listener) {
+        simulationController.addSimulationChangeListener(listener);
     }
 
-    public void removeSimulationStateListener(ISimulationStateListener listener) {
-        simulationController.removeSimulationStateListener(listener);
+    public void removeSimulationChangeListener(ISimulationChangeListener listener) {
+        simulationController.removeSimulationChangeListener(listener);
     }
 
     protected void updateStatusDisplay() {

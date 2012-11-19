@@ -5,7 +5,7 @@ package org.omnetpp.simulation.controller;
  *
  * @author Andras
  */
-public interface ISimulationStateListener {
+public interface ISimulationChangeListener {
     /**
      * Called when the simulation's state has changed
      */

@@ -17,7 +17,7 @@ import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.canvas.SelectionUtils;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
+import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
@@ -29,7 +29,7 @@ import org.omnetpp.simulation.ui.TextViewer;
  *
  * @author Andras
  */
-public class ModuleOutputView extends ViewWithMessagePart implements ISimulationEditorChangeListener, ISimulationStateListener, ISelectionChangedListener {
+public class ModuleOutputView extends ViewWithMessagePart implements ISimulationEditorChangeListener, ISimulationChangeListener, ISelectionChangedListener {
     // note: view ID is defined in IConstants.java
     protected TextViewer viewer;
     protected MenuManager contextMenuManager = new MenuManager("#PopupMenu");
