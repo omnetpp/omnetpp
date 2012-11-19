@@ -9,20 +9,18 @@ import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
 import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.geometry.Dimension;
+import org.eclipse.draw2d.geometry.Point;
 import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.StyledString;
-import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.TextStyle;
-import org.omnetpp.common.color.ColorFactory;
 
 class TreeItemFigure extends Figure {
 
     static class ToggleFigure extends Figure{
+        private static final Dimension preferredSize = new Dimension(16,16);
 
         boolean isExpanded;
         boolean isMouseOver;
-        int [] vertices = new int[6];
 
         MouseListener mouseListener = new MouseListener.Stub() {
             @Override
@@ -56,36 +54,14 @@ class TreeItemFigure extends Figure {
 
         @Override
         public Dimension getPreferredSize(int wHint, int hHint) {
-            return isExpanded ? new Dimension(9, 7) : new Dimension(7,9);
+            return preferredSize;
         }
 
         @Override
         public void paint(Graphics graphics) {
-            graphics.setForegroundColor(ColorFactory.BLACK);
-            graphics.setBackgroundColor(ColorFactory.BLACK);
-            Rectangle area = getBounds();
-            int x = area.x, y = area.y, w = area.width, h = area.height;
-            if (isExpanded) {
-                vertices[0] = x;
-                vertices[1] = y;
-                vertices[2] = x+w;
-                vertices[3] = y;
-                vertices[4] = x+w/2;
-                vertices[5] = y+h;
-            }
-            else {
-                vertices[0] = x;
-                vertices[1] = y;
-                vertices[2] = x;
-                vertices[3] = y+h;
-                vertices[4] = x+w;
-                vertices[5] = y+h/2;
-            }
-
-            if (isMouseOver)
-                graphics.fillPolygon(vertices);
-            else
-                graphics.drawPolygon(vertices);
+            Rectangle bounds = getBounds();
+            Point centerLoc = new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+            TreeFigure.getTheme().paintToggle(graphics, centerLoc, isExpanded, false/*fixme*/, isMouseOver, true/*FIXME*/);
         }
 
         private void onMouseReleased(MouseEvent event) {
