@@ -12,6 +12,7 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.util.DisplayUtils;
+import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation.AskParameterRequest;
 import org.omnetpp.simulation.controller.Simulation.AskYesNoRequest;
@@ -45,6 +46,7 @@ public class SimulationController implements ISimulationCallback {
 
     private ISimulationUICallback simulationUICallback;
     private ListenerList simulationChangeListeners = new ListenerList(); // listeners we have to notify on changes
+    private ListenerList simulationStateListeners = new ListenerList(); // listeners we have to notify on changes XXX bad name
 
 
     public SimulationController(Simulation simulation) {
@@ -141,23 +143,40 @@ public class SimulationController implements ISimulationCallback {
         simulationChangeListeners.remove(listener);
     }
 
+    public void addSimulationStateListener(ISimulationStateListener listener) {
+        simulationStateListeners.add(listener);
+    }
+
+    public void removeSimulationStateListener(ISimulationStateListener listener) {
+        simulationStateListeners.remove(listener);
+    }
+
     public List<ConfigDescription> getConfigDescriptions() throws CommunicationException {
         return simulation.getConfigDescriptions();
     }
 
     public void setupRun(String configName, int runNumber) throws CommunicationException {
+        if (StringUtils.isNotEmpty(simulation.getNetworkName()))
+            fireBeforeNetworkDelete();
         simulation.sendSetupRunCommand(configName, runNumber);
         refreshUntil(SimState.READY); //TODO in background thread, plus callback in the end?
+        fireNetworkSetUp();
     }
 
     public void setupNetwork(String networkName) throws CommunicationException {
+        if (StringUtils.isNotEmpty(simulation.getNetworkName()))
+            fireBeforeNetworkDelete();
         simulation.sendSetupNetworkCommand(networkName);
         refreshUntil(SimState.READY); //TODO in background thread, plus callback in the end?
+        fireNetworkSetUp();
     }
 
     public void rebuildNetwork() throws CommunicationException {
+        if (StringUtils.isNotEmpty(simulation.getNetworkName()))
+            fireBeforeNetworkDelete();
         simulation.sendRebuildNetworkCommand();
         refreshUntil(SimState.READY); //TODO in background thread, plus callback in the end?
+        fireNetworkSetUp();
     }
 
     public void step() throws CommunicationException {
@@ -170,6 +189,7 @@ public class SimulationController implements ISimulationCallback {
             simulation.sendStepCommand();
             lastEventAnimationDone = false;
             refreshUntil(SimState.READY);
+            fireEventsProcessed();
 
             // animate it
             doNowOrAfterAnimation(true, resetRunState);
@@ -283,6 +303,7 @@ public class SimulationController implements ISimulationCallback {
 
             // ...and wait for it to complete
             refreshUntil(SimState.READY);  //XXX note: error dialog will *precede* animation of last event -- weird!
+            fireEventsProcessed();
 
             boolean animate = (currentRunMode == RunMode.NORMAL);
 
@@ -504,6 +525,36 @@ public class SimulationController implements ISimulationCallback {
         for (final Object listener : simulationChangeListeners.getListeners()) {
             try {
                 ((ISimulationChangeListener) listener).simulationStateChanged(this);
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
+            }
+        }
+    }
+
+    protected void fireNetworkSetUp() {
+        for (final Object listener : simulationStateListeners.getListeners()) {
+            try {
+                ((ISimulationStateListener) listener).networkSetUp(this);
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
+            }
+        }
+    }
+
+    protected void fireEventsProcessed() {
+        for (final Object listener : simulationStateListeners.getListeners()) {
+            try {
+                ((ISimulationStateListener) listener).eventsProcessed(this);
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
+            }
+        }
+    }
+
+    protected void fireBeforeNetworkDelete() {
+        for (final Object listener : simulationStateListeners.getListeners()) {
+            try {
+                ((ISimulationStateListener) listener).beforeNetworkDelete(this);
             } catch (Exception e) {
                 SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
             }
