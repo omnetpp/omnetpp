@@ -43,7 +43,6 @@ public class TreeFigureTheme {
 
     // Tree plus/minus images.
     // note: load images unconditionally, so we always detect if something goes wrong with them, regardless of development platform
-    // TODO: edit osx images and linux _mouseover images
     private static final Image win7Blue_toggleClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_closed.png");
     private static final Image win7Blue_toggleMouseoverClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_closed_mouseover.png");
     private static final Image win7Blue_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_open.png");
@@ -53,9 +52,9 @@ public class TreeFigureTheme {
     private static final Image linux_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_linux_open.png");
     private static final Image linux_toggleMouseoverOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_linux_open_mouseover.png");
     private static final Image osx_toggleClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_closed.png");
-    private static final Image osx_toggleMouseoverClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_closed_mouseover.png");
+    private static final Image osx_toggleSelectedClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_closed_selected.png");
     private static final Image osx_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open.png");
-    private static final Image osx_toggleMouseoverOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open_mouseover.png");
+    private static final Image osx_toggleSelectedOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open_selected.png");
 
     public TreeFigureTheme() {
     }
@@ -108,10 +107,10 @@ public class TreeFigureTheme {
                 image = mouseOver ? linux_toggleMouseoverClosed : linux_toggleClosed;
         }
         else if (isOSX) {
-            if (expanded)
-                image = mouseOver ? osx_toggleMouseoverOpen : osx_toggleOpen;
+            if (selected && active)
+                image = expanded ? osx_toggleSelectedOpen : osx_toggleSelectedClosed;
             else
-                image = mouseOver ? osx_toggleMouseoverClosed : osx_toggleClosed;
+                image = expanded ? osx_toggleOpen : osx_toggleClosed;
         }
 
         if (image != null) {
