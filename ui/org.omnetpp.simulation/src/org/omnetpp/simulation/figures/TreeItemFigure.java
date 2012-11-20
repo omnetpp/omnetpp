@@ -78,8 +78,8 @@ class TreeItemFigure extends Figure {
         final static int vmargin = 2;
         private static final int indent = 10;
         final static int spacing = 2;
-        final static int toggleWidth = 12;
-        final static int toggleHeight = 10;
+        final static int toggleWidth = 16;
+        final static int toggleHeight = 16;
 
         @Override
         protected Dimension calculatePreferredSize(IFigure container, int wHint, int hHint) {
@@ -233,6 +233,8 @@ class TreeItemFigure extends Figure {
     @Override
     protected void paintFigure(Graphics graphics) {
         TreeFigureTheme theme = TreeFigure.getTheme();
-        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, 200 /*FIXME*/, isSelected, isMouseOver, isActive());
+        Rectangle imageBounds = imageFigure.getBounds();
+        Rectangle labelBounds = labelFigure.getBounds();
+        theme.paintBackground(graphics, getBounds(), imageBounds.x, labelBounds.right() - imageBounds.x, isSelected, isMouseOver, isActive());
     }
 }
