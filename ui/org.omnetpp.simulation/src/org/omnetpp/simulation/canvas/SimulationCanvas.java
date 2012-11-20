@@ -414,6 +414,9 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             }
         }
 
+        if (!inspectors.isEmpty())
+            inspectors.get(0).setFocus();
+
         return inspectors;
     }
 
@@ -430,6 +433,7 @@ public class SimulationCanvas extends FigureCanvas implements IInspectorContaine
             asyncReveal(inspector);
         }
         select(inspector, true);
+        inspector.setFocus();
 
         return inspector;
     }

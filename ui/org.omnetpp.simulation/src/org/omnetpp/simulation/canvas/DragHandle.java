@@ -57,6 +57,7 @@ public class DragHandle extends ControlContribution {
                 moveOffsetY = figureBounds.y - pp.y;
                 dragHandle.setCursor(DRAG_CURSOR);
                 inspector.raiseToTop();
+                inspector.setFocus();
 
                 // By default draw2d updates canvas bounds continually while dragging, which
                 // results in a weird effect: when dragging up an inspector from near the bottom

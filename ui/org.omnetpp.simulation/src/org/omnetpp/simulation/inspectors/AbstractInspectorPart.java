@@ -35,6 +35,7 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         this.inspectorContainer = parent;
 
         figure = createFigure();
+        figure.setRequestFocusEnabled(true);
     }
 
     @Override
@@ -69,6 +70,11 @@ public abstract class AbstractInspectorPart implements IInspectorPart, IAdaptabl
         siblings.remove(figure);
         siblings.add(figure);
         figure.getParent().invalidate();
+    }
+
+    @Override
+    public void setFocus() {
+        figure.requestFocus();
     }
 
     public void dispose() {

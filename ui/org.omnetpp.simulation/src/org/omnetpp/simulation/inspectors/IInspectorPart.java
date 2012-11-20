@@ -63,6 +63,11 @@ public interface IInspectorPart {
     void raiseToTop();
 
     /**
+     * Give the inspector keyboard focus.
+     */
+    void setFocus();
+
+    /**
      * Return the inspector's root figure.
      */
     IInspectorFigure getFigure();
@@ -135,6 +140,4 @@ public interface IInspectorPart {
      * See FigureUtils.getXxxDragOperation() methods for many useful implementations.
      */
     int getDragOperation(Control control, int x, int y);
-
-
 }
