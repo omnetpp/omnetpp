@@ -16,8 +16,8 @@ import org.eclipse.swt.graphics.Image;
 
 class TreeItemFigure extends Figure {
 
-    static class ToggleFigure extends Figure{
-        private static final Dimension preferredSize = new Dimension(16,16);
+    class ToggleFigure extends Figure{
+        private final Dimension preferredSize = new Dimension(16,16);
 
         boolean isExpanded;
         boolean isMouseOver;
@@ -61,7 +61,7 @@ class TreeItemFigure extends Figure {
         public void paint(Graphics graphics) {
             Rectangle bounds = getBounds();
             Point centerLoc = new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-            TreeFigure.getTheme().paintToggle(graphics, centerLoc, isExpanded, false/*fixme*/, isMouseOver, true/*FIXME*/);
+            TreeFigure.getTheme().paintToggle(graphics, centerLoc, isExpanded, TreeItemFigure.this.isSelected, isMouseOver, TreeItemFigure.this.isActive());
         }
 
         private void onMouseReleased(MouseEvent event) {
@@ -131,7 +131,26 @@ class TreeItemFigure extends Figure {
     private StyledString labelStyledString;
     private StyledString selectedLabelStyledString;
     private boolean isSelected;
+    private boolean isMouseOver;
     private int level;
+
+    MouseMotionListener mouseMotionListener = new MouseMotionListener.Stub() {
+        @Override
+        public void mouseEntered(MouseEvent event) {
+            if (!isMouseOver) {
+                isMouseOver = true;
+                repaint();
+            }
+        }
+
+        @Override
+        public void mouseExited(MouseEvent event) {
+            if (isMouseOver) {
+                isMouseOver = false;
+                repaint();
+            }
+        }
+    };
 
     public TreeItemFigure(TreeFigure tree, Object content, int level, boolean hasChildren) {
         this.tree = tree;
@@ -166,7 +185,7 @@ class TreeItemFigure extends Figure {
 
     public void setLabel(StyledString label) {
         labelStyledString = label;
-        selectedLabelStyledString = TreeFigure.getTheme().getSelectedItemLabel(label, false/*FIXME*/, false/*FIXME*/);
+        selectedLabelStyledString = TreeFigure.getTheme().getSelectedItemLabel(label, isMouseOver, isActive());
         labelFigure.setStyledString(label);
     }
 
@@ -199,6 +218,14 @@ class TreeItemFigure extends Figure {
         return isSelected;
     }
 
+    public boolean isActive() {
+        return tree.hasFocus();
+    }
+
+    public boolean isMouseOver() {
+        return isMouseOver;
+    }
+
     public Figure getToggle() {
         return toggleFigure;
     }
@@ -206,6 +233,6 @@ class TreeItemFigure extends Figure {
     @Override
     protected void paintFigure(Graphics graphics) {
         TreeFigureTheme theme = TreeFigure.getTheme();
-        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, 200 /*FIXME*/, isSelected, false /*FIXME*/, tree.hasFocus());
+        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, 200 /*FIXME*/, isSelected, isMouseOver, isActive());
     }
 }
