@@ -15,6 +15,7 @@ import org.eclipse.draw2d.KeyListener;
 import org.eclipse.draw2d.LineBorder;
 import org.eclipse.draw2d.MouseEvent;
 import org.eclipse.draw2d.MouseListener;
+import org.eclipse.draw2d.MouseMotionListener;
 import org.eclipse.draw2d.Panel;
 import org.eclipse.draw2d.ScrollPane;
 import org.eclipse.draw2d.geometry.Dimension;
@@ -34,6 +35,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
 
@@ -42,7 +44,7 @@ import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
  * provider and content provider. Currently does not support the
  * CHECK and VIRTUAL styles.
  *
- * @author Tomi
+ * @author Tomi, Andras
  */
 //TODO styles: SINGLE, MULTI
 public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
@@ -109,6 +111,41 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         }
     };
 
+    private boolean isMouseOver = false;
+    private int enterExitCounter = 0;
+
+    // A bloody overcomplicated way of getting notified when the mouse enters or leaves the tree.
+    // The problem is brain-damaged draw2d mouse handling that tells you the mouse "exited" the tree
+    // if you move it over a tree item -- so we have to add a listener to each subfigure. And we need
+    // the DelayedJob to remove the flicker when the mouse moves from one tree item to another (exit-enter).
+    // --Andras
+    private MouseMotionListener mouseMotionListener = new MouseMotionListener.Stub() {
+        public void mouseEntered(MouseEvent me) {
+            enterExitCounter++;
+        }
+        public void mouseExited(MouseEvent me) {
+            enterExitCounter--;
+            mouseOverUpdateJob.restartTimer();
+        }
+        public void mouseHover(MouseEvent me) {
+            mouseOverUpdateJob.restartTimer();
+        }
+    };
+
+    private DelayedJob mouseOverUpdateJob = new DelayedJob(100) {
+        @Override
+        public void run() {
+            if (enterExitCounter>0 && !isMouseOver) {
+                isMouseOver = true;
+                handleMouseEntered();
+            }
+            else if (enterExitCounter==0 && isMouseOver) {
+                isMouseOver = false;
+                handleMouseExited();
+            }
+        }
+    };
+
     /**
      * Constructor.
      */
@@ -128,6 +165,7 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
 
         addKeyListener(itemKeyPressedListener);
         addFocusListener(focusListener);
+        addMouseMotionListener(mouseMotionListener);
     }
 
     public Dimension getMaximumSize() {
@@ -186,6 +224,10 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         selectionListeners.remove(listener);
     }
 
+    public boolean isMouseOver() {
+        return isMouseOver;
+    }
+
     protected void rebuild() {
         contentsPane.removeAll();
         if (contentProvider == null || labelProvider == null || input == null)
@@ -215,8 +257,12 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         contentsPane.add(item, index);
         contentsPane.setConstraint(item, new GridData(GridData.FILL, GridData.CENTER, true, false));
         item.addMouseListener(itemMouseClickListener);
-        if (item.getToggle() != null)
+        item.addMouseMotionListener(mouseMotionListener);
+
+        if (item.getToggle() != null) {
             item.getToggle().addMouseListener(toggleMouseListener);
+            item.getToggle().addMouseMotionListener(mouseMotionListener);
+        }
         return item;
     }
 
@@ -232,9 +278,12 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
     protected void handleItemRemoved(IFigure item) {
         if (item instanceof TreeItemFigure) {
             item.removeMouseListener(itemMouseClickListener);
+            item.removeMouseMotionListener(mouseMotionListener);
             IFigure toggle = ((TreeItemFigure)item).getToggle();
-            if (toggle != null)
+            if (toggle != null) {
                 toggle.removeMouseListener(toggleMouseListener);
+                toggle.removeMouseMotionListener(mouseMotionListener);
+            }
             if (item == selectionAnchorItem)
                 selectionAnchorItem = null;
             if (item == activeItem)
@@ -523,6 +572,14 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
                 SimulationPlugin.logError(e);
             }
         }
+    }
+
+    protected void handleMouseEntered() {
+        repaint();
+    }
+
+    protected void handleMouseExited() {
+        repaint();
     }
 
     @Override

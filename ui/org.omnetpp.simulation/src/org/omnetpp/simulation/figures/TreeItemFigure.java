@@ -67,7 +67,7 @@ class TreeItemFigure extends Figure {
         public void paint(Graphics graphics) {
             Rectangle bounds = getBounds();
             Point centerLoc = new Point(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
-            TreeFigure.getTheme().paintToggle(graphics, centerLoc, isExpanded, TreeItemFigure.this.isSelected, isMouseOver, TreeItemFigure.this.isActive());
+            TreeFigure.getTheme().paintToggle(graphics, centerLoc, isExpanded, TreeItemFigure.this.isSelected, isMouseOver, TreeItemFigure.this.isActive(), tree.isMouseOver());
         }
 
         private void onMouseReleased(MouseEvent event) {
@@ -140,7 +140,7 @@ class TreeItemFigure extends Figure {
     private boolean isMouseOver;
     private int level;
 
-    MouseMotionListener mouseMotionListener = new MouseMotionListener.Stub() {
+    private MouseMotionListener mouseMotionListener = new MouseMotionListener.Stub() {
         @Override
         public void mouseEntered(MouseEvent event) {
             if (!isMouseOver) {
@@ -171,6 +171,7 @@ class TreeItemFigure extends Figure {
             add(toggleFigure);
         add(imageFigure);
         add(labelFigure);
+        addMouseMotionListener(mouseMotionListener);
     }
 
     public TreeFigure getTree() {
@@ -241,6 +242,6 @@ class TreeItemFigure extends Figure {
         TreeFigureTheme theme = TreeFigure.getTheme();
         Rectangle imageBounds = imageFigure.getBounds();
         Rectangle labelBounds = labelFigure.getBounds();
-        theme.paintBackground(graphics, getBounds(), imageBounds.x, labelBounds.right() - imageBounds.x, isSelected, isMouseOver, isActive());
+        theme.paintBackground(graphics, getBounds(), imageBounds.x, labelBounds.right() - imageBounds.x, isSelected, isMouseOver, isActive(), tree.isMouseOver());
     }
 }

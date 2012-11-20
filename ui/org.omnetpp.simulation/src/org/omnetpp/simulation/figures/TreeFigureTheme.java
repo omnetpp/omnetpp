@@ -18,18 +18,19 @@ import org.omnetpp.simulation.SimulationPlugin;
  *
  * @author Andras
  */
-//FIXME Linux colors are actually Ubuntu Ambiance colors, which will look weird in other distros/desktop/themes! maybe recognize from the system colors if GUI is NOT Ambiance, and fall back to system colors then?
-//FIXME mouse-over effects are missing in the win7 theme
 public class TreeFigureTheme {
-    // Platform detection
-    private static boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
-    private static boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
-    private static boolean isOSX = Platform.getOS().equals(Platform.OS_MACOSX);
+    enum Theme { Windows7Blue, UbuntuAmbiance, MacOSX, Generic };
+    private static final Theme theme;
+
+    private static final boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
+    private static final boolean isLinux = Platform.getOS().equals(Platform.OS_LINUX);
+    private static final boolean isOSX = Platform.getOS().equals(Platform.OS_MACOSX);
 
     // Colors
     private static final Color win7Blue_selectionBorder = new Color(null, 132, 172, 221);
     private static final Color win7Blue_selectionFillTop = new Color(null, 242, 248, 255);
     private static final Color win7Blue_selectionFillBottom = new Color(null, 208, 229, 255);
+    private static final Color win7Blue_selectionForeground = new Color(null, 0, 0, 0);
 
     private static final Color win7Blue_inactiveSelectionBorder = new Color(null, 217, 217, 217);
     private static final Color win7Blue_inactiveSelectionFillTop = new Color(null, 250, 250, 250);
@@ -40,17 +41,20 @@ public class TreeFigureTheme {
     private static final Color win7Blue_mouseoverFillBottom = new Color(null, 235, 243, 253);
 
     // Note: these linux colors (and images) are from the Ubuntu Ambiance (12.04) theme
-    private static final Color linux_selectionBorder = new Color(null, 235, 110, 60);
-    private static final Color linux_selectionFillTop = new Color(null, 244, 125, 76);
-    private static final Color linux_selectionFillBottom = new Color(null, 235, 110, 60);
+    private static final Color ubuntuAmbiance_selectionBorder = new Color(null, 235, 110, 60);
+    private static final Color ubuntuAmbiance_selectionFillTop = new Color(null, 244, 125, 76);
+    private static final Color ubuntuAmbiance_selectionFillBottom = new Color(null, 235, 110, 60);
 
-    private static final Color linux_inactiveSelectionBorder = new Color(null, 218, 216, 213);
-    private static final Color linux_inactiveSelectionFillTop = new Color(null, 235, 234, 233);
-    private static final Color linux_inactiveSelectionFillBottom = new Color(null, 218, 216, 213);
+    private static final Color ubuntuAmbiance_inactiveSelectionBorder = new Color(null, 218, 216, 213);
+    private static final Color ubuntuAmbiance_inactiveSelectionFillTop = new Color(null, 235, 234, 233);
+    private static final Color ubuntuAmbiance_inactiveSelectionFillBottom = new Color(null, 218, 216, 213);
 
     private static final Color listSelectionBackground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION);
     private static final Color listSelectionForeground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
     private static final Color genericInactiveSelectionBackground = new Color(null, 229, 229, 229);
+
+    private static final Color win7Blue_listSelectionBackground = new Color(null, 51, 153, 255); // for recognizing whether Windows is set to the default blue theme
+    private static final Color ubuntuAmbiance_listSelectionBackground = new Color(null, 240, 119, 70); // for recognizing whether Linux uses the Ubuntu Ambiance theme
 
     // Tree plus/minus images.
     // note: load images unconditionally, so we always detect if something goes wrong with them, regardless of development platform
@@ -69,6 +73,23 @@ public class TreeFigureTheme {
     private static final Image osx_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open.png");
     private static final Image osx_toggleSelectedOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open_selected.png");
 
+    static {
+        if (isWindows && closeEnough(listSelectionBackground, win7Blue_listSelectionBackground, 20))
+            theme = Theme.Windows7Blue;
+        else if (isLinux && closeEnough(listSelectionBackground, ubuntuAmbiance_listSelectionBackground, 20))
+            theme = Theme.UbuntuAmbiance;
+        else if (isOSX)
+            theme = Theme.MacOSX;
+        else
+            theme = Theme.Generic;
+}
+
+    private static boolean closeEnough(Color a, Color b, int tolerance) {
+        return Math.abs(a.getRed()-b.getRed()) <= tolerance &&
+               Math.abs(a.getGreen()-b.getGreen()) <= tolerance &&
+               Math.abs(a.getBlue()-b.getBlue()) <= tolerance;
+    }
+
 
     public TreeFigureTheme() {
     }
@@ -76,31 +97,31 @@ public class TreeFigureTheme {
     /**
      * "active" = tree is focused or not
      */
-    public void paintBackground(Graphics graphics, Rectangle r, int imageIndent, int contentWidth, boolean selected, boolean mouseOver, boolean active) {
+    public void paintBackground(Graphics graphics, Rectangle r, int imageIndent, int contentWidth, boolean selected, boolean mouseOver, boolean treeActive, boolean mouseOverTree) {
         if (selected || mouseOver) {
-            boolean shouldIndent = isWindows; // other systems seem to draw full-width selection bar
-            r = shouldIndent ? new Rectangle(r.x + imageIndent, r.y, contentWidth, r.height) : r.getCopy();
+            boolean shouldIndent = (theme == Theme.Windows7Blue); // other systems seem to draw full-width selection bar
+            r = shouldIndent ? new Rectangle(r.x + imageIndent - 2, r.y, contentWidth + 4, r.height) : r.getCopy();
             r.height--; r.width--;
-            if (isWindows) {
-                // assume default Windows 7 theme
-                if (selected && active)
+
+            if (theme == Theme.Windows7Blue) {
+                if (selected && (treeActive || mouseOver))
                     drawGradientRoundedRect(graphics, r, win7Blue_selectionBorder, win7Blue_selectionFillTop, win7Blue_selectionFillBottom, 4);
-                else if (selected && !active)
+                else if (selected && !treeActive)
                     drawGradientRoundedRect(graphics, r, win7Blue_inactiveSelectionBorder, win7Blue_inactiveSelectionFillTop, win7Blue_inactiveSelectionFillBottom, 4);
                 else if (mouseOver)
                     drawGradientRoundedRect(graphics, r, win7Blue_mouseoverBorder, win7Blue_mouseoverFillTop, win7Blue_mouseoverFillBottom, 4);
             }
-            else if (isLinux) {
-                // Ubuntu 12.4 default
-                if (selected && active)
-                    drawGradientRoundedRect(graphics, r, linux_selectionBorder, linux_selectionFillTop, linux_selectionFillBottom, 0);
-                else if (selected && !active)
-                    drawGradientRoundedRect(graphics, r, linux_inactiveSelectionBorder, linux_inactiveSelectionFillTop, linux_inactiveSelectionFillBottom, 0);
+            else if (theme == Theme.UbuntuAmbiance) {
+                if (selected && treeActive)
+                    drawGradientRoundedRect(graphics, r, ubuntuAmbiance_selectionBorder, ubuntuAmbiance_selectionFillTop, ubuntuAmbiance_selectionFillBottom, 0);
+                else if (selected && !treeActive)
+                    drawGradientRoundedRect(graphics, r, ubuntuAmbiance_inactiveSelectionBorder, ubuntuAmbiance_inactiveSelectionFillTop, ubuntuAmbiance_inactiveSelectionFillBottom, 0);
             }
-            else {
-                // plain
-                graphics.setBackgroundColor(active ? listSelectionBackground : genericInactiveSelectionBackground);
-                graphics.fillRectangle(r);
+            else /* MacOSX and Generic */ {
+                if (selected) {
+                    graphics.setBackgroundColor(treeActive ? listSelectionBackground : genericInactiveSelectionBackground);
+                    graphics.fillRectangle(r);
+                }
             }
         }
     }
@@ -113,22 +134,24 @@ public class TreeFigureTheme {
         graphics.drawRoundRectangle(r, cornerRadius, cornerRadius);
     }
 
-    public void paintToggle(Graphics graphics, Point centerLoc, boolean expanded, boolean selected, boolean mouseOver, boolean active) {
+    public void paintToggle(Graphics graphics, Point centerLoc, boolean expanded, boolean selected, boolean mouseOver, boolean treeActive, boolean mouseOverTree) {
         Image image = null;
-        if (isWindows) {
-            if (expanded)
+        if (theme == Theme.Windows7Blue) {
+            if (!treeActive && !mouseOverTree)
+                image = null;
+            else if (expanded)
                 image = mouseOver ? win7Blue_toggleMouseoverOpen : win7Blue_toggleOpen;
             else
                 image = mouseOver ? win7Blue_toggleMouseoverClosed : win7Blue_toggleClosed;
         }
-        else if (isLinux) {
+        else if (theme == Theme.UbuntuAmbiance) {
             if (expanded)
                 image = mouseOver ? linux_toggleMouseoverOpen : linux_toggleOpen;
             else
                 image = mouseOver ? linux_toggleMouseoverClosed : linux_toggleClosed;
         }
-        else if (isOSX) {
-            if (selected && active)
+        else /* MacOSX and Generic */ {
+            if (selected && treeActive)
                 image = expanded ? osx_toggleSelectedOpen : osx_toggleSelectedClosed;
             else
                 image = expanded ? osx_toggleOpen : osx_toggleClosed;
@@ -140,8 +163,8 @@ public class TreeFigureTheme {
         }
     }
 
-    public Color getSelectionForeground(boolean mouseOver, boolean active) {
-        return listSelectionForeground;
+    public Color getSelectionForeground(boolean mouseOver, boolean active) { //XXX currently only used in the following method
+        return theme == Theme.Windows7Blue ? win7Blue_selectionForeground : listSelectionForeground;
     }
 
     public StyledString getSelectedItemLabel(StyledString normalLabel, final boolean mouseOver, final boolean active) {
