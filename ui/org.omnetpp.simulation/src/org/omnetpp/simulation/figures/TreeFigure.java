@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.draw2d.FocusEvent;
+import org.eclipse.draw2d.FocusListener;
 import org.eclipse.draw2d.GridData;
 import org.eclipse.draw2d.GridLayout;
 import org.eclipse.draw2d.IFigure;
@@ -24,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.omnetpp.common.Debug;
 import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
 
 // TODO styles: SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL
@@ -74,6 +77,16 @@ public class TreeFigure extends ScrollPane {
         }
     };
 
+    FocusListener focusListener = new FocusListener() {
+        @Override public void focusGained(FocusEvent event) {
+            handleFocusGainedEvent(event);
+        }
+
+        @Override public void focusLost(FocusEvent event) {
+            handleFocusLostEvent(event);
+        }
+    };
+
     public TreeFigure() {
         setRequestFocusEnabled(true);
         setFocusTraversable(true);
@@ -89,6 +102,7 @@ public class TreeFigure extends ScrollPane {
         setContents(contentsPane);
 
         addKeyListener(itemKeyPressedListener);
+        addFocusListener(focusListener);
     }
 
     public Dimension getMaximumSize() {
@@ -176,7 +190,7 @@ public class TreeFigure extends ScrollPane {
     protected TreeItemFigure createTreeItem(Object node, int level, boolean hasChildren) {
         Image image = labelProvider.getImage(node);
         StyledString label = labelProvider.getStyledText(node);
-        TreeItemFigure item = new TreeItemFigure(node, level, hasChildren);
+        TreeItemFigure item = new TreeItemFigure(this, node, level, hasChildren);
         item.setImage(image);
         item.setLabel(label);
         return item;
@@ -420,5 +434,15 @@ public class TreeFigure extends ScrollPane {
                 showItem(nextItem);
             }
         }
+    }
+
+    protected void handleFocusGainedEvent(FocusEvent event) {
+        Debug.println("Focus gained.");
+        repaint();
+    }
+
+    protected void handleFocusLostEvent(FocusEvent event) {
+        Debug.println("Focus lost.");
+        repaint();
     }
 }

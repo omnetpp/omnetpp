@@ -123,6 +123,7 @@ class TreeItemFigure extends Figure {
         }
     }
 
+    private TreeFigure tree;
     private Object content;
     private ToggleFigure toggleFigure;
     private ImageFigure imageFigure;
@@ -132,7 +133,8 @@ class TreeItemFigure extends Figure {
     private boolean isSelected;
     private int level;
 
-    public TreeItemFigure(Object content, int level, boolean hasChildren) {
+    public TreeItemFigure(TreeFigure tree, Object content, int level, boolean hasChildren) {
+        this.tree = tree;
         this.content = content;
         this.level = level;
         if (hasChildren)
@@ -144,6 +146,10 @@ class TreeItemFigure extends Figure {
             add(toggleFigure);
         add(imageFigure);
         add(labelFigure);
+    }
+
+    public TreeFigure getTree() {
+        return tree;
     }
 
     public Object getContent() {
@@ -200,6 +206,6 @@ class TreeItemFigure extends Figure {
     @Override
     protected void paintFigure(Graphics graphics) {
         TreeFigureTheme theme = TreeFigure.getTheme();
-        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, 200 /*FIXME*/, isSelected, false /*FIXME*/, true /*FIXME*/);
+        theme.paintBackground(graphics, getBounds(), 19+level*10 /*FIXME toggleWidth + hmargin + spacing + level*indent*/, 200 /*FIXME*/, isSelected, false /*FIXME*/, tree.hasFocus());
     }
 }
