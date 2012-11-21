@@ -37,6 +37,14 @@ public class TreeFigureTheme {
     private static final Color win7Blue_mouseoverFillTop = new Color(null, 252, 253, 254);
     private static final Color win7Blue_mouseoverFillBottom = new Color(null, 235, 243, 253);
 
+    private static final Color linux_selectionBorder = new Color(null, 235, 110, 60);
+    private static final Color linux_selectionFillTop = new Color(null, 244, 125, 76);
+    private static final Color linux_selectionFillBottom = new Color(null, 235, 110, 60);
+
+    private static final Color linux_inactiveSelectionBorder = new Color(null, 218, 216, 213);
+    private static final Color linux_inactiveSelectionFillTop = new Color(null, 235, 234, 233);
+    private static final Color linux_inactiveSelectionFillBottom = new Color(null, 218, 216, 213);
+
     private static final Color listSelectionBackground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION);
     private static final Color listSelectionForeground = Display.getDefault().getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
     private static final Color genericInactiveSelectionBackground = new Color(null, 229, 229, 229);
@@ -75,6 +83,13 @@ public class TreeFigureTheme {
                     drawGradientRoundedRect(graphics, r, win7Blue_inactiveSelectionBorder, win7Blue_inactiveSelectionFillTop, win7Blue_inactiveSelectionFillBottom, 4);
                 else if (mouseOver)
                     drawGradientRoundedRect(graphics, r, win7Blue_mouseoverBorder, win7Blue_mouseoverFillTop, win7Blue_mouseoverFillBottom, 4);
+            }
+            else if (isLinux) {
+                // Ubuntu 12.4 default
+                if (selected && active)
+                    drawGradientRoundedRect(graphics, r, linux_selectionBorder, linux_selectionFillTop, linux_selectionFillBottom, 0);
+                else if (selected && !active)
+                    drawGradientRoundedRect(graphics, r, linux_inactiveSelectionBorder, linux_inactiveSelectionFillTop, linux_inactiveSelectionFillBottom, 0);
             }
             else {
                 // plain

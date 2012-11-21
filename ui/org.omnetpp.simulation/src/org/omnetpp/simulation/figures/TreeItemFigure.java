@@ -74,7 +74,7 @@ class TreeItemFigure extends Figure {
     }
 
     class TreeItemLayout extends AbstractLayout {
-        final static int hmargin = 5;
+        final static int hmargin = 1;
         final static int vmargin = 2;
         private static final int indent = 10;
         final static int spacing = 2;
