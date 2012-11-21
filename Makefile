@@ -163,8 +163,8 @@ clean: makefiles
 	$(Q)-rm -rf $(OMNETPP_OUT_DIR)/$(CONFIGNAME)
 	$(Q)-rm -rf $(OMNETPP_LIB_DIR)/$(CONFIGNAME)
 	$(Q)for i in $(BASE); do \
-	$(Q)    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
-	$(Q)done
+	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
+	done
 	$(Q)for i in $(SAMPLES) ""; do \
 	    if [ "$$i" != "" ]; then (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); fi;\
 	done
