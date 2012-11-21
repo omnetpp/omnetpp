@@ -185,7 +185,12 @@ public class FloatingToolbarSupport {
     public void openFloatingToolbarFor(IInspectorPart inspector) {
         Assert.isTrue(floatingToolbar == null);
 
-        Composite panel = new Composite(simulationCanvas, SWT.BORDER);
+        Composite panel = new Composite(simulationCanvas, SWT.BORDER) {
+            @Override
+            public boolean setFocus() {
+                return false;
+            }
+        };
         panel.setLayout(new FillLayout());
 
         // add icons to the toolbar
