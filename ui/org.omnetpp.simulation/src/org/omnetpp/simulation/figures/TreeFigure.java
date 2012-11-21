@@ -37,17 +37,30 @@ import org.eclipse.swt.widgets.Display;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
 
-// TODO styles: SINGLE, MULTI
+/**
+ * A draw2d near-equivalent of the JFace TreeViewer. Accepts the same label
+ * provider and content provider. Currently does not support the
+ * CHECK and VIRTUAL styles.
+ *
+ * @author Tomi
+ */
+//TODO styles: SINGLE, MULTI
 public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
-
     private static final Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
+    private static TreeFigureTheme theme;
 
-    private static TreeFigureTheme theme;  // static because tree items have no back pointer
-
+    private Object input;
+    private ITreeContentProvider contentProvider;
+    private IStyledLabelProvider labelProvider;
+    private TreeItemFigure selectionAnchorItem;  // one end of the range to be selected, the other end comes from the event
+    private TreeItemFigure activeItem;           // target of key events
+    private Panel contentsPane;
     private ListenerList selectionListeners = new ListenerList();
     private ListenerList selectionChangedListeners = new ListenerList();
 
-    // panel containing TreeItemFigures
+    /**
+     * A panel containing TreeItemFigures.
+     */
     class ContentsPanel extends Panel {
         @Override
         public void remove(IFigure figure) {
@@ -61,21 +74,14 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         }
     }
 
-    Object input;
-    ITreeContentProvider contentProvider;
-    IStyledLabelProvider labelProvider;
-    TreeItemFigure selectionAnchorItem;  // one end of the range to be selected, the other end comes from the event
-    TreeItemFigure activeItem;           // target of key events
-    Panel contentsPane;
-
-    MouseListener toggleMouseListener = new MouseListener.Stub() {
+    private MouseListener toggleMouseListener = new MouseListener.Stub() {
         @Override
         public void mouseReleased(MouseEvent event) {
             handleMouseReleasedOnToggle(event);
         }
     };
 
-    MouseListener itemMouseClickListener = new MouseListener.Stub() {
+    private MouseListener itemMouseClickListener = new MouseListener.Stub() {
         @Override
         public void mousePressed(MouseEvent event) {
             handleMousePressedOnItem(event);
@@ -86,14 +92,14 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         }
     };
 
-    KeyListener itemKeyPressedListener = new KeyListener.Stub() {
+    private KeyListener itemKeyPressedListener = new KeyListener.Stub() {
         @Override
         public void keyPressed(KeyEvent event) {
             handleKeyPressedEvent(event);
         }
     };
 
-    FocusListener focusListener = new FocusListener() {
+    private FocusListener focusListener = new FocusListener() {
         @Override public void focusGained(FocusEvent event) {
             handleFocusGainedEvent(event);
         }
@@ -103,6 +109,9 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         }
     };
 
+    /**
+     * Constructor.
+     */
     public TreeFigure() {
         setRequestFocusEnabled(true);
         setFocusTraversable(true);
@@ -387,15 +396,12 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         if (event.getSource() instanceof TreeItemFigure) {
             TreeItemFigure item = (TreeItemFigure)event.getSource();
             int state = event.getState();
-            if ((state & SWT.CTRL) != 0) {
+            if ((state & SWT.CTRL) != 0)
                 toggleSelection(item);
-            }
-            else if ((state & SWT.SHIFT) != 0) {
+            else if ((state & SWT.SHIFT) != 0)
                 extendSelection(item);
-            }
-            else if ((state & SWT.ALT) == 0) {
+            else if ((state & SWT.ALT) == 0)
                 setSelection(item);
-            }
             else
                 return;
 
@@ -404,7 +410,6 @@ public class TreeFigure extends ScrollPane implements IInputSelectionProvider {
         }
     }
 
-    // XXX should check button state and fire event for each selected item?
     protected void handleMouseDoubleClickedOnItem(MouseEvent event) {
         if (event.getSource() == activeItem)
             fireWidgetDefaultSelected(activeItem);

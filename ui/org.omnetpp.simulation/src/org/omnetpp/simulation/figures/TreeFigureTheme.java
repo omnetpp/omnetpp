@@ -18,6 +18,8 @@ import org.omnetpp.simulation.SimulationPlugin;
  *
  * @author Andras
  */
+//FIXME Linux colors are actually Ubuntu Ambiance colors, which will look weird in other distros/desktop/themes! maybe recognize from the system colors if GUI is NOT Ambiance, and fall back to system colors then?
+//FIXME mouse-over effects are missing in the win7 theme
 public class TreeFigureTheme {
     // Platform detection
     private static boolean isWindows = Platform.getOS().equals(Platform.OS_WIN32);
@@ -37,6 +39,7 @@ public class TreeFigureTheme {
     private static final Color win7Blue_mouseoverFillTop = new Color(null, 252, 253, 254);
     private static final Color win7Blue_mouseoverFillBottom = new Color(null, 235, 243, 253);
 
+    // Note: these linux colors (and images) are from the Ubuntu Ambiance (12.04) theme
     private static final Color linux_selectionBorder = new Color(null, 235, 110, 60);
     private static final Color linux_selectionFillTop = new Color(null, 244, 125, 76);
     private static final Color linux_selectionFillBottom = new Color(null, 235, 110, 60);
@@ -55,14 +58,17 @@ public class TreeFigureTheme {
     private static final Image win7Blue_toggleMouseoverClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_closed_mouseover.png");
     private static final Image win7Blue_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_open.png");
     private static final Image win7Blue_toggleMouseoverOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_win7blue_open_mouseover.png");
+
     private static final Image linux_toggleClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_linux_closed.png");
     private static final Image linux_toggleMouseoverClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_linux_closed_mouseover.png");
     private static final Image linux_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_linux_open.png");
     private static final Image linux_toggleMouseoverOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_linux_open_mouseover.png");
+
     private static final Image osx_toggleClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_closed.png");
     private static final Image osx_toggleSelectedClosed = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_closed_selected.png");
     private static final Image osx_toggleOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open.png");
     private static final Image osx_toggleSelectedOpen = SimulationPlugin.getCachedImage("icons/tree/toggle_osx_open_selected.png");
+
 
     public TreeFigureTheme() {
     }

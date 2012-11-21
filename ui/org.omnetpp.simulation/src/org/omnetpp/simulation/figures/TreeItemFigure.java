@@ -14,9 +14,15 @@ import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 
+/**
+ * One line in a TreeFigure draw2d widget.
+ *
+ * @author Tomi
+ */
+//Note: it would be possible to implement this using a single Figure (except mouse listeners on the toggle)
 class TreeItemFigure extends Figure {
 
-    class ToggleFigure extends Figure{
+    class ToggleFigure extends Figure {
         private final Dimension preferredSize = new Dimension(16,16);
 
         boolean isExpanded;
