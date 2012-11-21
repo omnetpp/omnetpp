@@ -259,6 +259,8 @@ public class SequenceChart
     private boolean drawWithAntialias = true; // antialias gets turned on/off automatically
 
     private boolean paintHasBeenFinished = false; // true means the user did not cancel the last paint
+
+    private RuntimeException internalError;
     private boolean internalErrorHappenedDuringPaint = false; // if this is true, then paint only draws an error message
 
     private boolean followEnd = false; // when the eventlog changes should we follow it or not?
@@ -2251,6 +2253,7 @@ public class SequenceChart
      * Clears internal error markers, all caches and forces a redraw.
      */
     public void refresh() {
+        internalError = null;
         internalErrorHappenedDuringPaint = false;
         eventLogInput.resetCanceled();
 
@@ -2279,7 +2282,7 @@ public class SequenceChart
         paintHasBeenFinished = false;
 
         if (internalErrorHappenedDuringPaint)
-            drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.");
+            drawNotificationMessage(gc, "Internal error happened during painting. Try to reset zoom, position, filter, etc. and press refresh. Sorry for your inconvenience.\n\n" + internalError.getMessage());
         else if (eventLogInput == null) {
             super.paint(gc);
             paintHasBeenFinished = true;
@@ -2306,6 +2309,7 @@ public class SequenceChart
                         if (eventLogInput.isFileChangedException(e))
                             eventLogInput.synchronize(e);
                         else {
+                            internalError = e;
                             internalErrorHappenedDuringPaint = true;
                             throw e;
                         }
