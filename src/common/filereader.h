@@ -125,6 +125,8 @@ class COMMON_API FileReader
      */
     virtual ~FileReader();
 
+    const char *getFileName() { return fileName.c_str(); }
+
     /**
      * Controls whether the file is checked for changes each time before physically accessing it.
      * See checkFileForChanges() for more details.

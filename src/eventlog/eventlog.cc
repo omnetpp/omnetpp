@@ -194,7 +194,7 @@ void EventLog::parseKeyframes()
         consequenceLookaheadLimits.resize(getLastEventNumber() / keyframeBlockSize + 1, 0);
         reader->seekTo(reader->getFileSize());
         while ((line = reader->getPreviousLineBufferPointer())) {
-            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(NULL, 0, line, reader->getCurrentLineLength());
+            EventLogEntry *eventLogEntry = (EventLogEntry *)EventLogEntry::parseEntry(this, NULL, 0, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
             if (dynamic_cast<KeyframeEntry *>(eventLogEntry)) {
                 KeyframeEntry *keyframeEntry = (KeyframeEntry *)eventLogEntry;
                 // store consequenceLookaheadLimits from the keyframe

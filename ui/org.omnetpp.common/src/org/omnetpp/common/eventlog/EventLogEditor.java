@@ -81,42 +81,44 @@ public abstract class EventLogEditor extends EditorPart implements IEventLogProv
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        locationTimer = new Runnable() {
-            public void run() {
-                try {
-                    Assert.isTrue(Display.getCurrent() != null);
-                    markLocation();
+        try {
+            locationTimer = new Runnable() {
+                public void run() {
+                    try {
+                        Assert.isTrue(Display.getCurrent() != null);
+                        markLocation();
+                    }
+                    catch (RuntimeException x) {
+                        if (eventLogInput.isFileChangedException(x))
+                            eventLogInput.synchronize(x);
+                        else
+                            throw x;
+                    }
                 }
-                catch (RuntimeException x) {
-                    if (eventLogInput.isFileChangedException(x))
-                        eventLogInput.synchronize(x);
-                    else
-                        throw x;
-                }
+            };
+            setSite(site);
+            setInput(input);
+            setPartName(input.getName());
+            IFile file = null;
+            String logFileName;
+            if (input instanceof IFileEditorInput) {
+                IFileEditorInput fileInput = (IFileEditorInput)input;
+                file = fileInput.getFile();
+                logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
             }
-        };
-
-        setSite(site);
-        setInput(input);
-        setPartName(input.getName());
-
-        IFile file = null;
-        String logFileName;
-        if (input instanceof IFileEditorInput) {
-            IFileEditorInput fileInput = (IFileEditorInput)input;
-            file = fileInput.getFile();
-            logFileName = fileInput.getFile().getLocation().toFile().getAbsolutePath();
+            else if (input instanceof IPathEditorInput) {
+                IPathEditorInput pathFileInput = (IPathEditorInput)input;
+                logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
+            }
+            else
+                throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + input.getName(),
+                    "Please make sure the project is open before trying to open a file in it.");
+            IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
+            eventLogInput = new EventLogInput(file, eventLog);
         }
-        else if (input instanceof IPathEditorInput) {
-            IPathEditorInput pathFileInput = (IPathEditorInput)input;
-            logFileName = pathFileInput.getPath().toFile().getAbsolutePath();
+        catch (RuntimeException e) {
+            throw new PartInitException(e.getMessage(), e);
         }
-        else
-            throw new DetailedPartInitException("Invalid input, it must be a file in the workspace: " + input.getName(),
-                "Please make sure the project is open before trying to open a file in it.");
-
-        IEventLog eventLog = new EventLog(new FileReader(logFileName, /* EventLog will delete it */false));
-        eventLogInput = new EventLogInput(file, eventLog);
     }
 
     @Override

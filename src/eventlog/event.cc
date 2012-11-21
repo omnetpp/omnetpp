@@ -134,7 +134,7 @@ file_offset_t Event::parse(FileReader *reader, file_offset_t offset)
             return endOffset;
         }
 
-        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(this, index, line, reader->getCurrentLineLength());
+        EventLogEntry *eventLogEntry = EventLogEntry::parseEntry(eventLog, this, index, reader->getCurrentLineStartOffset(), line, reader->getCurrentLineLength());
 
         // skip empty lines
         if (!eventLogEntry)

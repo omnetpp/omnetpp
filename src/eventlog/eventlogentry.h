@@ -18,6 +18,7 @@
 #define __EVENTLOGENTRY_H_
 
 #include <sstream>
+#include "platmisc.h"
 #include "matchexpression.h"
 #include "eventlogdefs.h"
 #include "linetokenizer.h"
@@ -25,6 +26,7 @@
 NAMESPACE_BEGIN
 
 class Event;
+class EventLog;
 
 /**
  * Base class for all kind of event log entries.
@@ -57,7 +59,7 @@ class EVENTLOG_API EventLogEntry : public MatchExpression::Matchable
         virtual const char *getDefaultAttribute() const = 0;
         virtual const char *getAttribute(const char *name) const = 0;
 
-        static EventLogEntry *parseEntry(Event *event, int entryIndex, char *line, int length);
+        static EventLogEntry *parseEntry(EventLog *eventLog, Event *event, int entryIndex, file_offset_t offset, char *line, int length);
         static eventnumber_t parseEventNumber(const char *str);
         static simtime_t parseSimulationTime(const char *str);
 };
