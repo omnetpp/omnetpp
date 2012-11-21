@@ -38,7 +38,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.figures.TreeItemFigure.ToggleFigure;
 
-// TODO styles: SINGLE, MULTI, CHECK, FULL_SELECTION, VIRTUAL, NO_SCROLL
+// TODO styles: SINGLE, MULTI
 public class TreeFigure extends ScrollPane implements ISelectionProvider {
 
     private static final Cursor CURSOR_ARROW = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
@@ -65,7 +65,8 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     Object input;
     ITreeContentProvider contentProvider;
     IStyledLabelProvider labelProvider;
-    TreeItemFigure lastSelectedItem;
+    TreeItemFigure selectionAnchorItem;  // one end of the range to be selected, the other end comes from the event
+    TreeItemFigure activeItem;           // target of key events
     Panel contentsPane;
 
     MouseListener toggleMouseListener = new MouseListener.Stub() {
@@ -226,8 +227,10 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
             IFigure toggle = ((TreeItemFigure)item).getToggle();
             if (toggle != null)
                 toggle.removeMouseListener(toggleMouseListener);
-            if (item == lastSelectedItem)
-                lastSelectedItem = null;
+            if (item == selectionAnchorItem)
+                selectionAnchorItem = null;
+            if (item == activeItem)
+                activeItem = null;
         }
     }
 
@@ -287,16 +290,16 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     }
 
     protected void toggleSelection(TreeItemFigure item) {
-        lastSelectedItem = item;
+        selectionAnchorItem = item;
         item.setSelected(!item.isSelected());
         fireSelectionChanged();
     }
 
     protected void extendSelection(TreeItemFigure item) {
-        if (lastSelectedItem != null) {
+        if (selectionAnchorItem != null) {
             List<IFigure> items = getItems();
             int itemIndex = items.indexOf(item);
-            int lastSelectedIndex = items.indexOf(lastSelectedItem);
+            int lastSelectedIndex = items.indexOf(selectionAnchorItem);
             if (itemIndex >= 0 && lastSelectedIndex >= 0) { // TODO assert?
                 int start = Math.min(itemIndex, lastSelectedIndex);
                 int end = Math.max(itemIndex, lastSelectedIndex);
@@ -306,7 +309,6 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
                 }
                 fireSelectionChanged();
             }
-            lastSelectedItem = item;
         }
         else {
             setSelection(item);
@@ -314,7 +316,7 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     }
 
     protected void setSelection(TreeItemFigure item) {
-        lastSelectedItem = item;
+        selectionAnchorItem = item;
         boolean changed = false;
         for (IFigure child : getItems()) {
             TreeItemFigure childItem = (TreeItemFigure)child;
@@ -329,22 +331,22 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     }
 
     protected void collapseCurrentItem() {
-        if (lastSelectedItem != null && lastSelectedItem.isExpandable() && lastSelectedItem.isExpanded()) {
-            lastSelectedItem.setExpanded(false);
-            collapseItem(lastSelectedItem);
+        if (activeItem != null && activeItem.isExpandable() && activeItem.isExpanded()) {
+            activeItem.setExpanded(false);
+            collapseItem(activeItem);
         }
     }
 
     protected void expandCurrentItem() {
-        if (lastSelectedItem != null && lastSelectedItem.isExpandable() && !lastSelectedItem.isExpanded()) {
-            lastSelectedItem.setExpanded(true);
-            expandItem(lastSelectedItem);
+        if (activeItem != null && activeItem.isExpandable() && !activeItem.isExpanded()) {
+            activeItem.setExpanded(true);
+            expandItem(activeItem);
         }
     }
 
     protected void toggleCurrentItem() {
-        if (lastSelectedItem != null && lastSelectedItem.isExpandable()) {
-            if (!lastSelectedItem.isExpanded())
+        if (activeItem != null && activeItem.isExpandable()) {
+            if (!activeItem.isExpanded())
                 expandCurrentItem();
             else
                 collapseCurrentItem();
@@ -391,13 +393,18 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
             else if ((state & SWT.ALT) == 0) {
                 setSelection(item);
             }
+            else
+                return;
+
+            activeItem = item;
             fireWidgetSelected(item);
         }
     }
 
+    // XXX should check button state and fire event for each selected item?
     protected void handleMouseDoubleClickedOnItem(MouseEvent event) {
-        Assert.isTrue(event.getSource() == lastSelectedItem);
-        fireWidgetDefaultSelected(lastSelectedItem);
+        if (event.getSource() == activeItem)
+            fireWidgetDefaultSelected(activeItem);
     }
 
     protected void handleKeyPressedEvent(KeyEvent event) {
@@ -420,35 +427,34 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
             break;
         case SWT.SPACE:
             toggleCurrentItem();  // seems to be Linux only, but there's not harm doing it on all platforms
-            fireWidgetSelected(lastSelectedItem);
+            fireWidgetSelected(activeItem);
             break;
         case SWT.CR:
-            fireWidgetDefaultSelected(lastSelectedItem);
+            fireWidgetDefaultSelected(activeItem);
             break;
         }
     }
 
     protected void handleKeyUp(boolean shift, boolean ctrl) {
-        if (lastSelectedItem != null && !lastSelectedItem.isSelected()) {
-            setSelection(lastSelectedItem);
-        }
-        else if (lastSelectedItem == null) {
+        if (activeItem == null) {
             List<IFigure> items = getItems();
-            if (!items.isEmpty())
-                setSelection((TreeItemFigure)items.get(0));
+            if (!items.isEmpty()) {
+                activeItem = (TreeItemFigure)items.get(0);
+                setSelection(activeItem);
+            }
         }
         else if (shift) {
-            TreeItemFigure prevItem = getPreviousItem(lastSelectedItem);
+            TreeItemFigure prevItem = getPreviousItem(activeItem);
             if (prevItem != null) {
-                prevItem.setSelected(true);
-                lastSelectedItem = prevItem;
+                activeItem = prevItem;
+                extendSelection(prevItem);
                 showItem(prevItem);
-                fireSelectionChanged();
             }
         }
         else {
-            TreeItemFigure prevItem = getPreviousItem(lastSelectedItem);
+            TreeItemFigure prevItem = getPreviousItem(activeItem);
             if (prevItem != null) {
+                activeItem = prevItem;
                 setSelection(prevItem);
                 showItem(prevItem);
             }
@@ -456,26 +462,25 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     }
 
     protected void handleKeyDown(boolean shift, boolean ctrl) {
-        if (lastSelectedItem != null && !lastSelectedItem.isSelected()) {
-            setSelection(lastSelectedItem);
-        }
-        else if (lastSelectedItem == null) {
+        if (activeItem == null) {
             List<IFigure> items = getItems();
-            if (!items.isEmpty())
-                setSelection((TreeItemFigure)items.get(0));
+            if (!items.isEmpty()) {
+                activeItem = (TreeItemFigure)items.get(0);
+                setSelection(activeItem);
+            }
         }
         else if (shift) {
-            TreeItemFigure nextItem = getNextItem(lastSelectedItem);
+            TreeItemFigure nextItem = getNextItem(activeItem);
             if (nextItem != null) {
-                nextItem.setSelected(true);
-                lastSelectedItem = nextItem;
+                activeItem = nextItem;
+                extendSelection(nextItem);
                 showItem(nextItem);
-                fireSelectionChanged();
             }
         }
         else {
-            TreeItemFigure nextItem = getNextItem(lastSelectedItem);
+            TreeItemFigure nextItem = getNextItem(activeItem);
             if (nextItem != null) {
+                activeItem = nextItem;
                 setSelection(nextItem);
                 showItem(nextItem);
             }
@@ -483,12 +488,12 @@ public class TreeFigure extends ScrollPane implements ISelectionProvider {
     }
 
     protected void handleFocusGainedEvent(FocusEvent event) {
-        Debug.println("Focus gained.");
+        activeItem = selectionAnchorItem;
         repaint();
     }
 
     protected void handleFocusLostEvent(FocusEvent event) {
-        Debug.println("Focus lost.");
+        activeItem = null;
         repaint();
     }
 
