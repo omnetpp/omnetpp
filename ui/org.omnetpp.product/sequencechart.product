@@ -15,6 +15,10 @@ http://www.omnest.com
    </configIni>
 
    <launcherArgs>
+      <programArgs>--launcher.defaultAction
+openFile
+-name
+&quot;OMNEST Sequence Chart&quot;</programArgs>
       <vmArgs>-Xms128m
 -Xmx512m
 -XX:MaxPermSize=192m</vmArgs>

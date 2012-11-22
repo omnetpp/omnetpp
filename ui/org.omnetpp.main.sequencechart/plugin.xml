@@ -36,4 +36,10 @@
     </property>
       </product>
    </extension>
+     <extension
+           point="org.eclipse.ui.startup">
+        <startup
+              class="org.omnetpp.main.sequencechart.Startup">
+        </startup>
+     </extension>
 </plugin>
