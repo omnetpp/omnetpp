@@ -27,8 +27,10 @@ Server::~Server()
 
 void Server::initialize()
 {
+    channelStateSignal = registerSignal("channelState");
     endRxEvent = new cMessage("end-reception");
     channelBusy = false;
+    emit(channelStateSignal,IDLE);
 
     gate("in")->setDeliverOnReceptionStart(true);
 
@@ -55,6 +57,7 @@ void Server::handleMessage(cMessage *msg)
     {
         EV << "reception finished\n";
         channelBusy = false;
+        emit(channelStateSignal,IDLE);
 
         // update statistics
         simtime_t dt = simTime() - recvStartTime;
@@ -100,6 +103,7 @@ void Server::handleMessage(cMessage *msg)
             EV << "started receiving\n";
             recvStartTime = simTime();
             channelBusy = true;
+            emit(channelStateSignal, TRANSMISSION);
             scheduleAt(endReceptionTime, endRxEvent);
 
             if (ev.isGUI())
@@ -112,6 +116,7 @@ void Server::handleMessage(cMessage *msg)
         else
         {
             EV << "another frame arrived while receiving -- collision!\n";
+            emit(channelStateSignal, COLLISION);
 
             if (currentCollisionNumFrames==0)
                 currentCollisionNumFrames = 2;

@@ -14,6 +14,8 @@
 simple Host
 {
     parameters:
+        @signal[state](type="int");
+        @statistic[radioState](source="state";title="Radio state";enum="IDLE=0,TRANSMIT=1";record=vector);
         double txRate @unit(bps);         // transmission rate
         double radioDelay @unit(s);       // propagation delay of radio link
         volatile int pkLenBits @unit(b);  // packet length in bits

@@ -29,6 +29,7 @@ Host::~Host()
 
 void Host::initialize()
 {
+    stateSignal = registerSignal("state");
     server = simulation.getModuleByPath("server");
     if (!server) error("server not found");
 
@@ -44,6 +45,7 @@ void Host::initialize()
 
     endTxEvent = new cMessage("send/endTx");
     state = IDLE;
+    emit(stateSignal, state);
     pkCounter = 0;
     WATCH((int&)state);
     WATCH(pkCounter);
@@ -67,6 +69,7 @@ void Host::handleMessage(cMessage *msg)
         EV << "generating packet " << pkname << endl;
 
         state = TRANSMIT;
+        emit(stateSignal, state);
 
         // update network graphics
         if (ev.isGUI())
@@ -86,6 +89,7 @@ void Host::handleMessage(cMessage *msg)
     {
         // endTxEvent indicates end of transmission
         state = IDLE;
+        emit(stateSignal, state);
 
         // schedule next sending
         scheduleAt(getNextTransmissionTime(), endTxEvent);
