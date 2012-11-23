@@ -1,5 +1,5 @@
 E # 0 t 0 m 1 ce -1 msg -1
-SB v 1026 rid PureAloha2-0-20110505-14:08:55-8083 b 1000
+SB v 1027 rid PureAloha2-0-20121123-14:04:39-12241 b 1000
 KF p -1 c "" s ""
 MC id 1 c cCompoundModule t Aloha n Aloha cm 1
 MS id 1 d bgi=background/terrain,s
@@ -1006,5 +1006,154 @@ SD sm 10 dm 2 dg 0 pd 0.01 td 0.099166666666
 ES t 11.283784325216 is 1
 BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 105
 ES t 11.372950991882
-SE e 0 c 9 m "The user has finished the simulation at event #106, t=11.273784325216."
-- duration: 11.273784325216
+
+E # 106 t 11.283784325216 m 2 ce 105 msg 48
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 104
+ES t 11.382950991882
+MS id 2 d t=,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 48 tid 48 eid 48 etid 48 c cMessage n pk-10-#0 pe 106
+
+E # 107 t 11.354663132171 m 11 ce 83 msg 9
+- generating packet pk-11-#3
+MS id 11 d t=,,#808000;i=device/pc_s,yellow
+MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 49 tid 49 eid 49 etid 49 c cMessage n pk-11-#3 pe -1
+BS id 49 tid 49 eid 49 etid 49 c cPacket n pk-11-#3 l 952 pe 107
+SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 11.364663132171 is 1
+BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 107
+ES t 11.453829798837
+
+E # 108 t 11.364663132171 m 2 ce 107 msg 49
+- another frame arrived while receiving -- collision!
+CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 106
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 108
+ES t 11.463829798837
+MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
+MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
+MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
+BU id 2 txt "Collision! (2 frames)"
+DM id 49 tid 49 eid 49 etid 49 c cMessage n pk-11-#3 pe 108
+
+E # 109 t 11.372950991882 m 10 ce 105 msg 8
+BS id 8 tid 8 eid 8 etid 8 c cMessage n send/endTx pe 109
+ES t 18.188584642143
+MS id 10 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 10 d t=,,#808000;i=device/pc_s
+
+E # 110 t 11.453829798837 m 11 ce 107 msg 9
+BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 110
+ES t 12.209076255465
+MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 11 d t=,,#808000;i=device/pc_s
+
+E # 111 t 11.463829798837 m 2 ce 108 msg 0
+- reception finished
+MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
+
+E # 112 t 11.709272015306 m 8 ce 0 msg 6
+- generating packet pk-8-#0
+MS id 8 d t=,,#808000;i=device/pc_s,yellow
+MS id 8 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 50 tid 50 eid 50 etid 50 c cMessage n pk-8-#0 pe -1
+BS id 50 tid 50 eid 50 etid 50 c cPacket n pk-8-#0 l 952 pe 112
+SD sm 8 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 11.719272015306 is 1
+BS id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 112
+ES t 11.808438681972
+
+E # 113 t 11.719272015306 m 2 ce 112 msg 50
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 111
+ES t 11.818438681972
+MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 50 tid 50 eid 50 etid 50 c cMessage n pk-8-#0 pe 113
+
+E # 114 t 11.758204047417 m 4 ce 45 msg 2
+- generating packet pk-4-#1
+MS id 4 d t=,,#808000;i=device/pc_s,yellow
+MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 51 tid 51 eid 51 etid 51 c cMessage n pk-4-#1 pe -1
+BS id 51 tid 51 eid 51 etid 51 c cPacket n pk-4-#1 l 952 pe 114
+SD sm 4 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 11.768204047417 is 1
+BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 114
+ES t 11.857370714083
+
+E # 115 t 11.768204047417 m 2 ce 114 msg 51
+- another frame arrived while receiving -- collision!
+CE id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 113
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 115
+ES t 11.867370714083
+MS id 2 d t=RECEIVE,,#808000;i2=x_red;i=device/antennatower_l
+MS id 2 d t=COLLISION,,#808000;i2=x_red;i=device/antennatower_l
+MS id 2 d t=COLLISION,,#800000;i2=x_red;i=device/antennatower_l
+BU id 2 txt "Collision! (2 frames)"
+DM id 51 tid 51 eid 51 etid 51 c cMessage n pk-4-#1 pe 115
+
+E # 116 t 11.808438681972 m 8 ce 112 msg 6
+BS id 6 tid 6 eid 6 etid 6 c cMessage n send/endTx pe 116
+ES t 19.459804895313
+MS id 8 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 8 d t=,,#808000;i=device/pc_s
+
+E # 117 t 11.857370714083 m 4 ce 114 msg 2
+BS id 2 tid 2 eid 2 etid 2 c cMessage n send/endTx pe 117
+ES t 17.985961960178
+MS id 4 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 4 d t=,,#808000;i=device/pc_s
+
+E # 118 t 11.867370714083 m 2 ce 115 msg 0
+- reception finished
+MS id 2 d t=COLLISION,,#800000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#800000;i2=x_off;i=device/antennatower_l
+
+E # 119 t 12.042570713665 m 20 ce 7 msg 18
+- generating packet pk-20-#1
+MS id 20 d t=,,#808000;i=device/pc_s,yellow
+MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 52 tid 52 eid 52 etid 52 c cMessage n pk-20-#1 pe -1
+BS id 52 tid 52 eid 52 etid 52 c cPacket n pk-20-#1 l 952 pe 119
+SD sm 20 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 12.052570713665 is 1
+BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 119
+ES t 12.141737380331
+
+E # 120 t 12.052570713665 m 2 ce 119 msg 52
+- started receiving
+BS id 0 tid 0 eid 0 etid 0 c cMessage n end-reception pe 118
+ES t 12.151737380331
+MS id 2 d t=,,#800000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#800000;i2=x_yellow;i=device/antennatower_l
+MS id 2 d t=RECEIVE,,#808000;i2=x_yellow;i=device/antennatower_l
+DM id 52 tid 52 eid 52 etid 52 c cMessage n pk-20-#1 pe 120
+
+E # 121 t 12.141737380331 m 20 ce 119 msg 18
+BS id 18 tid 18 eid 18 etid 18 c cMessage n send/endTx pe 121
+ES t 17.375664550583
+MS id 20 d t=TRANSMIT,,#808000;i=device/pc_s
+MS id 20 d t=,,#808000;i=device/pc_s
+
+E # 122 t 12.151737380331 m 2 ce 120 msg 0
+- reception finished
+MS id 2 d t=RECEIVE,,#808000;i2=x_off;i=device/antennatower_l
+MS id 2 d t=,,#808000;i2=x_off;i=device/antennatower_l
+
+E # 123 t 12.209076255465 m 11 ce 110 msg 9
+- generating packet pk-11-#4
+MS id 11 d t=,,#808000;i=device/pc_s,yellow
+MS id 11 d t=TRANSMIT,,#808000;i=device/pc_s,yellow
+CM id 53 tid 53 eid 53 etid 53 c cMessage n pk-11-#4 pe -1
+BS id 53 tid 53 eid 53 etid 53 c cPacket n pk-11-#4 l 952 pe 123
+SD sm 11 dm 2 dg 0 pd 0.01 td 0.099166666666
+ES t 12.219076255465 is 1
+BS id 9 tid 9 eid 9 etid 9 c cMessage n send/endTx pe 123
+ES t 12.308242922131
+SE e 0 c 9 m "The user has finished the simulation at event #124, t=12.209076255465."
+- duration: 12.209076255465

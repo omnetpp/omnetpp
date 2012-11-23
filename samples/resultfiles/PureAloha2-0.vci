@@ -1,0 +1,123 @@
+file 6092 1353675895
+version 2
+run PureAloha2-0-20121123-14:04:39-12241
+attr configname PureAloha2
+attr datetime 20121123-14:04:39
+attr experiment PureAloha2
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network Aloha
+attr processid 12241
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+vector 0  Aloha.server  serverChannelState:vector  ETV
+attr enum  IDLE=0,TRANSMISSION=1,COLLISION=2
+attr source  channelState
+attr title  "Channel state, vector"
+vector 1  Aloha.host[0]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 2  Aloha.host[1]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 3  Aloha.host[2]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 4  Aloha.host[3]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 5  Aloha.host[4]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 6  Aloha.host[5]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 7  Aloha.host[6]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 8  Aloha.host[7]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 9  Aloha.host[8]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 10  Aloha.host[9]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 11  Aloha.host[10]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 12  Aloha.host[11]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 13  Aloha.host[12]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 14  Aloha.host[13]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 15  Aloha.host[14]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 16  Aloha.host[15]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 17  Aloha.host[16]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 18  Aloha.host[17]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 19  Aloha.host[18]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+vector 20  Aloha.host[19]  radioState:vector  ETV
+attr enum  IDLE=0,TRANSMIT=1
+attr source  state
+attr title  "Radio state, vector"
+0	3155 1294 0 122 0 12.151737380331 59 0 2 38 50
+1	4449 95 0 82 0 7.443048338181 5 0 1 2 2
+2	4544 100 0 117 0 11.857370714083 5 0 1 2 2
+3	4644 51 0 87 0 7.63475121495 3 0 1 1 1
+4	4695 56 0 103 0 11.256791939114 3 0 1 1 1
+5	4751 138 0 95 0 8.714881142747 7 0 1 3 3
+6	4889 56 0 116 0 11.808438681972 3 0 1 1 1
+7	4945 140 0 60 0 6.009785129424 7 0 1 3 3
+8	5085 56 0 109 0 11.372950991882 3 0 1 1 1
+9	5141 212 0 123 0 12.209076255465 10 0 1 5 5
+10	5353 54 0 59 0 5.961205225026 3 0 1 1 1
+11	5407 55 0 64 0 6.328122470649 3 0 1 1 1
+12	5462 101 0 91 0 8.145699433062 5 0 1 2 2
+13	5563 55 0 26 0 3.552281847963 3 0 1 1 1
+14	5618 100 0 72 0 6.833332848033 5 0 1 2 2
+15	5718 9 0 0 0 0 1 0 0 0 0
+16	5727 99 0 99 0 9.962018053628 5 0 1 2 2
+17	5826 9 0 0 0 0 1 0 0 0 0
+18	5835 102 0 121 0 12.141737380331 5 0 1 2 2
+19	5937 100 0 76 0 7.023241366348 5 0 1 2 2
+20	6037 55 0 30 0 3.995844756171 3 0 1 1 1
