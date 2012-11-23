@@ -375,17 +375,50 @@
       <picture file="pictures/SequenceChart-SplitArrows.png">Split arrows</picture>
     </sect2>
     <sect2>
-      <title>Attaching Vectors</title>
+      <title>Displaying Module State on Axes</title>
       <para>
-	It is possible to attach Vector data to individual axes from the context menu by
-	right-clicking on the desired axis and selecting ``Attach Vector to
-	Axis'' from the corresponding submenu. In this case, the solid line of the
-	axis will be turned into a colored thick bar. If the vector is of type enum and
-	its element names have been registered with the C++ macro Register_Enum, then the
-	chart will display those names inside the bar. Otherwise, it will display
-	the value as a number. The background coloring for the thick bar is automatic; it
-	is either based on the enumeration member, or alternates for other types.
+        It is possible to display a module's state on an axis. The axis is then
+        rendered as a colored strip that changes color every time the module state
+        changes. The data are taken from an output vector in an ``output vector file'',
+        normally recorded by the simulation together with the eventlog file.
       </para>
+
+      <picture file="pictures/SequenceChart-AxisWithState.png">Axis with state information displayed</picture>
+
+      <para>
+	To attach an output vector to an axis, right-click the desired axis and select
+	``Attach Vector to Axis'' from the context menu. You will be prompted for an
+	output vector file and for a vector in the file. If the vector is of type enum
+	(that is, it has metadata attached that assigns symbolic names to values, e.g.
+	``IDLE'' for 0, ``TRANSMIT'' for 1, etc.), then the chart will display symbolic
+	names inside the strip, otherwise it will display the values as numbers. The
+	background coloring for the strip is automatic.
+      </para>
+
+
+      <note>
+        <para>
+        Recording output vectors is explained in the ``&Omnetpp; User Manual''.
+        It is recommended to turn on recording event numbers
+        ([[**.vector-record-eventnumbers = true]] inifile setting), because that
+        allows the Sequence Chart tool to display state changes accurately even
+        if there are multiple events at the same simulation time.
+        </para>
+
+        <para>
+        The format of output vector files is documented in an appendix of the Manual.
+        To see whether a given output vector is suitable for the Sequence Chart,
+        search for the vector declaration ([[vector... ]] line) in the file.
+        When event numbers are enabled, the vector declaration will end in [[ETV]]
+        (not [[TV]]). If a vector has an enum attached, there will be an [[attr enum]]
+        line after the vector declaration. An example vector declaration with an enum:
+        </para>
+
+<screen><![CDATA[vector 5 Net.host[2].radio state ETV
+attr enum "IDLE=0,TRANSMIT=1,RECEIVE=2"
+]]></screen>
+      </note>
+
     </sect2>
     <sect2>
       <title>Zooming</title>
