@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -42,7 +41,6 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.common.ui.HoverInfo;
@@ -77,6 +75,7 @@ import org.omnetpp.simulation.model.cSimulation;
 import org.omnetpp.simulation.ui.ModulePathsMessageFilter;
 import org.omnetpp.simulation.ui.ObjectTreeHoverInfo;
 import org.omnetpp.simulation.ui.SpeedControl;
+import org.omnetpp.simulation.ui.StatusLineControl;
 import org.omnetpp.simulation.ui.TimelineContentProvider;
 import org.omnetpp.simulation.ui.TimelineControl;
 import org.omnetpp.simulation.views.SimulationObjectPropertySheetPage;
@@ -89,13 +88,15 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     public static final String CONTEXT_SIMULATION = "org.omnetpp.context.simulation";
     public static final String EDITOR_ID = "org.omnetpp.simulation.editors.SimulationEditor";  // note: string is duplicated in the Launch plugin code
 
+    private static final String NA__ = "n/a   ";  // as status item text
+
     protected SimulationController simulationController;
+
 
     protected Composite editorRootControl;
 //    protected EventLogAnimationCanvas animationCanvas;
     protected SimulationCanvas simulationCanvas;
-
-    protected Label statusLabel;
+    protected StatusLineControl statusLine;
     protected TimelineControl timeline;
 
     protected HoverSupport hoverSupport = new HoverSupport();
@@ -172,9 +173,11 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         SpeedControl speedControl = new SpeedControl("");
         speedControl.fill(toolbar3, toolbar3.getItemCount());
 
-        statusLabel = new Label(simulationRibbon, SWT.BORDER);
-        statusLabel.setText("n/a");
-        statusLabel.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false));
+        statusLine = new StatusLineControl(simulationRibbon, SWT.BORDER);
+        statusLine.setLayoutData(new GridData(SWT.FILL, SWT.END, true, false));
+        statusLine.setItemCount(6);
+        for (int i = 0; i < statusLine.getItemCount(); i++)
+            statusLine.setItemText(i, NA__);
 
         // create and configure timeline
         timeline = new TimelineControl(simulationRibbon, SWT.BORDER);
@@ -657,21 +660,17 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     }
 
     protected void updateStatusDisplay() {
-        if (!statusLabel.isDisposed()) {
-            //TODO this should not be a single label because text jumps due to the use of proportional font
+        if (!statusLine.isDisposed()) {
             SimulationController controller = getSimulationController();
-            String status = "   pid=" + controller.getSimulation().getProcessId();  //TODO remove (or: display elsewhere, e.g in some tooltip or status dialog; also hostname)
-            status += "   " + controller.getUIState().name();
-
-            statusLabel.setForeground(controller.getSimulation().isInFailureMode() ? ColorFactory.RED : null); //FIXME better way to indicate failure mode!!
+            statusLine.setItemText(0, controller.getUIState().name());
+            statusLine.setForeground(controller.getSimulation().isInFailureMode() ? ColorFactory.RED : null); //FIXME better way to indicate failure mode!!
 
             if (controller.getUIState() != SimState.DISCONNECTED && controller.getUIState() != SimState.NONETWORK) {
                 Simulation simulation = controller.getSimulation();
-                status += "  -  " + simulation.getConfigName() + " #" + simulation.getRunNumber() + "   (" + simulation.getNetworkName() + ")";
+                statusLine.setItemText(1, simulation.getConfigName() + " #" + simulation.getRunNumber() + "   (" + simulation.getNetworkName() + ")");
 
-                long eventNumber = controller.getEventNumber();
-                BigDecimal simTime = controller.getSimulationTime();
-                status += "  -  Event #" + eventNumber + "   t=" + simTime + "s";
+                statusLine.setItemText(2, "Event #" + controller.getEventNumber());
+                statusLine.setItemText(3, "t=" + controller.getSimulationTime() + "s");
 
                 try {
                     cSimulation csimulation = (cSimulation) controller.getSimulation().getRootObject(Simulation.ROOTOBJ_SIMULATION);
@@ -680,15 +679,23 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                     cModule module = csimulation.getModuleById(controller.getEventModuleId());
                     if (module != null)
                         module.loadIfUnfilled();
-                    String moduleText = module == null ? "n/a" : module.getFullPath() + " (" + module.getShortTypeName() + ")";
-                    status += " in " + moduleText;
+                    String moduleText = module == null ? NA__ : module.getFullPath() + " (" + module.getShortTypeName() + ")";
+                    statusLine.setItemText(4, moduleText);
+
+                    statusLine.setItemText(5, "(cMessage) whatever"); //TODO
                 }
                 catch (CommunicationException e) {
-                    // nothing -- simply don't print the info if we cannot
+                    statusLine.setItemText(4, NA__);
+                    statusLine.setItemText(5, NA__);
                 }
             }
-
-            statusLabel.setText(status);
+            else {
+                statusLine.setItemText(1, NA__);
+                statusLine.setItemText(2, NA__);
+                statusLine.setItemText(3, NA__);
+                statusLine.setItemText(4, NA__);
+                statusLine.setItemText(5, NA__);
+            }
         }
     }
 
