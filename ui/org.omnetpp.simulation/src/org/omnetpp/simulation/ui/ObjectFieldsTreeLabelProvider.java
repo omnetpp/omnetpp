@@ -90,7 +90,10 @@ public class ObjectFieldsTreeLabelProvider implements IStyledLabelProvider {
                             try {
                                 valueObject.loadIfUnfilled();
                                 valueObject.loadFieldsIfUnfilled();
-                                result.append("(" + valueObject.getShortTypeName() + ") " + valueObject.getFullName(), blueStyle);
+                                result.append("(" + valueObject.getShortTypeName() + ") ", brownStyle);
+                                String fullNameOrPath = (valueObject.getOwner() == field.getOwner()) ?
+                                        valueObject.getFullName() : valueObject.getFullPath();
+                                result.append(fullNameOrPath, blueStyle);
                                 String infoTxt = valueObject.getInfo();
                                 if (!infoTxt.equals(""))
                                     result.append(": " + infoTxt, brownStyle);
