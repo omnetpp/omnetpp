@@ -287,7 +287,7 @@ public class SimulationController implements ISimulationCallback {
             switch (currentRunMode) {
                 case NORMAL: eventDelta = 1; break;
                 case FAST: eventDelta = 10; break;
-                case EXPRESS: realTimeMillis = 2000; break;
+                case EXPRESS: realTimeMillis = 1000; break;
                 default: Assert.isTrue(false);
             }
 
