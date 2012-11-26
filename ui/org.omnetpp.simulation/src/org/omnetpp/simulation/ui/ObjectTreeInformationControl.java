@@ -19,7 +19,10 @@ import org.eclipse.jface.text.AbstractReusableInformationControlCreator;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IInformationControlExtension2;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -30,6 +33,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.omnetpp.common.ui.HoverSupport;
 import org.omnetpp.common.ui.IUpdateableAction;
 import org.omnetpp.simulation.SimulationPlugin;
+import org.omnetpp.simulation.canvas.IInspectorContainer;
+import org.omnetpp.simulation.canvas.SelectionUtils;
+import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer.Mode;
 
 /**
@@ -40,14 +46,17 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
     private ObjectFieldsViewer viewer;
     private ToolBar toolbar;
     private List<IUpdateableAction> actions = new ArrayList<IUpdateableAction>();
+    private IInspectorContainer simulationCanvas;  // only for opening new inspectors
 
-    public ObjectTreeInformationControl(Shell parentShell, boolean isResizable) {
+    public ObjectTreeInformationControl(Shell parentShell, boolean isResizable, IInspectorContainer canvas) {
         super(parentShell, isResizable);
+        this.simulationCanvas = canvas;
         create();
     }
 
-    public ObjectTreeInformationControl(Shell parentShell, String statusFieldText) {
+    public ObjectTreeInformationControl(Shell parentShell, String statusFieldText, IInspectorContainer canvas) {
         super(parentShell, statusFieldText);
+        this.simulationCanvas = canvas;
         create();
     }
 
@@ -73,6 +82,17 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
     @Override
     protected void createContent(Composite parent) {
         viewer = new ObjectFieldsViewer(parent, SWT.NONE);
+
+        viewer.getTree().addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e) {
+                // inspect the selected object(s)
+                ISelection selection = viewer.getSelection();
+                List<cObject> objects = SelectionUtils.getObjects(selection, cObject.class);
+                for (cObject object : objects)
+                    simulationCanvas.inspect(object);
+            }
+        });
 
         if (isResizable()) {
             // add toolbar with actions to change the tree mode
@@ -147,12 +167,13 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
 
     /**
      * Utility method: returns a creator that creates a (transient) ObjectTreeInformationControl.
+     * The canvas is where double-clicking will open new inspectors.
      */
-    public static IInformationControlCreator getCreator() {
+    public static IInformationControlCreator getCreatorFor(final IInspectorContainer canvas) {
         return new AbstractReusableInformationControlCreator() {
             @Override
             public IInformationControl doCreateInformationControl(Shell shell) {
-                return new ObjectTreeInformationControl(shell, HoverSupport.AFFORDANCE);
+                return new ObjectTreeInformationControl(shell, HoverSupport.AFFORDANCE, canvas);
             }
         };
     }
@@ -160,11 +181,11 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
     /**
      * Utility method: returns a creator that creates a (sticky) ObjectTreeInformationControl.
      */
-    public static IInformationControlCreator getStickyCreator() {
+    public static IInformationControlCreator getStickyCreatorFor(final IInspectorContainer canvas) {
         return new AbstractReusableInformationControlCreator() {
             @Override
             public IInformationControl doCreateInformationControl(Shell shell) {
-                return new ObjectTreeInformationControl(shell, true);
+                return new ObjectTreeInformationControl(shell, true, canvas);
             }
         };
     }
@@ -174,6 +195,6 @@ public class ObjectTreeInformationControl extends AbstractInformationControl imp
      */
     @Override
     public IInformationControlCreator getInformationPresenterControlCreator() {
-        return getStickyCreator();
+        return getStickyCreatorFor(simulationCanvas);
     }
 }

@@ -232,10 +232,10 @@ public class GraphicalModuleInspectorPart extends AbstractInspectorPart {
         if (submoduleFigure != null) {
             cModule submodule = findSubmoduleFor(submoduleFigure);
             if (submodule != null)
-                return new ObjectTreeHoverInfo(new Object[] { submodule });
+                return new ObjectTreeHoverInfo(new Object[] { submodule }, getContainer());
         }
         else if (labelFigure.containsPoint(x, y)) {
-            return new ObjectTreeHoverInfo(new Object[] { object });
+            return new ObjectTreeHoverInfo(new Object[] { object }, getContainer());
         }
         return null;
     }

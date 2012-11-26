@@ -183,10 +183,10 @@ public class QueueInspectorPart extends AbstractInspectorPart {
         IFigure queueItemFigure = findQueueItemFigureAt(x,y);
         if (queueItemFigure != null) {
             cObject queueItem = figureToObjectMap.get(queueItemFigure);
-            return new ObjectTreeHoverInfo(new Object[] { queueItem });
+            return new ObjectTreeHoverInfo(new Object[] { queueItem }, getContainer());
         }
         else {
-            return new ObjectTreeHoverInfo(new Object[] { object });
+            return new ObjectTreeHoverInfo(new Object[] { object }, getContainer());
         }
     }
 

@@ -85,7 +85,7 @@ public class InfoTextInspectorPart extends AbstractInspectorPart {
 
     @Override
     public HoverInfo getHoverFor(int x, int y) {
-        return new ObjectTreeHoverInfo(new Object[] { object });
+        return new ObjectTreeHoverInfo(new Object[] { object }, getContainer());
     }
 
     @Override

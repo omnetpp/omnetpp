@@ -520,7 +520,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             @Override
             public HoverInfo getHoverFor(Control control, int x, int y) {
               Object[] messages = timeline.findMessages(new Point(x,y), 3);
-              return (messages.length == 0) ? null : new ObjectTreeHoverInfo(messages);
+              return (messages.length == 0) ? null : new ObjectTreeHoverInfo(messages, simulationCanvas);
             }
         });
 
