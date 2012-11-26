@@ -19,7 +19,6 @@ public class ZoomInAction extends AbstractInspectorAction {
     @Override
     public void update() {
         GraphicalModuleInspectorPart inspector = (getInspectorPart() instanceof GraphicalModuleInspectorPart) ? (GraphicalModuleInspectorPart)getInspectorPart() : null;
-        setEnabled(inspector != null);
-        setChecked(inspector != null && inspector.canZoomIn());
+        setEnabled(inspector != null && inspector.canZoomIn());
     }
 }
