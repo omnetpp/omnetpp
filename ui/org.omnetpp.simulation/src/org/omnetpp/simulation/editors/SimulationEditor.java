@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.draw2d.geometry.Rectangle;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
@@ -850,11 +851,19 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
                 cSimulation csimulation = (cSimulation)simulation.getRootObject(Simulation.ROOTOBJ_SIMULATION);
                 List<cObject> objects = simulation.searchForObjects(csimulation, inspectorMemento.objectClassName, inspectorMemento.objectFullPath, Simulation.CATEGORY_ALL, 1);
                 if (!objects.isEmpty()) {
-                    simulationCanvas.inspect(objects.get(0), inspectorMemento.inspectorId, inspectorMemento.bounds, false);
+                    simulationCanvas.inspect(objects.get(0), inspectorMemento.inspectorId, getSanitizedInspectorBounds(inspectorMemento.bounds), false);
                     pendingInspectors.remove(inspectorMemento);
                 }
             }
         }
+    }
+
+    protected Rectangle getSanitizedInspectorBounds(Rectangle bounds) {
+        return new Rectangle(
+                Math.max(0,  Math.min(10000, bounds.x)),
+                Math.max(0,  Math.min(10000, bounds.y)),
+                Math.max(8,  Math.min(10000, bounds.width)),
+                Math.max(8,  Math.min(10000, bounds.height)));
     }
 
     @Override
