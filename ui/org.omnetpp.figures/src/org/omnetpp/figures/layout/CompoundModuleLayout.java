@@ -82,7 +82,7 @@ public class CompoundModuleLayout extends AbstractLayout {
         for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
             moduleToId.put(node, nodeIndex);
 
-            ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
+            ISubmoduleConstraint constr = (ISubmoduleConstraint) getConstraint(node);
             Rectangle shapeBounds = constr.getShapeBounds();
             Point centerLocation = constr.getCenterLocation();
             if (centerLocation != null) {
@@ -225,7 +225,7 @@ public class CompoundModuleLayout extends AbstractLayout {
                 Assert.isNotNull(id);
 
                 // get the computed location from the auto-layout algorithm (if there is an algorithm at all)
-                ISubmoduleConstraint constr = (ISubmoduleConstraint)f;
+                ISubmoduleConstraint constr = (ISubmoduleConstraint) getConstraint(f);
                 Point locationFromAlg = alg.getNodePosition(id);
                 Assert.isNotNull(locationFromAlg);
 
@@ -263,7 +263,7 @@ public class CompoundModuleLayout extends AbstractLayout {
         // forget all cached coordinates
         IFigure nodeParent = compoundFigure.getSubmoduleLayer();
         for (IFigure node : (List<IFigure>)nodeParent.getChildren()) {
-            ISubmoduleConstraint constr = (ISubmoduleConstraint)node;
+            ISubmoduleConstraint constr = (ISubmoduleConstraint) getConstraint(node);
             constr.setCenterLocation(null);
         }
     }
