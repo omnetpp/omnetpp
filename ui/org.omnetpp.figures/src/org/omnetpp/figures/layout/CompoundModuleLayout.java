@@ -83,25 +83,26 @@ public class CompoundModuleLayout extends AbstractLayout {
             moduleToId.put(node, nodeIndex);
 
             ISubmoduleConstraint constr = (ISubmoduleConstraint) getConstraint(node);
-            Rectangle shapeBounds = constr.getShapeBounds();
+            Dimension shapeSize = constr.getShapeSize();
+            if (shapeSize == null) shapeSize = new Dimension();
             Point centerLocation = constr.getCenterLocation();
             if (centerLocation != null) {
                 // use cached (previously layouted) coordinates
-                autoLayouter.addFixedNode(nodeIndex, centerLocation.preciseX(), centerLocation.preciseY(), shapeBounds.preciseWidth(), shapeBounds.preciseHeight());
+                autoLayouter.addFixedNode(nodeIndex, centerLocation.preciseX(), centerLocation.preciseY(), shapeSize.preciseWidth(), shapeSize.preciseHeight());
             }
             else {
                 // lay out this node, and store the coordinates with setCenterLocation()
                 Point baseLoc = constr.getBaseLocation();
                 if (baseLoc != null) {
                     Point offset = getArrangementOffset(constr, 80); // handle vector layouts; note: we use fixed spacing NOT shape size, because items in a vector may be of different sizes which would result in strange arrangements
-                    autoLayouter.addFixedNode(nodeIndex, baseLoc.preciseX() + offset.preciseX(), baseLoc.preciseY() + offset.preciseY(), shapeBounds.width, shapeBounds.height);
+                    autoLayouter.addFixedNode(nodeIndex, baseLoc.preciseX() + offset.preciseX(), baseLoc.preciseY() + offset.preciseY(), shapeSize.width, shapeSize.height);
                 }
                 else if (constr.getVectorIdentifier()==null || constr.getVectorArrangement()==VectorArrangement.none) {
-                    autoLayouter.addMovableNode(nodeIndex, shapeBounds.preciseWidth(), shapeBounds.preciseHeight());
+                    autoLayouter.addMovableNode(nodeIndex, shapeSize.preciseWidth(), shapeSize.preciseHeight());
                 }
                 else {
                     Point offset = getArrangementOffset(constr, 80); // handle vector layouts
-                    autoLayouter.addAnchoredNode(nodeIndex, constr.getVectorIdentifier().toString(), offset.preciseX(), offset.preciseY(), shapeBounds.preciseWidth(), shapeBounds.preciseHeight());
+                    autoLayouter.addAnchoredNode(nodeIndex, constr.getVectorIdentifier().toString(), offset.preciseX(), offset.preciseY(), shapeSize.preciseWidth(), shapeSize.preciseHeight());
                 }
             }
             nodeIndex++;

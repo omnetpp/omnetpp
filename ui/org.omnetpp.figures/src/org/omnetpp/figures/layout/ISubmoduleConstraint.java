@@ -7,8 +7,8 @@
 
 package org.omnetpp.figures.layout;
 
+import org.eclipse.draw2d.geometry.Dimension;
 import org.eclipse.draw2d.geometry.Point;
-import org.eclipse.draw2d.geometry.Rectangle;
 
 /**
  * Submodule layout is using this interface
@@ -80,18 +80,9 @@ public interface ISubmoduleConstraint {
     public Point getCenterLocation();
 
     /**
-     * The bounds of the main shape of submodule. This is used during the layouting process.
-     * This is NOT the same as the bounds of the figure, because the figure might draw range
-     * indicators, and additional text annotation which is not treated as an "important"
-     * part of the figure.
-     *
-     * The size of this bounds also serves as input to the layouter, so this method should
-     * return a rectangle with the correct size even if centerLocation is not set.
+     * The size of the main shape of submodule; the layout algorithm may take this into
+     * account. Return null or (0,0) if size is not specified or is to be ignored
+     * during layouting.
      */
-    public Rectangle getShapeBounds();
-
-    /**
-     * The bounds of the name label of the submodule.
-     */
-    public Rectangle getNameBounds();
+    public Dimension getShapeSize();
 }

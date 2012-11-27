@@ -69,8 +69,8 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
     protected ITooltipTextProvider problemMarkerTextProvider;
     protected Image problemMarkerImage;
     protected int shape;
-    protected int shapeWidth;
-    protected int shapeHeight;
+    protected int shapeWidth; // zero if unspec
+    protected int shapeHeight; // zero if unspec
     protected Color shapeFillColor;
     protected Color shapeBorderColor;
     protected int shapeBorderWidth;
@@ -647,6 +647,11 @@ ISelectionHandleBounds, ITooltipTextProvider, IProblemDecorationSupport, ISelect
 
     public int getVectorArrangementPar3() {
         return vectorArrangementPar3;
+    }
+
+    @Override
+    public Dimension getShapeSize() {
+        return new Dimension(shapeHeight, shapeWidth);
     }
 
     @Override
