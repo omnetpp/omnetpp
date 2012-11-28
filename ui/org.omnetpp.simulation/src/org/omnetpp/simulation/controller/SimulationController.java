@@ -733,6 +733,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     }
 
     public void dispose() {
+        //TODO try sendQuitCommand() first
         if (launcherJob != null) {
             Job.getJobManager().removeJobChangeListener(jobChangeListener);
             if (cancelJobOnDispose && launcherJob.getState() != Job.NONE)

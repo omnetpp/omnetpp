@@ -1534,15 +1534,15 @@ bool Cmdenv::doRunSimulationExpress()
 
 void Cmdenv::finishSimulation()
 {
-    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
-    ASSERT(state==SIM_READY || state==SIM_TERMINATED || state==SIM_ERROR);
-
-    if (state == SIM_READY)
-    {
-        cTerminationException e("The user has finished the simulation");
-        stoppedWithTerminationException(e);
-    }
-
+//    // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR, but it comes handy in practice...
+//    ASSERT(state==SIM_READY || state==SIM_TERMINATED || state==SIM_ERROR);
+//
+//    if (state == SIM_READY)
+//    {
+//        cTerminationException e("The user has finished the simulation");
+//        stoppedWithTerminationException(e);
+//    }
+//
 //    logBuffer.addInfo("{** Calling finish() methods of modules\n}");
 //    printLastLogLine();
 

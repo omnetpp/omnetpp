@@ -43,6 +43,7 @@ import org.omnetpp.simulation.model.cObject;
  * @author Andras
  */
 //FIXME rename "failure mode" to "offline mode" everywhere
+//TODO sendQuitCommand! also: implement CMD_QUIT in cmdenv.cc
 public class Simulation {
     static boolean debugHttp = true;
     static boolean debugCache = true;
