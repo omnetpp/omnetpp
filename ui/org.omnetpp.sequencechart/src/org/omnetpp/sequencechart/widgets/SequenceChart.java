@@ -1382,7 +1382,9 @@ public class SequenceChart
         catch (Exception e) {
             manager.removeProperty(resource, STATE_PROPERTY);
 
-            throw new RuntimeException(e);
+            SequenceChartPlugin.logError(e);
+            MessageDialog.openError(getShell(), "Error", "Could not restore saved sequence chart state, ignoring.");
+            return false;
         }
     }
 

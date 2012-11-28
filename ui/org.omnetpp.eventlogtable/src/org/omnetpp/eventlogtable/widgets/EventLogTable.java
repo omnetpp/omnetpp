@@ -488,7 +488,9 @@ public class EventLogTable
         catch (Exception e) {
             manager.removeProperty(resource, STATE_PROPERTY);
 
-            throw new RuntimeException(e);
+            EventLogTablePlugin.logError(e);
+            MessageDialog.openError(getShell(), "Error", "Could not restore saved event log table state, ignoring.");
+            return false;
         }
     }
 
