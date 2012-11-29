@@ -78,6 +78,8 @@ public class CommandlineUtils {
         String[] args = Platform.getCommandLineArgs();
         args = getFilenameArgs(args);
         args = removeNonexistentFilenameArgs(args);
+        if (args.length == 0)
+        	return true;
         if (!ensureFilesAreAvailableInWorkspace(args))
             return false;
         return openFiles(args);
@@ -106,7 +108,9 @@ public class CommandlineUtils {
             if (!new File(args[i]).isFile())
                 nonexistentFileArgs.add(args[i]);
         if (!nonexistentFileArgs.isEmpty()) {
-            MessageDialog.openWarning(getParentShell(), "Warning", "File(s) do not exist, ignoring:\n  "+ StringUtils.join(nonexistentFileArgs, "\n  "));
+            MessageDialog.openWarning(getParentShell(), "Warning", 
+            		(nonexistentFileArgs.size() == 1 ? "File does not exist, ignoring: " : "File(s) do not exist, ignoring:\n  ")
+            		+ StringUtils.join(nonexistentFileArgs, "\n  "));
             for (String arg : nonexistentFileArgs)
                 args = (String[]) ArrayUtils.removeElement(args, arg);
         }
@@ -131,6 +135,12 @@ public class CommandlineUtils {
                 failures++;
             }
             else {
+            	try {
+					file.refreshLocal(IResource.DEPTH_ZERO, null);
+				} catch (CoreException e) {
+                    showErrorDialog("Cannot refresh '" + arg + "'", e);
+                    failures++;
+				}
                 try {
                     IDE.openEditor(workbenchPage, file, true);
                 }
@@ -172,15 +182,12 @@ public class CommandlineUtils {
             return false;
         }
 
-        // maybe a closed project contains it, offer opening the project
+        // maybe a closed project contains it, open the project
         IProject project = findOpenOrClosedProjectContaining(commonDir); // actually there may be more than one such project (projects may overlap), but oh well...
         if (project != null) {
             if (project.isOpen())
                 return true;
-            if (MessageDialog.openQuestion(getParentShell(), "Open Project?", "Open existing project '" + project.getName() + "' that covers location " + commonDir.toString() + "?")) {
-                return openProject(project);
-            }
-            return false;
+            return openProject(project);
         }
 
         // bring up "Create Project" dialog to choose between project locations below (stored in IProjectDescription objects)
