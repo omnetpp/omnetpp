@@ -1,32 +1,20 @@
 package org.omnetpp.scave.autoimport;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -46,6 +34,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ISetSelectionTarget;
+import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.scave.wizard.ScaveModelWizard;
 import org.omnetpp.scave.wizard.ScaveWizardUtil;
@@ -129,7 +118,7 @@ public class ScaveStartup implements IStartup {
         }
 
         // import or open projects to make files accessible
-        if (!ensureFilesAreAvailableInWorkspace())
+        if (!CommandlineUtils.ensureFilesAreAvailableInWorkspace(cleansedArgs))
             return;
 
         // open or create ANF files, etc.
@@ -259,255 +248,6 @@ public class ScaveStartup implements IStartup {
                 }
             };
             dialog.open();
-        }
-    }
-
-    /**
-     * Create, import or create projects so that the files given as command line args
-     * become accessible in the workspace.
-     *
-     * @return true on (probable) success, false on failure or user cancellation.
-     */
-    private boolean ensureFilesAreAvailableInWorkspace() {
-        // get files specified to Eclipse on the command-line
-        String[] args = cleansedArgs;
-
-        // check if all files are available via the workspace
-        if (args.length > 0 && availableInOpenProjects(args))
-            return true;
-
-        // find common ancestor of all files
-        File workingDir = new File((String) System.getProperties().get("user.dir"));
-        File commonDir = args.length == 0 ? workingDir : determineCommonDir(args);
-        if (commonDir == null) {
-            MessageDialog.openError(getParentShell(), "Error", "Error: Cannot create a project that covers all input files. Please create project(s) manually, or move/soft link files and start this program again.");
-            return false;
-        }
-
-        // maybe a closed project contains it, offer opening the project
-        IProject project = findOpenOrClosedProjectContaining(commonDir); // actually there may be more than one such project (projects may overlap), but oh well...
-        if (project != null) {
-            if (project.isOpen())
-                return true;
-            if (MessageDialog.openQuestion(getParentShell(), "Open Project?", "Open existing project '" + project.getName() + "' that covers location " + commonDir.toString() + "?")) {
-                openProject(project);
-                return true;
-            }
-            return false;
-        }
-
-        // bring up "Create Project" dialog to choose between project locations below (stored in IProjectDescription objects)
-        IProjectDescription[] descriptions = collectPotentialProjectDescriptions(commonDir);
-        if (descriptions.length == 0) {
-            if (args.length == 0)
-                return true; // no args, don't worry about project creation
-            File workspaceLocation = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-            if (isPrefixOf(commonDir, workspaceLocation))
-                MessageDialog.openError(getParentShell(), "Error", "Error: Cannot create a project to cover directory " + commonDir + ", because it contains the workspace location " + workspaceLocation + ". Project directories must not contain the workspace where administrative information is stored about them.\n\nPlease choose File->Switch Workspace from the menu, and select another workspace location.");
-            else
-                MessageDialog.openError(getParentShell(), "Error", "Error: Cannot create a project to cover directory " + commonDir + ". Try changing the workspace location."); // we really don't know what's wrong, but suggest something anyway...
-            return false;
-        }
-
-        // now really bring up the dialog
-        String message = args.length == 0 ?
-                "Do you want to create a project to make files in the current directory accessible?" :
-                    "Create a project to make your files accessible in the workspace.";
-        CreateProjectDialog dialog = new CreateProjectDialog(getParentShell(), message, descriptions);
-        if (dialog.open() == Dialog.OK) {
-            IProjectDescription description = dialog.getResult();
-            createOrImportProject(description);
-            return true;
-        }
-        return false;
-    }
-
-    private boolean availableInOpenProjects(String[] args) {
-        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        for (String arg : args) {
-            // note: findFilesForLocationURI() also finds closed projects, so we need to check if any are open
-            IFile[] candidates = root.findFilesForLocationURI(new File(arg).toURI());
-            boolean foundOpenProject = false;
-            for (IFile candidate : candidates)
-                if (candidate.getProject().isOpen())
-                    foundOpenProject = true;
-            if (!foundOpenProject)
-                return false;
-        }
-        return true;
-    }
-
-    /**
-     * Determine a common filesystem directory that contains all given files/dirs.
-     * Args are filesystem paths (absolute or working directory relative).
-     */
-    private File determineCommonDir(String[] args) {
-        Assert.isTrue(args.length > 0);
-
-        File[] files = new File[args.length];
-        for (int i=0; i<args.length; i++)
-            files[i] = new File(args[i]).getAbsoluteFile();
-
-        // find common prefix
-        File prefix = files[0];
-        if (!prefix.isDirectory())
-            prefix = prefix.getParentFile();
-        while (prefix != null) {
-            // prefix of all files?
-            boolean isPrefixOfAll = true;
-            for (File file : files)
-                if (!isPrefixOf(prefix, file))
-                    isPrefixOfAll = false;
-            if (isPrefixOfAll)
-                return prefix;
-            prefix = prefix.getParentFile();
-        }
-
-        return null;  // no common prefix (i.e. files are on different drives)
-    }
-
-    /**
-     * Find first project that covers the given filesystem path.
-     */
-    private IProject findOpenOrClosedProjectContaining(File dir) {
-        // note: this implementation ignores linked dirs inside the projects
-        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        for (IProject project : root.getProjects()) {
-            IPath location = project.getLocation();
-            if (location != null && isPrefixOf(location.toFile(), dir))
-                return project;
-        }
-        return null;
-    }
-
-    private boolean isPrefixOf(File prefix, File file) {
-        while (file != null) {
-            if (file.equals(prefix))
-                return true;
-            file = file.getParentFile();
-        }
-        return false;
-    }
-
-    /**
-     * Collect a list of places where we'll offer to create a project; this is the
-     * "common" directory of files, and all ancestor directories.
-     *
-     * Invalid locations (such as the dirs that contain the whole workspace)
-     * are filtered out.
-     *
-     * The result may be zero length, e.g. when dir is the workspace dir or its
-     * ancestor.
-     *
-     * We return the result as a list of project descriptions, for convenience.
-     * (Essentially we use them as (location, projectName) pairs.)
-     */
-    private IProjectDescription[] collectPotentialProjectDescriptions(File dir) {
-        List<IProjectDescription> result = new ArrayList<IProjectDescription>();
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IProjectDescription firstExistingDescription = null;
-        while (dir != null) {
-            IStatus status = workspace.validateProjectLocation(null, new Path(dir.getAbsolutePath()));
-            if (status.getSeverity() != IStatus.ERROR) {
-                IProjectDescription description = null;
-                try {
-                    File projectFile = new File(dir.getPath() + File.separator + IProjectDescription.DESCRIPTION_FILE_NAME);
-                    description = workspace.loadProjectDescription(new Path(projectFile.getPath()));
-                    if (firstExistingDescription == null)
-                        firstExistingDescription = description;
-                }
-                catch (CoreException e1) { }
-                if (description == null)
-                    description = workspace.newProjectDescription(suggestProjectNameFor(dir.getAbsolutePath()));
-                description.setLocation(new Path(dir.getPath()));
-                result.add(description);
-            }
-            dir = dir.getParentFile();
-        }
-        return result.toArray(new IProjectDescription[]{});
-    }
-
-    /**
-     * Suggest a name for a project; should be valid and different from existing project names.
-     */
-    private String suggestProjectNameFor(String location) {
-        String projectName = new Path(location).lastSegment();
-        if (projectName == null)
-            projectName = "unnamed";
-
-        // if already exists, tweak the name a little
-        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-        if (root.getProject(projectName).exists()) {
-            int k = 2;
-            while (root.getProject(projectName + "-" + k).exists())
-                k++;
-            projectName += "-" + k;
-        }
-        return projectName;
-    }
-
-    /**
-     * Create or import a project. Actually, if the project description was obtained
-     * by reading it from disk then it's "import", and if it was created from scratch
-     * then it is "create".
-     *
-     * Project will also be opened.
-     *
-     * This a synchronous operation, i.e. we'll return only when the whole thing is done.
-     */
-    @SuppressWarnings("deprecation")
-    private void createOrImportProject(final IProjectDescription description) {
-        boolean exists = new File(description.getLocation().append(IProjectDescription.DESCRIPTION_FILE_NAME).toOSString()).isFile();
-        final String taskLabel = exists ?
-                "Importing project" : "Creating project";
-        try {
-            IRunnableWithProgress op = new IRunnableWithProgress() {
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask(taskLabel, 100);
-                        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-                        IProject project = workspace.getRoot().getProject(description.getName());
-                        project.create(description, new SubProgressMonitor(monitor, 50));
-                        project.open(IResource.NONE, new SubProgressMonitor(monitor, 50));
-                    }
-                    catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    }
-                }
-            };
-            new ProgressMonitorDialog(getParentShell()).run(true, true, op);
-        }
-        catch (InterruptedException e) {
-            // cancelled
-        }
-        catch (InvocationTargetException e) {
-            showErrorDialog("Error creating project " + description.getName(), e.getCause());
-        }
-    }
-
-    /**
-     * Open project in a synchronous operation, i.e. we'll return only when the whole thing is done.
-     */
-    private void openProject(final IProject project) {
-        try {
-            IRunnableWithProgress op = new IRunnableWithProgress() {
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    try {
-                        monitor.beginTask("Opening project", 100);
-                        project.open(IResource.NONE, new SubProgressMonitor(monitor, 100));
-                    }
-                    catch (Exception e) {
-                        throw new InvocationTargetException(e);
-                    }
-                }
-            };
-            new ProgressMonitorDialog(getParentShell()).run(true, true, op);
-        }
-        catch (InterruptedException e) {
-            // cancelled
-        }
-        catch (InvocationTargetException e) {
-            showErrorDialog("Error opening project " + project.getName(), e);
         }
     }
 
@@ -683,13 +423,13 @@ public class ScaveStartup implements IStartup {
             ((ISetSelectionTarget)view).selectReveal(selection);
     }
 
-    private void showErrorDialog(String message, Throwable e) {
+    private static void showErrorDialog(String message, Throwable e) {
         if (e != null && !StringUtils.isEmpty(e.getMessage()))
             message += ": " + e.getMessage();
         MessageDialog.openError(getParentShell(), "Error", message);
     }
 
-    private Shell getParentShell() {
+    private static Shell getParentShell() {
         return Display.getCurrent().getActiveShell(); // or: PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), but workbench window may be null
     }
 }
