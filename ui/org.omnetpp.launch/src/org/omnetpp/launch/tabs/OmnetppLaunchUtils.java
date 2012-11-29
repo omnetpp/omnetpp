@@ -723,8 +723,8 @@ public class OmnetppLaunchUtils {
         String programLocation = expandedProg;
         // if it is workspace relative path, resolve it against the workspace and get the physical location
         if (!progPath.isAbsolute() ) {
-            IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getFile(projPath.append(progPath));
-            if (executableFile == null)
+            IFile executableFile = ResourcesPlugin.getWorkspace().getRoot().getProject(expandedProj).getFile(progPath);
+            if (executableFile == null)  // FIXME cannot be null
                 throw new CoreException(Status.CANCEL_STATUS);
             programLocation = executableFile.getRawLocation().makeAbsolute().toString();
         }
