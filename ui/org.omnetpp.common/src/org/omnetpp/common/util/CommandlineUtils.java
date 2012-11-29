@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -18,6 +19,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -43,6 +45,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 import org.omnetpp.common.util.StringUtils;
 
 
@@ -50,9 +56,102 @@ import org.omnetpp.common.util.StringUtils;
  * Offers the user to auto-import as project the directory that contains the
  * files listed on the command-line.
  *
+ * <pre>
+ * class MyStartup implements IStartup {
+ *     public void earlyStartup() {
+ *         Display.getDefault().asyncExec(new Runnable() {
+ *             public void run() {
+ *                 CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
+ *            }
+ *         });
+ *     }
+ * }
+ * </pre>
+ *
  * @author Andras
  */
 public class CommandlineUtils {
+    /**
+     * Open the files given on the command line. Returns true on success.
+     */
+    public static boolean autoimportAndOpenFilesOnCommandLine() {
+        String[] args = Platform.getCommandLineArgs();
+        args = getFilenameArgs(args);
+        args = removeNonexistentFilenameArgs(args);
+        if (!ensureFilesAreAvailableInWorkspace(args))
+            return false;
+        return openFiles(args);
+    }
+
+    /**
+     * Picks the filename (non-option) args from the command line, and returns them.
+     */
+    public static String[] getFilenameArgs(String[] args) {
+        List<String> fileArgs = new ArrayList<String>();
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].startsWith("--"))
+                i++;  // skip next one, too
+            else if (!args[i].startsWith("-"))
+                fileArgs.add(args[i]);
+        }
+        return fileArgs.toArray(new String[]{});
+    }
+
+    /**
+     * Remove the args that do not denote existing file names.
+     */
+    public static String[] removeNonexistentFilenameArgs(String[] args) {
+        List<String> nonexistentFileArgs = new ArrayList<String>();
+        for (int i = 0; i < args.length; i++)
+            if (!new File(args[i]).isFile())
+                nonexistentFileArgs.add(args[i]);
+        if (!nonexistentFileArgs.isEmpty()) {
+            MessageDialog.openWarning(getParentShell(), "Warning", "File(s) do not exist, ignoring:\n  "+ StringUtils.join(nonexistentFileArgs, "\n  "));
+            for (String arg : nonexistentFileArgs)
+                args = (String[]) ArrayUtils.removeElement(args, arg);
+        }
+        return args;
+    }
+
+    /**
+     * Interprets all arguments as files and opens editors for them. All args are
+     * filesystem paths (absolute or working directory relative). Returns true on success.
+     */
+    public static boolean openFiles(String[] args) {
+        IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchPage workbenchPage = workbenchWindow == null ? null : workbenchWindow.getActivePage();
+        if (workbenchPage == null)
+            return false;
+
+        int failures = 0;
+        for (String arg : args) {
+            IFile file = findFileArgInWorkspace(arg);
+            if (file == null) {
+                MessageDialog.openWarning(getParentShell(), "Warning", "Cannot open '"  + arg + "': There is no open project that contains it.");
+                failures++;
+            }
+            else {
+                try {
+                    IDE.openEditor(workbenchPage, file, true);
+                }
+                catch (org.eclipse.ui.PartInitException e) {
+                    showErrorDialog("Cannot open '" + arg + "'", e);
+                    failures++;
+                }
+            }
+        }
+        return failures == 0;
+    }
+
+    private static IFile findFileArgInWorkspace(String arg) {
+        IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+        IFile[] candidates = root.findFilesForLocationURI(new File(arg).toURI());
+        for (IFile candidate : candidates)
+            if (candidate.getProject().isAccessible())
+                return candidate;
+        return null;
+    }
+
     /**
      * Create, import or create projects so that the files given as command line args
      * become accessible in the workspace. If the files array is empty, it makes
