@@ -14,6 +14,8 @@
    </configIni>
 
    <launcherArgs>
+      <programArgs>-name
+&quot;OMNeT++ IDE&quot;</programArgs>
       <vmArgs>-Xms128m
 -Xmx512m
 -XX:MaxPermSize=192m</vmArgs>

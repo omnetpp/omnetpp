@@ -59,6 +59,7 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.CommonPlugin;
 import org.omnetpp.common.IConstants;
 import org.omnetpp.common.project.ProjectUtils;
+import org.omnetpp.common.util.CommandlineUtils;
 import org.omnetpp.common.util.FileUtils;
 import org.omnetpp.ide.views.NewVersionView;
 import org.w3c.dom.Document;
@@ -87,13 +88,10 @@ public class OmnetppStartup implements IStartup {
         final IWorkbench workbench = PlatformUI.getWorkbench();
         workbench.getDisplay().asyncExec(new Runnable() {
             public void run() {
-                if (isInitialDefaultStartup()) {
-                    // We need to turn off "build automatically", otherwise it'll start
-                    // building during the import process and will take forever.
-                    // Also, CDT is a pain with autobuild on.
-                    //disableAutoBuild(); -- we now do it via plugin_customization.ini in the main plugin
+                if (isInitialDefaultStartup())
                     importSampleProjects(false);
-                }
+                
+                CommandlineUtils.autoimportAndOpenFilesOnCommandLine();
             }
         });
     }
