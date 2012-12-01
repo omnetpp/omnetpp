@@ -20,10 +20,10 @@ import org.omnetpp.launch.tabs.OmnetppLaunchUtils;
 @SuppressWarnings("restriction")
 public class SimulationValgrindProfileLaunchDelegate extends ValgrindLaunchConfigurationDelegate {
     @Override
-    public void launch(ILaunchConfiguration config, String mode,
-            ILaunch launch, IProgressMonitor monitor) throws CoreException {
-        OmnetppLaunchUtils.updateLaunchConfigurationWithProgramAttributes(mode, launch);
-        // we must use the updated configuration in 'launch' instead the original passed to us
+    public void launch(ILaunchConfiguration configuration, String mode, ILaunch launch, IProgressMonitor monitor) throws CoreException {
+        configuration = OmnetppLaunchUtils.createUpdatedLaunchConfig(configuration, mode);
+        OmnetppLaunchUtils.replaceConfigurationInLaunch(launch, configuration);
+
         super.launch(launch.getLaunchConfiguration(), mode, launch, monitor);
     }
 }

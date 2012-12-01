@@ -192,6 +192,14 @@ typedef struct DIR {
 #define UINT64_FMT      "ll"
 typedef int SOCKET;
 
+#if defined(SO_NOSIGPIPE)  /* we assume it is a #define */
+#define HAVE_SO_NOSIGPIPE
+#endif
+
+#if defined(MSG_NOSIGNAL)  /* we assume it is a #define */
+#define HAVE_MSG_NOSIGNAL
+#endif
+
 #endif /* End of Windows and UNIX specific includes */
 
 #include "mongoose.h"
@@ -1490,7 +1498,11 @@ push(FILE *fp, SOCKET sock, SSL *ssl, const char *buf, uint64_t len)
             if (ferror(fp))
                 n = -1;
         } else {
+#ifdef HAVE_MSG_NOSIGNAL
+            n = send(sock, buf + sent, k, MSG_NOSIGNAL);
+#else
             n = send(sock, buf + sent, k, 0);
+#endif
         }
 
         if (n < 0)
@@ -1740,8 +1752,10 @@ retry:
     usa->u.sin.sin_port     = htons((uint16_t) port);
 
     if ((sock = socket(PF_INET, SOCK_STREAM, 6)) != INVALID_SOCKET &&
-        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR,
-        (char *) &on, sizeof(on)) == 0 &&
+        setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *) &on, sizeof(on)) == 0 &&
+#ifdef HAVE_SO_NOSIGPIPE
+        setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, (char *) &on, sizeof(on)) == 0 &&
+#endif
         bind(sock, &usa->u.sa, usa->len) == 0 &&
         listen(sock, 128) == 0) {
         /* Success */
@@ -4760,6 +4774,10 @@ mg_start(void)
     /*
      * Ignore SIGPIPE signal, so if browser cancels the request, it
      * won't kill the whole process.
+     *
+     * Note: I also added code to set SO_NOSIGPIPE / MSG_NOSIGNAL on the socket
+     * to achieve the same effect in a more specific way, so this SIG_IGN may be
+     * unnecessary. --Andras
      */
     (void) signal(SIGPIPE, SIG_IGN);
 #endif /* _WIN32 */

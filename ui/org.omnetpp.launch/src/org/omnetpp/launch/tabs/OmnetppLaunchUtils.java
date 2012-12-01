@@ -10,6 +10,8 @@ package org.omnetpp.launch.tabs;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -58,9 +60,12 @@ import org.omnetpp.launch.LaunchPlugin;
  * Various utility methods for the launcher.
  */
 public class OmnetppLaunchUtils {
-    // copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
+	// copied from JavaCore.NATURE_ID (we don't want dependency on the JDT plugins)
     private static final String JAVA_NATURE_ID = "org.eclipse.jdt.core.javanature";
     private static final String CDT_CC_NATURE_ID = "org.eclipse.cdt.core.ccnature";
+
+    private static final int HTTP_PORT_START = 9000;
+    private static final int HTTP_PORT_END = 9999;
 
     /**
      * Reads the ini file and enumerates all config sections. resolves include directives recursively
@@ -225,30 +230,27 @@ public class OmnetppLaunchUtils {
     }
 
     /**
-     * Adds required configuration parameters to the launch's configuration. They are required
-     * because built-in launch delegates will fail without them.
-     *
-     * @see createUpdatedLaunchConfig
+     * Replaces the configuration object inside the launch object with another one.
      */
     public static void updateLaunchConfigurationWithProgramAttributes(String mode, ILaunch launch)
                 throws CoreException {
         ILaunchConfigurationWorkingCopy newConfig = createUpdatedLaunchConfig(launch.getLaunchConfiguration(), mode);
-        setConfigurationInLaunch(launch, newConfig);
+        replaceConfigurationInLaunch(launch, newConfig);
     }
 
-    public static void setConfigurationInLaunch(ILaunch launch, ILaunchConfiguration newConfig) {
+    public static void replaceConfigurationInLaunch(ILaunch launch, ILaunchConfiguration configuration) {
         // the ILaunchConfiguration object in 'launch' is immutable so we have to create a mutable
         // ILaunchConfigurationWorkingCopy, update it with the required additional attributes and then
         // we MUST set this configuration on the 'launch' object. This is required because some launchers
         // notably the GdbLaunchDelegate uses the configuration INSIDE the launch object to set up the
         // launched process.
-        ReflectionUtils.setFieldValue(launch, "fConfiguration", newConfig);
+        ReflectionUtils.setFieldValue(launch, "fConfiguration", configuration);
     }
 
     /**
      * Creates a new temporary configuration from a simulation config type that is compatible with CDT.
-	 * It adds ATTR_PROJECT_NAME, ATTR_PROGRAM_NAME and ATTR_PROGRAM_ARGUMENTS. They are
-	 * required to start a program correctly with a debugger launch delegate.
+     * It adds ATTR_PROJECT_NAME, ATTR_PROGRAM_NAME and ATTR_PROGRAM_ARGUMENTS. They are
+     * required to start a program correctly with a debugger launch delegate.
      */
     @SuppressWarnings("unchecked")
     public static ILaunchConfigurationWorkingCopy createUpdatedLaunchConfig(ILaunchConfiguration config, String mode) throws CoreException {
@@ -306,6 +308,16 @@ public class OmnetppLaunchUtils {
             args += " -u Tkenv";
         else
             args += " -u " + envirStr;
+
+        int portNumber = config.getAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, -1);
+        if (portNumber == -1 && envirStr.equals(IOmnetppLaunchConstants.UI_IDE)) {
+            portNumber = findFirstAvailableTcpPort(HTTP_PORT_START, HTTP_PORT_END);
+            if (portNumber == -1)
+                throw new CoreException(new Status(IStatus.ERROR, LaunchPlugin.PLUGIN_ID, "Cannot find available TCP port for communication between the IDE and the simulation process (-p option)"));
+            newCfg.setAttribute(IOmnetppLaunchConstants.OPP_HTTP_PORT, portNumber);
+        }
+        if (portNumber != -1)
+            args += " -p " + portNumber;
 
         String configStr = config.getAttribute(IOmnetppLaunchConstants.OPP_CONFIG_NAME, "").trim();
         if (StringUtils.isNotEmpty(configStr))
@@ -458,6 +470,27 @@ public class OmnetppLaunchUtils {
         }
         // we cannot detect our own toolchain
         return null;
+    }
+
+    /**
+     * Searches for the first free TCP port number on localhost, and returns it.
+     * Returns -1 if no available TCP port was found.
+     */
+    public static int findFirstAvailableTcpPort(int startPort, int endPort) {
+        for (int port = startPort; port <= endPort; port++) {
+            try {
+                ServerSocket sock = new ServerSocket(port);
+                sock.close();
+                return port;
+            }
+            catch (SocketException e) {
+                // ignore, and go on to next port
+            }
+            catch (Exception e) {
+                return -1; // unexpected error -- give up
+            }
+        }
+        return -1;  // no available port found
     }
 
     /**

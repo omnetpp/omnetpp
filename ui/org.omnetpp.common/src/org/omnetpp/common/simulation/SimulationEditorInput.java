@@ -1,5 +1,6 @@
 package org.omnetpp.common.simulation;
 
+import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -10,7 +11,7 @@ import org.eclipse.ui.IPersistableElement;
  *
  * @author Andras
  */
-public class SimulationEditorInput implements IEditorInput {
+public class SimulationEditorInput implements IEditorInput, ISuspendResume {
     // mandatory fields
     private String name; // display name
     private String hostName;
@@ -19,6 +20,9 @@ public class SimulationEditorInput implements IEditorInput {
     // only if simulation was started via a launch configuration (and not attached to)
     private Job launcherJob;
     private String launchConfigurationName;
+
+    // for facilitating cooperation with the C++ debugger
+    private ListenerList listeners = new ListenerList();
 
     public SimulationEditorInput(String name, String hostName, int portNumber) {
         this(name, hostName, portNumber, null, null);
@@ -80,4 +84,25 @@ public class SimulationEditorInput implements IEditorInput {
     public Object getAdapter(@SuppressWarnings("rawtypes") Class adapter) {
         return null;
     }
+
+    @Override
+    public void addSuspendResumeListener(ISuspendResumeListener listener) {
+        listeners.add(listener);
+    }
+
+    @Override
+    public void removeSuspendResumeListener(ISuspendResumeListener listener) {
+        listeners.remove(listener);
+    }
+
+    protected void fireSimulationProcessSuspended() {
+        for (Object o : listeners.getListeners())
+            ((ISuspendResumeListener) o).simulationProcessSuspended();
+    }
+
+    protected void fireSimulationProcessResumed() {
+        for (Object o : listeners.getListeners())
+            ((ISuspendResumeListener) o).simulationProcessResumed();
+    }
+
 }

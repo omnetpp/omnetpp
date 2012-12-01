@@ -102,6 +102,12 @@ public interface IOmnetppLaunchConstants {
     public static final String OPP_USER_INTERFACE = OMNETPP_LAUNCH_ID + ".USER_INTERFACE";
 
     /**
+     * TCP port number for the embedded web server that also serves requests 
+     * from the Simulation Front-End (-p). Must be an integer.
+     */
+    public static final String OPP_HTTP_PORT = CDT_LAUNCH_ID + ".HTTP_PORT";
+
+    /**
      * Shared libraries to be loaded (-l)
      */
     public static final String OPP_SHARED_LIBS = OMNETPP_LAUNCH_ID + ".SHARED_LIBS";
