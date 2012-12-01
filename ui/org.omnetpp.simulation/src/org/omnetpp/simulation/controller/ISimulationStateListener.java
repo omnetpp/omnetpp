@@ -10,7 +10,8 @@ package org.omnetpp.simulation.controller;
  */
 //TODO Note: this interface is incomplete; new functions to be added as needed
 public interface ISimulationStateListener {
-    //TODO void simulationConnected();
+
+    void simulationConnected(SimulationController controller);
 
     void networkSetUp(SimulationController controller);
 

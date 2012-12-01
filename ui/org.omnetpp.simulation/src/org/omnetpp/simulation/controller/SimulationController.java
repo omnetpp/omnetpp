@@ -1,5 +1,6 @@
 package org.omnetpp.simulation.controller;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.List;
 
@@ -33,6 +34,7 @@ import org.omnetpp.simulation.model.cModule;
  */
 //TODO introduce BUSY state in Cmdenv? it would be active during setting up a network and calling finish
 public class SimulationController implements ISimulationCallback {
+    private boolean isDisposed = false;
     private Simulation simulation;
     private LiveAnimationController liveAnimationController;  //TODO should probably be done via listeners, and not by storing LiveAnimationController reference here!
 
@@ -89,6 +91,10 @@ public class SimulationController implements ISimulationCallback {
 
     public long getEventMessageId() {
         return isLastEventAnimationDone() ? simulation.getNextEventMessageIdGuess() : 0 /*XXX no getLastEventMessageId*/;
+    }
+
+    public boolean isDisposed() {
+        return isDisposed;
     }
 
     public boolean isNetworkPresent() {
@@ -153,6 +159,41 @@ public class SimulationController implements ISimulationCallback {
 
     public List<ConfigDescription> getConfigDescriptions() throws CommunicationException {
         return simulation.getConfigDescriptions();
+    }
+
+    public void connect() {
+        // wait until the simulation process starts to respond to HTTP requests.
+        // Meanwhile, the simulation is in DISCONNECTED state, with all actions disabled.
+        Assert.isTrue(simulation.getState() == SimState.DISCONNECTED);
+        tryConnect();
+    }
+
+    protected void tryConnect() {
+        //TODO stop pings if simulation process was suspended
+        int origTimeout = simulation.getTimeoutMillis();
+        simulation.setTimeoutMillis(1000); // 1s
+        try {
+            Debug.println("Ping...");
+            simulation.ping();  // throws exception on failure
+
+            // ping successful:
+            Debug.println("OK");
+            simulation.setConnected();
+            fireSimulationConnected();
+        }
+        catch (IOException e) {
+            Debug.println(e.getClass().getSimpleName() + ": " + e.getMessage());
+            Display.getCurrent().timerExec(1000, new Runnable() {
+                @Override
+                public void run() {
+                    if (!isDisposed())
+                        tryConnect();
+                }
+            });
+        }
+        finally {
+            simulation.setTimeoutMillis(origTimeout);
+        }
     }
 
     public void setupRun(String configName, int runNumber) throws CommunicationException {
@@ -531,6 +572,16 @@ public class SimulationController implements ISimulationCallback {
         }
     }
 
+    protected void fireSimulationConnected() {
+        for (final Object listener : simulationStateListeners.getListeners()) {
+            try {
+                ((ISimulationStateListener) listener).simulationConnected(this);
+            } catch (Exception e) {
+                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
+            }
+        }
+    }
+
     protected void fireNetworkSetUp() {
         for (final Object listener : simulationStateListeners.getListeners()) {
             try {
@@ -562,6 +613,7 @@ public class SimulationController implements ISimulationCallback {
     }
 
     public void dispose() {
+        isDisposed = true;
         simulation.dispose();
         //TODO cancel timers, etc.
     }

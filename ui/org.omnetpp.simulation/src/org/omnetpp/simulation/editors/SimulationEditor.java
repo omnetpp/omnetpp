@@ -1,10 +1,9 @@
 package org.omnetpp.simulation.editors;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -18,8 +17,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -42,6 +39,7 @@ import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
+import org.omnetpp.common.simulation.ISuspendResumeListener;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.common.ui.HoverInfo;
@@ -372,6 +370,10 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         });
 
         simulationController.addSimulationStateListener(new ISimulationStateListener() {
+            @Override
+            public void simulationConnected(SimulationController controller) {
+                runStartupTasks();
+            }
 
             @Override
             public void networkSetUp(SimulationController controller) {
@@ -404,95 +406,15 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             }
         });
 
-        // we asyncExec this, because the editor is not yet set up at this point
+
+        statusLine.setItemText(0, "Connecting...");  //XXX hack; should be done within connect()
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
-                connectToSimulation();
+                simulationController.connect();
             }
         });
 
-    }
-
-    /**
-     * Wait until the simulation process starts to respond to HTTP requests, then invoke runStartupTasks().
-     * Meanwhile, the simulation is in DISCONNECTED state, with all actions disabled.
-     */
-    protected void connectToSimulation() {
-        try {
-            final ProgressMonitorDialog progressMonitorDialog = new ProgressMonitorDialog(getSite().getShell());
-            progressMonitorDialog.setOpenOnRun(false);
-            progressMonitorDialog.run(true, true, new IRunnableWithProgress() {
-                @Override
-                public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-                    monitor.beginTask("Connecting to simulation process...", 10);
-                    if (SimulationEditor.this.isDisposed())
-                        return;
-                    Simulation simulation = simulationController.getSimulation();
-                    int origTimeout = simulation.getTimeoutMillis();
-                    simulation.setTimeoutMillis(1000); // 1s
-                    try {
-                        for (int seq = 1; true; seq++) {
-                            try {
-                                monitor.subTask("Ping " + seq + "...");
-
-                                // check if we're still relevant
-                                if (monitor.isCanceled())
-                                    throw new InterruptedException();
-                                if (SimulationEditor.this.isDisposed())
-                                    return;
-                                //TODO ha idokozben megdoglott a process (job exited!), eszre kellene venni!!!
-
-                                // after a while, open the progress dialog (so user can cancel)
-                                if (seq == 3) {
-                                    Display.getDefault().asyncExec(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progressMonitorDialog.open();
-                                        }
-                                    });
-                                }
-
-                                // ping!
-                                Debug.println("Ping...");
-                                simulation.ping();
-                                Debug.println("Ping successful!");
-                                break;  // we're done
-                            }
-                            catch (IOException e) {
-                                // wait a little (so we do not hog the CPU), then we'll try pinging again
-                                Debug.println(" -> " + e.getClass().getSimpleName() + ": " + e.getMessage());
-                                try { Thread.sleep(500); } catch (InterruptedException ee) {}
-                            }
-                        }
-                    }
-                    finally {
-                        simulation.setTimeoutMillis(origTimeout);
-                    }
-
-                    simulation.setConnected();
-
-                    // then run startup tasks (e.g. ask user which network to set up)
-                    Display.getDefault().asyncExec(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (!SimulationEditor.this.isDisposed()) {
-                                boolean dialogStillOpen = progressMonitorDialog.getShell() != null && !progressMonitorDialog.getShell().isDisposed();
-                                if (dialogStillOpen)
-                                    Display.getDefault().asyncExec(this);
-                                else
-                                    runStartupTasks();
-                            }
-                        }
-                    });
-                }
-            });
-        }
-        catch (InvocationTargetException e) {
-            SimulationPlugin.logError(e);
-        }
-        catch (InterruptedException e) {
-        }
     }
 
     protected void runStartupTasks() {
