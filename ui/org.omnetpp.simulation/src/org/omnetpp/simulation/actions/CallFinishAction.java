@@ -57,8 +57,8 @@ public class CallFinishAction extends AbstractSimulationActionDelegate {
 
     @Override
     public void updateState() {
+        boolean online = getSimulationController().isOnline();
         SimState state = getSimulationController().getUIState();
-        boolean failure = getSimulation().isInFailureMode();
-        setEnabled(!failure && (state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR)); // we also allow it in ERROR case, see SimulationController method
+        setEnabled(online && (state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR)); // we also allow it in ERROR case, see SimulationController method
     }
 }

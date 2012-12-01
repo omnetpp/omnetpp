@@ -34,8 +34,8 @@ public class RunUntilMessageFastAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        boolean failure = getSimulationController().getSimulation().isInFailureMode();
-        setEnabled(!failure && getMessage() != null && getSimulationController().isSimulationOK());
+        boolean online = getSimulationController().isOnline();
+        setEnabled(online && getMessage() != null && getSimulationController().isSimulationOK());
     }
 
 }

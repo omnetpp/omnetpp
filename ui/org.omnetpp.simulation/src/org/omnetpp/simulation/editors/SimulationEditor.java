@@ -3,7 +3,6 @@ package org.omnetpp.simulation.editors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.draw2d.geometry.Rectangle;
@@ -37,9 +36,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.omnetpp.common.Debug;
 import org.omnetpp.common.color.ColorFactory;
-import org.omnetpp.common.simulation.ISuspendResumeListener;
 import org.omnetpp.common.simulation.SimulationEditorInput;
 import org.omnetpp.common.ui.DelegatingSelectionProvider;
 import org.omnetpp.common.ui.HoverInfo;
@@ -57,6 +54,7 @@ import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.SimulationController.ConnState;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
 import org.omnetpp.simulation.inspectors.IInspectorPart;
 import org.omnetpp.simulation.inspectors.actions.IInspectorAction;
@@ -113,8 +111,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         ((IContextService)getSite().getService(IContextService.class)).activateContext(CONTEXT_SIMULATION);
 
         SimulationEditorInput simInput = (SimulationEditorInput)input;
-        Simulation simulation = new Simulation(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob());
-        simulationController = new SimulationController(simulation);
+        simulationController = new SimulationController(simInput.getHostName(), simInput.getPortNumber(), simInput.getLauncherJob(), simInput);
         simulationController.setSimulationUICallback(this);
 
         getSite().setSelectionProvider(new DelegatingSelectionProvider());  // must do it now, because 'editor opened' notification goes right after init() returns
@@ -342,7 +339,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         simulationController.addSimulationChangeListener(new ISimulationChangeListener() {
             @Override
             public void simulationStateChanged(final SimulationController controller) {
-//                if (controller.getState() == SimState.DISCONNECTED || controller.getState() == SimState.NONETWORK)
+//                if (controller.getState() == ConnState.DISCONNECTED || controller.getState() == SimState.NONETWORK)
 //                    return; //FIXME this is a hack because animationController doesn't like empty eventlogs
 //                if (controller.getEventlogFile() != null)
 //                    setEventlogFileName(controller.getEventlogFile());
@@ -406,8 +403,6 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             }
         });
 
-
-        statusLine.setItemText(0, "Connecting...");  //XXX hack; should be done within connect()
         Display.getCurrent().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -415,6 +410,7 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
             }
         });
 
+        updateStatusDisplay();
     }
 
     protected void runStartupTasks() {
@@ -525,6 +521,38 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         return l;
     }
 
+//TODO: move in Simulation class
+//    @Override
+//    public void simulationProcessSuspended() {
+//        Debug.println("PROCESS SUSPENDED");
+//        //TODO move this into SimulationController; also add flag
+//        Display.getDefault().asyncExec(new Runnable() {
+//            @Override
+//            public void run() {
+//                simulationController.getSimulation().enterFailureMode(); //TODO rename failure mode to offline mode
+//            }
+//        });
+//
+//        //TODO: if process is suspended, HTTPClient should not even try!!!!-
+//
+//        //XXX experimental: also try to kill ongoing http request.
+//        // according to http://book.javanb.com/java-threads-3rd/jthreads3-CHP-12-SECT-3.html,
+//        // this will only interrupt the http (blocking I/O) on unix, but not on windows!
+//        // on windows, we apparently have to close the socket, and *that* will immediately cause an IOException.
+//        Thread uiThread = Display.getDefault().getThread();
+//        if (Thread.currentThread() != uiThread) {
+//            System.out.println("INTERRUPTING UI THREAD");
+//            uiThread.interrupt(); // getPageContent() will check this
+//            simulationController.getSimulation().abortOngoingHttpRequest();
+//        }
+//    }
+//
+//    @Override
+//    public void simulationProcessResumed() {
+//        Debug.println("PROCESS RESUMED");
+//        // TODO Auto-generated method stub
+//    }
+
     @Override
     public void dispose() {
         try {
@@ -585,10 +613,12 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     protected void updateStatusDisplay() {
         if (!statusLine.isDisposed()) {
             SimulationController controller = getSimulationController();
-            statusLine.setItemText(0, controller.getUIState().name());
-            statusLine.setForeground(controller.getSimulation().isInFailureMode() ? ColorFactory.RED : null); //FIXME better way to indicate failure mode!!
 
-            if (controller.getUIState() != SimState.DISCONNECTED && controller.getUIState() != SimState.NONETWORK) {
+            ConnState connState = controller.getConnectionState();
+            statusLine.setItemText(0, connState == ConnState.ONLINE ? controller.getUIState().name() : connState.name());
+            statusLine.setForeground(connState == ConnState.OFFLINE ? ColorFactory.RED : connState != ConnState.ONLINE ? ColorFactory.GREY50 : null);
+
+            if (controller.isOnline() && controller.isNetworkPresent()) {
                 Simulation simulation = controller.getSimulation();
                 statusLine.setItemText(1, simulation.getConfigName() + " #" + simulation.getRunNumber() + "   (" + simulation.getNetworkName() + ")");
 

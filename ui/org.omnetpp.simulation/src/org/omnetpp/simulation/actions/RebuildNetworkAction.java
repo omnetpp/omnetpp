@@ -46,8 +46,8 @@ public class RebuildNetworkAction extends AbstractSimulationActionDelegate {
 
     @Override
     public void updateState() {
+        boolean online = getSimulationController().isOnline();
         SimState state = getSimulationController().getUIState();
-        boolean failure = getSimulation().isInFailureMode();
-        setEnabled(!failure && (state != SimState.DISCONNECTED && state != SimState.NONETWORK && state != SimState.RUNNING));
+        setEnabled(online && (state != SimState.NONETWORK && state != SimState.RUNNING));
     }
 }

@@ -34,7 +34,7 @@ public class RunLocalFastAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        boolean failure = getSimulationController().getSimulation().isInFailureMode();
-        setEnabled(!failure && getModule() != null && getSimulationController().isSimulationOK());
+        boolean online = getSimulationController().isOnline();
+        setEnabled(online && getModule() != null && getSimulationController().isSimulationOK());
     }
 }

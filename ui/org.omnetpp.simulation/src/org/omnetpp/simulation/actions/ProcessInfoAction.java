@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.controller.Simulation;
-import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
@@ -120,7 +119,7 @@ public class ProcessInfoAction extends AbstractSimulationActionDelegate {
                     "Configuration name:", StringUtils.defaultString(simulation.getConfigName(), "n/a"),
                     "Run number:", simulation.getConfigName()==null ? "n/a" : ""+simulation.getRunNumber(),
                     "Network name:", StringUtils.defaultString(simulation.getNetworkName(), "n/a"),
-                    "Simulation state:", simulation.getState().name(),
+                    "Simulation state:", simulation.getSimState().name(),
                     "Last event's event number:", ""+simulation.getLastEventNumber(),
                     "Last event's simulation time:", simulation.getLastEventSimulationTime().toString(),
             };
@@ -136,7 +135,6 @@ public class ProcessInfoAction extends AbstractSimulationActionDelegate {
 
     @Override
     public void updateState() {
-        SimState state = getSimulationController().getUIState();
-        setEnabled(state != SimState.DISCONNECTED);
+        setEnabled(getSimulationController().hasSimulationProcess());
     }
 }

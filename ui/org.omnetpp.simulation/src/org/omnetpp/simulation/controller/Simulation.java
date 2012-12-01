@@ -28,14 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.Jdk14Logger;
 import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
+import org.eclipse.swt.widgets.Display;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.json.JSONReader;
-import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.model.cGate;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
@@ -46,6 +42,7 @@ import org.omnetpp.simulation.model.cObject;
  *
  * @author Andras
  */
+//FIXME rename "failure mode" to "offline mode" everywhere
 public class Simulation {
     static boolean debugHttp = true;
     static boolean debugCache = true;
@@ -75,11 +72,10 @@ public class Simulation {
     public static final int CATEGORY_OTHERS = 0x80;
 
     /**
-     * See Cmdenv for state transitions
+     * The state in the simulation process as reported by it; see Cmdenv for state transitions
      */
     public enum SimState {  // FIXME still seems fishy around TERMINATED-ERROR-FINISHCALLED -- should be cleaned up. Rename TERMINATED to COMPLETED? define whether they include finish() having been called or not!!
-        DISCONNECTED, // no simulation process, e.g. it has terminated
-        NONETWORK, READY, RUNNING, TERMINATED /*TODO COMPLETED -- ez egyebkent nincs sose!!*/, ERROR, FINISHCALLED  // as defined in cmdenv.h
+        NONE, NONETWORK, READY, RUNNING, TERMINATED /*TODO COMPLETED -- ez egyebkent nincs sose!!*/, ERROR, FINISHCALLED  // as defined in cmdenv.h
         //TODO consider: BUSY (or ==INPROGRESS) and CANCELLED (useful if setupNetwork() and callFinish() can be cancelled)
     };
 
@@ -136,11 +132,8 @@ public class Simulation {
 
     private String urlBase;
     private int timeoutMillis = 30 * 1000;
-
-    private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
-    private IJobChangeListener jobChangeListener;
-    private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
-
+    private GetMethod currentHttpMethod;  // ongoing HTTP request, so that we can abort it from another thread when needed
+    private boolean isOnline;
     private ISimulationCallback simulationCallback;
 
     // simulation status (as returned by the GET "/sim/status" request)
@@ -149,8 +142,7 @@ public class Simulation {
     private long processId;
     private String[] argv;
     private String workingDir;
-    private SimState state;
-    private boolean inFailureMode = false;  // transient communication failure
+    private SimState simState;
     private StoppingReason stoppingReason = StoppingReason.NONE; // after run/runUntil
     private String configName;
     private int runNumber;
@@ -177,60 +169,17 @@ public class Simulation {
     /**
      * Constructor.
      */
-    public Simulation(String hostName, int portNumber, Job launcherJob) {
+    public Simulation(String hostName, int portNumber) {
         this.hostName = hostName;
         this.portNumber = portNumber;
         this.urlBase = "http://" + hostName + ":" + portNumber + "/";
-        this.launcherJob = launcherJob;
-        this.cancelJobOnDispose = launcherJob != null;
-        this.state = SimState.DISCONNECTED;
+        this.simState = SimState.NONE;
+        this.isOnline = false;
 
-
-        // if simulation was launched via a local launcher job (see SimulationLauncherJob),
-        // set up simulationProcessExited() to be called when the launcher job exits
-        if (launcherJob != null) {
-            Job.getJobManager().addJobChangeListener(jobChangeListener = new JobChangeAdapter() {
-                @Override
-                public void done(IJobChangeEvent event) {
-                    if (event.getJob() == Simulation.this.launcherJob) {
-                        Job.getJobManager().removeJobChangeListener(jobChangeListener);
-                        Simulation.this.launcherJob = null;
-                        Simulation.this.jobChangeListener = null;
-                        simulationProcessExited();
-                    }
-                }
-            });
-        }
-    }
-
-    public void setConnected() {
-        if (state == SimState.DISCONNECTED)
-            state = SimState.NONETWORK;
-    }
-
-    protected void simulationProcessExited() {
-        state = SimState.DISCONNECTED;
-        simulationCallback.simulationProcessExited();
-    }
-
-    public void dispose() {
-        if (launcherJob != null) {
-            Job.getJobManager().removeJobChangeListener(jobChangeListener);
-            if (cancelJobOnDispose && launcherJob.getState() != Job.NONE)
-                launcherJob.cancel();
-        }
-    }
-
-    public boolean canCancelLaunch() {
-        return launcherJob != null && launcherJob.getState() != Job.NONE;
-    }
-
-    /**
-     * Terminates the simulation; may only be called if canCancelLaunch() returns true
-     */
-    public void cancelLaunch() {
-        if (launcherJob != null)
-            launcherJob.cancel();
+        // turn off log messages from Apache HttpClient if we can
+        Log log = LogFactory.getLog("org.apache.commons.httpclient");
+        if (log instanceof Jdk14Logger)
+            ((Jdk14Logger) log).getLogger().setLevel(Level.OFF);
     }
 
     public void setSimulationCallback(ISimulationCallback simulationCallback) {
@@ -247,6 +196,14 @@ public class Simulation {
 
     public void setTimeoutMillis(int timeoutMillis) {
         this.timeoutMillis = timeoutMillis;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean isOnline) {
+        this.isOnline = isOnline;
     }
 
     /**
@@ -285,38 +242,8 @@ public class Simulation {
         return workingDir;
     }
 
-    public SimState getState() {
-        return state;
-    }
-
-    /**
-     * Returns true if the simulation front-end is in the
-     * "transient communication failure" mode. In this mode, all HTTP requests
-     * result in an immediate CommunicationException. Call clearFailureMode() to exit this
-     * mode (Refresh does it.)
-     */
-    public boolean isInFailureMode() {
-        return inFailureMode;
-    }
-
-    /**
-     * Put the simulation front-end into the "transient communication failure" mode.
-     */
-    public void enterFailureMode() {
-        if (!inFailureMode) {
-            inFailureMode = true;
-            simulationCallback.enteringTransientCommunicationFailureMode(); // displays error dialog
-        }
-    }
-
-    /**
-     * Exit the "transient communication failure" mode.
-     */
-    public void clearFailureMode() {
-        if (inFailureMode) {
-            inFailureMode = false;
-            simulationCallback.leavingTransientCommunicationFailureMode();
-        }
+    public SimState getSimState() {
+        return simState;
     }
 
     /**
@@ -370,14 +297,6 @@ public class Simulation {
         return cacheRefreshSeq;
     }
 
-    public void setCancelJobOnDispose(boolean cancelJobOnDispose) {
-        this.cancelJobOnDispose = cancelJobOnDispose;
-    }
-
-    public boolean getCancelJobOnDispose() {
-        return cancelJobOnDispose;
-    }
-
     public LogBuffer getLogBuffer() {
         return logBuffer;
     }
@@ -400,7 +319,7 @@ public class Simulation {
         configName = (String) responseMap.get("config");
         runNumber = (int) defaultLongIfNull((Number) responseMap.get("run"), -1);
         networkName = (String) responseMap.get("network");
-        state = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
+        simState = SimState.valueOf(((String) responseMap.get("state")).toUpperCase());
         stoppingReason = StoppingReason.valueOf(StringUtils.defaultString((String) responseMap.get("stoppingReason"), "none").toUpperCase());
         simulationChangeCounter = ((Number) responseMap.get("changeCounter")).longValue();
         eventlogFile = (String) responseMap.get("eventlogfile");
@@ -837,7 +756,7 @@ public class Simulation {
 
     public void sendCallFinishCommand() throws CommunicationException {
         // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR but it comes handy in practice...
-        Assert.isTrue(state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR);
+        Assert.isTrue(simState == SimState.READY || simState == SimState.TERMINATED || simState == SimState.ERROR);
         getPageContent(urlBase + "sim/callFinish");
     }
 
@@ -868,14 +787,10 @@ public class Simulation {
     protected String getPageContent(String url) throws CommunicationException {
         if (debugHttp)
             Debug.println("GET " + url);
+        if (!isOnline())
+            throw new CommunicationException("Simulation Front-end is currently off-line");
         if (url.length() > MONGOOSE_MAX_REQUEST_URI_SIZE)
             throw new RuntimeException("Request URL length " + url.length() + "exceeds Mongoose limit " + MONGOOSE_MAX_REQUEST_URI_SIZE);
-
-        if (getState() == SimState.DISCONNECTED)
-            throw new IllegalStateException("Simulation process already terminated"); //TODO not good, as we catch CommunicationException always
-
-        if (isInFailureMode())
-            throw new CommunicationException("Simulation front-end is in Failure Mode -- hit Refresh to try resuming normal mode");
 
         try {
             long startTime = System.currentTimeMillis();
@@ -886,16 +801,19 @@ public class Simulation {
             return response;
         }
         catch (SocketException e) {
-            // this means connection refused -- very probably fatal
-            state = SimState.DISCONNECTED;
-            SimulationPlugin.logError("Fatal communication error -- going to state DISCONNECTED", e);
-            simulationCallback.fatalCommunicationError(e);
-            throw new CommunicationException(e);
+            if (Thread.interrupted()) {
+                simulationCallback.communicationInterrupted();
+                throw new CommunicationException(e);
+            }
+            else {
+                // likely connection refused -- very probably fatal
+                simulationCallback.fatalCommunicationError(e);
+                throw new CommunicationException(e);
+            }
         }
         catch (IOException e) {
-            // go to failure mode until user hits Refresh
-            SimulationPlugin.logError("Transient communication error -- going to failure mode", e);
-            enterFailureMode(); // displays error dialog
+            // timeout or something like that -- likely transient failure
+            simulationCallback.transientCommunicationFailure(e);
             throw new CommunicationException(e);
         }
     }
@@ -908,11 +826,6 @@ public class Simulation {
      * A low-level HTTP GET method. Returns the response body.
      */
     protected String doHttpGet(String url) throws IOException {
-        // turn off log messages from Apache HttpClient if we can...
-        Log log = LogFactory.getLog("org.apache.commons.httpclient");
-        if (log instanceof Jdk14Logger)
-            ((Jdk14Logger) log).getLogger().setLevel(Level.OFF); //XXX should be enough to do it only once!
-
         HttpClient client = new HttpClient(); //XXX we could keep one instance for the whole session
         client.getParams().setSoTimeout(timeoutMillis);
         client.getParams().setConnectionManagerTimeout(timeoutMillis);
@@ -931,6 +844,8 @@ public class Simulation {
         method.getParams().setParameter(HttpMethodParams.RETRY_HANDLER, noRetryhandler);
         method.setDoAuthentication(true);
 
+        currentHttpMethod = method;
+
         try {
             int status = client.executeMethod(method);
             if (status != HttpStatus.SC_OK)
@@ -939,6 +854,15 @@ public class Simulation {
         }
         finally {
             method.releaseConnection();
+            currentHttpMethod = null;
+        }
+    }
+
+    public void abortOngoingHttpRequest() {
+        // for more info see e.g. http://devtcg.blogspot.hu/2008/07/interruptible-io-example-using.html
+        if (currentHttpMethod != null) {
+            Display.getDefault().getThread().interrupt(); // set interrupted flag for getPageContent() 
+            currentHttpMethod.abort();  // does nothing if already aborted
         }
     }
 

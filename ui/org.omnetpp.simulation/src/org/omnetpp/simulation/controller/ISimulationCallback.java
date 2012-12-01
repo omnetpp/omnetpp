@@ -3,22 +3,21 @@ package org.omnetpp.simulation.controller;
 import java.net.SocketException;
 
 /**
- * This interface is used by Simulation to notify when the simulation's state
- * has been re-read, the simulation process has exited, etc.
+ * This interface is used by Simulation to notify SimulationController of certain events.
  *
  * @author Andras
  */
 public interface ISimulationCallback {
+    /**
+     *
+     */
+    void communicationInterrupted();
 
     /**
      * TODO
+     * @param e TODO
      */
-    void enteringTransientCommunicationFailureMode();
-
-    /**
-     * TODO
-     */
-    void leavingTransientCommunicationFailureMode();
+    void transientCommunicationFailure(Exception e);
 
     /**
      * Called when the socket cannot connect to the simulation, which we interpret
@@ -26,10 +25,4 @@ public interface ISimulationCallback {
      * this callback; see subclasses of SocketException what does.
      */
     void fatalCommunicationError(SocketException e);
-
-    /**
-     * Called when the simulation process exits (according to the Job that was used to launch it).
-     */
-    void simulationProcessExited();
-
 }

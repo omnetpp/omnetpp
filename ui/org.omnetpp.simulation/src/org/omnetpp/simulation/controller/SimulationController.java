@@ -6,12 +6,16 @@ import java.util.List;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.IJobChangeListener;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
+import org.omnetpp.common.simulation.ISuspendResume;
+import org.omnetpp.common.simulation.ISuspendResumeListener;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
@@ -33,7 +37,24 @@ import org.omnetpp.simulation.model.cModule;
  * @author Andras
  */
 //TODO introduce BUSY state in Cmdenv? it would be active during setting up a network and calling finish
-public class SimulationController implements ISimulationCallback {
+public class SimulationController implements ISimulationCallback, ISuspendResumeListener {
+    /**
+     * State of the connection to the simulation process
+     */
+    public enum ConnState {
+        INIT,  // just created
+        CONNECTING,  // pinging
+        ONLINE,  // normal
+        OFFLINE, // temporarily not talking to the process (although we believe it still exists and is running)
+        SUSPENDED, // process suspended in the debugger
+        DISCONNECTED, // no simulation process, e.g. it has terminated
+    }
+
+    private ConnState connState;  // connection state
+    private Job launcherJob; // we want to be notified when the launcher job exits (== simulation process exits); may be null
+    private IJobChangeListener jobChangeListener;
+    private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
+    private boolean isProcessSuspended;  // whether the simulation process is suspended (in the debugger)
     private boolean isDisposed = false;
     private Simulation simulation;
     private LiveAnimationController liveAnimationController;  //TODO should probably be done via listeners, and not by storing LiveAnimationController reference here!
@@ -51,13 +72,61 @@ public class SimulationController implements ISimulationCallback {
     private ListenerList simulationStateListeners = new ListenerList(); // listeners we have to notify on changes XXX bad name
 
 
-    public SimulationController(Simulation simulation) {
-        this.simulation = simulation;
+    public SimulationController(String hostName, int portNumber, Job theLauncherJob, ISuspendResume suspendResume) {
+        this.launcherJob = theLauncherJob;
+        this.cancelJobOnDispose = launcherJob != null;
+        this.connState = ConnState.INIT;
+
+        this.simulation = new Simulation(hostName, portNumber);
         simulation.setSimulationCallback(this);
+        simulation.setOnline(false);
+
+        // if simulation was launched via a local launcher job (see SimulationLauncherJob),
+        // set up simulationProcessExited() to be called when the launcher job exits
+        if (launcherJob != null) {
+            Job.getJobManager().addJobChangeListener(jobChangeListener = new JobChangeAdapter() {
+                @Override
+                public void done(IJobChangeEvent event) {
+                    if (event.getJob() == launcherJob) {
+                        Job.getJobManager().removeJobChangeListener(jobChangeListener);
+                        launcherJob = null;
+                        jobChangeListener = null;
+                        simulationProcessExited();
+                    }
+                }
+            });
+        }
+
+        // get notified about process suspend/resume
+        if (suspendResume != null) {
+            suspendResume.addSuspendResumeListener(this);
+        }
     }
 
     public Simulation getSimulation() {
         return simulation;
+    }
+
+    public ConnState getConnectionState() {
+        return connState;
+    }
+
+    protected void setConnectionState(ConnState state) {
+        if (connState != state) {
+            connState = state;
+
+            boolean online = (connState == ConnState.ONLINE);
+            if (online != simulation.isOnline())
+                simulation.setOnline(online);
+
+            // state changes often come in a background thread, but listeners are typically UI related
+            DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
+                @Override
+                public void run() {
+                    fireSimulationStateChanged();
+                }
+            });
+        }
     }
 
     /**
@@ -68,7 +137,7 @@ public class SimulationController implements ISimulationCallback {
      * between the chunks, while UI is obviously in state==RUNNING.
      */
     public SimState getUIState() {
-        SimState state = simulation.getState();
+        SimState state = simulation.getSimState();
         return (state == SimState.READY && currentRunMode != RunMode.NONE) ? SimState.RUNNING : state;
     }
 
@@ -97,8 +166,16 @@ public class SimulationController implements ISimulationCallback {
         return isDisposed;
     }
 
+    public boolean hasSimulationProcess() {
+        return getConnectionState() != ConnState.DISCONNECTED;
+    }
+
+    public boolean isOnline() {
+        return getConnectionState() == ConnState.ONLINE;
+    }
+
     public boolean isNetworkPresent() {
-        return getUIState() != SimState.DISCONNECTED && getUIState() != SimState.NONETWORK;
+        return isOnline() && getUIState() != SimState.NONETWORK;
     }
 
     public boolean isSimulationOK() {
@@ -161,15 +238,36 @@ public class SimulationController implements ISimulationCallback {
         return simulation.getConfigDescriptions();
     }
 
+
+    public void setCancelJobOnDispose(boolean cancelJobOnDispose) {
+        this.cancelJobOnDispose = cancelJobOnDispose;
+    }
+
+    public boolean getCancelJobOnDispose() {
+        return cancelJobOnDispose;
+    }
+
+    public boolean canCancelLaunch() {
+        return launcherJob != null && launcherJob.getState() != Job.NONE;
+    }
+
+    /**
+     * Terminates the simulation; may only be called if canCancelLaunch() returns true
+     */
+    public void cancelLaunch() {
+        if (launcherJob != null)
+            launcherJob.cancel();
+    }
+
     public void connect() {
         // wait until the simulation process starts to respond to HTTP requests.
-        // Meanwhile, the simulation is in DISCONNECTED state, with all actions disabled.
-        Assert.isTrue(simulation.getState() == SimState.DISCONNECTED);
+        // Meanwhile, all actions should be disabled.
+        Assert.isTrue(getConnectionState() == ConnState.INIT);
+        setConnectionState(ConnState.CONNECTING);
         tryConnect();
     }
 
     protected void tryConnect() {
-        //TODO stop pings if simulation process was suspended
         int origTimeout = simulation.getTimeoutMillis();
         simulation.setTimeoutMillis(1000); // 1s
         try {
@@ -178,7 +276,7 @@ public class SimulationController implements ISimulationCallback {
 
             // ping successful:
             Debug.println("OK");
-            simulation.setConnected();
+            setConnectionState(ConnState.ONLINE);
             fireSimulationConnected();
         }
         catch (IOException e) {
@@ -186,7 +284,7 @@ public class SimulationController implements ISimulationCallback {
             Display.getCurrent().timerExec(1000, new Runnable() {
                 @Override
                 public void run() {
-                    if (!isDisposed())
+                    if (!isDisposed() && !isProcessSuspended)
                         tryConnect();
                 }
             });
@@ -221,7 +319,7 @@ public class SimulationController implements ISimulationCallback {
     }
 
     public void step() throws CommunicationException {
-        Assert.isTrue(simulation.getState() == SimState.READY);
+        Assert.isTrue(simulation.getSimState() == SimState.READY);
         if (currentRunMode == RunMode.NONE) {
 //            animationPlaybackController.jumpToEnd();
 
@@ -273,7 +371,7 @@ public class SimulationController implements ISimulationCallback {
 //        animationPlaybackController.jumpToEnd();
 
         if (currentRunMode == RunMode.NONE) {
-            Assert.isTrue(simulation.getState() == SimState.READY);
+            Assert.isTrue(simulation.getSimState() == SimState.READY);
             stopRequested = false;
             currentRunMode = mode;
             fireSimulationStateChanged(); // because currentRunMode has changed
@@ -315,7 +413,7 @@ public class SimulationController implements ISimulationCallback {
 
     protected void doRun() throws CommunicationException {
         // should we run at all? (stopRequested is set while we are in asyncExec)
-        if (stopRequested || (simulation.getState() != SimState.READY && simulation.getState() != SimState.RUNNING)) {
+        if (stopRequested || (simulation.getSimState() != SimState.READY && simulation.getSimState() != SimState.RUNNING)) {
             resetRunState();
             return;
         }
@@ -348,7 +446,7 @@ public class SimulationController implements ISimulationCallback {
 
             boolean animate = (currentRunMode == RunMode.NORMAL);
 
-            if (simulation.getState() != SimState.READY) {
+            if (simulation.getSimState() != SimState.READY) {
                 // likely an error condition -- animate last part if needed, and then we're done
                 doNowOrAfterAnimation(animate, resetRunState);
             }
@@ -393,7 +491,7 @@ public class SimulationController implements ISimulationCallback {
             liveAnimationController.cancelAnimation();
 
         // stop the underlying simulation
-        if (simulation.getState() == SimState.RUNNING) {
+        if (simulation.getSimState() == SimState.RUNNING) {
             try {
                 simulation.sendStopCommand();
             } finally {
@@ -419,7 +517,7 @@ public class SimulationController implements ISimulationCallback {
 
     public void callFinish() throws CommunicationException {
         // strictly speaking, we shouldn't allow callFinish() after SIM_ERROR but it comes handy in practice...
-        SimState state = simulation.getState();
+        SimState state = simulation.getSimState();
         Assert.isTrue(state == SimState.READY || state == SimState.TERMINATED || state == SimState.ERROR);
         simulation.sendCallFinishCommand();
         refreshUntil(SimState.FINISHCALLED); //TODO in background thread, plus callback in the end?
@@ -495,8 +593,8 @@ public class SimulationController implements ISimulationCallback {
                 }
             } while (again);
 
-            SimState state = simulation.getState();
-            if (expectedState == null || state == expectedState || state == SimState.FINISHCALLED || state == SimState.TERMINATED || state == SimState.ERROR || state == SimState.DISCONNECTED)
+            SimState state = simulation.getSimState();
+            if (!isOnline() || expectedState == null || state == expectedState || state == SimState.FINISHCALLED || state == SimState.TERMINATED || state == SimState.ERROR)
                 break;
 
             if (retries > 1)
@@ -513,56 +611,99 @@ public class SimulationController implements ISimulationCallback {
         Debug.println("SimulationController.refreshUntil(): " + (System.currentTimeMillis() - startTime) + "ms\n");
     }
 
-    @Override
-    public void enteringTransientCommunicationFailureMode() {
-        fireSimulationStateChanged();
+    /**
+     * Put the simulation front-end into the "transient communication failure" mode.
+     */
+    public void goOffline() {
+        Assert.isTrue(connState == ConnState.ONLINE);
+        setConnectionState(ConnState.OFFLINE);
 
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                final String KEY_SUPPRESSDIALOGONCOMMUNICATIONERROR = "suppressDialogOnCommunicationError";
-                MessageDialogWithToggle.openError(
-                        PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-                        "Communication Error",
-                        "An error occurred while talking to the simulation process.\n" +
-                        "\n" +
-                        "To prevent a cascade of further such errors, all communication " +
-                        "with the simulation process has been suspended until you hit Refresh. " +
-                        "In this reduced mode, you may still use the UI, open inspectors, browse objects " +
-                        "or the module log, etc., but be aware that any information you see on the screen " +
-                        "may be obsolete or invalid. Refresh will attempt to re-establish communication " +
-                        "with the simulation process and return to normal operation.",
-                        "Don't show this message again",
-                        false,
-                        SimulationPlugin.getDefault().getPreferenceStore(),
-                        KEY_SUPPRESSDIALOGONCOMMUNICATIONERROR
-                        );
-            }
-        });
+//            //FIXME dialog -- move this into the UI part (editor)
+//            Display.getDefault().asyncExec(new Runnable() {
+//                @Override
+//                public void run() {
+//                    //FIXME obey "don't show again" !!!!
+//                    final String KEY_SUPPRESSDIALOGONCOMMUNICATIONERROR = "suppressDialogOnCommunicationError";
+//                    MessageDialogWithToggle.openError(
+//                            PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
+//                            "Communication Error",
+//                            "An error occurred while talking to the simulation process.\n" +
+//                            "\n" +
+//                            "To prevent a cascade of further such errors, all communication " +
+//                            "with the simulation process has been suspended until you hit Refresh. " +
+//                            "In this reduced mode, you may still use the UI, open inspectors, browse objects " +
+//                            "or the module log, etc., but be aware that any information you see on the screen " +
+//                            "may be obsolete or invalid. Refresh will attempt to re-establish communication " +
+//                            "with the simulation process and return to normal operation.",
+//                            "Don't show this message again",
+//                            false,
+//                            SimulationPlugin.getDefault().getPreferenceStore(),
+//                            KEY_SUPPRESSDIALOGONCOMMUNICATIONERROR
+//                            );
+//                }
+//            });
+    }
+
+    public void goOnline() {
+        Assert.isTrue(connState == ConnState.OFFLINE || connState == ConnState.SUSPENDED);
+        setConnectionState(ConnState.ONLINE);
     }
 
     @Override
-    public void leavingTransientCommunicationFailureMode() {
-        fireSimulationStateChanged();
+    public void communicationInterrupted() {
+        SimulationPlugin.logError("Interrupted", null);
+    }
+
+    @Override
+    public void transientCommunicationFailure(Exception e) {
+        // go to failure mode until user hits Refresh
+        SimulationPlugin.logError("Transient communication error, going offline", e);
+        goOffline();
     }
 
     @Override
     public void fatalCommunicationError(SocketException e) {
-        fireSimulationStateChanged();
+        SimulationPlugin.logError("Fatal communication error, going to state DISCONNECTED", e);
+        setConnectionState(ConnState.DISCONNECTED);
+    }
+
+    protected void simulationProcessExited() {
+        setConnectionState(ConnState.DISCONNECTED);
     }
 
     @Override
-    public void simulationProcessExited() {
-        // this comes in a background thread, but listeners are typically UI related
-        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-            @Override
-            public void run() {
-                fireSimulationStateChanged();
-            }
-        });
+    public void simulationProcessSuspended() {
+        if (!isProcessSuspended) {
+            isProcessSuspended = true;
+            simulation.abortOngoingHttpRequest();
+            setConnectionState(ConnState.SUSPENDED);
+        }
+    }
+
+    @Override
+    public void simulationProcessResumed() {
+        if (isProcessSuspended) {
+            // note: just set the flag. We must wait with actually trying to contact the simulation process
+            // again, because this Resume may be immediately followed by a Suspend; this occurs e.g. when
+            // the user single-steps through the code in the debugger.
+            isProcessSuspended = false;
+            setConnectionState(ConnState.OFFLINE); //XXX experimental
+        }
+    }
+
+    public void dispose() {
+        if (launcherJob != null) {
+            Job.getJobManager().removeJobChangeListener(jobChangeListener);
+            if (cancelJobOnDispose && launcherJob.getState() != Job.NONE)
+                launcherJob.cancel();
+        }
+
+        isDisposed = true;
+        //TODO cancel timers, etc.
     }
 
     protected void fireSimulationStateChanged() {
+        Assert.isTrue(Display.getCurrent() != null); // mandate that we are in the UI thread, as listeners are typically UI related
         for (final Object listener : simulationChangeListeners.getListeners()) {
             try {
                 ((ISimulationChangeListener) listener).simulationStateChanged(this);
@@ -611,11 +752,5 @@ public class SimulationController implements ISimulationCallback {
             }
         }
     }
-
-    public void dispose() {
-        isDisposed = true;
-        simulation.dispose();
-        //TODO cancel timers, etc.
-    }
-
 }
+

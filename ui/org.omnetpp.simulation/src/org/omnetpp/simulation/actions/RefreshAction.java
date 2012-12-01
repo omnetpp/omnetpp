@@ -4,6 +4,7 @@ import org.eclipse.jface.action.IAction;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.SimulationController.ConnState;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
@@ -21,8 +22,8 @@ public class RefreshAction extends AbstractSimulationActionDelegate {
     public void run(IAction action) {
         try {
             SimulationController controller = getSimulationController();
-            if (controller.getSimulation().isInFailureMode())
-                controller.getSimulation().clearFailureMode(); // give it another chance
+            if (controller.getConnectionState() == ConnState.OFFLINE)
+                controller.goOnline(); // give it another chance
             controller.refreshStatus();
         }
         catch (CommunicationException e) {
@@ -35,8 +36,8 @@ public class RefreshAction extends AbstractSimulationActionDelegate {
 
     @Override
     public void updateState() {
-        SimState state = getSimulationController().getUIState();
-        boolean failure = getSimulation().isInFailureMode();
-        setEnabled(failure || (state != SimState.DISCONNECTED && state != SimState.RUNNING));
+        ConnState connState = getSimulationController().getConnectionState();
+        SimState simState = getSimulationController().getUIState();
+        setEnabled(connState == ConnState.OFFLINE || (connState == ConnState.ONLINE && simState != SimState.RUNNING));
     }
 }

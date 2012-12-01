@@ -18,7 +18,6 @@ import org.omnetpp.common.ui.ViewWithMessagePart;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.Simulation;
-import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
@@ -124,7 +123,7 @@ public class ObjectTreeView extends ViewWithMessagePart implements ISimulationEd
     public void refresh() {
         SimulationEditor editor = simulationEditorProxy.getAssociatedSimulationEditor();
         SimulationController controller = (editor == null) ? null : editor.getSimulationController();
-        if (controller == null || controller.getUIState() == SimState.DISCONNECTED || !controller.getSimulation().hasRootObjects()) {
+        if (controller == null || !controller.hasSimulationProcess() || !controller.getSimulation().hasRootObjects()) {
             showMessage("No simulation process.");
         }
         else {

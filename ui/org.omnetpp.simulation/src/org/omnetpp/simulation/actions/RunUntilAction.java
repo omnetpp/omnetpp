@@ -40,9 +40,9 @@ public class RunUntilAction extends AbstractSimulationActionDelegate {
 
     @Override
     public void updateState() {
+        boolean online = getSimulationController().isOnline();
         SimState state = getSimulationController().getUIState();
-        boolean failure = getSimulation().isInFailureMode();
-        setEnabled(!failure && (state == SimState.READY || state == SimState.RUNNING));
+        setEnabled(online && (state == SimState.READY || state == SimState.RUNNING));
 
         setChecked(getSimulationController().isRunUntilActive());
     }

@@ -32,7 +32,7 @@ public class StopAction extends AbstractInspectorAction {
 
     @Override
     public void update() {
-        boolean failure = getSimulationController().getSimulation().isInFailureMode();
-        setEnabled(!failure);
+        boolean online = getSimulationController().isOnline();
+        setEnabled(online);
     }
 }

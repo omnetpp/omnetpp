@@ -1,7 +1,6 @@
 package org.omnetpp.simulation.actions;
 
 import org.eclipse.jface.action.IAction;
-import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.editors.SimulationEditorContributor;
 
 /**
@@ -21,7 +20,7 @@ public class LinkWithSimulationAction extends AbstractSimulationActionDelegate {
             if (!haveSimulationProcess())
                 return;
 
-            getSimulationController().getSimulation().setCancelJobOnDispose(isChecked());
+            getSimulationController().setCancelJobOnDispose(isChecked());
         }
         finally {
             updateState();
@@ -30,8 +29,7 @@ public class LinkWithSimulationAction extends AbstractSimulationActionDelegate {
 
     @Override
     public void updateState() {
-        Simulation simulation = getSimulationController().getSimulation();
-        setEnabled(simulation.canCancelLaunch());
-        setChecked(simulation.getCancelJobOnDispose());
+        setEnabled(getSimulationController().canCancelLaunch());
+        setChecked(getSimulationController().getCancelJobOnDispose());
     }
 }

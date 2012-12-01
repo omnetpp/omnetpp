@@ -18,7 +18,6 @@ import org.eclipse.ui.PlatformUI;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
-import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
@@ -47,10 +46,6 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
 
     public SimulationController getSimulationController() {
         return simulationEditor.getSimulationController();
-    }
-
-    public Simulation getSimulation() {
-        return simulationEditor.getSimulationController().getSimulation();
     }
 
     public SimulationCanvas getSimulationCanvas() {
@@ -104,7 +99,7 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
      * Utility function.
      */
     protected boolean haveSimulationProcess() {
-        if (getSimulationController().getSimulation().getState() == SimState.DISCONNECTED) {
+        if (!getSimulationController().hasSimulationProcess()) {
             MessageDialog.openConfirm(getShell(), "Error", "No simulation process.");
             return false;
         }

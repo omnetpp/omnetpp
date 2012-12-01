@@ -93,7 +93,7 @@ public class cObject {
 
     public void load() throws CommunicationException {
         if (isDisposed) {
-            Assert.isTrue(simulation.isInFailureMode()); // otherwise it should not occur!
+            Assert.isTrue(!simulation.isOnline()); // otherwise it should not occur!
             // Note: we use CommunicationException (not InvalidSimulationObjectException) because we want it to be a *checked* exception, and handled together with other CommunicationExceptions
             throw new CommunicationException("refusing to load object " + getObjectId() + "-" + getClass().getSimpleName() + " because it is already deleted");
         }
