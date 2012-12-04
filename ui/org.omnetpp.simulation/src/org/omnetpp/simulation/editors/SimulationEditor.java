@@ -575,6 +575,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
     @Override
     public void setFocus() {
         simulationCanvas.setFocus();
+        if (simulationController.getConnectionState() == ConnState.RESUMABLE)
+            simulationController.goOnline();
     }
 
     @Override

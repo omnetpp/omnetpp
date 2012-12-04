@@ -16,6 +16,7 @@ import org.omnetpp.common.Debug;
 import org.omnetpp.common.engine.BigDecimal;
 import org.omnetpp.common.simulation.ISuspendResume;
 import org.omnetpp.common.simulation.ISuspendResumeListener;
+import org.omnetpp.common.util.DelayedJob;
 import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.common.util.StringUtils;
 import org.omnetpp.simulation.SimulationPlugin;
@@ -47,6 +48,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         ONLINE,  // normal
         OFFLINE, // temporarily not talking to the process (although we believe it still exists and is running)
         SUSPENDED, // process suspended in the debugger
+        RESUMABLE, // still off-line, but process has already been resumed in the debugger
         DISCONNECTED, // no simulation process, e.g. it has terminated
     }
 
@@ -55,6 +57,8 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     private IJobChangeListener jobChangeListener;
     private boolean cancelJobOnDispose;  // whether to kill the simulation launcher job when the controller is disposed
     private boolean isProcessSuspended;  // whether the simulation process is suspended (in the debugger)
+    private DelayedJob resumableStateDelayedJob = null;
+    private DelayedJob reconnectDelayedJob = null;
     private boolean isDisposed = false;
     private Simulation simulation;
     private LiveAnimationController liveAnimationController;  //TODO should probably be done via listeners, and not by storing LiveAnimationController reference here!
@@ -70,7 +74,6 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     private ISimulationUICallback simulationUICallback;
     private ListenerList simulationChangeListeners = new ListenerList(); // listeners we have to notify on changes
     private ListenerList simulationStateListeners = new ListenerList(); // listeners we have to notify on changes XXX bad name
-
 
     public SimulationController(String hostName, int portNumber, Job theLauncherJob, ISuspendResume suspendResume) {
         this.launcherJob = theLauncherJob;
@@ -645,8 +648,11 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     }
 
     public void goOnline() {
-        Assert.isTrue(connState == ConnState.OFFLINE || connState == ConnState.SUSPENDED);
+        Assert.isTrue(connState == ConnState.OFFLINE || connState == ConnState.RESUMABLE);
         setConnectionState(ConnState.ONLINE);
+        try {
+            refreshStatus();
+        } catch (CommunicationException e) { }
     }
 
     @Override
@@ -673,22 +679,52 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
     @Override
     public void simulationProcessSuspended() {
-        if (!isProcessSuspended) {
+        if (!isDisposed() && !isProcessSuspended) {
             isProcessSuspended = true;
             simulation.abortOngoingHttpRequest();
             setConnectionState(ConnState.SUSPENDED);
+            if (resumableStateDelayedJob != null)
+                resumableStateDelayedJob.cancel();
+            if (reconnectDelayedJob != null)
+                reconnectDelayedJob.cancel();
         }
     }
 
     @Override
     public void simulationProcessResumed() {
-        if (isProcessSuspended) {
+        if (!isDisposed() && isProcessSuspended) {
             // note: just set the flag. We must wait with actually trying to contact the simulation process
             // again, because this Resume may be immediately followed by a Suspend; this occurs e.g. when
             // the user single-steps through the code in the debugger.
             isProcessSuspended = false;
-            setConnectionState(ConnState.OFFLINE); //XXX experimental
+
+            // enter RESUMABLE after a delay
+            if (resumableStateDelayedJob == null)
+                createDelayedJobs();
+            resumableStateDelayedJob.restartTimer();
         }
+    }
+
+    protected void createDelayedJobs() {
+        // sets state=RESUMABLE after 0.5s
+        resumableStateDelayedJob = new DelayedJob(500) {
+            @Override
+            public void run() {
+                if (!isDisposed()) {
+                    setConnectionState(ConnState.RESUMABLE);
+                    reconnectDelayedJob.restartTimer();
+                }
+            }
+        };
+
+        // goes online after 2s delay
+        reconnectDelayedJob = new DelayedJob(2000) {
+            @Override
+            public void run() {
+                if (!isDisposed() && getConnectionState() == ConnState.RESUMABLE)
+                    goOnline();
+            }
+        };
     }
 
     public void dispose() {

@@ -22,8 +22,9 @@ public class RefreshAction extends AbstractSimulationActionDelegate {
     public void run(IAction action) {
         try {
             SimulationController controller = getSimulationController();
-            if (controller.getConnectionState() == ConnState.OFFLINE)
-                controller.goOnline(); // give it another chance
+            ConnState connState = controller.getConnectionState();
+            if (connState == ConnState.OFFLINE || connState == ConnState.RESUMABLE)
+                controller.goOnline();
             controller.refreshStatus();
         }
         catch (CommunicationException e) {
@@ -38,6 +39,7 @@ public class RefreshAction extends AbstractSimulationActionDelegate {
     public void updateState() {
         ConnState connState = getSimulationController().getConnectionState();
         SimState simState = getSimulationController().getUIState();
-        setEnabled(connState == ConnState.OFFLINE || (connState == ConnState.ONLINE && simState != SimState.RUNNING));
+        setEnabled(connState == ConnState.OFFLINE || connState == ConnState.RESUMABLE || 
+                (connState == ConnState.ONLINE && simState != SimState.RUNNING));
     }
 }
