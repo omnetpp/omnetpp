@@ -1,3 +1,5 @@
+2012-12-04  ------ omnetpp-4.3b1 released ------
+
 2012-03-27 Tamas Borbely
 
     Fix bug #555: Memory leak in output vector recording.
