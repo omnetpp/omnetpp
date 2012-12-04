@@ -5,13 +5,79 @@ This file summarizes OMNeT++ changes in each release. For changes related to
 simulation model compatibility, see doc/API-Changes. For more detailed info
 about all changes, see include/ChangeLog, src/*/ChangeLog, and ide/ChangeLog.
 
+OMNeT++ 4.3b1 (Dec 2012)
+------------------------
+
+IDE:
+
+  - Updated to Eclipse 3.8.1.
+
+  - The IDE now required Java 1.6+
+
+  - The C++ code analyzer has been turned off as it was reporting
+    too many false positives.
+
+  - Usability improvements in the analysis tool.
+
+  - Computed scalars: The analysis tool now supports the creation of
+    scalar values from other scalars. Read the updated the User Guide
+    for further details.
+
+  - Added 'logarithmic X axis' option to scatter chart.
+
+  - Added NED editor support for named channels.
+
+  - Added full screen mode (Ctrl-Shift-F11)
+
+  - Better error reporting in the Sequence Chart and Event Log views.
+
+  - Added support for opening files from the command line. i.e. use:
+    $ omnetpp Aloha.ned
+
+  - Updated MinGW files (GCC, linker and GDB)
+
+NED:
+  - Channel name syntax in connections; @defaultname(Foo) attribute for channel types
+
+    Syntax:
+       r1.pppg++ <--> eth1: EthernetChannel <--> r2.pppg++;
+       a.out --> foo: {delay=1ms;} --> b.in;
+       a.out --> bar: --> b.in;
+
+    Default name may also come from @defaultname of the channel type:
+       channel Eth_100M like IEth {
+           @defaultname(eth100);
+       }
+Sim:
+
+  - Added hasEncapsulatedPacket() to cPacket.
+
+  - Implemented calculateWeightedSingleShortestPathsTo() in cTopology.
+
+  - Signals implementation now allows static initialization of simsignal_t variables
+
+    Signal registration table is no longer cleared between runs, so you
+    can write things like:
+
+    simsignal_t PPP::txBeginSignal = cComponent::registerSignal("txBegin");
+  - fixed a bug in Expression where '-2m' was evaluated to '2' (meter was lost)
+
+Tools:
+
+  - The simulator now supports MAC OS X 10.8 (as long as you have installed the quartz library
+    because 10.8 no longer supports X directly.)
+
+  - Simplified makefile output: Makefiles now output only the filenames to the console instead of
+    the whole command line. This makes the build process less "noisy'. If you need the old behavior,
+    use the 'V=1' (verbose on) option on the make command line.
+
 OMNeT++ 4.2.2 (March 2012)
-----------------------
+--------------------------
 
 Bugs fixed: http://tinyurl.com/omnetpp422-fixes
 
 OMNeT++ 4.2.1 (Jan 2012)
-----------------------
+------------------------
 
 Bugs fixed: http://tinyurl.com/omnetpp421-fixes
 
