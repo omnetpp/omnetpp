@@ -15,9 +15,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.ui.SelectionProvider;
 import org.omnetpp.common.ui.ViewWithMessagePart;
-import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.Simulation;
+import org.omnetpp.simulation.controller.SimulationChangeEvent;
+import org.omnetpp.simulation.controller.SimulationChangeEvent.Reason;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
@@ -110,14 +111,9 @@ public class ObjectTreeView extends ViewWithMessagePart implements ISimulationEd
         refresh();
     }
 
-    public void simulationStateChanged(SimulationController controller) {
-        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!isDisposed())
-                    refresh();
-            }
-        });
+    public void simulationStateChanged(SimulationChangeEvent e) {
+        if (e.reason == Reason.OBJECTCACHE_REFRESH && !isDisposed())
+            refresh();
     }
 
     public void refresh() {

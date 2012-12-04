@@ -19,6 +19,7 @@ import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
 import org.omnetpp.simulation.controller.Simulation.SimState;
+import org.omnetpp.simulation.controller.SimulationChangeEvent;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.editors.SimulationEditor;
 
@@ -33,7 +34,8 @@ public abstract class AbstractSimulationActionDelegate implements IEditorActionD
 
     private ISimulationChangeListener listener = new ISimulationChangeListener() {
         @Override
-        public void simulationStateChanged(SimulationController controller) {
+        public void simulationStateChanged(SimulationChangeEvent e) {
+            //TODO if (e.reason == ... what exactly?
             updateState();
         }
     };

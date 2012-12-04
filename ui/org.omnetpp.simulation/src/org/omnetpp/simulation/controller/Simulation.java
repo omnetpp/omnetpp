@@ -304,7 +304,6 @@ public class Simulation {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public StatusResponse refreshStatus() throws CommunicationException {
         Object responseJSON = getPageContentAsJSON(urlBase + "sim/status");
-
         // store basic simulation state
         Map responseMap = (Map) responseJSON;
         long oldProcessId = processId;
@@ -453,7 +452,7 @@ public class Simulation {
                 logItems.add(item);
             }
             else {
-                throw new RuntimeException("type: '" + type + "'");
+                throw new RuntimeException("unknown log entry type '" + type + "'");
             }
         }
         if (!logItems.isEmpty()) {

@@ -24,13 +24,13 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.omnetpp.common.ui.IUpdateableAction;
-import org.omnetpp.common.util.DisplayUtils;
 import org.omnetpp.simulation.SimulationPlugin;
 import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
-import org.omnetpp.simulation.controller.SimulationController;
+import org.omnetpp.simulation.controller.SimulationChangeEvent;
+import org.omnetpp.simulation.controller.SimulationChangeEvent.Reason;
 import org.omnetpp.simulation.editors.SimulationEditor;
 import org.omnetpp.simulation.model.cObject;
 import org.omnetpp.simulation.ui.ObjectFieldsViewer;
@@ -112,14 +112,10 @@ public class SimulationObjectPropertySheetPage implements IPropertySheetPage, IS
         refresh();
     }
 
-    public void simulationStateChanged(SimulationController controller) {
-        DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
-            @Override
-            public void run() {
-                if (!isDisposed())
-                    refresh();
-            }
-        });
+    @Override
+    public void simulationStateChanged(SimulationChangeEvent e) {
+        if (e.reason == Reason.OBJECTCACHE_REFRESH && !isDisposed())
+            refresh();
     }
 
     @Override

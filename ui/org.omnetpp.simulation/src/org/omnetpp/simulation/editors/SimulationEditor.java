@@ -49,10 +49,11 @@ import org.omnetpp.simulation.canvas.SelectionUtils;
 import org.omnetpp.simulation.canvas.SimulationCanvas;
 import org.omnetpp.simulation.controller.CommunicationException;
 import org.omnetpp.simulation.controller.ISimulationChangeListener;
-import org.omnetpp.simulation.controller.ISimulationStateListener;
 import org.omnetpp.simulation.controller.ISimulationUICallback;
 import org.omnetpp.simulation.controller.Simulation;
 import org.omnetpp.simulation.controller.Simulation.SimState;
+import org.omnetpp.simulation.controller.SimulationChangeEvent;
+import org.omnetpp.simulation.controller.SimulationChangeEvent.Reason;
 import org.omnetpp.simulation.controller.SimulationController;
 import org.omnetpp.simulation.controller.SimulationController.ConnState;
 import org.omnetpp.simulation.inspectors.GraphicalModuleInspectorPart;
@@ -232,11 +233,14 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         // update inspectors when something happens in the simulation
         simulationController.addSimulationChangeListener(new ISimulationChangeListener() {
             @Override
-            public void simulationStateChanged(SimulationController controller) {
-                simulationCanvas.refreshInspectors();
-                timeline.redraw();
-                if (controller.isLastEventAnimationDone())
+            public void simulationStateChanged(SimulationChangeEvent e) {
+                if (e.reason == Reason.OBJECTCACHE_REFRESH) {
+                    simulationCanvas.refreshInspectors();
+                    timeline.redraw();
+                }
+                if (simulationController.isLastEventAnimationDone()) {  //TODO allocate some reason code for this!!!
                     showNextEventMarker();
+                }
             }
         });
 
@@ -338,7 +342,10 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
         // update status display when something happens to the simulation
         simulationController.addSimulationChangeListener(new ISimulationChangeListener() {
             @Override
-            public void simulationStateChanged(final SimulationController controller) {
+            public void simulationStateChanged(SimulationChangeEvent e) {
+                if (e.reason == Reason.STATUS_REFRESH || e.reason == Reason.CONNSTATE_CHANGE)
+                    updateStatusDisplay();
+
 //                if (controller.getState() == ConnState.DISCONNECTED || controller.getState() == SimState.NONETWORK)
 //                    return; //FIXME this is a hack because animationController doesn't like empty eventlogs
 //                if (controller.getEventlogFile() != null)
@@ -362,43 +369,39 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 //                            animationController.gotoInitialAnimationPosition();
 //                    }
 //                }
-                updateStatusDisplay();
             }
         });
 
-        simulationController.addSimulationStateListener(new ISimulationStateListener() {
+        simulationController.addSimulationChangeListener(new ISimulationChangeListener() {
             @Override
-            public void simulationConnected(SimulationController controller) {
-                runStartupTasks();
-            }
-
-            @Override
-            public void networkSetUp(SimulationController controller) {
-                try {
-                    loadInspectorList();
+            public void simulationStateChanged(SimulationChangeEvent e) {
+                if (e.reason == Reason.CONNSTATE_CHANGE && e.newConnState == ConnState.ONLINE && 
+                        simulationController.getSimulation().getSimState() == SimState.NONE) {
+                    runStartupTasks();
                 }
-                catch (Exception e) {
-                    SimulationPlugin.logError("Cannot restore inspector list", e);
+                else if (e.reason == Reason.NETWORK_SET_UP) {
+                    try {
+                        loadInspectorList();
+                    }
+                    catch (Exception ex) {
+                        SimulationPlugin.logError("Cannot restore inspector list", ex);
+                    }
                 }
-            }
-
-            @Override
-            public void eventsProcessed(SimulationController controller) {
-                try {
-                    tryOpenPendingInspectors();
+                else if (e.reason == Reason.EVENTS_PROCESSED) {
+                    try {
+                        tryOpenPendingInspectors();
+                    }
+                    catch (Exception ex) {
+                        SimulationPlugin.logError("Error restoring pending inspectors", ex);
+                    }
                 }
-                catch (Exception e) {
-                    SimulationPlugin.logError("Error restoring pending inspectors", e);
-                }
-            }
-
-            @Override
-            public void beforeNetworkDelete(SimulationController controller) {
-                try {
-                    saveInspectorList();
-                }
-                catch (CoreException e) {
-                    SimulationPlugin.logError("Cannot save inspector list", e);
+                else if (e.reason == Reason.BEFORE_NETWORK_DELETION) {
+                    try {
+                        saveInspectorList();
+                    }
+                    catch (CoreException ex) {
+                        SimulationPlugin.logError("Cannot save inspector list", ex);
+                    }
                 }
             }
         });
@@ -639,7 +642,8 @@ public class SimulationEditor extends EditorPart implements /*TODO IAnimationCan
 
                     statusLine.setItemText(5, "(cMessage) whatever"); //TODO
                 }
-                catch (CommunicationException e) {
+                catch (Exception e) {
+                    SimulationPlugin.logError(e);
                     statusLine.setItemText(4, NA__);
                     statusLine.setItemText(5, NA__);
                 }

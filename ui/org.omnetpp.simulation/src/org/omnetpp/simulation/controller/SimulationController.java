@@ -28,6 +28,7 @@ import org.omnetpp.simulation.controller.Simulation.RunMode;
 import org.omnetpp.simulation.controller.Simulation.SimState;
 import org.omnetpp.simulation.controller.Simulation.StatusResponse;
 import org.omnetpp.simulation.controller.Simulation.StoppingReason;
+import org.omnetpp.simulation.controller.SimulationChangeEvent.Reason;
 import org.omnetpp.simulation.liveanimation.LiveAnimationController;
 import org.omnetpp.simulation.model.cMessage;
 import org.omnetpp.simulation.model.cModule;
@@ -38,6 +39,11 @@ import org.omnetpp.simulation.model.cModule;
  * @author Andras
  */
 //TODO introduce BUSY state in Cmdenv? it would be active during setting up a network and calling finish
+//TODO: "set up network" after 1st resume
+//TODO resurrect dialog on going offline
+//TODO process info dialog: add connState
+//TODO rename SimState.NONE to UNKNOWN?
+//TODO rewrite refreshUntil() to use DelayedJob
 public class SimulationController implements ISimulationCallback, ISuspendResumeListener {
     /**
      * State of the connection to the simulation process
@@ -64,7 +70,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     private LiveAnimationController liveAnimationController;  //TODO should probably be done via listeners, and not by storing LiveAnimationController reference here!
 
     private boolean lastEventAnimationDone = false;
-    private Simulation.RunMode currentRunMode = RunMode.NONE;
+    private RunMode currentRunMode = RunMode.NONE;
     private BigDecimal runUntilSimTime;
     private long runUntilEventNumber;
     private cModule runUntilModule;
@@ -72,8 +78,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     private boolean stopRequested;
 
     private ISimulationUICallback simulationUICallback;
-    private ListenerList simulationChangeListeners = new ListenerList(); // listeners we have to notify on changes
-    private ListenerList simulationStateListeners = new ListenerList(); // listeners we have to notify on changes XXX bad name
+    private ListenerList simulationChangeListeners = new ListenerList();
 
     public SimulationController(String hostName, int portNumber, Job theLauncherJob, ISuspendResume suspendResume) {
         this.launcherJob = theLauncherJob;
@@ -116,6 +121,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
     protected void setConnectionState(ConnState state) {
         if (connState != state) {
+            final ConnState oldState = connState;
             connState = state;
 
             boolean online = (connState == ConnState.ONLINE);
@@ -126,7 +132,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
             DisplayUtils.runNowOrAsyncInUIThread(new Runnable() {
                 @Override
                 public void run() {
-                    fireSimulationStateChanged();
+                    fireSimulationStateChanged(new SimulationChangeEvent(Reason.CONNSTATE_CHANGE, oldState, connState));
                 }
             });
         }
@@ -178,7 +184,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     }
 
     public boolean isNetworkPresent() {
-        return isOnline() && getUIState() != SimState.NONETWORK;
+        return isOnline() && getUIState() != SimState.NONE && getUIState() != SimState.NONETWORK;
     }
 
     public boolean isSimulationOK() {
@@ -229,18 +235,9 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         simulationChangeListeners.remove(listener);
     }
 
-    public void addSimulationStateListener(ISimulationStateListener listener) {
-        simulationStateListeners.add(listener);
-    }
-
-    public void removeSimulationStateListener(ISimulationStateListener listener) {
-        simulationStateListeners.remove(listener);
-    }
-
     public List<ConfigDescription> getConfigDescriptions() throws CommunicationException {
         return simulation.getConfigDescriptions();
     }
-
 
     public void setCancelJobOnDispose(boolean cancelJobOnDispose) {
         this.cancelJobOnDispose = cancelJobOnDispose;
@@ -280,7 +277,6 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
             // ping successful:
             Debug.println("OK");
             setConnectionState(ConnState.ONLINE);
-            fireSimulationConnected();
         }
         catch (IOException e) {
             Debug.println(e.getClass().getSimpleName() + ": " + e.getMessage());
@@ -299,26 +295,26 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
     public void setupRun(String configName, int runNumber) throws CommunicationException {
         if (StringUtils.isNotEmpty(simulation.getNetworkName()))
-            fireBeforeNetworkDelete();
+            fireSimulationStateChanged(Reason.BEFORE_NETWORK_DELETION);
         simulation.sendSetupRunCommand(configName, runNumber);
         refreshUntil(SimState.READY); //TODO in background thread, plus callback in the end?
-        fireNetworkSetUp();
+        fireSimulationStateChanged(Reason.NETWORK_SET_UP);
     }
 
     public void setupNetwork(String networkName) throws CommunicationException {
         if (StringUtils.isNotEmpty(simulation.getNetworkName()))
-            fireBeforeNetworkDelete();
+            fireSimulationStateChanged(Reason.BEFORE_NETWORK_DELETION);
         simulation.sendSetupNetworkCommand(networkName);
         refreshUntil(SimState.READY); //TODO in background thread, plus callback in the end?
-        fireNetworkSetUp();
+        fireSimulationStateChanged(Reason.NETWORK_SET_UP);
     }
 
     public void rebuildNetwork() throws CommunicationException {
         if (StringUtils.isNotEmpty(simulation.getNetworkName()))
-            fireBeforeNetworkDelete();
+            fireSimulationStateChanged(Reason.BEFORE_NETWORK_DELETION);
         simulation.sendRebuildNetworkCommand();
         refreshUntil(SimState.READY); //TODO in background thread, plus callback in the end?
-        fireNetworkSetUp();
+        fireSimulationStateChanged(Reason.NETWORK_SET_UP);
     }
 
     public void step() throws CommunicationException {
@@ -326,12 +322,11 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         if (currentRunMode == RunMode.NONE) {
 //            animationPlaybackController.jumpToEnd();
 
-            currentRunMode = RunMode.STEP;
-            fireSimulationStateChanged(); // because currentRunMode has changed
+            setRunMode(RunMode.STEP);
             simulation.sendStepCommand();
             lastEventAnimationDone = false;
             refreshUntil(SimState.READY);
-            fireEventsProcessed();
+            fireSimulationStateChanged(Reason.EVENTS_PROCESSED);
 
             // animate it
             doNowOrAfterAnimation(true, resetRunState);
@@ -357,8 +352,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         if (mode != currentRunMode) {
             Assert.isTrue(mode != RunMode.NONE);
             Assert.isTrue(currentRunMode != RunMode.NONE, "must be running");
-            currentRunMode = mode;
-            fireSimulationStateChanged(); // because run mode has changed
+            setRunMode(mode);
         }
     }
 
@@ -376,13 +370,12 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         if (currentRunMode == RunMode.NONE) {
             Assert.isTrue(simulation.getSimState() == SimState.READY);
             stopRequested = false;
-            currentRunMode = mode;
-            fireSimulationStateChanged(); // because currentRunMode has changed
+            setRunMode(mode);
             doRun();
         }
         else {
             // asyncExec() already scheduled, just change the runMode for it
-            currentRunMode = mode;
+            setRunMode(mode);
         }
     }
 
@@ -445,7 +438,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
             // ...and wait for it to complete
             refreshUntil(SimState.READY);  //XXX note: error dialog will *precede* animation of last event -- weird!
-            fireEventsProcessed();
+            fireSimulationStateChanged(Reason.EVENTS_PROCESSED);
 
             boolean animate = (currentRunMode == RunMode.NORMAL);
 
@@ -508,14 +501,20 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
     }
 
     protected void resetRunState() {
-        currentRunMode = RunMode.NONE;
         lastEventAnimationDone = true;
         runUntilSimTime = null;
         runUntilEventNumber = 0;
         runUntilMessage = null;
         runUntilModule = null;
+        setRunMode(RunMode.NONE);
+    }
 
-        fireSimulationStateChanged(); // because currentRunMode has changed
+    protected void setRunMode(RunMode runMode) {
+        if (currentRunMode != runMode) {
+            RunMode oldRunMode = currentRunMode;
+            currentRunMode = runMode;
+            fireSimulationStateChanged(new SimulationChangeEvent(Reason.RUNMODE_CHANGE, oldRunMode, currentRunMode));
+        }
     }
 
     public void callFinish() throws CommunicationException {
@@ -552,13 +551,19 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
                 //TODO implement PAUSE/RESUME commands in Cmdenv!! this method calls getObjectINfo even while
                 // simulation is running!!!! or while network is being set up! this could be solved with PAUSE/RESUME
 
+                // refresh status
+                SimState oldState = simulation.getSimState();
                 StatusResponse response = simulation.refreshStatus();
+                if (oldState != simulation.getSimState())
+                    fireSimulationStateChanged(new SimulationChangeEvent(Reason.SIMSTATE_CHANGE, oldState, simulation.getSimState()));
+                fireSimulationStateChanged(Reason.STATUS_REFRESH);
+
                 again = false;
 
                 if (response != null) {
                     // allow the UI to be updated before we pop up an parameter prompt or error dialog
                     simulation.refreshObjectCache();
-                    fireSimulationStateChanged();
+                    fireSimulationStateChanged(Reason.OBJECTCACHE_REFRESH);
 
                     // carry out action requested by the simulation
                     if (response instanceof AskParameterRequest) {
@@ -609,7 +614,7 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
 
         // UI update
         simulation.refreshObjectCache(); // note: if state is still "running" (shouldn't be), the simulation may have progressed since the last simulation.refreshStatus() call, so results might be inconsistent
-        fireSimulationStateChanged();
+        fireSimulationStateChanged(Reason.OBJECTCACHE_REFRESH);
 
         Debug.println("SimulationController.refreshUntil(): " + (System.currentTimeMillis() - startTime) + "ms\n");
     }
@@ -738,51 +743,16 @@ public class SimulationController implements ISimulationCallback, ISuspendResume
         //TODO cancel timers, etc.
     }
 
-    protected void fireSimulationStateChanged() {
+    protected void fireSimulationStateChanged(SimulationChangeEvent.Reason reason) {
+        fireSimulationStateChanged(new SimulationChangeEvent(reason));
+    }
+
+    protected void fireSimulationStateChanged(SimulationChangeEvent event) {
         Assert.isTrue(Display.getCurrent() != null); // mandate that we are in the UI thread, as listeners are typically UI related
+        event.simulationController = this;
         for (final Object listener : simulationChangeListeners.getListeners()) {
             try {
-                ((ISimulationChangeListener) listener).simulationStateChanged(this);
-            } catch (Exception e) {
-                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
-            }
-        }
-    }
-
-    protected void fireSimulationConnected() {
-        for (final Object listener : simulationStateListeners.getListeners()) {
-            try {
-                ((ISimulationStateListener) listener).simulationConnected(this);
-            } catch (Exception e) {
-                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
-            }
-        }
-    }
-
-    protected void fireNetworkSetUp() {
-        for (final Object listener : simulationStateListeners.getListeners()) {
-            try {
-                ((ISimulationStateListener) listener).networkSetUp(this);
-            } catch (Exception e) {
-                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
-            }
-        }
-    }
-
-    protected void fireEventsProcessed() {
-        for (final Object listener : simulationStateListeners.getListeners()) {
-            try {
-                ((ISimulationStateListener) listener).eventsProcessed(this);
-            } catch (Exception e) {
-                SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
-            }
-        }
-    }
-
-    protected void fireBeforeNetworkDelete() {
-        for (final Object listener : simulationStateListeners.getListeners()) {
-            try {
-                ((ISimulationStateListener) listener).beforeNetworkDelete(this);
+                ((ISimulationChangeListener) listener).simulationStateChanged(event);
             } catch (Exception e) {
                 SimulationPlugin.logError("Error invoking simulation listener " + listener, e);
             }

@@ -9,5 +9,5 @@ public interface ISimulationChangeListener {
     /**
      * Called when the simulation's state has changed
      */
-    void simulationStateChanged(SimulationController controller);
+    void simulationStateChanged(SimulationChangeEvent e);
 }
