@@ -2214,6 +2214,7 @@ void Cmdenv::messageDeleted(cMessage *msg)
 
 void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
+    //FIXME "from" is NULL if the cross-module call is from a module destructor! maybe add context switching into cModule destructor
     va_list va2;
     va_copy(va2, va);
     EnvirBase::componentMethodBegin(from, to, methodFmt, va2, silent);
@@ -2229,8 +2230,10 @@ void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *
         }
         JsonObject *entry = new JsonObject();
         entry->put("@", jsonWrap("MB"));
-        entry->put("sm", jsonWrap(((cModule *)from)->getId()));  //FIXME may be a channel too!!!
-        entry->put("tm", jsonWrap(((cModule *)to)->getId()));
+        cModule *fromModule = dynamic_cast<cModule *>(from);
+        entry->put("sm", jsonWrap(fromModule ? fromModule->getId() : 0));  //FIXME may be a channel too!!!
+        cModule *toModule = dynamic_cast<cModule *>(to);
+        entry->put("tm", jsonWrap(toModule ? toModule->getId() : 0));
         entry->put("m", jsonWrap(methodText));
         jsonLog->push_back(entry);
     }

@@ -12,8 +12,9 @@ public class Anim {  //TODO temp class; make inner classes toplevel
 
     public static class ComponentMethodBeginEntry extends Entry {
         public String txt;
-        public int srcModuleId;
-        public int destModuleId; // cannot be cModule because module may get deleted while we still hold on to this entry
+        // note: cannot be cModule because module may get deleted while we still hold on to this entry
+        public int srcModuleId; //XXX many be 0, see Cmdenv!
+        public int destModuleId; //XXX may be 0, see Cmdenv! 
 
         @Override
         public String toString() {
