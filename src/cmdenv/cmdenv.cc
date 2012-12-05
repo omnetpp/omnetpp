@@ -2214,7 +2214,9 @@ void Cmdenv::messageDeleted(cMessage *msg)
 
 void Cmdenv::componentMethodBegin(cComponent *from, cComponent *to, const char *methodFmt, va_list va, bool silent)
 {
-    EnvirBase::componentMethodBegin(from, to, methodFmt, va, silent);
+    va_list va2;
+    va_copy(va2, va);
+    EnvirBase::componentMethodBegin(from, to, methodFmt, va2, silent);
 
     if (!disable_tracing && collectJsonLog)
     {
