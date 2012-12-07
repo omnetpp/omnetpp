@@ -20,13 +20,18 @@ import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.dom.ast.IASTFileLocation;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorIncludeStatement;
+import org.eclipse.cdt.core.index.IIndexFile;
+import org.eclipse.cdt.core.index.IIndexFileLocation;
+import org.eclipse.cdt.core.index.IIndexInclude;
 import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.parser.FileContent;
 import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
 import org.eclipse.cdt.core.settings.model.ICConfigurationDescription;
 import org.eclipse.cdt.core.settings.model.ICDescriptionDelta;
 import org.eclipse.cdt.core.settings.model.ICProjectDescription;
 import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.core.settings.model.ICSourceEntry;
+import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -46,6 +51,7 @@ import org.omnetpp.cdt.CDTUtils;
 import org.omnetpp.cdt.build.MakefileBuilder;
 import org.omnetpp.cdt.build.MakefileTools;
 import org.omnetpp.cdt.cache.CachedFileContentProvider.ISourceFileChangeListener;
+import org.omnetpp.cdt.cache.Index.IndexFile;
 import org.omnetpp.common.Debug;
 import org.omnetpp.common.markers.ProblemMarkerSynchronizer;
 import org.omnetpp.common.project.ProjectUtils;
@@ -334,25 +340,39 @@ public class DependencyCache {
     /**
      * Collect #includes from a C++ source file or a msg file
      */
+    @SuppressWarnings("restriction")
     protected static List<Include> collectFileIncludes(IFile file) throws CoreException {
         //Debug.println("Collect includes from " + file.getLocation());
 
         List<Include> result = new ArrayList<Include>();
         if (MakefileTools.isCppFile(file) || MakefileTools.isMsgFile(file)) {
             try {
-                CppScanner scanner = new CppScanner(file);
-                scanner.scanFully();
-                for (IASTPreprocessorIncludeStatement include : scanner.getIncludeDirectives()) {
-                    if (include.isActive()) {
-                        IASTFileLocation location = scanner.getIncludeLocation(include);
-                        if (location != null && location.getFileName().equals(file.getLocation().toOSString())) {
-                            //Debug.println("    includes " + (include.isResolved() ? "+" : "-") +include.getName().toString() + " at " + location.getStartingLineNumber());
+                String filePath = file.getLocation().toOSString();
+                IndexFile indexFile = Activator.getIndex().resolve(filePath);
+                if (indexFile != null) {
+                    for (IIndexInclude include : indexFile.getIncludes()) {
+                        if (include.isActive()) {
+                            //Debug.println("    includes " + (include.isResolved() ? "+" : "-") +include.getName());
+                            if (include.getIncludedBy() == indexFile);
+                                result.add(new Include(file, -1, include.getFullName(), include.isSystemInclude()));
+                        }
+                    }
+                }
+                else {
+                    CppScanner scanner = new CppScanner(file);
+                    scanner.scanFully();
+                    for (IASTPreprocessorIncludeStatement include : scanner.getIncludeDirectives()) {
+                        if (include.isActive()) {
+                            IASTFileLocation location = scanner.getIncludeLocation(include);
+                            if (location != null && location.getFileName().equals(filePath)) {
+                                //Debug.println("    includes " + (include.isResolved() ? "+" : "-") +include.getName().toString() + " at " + location.getStartingLineNumber());
 
-                            // XXX because the scanner receives file contents that contains only the preprocessor directives,
-                            //     the line numbers in the location will be wrong. They cannot be cured by adding #line directives
-                            //     to the generated file contents, because CPreprocessor ignores them. So we did not fill the line
-                            //     numbers here. The line number can be computed by getLineForInclude() when needed.
-                            result.add(new Include(file, -1/*location.getStartingLineNumber()*/, include.getName().toString(), include.isSystemInclude()));
+                                // XXX because the scanner receives file contents that contains only the preprocessor directives,
+                                //     the line numbers in the location will be wrong. They cannot be cured by adding #line directives
+                                //     to the generated file contents, because CPreprocessor ignores them. So we did not fill the line
+                                //     numbers here. The line number can be computed by getLineForInclude() when needed.
+                                result.add(new Include(file, -1/*location.getStartingLineNumber()*/, include.getName().toString(), include.isSystemInclude()));
+                            }
                         }
                     }
                 }

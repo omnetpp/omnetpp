@@ -1,6 +1,7 @@
 package org.omnetpp.cdt.cache;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -8,9 +9,13 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.cdt.core.dom.ast.cpp.ICPPUsingDirective;
 import org.eclipse.cdt.core.index.IIndexFileLocation;
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.parser.FileContent;
 import org.eclipse.cdt.core.parser.ParserUtil;
+import org.eclipse.cdt.core.settings.model.CProjectDescriptionEvent;
+import org.eclipse.cdt.core.settings.model.ICProjectDescriptionListener;
 import org.eclipse.cdt.internal.core.parser.scanner.AbstractCharArray;
 import org.eclipse.cdt.internal.core.parser.scanner.CharArray;
 import org.eclipse.cdt.internal.core.parser.scanner.InternalFileContent;
@@ -23,11 +28,13 @@ import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Path;
 import org.omnetpp.cdt.Activator;
 import org.omnetpp.cdt.build.MakefileTools;
+import org.omnetpp.cdt.cache.Index.IndexFile;
 import org.omnetpp.common.Debug;
 
 /**
@@ -52,8 +59,21 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
     // standard headers are always skipped
     protected static final Set<String> standardHeaders = new HashSet<String>(Arrays.asList(MakefileTools.ALL_STANDARD_HEADERS.trim().split(" +")));
 
+    static class CachedData {
+        InternalFileContent sourceContent;
+        InternalFileContent indexContent;
+
+        public CachedData(InternalFileContent sourceContent) {
+            this.sourceContent = sourceContent;
+        }
+        public InternalFileContent getContent(boolean allowIndex) {
+            return indexContent != null && allowIndex ? indexContent : sourceContent;
+        }
+    }
+
     // map of file locations to file content
-    Map<String, InternalFileContent> cache = new HashMap<String, InternalFileContent>();
+    // if the value is null, then the file does not exists in the file system
+    Map<String, CachedData> cache = new HashMap<String, CachedData>();
 
     // files included into the current translation unit
     // their path is mapped to a skipped content (kind == SKIP_FILE)
@@ -68,20 +88,29 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         }
     };
 
+    private ICProjectDescriptionListener projectDescriptionListener = new ICProjectDescriptionListener() {
+        public void handleEvent(CProjectDescriptionEvent e) {
+            projectDescriptionChanged(e);
+        }
+    };
+
     public CachedFileContentProvider() {
     }
 
     public void hookListeners() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener);
+        CoreModel.getDefault().addCProjectDescriptionListener(projectDescriptionListener, CProjectDescriptionEvent.APPLIED);
     }
 
     public void unhookListeners() {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(resourceChangeListener);
+        CoreModel.getDefault().removeCProjectDescriptionListener(projectDescriptionListener);
     }
 
     public InternalFileContent getContentForTranslationUnit(String path) {
+        //Debug.println("Processing " + path);
         includedFiles.clear();
-        return getFileContent(path);
+        return getFileContent(path, false); // XXX get rid of this flag, no need to parse if it is indexed
     }
 
     @Override
@@ -90,7 +119,7 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         if (content != null)
             return content;
 
-        content = getFileContent(path);
+        content = getFileContent(path, true);
 
         if (content != null)
             includedFiles.put(path, new InternalFileContent(path, InclusionKind.SKIP_FILE));
@@ -98,14 +127,27 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         return content;
     }
 
+    public void setIndexFile(String path, IndexFile indexFile) {
+        CachedData data = cache.get(path);
+        Assert.isTrue(data != null);
+
+        data.indexContent = indexFile == null ? null :
+                            new InternalFileContent(indexFile.absolutePath,
+                                                    Arrays.asList(indexFile.getMacros()),
+                                                    Collections.<ICPPUsingDirective>emptyList(),
+                                                    Activator.getIndex().findIncludedFiles(indexFile));
+    }
+
     @Override
     public InternalFileContent getContentForInclusion(IIndexFileLocation ifl, String astPath) {
         throw new UnsupportedOperationException();
     }
 
-    private InternalFileContent getFileContent(String path) {
-        if (cache.containsKey(path))
-            return cache.get(path);
+    private InternalFileContent getFileContent(String path, boolean allowIndex) {
+        if (cache.containsKey(path)) {
+            CachedData data = cache.get(path);
+            return data != null ? data.getContent(allowIndex) : null;
+        }
 
         InternalFileContent fileContent = null;
         if (standardHeaders.contains(new Path(path).lastSegment()))
@@ -117,7 +159,7 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
                 fileContent = new InternalFileContent(path, content);
         }
 
-        cache.put(path, fileContent);
+        cache.put(path, new CachedData(fileContent));
         return fileContent;
     }
 
@@ -157,6 +199,13 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
         return new CharArray(sb.toString());
     }
 
+    protected void projectDescriptionChanged(CProjectDescriptionEvent e) {
+        Debug.println("CachedFileContentProvider: project description changed, discarding indexed content");
+        for (Map.Entry<String,CachedData> entry : cache.entrySet()) {
+            entry.getValue().indexContent = null;
+        }
+    }
+
     protected void resourceChanged(IResourceChangeEvent event) {
         try {
             // refresh the cache on resource change events
@@ -170,18 +219,18 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
                             String path = resource.getLocation().toOSString(); // XXX normalized?
                             if (kind == IResourceDelta.ADDED) {
                                 AbstractCharArray content = readAndCompressFileContent(path);
-                                cache.put(path, new InternalFileContent(path, content));
+                                cache.put(path, new CachedData(new InternalFileContent(path, content)));
                                 fireFileContentChanged(delta);
                             }
                             else if (kind == IResourceDelta.REMOVED) {
-                                InternalFileContent oldContent = cache.remove(path);
+                                CachedData oldContent = cache.remove(path);
                                 if (oldContent != null)
                                     fireFileContentChanged(delta);
                             }
                             else if (kind==IResourceDelta.CHANGED && (flags&IResourceDelta.CONTENT)!=0) {
-                                InternalFileContent fileContent = cache.get(path);
-                                if (fileContent != null && fileContent.getKind() == InclusionKind.USE_SOURCE) {
-                                    AbstractCharArray oldContent = fileContent.getSource();
+                                CachedData data = cache.get(path);
+                                if (data != null && data.getContent(false).getKind() == InclusionKind.USE_SOURCE) {
+                                    AbstractCharArray oldContent = data.getContent(false).getSource();
                                     AbstractCharArray newContent = readAndCompressFileContent(path);
                                     boolean contentChanged = oldContent.getLength() != newContent.getLength() ||
                                                              oldContent.getContentsHash() != newContent.getContentsHash();
@@ -194,7 +243,7 @@ public class CachedFileContentProvider extends InternalFileContentProvider {
                                         }
                                     }
                                     if (contentChanged) {
-                                        cache.put(path, new InternalFileContent(path, newContent));
+                                        cache.put(path, new CachedData(new InternalFileContent(path, newContent)));
                                         fireFileContentChanged(delta);
                                     }
                                 }

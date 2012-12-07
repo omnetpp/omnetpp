@@ -25,6 +25,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.omnetpp.cdt.cache.CachedFileContentProvider;
 import org.omnetpp.cdt.cache.DependencyCache;
 import org.omnetpp.cdt.cache.IncludeFoldersCache;
+import org.omnetpp.cdt.cache.Index;
 import org.omnetpp.cdt.cache.NewConfigConfigurer;
 import org.omnetpp.cdt.ui.ProjectFeaturesListener;
 import org.osgi.framework.BundleContext;
@@ -47,6 +48,7 @@ public class Activator extends AbstractUIPlugin {
     private NewConfigConfigurer newConfigConfigurer = new NewConfigConfigurer();
     private CProjectChecker cprojectChecker = new CProjectChecker();
     private CachedFileContentProvider fileContentProvider = new CachedFileContentProvider();
+    private Index index = new Index(fileContentProvider);
 
     /**
      * The constructor
@@ -68,6 +70,7 @@ public class Activator extends AbstractUIPlugin {
         newConfigConfigurer.hookListeners();
         cprojectChecker.hookListeners();
         fileContentProvider.hookListeners();
+        index.hookListeners();
 
         cprojectChecker.checkAllOpenProjects();
 
@@ -92,6 +95,7 @@ public class Activator extends AbstractUIPlugin {
         newConfigConfigurer.unhookListeners();
         cprojectChecker.unhookListeners();
         fileContentProvider.unhookListeners();
+        index.unhookListeners();
 
         plugin = null;
         super.stop(context);
@@ -209,5 +213,9 @@ public class Activator extends AbstractUIPlugin {
 
     public static CachedFileContentProvider getFileContentProvider() {
         return getDefault().fileContentProvider;
+    }
+
+    public static Index getIndex() {
+        return getDefault().index;
     }
 }
